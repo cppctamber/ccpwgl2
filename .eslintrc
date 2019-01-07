@@ -1,0 +1,46 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-unused-vars": "off",
+    "no-console": "off",
+    "no-constant-condition": "off",
+    "no-case-declarations": "off",
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "indent": [
+      2,
+      4,
+      {
+        "VariableDeclarator": 1,
+        "SwitchCase": 1
+      }
+    ],
+    "newline-per-chained-call": "off",
+    "brace-style": [
+      "error",
+      "allman",
+      {
+        "allowSingleLine": true
+      }
+    ],
+    "space-in-parens": [
+      "error",
+      "never"
+    ]
+  }
+}

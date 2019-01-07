@@ -1,0 +1,117 @@
+import {vec3, quat, mat4} from "../../global";
+import {Tw2Parameter} from "./Tw2Parameter";
+
+/**
+ * Tw2TransformParameter
+ *
+ * @parameter {String} name
+ * @parameter {vec3} scaling=[1,1,1]
+ * @parameter {quat} rotation=[0,0,0,1]
+ * @parameter {vec3} translation=[0,0,0]
+ * @parameter {mat4} transform
+ * @parameter {mat4} transformTranspose
+ * @class
+ */
+export class Tw2TransformParameter extends Tw2Parameter
+{
+
+    name = "";
+    scaling = vec3.fromValues(1, 1, 1);
+    rotationCenter = vec3.create();
+    rotation = quat.create();
+    translation = vec3.create();
+    transform = mat4.create();
+    worldTransform = mat4.create();
+    constantBuffer = null;
+    offset = null;
+
+
+    /**
+     * Initializes the transform parameter
+     */
+    Initialize()
+    {
+        this.OnValueChanged();
+    }
+
+    /**
+     * Gets the parameter's value
+     * @param {Boolean} [serialize]
+     * @returns {Array|Float32Array|mat4}
+     */
+    GetValue(serialize)
+    {
+        return serialize ? Array.from(this.transform) : new Float32Array(this.transform);
+    }
+
+    /**
+     * Fire on value changes
+     * @param {*} [controller]        - An optional argument to track the object that called this function
+     * @param {String[]} [properties] - An option array containing the properties that were updated
+     */
+    OnValueChanged(controller, properties)
+    {
+        mat4.fromRotationTranslationScaleOrigin(this.transform, this.rotation, this.translation, this.scaling, this.rotationCenter);
+        mat4.transpose(this.worldTransform, this.transform);
+        super.OnValueChanged(controller, properties);
+    }
+
+    /**
+     * Binds the parameter to a constant buffer
+     * @param {Float32Array} constantBuffer
+     * @param {Number} offset
+     * @param {Number} size
+     * @returns {Boolean}
+     */
+    Bind(constantBuffer, offset, size)
+    {
+        if (!this.constantBuffer && size >= this.size)
+        {
+            this.constantBuffer = constantBuffer;
+            this.offset = offset;
+            this.Apply(constantBuffer, offset, size);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Applies the parameter's value to a constant buffer
+     * @param {Float32Array} constantBuffer
+     * @param {Number} offset
+     * @param {Number} size
+     */
+    Apply(constantBuffer, offset, size)
+    {
+        if (size >= this.constructor.constantBufferSize)
+        {
+            constantBuffer.set(this.worldTransform, offset);
+        }
+        else
+        {
+            constantBuffer.set(this.worldTransform.subarray(0, size), offset);
+        }
+    }
+
+    /**
+     * Copies another transform parameter's values
+     * @param {Tw2TransformParameter} parameter
+     * @param {Boolean} [includeName]
+     */
+    Copy(parameter, includeName)
+    {
+        if (includeName) this.name = parameter.name;
+        quat.copy(this.rotation, parameter.rotation);
+        vec3.copy(this.translation, parameter.translation);
+        vec3.copy(this.scaling, parameter.scaling);
+        vec3.copy(this.rotationCenter, parameter.rotationCenter);
+        this.OnValueChanged();
+    }
+
+    /**
+     * The parameter's constant buffer size
+     * @type {Number}
+     */
+    static constantBufferSize = 16;
+
+}
