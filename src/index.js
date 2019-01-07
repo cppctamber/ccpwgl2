@@ -93,6 +93,26 @@ store.Register({
 
 });
 
+/**
+ * Staging
+ */
 
+import * as staging from "./.staging";
+export { staging };
+
+/**
+ * Registers a staging class
+ * @param {String} name - The name of the staging class
+ * @returns {null|class|Function} the class
+ */
+export function useStaging(name)
+{
+    if (name in staging)
+    {
+        store.RegisterClass(name, staging[name]);
+        return staging[name];
+    }
+    return null;
+}
 
 

@@ -9,10 +9,10 @@ export * from "./post";
 export * from "./reader";
 export * from "./resource";
 export * from "./sampler";
+export * from "./value";
 export * from "./vertex";
 
 export * from "./Tw2Error";
 export * from "./Tw2EventEmitter";
-export * from "./Tw2Float";
 export * from "./Tw2Frustum";
 export * from "./Tw2RenderTarget";

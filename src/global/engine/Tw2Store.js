@@ -211,16 +211,16 @@ class Tw2Store extends Tw2EventEmitter
             }
         }
 
-        // Create a warning when a partially implemented class is called
-        if (Constructor && Constructor.partialImplementation)
+        // Create a warning when a staging class is called
+        if (Constructor && Constructor.__isStaging)
         {
-            this.emit("partial", {
+            this.emit("staging", {
                 type: "class",
                 key: name,
                 value: Constructor,
                 log: {
                     type: "warning",
-                    message: `"${name}" class partially implemented`
+                    message: `"${name}" class is in development`
                 }
             });
         }
