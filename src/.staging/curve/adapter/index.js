@@ -1,3 +1,3 @@
-export Tw2RotationAdapter from "./Tw2RotationAdapter";
-export Tw2TranslationAdapter from "./Tw2TranslationAdapter";
+export Tr2RotationAdapter from "./Tr2RotationAdapter";
+export Tr2TranslationAdapter from "./Tr2TranslationAdapter";
 

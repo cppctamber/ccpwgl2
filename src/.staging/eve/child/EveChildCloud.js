@@ -1,19 +1,19 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildCloud
  * @implements ObjectChild
  *
  * @parameter {Number} cellScreenSize      -
- * @parameter {Tw2Effect} effect           -
+ * @parameter {Tr2Effect} effect           -
  * @parameter {Number} preTesselationLevel -
  * @parameter {quat} rotation              -
  * @parameter {vec3} scaling               -
  * @parameter {Number} sortingModifier     -
  * @parameter {vec3} translation           -
  */
-export default class EveChildCloud extends Tw2StagingClass
+export default class EveChildCloud extends Tw2BaseClass
 {
 
     cellScreenSize = 0;
@@ -26,14 +26,15 @@ export default class EveChildCloud extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildCloud, Type =>
+Tw2BaseClass.define(EveChildCloud, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildCloud",
         category: "ObjectChild",
         props: {
             cellScreenSize: Type.NUMBER,
-            effect: ["Tw2Effect"],
+            effect: ["Tr2Effect"],
             preTesselationLevel: Type.NUMBER,
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,

@@ -1,5 +1,5 @@
 import {vec2, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataGenericDamage
@@ -27,7 +27,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} shieldShaderEllipsoid                -
  * @parameter {String} shieldShaderHull                     -
  */
-export default class EveSOFDataGenericDamage extends Tw2StagingClass
+export default class EveSOFDataGenericDamage extends Tw2BaseClass
 {
 
     armorParticleAngle = 0;
@@ -55,9 +55,10 @@ export default class EveSOFDataGenericDamage extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataGenericDamage, Type =>
+Tw2BaseClass.define(EveSOFDataGenericDamage, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataGenericDamage",
         props: {
             armorParticleAngle: Type.NUMBER,

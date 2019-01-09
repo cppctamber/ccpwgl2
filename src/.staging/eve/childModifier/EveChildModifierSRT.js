@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildModifierSRT
@@ -8,7 +8,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {quat} rotation -
  * @parameter {vec3} scaling  -
  */
-export default class EveChildModifierSRT extends Tw2StagingClass
+export default class EveChildModifierSRT extends Tw2BaseClass
 {
 
     rotation = quat.create();
@@ -16,9 +16,10 @@ export default class EveChildModifierSRT extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildModifierSRT, Type =>
+Tw2BaseClass.define(EveChildModifierSRT, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildModifierSRT",
         category: "ChildModifier",
         props: {

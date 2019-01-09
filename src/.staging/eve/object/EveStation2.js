@@ -1,5 +1,5 @@
 import {vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveStation2
@@ -8,22 +8,22 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} boundingSphereCenter              -
  * @parameter {Number} boundingSphereRadius            -
  * @parameter {Array.<EveObject>} children             -
- * @parameter {Array.<Tw2CurveSet>} curveSets          -
+ * @parameter {Array.<TriCurveSet>} curveSets          -
  * @parameter {Array.<EveObjectItem>} decals           -
  * @parameter {Array.<ObjectChild>} effectChildren     -
- * @parameter {Array.<Tw2PointLight>} lights           -
+ * @parameter {Array.<Tr2PointLight>} lights           -
  * @parameter {Array.<EveObjectSet>} locatorSets       -
  * @parameter {Array.<EveObjectItem>} locators         -
- * @parameter {Tw2Mesh} mesh                           -
- * @parameter {Tw2MeshLod} meshLod                     -
- * @parameter {Tw2RotationAdapter} modelRotationCurve  -
+ * @parameter {Tr2Mesh} mesh                           -
+ * @parameter {Tr2MeshLod} meshLod                     -
+ * @parameter {Tr2RotationAdapter} modelRotationCurve  -
  * @parameter {Number} modelScale                      -
- * @parameter {Array.<Tw2ObserverLocal>} observers     -
- * @parameter {Tw2RotationAdapter} rotationCurve       -
- * @parameter {Tw2Effect} shadowEffect                 -
- * @parameter {Tw2TranslationAdapter} translationCurve -
+ * @parameter {Array.<TriObserverLocal>} observers     -
+ * @parameter {Tr2RotationAdapter} rotationCurve       -
+ * @parameter {Tr2Effect} shadowEffect                 -
+ * @parameter {Tr2TranslationAdapter} translationCurve -
  */
-export default class EveStation2 extends Tw2StagingClass
+export default class EveStation2 extends Tw2BaseClass
 {
 
     attachments = [];
@@ -47,29 +47,30 @@ export default class EveStation2 extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveStation2, Type =>
+Tw2BaseClass.define(EveStation2, Type =>
 {
     return {
+        isStaging: true,
         type: "EveStation2",
         props: {
             attachments: [["EvePlaneSet", "EveSpotlightSet", "EveSpriteSet"]],
             boundingSphereCenter: Type.VECTOR3,
             boundingSphereRadius: Type.NUMBER,
             children: [["EveTransform"]],
-            curveSets: [["Tw2CurveSet"]],
+            curveSets: [["TriCurveSet"]],
             decals: [["EveSpaceObjectDecal"]],
             effectChildren: [["EveChildContainer", "EveChildMesh"]],
-            lights: [["Tw2PointLight"]],
+            lights: [["Tr2PointLight"]],
             locatorSets: [["EveLocatorSets"]],
             locators: [["EveLocator2"]],
-            mesh: ["Tw2Mesh"],
-            meshLod: ["Tw2MeshLod"],
-            modelRotationCurve: ["Tw2RotationAdapter"],
+            mesh: ["Tr2Mesh"],
+            meshLod: ["Tr2MeshLod"],
+            modelRotationCurve: ["Tr2RotationAdapter"],
             modelScale: Type.NUMBER,
-            observers: [["Tw2ObserverLocal"]],
-            rotationCurve: ["Tw2RotationAdapter"],
-            shadowEffect: ["Tw2Effect"],
-            translationCurve: ["Tw2TranslationAdapter"]
+            observers: [["TriObserverLocal"]],
+            rotationCurve: ["Tr2RotationAdapter"],
+            shadowEffect: ["Tr2Effect"],
+            translationCurve: ["Tr2TranslationAdapter"]
         }
     };
 });

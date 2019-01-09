@@ -1,13 +1,13 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveUiObject
  *
  * @parameter {Number} boundingSphereRadius -
- * @parameter {Tw2Mesh} mesh                -
+ * @parameter {Tr2Mesh} mesh                -
  * @parameter {Number} modelScale           -
  */
-export default class EveUiObject extends Tw2StagingClass
+export default class EveUiObject extends Tw2BaseClass
 {
 
     boundingSphereRadius = 0;
@@ -16,13 +16,14 @@ export default class EveUiObject extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveUiObject, Type =>
+Tw2BaseClass.define(EveUiObject, Type =>
 {
     return {
+        isStaging: true,
         type: "EveUiObject",
         props: {
             boundingSphereRadius: Type.NUMBER,
-            mesh: ["Tw2Mesh"],
+            mesh: ["Tr2Mesh"],
             modelScale: Type.NUMBER
         }
     };

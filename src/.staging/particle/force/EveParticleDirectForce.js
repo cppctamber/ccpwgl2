@@ -1,5 +1,5 @@
 import {vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveParticleDirectForce
@@ -7,16 +7,17 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {vec3} force -
  */
-export default class EveParticleDirectForce extends Tw2StagingClass
+export default class EveParticleDirectForce extends Tw2BaseClass
 {
 
     force = vec3.create();
 
 }
 
-Tw2StagingClass.define(EveParticleDirectForce, Type =>
+Tw2BaseClass.define(EveParticleDirectForce, Type =>
 {
     return {
+        isStaging: true,
         type: "EveParticleDirectForce",
         category: "ParticleForce",
         props: {

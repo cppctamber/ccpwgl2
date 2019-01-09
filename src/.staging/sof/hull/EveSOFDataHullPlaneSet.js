@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullPlaneSet
@@ -11,7 +11,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} skinned                          -
  * @parameter {Number} usage                             -
  */
-export default class EveSOFDataHullPlaneSet extends Tw2StagingClass
+export default class EveSOFDataHullPlaneSet extends Tw2BaseClass
 {
 
     atlasSize = 0;
@@ -24,9 +24,10 @@ export default class EveSOFDataHullPlaneSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullPlaneSet, Type =>
+Tw2BaseClass.define(EveSOFDataHullPlaneSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullPlaneSet",
         props: {
             atlasSize: Type.NUMBER,

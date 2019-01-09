@@ -1,5 +1,5 @@
 import {vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveShip2
@@ -15,14 +15,14 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} dna                          -
  * @parameter {Array.<EveObjectSet>} locatorSets    -
  * @parameter {Array.<EveObjectItem>} locators      -
- * @parameter {Mesh|Tw2MeshLod} mesh                -
+ * @parameter {Mesh|Tr2MeshLod} mesh                -
  * @parameter {Curve|CurveAdapter} rotationCurve    -
- * @parameter {Tw2Effect} shadowEffect              -
+ * @parameter {Tr2Effect} shadowEffect              -
  * @parameter {vec3} shapeEllipsoidCenter           -
  * @parameter {vec3} shapeEllipsoidRadius           -
  * @parameter {Curve|CurveAdapter} translationCurve -
  */
-export default class EveShip2 extends Tw2StagingClass
+export default class EveShip2 extends Tw2BaseClass
 {
 
     attachments = [];
@@ -44,9 +44,10 @@ export default class EveShip2 extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveShip2, Type =>
+Tw2BaseClass.define(EveShip2, Type =>
 {
     return {
+        isStaging: true,
         type: "EveShip2",
         category: "EveObject",
         props: {
@@ -60,12 +61,12 @@ Tw2StagingClass.define(EveShip2, Type =>
             dna: Type.STRING,
             locatorSets: [["EveLocatorSets"]],
             locators: [["EveLocator2"]],
-            mesh: ["Tw2Mesh", "Tw2MeshLod"],
-            rotationCurve: ["Tw2CurveConstant", "Tw2RotationAdapter"],
-            shadowEffect: ["Tw2Effect"],
+            mesh: ["Tr2Mesh", "Tr2MeshLod"],
+            rotationCurve: ["Tr2CurveConstant", "Tr2RotationAdapter"],
+            shadowEffect: ["Tr2Effect"],
             shapeEllipsoidCenter: Type.VECTOR3,
             shapeEllipsoidRadius: Type.VECTOR3,
-            translationCurve: ["Tw2CurveConstant", "Tw2TranslationAdapter"]
+            translationCurve: ["Tr2CurveConstant", "Tr2TranslationAdapter"]
         }
     };
 });

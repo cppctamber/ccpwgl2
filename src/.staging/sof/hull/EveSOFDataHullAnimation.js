@@ -1,5 +1,5 @@
 import {quat} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullAnimation
@@ -12,7 +12,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} startRotationTime -
  * @parameter {quat} startRotationValue  -
  */
-export default class EveSOFDataHullAnimation extends Tw2StagingClass
+export default class EveSOFDataHullAnimation extends Tw2BaseClass
 {
 
     endRate = 0;
@@ -25,9 +25,10 @@ export default class EveSOFDataHullAnimation extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullAnimation, Type =>
+Tw2BaseClass.define(EveSOFDataHullAnimation, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullAnimation",
         props: {
             endRate: Type.NUMBER,

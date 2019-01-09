@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullSpriteLineSet
@@ -7,7 +7,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} skinned                               -
  * @parameter {String} visibilityGroup                        -
  */
-export default class EveSOFDataHullSpriteLineSet extends Tw2StagingClass
+export default class EveSOFDataHullSpriteLineSet extends Tw2BaseClass
 {
 
     items = [];
@@ -16,9 +16,10 @@ export default class EveSOFDataHullSpriteLineSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullSpriteLineSet, Type =>
+Tw2BaseClass.define(EveSOFDataHullSpriteLineSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullSpriteLineSet",
         props: {
             items: [["EveSOFDataHullSpriteLineSetItem"]],

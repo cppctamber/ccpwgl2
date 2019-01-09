@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveParticleDragForce
@@ -6,16 +6,17 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {Number} drag -
  */
-export default class EveParticleDragForce extends Tw2StagingClass
+export default class EveParticleDragForce extends Tw2BaseClass
 {
 
     drag = 0;
 
 }
 
-Tw2StagingClass.define(EveParticleDragForce, Type =>
+Tw2BaseClass.define(EveParticleDragForce, Type =>
 {
     return {
+        isStaging: true,
         type: "EveParticleDragForce",
         category: "ParticleForce",
         props: {

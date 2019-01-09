@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * AudEventCurve
@@ -6,9 +6,9 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {Number} extrapolation               -
  * @parameter {Array.<CurveKey>} keys              -
- * @parameter {Tw2ObserverLocal} sourceTriObserver -
+ * @parameter {TriObserverLocal} sourceTriObserver -
  */
-export default class AudEventCurve extends Tw2StagingClass
+export default class AudEventCurve extends Tw2BaseClass
 {
 
     extrapolation = 0;
@@ -17,15 +17,16 @@ export default class AudEventCurve extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(AudEventCurve, Type =>
+Tw2BaseClass.define(AudEventCurve, Type =>
 {
     return {
+        isStaging: true,
         type: "AudEventCurve",
         category: "Curve",
         props: {
             extrapolation: Type.NUMBER,
             keys: [["AudEventKey"]],
-            sourceTriObserver: ["Tw2ObserverLocal"]
+            sourceTriObserver: ["TriObserverLocal"]
         }
     };
 });

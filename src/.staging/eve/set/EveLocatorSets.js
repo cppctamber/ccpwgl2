@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveLocatorSets
@@ -6,16 +6,17 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {Array} locators -
  */
-export default class EveLocatorSets extends Tw2StagingClass
+export default class EveLocatorSets extends Tw2BaseClass
 {
 
     locators = [];
 
 }
 
-Tw2StagingClass.define(EveLocatorSets, Type =>
+Tw2BaseClass.define(EveLocatorSets, Type =>
 {
     return {
+        isStaging: true,
         type: "EveLocatorSets",
         category: "EveObjectSet",
         props: {

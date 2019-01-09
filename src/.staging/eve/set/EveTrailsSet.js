@@ -1,13 +1,13 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveTrailsSet
  * @implements EveObjectSet
  *
- * @parameter {Tw2Effect} effect       -
+ * @parameter {Tr2Effect} effect       -
  * @parameter {String} geometryResPath -
  */
-export default class EveTrailsSet extends Tw2StagingClass
+export default class EveTrailsSet extends Tw2BaseClass
 {
 
     effect = null;
@@ -15,13 +15,14 @@ export default class EveTrailsSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveTrailsSet, Type =>
+Tw2BaseClass.define(EveTrailsSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveTrailsSet",
         category: "EveObjectSet",
         props: {
-            effect: ["Tw2Effect"],
+            effect: ["Tr2Effect"],
             geometryResPath: Type.PATH
         }
     };

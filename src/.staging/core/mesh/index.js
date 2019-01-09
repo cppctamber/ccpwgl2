@@ -1,7 +1,7 @@
-export Tw2Effect from "./Tw2Effect";
-export Tw2InstancedMesh from "./Tw2InstancedMesh";
-export Tw2LodResource from "./Tw2LodResource";
-export Tw2Mesh from "./Tw2Mesh";
-export Tw2MeshArea from "./Tw2MeshArea";
-export Tw2MeshLod from "./Tw2MeshLod";
+export Tr2Effect from "./Tr2Effect";
+export Tr2InstancedMesh from "./Tr2InstancedMesh";
+export Tr2LodResource from "./Tr2LodResource";
+export Tr2Mesh from "./Tr2Mesh";
+export Tr2MeshArea from "./Tr2MeshArea";
+export Tr2MeshLod from "./Tr2MeshLod";
 

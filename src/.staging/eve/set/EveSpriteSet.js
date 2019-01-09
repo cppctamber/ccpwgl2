@@ -1,15 +1,15 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSpriteSet
  * @implements EveObjectSet
  *
- * @parameter {Tw2Effect} effect                 -
+ * @parameter {Tr2Effect} effect                 -
  * @parameter {Number} intensity                 -
  * @parameter {Boolean} skinned                  -
  * @parameter {Array.<EveObjectSetItem>} sprites -
  */
-export default class EveSpriteSet extends Tw2StagingClass
+export default class EveSpriteSet extends Tw2BaseClass
 {
 
     effect = null;
@@ -19,13 +19,14 @@ export default class EveSpriteSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSpriteSet, Type =>
+Tw2BaseClass.define(EveSpriteSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpriteSet",
         category: "EveObjectSet",
         props: {
-            effect: ["Tw2Effect"],
+            effect: ["Tr2Effect"],
             intensity: Type.NUMBER,
             skinned: Type.BOOLEAN,
             sprites: [["EveSpriteSetItem"]]

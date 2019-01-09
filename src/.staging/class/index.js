@@ -1,1 +1,1 @@
-export Tw2StagingClass from "./Tw2StagingClass";
+export Tw2BaseClass from "./Tw2BaseClass";

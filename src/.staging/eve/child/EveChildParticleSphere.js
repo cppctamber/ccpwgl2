@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildParticleSphere
@@ -6,9 +6,9 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {Array.<ParticleAttributeGenerator>} generators -
  * @parameter {Number} maxSpeed                               -
- * @parameter {Tw2InstancedMesh} mesh                         -
+ * @parameter {Tr2InstancedMesh} mesh                         -
  * @parameter {Number} movementScale                          -
- * @parameter {Tw2ParticleSystem} particleSystem              -
+ * @parameter {Tr2ParticleSystem} particleSystem              -
  * @parameter {Number} positionShiftDecreaseSpeed             -
  * @parameter {Number} positionShiftIncreaseSpeed             -
  * @parameter {Number} positionShiftMax                       -
@@ -16,7 +16,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} radius                                 -
  * @parameter {Boolean} useSpaceObjectData                    -
  */
-export default class EveChildParticleSphere extends Tw2StagingClass
+export default class EveChildParticleSphere extends Tw2BaseClass
 {
 
     generators = [];
@@ -33,17 +33,18 @@ export default class EveChildParticleSphere extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildParticleSphere, Type =>
+Tw2BaseClass.define(EveChildParticleSphere, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildParticleSphere",
         category: "ObjectChild",
         props: {
-            generators: [["Tw2RandomIntegerAttributeGenerator", "Tw2RandomUniformAttributeGenerator"]],
+            generators: [["Tr2RandomIntegerAttributeGenerator", "Tr2RandomUniformAttributeGenerator"]],
             maxSpeed: Type.NUMBER,
-            mesh: ["Tw2InstancedMesh"],
+            mesh: ["Tr2InstancedMesh"],
             movementScale: Type.NUMBER,
-            particleSystem: ["Tw2ParticleSystem"],
+            particleSystem: ["Tr2ParticleSystem"],
             positionShiftDecreaseSpeed: Type.NUMBER,
             positionShiftIncreaseSpeed: Type.NUMBER,
             positionShiftMax: Type.NUMBER,

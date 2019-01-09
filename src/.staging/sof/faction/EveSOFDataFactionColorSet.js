@@ -1,5 +1,5 @@
 import {vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataFactionColorSet
@@ -23,7 +23,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec4} White     -
  * @parameter {vec4} Yellow    -
  */
-export default class EveSOFDataFactionColorSet extends Tw2StagingClass
+export default class EveSOFDataFactionColorSet extends Tw2BaseClass
 {
 
     Black = vec4.create();
@@ -47,9 +47,10 @@ export default class EveSOFDataFactionColorSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataFactionColorSet, Type =>
+Tw2BaseClass.define(EveSOFDataFactionColorSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataFactionColorSet",
         props: {
             Black: Type.VECTOR4,

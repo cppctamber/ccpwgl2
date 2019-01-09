@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildModifierAttachToBone
@@ -6,16 +6,17 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {Number} boneIndex -
  */
-export default class EveChildModifierAttachToBone extends Tw2StagingClass
+export default class EveChildModifierAttachToBone extends Tw2BaseClass
 {
 
     boneIndex = 0;
 
 }
 
-Tw2StagingClass.define(EveChildModifierAttachToBone, Type =>
+Tw2BaseClass.define(EveChildModifierAttachToBone, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildModifierAttachToBone",
         category: "ChildModifier",
         props: {

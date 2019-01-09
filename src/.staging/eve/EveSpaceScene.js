@@ -1,14 +1,14 @@
 import {quat, vec3, vec4} from "../../global";
-import {Tw2StagingClass} from "../class";
+import {Tw2BaseClass} from "../class";
 
 /**
  * EveSpaceScene
  *
  * @parameter {vec4} ambientColor                                                     -
- * @parameter {Tw2Effect} backgroundEffect                                            -
+ * @parameter {Tr2Effect} backgroundEffect                                            -
  * @parameter {Array.<EveObject>} backgroundObjects                                   -
  * @parameter {Boolean} backgroundRenderingEnabled                                    -
- * @parameter {Array.<Tw2CurveSet>} curveSets                                         -
+ * @parameter {Array.<TriCurveSet>} curveSets                                         -
  * @parameter {Boolean} enableShadows                                                 -
  * @parameter {String} envMap1ResPath                                                 -
  * @parameter {String} envMap2ResPath                                                 -
@@ -23,7 +23,7 @@ import {Tw2StagingClass} from "../class";
  * @parameter {Array.<EveEffectRoot2|EveRootTransform|EveObject|EveStation2>} objects -
  * @parameter {String} postProcessPath                                                -
  * @parameter {Boolean} selfShadowOnly                                                -
- * @parameter {Tw2ShLightingManager} shLightingManager                                -
+ * @parameter {Tr2ShLightingManager} shLightingManager                                -
  * @parameter {Number} shadowFadeThreshold                                            -
  * @parameter {Number} shadowThreshold                                                -
  * @parameter {EveStarfield} starfield                                                -
@@ -32,7 +32,7 @@ import {Tw2StagingClass} from "../class";
  * @parameter {vec3} sunDirection                                                     -
  * @parameter {Boolean} useSunDiffuseColorWithDynamicLights                           -
  */
-export default class EveSpaceScene extends Tw2StagingClass
+export default class EveSpaceScene extends Tw2BaseClass
 {
 
     ambientColor = vec4.create();
@@ -65,22 +65,23 @@ export default class EveSpaceScene extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSpaceScene, Type =>
+Tw2BaseClass.define(EveSpaceScene, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpaceScene",
         props: {
             ambientColor: Type.RGBA_LINEAR,
-            backgroundEffect: ["Tw2Effect"],
+            backgroundEffect: ["Tr2Effect"],
             backgroundObjects: [["EveTransform"]],
             backgroundRenderingEnabled: Type.BOOLEAN,
-            curveSets: [["Tw2CurveSet"]],
+            curveSets: [["TriCurveSet"]],
             enableShadows: Type.BOOLEAN,
             envMap1ResPath: Type.PATH,
             envMap2ResPath: Type.PATH,
             envMapResPath: Type.PATH,
             envMapRotation: Type.TR_ROTATION,
-            externalParameters: [["Tw2ExternalParameter"]],
+            externalParameters: [["Tr2ExternalParameter"]],
             fogColor: Type.RGBA_LINEAR,
             fogEnd: Type.NUMBER,
             fogMax: Type.NUMBER,
@@ -89,7 +90,7 @@ Tw2StagingClass.define(EveSpaceScene, Type =>
             objects: [["EveEffectRoot2", "EveRootTransform", "EveShip2", "EveStation2", "EveTransform"]],
             postProcessPath: Type.PATH,
             selfShadowOnly: Type.BOOLEAN,
-            shLightingManager: ["Tw2ShLightingManager"],
+            shLightingManager: ["Tr2ShLightingManager"],
             shadowFadeThreshold: Type.NUMBER,
             shadowThreshold: Type.NUMBER,
             starfield: ["EveStarfield"],

@@ -1,10 +1,10 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveTurretFiringFX
  *
  * @parameter {String} boneName                        -
- * @parameter {Tw2ObserverLocal} destinationObserver   -
+ * @parameter {TriObserverLocal} destinationObserver   -
  * @parameter {Number} firingDelay1                    -
  * @parameter {Number} firingDelay2                    -
  * @parameter {Number} firingDelay3                    -
@@ -17,13 +17,13 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} minRadius                       -
  * @parameter {Number} minScale                        -
  * @parameter {Boolean} scaleEffectTarget              -
- * @parameter {Tw2ObserverLocal} sourceObserver        -
- * @parameter {Tw2CurveSet} startCurveSet              -
- * @parameter {Tw2CurveSet} stopCurveSet               -
+ * @parameter {TriObserverLocal} sourceObserver        -
+ * @parameter {TriCurveSet} startCurveSet              -
+ * @parameter {TriCurveSet} stopCurveSet               -
  * @parameter {Array.<EveStretch|EveStretch2>} stretch -
  * @parameter {Boolean} useMuzzleTransform             -
  */
-export default class EveTurretFiringFX extends Tw2StagingClass
+export default class EveTurretFiringFX extends Tw2BaseClass
 {
 
     boneName = "";
@@ -48,13 +48,14 @@ export default class EveTurretFiringFX extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveTurretFiringFX, Type =>
+Tw2BaseClass.define(EveTurretFiringFX, Type =>
 {
     return {
+        isStaging: true,
         type: "EveTurretFiringFX",
         props: {
             boneName: Type.STRING,
-            destinationObserver: ["Tw2ObserverLocal"],
+            destinationObserver: ["TriObserverLocal"],
             firingDelay1: Type.NUMBER,
             firingDelay2: Type.NUMBER,
             firingDelay3: Type.NUMBER,
@@ -67,9 +68,9 @@ Tw2StagingClass.define(EveTurretFiringFX, Type =>
             minRadius: Type.NUMBER,
             minScale: Type.NUMBER,
             scaleEffectTarget: Type.BOOLEAN,
-            sourceObserver: ["Tw2ObserverLocal"],
-            startCurveSet: ["Tw2CurveSet"],
-            stopCurveSet: ["Tw2CurveSet"],
+            sourceObserver: ["TriObserverLocal"],
+            startCurveSet: ["TriCurveSet"],
+            stopCurveSet: ["TriCurveSet"],
             stretch: [["EveStretch", "EveStretch2"]],
             useMuzzleTransform: Type.BOOLEAN
         }

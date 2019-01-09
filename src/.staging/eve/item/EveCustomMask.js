@@ -1,5 +1,5 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveCustomMask
@@ -10,7 +10,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} scaling         -
  * @parameter {vec4} targetMaterials -
  */
-export default class EveCustomMask extends Tw2StagingClass
+export default class EveCustomMask extends Tw2BaseClass
 {
 
     materialIndex = 0;
@@ -21,9 +21,10 @@ export default class EveCustomMask extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveCustomMask, Type =>
+Tw2BaseClass.define(EveCustomMask, Type =>
 {
     return {
+        isStaging: true,
         type: "EveCustomMask",
         props: {
             materialIndex: Type.NUMBER,

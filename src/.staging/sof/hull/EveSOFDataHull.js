@@ -1,5 +1,5 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHull
@@ -38,7 +38,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Array.<EveSOFDataHullSpriteSet>} spriteSets         -
  * @parameter {Array.<EveSOFDataHullArea>} transparentAreas        -
  */
-export default class EveSOFDataHull extends Tw2StagingClass
+export default class EveSOFDataHull extends Tw2BaseClass
 {
 
     additiveAreas = [];
@@ -77,9 +77,10 @@ export default class EveSOFDataHull extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHull, Type =>
+Tw2BaseClass.define(EveSOFDataHull, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHull",
         props: {
             additiveAreas: [["EveSOFDataHullArea"]],

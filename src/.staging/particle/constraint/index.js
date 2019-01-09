@@ -1,2 +1,2 @@
-export Tw2PlaneConstraint from "./Tw2PlaneConstraint";
+export Tr2PlaneConstraint from "./Tr2PlaneConstraint";
 

@@ -1,16 +1,16 @@
 import {quat} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildLink
  * @implements ObjectChild
  *
- * @parameter {Array.<Tw2ValueBinding>} linkStrengthBindings -
+ * @parameter {Array.<TriValueBinding>} linkStrengthBindings -
  * @parameter {Array.<Curve>} linkStrengthCurves             -
- * @parameter {Tw2Mesh} mesh                                 -
+ * @parameter {Tr2Mesh} mesh                                 -
  * @parameter {quat} rotation                                -
  */
-export default class EveChildLink extends Tw2StagingClass
+export default class EveChildLink extends Tw2BaseClass
 {
 
     linkStrengthBindings = [];
@@ -20,15 +20,16 @@ export default class EveChildLink extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildLink, Type =>
+Tw2BaseClass.define(EveChildLink, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildLink",
         category: "ObjectChild",
         props: {
-            linkStrengthBindings: [["Tw2ValueBinding"]],
-            linkStrengthCurves: [["Tw2CurveColor"]],
-            mesh: ["Tw2Mesh"],
+            linkStrengthBindings: [["TriValueBinding"]],
+            linkStrengthCurves: [["Tr2CurveColor"]],
+            mesh: ["Tr2Mesh"],
             rotation: Type.TR_ROTATION
         }
     };

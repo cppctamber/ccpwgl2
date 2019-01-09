@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataFaction
@@ -19,7 +19,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Array.<EveSOFDataFactionSpotlightSet>} spotlightSets    -
  * @parameter {EveSOFDataFactionVisibilityGroupSet} visibilityGroupSet -
  */
-export default class EveSOFDataFaction extends Tw2StagingClass
+export default class EveSOFDataFaction extends Tw2BaseClass
 {
 
     areaTypes = null;
@@ -40,9 +40,10 @@ export default class EveSOFDataFaction extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataFaction, Type =>
+Tw2BaseClass.define(EveSOFDataFaction, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataFaction",
         props: {
             areaTypes: ["EveSOFDataArea"],

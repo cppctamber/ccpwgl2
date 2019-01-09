@@ -1,18 +1,18 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveTacticalOverlay
  *
- * @parameter {Tw2Effect} anchorEffect      -
+ * @parameter {Tr2Effect} anchorEffect      -
  * @parameter {Number} arcSegmentMultiplier -
- * @parameter {Tw2Effect} connectorEffect   -
+ * @parameter {Tr2Effect} connectorEffect   -
  * @parameter {Number} segmentsHigh         -
  * @parameter {Number} segmentsLow          -
  * @parameter {Number} segmentsMedium       -
  * @parameter {Number} targetMaxSegments    -
- * @parameter {Tw2Effect} velocityEffect    -
+ * @parameter {Tr2Effect} velocityEffect    -
  */
-export default class EveTacticalOverlay extends Tw2StagingClass
+export default class EveTacticalOverlay extends Tw2BaseClass
 {
 
     anchorEffect = null;
@@ -26,19 +26,20 @@ export default class EveTacticalOverlay extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveTacticalOverlay, Type =>
+Tw2BaseClass.define(EveTacticalOverlay, Type =>
 {
     return {
+        isStaging: true,
         type: "EveTacticalOverlay",
         props: {
-            anchorEffect: ["Tw2Effect"],
+            anchorEffect: ["Tr2Effect"],
             arcSegmentMultiplier: Type.NUMBER,
-            connectorEffect: ["Tw2Effect"],
+            connectorEffect: ["Tr2Effect"],
             segmentsHigh: Type.NUMBER,
             segmentsLow: Type.NUMBER,
             segmentsMedium: Type.NUMBER,
             targetMaxSegments: Type.NUMBER,
-            velocityEffect: ["Tw2Effect"]
+            velocityEffect: ["Tr2Effect"]
         }
     };
 });

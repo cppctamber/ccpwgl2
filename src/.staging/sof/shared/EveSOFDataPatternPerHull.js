@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataPatternPerHull
@@ -6,7 +6,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {EveSOFDataPatternTransform} transformLayer1 -
  * @parameter {EveSOFDataPatternTransform} transformLayer2 -
  */
-export default class EveSOFDataPatternPerHull extends Tw2StagingClass
+export default class EveSOFDataPatternPerHull extends Tw2BaseClass
 {
 
     transformLayer1 = null;
@@ -14,9 +14,10 @@ export default class EveSOFDataPatternPerHull extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataPatternPerHull, Type =>
+Tw2BaseClass.define(EveSOFDataPatternPerHull, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataPatternPerHull",
         props: {
             transformLayer1: ["EveSOFDataPatternTransform"],

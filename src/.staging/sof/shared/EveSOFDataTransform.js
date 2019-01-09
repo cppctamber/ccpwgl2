@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataTransform
@@ -8,7 +8,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} position    -
  * @parameter {quat} rotation    -
  */
-export default class EveSOFDataTransform extends Tw2StagingClass
+export default class EveSOFDataTransform extends Tw2BaseClass
 {
 
     boneIndex = 0;
@@ -17,9 +17,10 @@ export default class EveSOFDataTransform extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataTransform, Type =>
+Tw2BaseClass.define(EveSOFDataTransform, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataTransform",
         props: {
             boneIndex: Type.NUMBER,

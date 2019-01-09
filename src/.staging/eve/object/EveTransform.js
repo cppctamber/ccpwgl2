@@ -1,19 +1,19 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveTransform
  * @implements EveObject
  *
  * @parameter {Array.<EveObject>} children                                  -
- * @parameter {Array.<Tw2CurveSet>} curveSets                               -
+ * @parameter {Array.<TriCurveSet>} curveSets                               -
  * @parameter {Boolean} display                                             -
  * @parameter {Number} distanceBasedScaleArg1                               -
  * @parameter {Number} distanceBasedScaleArg2                               -
  * @parameter {Boolean} hideOnLowQuality                                    -
- * @parameter {Mesh|Tw2MeshLod} mesh                                        -
+ * @parameter {Mesh|Tr2MeshLod} mesh                                        -
  * @parameter {Number} modifier                                             -
- * @parameter {Array.<Tw2ObserverLocal>} observers                          -
+ * @parameter {Array.<TriObserverLocal>} observers                          -
  * @parameter {vec3} overrideBoundsMax                                      -
  * @parameter {vec3} overrideBoundsMin                                      -
  * @parameter {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
@@ -27,7 +27,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} useLodLevel                                         -
  * @parameter {Number} visibilityThreshold                                  -
  */
-export default class EveTransform extends Tw2StagingClass
+export default class EveTransform extends Tw2BaseClass
 {
 
     children = [];
@@ -54,25 +54,26 @@ export default class EveTransform extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveTransform, Type =>
+Tw2BaseClass.define(EveTransform, Type =>
 {
     return {
+        isStaging: true,
         type: "EveTransform",
         category: "EveObject",
         props: {
             children: [["EveSpherePin", "EveTransform"]],
-            curveSets: [["Tw2CurveSet"]],
+            curveSets: [["TriCurveSet"]],
             display: Type.BOOLEAN,
             distanceBasedScaleArg1: Type.NUMBER,
             distanceBasedScaleArg2: Type.NUMBER,
             hideOnLowQuality: Type.BOOLEAN,
-            mesh: ["Tw2InstancedMesh", "Tw2Mesh", "Tw2MeshLod"],
+            mesh: ["Tr2InstancedMesh", "Tr2Mesh", "Tr2MeshLod"],
             modifier: Type.NUMBER,
-            observers: [["Tw2ObserverLocal"]],
+            observers: [["TriObserverLocal"]],
             overrideBoundsMax: Type.VECTOR3,
             overrideBoundsMin: Type.VECTOR3,
-            particleEmitters: [["Tw2DynamicEmitter", "Tw2GpuUniqueEmitter", "Tw2StaticEmitter"]],
-            particleSystems: [["Tw2ParticleSystem"]],
+            particleEmitters: [["Tr2DynamicEmitter", "Tr2GpuUniqueEmitter", "Tr2StaticEmitter"]],
+            particleSystems: [["Tr2ParticleSystem"]],
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,
             sortValueMultiplier: Type.NUMBER,

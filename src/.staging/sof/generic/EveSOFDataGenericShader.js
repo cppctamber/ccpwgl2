@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataGenericShader
@@ -10,7 +10,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} shader                                 -
  * @parameter {String} transparencyTextureName                -
  */
-export default class EveSOFDataGenericShader extends Tw2StagingClass
+export default class EveSOFDataGenericShader extends Tw2BaseClass
 {
 
     defaultParameters = [];
@@ -22,9 +22,10 @@ export default class EveSOFDataGenericShader extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataGenericShader, Type =>
+Tw2BaseClass.define(EveSOFDataGenericShader, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataGenericShader",
         props: {
             defaultParameters: [["EveSOFDataParameter"]],

@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataAreaMaterial
@@ -9,7 +9,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} material3 -
  * @parameter {String} material4 -
  */
-export default class EveSOFDataAreaMaterial extends Tw2StagingClass
+export default class EveSOFDataAreaMaterial extends Tw2BaseClass
 {
 
     colorType = 0;
@@ -20,9 +20,10 @@ export default class EveSOFDataAreaMaterial extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataAreaMaterial, Type =>
+Tw2BaseClass.define(EveSOFDataAreaMaterial, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataAreaMaterial",
         props: {
             colorType: Type.NUMBER,

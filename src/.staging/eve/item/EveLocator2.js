@@ -1,5 +1,5 @@
 import {mat4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveLocator2
@@ -7,16 +7,17 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {mat4} transform -
  */
-export default class EveLocator2 extends Tw2StagingClass
+export default class EveLocator2 extends Tw2BaseClass
 {
 
     transform = mat4.create();
 
 }
 
-Tw2StagingClass.define(EveLocator2, Type =>
+Tw2BaseClass.define(EveLocator2, Type =>
 {
     return {
+        isStaging: true,
         type: "EveLocator2",
         category: "EveObjectItem",
         props: {

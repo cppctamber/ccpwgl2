@@ -1,5 +1,5 @@
 import {mat4, quat, vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildQuad
@@ -7,14 +7,14 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {Number} brightness    -
  * @parameter {vec4} color           -
- * @parameter {Tw2Effect} effect     -
+ * @parameter {Tr2Effect} effect     -
  * @parameter {mat4} localTransform  -
  * @parameter {Number} minScreenSize -
  * @parameter {quat} rotation        -
  * @parameter {vec3} scaling         -
  * @parameter {vec3} translation     -
  */
-export default class EveChildQuad extends Tw2StagingClass
+export default class EveChildQuad extends Tw2BaseClass
 {
 
     brightness = 0;
@@ -28,15 +28,16 @@ export default class EveChildQuad extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildQuad, Type =>
+Tw2BaseClass.define(EveChildQuad, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildQuad",
         category: "ObjectChild",
         props: {
             brightness: Type.NUMBER,
             color: Type.RGBA_LINEAR,
-            effect: ["Tw2Effect"],
+            effect: ["Tr2Effect"],
             localTransform: Type.TR_LOCAL,
             minScreenSize: Type.NUMBER,
             rotation: Type.TR_ROTATION,

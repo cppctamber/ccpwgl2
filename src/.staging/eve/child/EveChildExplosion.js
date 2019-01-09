@@ -1,5 +1,5 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildExplosion
@@ -19,7 +19,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {quat} rotation                          -
  * @parameter {vec3} scaling                           -
  */
-export default class EveChildExplosion extends Tw2StagingClass
+export default class EveChildExplosion extends Tw2BaseClass
 {
 
     globalDuration = 0;
@@ -38,9 +38,10 @@ export default class EveChildExplosion extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildExplosion, Type =>
+Tw2BaseClass.define(EveChildExplosion, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildExplosion",
         category: "ObjectChild",
         props: {

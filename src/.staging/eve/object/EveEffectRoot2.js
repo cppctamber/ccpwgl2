@@ -1,16 +1,16 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveEffectRoot2
  *
  * @parameter {vec3} boundingSphereCenter            -
  * @parameter {Number} boundingSphereRadius          -
- * @parameter {Array.<Tw2CurveSet>} curveSets        -
+ * @parameter {Array.<TriCurveSet>} curveSets        -
  * @parameter {Number} duration                      -
  * @parameter {Boolean} dynamicLOD                   -
  * @parameter {Array.<ObjectChild>} effectChildren   -
- * @parameter {Array.<Tw2PointLight>} lights         -
+ * @parameter {Array.<Tr2PointLight>} lights         -
  * @parameter {Array} observers                      -
  * @parameter {quat} rotation                        -
  * @parameter {vec3} scaling                         -
@@ -18,7 +18,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} secondaryLightingSphereRadius -
  * @parameter {vec3} translation                     -
  */
-export default class EveEffectRoot2 extends Tw2StagingClass
+export default class EveEffectRoot2 extends Tw2BaseClass
 {
 
     boundingSphereCenter = vec3.create();
@@ -37,18 +37,19 @@ export default class EveEffectRoot2 extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveEffectRoot2, Type =>
+Tw2BaseClass.define(EveEffectRoot2, Type =>
 {
     return {
+        isStaging: true,
         type: "EveEffectRoot2",
         props: {
             boundingSphereCenter: Type.VECTOR3,
             boundingSphereRadius: Type.NUMBER,
-            curveSets: [["Tw2CurveSet"]],
+            curveSets: [["TriCurveSet"]],
             duration: Type.NUMBER,
             dynamicLOD: Type.BOOLEAN,
             effectChildren: Type.ARRAY,
-            lights: [["Tw2PointLight"]],
+            lights: [["Tr2PointLight"]],
             observers: Type.ARRAY,
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,

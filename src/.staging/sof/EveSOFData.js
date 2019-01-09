@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../class";
+import {Tw2BaseClass} from "../class";
 
 /**
  * EveSOFData
@@ -10,7 +10,7 @@ import {Tw2StagingClass} from "../class";
  * @parameter {Array.<EveSOFDataPattern>} pattern   -
  * @parameter {Array.<EveSOFDataRace>} race         -
  */
-export default class EveSOFData extends Tw2StagingClass
+export default class EveSOFData extends Tw2BaseClass
 {
 
     faction = [];
@@ -22,9 +22,10 @@ export default class EveSOFData extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFData, Type =>
+Tw2BaseClass.define(EveSOFData, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFData",
         props: {
             faction: [["EveSOFDataFaction"]],

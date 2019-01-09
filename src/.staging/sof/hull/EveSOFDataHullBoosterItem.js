@@ -1,5 +1,5 @@
 import {mat4, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullBoosterItem
@@ -10,7 +10,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} hasTrail   -
  * @parameter {mat4} transform     -
  */
-export default class EveSOFDataHullBoosterItem extends Tw2StagingClass
+export default class EveSOFDataHullBoosterItem extends Tw2BaseClass
 {
 
     atlasIndex0 = 0;
@@ -21,9 +21,10 @@ export default class EveSOFDataHullBoosterItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullBoosterItem, Type =>
+Tw2BaseClass.define(EveSOFDataHullBoosterItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullBoosterItem",
         props: {
             atlasIndex0: Type.NUMBER,

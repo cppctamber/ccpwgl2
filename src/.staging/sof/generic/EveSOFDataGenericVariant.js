@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataGenericVariant
@@ -6,7 +6,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {EveSOFDataHullArea} hullArea -
  * @parameter {Boolean} isTransparent       -
  */
-export default class EveSOFDataGenericVariant extends Tw2StagingClass
+export default class EveSOFDataGenericVariant extends Tw2BaseClass
 {
 
     hullArea = null;
@@ -14,9 +14,10 @@ export default class EveSOFDataGenericVariant extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataGenericVariant, Type =>
+Tw2BaseClass.define(EveSOFDataGenericVariant, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataGenericVariant",
         props: {
             hullArea: ["EveSOFDataHullArea"],

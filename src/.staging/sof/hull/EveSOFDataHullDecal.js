@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullDecal
@@ -17,7 +17,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Array.<EveSOFDataTexture>} textures     -
  * @parameter {Number} usage                           -
  */
-export default class EveSOFDataHullDecal extends Tw2StagingClass
+export default class EveSOFDataHullDecal extends Tw2BaseClass
 {
 
     boneIndex = 0;
@@ -35,9 +35,10 @@ export default class EveSOFDataHullDecal extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullDecal, Type =>
+Tw2BaseClass.define(EveSOFDataHullDecal, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullDecal",
         props: {
             boneIndex: Type.NUMBER,

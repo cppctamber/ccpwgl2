@@ -1,5 +1,5 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildParticleSystem
@@ -8,7 +8,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} display                                             -
  * @parameter {mat4} localTransform                                         -
  * @parameter {Number} lodSphereRadius                                      -
- * @parameter {Tw2InstancedMesh} mesh                                       -
+ * @parameter {Tr2InstancedMesh} mesh                                       -
  * @parameter {Number} minScreenSize                                        -
  * @parameter {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
  * @parameter {Array.<ParticleSystem>} particleSystems                      -
@@ -17,7 +17,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} translation                                            -
  * @parameter {Boolean} useDynamicLod                                       -
  */
-export default class EveChildParticleSystem extends Tw2StagingClass
+export default class EveChildParticleSystem extends Tw2BaseClass
 {
 
     display = false;
@@ -34,19 +34,20 @@ export default class EveChildParticleSystem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildParticleSystem, Type =>
+Tw2BaseClass.define(EveChildParticleSystem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildParticleSystem",
         category: "ObjectChild",
         props: {
             display: Type.BOOLEAN,
             localTransform: Type.TR_LOCAL,
             lodSphereRadius: Type.NUMBER,
-            mesh: ["Tw2InstancedMesh"],
+            mesh: ["Tr2InstancedMesh"],
             minScreenSize: Type.NUMBER,
-            particleEmitters: [["Tw2DynamicEmitter", "Tw2GpuSharedEmitter", "Tw2GpuUniqueEmitter", "Tw2StaticEmitter"]],
-            particleSystems: [["Tw2ParticleSystem"]],
+            particleEmitters: [["Tr2DynamicEmitter", "Tr2GpuSharedEmitter", "Tr2GpuUniqueEmitter", "Tr2StaticEmitter"]],
+            particleSystems: [["Tr2ParticleSystem"]],
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,
             translation: Type.TR_TRANSLATION,

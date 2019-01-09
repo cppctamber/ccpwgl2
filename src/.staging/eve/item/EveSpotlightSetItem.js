@@ -1,5 +1,5 @@
 import {mat4, vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSpotlightSetItem
@@ -11,7 +11,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} spriteScale -
  * @parameter {mat4} transform   -
  */
-export default class EveSpotlightSetItem extends Tw2StagingClass
+export default class EveSpotlightSetItem extends Tw2BaseClass
 {
 
     coneColor = vec4.create();
@@ -22,9 +22,10 @@ export default class EveSpotlightSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSpotlightSetItem, Type =>
+Tw2BaseClass.define(EveSpotlightSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpotlightSetItem",
         category: "EveObjectSetItem",
         props: {

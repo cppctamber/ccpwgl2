@@ -1,25 +1,25 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildContainer
  * @implements ObjectChild
  *
  * @parameter {Array.<StateController>} controllers      -
- * @parameter {Array.<Tw2CurveSet>} curveSets            -
+ * @parameter {Array.<TriCurveSet>} curveSets            -
  * @parameter {Boolean} display                          -
  * @parameter {Boolean} hideOnLowQuality                 -
- * @parameter {Array.<Tw2PointLight>} lights             -
+ * @parameter {Array.<Tr2PointLight>} lights             -
  * @parameter {mat4} localTransform                      -
  * @parameter {Array.<ObjectChild>} objects              -
- * @parameter {Array.<Tw2ObserverLocal>} observers       -
+ * @parameter {Array.<TriObserverLocal>} observers       -
  * @parameter {quat} rotation                            -
  * @parameter {vec3} scaling                             -
  * @parameter {Boolean} staticTransform                  -
  * @parameter {Array.<ChildModifier>} transformModifiers -
  * @parameter {vec3} translation                         -
  */
-export default class EveChildContainer extends Tw2StagingClass
+export default class EveChildContainer extends Tw2BaseClass
 {
 
     controllers = [];
@@ -38,20 +38,21 @@ export default class EveChildContainer extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildContainer, Type =>
+Tw2BaseClass.define(EveChildContainer, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildContainer",
         category: "ObjectChild",
         props: {
-            controllers: [["Tw2Controller"]],
-            curveSets: [["Tw2CurveSet"]],
+            controllers: [["Tr2Controller"]],
+            curveSets: [["TriCurveSet"]],
             display: Type.BOOLEAN,
             hideOnLowQuality: Type.BOOLEAN,
-            lights: [["Tw2PointLight"]],
+            lights: [["Tr2PointLight"]],
             localTransform: Type.TR_LOCAL,
             objects: [["EveChildContainer", "EveChildMesh", "EveChildParticleSphere", "EveChildParticleSystem", "EveChildQuad"]],
-            observers: [["Tw2ObserverLocal"]],
+            observers: [["TriObserverLocal"]],
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,
             staticTransform: Type.BOOLEAN,

@@ -1,5 +1,5 @@
 import {vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataBoosterShape
@@ -11,7 +11,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} noiseFunction     -
  * @parameter {Number} noiseSpeed        -
  */
-export default class EveSOFDataBoosterShape extends Tw2StagingClass
+export default class EveSOFDataBoosterShape extends Tw2BaseClass
 {
 
     color = vec4.create();
@@ -23,9 +23,10 @@ export default class EveSOFDataBoosterShape extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataBoosterShape, Type =>
+Tw2BaseClass.define(EveSOFDataBoosterShape, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataBoosterShape",
         props: {
             color: Type.RGBA_LINEAR,

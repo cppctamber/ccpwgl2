@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullSpotlightSet
@@ -9,7 +9,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} skinned                              -
  * @parameter {Number} zOffset                               -
  */
-export default class EveSOFDataHullSpotlightSet extends Tw2StagingClass
+export default class EveSOFDataHullSpotlightSet extends Tw2BaseClass
 {
 
     coneTextureResPath = "";
@@ -20,9 +20,10 @@ export default class EveSOFDataHullSpotlightSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullSpotlightSet, Type =>
+Tw2BaseClass.define(EveSOFDataHullSpotlightSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullSpotlightSet",
         props: {
             coneTextureResPath: Type.PATH,

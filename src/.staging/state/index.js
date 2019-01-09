@@ -1,8 +1,8 @@
 export * from "./action";
 export * from "./controller";
 export * from "./variable";
-export Tw2StateMachine from "./Tw2StateMachine";
-export Tw2StateMachineState from "./Tw2StateMachineState";
-export Tw2StateMachineTransition from "./Tw2StateMachineTransition";
-export Tw2SyncToAnimation from "./Tw2SyncToAnimation";
+export Tr2StateMachine from "./Tr2StateMachine";
+export Tr2StateMachineState from "./Tr2StateMachineState";
+export Tr2StateMachineTransition from "./Tr2StateMachineTransition";
+export Tr2SyncToAnimation from "./Tr2SyncToAnimation";
 

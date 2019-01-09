@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullHazeSetItem
@@ -14,7 +14,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} sourceBrightness      -
  * @parameter {Number} sourceSize            -
  */
-export default class EveSOFDataHullHazeSetItem extends Tw2StagingClass
+export default class EveSOFDataHullHazeSetItem extends Tw2BaseClass
 {
 
     boosterGainInfluence = false;
@@ -29,9 +29,10 @@ export default class EveSOFDataHullHazeSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullHazeSetItem, Type =>
+Tw2BaseClass.define(EveSOFDataHullHazeSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullHazeSetItem",
         props: {
             boosterGainInfluence: Type.BOOLEAN,

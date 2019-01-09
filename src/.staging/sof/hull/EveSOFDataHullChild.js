@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullChild
@@ -11,7 +11,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} scaling            -
  * @parameter {vec3} translation        -
  */
-export default class EveSOFDataHullChild extends Tw2StagingClass
+export default class EveSOFDataHullChild extends Tw2BaseClass
 {
 
     groupIndex = 0;
@@ -23,9 +23,10 @@ export default class EveSOFDataHullChild extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullChild, Type =>
+Tw2BaseClass.define(EveSOFDataHullChild, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullChild",
         props: {
             groupIndex: Type.NUMBER,

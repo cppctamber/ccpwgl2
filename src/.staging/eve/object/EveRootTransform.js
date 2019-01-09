@@ -1,24 +1,24 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveRootTransform
  *
  * @parameter {Number} boundingSphereRadius       -
  * @parameter {Array.<EveObject>} children        -
- * @parameter {Array.<Tw2CurveSet>} curveSets     -
+ * @parameter {Array.<TriCurveSet>} curveSets     -
  * @parameter {Boolean} display                   -
- * @parameter {Tw2Mesh} mesh                      -
+ * @parameter {Tr2Mesh} mesh                      -
  * @parameter {Number} modifier                   -
  * @parameter {Array} observers                   -
  * @parameter {quat} rotation                     -
- * @parameter {Tw2CurveConstant} rotationCurve    -
+ * @parameter {Tr2CurveConstant} rotationCurve    -
  * @parameter {vec3} scaling                      -
  * @parameter {Number} sortValueMultiplier        -
  * @parameter {vec3} translation                  -
- * @parameter {Tw2CurveConstant} translationCurve -
+ * @parameter {Tr2CurveConstant} translationCurve -
  */
-export default class EveRootTransform extends Tw2StagingClass
+export default class EveRootTransform extends Tw2BaseClass
 {
 
     boundingSphereRadius = 0;
@@ -37,24 +37,25 @@ export default class EveRootTransform extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveRootTransform, Type =>
+Tw2BaseClass.define(EveRootTransform, Type =>
 {
     return {
+        isStaging: true,
         type: "EveRootTransform",
         props: {
             boundingSphereRadius: Type.NUMBER,
             children: [["EveTransform"]],
-            curveSets: [["Tw2CurveSet"]],
+            curveSets: [["TriCurveSet"]],
             display: Type.BOOLEAN,
-            mesh: ["Tw2Mesh"],
+            mesh: ["Tr2Mesh"],
             modifier: Type.NUMBER,
             observers: Type.ARRAY,
             rotation: Type.TR_ROTATION,
-            rotationCurve: ["Tw2CurveConstant"],
+            rotationCurve: ["Tr2CurveConstant"],
             scaling: Type.TR_SCALING,
             sortValueMultiplier: Type.NUMBER,
             translation: Type.TR_TRANSLATION,
-            translationCurve: ["Tw2CurveConstant"]
+            translationCurve: ["Tr2CurveConstant"]
         }
     };
 });

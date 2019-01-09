@@ -1,20 +1,21 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullLocatorSet
  *
  * @parameter {Array.<EveSOFDataTransform>} locators -
  */
-export default class EveSOFDataHullLocatorSet extends Tw2StagingClass
+export default class EveSOFDataHullLocatorSet extends Tw2BaseClass
 {
 
     locators = [];
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullLocatorSet, Type =>
+Tw2BaseClass.define(EveSOFDataHullLocatorSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullLocatorSet",
         props: {
             locators: [["EveSOFDataTransform"]]

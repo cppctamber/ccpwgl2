@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataArea
@@ -10,7 +10,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {EveSOFDataAreaMaterial} Rock     -
  * @parameter {EveSOFDataAreaMaterial} Sails    -
  */
-export default class EveSOFDataArea extends Tw2StagingClass
+export default class EveSOFDataArea extends Tw2BaseClass
 {
 
     Darkhull = null;
@@ -22,9 +22,10 @@ export default class EveSOFDataArea extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataArea, Type =>
+Tw2BaseClass.define(EveSOFDataArea, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataArea",
         props: {
             Darkhull: ["EveSOFDataAreaMaterial"],

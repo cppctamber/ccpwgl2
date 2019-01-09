@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * AudEventKey
@@ -7,7 +7,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} time  -
  * @parameter {Number} value -
  */
-export default class AudEventKey extends Tw2StagingClass
+export default class AudEventKey extends Tw2BaseClass
 {
 
     time = 0;
@@ -15,9 +15,10 @@ export default class AudEventKey extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(AudEventKey, Type =>
+Tw2BaseClass.define(AudEventKey, Type =>
 {
     return {
+        isStaging: true,
         type: "AudEventKey",
         category: "CurveKey",
         props: {

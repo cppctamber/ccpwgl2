@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataRace
@@ -6,7 +6,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {EveSOFDataBooster} booster   -
  * @parameter {EveSOFDataRaceDamage} damage -
  */
-export default class EveSOFDataRace extends Tw2StagingClass
+export default class EveSOFDataRace extends Tw2BaseClass
 {
 
     booster = null;
@@ -14,9 +14,10 @@ export default class EveSOFDataRace extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataRace, Type =>
+Tw2BaseClass.define(EveSOFDataRace, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataRace",
         props: {
             booster: ["EveSOFDataBooster"],

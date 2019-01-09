@@ -1,5 +1,5 @@
 import {mat4, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullSpotlightSetItem
@@ -13,7 +13,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} spriteScale             -
  * @parameter {mat4} transform               -
  */
-export default class EveSOFDataHullSpotlightSetItem extends Tw2StagingClass
+export default class EveSOFDataHullSpotlightSetItem extends Tw2BaseClass
 {
 
     boneIndex = 0;
@@ -27,9 +27,10 @@ export default class EveSOFDataHullSpotlightSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullSpotlightSetItem, Type =>
+Tw2BaseClass.define(EveSOFDataHullSpotlightSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullSpotlightSetItem",
         props: {
             boneIndex: Type.NUMBER,

@@ -1,13 +1,13 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveCurveLineSet
  * @implements EveObjectSet
  *
- * @parameter {Tw2Effect} lineEffect -
- * @parameter {Tw2Effect} pickEffect -
+ * @parameter {Tr2Effect} lineEffect -
+ * @parameter {Tr2Effect} pickEffect -
  */
-export default class EveCurveLineSet extends Tw2StagingClass
+export default class EveCurveLineSet extends Tw2BaseClass
 {
 
     lineEffect = null;
@@ -15,14 +15,15 @@ export default class EveCurveLineSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveCurveLineSet, Type =>
+Tw2BaseClass.define(EveCurveLineSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveCurveLineSet",
         category: "EveObjectSet",
         props: {
-            lineEffect: ["Tw2Effect"],
-            pickEffect: ["Tw2Effect"]
+            lineEffect: ["Tr2Effect"],
+            pickEffect: ["Tr2Effect"]
         }
     };
 });

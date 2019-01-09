@@ -1,4 +1,4 @@
-export Tw2RandomIntegerAttributeGenerator from "./Tw2RandomIntegerAttributeGenerator";
-export Tw2RandomUniformAttributeGenerator from "./Tw2RandomUniformAttributeGenerator";
-export Tw2SphereShapeAttributeGenerator from "./Tw2SphereShapeAttributeGenerator";
+export Tr2RandomIntegerAttributeGenerator from "./Tr2RandomIntegerAttributeGenerator";
+export Tr2RandomUniformAttributeGenerator from "./Tr2RandomUniformAttributeGenerator";
+export Tr2SphereShapeAttributeGenerator from "./Tr2SphereShapeAttributeGenerator";
 

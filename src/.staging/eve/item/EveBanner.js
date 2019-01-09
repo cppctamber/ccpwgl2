@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveBanner
@@ -13,7 +13,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} scaling     -
  * @parameter {Number} usage     -
  */
-export default class EveBanner extends Tw2StagingClass
+export default class EveBanner extends Tw2BaseClass
 {
 
     angleX = 0;
@@ -26,9 +26,10 @@ export default class EveBanner extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveBanner, Type =>
+Tw2BaseClass.define(EveBanner, Type =>
 {
     return {
+        isStaging: true,
         type: "EveBanner",
         category: "EveObjectItem",
         props: {

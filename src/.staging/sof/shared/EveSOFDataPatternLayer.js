@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataPatternLayer
@@ -13,7 +13,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} textureName        -
  * @parameter {String} textureResFilePath -
  */
-export default class EveSOFDataPatternLayer extends Tw2StagingClass
+export default class EveSOFDataPatternLayer extends Tw2BaseClass
 {
 
     isTargetMtl1 = false;
@@ -28,9 +28,10 @@ export default class EveSOFDataPatternLayer extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataPatternLayer, Type =>
+Tw2BaseClass.define(EveSOFDataPatternLayer, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataPatternLayer",
         props: {
             isTargetMtl1: Type.BOOLEAN,

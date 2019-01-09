@@ -1,4 +1,4 @@
-export Tw2CurveEulerRotationExpression from "./Tw2CurveEulerRotationExpression";
-export Tw2CurveVector3Expression from "./Tw2CurveVector3Expression";
-export Tw2CurveScalarExpression from "./Tw2CurveScalarExpression";
+export Tr2CurveEulerRotationExpression from "./Tr2CurveEulerRotationExpression";
+export Tr2CurveScalarExpression from "./Tr2CurveScalarExpression";
+export Tr2CurveVector3Expression from "./Tr2CurveVector3Expression";
 

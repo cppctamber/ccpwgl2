@@ -1,2 +1,2 @@
-export Tw2GeometryRes from "./Tw2GeometryRes";
+export TriGeometryRes from "./TriGeometryRes";
 

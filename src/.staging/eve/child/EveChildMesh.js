@@ -1,5 +1,5 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildMesh
@@ -19,7 +19,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} useSRT                           -
  * @parameter {Boolean} useSpaceObjectData               -
  */
-export default class EveChildMesh extends Tw2StagingClass
+export default class EveChildMesh extends Tw2BaseClass
 {
 
     display = false;
@@ -38,16 +38,17 @@ export default class EveChildMesh extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveChildMesh, Type =>
+Tw2BaseClass.define(EveChildMesh, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildMesh",
         category: "ObjectChild",
         props: {
             display: Type.BOOLEAN,
             localTransform: Type.TR_LOCAL,
             lowestLodVisible: Type.NUMBER,
-            mesh: ["Tw2InstancedMesh", "Tw2Mesh"],
+            mesh: ["Tr2InstancedMesh", "Tr2Mesh"],
             minScreenSize: Type.NUMBER,
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,

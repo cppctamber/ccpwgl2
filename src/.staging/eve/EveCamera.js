@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../global";
-import {Tw2StagingClass} from "../class";
+import {Tw2BaseClass} from "../class";
 
 /**
  * EveCamera
@@ -13,15 +13,15 @@ import {Tw2StagingClass} from "../class";
  * @parameter {vec3} intr                      -
  * @parameter {Number} maxSpeed                -
  * @parameter {Number} noiseScale              -
- * @parameter {Tw2CurveScalar} noiseScaleCurve -
+ * @parameter {Tr2CurveScalar} noiseScaleCurve -
  * @parameter {Number} pitch                   -
  * @parameter {vec3} pos                       -
  * @parameter {quat} rotationAroundParent      -
  * @parameter {Number} translationFromParent   -
  * @parameter {Number} yaw                     -
- * @parameter {Tw2CurveScalar} zoomCurve       -
+ * @parameter {Tr2CurveScalar} zoomCurve       -
  */
-export default class EveCamera extends Tw2StagingClass
+export default class EveCamera extends Tw2BaseClass
 {
 
     fieldOfView = 0;
@@ -43,9 +43,10 @@ export default class EveCamera extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveCamera, Type =>
+Tw2BaseClass.define(EveCamera, Type =>
 {
     return {
+        isStaging: true,
         type: "EveCamera",
         props: {
             fieldOfView: Type.NUMBER,
@@ -57,13 +58,13 @@ Tw2StagingClass.define(EveCamera, Type =>
             intr: Type.VECTOR3,
             maxSpeed: Type.NUMBER,
             noiseScale: Type.NUMBER,
-            noiseScaleCurve: ["Tw2CurveScalar"],
+            noiseScaleCurve: ["Tr2CurveScalar"],
             pitch: Type.NUMBER,
             pos: Type.VECTOR3,
             rotationAroundParent: Type.TR_ROTATION,
             translationFromParent: Type.NUMBER,
             yaw: Type.NUMBER,
-            zoomCurve: ["Tw2CurveScalar"]
+            zoomCurve: ["Tr2CurveScalar"]
         }
     };
 });

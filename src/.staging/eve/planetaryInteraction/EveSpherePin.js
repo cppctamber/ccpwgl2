@@ -1,5 +1,5 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSpherePin
@@ -7,17 +7,17 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {vec3} centerNormal             -
  * @parameter {vec4} color                    -
- * @parameter {Array.<Tw2CurveSet>} curveSets -
+ * @parameter {Array.<TriCurveSet>} curveSets -
  * @parameter {Boolean} enablePicking         -
  * @parameter {String} geometryResPath        -
  * @parameter {vec4} pinColor                 -
- * @parameter {Tw2Effect} pinEffect           -
+ * @parameter {Tr2Effect} pinEffect           -
  * @parameter {Number} pinMaxRadius           -
  * @parameter {Number} pinRadius              -
  * @parameter {Number} pinRotation            -
  * @parameter {Number} sortValueMultiplier    -
  */
-export default class EveSpherePin extends Tw2StagingClass
+export default class EveSpherePin extends Tw2BaseClass
 {
 
     centerNormal = vec3.create();
@@ -34,19 +34,20 @@ export default class EveSpherePin extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSpherePin, Type =>
+Tw2BaseClass.define(EveSpherePin, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpherePin",
         category: "EveObject",
         props: {
             centerNormal: Type.VECTOR3,
             color: Type.RGBA_LINEAR,
-            curveSets: [["Tw2CurveSet"]],
+            curveSets: [["TriCurveSet"]],
             enablePicking: Type.BOOLEAN,
             geometryResPath: Type.PATH,
             pinColor: Type.RGBA_LINEAR,
-            pinEffect: ["Tw2Effect"],
+            pinEffect: ["Tr2Effect"],
             pinMaxRadius: Type.NUMBER,
             pinRadius: Type.NUMBER,
             pinRotation: Type.NUMBER,

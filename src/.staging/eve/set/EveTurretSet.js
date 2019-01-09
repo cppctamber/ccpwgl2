@@ -1,5 +1,5 @@
 import {vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveTurretSet
@@ -23,12 +23,12 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} sysBonePitchMax          -
  * @parameter {Number} sysBonePitchMin          -
  * @parameter {Number} sysBonePitchOffset       -
- * @parameter {Tw2Effect} turretEffect          -
+ * @parameter {Tr2Effect} turretEffect          -
  * @parameter {Boolean} updatePitchPose         -
  * @parameter {Boolean} useDynamicBounds        -
  * @parameter {Boolean} useRandomFiringDelay    -
  */
-export default class EveTurretSet extends Tw2StagingClass
+export default class EveTurretSet extends Tw2BaseClass
 {
 
     bottomClipHeight = 0;
@@ -56,9 +56,10 @@ export default class EveTurretSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveTurretSet, Type =>
+Tw2BaseClass.define(EveTurretSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveTurretSet",
         category: "EveObjectSet",
         props: {
@@ -80,7 +81,7 @@ Tw2StagingClass.define(EveTurretSet, Type =>
             sysBonePitchMax: Type.NUMBER,
             sysBonePitchMin: Type.NUMBER,
             sysBonePitchOffset: Type.NUMBER,
-            turretEffect: ["Tw2Effect"],
+            turretEffect: ["Tr2Effect"],
             updatePitchPose: Type.BOOLEAN,
             useDynamicBounds: Type.BOOLEAN,
             useRandomFiringDelay: Type.BOOLEAN

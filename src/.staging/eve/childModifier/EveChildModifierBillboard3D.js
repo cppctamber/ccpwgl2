@@ -1,19 +1,20 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildModifierBillboard3D
  * @implements ChildModifier
  *
  */
-export default class EveChildModifierBillboard3D extends Tw2StagingClass
+export default class EveChildModifierBillboard3D extends Tw2BaseClass
 {
 
 
 }
 
-Tw2StagingClass.define(EveChildModifierBillboard3D, Type =>
+Tw2BaseClass.define(EveChildModifierBillboard3D, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildModifierBillboard3D",
         category: "ChildModifier",
         props: {}

@@ -1,5 +1,5 @@
 import {vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataBooster
@@ -30,7 +30,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {EveSOFDataBoosterShape} warpShape0 -
  * @parameter {EveSOFDataBoosterShape} warpShape1 -
  */
-export default class EveSOFDataBooster extends Tw2StagingClass
+export default class EveSOFDataBooster extends Tw2BaseClass
 {
 
     glowColor = vec4.create();
@@ -61,9 +61,10 @@ export default class EveSOFDataBooster extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataBooster, Type =>
+Tw2BaseClass.define(EveSOFDataBooster, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataBooster",
         props: {
             glowColor: Type.RGBA_LINEAR,

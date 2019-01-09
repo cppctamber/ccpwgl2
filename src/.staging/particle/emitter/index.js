@@ -1,5 +1,5 @@
-export Tw2DynamicEmitter from "./Tw2DynamicEmitter";
-export Tw2GpuSharedEmitter from "./Tw2GpuSharedEmitter";
-export Tw2GpuUniqueEmitter from "./Tw2GpuUniqueEmitter";
-export Tw2StaticEmitter from "./Tw2StaticEmitter";
+export Tr2DynamicEmitter from "./Tr2DynamicEmitter";
+export Tr2GpuSharedEmitter from "./Tr2GpuSharedEmitter";
+export Tr2GpuUniqueEmitter from "./Tr2GpuUniqueEmitter";
+export Tr2StaticEmitter from "./Tr2StaticEmitter";
 

@@ -6,6 +6,6 @@ export * from "./parameter";
 export * from "./post";
 export * from "./resource";
 export * from "./value";
-export Tw2ObserverLocal from "./Tw2ObserverLocal";
-export Tw2RuntimeInstanceData from "./Tw2RuntimeInstanceData";
+export Tr2RuntimeInstanceData from "./Tr2RuntimeInstanceData";
+export TriObserverLocal from "./TriObserverLocal";
 

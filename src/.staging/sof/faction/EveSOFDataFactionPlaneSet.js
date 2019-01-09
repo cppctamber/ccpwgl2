@@ -1,5 +1,5 @@
 import {vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataFactionPlaneSet
@@ -7,7 +7,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec4} color        -
  * @parameter {Number} groupIndex -
  */
-export default class EveSOFDataFactionPlaneSet extends Tw2StagingClass
+export default class EveSOFDataFactionPlaneSet extends Tw2BaseClass
 {
 
     color = vec4.create();
@@ -15,9 +15,10 @@ export default class EveSOFDataFactionPlaneSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataFactionPlaneSet, Type =>
+Tw2BaseClass.define(EveSOFDataFactionPlaneSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataFactionPlaneSet",
         props: {
             color: Type.RGBA_LINEAR,

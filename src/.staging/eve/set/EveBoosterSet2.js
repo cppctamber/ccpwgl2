@@ -1,5 +1,5 @@
 import {vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveBoosterSet2
@@ -7,7 +7,7 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {Boolean} alwaysOn             -
  * @parameter {Number} alwaysOnIntensity     -
- * @parameter {Tw2Effect} effect             -
+ * @parameter {Tr2Effect} effect             -
  * @parameter {vec4} glowColor               -
  * @parameter {Number} glowScale             -
  * @parameter {EveSpriteSet} glows           -
@@ -25,7 +25,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec4} warpGlowColor           -
  * @parameter {vec4} warpHaloColor           -
  */
-export default class EveBoosterSet2 extends Tw2StagingClass
+export default class EveBoosterSet2 extends Tw2BaseClass
 {
 
     alwaysOn = false;
@@ -50,15 +50,16 @@ export default class EveBoosterSet2 extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveBoosterSet2, Type =>
+Tw2BaseClass.define(EveBoosterSet2, Type =>
 {
     return {
+        isStaging: true,
         type: "EveBoosterSet2",
         category: "EveObjectSet",
         props: {
             alwaysOn: Type.BOOLEAN,
             alwaysOnIntensity: Type.NUMBER,
-            effect: ["Tw2Effect"],
+            effect: ["Tr2Effect"],
             glowColor: Type.RGBA_LINEAR,
             glowScale: Type.NUMBER,
             glows: ["EveSpriteSet"],

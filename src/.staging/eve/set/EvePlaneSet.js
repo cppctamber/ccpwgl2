@@ -1,15 +1,15 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EvePlaneSet
  * @implements EveObjectSet
  *
- * @parameter {Tw2Effect} effect                -
+ * @parameter {Tr2Effect} effect                -
  * @parameter {Boolean} hideOnLowQuality        -
  * @parameter {Number} pickBufferID             -
  * @parameter {Array.<EveObjectSetItem>} planes -
  */
-export default class EvePlaneSet extends Tw2StagingClass
+export default class EvePlaneSet extends Tw2BaseClass
 {
 
     effect = null;
@@ -19,13 +19,14 @@ export default class EvePlaneSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EvePlaneSet, Type =>
+Tw2BaseClass.define(EvePlaneSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EvePlaneSet",
         category: "EveObjectSet",
         props: {
-            effect: ["Tw2Effect"],
+            effect: ["Tr2Effect"],
             hideOnLowQuality: Type.BOOLEAN,
             pickBufferID: Type.NUMBER,
             planes: [["EvePlaneSetItem"]]

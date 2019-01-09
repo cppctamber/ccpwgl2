@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullArea
@@ -11,7 +11,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} shader                          -
  * @parameter {Array.<EveSOFDataTexture>} textures     -
  */
-export default class EveSOFDataHullArea extends Tw2StagingClass
+export default class EveSOFDataHullArea extends Tw2BaseClass
 {
 
     areaType = 0;
@@ -24,9 +24,10 @@ export default class EveSOFDataHullArea extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullArea, Type =>
+Tw2BaseClass.define(EveSOFDataHullArea, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullArea",
         props: {
             areaType: Type.NUMBER,

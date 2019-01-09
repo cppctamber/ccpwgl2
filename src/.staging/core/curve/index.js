@@ -1,4 +1,4 @@
-export Tw2CurveSet from "./Tw2CurveSet";
-export Tw2CurveSetRange from "./Tw2CurveSetRange";
-export Tw2ValueBinding from "./Tw2ValueBinding";
+export Tr2CurveSetRange from "./Tr2CurveSetRange";
+export TriCurveSet from "./TriCurveSet";
+export TriValueBinding from "./TriValueBinding";
 

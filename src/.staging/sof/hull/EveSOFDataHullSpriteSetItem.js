@@ -1,5 +1,5 @@
 import {vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullSpriteSetItem
@@ -14,7 +14,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} minScale   -
  * @parameter {vec3} position     -
  */
-export default class EveSOFDataHullSpriteSetItem extends Tw2StagingClass
+export default class EveSOFDataHullSpriteSetItem extends Tw2BaseClass
 {
 
     blinkPhase = 0;
@@ -29,9 +29,10 @@ export default class EveSOFDataHullSpriteSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullSpriteSetItem, Type =>
+Tw2BaseClass.define(EveSOFDataHullSpriteSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullSpriteSetItem",
         props: {
             blinkPhase: Type.NUMBER,

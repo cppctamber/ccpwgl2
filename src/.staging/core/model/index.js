@@ -1,2 +1,2 @@
-export Tw2Model from "./Tw2Model";
+export Tr2Model from "./Tr2Model";
 

@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveMissileWarhead
@@ -8,7 +8,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} impactDuration                       -
  * @parameter {Number} impactSize                           -
  * @parameter {Number} maxExplosionDistance                 -
- * @parameter {Tw2Mesh} mesh                                -
+ * @parameter {Tr2Mesh} mesh                                -
  * @parameter {Array.<ParticleEmitterGPU>} particleEmitters -
  * @parameter {Number} pathOffsetNoiseScale                 -
  * @parameter {Number} pathOffsetNoiseSpeed                 -
@@ -17,7 +17,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} warheadLength                        -
  * @parameter {Number} warheadRadius                        -
  */
-export default class EveMissileWarhead extends Tw2StagingClass
+export default class EveMissileWarhead extends Tw2BaseClass
 {
 
     acceleration = 0;
@@ -36,9 +36,10 @@ export default class EveMissileWarhead extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveMissileWarhead, Type =>
+Tw2BaseClass.define(EveMissileWarhead, Type =>
 {
     return {
+        isStaging: true,
         type: "EveMissileWarhead",
         props: {
             acceleration: Type.NUMBER,
@@ -46,8 +47,8 @@ Tw2StagingClass.define(EveMissileWarhead, Type =>
             impactDuration: Type.NUMBER,
             impactSize: Type.NUMBER,
             maxExplosionDistance: Type.NUMBER,
-            mesh: ["Tw2Mesh"],
-            particleEmitters: [["Tw2GpuSharedEmitter"]],
+            mesh: ["Tr2Mesh"],
+            particleEmitters: [["Tr2GpuSharedEmitter"]],
             pathOffsetNoiseScale: Type.NUMBER,
             pathOffsetNoiseSpeed: Type.NUMBER,
             spriteSet: ["EveSpriteSet"],

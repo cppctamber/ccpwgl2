@@ -1,19 +1,20 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSpriteLineSet
  * @implements EveObjectSet
  *
  */
-export default class EveSpriteLineSet extends Tw2StagingClass
+export default class EveSpriteLineSet extends Tw2BaseClass
 {
 
 
 }
 
-Tw2StagingClass.define(EveSpriteLineSet, Type =>
+Tw2BaseClass.define(EveSpriteLineSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpriteLineSet",
         category: "EveObjectSet",
         props: {}

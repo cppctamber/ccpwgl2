@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataPatternTransform
@@ -9,7 +9,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {quat} rotation      -
  * @parameter {vec3} scaling       -
  */
-export default class EveSOFDataPatternTransform extends Tw2StagingClass
+export default class EveSOFDataPatternTransform extends Tw2BaseClass
 {
 
     isMirrored = false;
@@ -19,9 +19,10 @@ export default class EveSOFDataPatternTransform extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataPatternTransform, Type =>
+Tw2BaseClass.define(EveSOFDataPatternTransform, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataPatternTransform",
         props: {
             isMirrored: Type.BOOLEAN,

@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataFactionDecal
@@ -9,7 +9,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} shader                          -
  * @parameter {Array.<EveSOFDataTexture>} textures     -
  */
-export default class EveSOFDataFactionDecal extends Tw2StagingClass
+export default class EveSOFDataFactionDecal extends Tw2BaseClass
 {
 
     groupIndex = 0;
@@ -20,9 +20,10 @@ export default class EveSOFDataFactionDecal extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataFactionDecal, Type =>
+Tw2BaseClass.define(EveSOFDataFactionDecal, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataFactionDecal",
         props: {
             groupIndex: Type.NUMBER,

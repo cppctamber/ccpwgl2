@@ -1,20 +1,21 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullController
  *
  * @parameter {String} path -
  */
-export default class EveSOFDataHullController extends Tw2StagingClass
+export default class EveSOFDataHullController extends Tw2BaseClass
 {
 
     path = "";
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullController, Type =>
+Tw2BaseClass.define(EveSOFDataHullController, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullController",
         props: {
             path: Type.PATH

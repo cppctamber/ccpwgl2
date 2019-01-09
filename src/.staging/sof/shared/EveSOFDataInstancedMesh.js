@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataInstancedMesh
@@ -9,7 +9,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {String} shader                      -
  * @parameter {Array.<EveSOFDataTexture>} textures -
  */
-export default class EveSOFDataInstancedMesh extends Tw2StagingClass
+export default class EveSOFDataInstancedMesh extends Tw2BaseClass
 {
 
     geometryResPath = "";
@@ -20,9 +20,10 @@ export default class EveSOFDataInstancedMesh extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataInstancedMesh, Type =>
+Tw2BaseClass.define(EveSOFDataInstancedMesh, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataInstancedMesh",
         props: {
             geometryResPath: Type.PATH,

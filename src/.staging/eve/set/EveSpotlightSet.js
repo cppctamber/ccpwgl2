@@ -1,15 +1,15 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSpotlightSet
  * @implements EveObjectSet
  *
- * @parameter {Tw2Effect} coneEffect                    -
- * @parameter {Tw2Effect} glowEffect                    -
+ * @parameter {Tr2Effect} coneEffect                    -
+ * @parameter {Tr2Effect} glowEffect                    -
  * @parameter {Number} intensity                        -
  * @parameter {Array.<EveObjectSetItem>} spotlightItems -
  */
-export default class EveSpotlightSet extends Tw2StagingClass
+export default class EveSpotlightSet extends Tw2BaseClass
 {
 
     coneEffect = null;
@@ -19,14 +19,15 @@ export default class EveSpotlightSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSpotlightSet, Type =>
+Tw2BaseClass.define(EveSpotlightSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpotlightSet",
         category: "EveObjectSet",
         props: {
-            coneEffect: ["Tw2Effect"],
-            glowEffect: ["Tw2Effect"],
+            coneEffect: ["Tr2Effect"],
+            glowEffect: ["Tr2Effect"],
             intensity: Type.NUMBER,
             spotlightItems: [["EveSpotlightSetItem"]]
         }

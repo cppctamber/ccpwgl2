@@ -1,19 +1,20 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveChildModifierTranslateWithCamera
  * @implements ChildModifier
  *
  */
-export default class EveChildModifierTranslateWithCamera extends Tw2StagingClass
+export default class EveChildModifierTranslateWithCamera extends Tw2BaseClass
 {
 
 
 }
 
-Tw2StagingClass.define(EveChildModifierTranslateWithCamera, Type =>
+Tw2BaseClass.define(EveChildModifierTranslateWithCamera, Type =>
 {
     return {
+        isStaging: true,
         type: "EveChildModifierTranslateWithCamera",
         category: "ChildModifier",
         props: {}

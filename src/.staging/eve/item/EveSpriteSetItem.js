@@ -1,5 +1,5 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSpriteSetItem
@@ -15,7 +15,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {vec3} position     -
  * @parameter {vec4} warpColor    -
  */
-export default class EveSpriteSetItem extends Tw2StagingClass
+export default class EveSpriteSetItem extends Tw2BaseClass
 {
 
     blinkPhase = 0;
@@ -30,9 +30,10 @@ export default class EveSpriteSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSpriteSetItem, Type =>
+Tw2BaseClass.define(EveSpriteSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpriteSetItem",
         category: "EveObjectSetItem",
         props: {

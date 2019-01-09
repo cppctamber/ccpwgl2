@@ -1,22 +1,22 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveStretch
  *
- * @parameter {Array.<Tw2CurveSet>} curveSets -
+ * @parameter {Array.<TriCurveSet>} curveSets -
  * @parameter {Curve|CurveAdapter} dest       -
  * @parameter {EveTransform} destObject       -
- * @parameter {Tw2Float} length               -
- * @parameter {Tw2CurveSet} moveCompletion    -
+ * @parameter {TriFloat} length               -
+ * @parameter {TriCurveSet} moveCompletion    -
  * @parameter {EveTransform} moveObject       -
- * @parameter {Tw2CurveScalar} progressCurve  -
+ * @parameter {Tr2CurveScalar} progressCurve  -
  * @parameter {Curve|CurveAdapter} source     -
  * @parameter {Array} sourceLights            -
  * @parameter {EveTransform} sourceObject     -
  * @parameter {EveTransform} stretchObject    -
  * @parameter {Boolean} useCurveLod           -
  */
-export default class EveStretch extends Tw2StagingClass
+export default class EveStretch extends Tw2BaseClass
 {
 
     curveSets = [];
@@ -34,19 +34,20 @@ export default class EveStretch extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveStretch, Type =>
+Tw2BaseClass.define(EveStretch, Type =>
 {
     return {
+        isStaging: true,
         type: "EveStretch",
         props: {
-            curveSets: [["Tw2CurveSet"]],
-            dest: ["Tw2CurveConstant", "Tw2TranslationAdapter"],
+            curveSets: [["TriCurveSet"]],
+            dest: ["Tr2CurveConstant", "Tr2TranslationAdapter"],
             destObject: ["EveTransform"],
-            length: ["Tw2Float"],
-            moveCompletion: ["Tw2CurveSet"],
+            length: ["TriFloat"],
+            moveCompletion: ["TriCurveSet"],
             moveObject: ["EveTransform"],
-            progressCurve: ["Tw2CurveScalar"],
-            source: ["Tw2CurveConstant", "Tw2TranslationAdapter"],
+            progressCurve: ["Tr2CurveScalar"],
+            source: ["Tr2CurveConstant", "Tr2TranslationAdapter"],
             sourceLights: Type.ARRAY,
             sourceObject: ["EveTransform"],
             stretchObject: ["EveTransform"],

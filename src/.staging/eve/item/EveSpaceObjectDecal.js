@@ -1,17 +1,17 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSpaceObjectDecal
  * @implements EveObjectItem
  *
- * @parameter {Tw2Effect} decalEffect  -
+ * @parameter {Tr2Effect} decalEffect  -
  * @parameter {TypedArray} indexBuffer -
  * @parameter {vec3} position          -
  * @parameter {quat} rotation          -
  * @parameter {vec3} scaling           -
  */
-export default class EveSpaceObjectDecal extends Tw2StagingClass
+export default class EveSpaceObjectDecal extends Tw2BaseClass
 {
 
     decalEffect = null;
@@ -22,13 +22,14 @@ export default class EveSpaceObjectDecal extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSpaceObjectDecal, Type =>
+Tw2BaseClass.define(EveSpaceObjectDecal, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSpaceObjectDecal",
         category: "EveObjectItem",
         props: {
-            decalEffect: ["Tw2Effect"],
+            decalEffect: ["Tr2Effect"],
             indexBuffer: Type.TYPED,
             position: Type.TR_TRANSLATION,
             rotation: Type.TR_ROTATION,

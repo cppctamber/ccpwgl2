@@ -1,9 +1,9 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveStarfield
  *
- * @parameter {Tw2Effect} effect         -
+ * @parameter {Tr2Effect} effect         -
  * @parameter {Number} maxDist           -
  * @parameter {Number} maxFlashRate      -
  * @parameter {Number} minDist           -
@@ -12,7 +12,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} numStars          -
  * @parameter {Number} seed              -
  */
-export default class EveStarfield extends Tw2StagingClass
+export default class EveStarfield extends Tw2BaseClass
 {
 
     effect = null;
@@ -26,12 +26,13 @@ export default class EveStarfield extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveStarfield, Type =>
+Tw2BaseClass.define(EveStarfield, Type =>
 {
     return {
+        isStaging: true,
         type: "EveStarfield",
         props: {
-            effect: ["Tw2Effect"],
+            effect: ["Tr2Effect"],
             maxDist: Type.NUMBER,
             maxFlashRate: Type.NUMBER,
             minDist: Type.NUMBER,

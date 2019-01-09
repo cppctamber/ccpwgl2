@@ -1,5 +1,5 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EvePlaneSetItem
@@ -15,7 +15,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {quat} rotation        -
  * @parameter {vec3} scaling         -
  */
-export default class EvePlaneSetItem extends Tw2StagingClass
+export default class EvePlaneSetItem extends Tw2BaseClass
 {
 
     color = vec4.create();
@@ -30,9 +30,10 @@ export default class EvePlaneSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EvePlaneSetItem, Type =>
+Tw2BaseClass.define(EvePlaneSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EvePlaneSetItem",
         category: "EveObjectSetItem",
         props: {

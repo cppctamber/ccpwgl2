@@ -1,5 +1,5 @@
 import {vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveMobile
@@ -9,13 +9,13 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} boundingSphereRadius         -
  * @parameter {Array.<EveObject>} children          -
  * @parameter {Array.<StateController>} controllers -
- * @parameter {Array.<Tw2CurveSet>} curveSets       -
+ * @parameter {Array.<TriCurveSet>} curveSets       -
  * @parameter {Array.<EveObjectSet>} locatorSets    -
- * @parameter {Tw2MeshLod} meshLod                  -
- * @parameter {Array.<Tw2ObserverLocal>} observers  -
- * @parameter {Tw2Effect} shadowEffect              -
+ * @parameter {Tr2MeshLod} meshLod                  -
+ * @parameter {Array.<TriObserverLocal>} observers  -
+ * @parameter {Tr2Effect} shadowEffect              -
  */
-export default class EveMobile extends Tw2StagingClass
+export default class EveMobile extends Tw2BaseClass
 {
 
     attachments = [];
@@ -31,21 +31,22 @@ export default class EveMobile extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveMobile, Type =>
+Tw2BaseClass.define(EveMobile, Type =>
 {
     return {
+        isStaging: true,
         type: "EveMobile",
         props: {
             attachments: [["EveSpriteSet"]],
             boundingSphereCenter: Type.VECTOR3,
             boundingSphereRadius: Type.NUMBER,
             children: [["EveTransform"]],
-            controllers: [["Tw2ControllerReference"]],
-            curveSets: [["Tw2CurveSet"]],
+            controllers: [["Tr2ControllerReference"]],
+            curveSets: [["TriCurveSet"]],
             locatorSets: [["EveLocatorSets"]],
-            meshLod: ["Tw2MeshLod"],
-            observers: [["Tw2ObserverLocal"]],
-            shadowEffect: ["Tw2Effect"]
+            meshLod: ["Tr2MeshLod"],
+            observers: [["TriObserverLocal"]],
+            shadowEffect: ["Tr2Effect"]
         }
     };
 });

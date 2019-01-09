@@ -1,2 +1,2 @@
-export Tw2ControllerFloatVariable from "./Tw2ControllerFloatVariable";
+export Tr2ControllerFloatVariable from "./Tr2ControllerFloatVariable";
 

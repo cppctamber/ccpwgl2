@@ -1,3 +1,3 @@
-export Tw2InteriorLightSource from "./Tw2InteriorLightSource";
-export Tw2KelvinColor from "./Tw2KelvinColor";
+export Tr2InteriorLightSource from "./Tr2InteriorLightSource";
+export Tr2KelvinColor from "./Tr2KelvinColor";
 

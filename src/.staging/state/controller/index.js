@@ -1,3 +1,3 @@
-export Tw2Controller from "./Tw2Controller";
-export Tw2ControllerReference from "./Tw2ControllerReference";
+export Tr2Controller from "./Tr2Controller";
+export Tr2ControllerReference from "./Tr2ControllerReference";
 

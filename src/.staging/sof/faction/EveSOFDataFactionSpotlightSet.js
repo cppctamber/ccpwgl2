@@ -1,5 +1,5 @@
 import {vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataFactionSpotlightSet
@@ -9,7 +9,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} groupIndex -
  * @parameter {vec4} spriteColor  -
  */
-export default class EveSOFDataFactionSpotlightSet extends Tw2StagingClass
+export default class EveSOFDataFactionSpotlightSet extends Tw2BaseClass
 {
 
     coneColor = vec4.create();
@@ -19,9 +19,10 @@ export default class EveSOFDataFactionSpotlightSet extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataFactionSpotlightSet, Type =>
+Tw2BaseClass.define(EveSOFDataFactionSpotlightSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataFactionSpotlightSet",
         props: {
             coneColor: Type.RGBA_LINEAR,

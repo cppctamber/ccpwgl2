@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataGenericSwarm
@@ -17,7 +17,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} weightFormation    -
  * @parameter {Number} weightSeparation   -
  */
-export default class EveSOFDataGenericSwarm extends Tw2StagingClass
+export default class EveSOFDataGenericSwarm extends Tw2BaseClass
 {
 
     formationDistance = 0;
@@ -36,9 +36,10 @@ export default class EveSOFDataGenericSwarm extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataGenericSwarm, Type =>
+Tw2BaseClass.define(EveSOFDataGenericSwarm, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataGenericSwarm",
         props: {
             formationDistance: Type.NUMBER,

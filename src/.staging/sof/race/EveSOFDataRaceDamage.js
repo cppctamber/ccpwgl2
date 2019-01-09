@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataRaceDamage
@@ -8,7 +8,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Array.<EveSOFDataParameter>} shieldImpactParameters -
  * @parameter {Array.<EveSOFDataTexture>} shieldImpactTextures     -
  */
-export default class EveSOFDataRaceDamage extends Tw2StagingClass
+export default class EveSOFDataRaceDamage extends Tw2BaseClass
 {
 
     armorImpactParameters = [];
@@ -18,9 +18,10 @@ export default class EveSOFDataRaceDamage extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataRaceDamage, Type =>
+Tw2BaseClass.define(EveSOFDataRaceDamage, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataRaceDamage",
         props: {
             armorImpactParameters: [["EveSOFDataParameter"]],

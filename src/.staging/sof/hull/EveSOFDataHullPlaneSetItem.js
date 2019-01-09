@@ -1,5 +1,5 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullPlaneSetItem
@@ -16,7 +16,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {quat} rotation            -
  * @parameter {vec3} scaling             -
  */
-export default class EveSOFDataHullPlaneSetItem extends Tw2StagingClass
+export default class EveSOFDataHullPlaneSetItem extends Tw2BaseClass
 {
 
     boneIndex = 0;
@@ -33,9 +33,10 @@ export default class EveSOFDataHullPlaneSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullPlaneSetItem, Type =>
+Tw2BaseClass.define(EveSOFDataHullPlaneSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullPlaneSetItem",
         props: {
             boneIndex: Type.NUMBER,

@@ -1,5 +1,5 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveConnector
@@ -15,7 +15,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {EveLocalPositionCurve} sourceObject -
  * @parameter {Number} type                        -
  */
-export default class EveConnector extends Tw2StagingClass
+export default class EveConnector extends Tw2BaseClass
 {
 
     animationColor = vec4.create();
@@ -31,9 +31,10 @@ export default class EveConnector extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveConnector, Type =>
+Tw2BaseClass.define(EveConnector, Type =>
 {
     return {
+        isStaging: true,
         type: "EveConnector",
         props: {
             animationColor: Type.RGBA_LINEAR,

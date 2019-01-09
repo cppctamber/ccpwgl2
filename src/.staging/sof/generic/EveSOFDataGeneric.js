@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataGeneric
@@ -20,7 +20,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {EveSOFDataGenericSwarm} swarm                            -
  * @parameter {Array.<EveSOFDataGenericVariant>} variants               -
  */
-export default class EveSOFDataGeneric extends Tw2StagingClass
+export default class EveSOFDataGeneric extends Tw2BaseClass
 {
 
     areaShaderLocation = "";
@@ -42,9 +42,10 @@ export default class EveSOFDataGeneric extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataGeneric, Type =>
+Tw2BaseClass.define(EveSOFDataGeneric, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataGeneric",
         props: {
             areaShaderLocation: Type.STRING,

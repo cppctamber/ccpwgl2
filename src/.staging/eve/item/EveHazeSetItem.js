@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveHazeSetItem
@@ -15,7 +15,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} sourceBrightness      -
  * @parameter {Number} sourceSize            -
  */
-export default class EveHazeSetItem extends Tw2StagingClass
+export default class EveHazeSetItem extends Tw2BaseClass
 {
 
     boosterGainInfluence = false;
@@ -30,9 +30,10 @@ export default class EveHazeSetItem extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveHazeSetItem, Type =>
+Tw2BaseClass.define(EveHazeSetItem, Type =>
 {
     return {
+        isStaging: true,
         type: "EveHazeSetItem",
         category: "EveObjectSetItem",
         props: {

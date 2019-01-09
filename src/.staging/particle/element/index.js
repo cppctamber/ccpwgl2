@@ -1,2 +1,2 @@
-export Tw2ParticleElementDeclaration from "./Tw2ParticleElementDeclaration";
+export Tr2ParticleElementDeclaration from "./Tr2ParticleElementDeclaration";
 

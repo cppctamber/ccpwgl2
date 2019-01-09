@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataFactionChild
@@ -6,7 +6,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} groupIndex -
  * @parameter {Boolean} isVisible -
  */
-export default class EveSOFDataFactionChild extends Tw2StagingClass
+export default class EveSOFDataFactionChild extends Tw2BaseClass
 {
 
     groupIndex = 0;
@@ -14,9 +14,10 @@ export default class EveSOFDataFactionChild extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataFactionChild, Type =>
+Tw2BaseClass.define(EveSOFDataFactionChild, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataFactionChild",
         props: {
             groupIndex: Type.NUMBER,

@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveHazeSet
@@ -6,16 +6,17 @@ import {Tw2StagingClass} from "../../class";
  *
  * @parameter {EveObjectSetItem} items -
  */
-export default class EveHazeSet extends Tw2StagingClass
+export default class EveHazeSet extends Tw2BaseClass
 {
 
     items = null;
 
 }
 
-Tw2StagingClass.define(EveHazeSet, Type =>
+Tw2BaseClass.define(EveHazeSet, Type =>
 {
     return {
+        isStaging: true,
         type: "EveHazeSet",
         category: "EveObjectSet",
         props: {

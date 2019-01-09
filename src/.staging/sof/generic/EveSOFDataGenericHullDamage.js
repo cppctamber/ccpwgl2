@@ -1,5 +1,5 @@
 import {vec2, vec4} from "../../../global";
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataGenericHullDamage
@@ -18,7 +18,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Number} hullParticleTurbulenceAmplitude -
  * @parameter {Number} hullParticleTurbulenceFrequency -
  */
-export default class EveSOFDataGenericHullDamage extends Tw2StagingClass
+export default class EveSOFDataGenericHullDamage extends Tw2BaseClass
 {
 
     hullParticleAngle = 0;
@@ -37,9 +37,10 @@ export default class EveSOFDataGenericHullDamage extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataGenericHullDamage, Type =>
+Tw2BaseClass.define(EveSOFDataGenericHullDamage, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataGenericHullDamage",
         props: {
             hullParticleAngle: Type.NUMBER,

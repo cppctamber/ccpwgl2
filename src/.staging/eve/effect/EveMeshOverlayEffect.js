@@ -1,15 +1,15 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveMeshOverlayEffect
  *
- * @parameter {Array.<Tw2Effect>} additiveEffects    -
- * @parameter {Tw2CurveSet} curveSet                 -
- * @parameter {Array.<Tw2Effect>} distortionEffects  -
- * @parameter {Array.<Tw2Effect>} opaqueEffects      -
- * @parameter {Array.<Tw2Effect>} transparentEffects -
+ * @parameter {Array.<Tr2Effect>} additiveEffects    -
+ * @parameter {TriCurveSet} curveSet                 -
+ * @parameter {Array.<Tr2Effect>} distortionEffects  -
+ * @parameter {Array.<Tr2Effect>} opaqueEffects      -
+ * @parameter {Array.<Tr2Effect>} transparentEffects -
  */
-export default class EveMeshOverlayEffect extends Tw2StagingClass
+export default class EveMeshOverlayEffect extends Tw2BaseClass
 {
 
     additiveEffects = [];
@@ -20,16 +20,17 @@ export default class EveMeshOverlayEffect extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveMeshOverlayEffect, Type =>
+Tw2BaseClass.define(EveMeshOverlayEffect, Type =>
 {
     return {
+        isStaging: true,
         type: "EveMeshOverlayEffect",
         props: {
-            additiveEffects: [["Tw2Effect"]],
-            curveSet: ["Tw2CurveSet"],
-            distortionEffects: [["Tw2Effect"]],
-            opaqueEffects: [["Tw2Effect"]],
-            transparentEffects: [["Tw2Effect"]]
+            additiveEffects: [["Tr2Effect"]],
+            curveSet: ["TriCurveSet"],
+            distortionEffects: [["Tr2Effect"]],
+            opaqueEffects: [["Tr2Effect"]],
+            transparentEffects: [["Tr2Effect"]]
         }
     };
 });

@@ -1,4 +1,4 @@
-import {Tw2StagingClass} from "../../class";
+import {Tw2BaseClass} from "../../class";
 
 /**
  * EveSOFDataHullBooster
@@ -7,7 +7,7 @@ import {Tw2StagingClass} from "../../class";
  * @parameter {Boolean} hasTrails                       -
  * @parameter {Array.<EveSOFDataHullBoosterItem>} items -
  */
-export default class EveSOFDataHullBooster extends Tw2StagingClass
+export default class EveSOFDataHullBooster extends Tw2BaseClass
 {
 
     alwaysOn = false;
@@ -16,9 +16,10 @@ export default class EveSOFDataHullBooster extends Tw2StagingClass
 
 }
 
-Tw2StagingClass.define(EveSOFDataHullBooster, Type =>
+Tw2BaseClass.define(EveSOFDataHullBooster, Type =>
 {
     return {
+        isStaging: true,
         type: "EveSOFDataHullBooster",
         props: {
             alwaysOn: Type.BOOLEAN,
