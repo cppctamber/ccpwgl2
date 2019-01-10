@@ -177,7 +177,7 @@ export class EveBoosterSet extends EveObjectSet
     _parentTransform = mat4.create();
     _positions = null;
     _decl = new Tw2VertexDeclaration(EveBoosterSet.vertexDeclarations);
-    _perObjectData = new Tw2PerObjectData(EveBoosterSet.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveBoosterSet.perObjectData);
     _locatorRebuildPending = true;
 
 
@@ -374,9 +374,9 @@ export class EveBoosterSet extends EveObjectSet
         if (this.effect)
         {
             const batch = new EveBoosterBatch();
-            mat4.transpose(this._perObjectData.perObjectVSData.Get("WorldMat"), this._parentTransform);
-            this._perObjectData.perObjectVSData.Set("Shipdata", perObjectData.perObjectVSData.Get("Shipdata"));
-            this._perObjectData.perObjectPSData = perObjectData.perObjectPSData;
+            mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._parentTransform);
+            this._perObjectData.vs.Set("Shipdata", perObjectData.vs.Get("Shipdata"));
+            this._perObjectData.ps = perObjectData.ps;
             batch.perObjectData = this._perObjectData;
             batch.boosters = this;
             batch.renderMode = device.RM_ADDITIVE;
@@ -390,7 +390,7 @@ export class EveBoosterSet extends EveObjectSet
                 accumulator,
                 perObjectData,
                 this._parentTransform,
-                perObjectData.perObjectVSData.Get("Shipdata")[0],
+                perObjectData.vs.Get("Shipdata")[0],
                 0
             );
         }
@@ -506,7 +506,7 @@ export class EveBoosterSet extends EveObjectSet
      * @type {*}
      */
     static perObjectData = {
-        VSData: [
+        vs: [
             ["WorldMat", 16],
             ["Shipdata", 4]
         ]

@@ -260,7 +260,7 @@ export class EveCurveLineSet extends EveObjectSet
     _vertexSize = 26;
     _vbSize = 0;
     _vb = null;
-    _perObjectData = new Tw2PerObjectData(EveCurveLineSet.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveCurveLineSet.perObjectData);
     _decl = new Tw2VertexDeclaration(EveCurveLineSet.vertexDeclarations, 4 * this._vertexSize);
 
 
@@ -629,8 +629,8 @@ export class EveCurveLineSet extends EveObjectSet
             worldTransform = EveCurveLineSet.global.mat4_0;
 
         mat4.multiply(worldTransform, this.transform, this.parentTransform);
-        mat4.transpose(this._perObjectData.perObjectVSData.Get("WorldMat"), worldTransform);
-        mat4.transpose(this._perObjectData.perObjectPSData.Get("WorldMat"), worldTransform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), worldTransform);
+        mat4.transpose(this._perObjectData.ps.Get("WorldMat"), worldTransform);
         batch.perObjectData = this._perObjectData;
         batch.geometryProvider = this;
         batch.renderMode = mode;
@@ -862,8 +862,8 @@ export class EveCurveLineSet extends EveObjectSet
      * @type {*}
      */
     static perObjectData = {
-        VSData: [["WorldMat", 16]],
-        PSData: [["WorldMat", 16]]
+        vs: [["WorldMat", 16]],
+        ps: [["WorldMat", 16]]
     };
 
     /**

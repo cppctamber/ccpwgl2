@@ -126,8 +126,8 @@ export class EveTurretSet extends EveObjectSet
     _recheckTimeLeft = 0;
     _currentCyclingFiresPos = 0;
 
-    _perObjectDataActive = new Tw2PerObjectData(EveTurretSet.perObjectData);
-    _perObjectDataInactive = new Tw2PerObjectData(EveTurretSet.perObjectData);
+    _perObjectDataActive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
+    _perObjectDataInactive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _locatorRebuildPending = true;
 
 
@@ -619,8 +619,8 @@ export class EveTurretSet extends EveObjectSet
             const transforms = this.inactiveAnimation.GetBoneMatrices(0);
             if (transforms.length !== 0)
             {
-                EveTurretSet.UpdatePerObjectData(this, this._perObjectDataInactive.perObjectVSData, transforms);
-                this._perObjectDataInactive.perObjectPSData = perObjectData.perObjectPSData;
+                EveTurretSet.UpdatePerObjectData(this, this._perObjectDataInactive.vs, transforms);
+                this._perObjectDataInactive.ps = perObjectData.ps;
 
                 const batch = new Tw2ForwardingRenderBatch();
                 batch.renderMode = mode;
@@ -634,8 +634,8 @@ export class EveTurretSet extends EveObjectSet
                     const transforms = this.activeAnimation.GetBoneMatrices(0);
                     if (transforms.length !== 0)
                     {
-                        EveTurretSet.UpdatePerObjectData(this, this._perObjectDataActive.perObjectVSData, transforms, true);
-                        this._perObjectDataActive.perObjectPSData = perObjectData.perObjectPSData;
+                        EveTurretSet.UpdatePerObjectData(this, this._perObjectDataActive.vs, transforms, true);
+                        this._perObjectDataActive.ps = perObjectData.ps;
 
                         const batch = new Tw2ForwardingRenderBatch();
                         batch.renderActive = true;
@@ -852,10 +852,10 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Per object data
-     * @type {{VSData: *[]}}
+     * @type {{vs: *[]}}
      */
     static perObjectData = {
-        VSData: [
+        vs: [
             ["baseCutoffData", 4],
             ["turretSetData", 4],
             ["shipMatrix", 16],

@@ -1,5 +1,5 @@
 import {mat4} from "../../global";
-import {Tw2BasicPerObjectData} from "../../core";
+import {Tw2PerObjectData} from "../../core";
 import {EveChild} from "./EveChild";
 
 /**
@@ -8,7 +8,7 @@ import {EveChild} from "./EveChild";
  * @property {Tw2Mesh} mesh
  * @property {Array<Tw2ParticleEmitter>} particleEmitters
  * @property {Array<Tw2ParticleSystem>} particleSystems
- * @property {Tw2BasicPerObjectData} _perObjectData
+ * @property {Tw2PerObjectData} _perObjectData
  * @class
  */
 export class EveChildParticleSystem extends EveChild
@@ -17,7 +17,7 @@ export class EveChildParticleSystem extends EveChild
     mesh = null;
     particleEmitters = [];
     particleSystems = [];
-    _perObjectData = new Tw2BasicPerObjectData(EveChild.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
 
 
     /**
@@ -60,8 +60,8 @@ export class EveChildParticleSystem extends EveChild
     {
         if (this.display && this.mesh)
         {
-            mat4.transpose(this._perObjectData.perObjectFFEData.Get("world"), this.worldTransform);
-            mat4.invert(this._perObjectData.perObjectFFEData.Get("worldInverseTranspose"), this.worldTransform);
+            mat4.transpose(this._perObjectData.ffe.Get("world"), this.worldTransform);
+            mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this.worldTransform);
             this.mesh.GetBatches(mode, accumulator, this._perObjectData);
         }
     }

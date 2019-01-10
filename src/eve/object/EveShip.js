@@ -156,8 +156,8 @@ export class EveShip extends EveSpaceObject
         {
             super.GetBatches(mode, accumulator);
 
-            this._perObjectData.perObjectVSData.Get("Shipdata")[0] = this.boosterGain;
-            this._perObjectData.perObjectPSData.Get("Shipdata")[0] = this.boosterGain;
+            this._perObjectData.vs.Get("Shipdata")[0] = this.boosterGain;
+            this._perObjectData.ps.Get("Shipdata")[0] = this.boosterGain;
 
             if (this.boosters && this.visible.boosters)
             {

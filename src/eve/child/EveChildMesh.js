@@ -1,5 +1,5 @@
 import {mat4} from "../../global";
-import {Tw2PerObjectData, Tw2BasicPerObjectData, Tw2RawData} from "../../core";
+import {Tw2PerObjectData, Tw2RawData} from "../../core";
 import {EveChild} from "./EveChild";
 
 /**
@@ -42,32 +42,32 @@ export class EveChildMesh extends EveChild
             if (!this._perObjectData)
             {
                 this._perObjectData = new Tw2PerObjectData();
-                this._perObjectData.perObjectVSData = new Tw2RawData();
-                this._perObjectData.perObjectVSData.data = new Float32Array(perObjectData.perObjectVSData.data.length);
+                this._perObjectData.vs = new Tw2RawData();
+                this._perObjectData.vs.data = new Float32Array(perObjectData.vs.data.length);
 
-                this._perObjectData.perObjectVSData.data[33] = 1;
-                this._perObjectData.perObjectVSData.data[35] = 1;
+                this._perObjectData.vs.data[33] = 1;
+                this._perObjectData.vs.data[35] = 1;
 
-                this._perObjectData.perObjectPSData = new Tw2RawData();
-                this._perObjectData.perObjectPSData.data = new Float32Array(perObjectData.perObjectPSData.data.length);
+                this._perObjectData.ps = new Tw2RawData();
+                this._perObjectData.ps.data = new Float32Array(perObjectData.ps.data.length);
 
-                this._perObjectData.perObjectPSData.data[1] = 1;
-                this._perObjectData.perObjectPSData.data[3] = 1;
+                this._perObjectData.ps.data[1] = 1;
+                this._perObjectData.ps.data[3] = 1;
             }
-            this._perObjectData.perObjectVSData.data.set(perObjectData.perObjectVSData.data);
-            this._perObjectData.perObjectPSData.data.set(perObjectData.perObjectPSData.data);
+            this._perObjectData.vs.data.set(perObjectData.vs.data);
+            this._perObjectData.ps.data.set(perObjectData.ps.data);
 
-            mat4.transpose(this._perObjectData.perObjectVSData.data, this.worldTransform);
-            mat4.transpose(this._perObjectData.perObjectVSData.data.subarray(16), this.worldTransformLast);
+            mat4.transpose(this._perObjectData.vs.data, this.worldTransform);
+            mat4.transpose(this._perObjectData.vs.data.subarray(16), this.worldTransformLast);
         }
         else
         {
             if (!this._perObjectData)
             {
-                this._perObjectData = new Tw2BasicPerObjectData(EveChild.perObjectData);
+                this._perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
             }
-            mat4.transpose(this._perObjectData.perObjectFFEData.Get("world"), this.worldTransform);
-            mat4.invert(this._perObjectData.perObjectFFEData.Get("worldInverseTranspose"), this.worldTransform);
+            mat4.transpose(this._perObjectData.ffe.Get("world"), this.worldTransform);
+            mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this.worldTransform);
         }
 
         this.mesh.GetBatches(mode, accumulator, this._perObjectData);

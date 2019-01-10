@@ -39,7 +39,7 @@ export class EveMissileWarhead extends EveObject
     pathOffset = vec3.create();
     transform = mat4.create();
     velocity = vec3.create();
-    _perObjectData = new Tw2PerObjectData(EveMissileWarhead.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveMissileWarhead.perObjectData);
 
 
     /**
@@ -93,8 +93,8 @@ export class EveMissileWarhead extends EveObject
     UpdateViewDependentData()
     {
         if (!this.display || this.state === EveMissileWarhead.State.DEAD) return;
-        mat4.transpose(this._perObjectData.perObjectVSData.Get("WorldMat"), this.transform);
-        mat4.transpose(this._perObjectData.perObjectVSData.Get("WorldMatLast"), this.transform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this.transform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this.transform);
     }
 
     /**
@@ -191,15 +191,15 @@ export class EveMissileWarhead extends EveObject
      * @type {*}
      */
     static perObjectData = {
-        VSData: [
+        vs: [
             ["WorldMat", 16],
             ["WorldMatLast", 16],
-            ["Shipdata", 4, [0, 1, 0, -10]],
+            ["Shipdata", [0, 1, 0, -10]],
             ["Clipdata1", 4],
             ["JointMat", 696]
         ],
-        PSData: [
-            ["Shipdata", 4, [0, 1, 0, 1]],
+        ps: [
+            ["Shipdata", [0, 1, 0, 1]],
             ["Clipdata1", 4],
             ["Clipdata2", 4],
         ]

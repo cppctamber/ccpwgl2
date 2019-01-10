@@ -42,7 +42,7 @@ export class EveSpaceObjectDecal
     invDecalMatrix = mat4.create();
     indexBuffer = [];
     _indexBuffer = null;
-    _perObjectData = new Tw2PerObjectData(EveSpaceObjectDecal.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
 
 
     /**
@@ -149,16 +149,16 @@ export class EveSpaceObjectDecal
         )
         {
             const batch = new Tw2ForwardingRenderBatch();
-            this._perObjectData.perObjectVSData.Set("worldMatrix", perObjectData.perObjectVSData.Get("WorldMat"));
+            this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
             if (this.parentBoneIndex >= 0)
             {
                 const
-                    bones = perObjectData.perObjectVSData.Get("JointMat"),
+                    bones = perObjectData.vs.Get("JointMat"),
                     offset = this.parentBoneIndex * 12;
 
                 if (bones[offset] || bones[offset + 4] || bones[offset + 8])
                 {
-                    const bone = this._perObjectData.perObjectVSData.Get("parentBoneMatrix");
+                    const bone = this._perObjectData.vs.Get("parentBoneMatrix");
                     bone[0] = bones[offset];
                     bone[1] = bones[offset + 4];
                     bone[2] = bones[offset + 8];
@@ -179,12 +179,12 @@ export class EveSpaceObjectDecal
                 }
             }
 
-            mat4.invert(this._perObjectData.perObjectVSData.Get("invWorldMatrix"), this._perObjectData.perObjectVSData.Get("worldMatrix"));
-            mat4.transpose(this._perObjectData.perObjectVSData.Get("decalMatrix"), this.decalMatrix);
-            mat4.transpose(this._perObjectData.perObjectVSData.Get("invDecalMatrix"), this.invDecalMatrix);
+            mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
+            mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this.decalMatrix);
+            mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this.invDecalMatrix);
 
-            this._perObjectData.perObjectPSData.Get("displayData")[0] = counter || 0;
-            this._perObjectData.perObjectPSData.Set("shipData", perObjectData.perObjectPSData.data);
+            this._perObjectData.ps.Get("displayData")[0] = counter || 0;
+            this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
 
             batch.perObjectData = this._perObjectData;
             batch.geometryProvider = this;
@@ -224,17 +224,17 @@ export class EveSpaceObjectDecal
 
     /**
      * Per object data
-     * @type {{VSData: *[], PSData: *[]}}
+     * @type {{vs: *[], ps: *[]}}
      */
     static perObjectData = {
-        VSData: [
+        vs: [
             ["worldMatrix", 16],
             ["invWorldMatrix", 16],
             ["decalMatrix", 16],
             ["invDecalMatrix", 16],
             ["parentBoneMatrix", 16, mat4.identity([])]
         ],
-        PSData: [
+        ps: [
             ["displayData", 4],
             ["shipData", 4 * 3]
         ]

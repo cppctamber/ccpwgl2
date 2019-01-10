@@ -356,7 +356,13 @@ export class Tw2Effect
         if (cbh[7]) gl.uniform4fv(cbh[7], p.stages[1].constantBuffer);
         if (d.perFrameVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameVSData.data);
         if (d.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFramePSData.data);
-        if (d.perObjectData) d.perObjectData.SetPerObjectDataToDevice(cbh);
+        const pod = d.perObjectData;
+        if (pod)
+        {
+            if (pod.vs && cbh[3]) gl.uniform4fv(cbh[3], pod.vs.data);
+            if (pod.ps && cbh[4]) gl.uniform4fv(cbh[4], pod.ps.data);
+            if (pod.ffe && cbh[5]) gl.uniform4fv(cbh[5], pod.ffe.data);
+        }
     }
 
     /**

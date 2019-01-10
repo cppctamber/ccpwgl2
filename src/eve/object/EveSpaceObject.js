@@ -82,7 +82,7 @@ export class EveSpaceObject extends EveObject
     boundingSphereRadius = 0;
     shapeEllipsoidRadius = vec3.create();
     shapeEllipsoidCenter = vec3.create();
-    _perObjectData = new Tw2PerObjectData(EveSpaceObject.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
 
     /**
@@ -301,12 +301,12 @@ export class EveSpaceObject extends EveObject
             this.children[i].UpdateViewDependentData(this.transform);
         }
 
-        mat4.transpose(this._perObjectData.perObjectVSData.Get("WorldMat"), this.transform);
-        mat4.transpose(this._perObjectData.perObjectVSData.Get("WorldMatLast"), this.transform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this.transform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this.transform);
 
         const
-            center = this._perObjectData.perObjectVSData.Get("EllipsoidCenter"),
-            radii = this._perObjectData.perObjectVSData.Get("EllipsoidRadii");
+            center = this._perObjectData.vs.Get("EllipsoidCenter"),
+            radii = this._perObjectData.vs.Get("EllipsoidRadii");
 
         if (this.shapeEllipsoidRadius[0] > 0)
         {
@@ -328,15 +328,15 @@ export class EveSpaceObject extends EveObject
         for (let i = 0; i < this.customMasks.length; ++i)
         {
             const targets = this.visible.customMasks ? this.customMasks[i].targets : [0, 0, 0, 0];
-            this._perObjectData.perObjectVSData.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
-            this._perObjectData.perObjectVSData.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
-            this._perObjectData.perObjectPSData.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
-            this._perObjectData.perObjectPSData.Set(i ? "CustomMaskTarget1" : "CustomMaskTarget0", targets);
+            this._perObjectData.vs.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
+            this._perObjectData.vs.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
+            this._perObjectData.ps.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
+            this._perObjectData.ps.Set(i ? "CustomMaskTarget1" : "CustomMaskTarget0", targets);
         }
 
         if (this.animation.animations.length)
         {
-            this._perObjectData.perObjectVSData.Set("JointMat", this.animation.GetBoneMatrices(0));
+            this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
         }
 
         for (let i = 0; i < this.lineSets.length; ++i)
@@ -493,24 +493,24 @@ export class EveSpaceObject extends EveObject
 
     /**
      * Per object data
-     * @type {{VSData: *[], PSData: *[]}}
+     * @type {{vs: *[], ps: *[]}}
      */
     static perObjectData = {
-        VSData: [
+        vs: [
             ["WorldMat", 16],
             ["WorldMatLast", 16],
-            ["Shipdata", 4, [0, 1, 0, -10]],
+            ["Shipdata", [0, 1, 0, -10]],
             ["Clipdata1", 4],
             ["EllipsoidRadii", 4],
             ["EllipsoidCenter", 4],
-            ["CustomMaskMatrix0", 16, mat4.identity([])],
-            ["CustomMaskMatrix1", 16, mat4.identity([])],
+            ["CustomMaskMatrix0", mat4.identity([])],
+            ["CustomMaskMatrix1", mat4.identity([])],
             ["CustomMaskData0", 4],
             ["CustomMaskData1", 4],
             ["JointMat", 696]
         ],
-        PSData: [
-            ["Shipdata", 4, [0, 1, 0, 1]],
+        ps: [
+            ["Shipdata", [0, 1, 0, 1]],
             ["Clipdata1", 4],
             ["Clipdata2", 4],
             ["ShLighting", 4 * 7],

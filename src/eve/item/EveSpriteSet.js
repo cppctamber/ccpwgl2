@@ -455,7 +455,7 @@ export class EveSpriteSet extends EveObjectSet
             itemCount = this._visibleItems.length,
             array = new Float32Array(17 * itemCount),
             pos = EveObjectSet.global.vec3_0,
-            bones = perObjectData.perObjectVSData.Get("JointMat");
+            bones = perObjectData.vs.Get("JointMat");
 
         d.SetStandardStates(d.RM_ADDITIVE);
 

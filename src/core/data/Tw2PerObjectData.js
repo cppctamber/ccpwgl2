@@ -1,63 +1,36 @@
-import {device} from "../../global";
 import {Tw2RawData} from "./Tw2RawData";
 
 /**
  * Tw2PerObjectData
  *
- * @property {?Tw2RawData} perObjectVSData - Per object vertex shader data
- * @property {?Tw2RawData} perObjectPSData - Per object pixel shader data
+ * @property {?Tw2RawData} vs - Per object vertex shader data
+ * @property {?Tw2RawData} ps - Per object pixel shader data
  * @class
  */
 export class Tw2PerObjectData
 {
 
-    perObjectVSData = null;
-    perObjectPSData = null;
+    vs = null;
+    ps = null;
+    ffe = null;
 
 
     /**
-     * Constructor
-     * @param {RawDataObject} [rawDataObject]
+     * Creates per object data from values
+     * @param {RawDataObject} values
+     * @param {{}} [opt={}]
+     * @param {Boolean} [opt.skipUpdate]
+     * @returns {Tw2PerObjectData}
      */
-    constructor(rawDataObject)
+    static from(values, opt={})
     {
-        if (rawDataObject) this.DeclareFromObject(rawDataObject);
+        const item = new Tw2PerObjectData();
+        if (values)
+        {
+            if (values.ps) item.ps = Tw2RawData.from(values.ps, opt);
+            if (values.vs) item.vs = Tw2RawData.from(values.vs, opt);
+            if (values.ffe) item.ffe = Tw2RawData.from(values.ffe, opt);
+        }
+        return item;
     }
-
-    /**
-     * Sets per object data to the device
-     * @param constantBufferHandles
-     */
-    SetPerObjectDataToDevice(constantBufferHandles)
-    {
-        const gl = device.gl;
-
-        if (this.perObjectVSData && constantBufferHandles[3])
-        {
-            gl.uniform4fv(constantBufferHandles[3], this.perObjectVSData.data);
-        }
-
-        if (this.perObjectPSData && constantBufferHandles[4])
-        {
-            gl.uniform4fv(constantBufferHandles[4], this.perObjectPSData.data);
-        }
-    }
-
-    /**
-     * Defines and creates raw data from an object
-     * @param {RawDataObject} [rawDataObject={}]
-     */
-    DeclareFromObject(rawDataObject = {})
-    {
-        if (rawDataObject.VSData)
-        {
-            this.perObjectVSData = new Tw2RawData(rawDataObject.VSData);
-        }
-
-        if (rawDataObject.PSData)
-        {
-            this.perObjectPSData = new Tw2RawData(rawDataObject.PSData);
-        }
-    }
-
 }

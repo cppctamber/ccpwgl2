@@ -1,5 +1,5 @@
 import {vec3, quat, mat4, device} from "../../global";
-import {Tw2BasicPerObjectData} from "../../core";
+import {Tw2PerObjectData} from "../../core";
 import {EveObject} from "./EveObject";
 
 /**
@@ -25,7 +25,7 @@ import {EveObject} from "./EveObject";
  * @property {mat4} worldTransform
  * @property {Array.<mat4>} _mat4Cache
  * @property {Array.<vec3>} _vec3Cache
- * @property {Tw2BasicPerObjectData} _perObjectData
+ * @property {Tw2PerObjectData} _perObjectData
  * @class
  */
 export class EveTransform extends EveObject
@@ -50,7 +50,7 @@ export class EveTransform extends EveObject
     rotation = quat.create();
     localTransform = mat4.create();
     worldTransform = mat4.create();
-    _perObjectData = new Tw2BasicPerObjectData(EveTransform.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveTransform.perObjectData);
 
 
     /**
@@ -261,7 +261,7 @@ export class EveTransform extends EveObject
      * Gets render batches for accumulation
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
-     * @param {Tw2PerObjectData|Tw2BasicPerObjectData} [perObjectData]
+     * @param {Tw2PerObjectData} [perObjectData]
      */
     GetBatches(mode, accumulator, perObjectData)
     {
@@ -269,13 +269,13 @@ export class EveTransform extends EveObject
 
         if (this.visible.mesh && this.mesh)
         {
-            mat4.transpose(this._perObjectData.perObjectFFEData.Get("World"), this.worldTransform);
-            mat4.invert(this._perObjectData.perObjectFFEData.Get("WorldInverseTranspose"), this.worldTransform);
+            mat4.transpose(this._perObjectData.ffe.Get("World"), this.worldTransform);
+            mat4.invert(this._perObjectData.ffe.Get("WorldInverseTranspose"), this.worldTransform);
 
             if (perObjectData)
             {
-                this._perObjectData.perObjectVSData = perObjectData.perObjectVSData;
-                this._perObjectData.perObjectPSData = perObjectData.perObjectPSData;
+                this._perObjectData.vs = perObjectData.vs;
+                this._perObjectData.ps = perObjectData.ps;
             }
 
             this.mesh.GetBatches(mode, accumulator, this._perObjectData);
@@ -310,7 +310,7 @@ export class EveTransform extends EveObject
      * @type {*}
      */
     static perObjectData = {
-        FFEData: [
+        ffe: [
             ["World", 16],
             ["WorldInverseTranspose", 16]
         ]

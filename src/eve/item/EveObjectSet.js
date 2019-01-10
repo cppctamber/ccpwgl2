@@ -191,7 +191,7 @@ export class EveObjectSet
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
-     * @param {Tw2PerObjectData|Tw2BasicPerObjectData} perObjectData
+     * @param {Tw2PerObjectData} perObjectData
      */
     GetBatches(mode, accumulator, perObjectData)
     {

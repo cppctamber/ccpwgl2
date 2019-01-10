@@ -16,7 +16,7 @@ import {vec3, quat, mat4, util} from "../../global";
  * @property {mat4} localTransform
  * @property {mat4} worldTransform
  * @property {mat4} worldTransformLast
- * @property {?|Tw2BasicPerObjectData|Tw2PerObjectData} _perObjectData
+ * @property {Tw2PerObjectData} _perObjectData
  * @class
  */
 export class EveChild
@@ -87,10 +87,10 @@ export class EveChild
 
     /**
      * Per object data
-     * @type {{FFEData: *[]}}
+     * @type {{ffe: *[]}}
      */
     static perObjectData = {
-        FFEData: [
+        ffe: [
             ["world", 16],
             ["worldInverseTranspose", 16]
         ]

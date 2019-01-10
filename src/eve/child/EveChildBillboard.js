@@ -1,19 +1,19 @@
 import {vec3, mat4, device} from "../../global";
-import {Tw2BasicPerObjectData} from "../../core";
+import {Tw2PerObjectData} from "../../core";
 import {EveChild} from "./EveChild";
 
 /**
  * Mesh attachment to space object and oriented towards the camera
  *
  * @property {Tw2Mesh|Tw2InstancedMesh} mesh
- * @property {Tw2BasicPerObjectData} _perObjectData
+ * @property {Tw2PerObjectData} _perObjectData
  * @class
  */
 export class EveChildBillboard extends EveChild
 {
 
     mesh = null;
-    _perObjectData = new Tw2BasicPerObjectData(EveChild.perObjectData);
+    _perObjectData = new Tw2PerObjectData.from(EveChild.perObjectData);
 
 
     /**
@@ -65,8 +65,8 @@ export class EveChildBillboard extends EveChild
     {
         if (this.display && this.mesh)
         {
-            mat4.transpose(this._perObjectData.perObjectFFEData.Get("world"), this.worldTransform);
-            mat4.invert(this._perObjectData.perObjectFFEData.Get("worldInverseTranspose"), this.worldTransform);
+            mat4.transpose(this._perObjectData.ffe.Get("world"), this.worldTransform);
+            mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this.worldTransform);
             this.mesh.GetBatches(mode, accumulator, this._perObjectData);
         }
     }

@@ -1,43 +1,40 @@
-import {util} from "../../global";
-import {ErrDeclarationValueType} from "../Tw2Error";
-
 /**
  * Stores raw data for {@link Tw2PerObjectData}
  *
- * @property {Number} nextOffset
  * @property {Float32Array} data
  * @property {*} elements
+ * @property {Number} nextOffset
  * @class
  */
 export class Tw2RawData
 {
 
-    nextOffset = 0;
     data = null;
     elements = {};
-
+    _nextOffset = 0;
 
     /**
-     * Constructor
-     * @param {Array} [declarations] An optional array containing raw data declarations
+     * Checks if an element exists
+     * @param {String} name
+     * @returns {boolean}
      */
-    constructor(declarations)
+    Has(name)
     {
-        if (declarations) this.DeclareFromObject(declarations);
+        return name in this.elements;
     }
 
     /**
-     * Sets a element value
+     * Sets an element value
      * @param {String} name
-     * @param {Float32Array|Array} value
+     * @param {Float32Array|Array|vec3|vec4|mat4} value
      */
     Set(name, value)
     {
-        const
-            el = this.elements[name],
-            subarray = "subarray" in value ? "subarray" : "slice";
-
-        this.data.set(value.length > el.size ? value[subarray](0, el.size) : value, el.offset);
+        const el = this.elements[name];
+        for (let i = 0; i < el.size; i++)
+        {
+            this.data[i + el.offset] = value[i];
+        }
     }
 
     /**
@@ -51,97 +48,64 @@ export class Tw2RawData
     }
 
     /**
-     * Gets an element's array value from the share data array
+     * Declares a raw data element
      * @param {String} name
-     * @return {Float32Array}
+     * @param {Number|Array|Float32Array} data - Size or the default value in an array
      */
-    GetData(name)
+    Declare(name, data)
     {
-        return this.data.subarray(this.elements[name].offset, this.elements[name].offset + this.elements[name].array.length);
+        let
+            isValue = typeof data !== "number",
+            size = isValue ? data.length : data,
+            value = isValue ? data : null;
+
+        this.elements[name] = {offset: this._nextOffset, array: null, size, value};
+        this._nextOffset += size;
     }
 
     /**
-     * Creates the raw data element arrays
+     * Creates the raw data element array
      */
     Create()
     {
-        this.data = new Float32Array(this.nextOffset);
+        this.data = new Float32Array(this._nextOffset);
         for (let name in this.elements)
         {
             if (this.elements.hasOwnProperty(name))
             {
                 const el = this.elements[name];
                 el.array = this.data.subarray(el.offset, el.offset + el.size);
-
-                if (el.value !== null)
+                if (el.value)
                 {
-                    if (el.size === 1)
+                    for (let i = 0; i < el.size; i++)
                     {
-                        if (util.isNumber(el.value))
-                        {
-                            el.array[0] = el.value;
-                        }
-                        else
-                        {
-                            el.array[0] = el.value[0];
-                        }
+                        el.array[i] = el.value[i];
                     }
-                    else
-                    {
-                        for (let i = 0; i < el.size; i++)
-                        {
-                            el.array[i] = el.value[i];
-                        }
-                    }
-                    el.value = null;
+                    Reflect.deleteProperty(el, "value");
                 }
             }
         }
     }
 
     /**
-     * Declares a raw data element
-     * @param {String} name
-     * @param {Number} size
-     * @param {!|number|Array|Float32Array} [value=null] optional value to set on raw data creation
+     * Tw2RawData factory
+     * @param {RawElementArray} [values]
+     * @param {{}} [opt={}]
+     * @param {boolean} [opt.skipUpdate]
+     * @returns {Tw2RawData}
      */
-    Declare(name, size, value = null)
+    static from(values, opt={})
     {
-        if (value !== null && !(util.isArrayLike(value) || util.isNumber(value)))
+        const item = new Tw2RawData();
+        if (values)
         {
-            throw new ErrDeclarationValueType({declaration: name, valueType: typeof value});
-        }
-
-        this.elements[name] = {
-            offset: this.nextOffset,
-            size: size,
-            array: null,
-            value: value
-        };
-
-        this.nextOffset += size;
-    }
-
-    /**
-     * Declares raw data from an object and then creates the elements
-     * @param {Array|Object} declarations
-     */
-    DeclareFromObject(declarations = [])
-    {
-        for (let i = 0; i < declarations.length; i++)
-        {
-            const decl = declarations[i];
-            if (util.isArray(decl))
+            for (let i = 0; i < values.length; i++)
             {
-                this.Declare(decl[0], decl[1], decl[2]);
+                item.Declare(values[i][0], values[i][1]);
             }
-            else
-            {
-                this.Declare(decl.name, decl.size, decl.value);
-            }
+
+            if (!opt.skipUpdate) item.Create();
         }
-
-        this.Create();
+        return item;
     }
-
 }

@@ -98,7 +98,8 @@ store.Register({
  */
 
 import * as staging from "./.staging";
-export { staging };
+
+export {staging};
 
 /**
  * Registers a staging class

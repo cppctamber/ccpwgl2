@@ -34,7 +34,7 @@ export class EveEffectRoot extends EveObject
     rotationTransform = mat4.create();
     boundingSphereCenter = vec3.create();
     boundingSphereRadius = 0;
-    _perObjectData = new Tw2PerObjectData(EveSpaceObject.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
 
     /**

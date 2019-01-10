@@ -106,8 +106,8 @@ export class EveSpaceScene
         this._debugHelper = null;
 
         this._batches = new Tw2BatchAccumulator();
-        this._perFrameVS = new Tw2RawData(EveSpaceScene.perFrameData.VSData);
-        this._perFramePS = new Tw2RawData(EveSpaceScene.perFrameData.PSData);
+        this._perFrameVS = Tw2RawData.from(EveSpaceScene.perFrameData.vs);
+        this._perFramePS = Tw2RawData.from(EveSpaceScene.perFrameData.ps);
 
         EveSpaceScene.init();
     }
@@ -460,39 +460,39 @@ export class EveSpaceScene
         if (Math.abs(distance) < 1e-5) distance = 1e-5;
         const f = 1.0 / distance;
 
-        const VSData = this._perFrameVS;
-        VSData.Set("FogFactors", [this.fogEnd * f, f, this.visible.fog ? this.fogMax : 0, 1]);
-        VSData.Set("ViewportAdjustment", [1, 1, 1, 1]);
-        VSData.Set("MiscSettings", [d.currentTime, 0, d.viewportWidth, d.viewportHeight]);
-        VSData.Set("SunData.DirWorld", sunDir);
-        VSData.Set("SunData.DiffuseColor", this.sunDiffuseColor);
-        VSData.Set("TargetResolution", d.targetResolution);
-        VSData.Set("ViewInverseTransposeMat", d.viewInverse);
-        VSData.Set("ViewProjectionMat", d.viewProjectionTranspose);
-        VSData.Set("ViewMat", d.viewTranspose);
-        VSData.Set("ProjectionMat", d.projectionTranspose);
-        VSData.Set("EnvMapRotationMat", envMapTransform);
-        d.perFrameVSData = VSData;
+        const vs = this._perFrameVS;
+        vs.Set("FogFactors", [this.fogEnd * f, f, this.visible.fog ? this.fogMax : 0, 1]);
+        vs.Set("ViewportAdjustment", [1, 1, 1, 1]);
+        vs.Set("MiscSettings", [d.currentTime, 0, d.viewportWidth, d.viewportHeight]);
+        vs.Set("SunData.DirWorld", sunDir);
+        vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
+        vs.Set("TargetResolution", d.targetResolution);
+        vs.Set("ViewInverseTransposeMat", d.viewInverse);
+        vs.Set("ViewProjectionMat", d.viewProjectionTranspose);
+        vs.Set("ViewMat", d.viewTranspose);
+        vs.Set("ProjectionMat", d.projectionTranspose);
+        vs.Set("EnvMapRotationMat", envMapTransform);
+        d.perFrameVSData = vs;
 
-        const PSData = this._perFramePS;
-        PSData.Set("ViewInverseTransposeMat", d.viewInverse);
-        PSData.Set("ViewMat", d.viewTranspose);
-        PSData.Set("EnvMapRotationMat", envMapTransform);
-        PSData.Set("SunData.DirWorld", sunDir);
-        PSData.Set("SunData.DiffuseColor", this.sunDiffuseColor);
-        PSData.Set("SceneData.AmbientColor", this.ambientColor);
-        PSData.Set("MiscSettings", [d.currentTime, this.fogType, this.fogBlur, 1]);
-        PSData.Set("SceneData.FogColor", this.fogColor);
-        PSData.Set("FovXY", [d.targetResolution[3], d.targetResolution[2]]);
-        PSData.Set("ShadowMapSettings", [1, 1, 0, 0]);
-        PSData.Set("TargetResolution", d.targetResolution);
-        PSData.Get("SceneData.NebulaIntensity")[0] = this.nebulaIntensity;
-        PSData.Get("ViewportSize")[0] = d.viewportWidth;
-        PSData.Get("ViewportSize")[1] = d.viewportHeight;
-        PSData.Get("ShadowCameraRange")[0] = 1;
-        PSData.Get("ProjectionToView")[0] = -d.projection[14];
-        PSData.Get("ProjectionToView")[1] = -d.projection[10] - 1;
-        d.perFramePSData = PSData;
+        const ps = this._perFramePS;
+        ps.Set("ViewInverseTransposeMat", d.viewInverse);
+        ps.Set("ViewMat", d.viewTranspose);
+        ps.Set("EnvMapRotationMat", envMapTransform);
+        ps.Set("SunData.DirWorld", sunDir);
+        ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
+        ps.Set("SceneData.AmbientColor", this.ambientColor);
+        ps.Set("MiscSettings", [d.currentTime, this.fogType, this.fogBlur, 1]);
+        ps.Set("SceneData.FogColor", this.fogColor);
+        ps.Set("FovXY", [d.targetResolution[3], d.targetResolution[2]]);
+        ps.Set("ShadowMapSettings", [1, 1, 0, 0]);
+        ps.Set("TargetResolution", d.targetResolution);
+        ps.Get("SceneData.NebulaIntensity")[0] = this.nebulaIntensity;
+        ps.Get("ViewportSize")[0] = d.viewportWidth;
+        ps.Get("ViewportSize")[1] = d.viewportHeight;
+        ps.Get("ShadowCameraRange")[0] = 1;
+        ps.Get("ProjectionToView")[0] = -d.projection[14];
+        ps.Get("ProjectionToView")[1] = -d.projection[10] - 1;
+        d.perFramePSData = ps;
 
         const
             envMap = this.envMapRes && show.environmentReflection ? this.envMapRes : g.emptyTexture,
@@ -531,7 +531,7 @@ export class EveSpaceScene
      * @type {*}
      */
     static perFrameData = {
-        PSData: [
+        ps: [
             ["ViewInverseTransposeMat", 16],
             ["ViewMat", 16],
             ["EnvMapRotationMat", 16],
@@ -549,7 +549,7 @@ export class EveSpaceScene
             ["FovXY", 2],
             ["MiscSettings", 4],
         ],
-        VSData: [
+        vs: [
             ["ViewInverseTransposeMat", 16],
             ["ViewProjectionMat", 16],
             ["ViewMat", 16],
