@@ -1,5 +1,5 @@
 import {vec3, quat} from "../../global";
-import {Tw2ParticleElementDeclaration} from "../Tw2ParticleElementDeclaration";
+import {Tw2ParticleElement} from "../Tw2ParticleElement";
 import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 
 /**
@@ -54,11 +54,11 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
 
         for (let i = 0; i < ps._elements.length; ++i)
         {
-            if (ps._elements[i].elementType === Tw2ParticleElementDeclaration.Type.POSITION && this.controlPosition)
+            if (ps._elements[i].elementType === Tw2ParticleElement.Type.POSITION && this.controlPosition)
             {
                 this._position = ps._elements[i];
             }
-            else if (ps._elements[i].elementType === Tw2ParticleElementDeclaration.Type.VELOCITY && this.controlVelocity)
+            else if (ps._elements[i].elementType === Tw2ParticleElement.Type.VELOCITY && this.controlVelocity)
             {
                 this._velocity = ps._elements[i];
             }

@@ -1,6 +1,5 @@
-import {Tw2VertexDeclaration, Tw2VertexElement} from "../core";
-import {device} from "../global";
-
+import {Tw2VertexElement} from "../core";
+import {Tw2ParticleElement} from "./Tw2ParticleElement";
 
 /**
  * Tw2ParticleElementDeclaration
@@ -30,16 +29,16 @@ export class Tw2ParticleElementDeclaration
     {
         switch (this.elementType)
         {
-            case Tw2ParticleElementDeclaration.Type.LIFETIME:
+            case Tw2ParticleElement.Type.LIFETIME:
                 return 2;
 
-            case Tw2ParticleElementDeclaration.Type.POSITION:
+            case Tw2ParticleElement.Type.POSITION:
                 return 3;
 
-            case Tw2ParticleElementDeclaration.Type.VELOCITY:
+            case Tw2ParticleElement.Type.VELOCITY:
                 return 3;
 
-            case Tw2ParticleElementDeclaration.Type.MASS:
+            case Tw2ParticleElement.Type.MASS:
                 return 1;
         }
         return this.dimension;
@@ -54,40 +53,32 @@ export class Tw2ParticleElementDeclaration
         let usage;
         switch (this.elementType)
         {
-            case Tw2ParticleElementDeclaration.Type.LIFETIME:
-                usage = Tw2VertexDeclaration.Type.TANGENT;
+            case Tw2ParticleElement.Type.LIFETIME:
+                usage = Tw2VertexElement.Type.TANGENT;
                 break;
 
-            case Tw2ParticleElementDeclaration.Type.POSITION:
-                usage = Tw2VertexDeclaration.Type.POSITION;
+            case Tw2ParticleElement.Type.POSITION:
+                usage = Tw2VertexElement.Type.POSITION;
                 break;
 
-            case Tw2ParticleElementDeclaration.Type.VELOCITY:
-                usage = Tw2VertexDeclaration.Type.NORMAL;
+            case Tw2ParticleElement.Type.VELOCITY:
+                usage = Tw2VertexElement.Type.NORMAL;
                 break;
 
-            case Tw2ParticleElementDeclaration.Type.MASS:
-                usage = Tw2VertexDeclaration.Type.BINORMAL;
+            case Tw2ParticleElement.Type.MASS:
+                usage = Tw2VertexElement.Type.BINORMAL;
                 break;
 
             default:
-                usage = Tw2VertexDeclaration.Type.TEXCOORD;
+                usage = Tw2VertexElement.Type.TEXCOORD;
         }
 
-        return new Tw2VertexElement(usage, this.usageIndex, device.gl.FLOAT, this.GetDimension());
+        return Tw2VertexElement.from({
+            usage: usage,
+            usageIndex: this.usageIndex,
+            elements: this.GetDimension()
+        });
     }
-
-    /**
-     * Particle element declaration types
-     * @type {{LIFETIME: number, POSITION: number, VELOCITY: number, MASS: number, CUSTOM: number}}
-     */
-    static Type = {
-        LIFETIME: 0,
-        POSITION: 1,
-        VELOCITY: 2,
-        MASS: 3,
-        CUSTOM: 4
-    };
 
 }
 

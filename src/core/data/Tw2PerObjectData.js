@@ -18,11 +18,11 @@ export class Tw2PerObjectData
     /**
      * Creates per object data from values
      * @param {RawDataObject} values
-     * @param {{}} [opt={}]
+     * @param {{}} [opt]
      * @param {Boolean} [opt.skipUpdate]
      * @returns {Tw2PerObjectData}
      */
-    static from(values, opt={})
+    static from(values, opt)
     {
         const item = new Tw2PerObjectData();
         if (values)

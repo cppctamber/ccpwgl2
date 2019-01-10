@@ -1,5 +1,5 @@
 import {vec4, mat4, util, device, store} from "../../global";
-import {Tw2Effect, Tw2VertexDeclaration, Tw2VertexElement, Tw2BatchAccumulator} from "../../core";
+import {Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator} from "../../core";
 
 /**
  * EveOccluder
@@ -101,10 +101,10 @@ export class EveOccluder
         d.SetStandardStates(d.RM_ADDITIVE);
         d.gl.bindBuffer(d.gl.ARRAY_BUFFER, vertexBuffer);
 
-        for (let pass = 0; pass < effect.GetPassCount('Main'); ++pass)
+        for (let pass = 0; pass < effect.GetPassCount("Main"); ++pass)
         {
             effect.ApplyPass("Main", pass);
-            if (decl.SetDeclaration(effect.GetPassInput("Main", pass), 16)) return false;
+            if (decl.SetDeclaration(d, effect.GetPassInput("Main", pass), 16)) return false;
             d.ApplyShadowState();
             d.gl.drawArrays(d.gl.TRIANGLES, 0, 255 * 6);
         }
@@ -137,9 +137,10 @@ export class EveOccluder
         });
 
         g.vertexBuffer = null;
-        g.decl = new Tw2VertexDeclaration();
-        g.decl.elements.push(new Tw2VertexElement(Tw2VertexDeclaration.Type.POSITION, 0, d.gl.FLOAT, 2, 0));
-        g.decl.elements.push(new Tw2VertexElement(Tw2VertexDeclaration.Type.TEXCOORD, 0, d.gl.FLOAT, 2, 8));
+        g.decl = Tw2VertexDeclaration.from([
+            {usage: "POSITION", usageIndex: 0, elements: 2},
+            {usage: "TEXCOORD", usageIndex: 0, elements: 2}
+        ]);
         g.decl.RebuildHash();
 
         const vb = new Float32Array(255 * 6 * 4);

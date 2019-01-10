@@ -31,19 +31,35 @@ export class Tw2ParticleElement
 
 
     /**
-     * Constructor
-     * @param {Tw2ParticleElementDeclaration} decl
+     * Particle element factory
+     * @param {*} values
+     * @returns {Tw2ParticleElement}
      */
-    constructor(decl)
+    static from(values)
     {
-        if (decl)
+        const item = new Tw2ParticleElement();
+        if (values)
         {
-            this.elementType = decl.elementType;
-            this.customName = decl.customName;
-            this.dimension = decl.GetDimension();
-            this.usageIndex = decl.usageIndex;
-            this.usedByGPU = decl.usedByGPU;
+            const type = values.elementType;
+            item.elementType = typeof type === "string" ? this.Type[type.toUpperCase()] : type;
+            item.customName = values.customName;
+            item.dimension = values.dimension;
+            item.usageIndex = values.usageIndex;
+            item.usedByGPU = values.usedByGPU ? 1 : 0;
         }
+        return item;
     }
+
+    /**
+     * Particle element types
+     * @type {{LIFETIME: number, POSITION: number, VELOCITY: number, MASS: number, CUSTOM: number}}
+     */
+    static Type = {
+        LIFETIME: 0,
+        POSITION: 1,
+        VELOCITY: 2,
+        MASS: 3,
+        CUSTOM: 4
+    };
 
 }

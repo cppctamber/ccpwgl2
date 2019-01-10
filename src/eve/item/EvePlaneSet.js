@@ -99,7 +99,7 @@ export class EvePlaneSet extends EveObjectSet
     _time = 0;
     _vertexBuffer = null;
     _indexBuffer = null;
-    _decl = new Tw2VertexDeclaration(EvePlaneSet.vertexDeclarations);
+    _decl = Tw2VertexDeclaration.from(EvePlaneSet.vertexDeclarations);
 
 
     /**
@@ -294,16 +294,20 @@ export class EvePlaneSet extends EveObjectSet
     {
         if (!this.effect || !this.effect.IsGood()) return false;
 
-        device.SetStandardStates(device.RM_ADDITIVE);
-        device.gl.bindBuffer(device.gl.ARRAY_BUFFER, this._vertexBuffer);
-        device.gl.bindBuffer(device.gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+        const
+            d = device,
+            gl = d.gl;
+
+        d.SetStandardStates(d.RM_ADDITIVE);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
         for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass)
         {
             this.effect.ApplyPass(technique, pass);
-            if (!this._decl.SetDeclaration(this.effect.GetPassInput(technique, pass), 140)) return false;
-            device.ApplyShadowState();
-            device.gl.drawElements(device.gl.TRIANGLES, this._indexBuffer.count, device.gl.UNSIGNED_SHORT, 0);
+            if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), 140)) return false;
+            d.ApplyShadowState();
+            gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0);
         }
         return true;
     }
@@ -319,15 +323,15 @@ export class EvePlaneSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        ["TEXCOORD", 0, 4],
-        ["TEXCOORD", 1, 4],
-        ["TEXCOORD", 2, 4],
-        ["COLOR", 0, 4],
-        ["TEXCOORD", 3, 4],
-        ["TEXCOORD", 4, 4],
-        ["TEXCOORD", 5, 4],
-        ["TEXCOORD", 6, 4],
-        ["TEXCOORD", 7, 3]
+        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 2, elements: 4},
+        {usage: "COLOR", usageIndex: 0, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 3, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 4, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 5, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 6, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 7, elements: 3}
     ];
 
 }

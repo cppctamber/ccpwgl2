@@ -176,7 +176,7 @@ export class EveBoosterSet extends EveObjectSet
     trailSize = vec4.create();
     _parentTransform = mat4.create();
     _positions = null;
-    _decl = new Tw2VertexDeclaration(EveBoosterSet.vertexDeclarations);
+    _decl = Tw2VertexDeclaration.from(EveBoosterSet.vertexDeclarations);
     _perObjectData = Tw2PerObjectData.from(EveBoosterSet.perObjectData);
     _locatorRebuildPending = true;
 
@@ -405,13 +405,17 @@ export class EveBoosterSet extends EveObjectSet
     {
         if (!this.effect || !this.effect.IsGood()) return false;
 
-        device.gl.bindBuffer(device.gl.ARRAY_BUFFER, this._positions);
+        const
+            d = device,
+            gl = d.gl;
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._positions);
         for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass)
         {
             this.effect.ApplyPass(technique, pass);
-            if (!this._decl.SetDeclaration(this.effect.GetPassInput(technique, pass), 112)) return false;
-            device.ApplyShadowState();
-            device.gl.drawArrays(device.gl.TRIANGLES, 0, this._positions.count);
+            if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), 112)) return false;
+            d.ApplyShadowState();
+            gl.drawArrays(gl.TRIANGLES, 0, this._positions.count);
         }
         return true;
     }
@@ -517,15 +521,15 @@ export class EveBoosterSet extends EveObjectSet
      * @type {*}
      */
     static vertexDeclarations = [
-        ["POSITION", 0, 3],
-        ["TEXCOORD", 0, 2],
-        ["TEXCOORD", 1, 4],
-        ["TEXCOORD", 2, 4],
-        ["TEXCOORD", 3, 4],
-        ["TEXCOORD", 4, 4],
-        ["TEXCOORD", 5, 4],
-        ["TEXCOORD", 6, 1],
-        ["TEXCOORD", 7, 2]
+        {usage: "POSITION", usageIndex: 0, elements: 3},
+        {usage: "TEXCOORD", usageIndex: 0, elements: 2},
+        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 2, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 3, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 4, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 5, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 6, elements: 1},
+        {usage: "TEXCOORD", usageIndex: 7, elements: 2}
     ];
 
     /**

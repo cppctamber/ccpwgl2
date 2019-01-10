@@ -93,7 +93,7 @@ export class Tw2Shader
                         const usageIndex = reader.ReadUInt8();
                         /* let usedMask = */
                         reader.ReadUInt8();
-                        stage.inputDefinition.elements[inputIx] = new Tw2VertexElement(usage, usageIndex, 0);
+                        stage.inputDefinition.elements[inputIx] = Tw2VertexElement.from({usage, usageIndex, type: 0});
                     }
                     stage.inputDefinition.RebuildHash();
 
@@ -580,11 +580,11 @@ export class Tw2Shader
             let location = gl.getAttribLocation(program.program, "attr" + j);
             if (location >= 0)
             {
-                const el = new Tw2VertexElement(
-                    pass.stages[0].inputDefinition.elements[j].usage,
-                    pass.stages[0].inputDefinition.elements[j].usageIndex
-                );
-                el.location = location;
+                const el = Tw2VertexElement.from({
+                    usage: pass.stages[0].inputDefinition.elements[j].usage,
+                    usageIndex: pass.stages[0].inputDefinition.elements[j].usageIndex,
+                    location
+                });
                 program.input.elements.push(el);
             }
         }

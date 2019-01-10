@@ -197,18 +197,8 @@ export class Tw2Device extends Tw2EventEmitter
         this.glVersion = WebglVersion.NONE;
         this.effectDir = "/effect.gles2/";
         this.canvas = null;
-
-        const
-            returnFalse = () => (false),
-            returnTrue = () => (true);
-
-        this.ext = {
-            drawElementsInstanced: returnFalse,
-            drawArraysInstanced: returnFalse,
-            vertexAttribDivisor: returnFalse,
-            hasInstancedArrays: returnFalse
-        };
-
+        this.ext = {};
+        
         let {gl, version} = Tw2Device.CreateContext(canvas, params, params.webgl2);
         if (!gl) return this.glVersion;
 
@@ -224,24 +214,14 @@ export class Tw2Device extends Tw2EventEmitter
             }
         });
 
+        const
+            returnFalse = () => (false),
+            returnTrue = () => (true);
+
         switch (this.glVersion)
         {
             case WebglVersion.WEBGL2:
-                this.ext = {
-                    drawElementsInstanced: function (mode, count, type, offset, instanceCount)
-                    {
-                        gl.drawElementsInstanced(mode, count, type, offset, instanceCount);
-                    },
-                    drawArraysInstanced: function (mode, first, count, instanceCount)
-                    {
-                        gl.drawArraysInstanced(mode, first, count, instanceCount);
-                    },
-                    vertexAttribDivisor: function (location, divisor)
-                    {
-                        gl.vertexAttribDivisor(location, divisor);
-                    },
-                    hasInstancedArrays: returnTrue
-                };
+                gl.hasInstancedArrays = returnTrue;
                 break;
 
             default:
@@ -249,25 +229,11 @@ export class Tw2Device extends Tw2EventEmitter
                 this.GetExtension("OES_element_index_uint");
                 this.GetExtension("OES_texture_float");
                 this.GetExtension("EXT_shader_texture_lod");
-                const instancedArrays = this.GetExtension("ANGLE_instanced_arrays");
-                if (instancedArrays)
-                {
-                    this.ext = {
-                        drawElementsInstanced: function (mode, count, type, offset, instanceCount)
-                        {
-                            instancedArrays["drawElementsInstancedANGLE"](mode, count, type, offset, instanceCount);
-                        },
-                        drawArraysInstanced: function (mode, first, count, instanceCount)
-                        {
-                            instancedArrays["drawArraysInstancedANGLE"](mode, first, count, instanceCount);
-                        },
-                        vertexAttribDivisor: function (location, divisor)
-                        {
-                            instancedArrays["vertexAttribDivisorANGLE"](location, divisor);
-                        },
-                        hasInstancedArrays: returnTrue
-                    };
-                }
+                const iArray = this.GetExtension("ANGLE_instanced_arrays");
+                gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
+                gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
+                gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
+                gl.hasInstancedArrays = iArray ? returnTrue : returnFalse;
         }
 
         // Optional extensions
@@ -310,9 +276,9 @@ export class Tw2Device extends Tw2EventEmitter
         gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         this._cameraQuadBuffer = gl.createBuffer();
-        this._quadDecl = new Tw2VertexDeclaration([
-            ["POSITION", 0, 4],
-            ["TEXCOORD", 0, 2]
+        this._quadDecl = Tw2VertexDeclaration.from([
+            {usage: "POSITION", usageIndex: 0, elements: 4},
+            {usage: "TEXCOORD", usageIndex: 0, elements: 2}
         ]);
 
         this.wrapModes = Array.from(WrapModes);
@@ -670,7 +636,7 @@ export class Tw2Device extends Tw2EventEmitter
         for (let pass = 0; pass < effect.GetPassCount(technique); ++pass)
         {
             effect.ApplyPass(technique, pass);
-            if (!this._quadDecl.SetDeclaration(effect.GetPassInput(technique, pass), 24)) return false;
+            if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
             this.ApplyShadowState();
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }
@@ -728,7 +694,7 @@ export class Tw2Device extends Tw2EventEmitter
         for (let pass = 0; pass < effect.GetPassCount(technique); ++pass)
         {
             effect.ApplyPass(technique, pass);
-            if (!this._quadDecl.SetDeclaration(effect.GetPassInput(technique, pass), 24)) return false;
+            if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
             this.ApplyShadowState();
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }

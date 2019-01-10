@@ -261,7 +261,7 @@ export class EveCurveLineSet extends EveObjectSet
     _vbSize = 0;
     _vb = null;
     _perObjectData = Tw2PerObjectData.from(EveCurveLineSet.perObjectData);
-    _decl = new Tw2VertexDeclaration(EveCurveLineSet.vertexDeclarations, 4 * this._vertexSize);
+    _decl = Tw2VertexDeclaration.from(EveCurveLineSet.vertexDeclarations);
 
 
     /**
@@ -648,16 +648,20 @@ export class EveCurveLineSet extends EveObjectSet
     {
         if (!batch.effect || !batch.effect.IsGood()) return false;
 
-        device.gl.bindBuffer(device.gl.ARRAY_BUFFER, this._vb);
+        const
+            d = device,
+            gl = d.gl;
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
 
         let passCount = batch.effect.GetPassCount(technique);
         for (let pass = 0; pass < passCount; ++pass)
         {
             batch.effect.ApplyPass(technique, pass);
             let passInput = batch.effect.GetPassInput(technique, pass);
-            if (!this._decl.SetDeclaration(passInput, this._decl.stride)) return false;
-            device.ApplyShadowState();
-            device.gl.drawArrays(device.gl.TRIANGLES, 0, this._vbSize * 6);
+            if (!this._decl.SetDeclaration(d, passInput, this._decl.stride)) return false;
+            d.ApplyShadowState();
+            gl.drawArrays(gl.TRIANGLES, 0, this._vbSize * 6);
         }
         return true;
     }
@@ -871,13 +875,13 @@ export class EveCurveLineSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        ["POSITION", 0, 3],
-        ["TEXCOORD", 0, 4],
-        ["TEXCOORD", 1, 4],
-        ["TEXCOORD", 2, 3],
-        ["COLOR", 0, 4],
-        ["COLOR", 1, 4],
-        ["COLOR", 2, 4]
+        {usage: "POSITION", usageIndex: 0, elements: 3},
+        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 2, elements: 3},
+        {usage: "COLOR", usageIndex: 0, elements: 4},
+        {usage: "COLOR", usageIndex: 1, elements: 4},
+        {usage: "COLOR", usageIndex: 2, elements: 4}
     ];
 }
 

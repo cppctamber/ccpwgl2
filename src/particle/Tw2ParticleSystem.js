@@ -13,7 +13,7 @@ import {Tw2ParticleElementDeclaration} from "./Tw2ParticleElementDeclaration";
  * @property {number} maxParticleCount
  * @property {*} emitParticleOnDeathEmitter
  * @property {*} emitParticleDuringLifeEmitter
- * @property {Array.<Tw2ParticleElement>} elements
+ * @property {Array.<Tw2ParticleElementDeclaration>} elements
  * @property {Boolean} isValid
  * @property {Boolean} requiresSorting
  * @property {Boolean} updateSimulation
@@ -113,12 +113,21 @@ export class Tw2ParticleSystem
         {
             const
                 bufferIndex = this.elements[i].usedByGPU ? 0 : 1,
-                el = new Tw2ParticleElement(this.elements[i]);
+                src = this.elements[i];
+
+            const el = Tw2ParticleElement.from({
+                elementType: src.elementType,
+                customName: src.customName,
+                dimension: src.GetDimension(),
+                usageIndex: src.usageIndex,
+                usedByGPU: src.usedByGPU
+            });
+
             //el.buffer = this.buffers[bufferIndex];
 
             el.startOffset = this.vertexStride[bufferIndex];
             el.offset = el.startOffset;
-            if (this.elements[i].elementType !== Tw2ParticleElementDeclaration.Type.CUSTOM)
+            if (this.elements[i].elementType !== Tw2ParticleElement.Type.CUSTOM)
             {
                 this._stdElements[this.elements[i].elementType] = el;
             }
@@ -231,12 +240,12 @@ export class Tw2ParticleSystem
     {
         dt = Math.min(dt, 0.1);
 
-        if (this.applyAging && this.HasElement(Tw2ParticleElementDeclaration.Type.LIFETIME))
+        if (this.applyAging && this.HasElement(Tw2ParticleElement.Type.LIFETIME))
         {
             const
-                lifetime = this.GetElement(Tw2ParticleElementDeclaration.Type.LIFETIME),
-                position = this.emitParticleOnDeathEmitter ? this.GetElement(Tw2ParticleElementDeclaration.Type.POSITION) : null,
-                velocity = this.emitParticleOnDeathEmitter ? this.GetElement(Tw2ParticleElementDeclaration.Type.VELOCITY) : null;
+                lifetime = this.GetElement(Tw2ParticleElement.Type.LIFETIME),
+                position = this.emitParticleOnDeathEmitter ? this.GetElement(Tw2ParticleElement.Type.POSITION) : null,
+                velocity = this.emitParticleOnDeathEmitter ? this.GetElement(Tw2ParticleElement.Type.VELOCITY) : null;
 
             for (let i = 0; i < this.aliveCount; ++i)
             {
@@ -274,7 +283,7 @@ export class Tw2ParticleSystem
 
         const vec3_0 = Tw2ParticleSystem.global.vec3_0;
 
-        if (this.updateSimulation && this.HasElement(Tw2ParticleElementDeclaration.Type.POSITION) && this.HasElement(Tw2ParticleElementDeclaration.Type.VELOCITY))
+        if (this.updateSimulation && this.HasElement(Tw2ParticleElement.Type.POSITION) && this.HasElement(Tw2ParticleElement.Type.VELOCITY))
         {
             const hasForces = this.applyForce && this.forces.length;
             for (let i = 0; i < this.forces.length; ++i)
@@ -283,9 +292,9 @@ export class Tw2ParticleSystem
             }
 
             const
-                position = this.GetElement(Tw2ParticleElementDeclaration.Type.POSITION),
-                velocity = this.GetElement(Tw2ParticleElementDeclaration.Type.VELOCITY),
-                mass = hasForces ? this.GetElement(Tw2ParticleElementDeclaration.Type.MASS) : null;
+                position = this.GetElement(Tw2ParticleElement.Type.POSITION),
+                velocity = this.GetElement(Tw2ParticleElement.Type.VELOCITY),
+                mass = hasForces ? this.GetElement(Tw2ParticleElement.Type.MASS) : null;
 
             for (let i = 0; i < this.aliveCount; ++i)
             {
@@ -338,11 +347,11 @@ export class Tw2ParticleSystem
             this.GetBoundingBox(this.aabbMin, this.aabbMax);
         }
 
-        if (this.emitParticleDuringLifeEmitter && !(this.HasElement(Tw2ParticleElementDeclaration.Type.POSITION) && this.HasElement(Tw2ParticleElementDeclaration.Type.VELOCITY)) && this.updateSimulation)
+        if (this.emitParticleDuringLifeEmitter && !(this.HasElement(Tw2ParticleElement.Type.POSITION) && this.HasElement(Tw2ParticleElement.Type.VELOCITY)) && this.updateSimulation)
         {
             const
-                position = this.GetElement(Tw2ParticleElementDeclaration.Type.POSITION),
-                velocity = this.GetElement(Tw2ParticleElementDeclaration.Type.VELOCITY);
+                position = this.GetElement(Tw2ParticleElement.Type.POSITION),
+                velocity = this.GetElement(Tw2ParticleElement.Type.VELOCITY);
 
             for (let i = 0; i < this.aliveCount; ++i)
             {
@@ -372,9 +381,9 @@ export class Tw2ParticleSystem
      */
     GetBoundingBox(aabbMin, aabbMax)
     {
-        if (this.aliveCount && this.HasElement(Tw2ParticleElementDeclaration.Type.POSITION))
+        if (this.aliveCount && this.HasElement(Tw2ParticleElement.Type.POSITION))
         {
-            const position = this.GetElement(Tw2ParticleElementDeclaration.Type.POSITION);
+            const position = this.GetElement(Tw2ParticleElement.Type.POSITION);
             aabbMin[0] = position.buffer[position.offset];
             aabbMin[1] = position.buffer[position.offset + 1];
             aabbMin[2] = position.buffer[position.offset + 2];
@@ -404,7 +413,7 @@ export class Tw2ParticleSystem
     {
         const
             eye = mat4.multiply(Tw2ParticleSystem.global.mat4_0, device.projection, device.view), //device.viewInverse;
-            position = this.GetElement(Tw2ParticleElementDeclaration.Type.POSITION),
+            position = this.GetElement(Tw2ParticleElement.Type.POSITION),
             count = this.aliveCount,
             distances = this._distancesBuffer;
 
@@ -466,7 +475,7 @@ export class Tw2ParticleSystem
         if (this.aliveCount === 0) return undefined;
 
         const gl = device.gl;
-        if (this.requiresSorting && this.HasElement(Tw2ParticleElementDeclaration.Type.POSITION) && this.buffers)
+        if (this.requiresSorting && this.HasElement(Tw2ParticleElement.Type.POSITION) && this.buffers)
         {
             this._Sort();
 

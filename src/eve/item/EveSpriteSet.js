@@ -110,8 +110,8 @@ export class EveSpriteSet extends EveObjectSet
     _vertexBuffer = null;
     _indexBuffer = null;
     _instanceBuffer = null;
-    _decl = new Tw2VertexDeclaration();
-    _vdecl = new Tw2VertexDeclaration([["TEXCOORD", 5, 1]]);
+    _decl = null;
+    _vdecl = Tw2VertexDeclaration.from([{usage: "TEXCOORD", usageType: 5, elements: 1}]);
 
 
     /**
@@ -153,7 +153,7 @@ export class EveSpriteSet extends EveObjectSet
         if (this.useQuads === useQuads) return;
         this.useQuads = useQuads;
         this.isSkinned = isSkinned;
-        this._decl.DeclareFromObject(!useQuads ? EveSpriteSet.vertexDeclarations : EveSpriteSet.quadVertexDeclarations);
+        this._decl = Tw2VertexDeclaration.from(!useQuads ? EveSpriteSet.vertexDeclarations : EveSpriteSet.quadVertexDeclarations);
         this._rebuildPending = true;
     }
 
@@ -367,7 +367,7 @@ export class EveSpriteSet extends EveObjectSet
         for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass)
         {
             this.effect.ApplyPass(technique, pass);
-            if (!this._decl.SetDeclaration(this.effect.GetPassInput(technique, pass), 52)) return false;
+            if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), 52)) return false;
             d.ApplyShadowState();
             gl.drawElements(gl.TRIANGLES, this._indexBuffer.count, gl.UNSIGNED_SHORT, 0);
         }
@@ -427,12 +427,12 @@ export class EveSpriteSet extends EveObjectSet
             this.effect.ApplyPass(technique, pass);
             const passInput = this.effect.GetPassInput(technique, pass);
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-            this._vdecl.SetPartialDeclaration(passInput, 4);
+            this._vdecl.SetPartialDeclaration(d, passInput, 4);
             gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
-            const resetData = this._decl.SetPartialDeclaration(passInput, 17 * 4, 0, 1);
+            const resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
             d.ApplyShadowState();
-            d.ext.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
-            this._decl.ResetInstanceDivisors(resetData);
+            gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+            this._decl.ResetInstanceDivisors(d, resetData);
         }
 
         return true;
@@ -503,12 +503,12 @@ export class EveSpriteSet extends EveObjectSet
             this.effect.ApplyPass(technique, pass);
             const passInput = this.effect.GetPassInput(technique, pass);
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-            this._vdecl.SetPartialDeclaration(passInput, 4);
+            this._vdecl.SetPartialDeclaration(d, passInput, 4);
             gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
-            const resetData = this._decl.SetPartialDeclaration(passInput, 17 * 4, 0, 1);
+            const resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
             d.ApplyShadowState();
-            d.ext.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
-            this._decl.ResetInstanceDivisors(resetData);
+            gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
+            this._decl.ResetInstanceDivisors(d, resetData);
         }
 
         return true;
@@ -525,14 +525,14 @@ export class EveSpriteSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        ["TEXCOORD", 5, 2],
-        ["POSITION", 0, 3],
-        ["COLOR", 0, 3],
-        ["TEXCOORD", 0, 1],
-        ["TEXCOORD", 1, 1],
-        ["TEXCOORD", 2, 1],
-        ["TEXCOORD", 3, 1],
-        ["TEXCOORD", 4, 1]
+        {usage: "TEXCOORD", usageIndex: 5, elements: 2},
+        {usage: "POSITION", usageIndex: 0, elements: 3},
+        {usage: "COLOR", usageIndex: 0, elements: 3},
+        {usage: "TEXCOORD", usageIndex: 0, elements: 1},
+        {usage: "TEXCOORD", usageIndex: 1, elements: 1},
+        {usage: "TEXCOORD", usageIndex: 2, elements: 1},
+        {usage: "TEXCOORD", usageIndex: 3, elements: 1},
+        {usage: "TEXCOORD", usageIndex: 4, elements: 1}
     ];
 
     /**
@@ -540,11 +540,11 @@ export class EveSpriteSet extends EveObjectSet
      * @type {*[]}
      */
     static quadVertexDeclarations = [
-        ["POSITION", 0, 3],
-        ["TEXCOORD", 0, 4],
-        ["TEXCOORD", 1, 2],
-        ["COLOR", 0, 4],
-        ["COLOR", 1, 4]
+        {usage: "POSITION", usageIndex: 0, elements: 3},
+        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 1, elements: 2},
+        {usage: "COLOR", usageIndex: 0, elements: 4},
+        {usage: "COLOR", usageIndex: 1, elements: 4}
     ];
 
 }

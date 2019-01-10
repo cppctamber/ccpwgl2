@@ -1,102 +1,97 @@
-import {util, device} from "../../global";
 import {Tw2VertexElement} from "./Tw2VertexElement";
 
 /**
  * Tw2VertexDeclaration
  *
  * @property {Array.<Tw2VertexElement>} elements
- * @property {Array.<Tw2VertexElement>} _elementsSorted
- * @class
+ * @property {Array.<Tw2VertexElement>} elementsSorted
+ * @property {?Number} stride
+ * @property {?Number} vertexSize
  */
 export class Tw2VertexDeclaration
 {
 
     elements = [];
-    _elementsSorted = [];
+    elementsSorted = [];
     stride = null;
+    vertexSize = null;
 
 
     /**
-     * Constructor
-     * @param {Array<Array|Object>} [declarations]
-     * @param {Number} [stride]
+     * Clears the declaration
      */
-    constructor(declarations, stride)
+    Clear()
     {
-        if (stride !== undefined)
-        {
-            this.stride = stride;
-        }
-
-        if (declarations)
-        {
-            this.DeclareFromObject(declarations);
-        }
+        this.elements.splice(0, this.elements.length);
+        this.RebuildHash();
     }
 
     /**
-     * Re-sorts elements
+     * Rebuilds the declaration
      */
     RebuildHash()
     {
-        this._elementsSorted = [];
+        this.elementsSorted.splice(0, this.elementsSorted.length);
+        this.vertexSize = 0;
         for (let i = 0; i < this.elements.length; ++i)
         {
-            this._elementsSorted[i] = this.elements[i];
+            this.elementsSorted.push(this.elements[i]);
+            if (typeof this.elements[i].elements === "number")
+            {
+                this.vertexSize += this.elements[i].elements;
+            }
+            else
+            {
+                this.vertexSize = null;
+            }
         }
-        this._elementsSorted.sort(Tw2VertexDeclaration.CompareDeclarationElements);
+        this.elementsSorted.sort(Tw2VertexDeclaration.CompareDeclarationElements);
+        this.stride = this.vertexSize !== null ? this.vertexSize * 4 : null;
     }
 
     /**
      * Finds an element by it's usage type and usage index
      * @param {Number} usage
      * @param {Number} usageIndex
-     * @returns {Tw2VertexElement|null}
+     * @returns {?Tw2VertexElement}
      */
     FindUsage(usage, usageIndex)
     {
-        for (let i = 0; i < this._elementsSorted.length; ++i)
+        for (let i = 0; i < this.elementsSorted.length; ++i)
         {
-            const e = this._elementsSorted[i];
+            const e = this.elementsSorted[i];
             if (e.usage === usage)
             {
-                if (e.usageIndex === usageIndex)
-                {
-                    return e;
-                }
-                else if (e.usageIndex > usageIndex)
-                {
-                    return null;
-                }
+                if (e.usageIndex === usageIndex) return e;
+                else if (e.usageIndex > usageIndex) return null;
             }
 
-            if (e.usage > usage)
-            {
-                return null;
-            }
+            if (e.usage > usage) return null;
         }
         return null;
     }
 
     /**
-     * SetDeclaration
+     * Sets declarations
+     * TODO: Move to the device?
+     * @param {Tw2Device} device
      * @param {Tw2VertexDeclaration} inputDecl
      * @param {Number} stride
      * @returns {Boolean}
      */
-    SetDeclaration(inputDecl, stride)
+    SetDeclaration(device, inputDecl, stride)
     {
         const gl = device.gl;
 
         let index = 0;
-        for (let i = 0; i < inputDecl._elementsSorted.length; ++i)
+        for (let i = 0; i < inputDecl.elementsSorted.length; ++i)
         {
-            const el = inputDecl._elementsSorted[i];
+            const el = inputDecl.elementsSorted[i];
             if (el.location < 0) continue;
 
             while (true)
             {
-                if (index >= this._elementsSorted.length)
+                if (index >= this.elementsSorted.length)
                 {
                     gl.disableVertexAttribArray(el.location);
                     gl.vertexAttrib4f(el.location, 0, 0, 0, 0);
@@ -104,7 +99,7 @@ export class Tw2VertexDeclaration
                 }
 
                 const
-                    input = this._elementsSorted[index],
+                    input = this.elementsSorted[index],
                     cmp = Tw2VertexDeclaration.CompareDeclarationElements(input, el);
 
                 if (cmp > 0)
@@ -140,29 +135,31 @@ export class Tw2VertexDeclaration
     }
 
     /**
-     * SetPartialDeclaration
+     * Sets a partial declaration
+     * TODO: Move to the device?
+     * @param {Tw2Device} device
      * @param {Tw2VertexDeclaration} inputDecl
      * @param {Number} stride
-     * @param {Number} [usageOffset=0]
-     * @param {Number} [divisor=0]
-     * @returns {Array} ResetData
+     * @param {Number} [usageOffset]
+     * @param {Number} [divisor]
+     * @returns {Array}
      */
-    SetPartialDeclaration(inputDecl, stride, usageOffset = 0, divisor = 0)
+    SetPartialDeclaration(device, inputDecl, stride, usageOffset, divisor)
     {
         const
-            {ext, gl} = device,
+            gl = device.gl,
             resetData = [];
 
         let index = 0;
-        for (let i = 0; i < inputDecl._elementsSorted.length; ++i)
+        for (let i = 0; i < inputDecl.elementsSorted.length; ++i)
         {
-            const el = inputDecl._elementsSorted[i];
+            const el = inputDecl.elementsSorted[i];
             if (el.location < 0) continue;
 
             while (true)
             {
                 const
-                    input = this._elementsSorted[index],
+                    input = this.elementsSorted[index],
                     cmp = Tw2VertexDeclaration.CompareDeclarationElements(input, el, usageOffset);
 
                 if (cmp === 0)
@@ -182,7 +179,7 @@ export class Tw2VertexDeclaration
                             stride,
                             input.offset);
 
-                        ext.vertexAttribDivisor(el.location, divisor);
+                        gl.vertexAttribDivisor(el.location, divisor);
 
                         if (divisor)
                         {
@@ -202,7 +199,7 @@ export class Tw2VertexDeclaration
                 }
 
                 index++;
-                if (index >= this._elementsSorted.length)
+                if (index >= this.elementsSorted.length)
                 {
                     if (!divisor)
                     {
@@ -217,82 +214,20 @@ export class Tw2VertexDeclaration
     }
 
     /**
-     * ResetInstanceDivisors
-     * @param {Array} resetData
+     * Resets instance divisors
+     * TODO: Move to the device?
+     * @param {Tw2Device} device
+     * @param {?Array} [resetData]
      */
-    ResetInstanceDivisors(resetData)
+    ResetInstanceDivisors(device, resetData)
     {
         if (resetData)
         {
             for (let i = 0; i < resetData.length; ++i)
             {
-                device.ext.vertexAttribDivisor(resetData[i], 0);
+                device.gl.vertexAttribDivisor(resetData[i], 0);
             }
         }
-    }
-
-    /**
-     * Sets vertex declarations from an array of arrays, or an array of objects
-     * @param {Array<Array>|Array<Object>} declarations
-     * @param {Number} [stride]
-     */
-    DeclareFromObject(declarations, stride)
-    {
-        this.elements.splice(0, this.elements.length);
-        let currentOffset = 0;
-
-        for (let i = 0; i < declarations.length; i++)
-        {
-            const decl = declarations[i];
-            let usage, usageIndex, type, elements, offset;
-
-            if (util.isArray(decl))
-            {
-                usage = decl[0];
-                usageIndex = decl[1];
-                elements = decl[2];
-                type = decl[3];
-                offset = decl[4];
-            }
-            else
-            {
-                usage = decl.usage;
-                usageIndex = decl.usageIndex;
-                elements = decl.elements;
-                type = decl.type;
-                offset = decl.offset;
-            }
-
-            if (util.isString(usage))
-            {
-                usage = Tw2VertexDeclaration.Type[usage.toUpperCase()];
-            }
-
-            if (util.isNoU(type))
-            {
-                type = "FLOAT";
-            }
-
-            if (util.isString(type))
-            {
-                type = device.gl[type.toUpperCase()];
-            }
-
-            if (util.isNoU(offset))
-            {
-                offset = currentOffset;
-            }
-
-            this.elements.push(new Tw2VertexElement(usage, usageIndex, type, elements, offset));
-            currentOffset += elements * 4;
-        }
-
-        if (stride !== undefined)
-        {
-            this.stride = stride;
-        }
-
-        this.RebuildHash();
     }
 
     /**
@@ -301,7 +236,6 @@ export class Tw2VertexDeclaration
      * @param {Tw2VertexElement} b
      * @param {Number} [usageOffset=0]
      * @returns {Number}
-     * @function
      */
     static CompareDeclarationElements(a, b, usageOffset = 0)
     {
@@ -313,18 +247,29 @@ export class Tw2VertexDeclaration
     }
 
     /**
-     * Vertex Declaration Types
-     * @type {*}
+     * Creates a vertex declaration from a plain object
+     * TODO: Allow preset element offsets
+     * @param {RawVertexDataArray} values
+     * @param {{}} [opt]
+     * @param {Boolean} [opt.skipUpdate]
      */
-    static Type = {
-        POSITION: 0,
-        COLOR: 1,
-        NORMAL: 2,
-        TANGENT: 3,
-        BINORMAL: 4,
-        TEXCOORD: 5,
-        BLENDWEIGHT: 6,
-        BLENDINDICES: 7
-    };
+    static from(values, opt)
+    {
+        const item = new Tw2VertexDeclaration();
+        if (values)
+        {
+            let currentOffset = 0;
+            for (let i = 0; i < values.length; i++)
+            {
+                values[i].offset = currentOffset;
+                item.elements.push(Tw2VertexElement.from(values[i]));
+                currentOffset += values[i].elements * 4;
+            }
+
+            if (!opt || !opt.skipUpdate) item.RebuildHash();
+        }
+
+        return item;
+    }
 
 }

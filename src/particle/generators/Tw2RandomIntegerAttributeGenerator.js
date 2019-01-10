@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {Tw2ParticleElementDeclaration} from "../Tw2ParticleElementDeclaration";
+import {Tw2ParticleElement} from "../Tw2ParticleElement";
 import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 
 /**
@@ -16,7 +16,7 @@ import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
-    elementType = Tw2ParticleElementDeclaration.Type.CUSTOM;
+    elementType = Tw2ParticleElement.Type.CUSTOM;
     customName = "";
     minRange = vec4.create();
     maxRange = vec4.create();
@@ -35,7 +35,7 @@ export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGene
             if
             (
                 ps._elements[i].elementType === this.elementType &&
-                (this.elementType !== Tw2ParticleElementDeclaration.Type.CUSTOM || ps._elements[i].customName === this.customName)
+                (this.elementType !== Tw2ParticleElement.Type.CUSTOM || ps._elements[i].customName === this.customName)
             )
             {
                 this._element = ps._elements[i];

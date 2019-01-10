@@ -369,7 +369,7 @@ export class EveTurretSet extends EveObjectSet
     RebuildCachedData()
     {
         const
-            instancedElement = new Tw2VertexElement(Tw2VertexDeclaration.Type.TEXCOORD, 1, device.gl.FLOAT, 2),
+            instancedElement = Tw2VertexElement.from({usage: "TEXCOORD", usageIndex: 1, elements: 2}),
             meshes = this.geometryResource.meshes,
             active = this.activeAnimation,
             inactive = this.inactiveAnimation;

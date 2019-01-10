@@ -88,13 +88,13 @@ export class Tw2RawData
     }
 
     /**
-     * Tw2RawData factory
+     * Creates raw data from values
      * @param {RawElementArray} [values]
-     * @param {{}} [opt={}]
+     * @param {{}} [opt]
      * @param {boolean} [opt.skipUpdate]
      * @returns {Tw2RawData}
      */
-    static from(values, opt={})
+    static from(values, opt)
     {
         const item = new Tw2RawData();
         if (values)
@@ -104,7 +104,7 @@ export class Tw2RawData
                 item.Declare(values[i][0], values[i][1]);
             }
 
-            if (!opt.skipUpdate) item.Create();
+            if (!opt || !opt.skipUpdate) item.Create();
         }
         return item;
     }

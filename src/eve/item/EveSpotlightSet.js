@@ -83,12 +83,12 @@ export class EveSpotlightSetItem extends EveObjectSetItem
  * @property {String} name                               - The spotlight set's name
  * @property {Boolean} display                           - controls the visibility of the spotlight set, and all it's children
  * @property {Tw2Effect} coneEffect                      - The spotlight set's cone effect
- * @property {Tw2Effect} glowEffect                      - The spotlight set's glow effect
+ * @property {Tw2Effect} glowEffect                      - The spotlight set's glow    effect
  * @property {Array.<EveSpotlightSetItem) spotlightItems - The spotlight set's children
  * @property {WebGLBuffer} _coneVertexBuffer             - Webgl buffer for the spotlight set's cone vertices
  * @property {WebGLBuffer} _spriteVertexBuffer           - Webgl buffer for the spotlight set's sprite/glow vertices
  * @property {WebGLBuffer} _indexBuffer                  - Webgl buffer for the spotlight set
- * @property {Tw2VertexDeclaration} _decl                - The spotlight set's vertex declarations
+ * @property {Tw2VertexDeclaration{ usage: } _decl                - The spotlight set's vertex declarations
  * @class
  */
 export class EveSpotlightSet extends EveObjectSet
@@ -99,7 +99,7 @@ export class EveSpotlightSet extends EveObjectSet
     _coneVertexBuffer = null;
     _spriteVertexBuffer = null;
     _indexBuffer = null;
-    _decl = new Tw2VertexDeclaration(EveSpotlightSet.vertexDeclarations);
+    _decl = Tw2VertexDeclaration.from(EveSpotlightSet.vertexDeclarations);
 
 
     /**
@@ -365,25 +365,29 @@ export class EveSpotlightSet extends EveObjectSet
     {
         if (!effect || !effect.IsGood() || !buffer) return false;
 
-        const stride = 22 * 4;
-        device.SetStandardStates(device.RM_ADDITIVE);
-        device.gl.bindBuffer(device.gl.ARRAY_BUFFER, buffer);
-        device.gl.bindBuffer(device.gl.ELEMENT_ARRAY_BUFFER, spotlightSet._indexBuffer);
+        const
+            d = device,
+            gl = d.gl,
+            stride = 22 * 4;
+
+        d.SetStandardStates(d.RM_ADDITIVE);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, spotlightSet._indexBuffer);
 
         for (let pass = 0; pass < effect.GetPassCount(technique); ++pass)
         {
             effect.ApplyPass(technique, pass);
-            if (!spotlightSet._decl.SetDeclaration(effect.GetPassInput(technique, pass), stride)) return false;
-            device.ApplyShadowState();
-            device.gl.drawElements(device.gl.TRIANGLES, buffer["count"], device.gl.UNSIGNED_SHORT, 0);
+            if (!spotlightSet._decl.SetDeclaration(d, effect.GetPassInput(technique, pass), stride)) return false;
+            d.ApplyShadowState();
+            d.gl.drawElements(gl.TRIANGLES, buffer["count"], gl.UNSIGNED_SHORT, 0);
         }
         return true;
     }
 
     /**
      * Spotlight set item constructor
-     * @type {EveSpotlightSetItem}
-     */
+     * @type {EveSpotlightSetItem}usageIndex:
+     elements:    */
     static Item = EveSpotlightSetItem;
 
     /**
@@ -391,12 +395,12 @@ export class EveSpotlightSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        ["COLOR", 0, 4],
-        ["TEXCOORD", 0, 4],
-        ["TEXCOORD", 1, 4],
-        ["TEXCOORD", 2, 4],
-        ["TEXCOORD", 3, 3],
-        ["TEXCOORD", 4, 3]
+        {usage: "COLOR", usageIndex: 0, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 2, elements: 4},
+        {usage: "TEXCOORD", usageIndex: 3, elements: 3},
+        {usage: "TEXCOORD", usageIndex: 4, elements: 3}
     ];
 
 }

@@ -359,7 +359,7 @@ export class Tw2GeometryRes extends Tw2Resource
 
         const
             d = device,
-            {ext, gl} = d,
+            gl = d.gl,
             mesh = this.meshes[meshIx],
             passCount = effect.GetPassCount(technique);
 
@@ -372,9 +372,9 @@ export class Tw2GeometryRes extends Tw2Resource
             if (passInput.elements.length === 0) continue;
 
             gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
-            mesh.declaration.SetPartialDeclaration(passInput, mesh.declaration.stride);
+            mesh.declaration.SetPartialDeclaration(d, passInput, mesh.declaration.stride);
             gl.bindBuffer(gl.ARRAY_BUFFER, instanceVB);
-            const resetData = instanceDecl.SetPartialDeclaration(passInput, instanceStride, 8, 1);
+            const resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, 8, 1);
             d.ApplyShadowState();
 
             for (let i = 0; i < count; ++i)
@@ -392,10 +392,10 @@ export class Tw2GeometryRes extends Tw2Resource
                         acount += area.count;
                         ++i;
                     }
-                    ext.drawElementsInstanced(gl.TRIANGLES, acount, mesh.indexType, areaStart, instanceCount);
+                    gl.drawElementsInstanced(gl.TRIANGLES, acount, mesh.indexType, areaStart, instanceCount);
                 }
             }
-            instanceDecl.ResetInstanceDivisors(resetData);
+            instanceDecl.ResetInstanceDivisors(d, resetData);
         }
         return true;
     }
@@ -427,7 +427,7 @@ export class Tw2GeometryRes extends Tw2Resource
         {
             effect.ApplyPass(technique, pass);
             const passInput = effect.GetPassInput(technique, pass);
-            if (!mesh.declaration.SetDeclaration(passInput, mesh.declaration.stride))
+            if (!mesh.declaration.SetDeclaration(d, passInput, mesh.declaration.stride))
             {
                 this.OnError(new ErrGeometryMeshEffectBinding({
                     path: this.path,
@@ -489,7 +489,7 @@ export class Tw2GeometryRes extends Tw2Resource
         {
             effect.ApplyPass(technique, pass);
             const passInput = effect.GetPassInput(technique, pass);
-            if (!mesh.declaration.SetDeclaration(passInput, mesh.declaration.stride))
+            if (!mesh.declaration.SetDeclaration(d, passInput, mesh.declaration.stride))
             {
                 this.OnError(new ErrGeometryMeshEffectBinding({
                     path: this.path,
