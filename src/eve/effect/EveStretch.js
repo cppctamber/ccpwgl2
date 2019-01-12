@@ -1,53 +1,62 @@
-import {vec3, mat4, util} from "../../global";
+import {vec3, mat4, util, Tw2BaseClass} from "../../global";
 import {Tw2Float} from "../../core";
 
 /**
  * EveStretch
- *
- * @property {String|number} _id
- * @property {String} name
- * @property {Boolean} display
- * @property {Boolean} update
- * @property {Array.<Tw2CurveSet>} curveSets
- * @property {*} source
- * @property {*} dest
- * @property {*} sourceObject
- * @property {*} destObject
- * @property {*} stretchObject
- * @property {Tw2Float} length
- * @property {number} _time
- * @property {Boolean} _useTransformsForStretch
- * @property {vec3} _sourcePosition
- * @property {vec3} _destinationPosition
- * @property {Boolean} _displaySourceObject
- * @property {mat4} _sourceTransform
- * @property {Boolean} _displayDestObject
- * @property {Boolean} _useTransformsForStretch
- * @property {Boolean} _isNegZForward
- * @class
+ * TODO: Implement "moveCompletion"
+ * TODO: Implement "moveObject"
+ * TODO: Implement "progressCurve"
+ * TODO: Implement "sourceLights"
+ * TODO: Implement "useCurveLod"
+ * @property {Array.<TriCurveSet>} curveSets    - Animation curve sets
+ * @property {Curve|CurveAdapter} dest          - Destination curve
+ * @property {EveTransform} destObject          - Destination object
+ * @property {Tw2Float} length                  - Stretch length
+ * @property {TriCurveSet} moveCompletion       - not implemented
+ * @property {EveTransform} moveObject          - not implemented
+ * @property {Tr2CurveScalar} progressCurve     - not implemented
+ * @property {Curve|CurveAdapter} source        - Source object
+ * @property {Array} sourceLights               - not implemented
+ * @property {EveTransform} sourceObject        - Source object
+ * @property {EveTransform} stretchObject       - Stretch object
+ * @property {Boolean} useCurveLod              - Enables curve LOD
+ * @property {vec3} _destinationPosition        - Destination position
+ * @property {Boolean} _displayDestObject       - Toggles destination object visibility
+ * @property {Boolean} _displaySourceObject     - Toggles source object visibility
+ * @property {Boolean} _isNegZForward           - Identifies if the the negative z axis is forwards
+ * @property {vec3} _sourcePosition             - Source's position
+ * @property {mat4} _sourceTransform            - Source's transform
+ * @property {number} _time                     - The current stretch time
+ * @property {Boolean} _useTransformsForStretch - Toggles using transforms for stretch objects
  */
-export class EveStretch
+export class EveStretch extends Tw2BaseClass
 {
 
-    _id = util.generateID();
-    name = "";
+    // ccp
+    curveSets = [];
+    dest = null;
+    destObject = null;
+    length = new Tw2Float();
+    moveCompletion = null;
+    moveObject = null;
+    progressCurve = null;
+    source = null;
+    sourceLights = [];
+    sourceObject = null;
+    stretchObject = null;
+    useCurveLod = false;
+
+    // ccpwgl
     display = true;
     update = true;
-    curveSets = [];
-    source = null;
-    dest = null;
-    sourceObject = null;
-    destObject = null;
-    stretchObject = null;
-    length = new Tw2Float();
-    _time = 0;
+    _destinationPosition = vec3.create();
+    _displayDestObject = true;
+    _displaySourceObject = true;
+    _isNegZForward = false;
     _useTransformsForStretch = false;
     _sourcePosition = vec3.create();
-    _destinationPosition = vec3.create();
-    _displaySourceObject = true;
     _sourceTransform = null;
-    _displayDestObject = true;
-    _isNegZForward = false;
+    _time = 0;
 
 
     /**
@@ -55,17 +64,31 @@ export class EveStretch
      */
     constructor()
     {
+        super();
         EveStretch.init();
     }
 
     /**
-     * Gets source position
+     * Sets source's position
      * @param {vec3} position
      */
     SetSourcePosition(position)
     {
         this._useTransformsForStretch = false;
-        this._sourcePosition = position;
+        vec3.copy(this._sourcePosition, position);
+    }
+
+    /**
+     * Sets the source's position from a transform
+     * @param {mat4} t
+     * @constructor
+     */
+    SetSourcePositionFromTransform(t)
+    {
+        this._useTransformsForStretch = false;
+        this._sourcePosition[0] = t[12];
+        this._sourcePosition[1] = t[13];
+        this._sourcePosition[2] = t[14];
     }
 
     /**
@@ -74,7 +97,7 @@ export class EveStretch
      */
     SetDestinationPosition(position)
     {
-        this._destinationPosition = position;
+        vec3.copy(this._destinationPosition, position);
     }
 
     /**
@@ -94,21 +117,6 @@ export class EveStretch
     SetIsNegZForward(isNegZForward)
     {
         this._isNegZForward = isNegZForward;
-    }
-
-    /**
-     * Gets the stretches resources
-     * @param {Array} [out=[]]
-     * @return {Array<Tw2Resource>} out
-     */
-    GetResources(out = [])
-    {
-        if (this.source && this.source.GetResources) this.source.GetResources(out);
-        if (this.dest && this.dest.GetResources) this.dest.GetResources(out);
-        if (this.sourceObject && this.sourceObject.GetResources) this.sourceObject.GetResources(out);
-        if (this.destObject && this.destObject.GetResources) this.destObject.GetResources(out);
-        if (this.stretchObject && this.stretchObject.GetResources) this.stretchObject.GetResources(out);
-        return out;
     }
 
     /**
@@ -306,3 +314,35 @@ export class EveStretch
     static global = null;
 
 }
+
+Tw2BaseClass.define(EveStretch, Type =>
+{
+    return {
+        isStaging: true,
+        type: "EveStretch",
+        props: {
+            curveSets: [["TriCurveSet"]],
+            display: Type.BOOLEAN,
+            dest: ["Tr2CurveConstant", "Tr2TranslationAdapter"],
+            destObject: ["EveTransform"],
+            length: ["TriFloat"],
+            moveCompletion: ["TriCurveSet"],
+            moveObject: ["EveTransform"],
+            progressCurve: ["Tr2CurveScalar"],
+            source: ["Tr2CurveConstant", "Tr2TranslationAdapter"],
+            sourceLights: Type.ARRAY,
+            sourceObject: ["EveTransform"],
+            stretchObject: ["EveTransform"],
+            updated: Type.BOOLEAN,
+            useCurveLod: Type.BOOLEAN,
+        },
+        notImplemented: [
+            "moveCompletion",
+            "moveObject",
+            "progressCurve",
+            "sourceLights",
+            "useCurveLod"
+        ]
+    };
+});
+

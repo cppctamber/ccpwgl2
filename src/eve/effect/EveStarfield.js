@@ -1,16 +1,17 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * EveStarfield
+ * TODO: Implement class
  *
- * @parameter {Tr2Effect} effect         -
- * @parameter {Number} maxDist           -
- * @parameter {Number} maxFlashRate      -
- * @parameter {Number} minDist           -
- * @parameter {Number} minFlashIntensity -
- * @parameter {Number} minFlashRate      -
- * @parameter {Number} numStars          -
- * @parameter {Number} seed              -
+ * @property {Tr2Effect} effect         -
+ * @property {Number} maxDist           -
+ * @property {Number} maxFlashRate      -
+ * @property {Number} minDist           -
+ * @property {Number} minFlashIntensity -
+ * @property {Number} minFlashRate      -
+ * @property {Number} numStars          -
+ * @property {Number} seed              -
  */
 export default class EveStarfield extends Tw2BaseClass
 {
@@ -40,7 +41,16 @@ Tw2BaseClass.define(EveStarfield, Type =>
             minFlashRate: Type.NUMBER,
             numStars: Type.NUMBER,
             seed: Type.NUMBER
-        }
+        },
+        notImplemented: [
+            "maxDist",
+            "maxFlashRate",
+            "minDist",
+            "minFlashIntensity",
+            "minFlashRate",
+            "numStars",
+            "seed"
+        ]
     };
 });
 

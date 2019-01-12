@@ -1,68 +1,71 @@
-import {vec3, vec4, mat4, util, device, store} from "../../global";
+import {vec3, vec4, mat4, util, device, store, Tw2BaseClass, RS_COLORWRITEENABLE} from "../../global";
 import {Tw2TextureRes, Tw2RenderTarget} from "../../core";
 import {EveOccluder} from "./EveOccluder";
 
 /**
  * EveLensFlare
- *
- * @property {number|String} _id
- * @property {String} name=
- * @property {Boolean} display
- * @property {Boolean} update
- * @property {Boolean} doOcclusionQueries
- * @property {number} cameraFactor
- * @property {vec3} position
- * @property {Array} flares
- * @property {Array.<EveOccluder>} occluders
- * @property {Array.<EveOccluder>} backgroundOccluders
- * @property {number} occlusionIntensity
- * @property {number} backgroundOcclusionIntensity
- * @property {Array} distanceToEdgeCurves
- * @property {Array} distanceToCenterCurves
- * @property {Array} radialAngleCurves
- * @property {Array} xDistanceToCenter
- * @property {Array} yDistanceToCenter
- * @property {Array} bindings
- * @property {Array.<Tw2CurveSet>} curveSets
- * @property {?Tw2Mesh} mesh
- * @property {vec3} _direction
- * @property {mat4} _transform
- * @property {*} _backBuffer
- * @class
+ * TODO: Handle store
+ * TODO: Handle device
+ * TODO: Handle device specific global variables (TextureRes, Tw2RenderTarget)
+ * TODO: Identify if "curveSets" is deprecated, it never gets used
+ * TODO: Identify if "flares" array is deprecated, newer files don't look to have child flares
+ * TODO: Identify if "_backBuffer" is deprecated, it never gets used
+ * TODO: Identify if "backgroundOccluders" should be implemented
+ * @property {Boolean} display                          -
+ * @property {Boolean} update                           -
+ * @property {Boolean} doOcclusionQueries               -
+ * @property {number} cameraFactor                      -
+ * @property {vec3} position                            -
+ * @property {Array} flares                             -
+ * @property {Array.<EveOccluder>} occluders            -
+ * @property {Array.<EveOccluder>} backgroundOccluders  -
+ * @property {number} occlusionIntensity                -
+ * @property {number} backgroundOcclusionIntensity      -
+ * @property {Array} distanceToEdgeCurves               -
+ * @property {Array} distanceToCenterCurves             -
+ * @property {Array} radialAngleCurves                  -
+ * @property {Array} xDistanceToCenter                  -
+ * @property {Array} yDistanceToCenter                  -
+ * @property {Array} bindings                           -
+ * @property {Array.<Tw2CurveSet>} curveSets            -
+ * @property {?Tw2Mesh} mesh                            -
+ * @property {vec3} _direction                          -
+ * @property {mat4} _transform                          -
+ * @property {*} _backBuffer                            -
  */
-export class EveLensflare
+export class EveLensflare extends Tw2BaseClass
 {
+    // ccp
+    backgroundOccluders = [];
+    bindings = [];
+    distanceToCenterCurves = [];
+    distanceToEdgeCurves = [];
+    mesh = null;
+    occluders = [];
+    position = vec3.create();
+    radialAngleCurves = [];
+    xDistanceToCenter = [];
+    yDistanceToCenter = [];
 
-    _id = util.generateID();
-    name = "";
+    // ccpwgl
     display = true;
     update = true;
     doOcclusionQueries = true;
     cameraFactor = 20;
-    position = vec3.create();
     flares = [];
-    occluders = [];
-    backgroundOccluders = [];
     occlusionIntensity = 1;
     backgroundOcclusionIntensity = 1;
-    distanceToEdgeCurves = [];
-    distanceToCenterCurves = [];
-    radialAngleCurves = [];
-    xDistanceToCenter = [];
-    yDistanceToCenter = [];
-    bindings = [];
     curveSets = [];
-    mesh = null;
     _direction = vec3.create();
     _transform = mat4.create();
     _backBuffer = null;
-
 
     /**
      * Constructor
      */
     constructor()
     {
+        super();
         EveLensflare.init();
     }
 
@@ -97,6 +100,7 @@ export class EveLensflare
 
         const
             d = device,
+            gl = d.gl,
             g = EveLensflare.global;
 
         if (!g.occluderLevels[0].texture || g.occluderLevels[0].width < this.occluders.length * 2)
@@ -121,46 +125,46 @@ export class EveLensflare
 
         g.occluderLevels[g.occludedLevelIndex].Set();
         d.SetStandardStates(d.RM_OPAQUE);
-        d.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        d.gl.clear(d.gl.COLOR_BUFFER_BIT);
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
         g.occluderLevels[g.occludedLevelIndex].Unset();
 
         let samples = 1;
         if (d.antialiasing)
         {
             samples = d.msaaSamples;
-            d.gl.sampleCoverage(1.0 / samples, false);
+            gl.sampleCoverage(1.0 / samples, false);
         }
 
         for (let i = 0; i < this.occluders.length; ++i)
         {
-            d.SetRenderState(d.RS_COLORWRITEENABLE, 8);
-            d.gl.colorMask(false, false, false, true);
-            d.gl.clearColor(0.0, 0.0, 0.0, 0.0);
-            d.gl.clear(d.gl.COLOR_BUFFER_BIT);
+            d.SetRenderState(RS_COLORWRITEENABLE, 8);
+            gl.colorMask(false, false, false, true);
+            gl.clearColor(0.0, 0.0, 0.0, 0.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
 
             // Turn off antialiasing
             if (d.antialiasing)
             {
-                d.gl.enable(d.gl.SAMPLE_COVERAGE);
-                d.gl.sampleCoverage(0.25, false);
+                gl.enable(gl.SAMPLE_COVERAGE);
+                gl.sampleCoverage(0.25, false);
             }
             this.occluders[i].UpdateValue(this._transform, i);
-            if (d.antialiasing) d.gl.disable(d.gl.SAMPLE_COVERAGE);
+            if (d.antialiasing) gl.disable(gl.SAMPLE_COVERAGE);
 
             // Copy back buffer into a texture
-            if (!g.backBuffer.texture) g.backBuffer.Attach(d.gl.createTexture());
-            d.gl.bindTexture(d.gl.TEXTURE_2D, g.backBuffer.texture);
+            if (!g.backBuffer.texture) g.backBuffer.Attach(gl.createTexture());
+            gl.bindTexture(gl.TEXTURE_2D, g.backBuffer.texture);
             if (g.backBuffer.width !== d.viewportWidth || g.backBuffer.height !== d.viewportHeight)
             {
-                d.gl.texImage2D(d.gl.TEXTURE_2D, 0, d.gl.RGBA, d.viewportWidth, d.viewportHeight, 0, d.gl.RGBA, d.gl.UNSIGNED_BYTE, null);
-                d.gl.texParameteri(d.gl.TEXTURE_2D, d.gl.TEXTURE_MAG_FILTER, d.gl.LINEAR);
-                d.gl.texParameteri(d.gl.TEXTURE_2D, d.gl.TEXTURE_MIN_FILTER, d.gl.LINEAR);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, d.viewportWidth, d.viewportHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 g.backBuffer.width = d.viewportWidth;
                 g.backBuffer.height = d.viewportHeight;
             }
-            d.gl.copyTexImage2D(d.gl.TEXTURE_2D, 0, d.alphaBlendBackBuffer ? d.gl.RGBA : d.gl.RGB, 0, 0, g.backBuffer.width, g.backBuffer.height, 0);
-            d.gl.bindTexture(d.gl.TEXTURE_2D, null);
+            gl.copyTexImage2D(gl.TEXTURE_2D, 0, d.alphaBlendBackBuffer ? gl.RGBA : gl.RGB, 0, 0, g.backBuffer.width, g.backBuffer.height, 0);
+            gl.bindTexture(gl.TEXTURE_2D, null);
 
             // Collect samples
             g.occluderLevels[g.occludedLevelIndex].Set();
@@ -168,11 +172,11 @@ export class EveLensflare
             g.occluderLevels[g.occludedLevelIndex].Unset();
         }
 
-        if (d.antialiasing) d.gl.sampleCoverage(1, false);
+        if (d.antialiasing) gl.sampleCoverage(1, false);
 
         g.occluderLevels[(g.occludedLevelIndex + 1) % g.occluderLevels.length].Set();
         const pixels = new Uint8Array(g.occluderLevels[0].width * 4);
-        d.gl.readPixels(0, 0, 2, 1, d.gl.RGBA, d.gl.UNSIGNED_BYTE, pixels);
+        gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
         g.occluderLevels[(g.occludedLevelIndex + 1) % g.occluderLevels.length].Unset();
 
         this.occlusionIntensity = 1;
@@ -341,3 +345,41 @@ export class EveLensflare
     static global = null;
 
 }
+
+Tw2BaseClass.define(EveLensflare, Type =>
+{
+    return {
+        type: "EveLensflare",
+        props: {
+            backgroundOccluders: [["EveOccluder"]],
+            backgroundOcclusionIntensity: Type.NUMBER,
+            bindings: [["TriValueBinding"]],
+            cameraFactor: Type.NUMBER,
+            curveSets: [["Tw2CurveSet"]],
+            display: Type.BOOLEAN,
+            distanceToCenterCurves: [["Tr2CurveScalar"]],
+            distanceToEdgeCurves: [["Tr2CurveScalar"]],
+            doOcclusionQueries: Type.BOOLEAN,
+            flares: ["EveLensflare"],
+            mesh: ["Tr2Mesh"],
+            occluders: [["EveOccluder"]],
+            occlusionIntensity: Type.NUMBER,
+            position: Type.TR_TRANSLATION,
+            radialAngleCurves: [["Tr2CurveScalar"]],
+            update: Type.BOOLEAN,
+            xDistanceToCenter: [["Tr2CurveScalar"]],
+            yDistanceToCenter: Type.ARRAY
+        },
+        bugs: [
+            "Occluder doesn't work for center most flares, which can be seen through ships"
+        ],
+        watch: [
+            "curveSets",
+            "flares",
+            "_backBuffer",
+        ],
+        notImplemented: [
+            "backgroundOccluders"
+        ]
+    };
+});

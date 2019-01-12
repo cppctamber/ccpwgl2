@@ -598,7 +598,7 @@ export class EveTurretSet extends EveObjectSet
                 }
             }
 
-            vec3.copy(this.firingEffect.endPosition, this.targetPosition);
+            this.firingEffect.SetEndPosition(this.targetPosition);
             this.firingEffect.Update(dt);
         }
     }

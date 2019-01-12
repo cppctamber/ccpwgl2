@@ -1,11 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * EveStretch2
+ * TODO: Implement class
  *
- * @parameter {Tr2Effect} effect -
- * @parameter {TriCurveSet} loop -
- * @parameter {Number} quadCount -
+ * @property {Tr2Effect} effect -
+ * @property {TriCurveSet} loop -
+ * @property {Number} quadCount -
  */
 export default class EveStretch2 extends Tw2BaseClass
 {

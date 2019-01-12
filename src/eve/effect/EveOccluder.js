@@ -1,21 +1,17 @@
-import {vec4, mat4, util, device, store} from "../../global";
+import {vec4, mat4, util, device, store, Tw2BaseClass} from "../../global";
 import {Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator} from "../../core";
 
 /**
  * EveOccluder
+ * TODO: Handle device
+ * TODO: Handle device specific global variables (Tw2VertexDeclaration, Tw2Effect)
+ * TODO: Handle store
  *
- * @property {number|String} _id
- * @property {String} name
- * @property {number} value
- * @property {Array.<EveSpriteSet>} sprites
- * @class
+ * @property {Array.<EveTransform>} sprites
  */
-export class EveOccluder
+export class EveOccluder extends Tw2BaseClass
 {
 
-    _id = util.generateID();
-    name = "";
-    value = 1;
     sprites = [];
 
 
@@ -24,6 +20,7 @@ export class EveOccluder
      */
     constructor()
     {
+        super();
         EveOccluder.init();
     }
 
@@ -95,7 +92,7 @@ export class EveOccluder
 
         if (!effect.effectRes || !effect.effectRes.IsGood()) return false;
 
-        effect.parameters.BackBuffer.textureRes = tex;
+        effect.parameters.BackBuffer.SetTextureRes(tex);
         effect.parameters.OccluderIndex.SetValue([index, total, samples]);
 
         d.SetStandardStates(d.RM_ADDITIVE);
@@ -195,3 +192,13 @@ export class EveOccluder
     static global = null;
 
 }
+
+Tw2BaseClass.define(EveOccluder, Type =>
+{
+    return {
+        type: "EveOccluder",
+        props: {
+            sprites: [["EveTransform"]]
+        }
+    };
+});
