@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2Controller
  * @implements StateController
  *
- * @parameter {Boolean} isShared                      -
- * @parameter {Array.<Tr2StateMachine>} stateMachines -
- * @parameter {Array.<StateVariable>} variables       -
+ * @property {Boolean} isShared                      -
+ * @property {Array.<Tr2StateMachine>} stateMachines -
+ * @property {Array.<StateVariable>} variables       -
  */
 export default class Tr2Controller extends Tw2BaseClass
 {

@@ -1,13 +1,13 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataFactionSpotlightSet
  *
- * @parameter {vec4} coneColor    -
- * @parameter {vec4} flareColor   -
- * @parameter {Number} groupIndex -
- * @parameter {vec4} spriteColor  -
+ * @property {vec4} coneColor    -
+ * @property {vec4} flareColor   -
+ * @property {Number} groupIndex -
+ * @property {vec4} spriteColor  -
  */
 export default class EveSOFDataFactionSpotlightSet extends Tw2BaseClass
 {

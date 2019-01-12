@@ -1,16 +1,16 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2PointLight
  *
- * @parameter {Number} brightness     -
- * @parameter {vec4} color            -
- * @parameter {Number} noiseAmplitude -
- * @parameter {Number} noiseFrequency -
- * @parameter {Number} noiseOctaves   -
- * @parameter {vec3} position         -
- * @parameter {Number} radius         -
+ * @property {Number} brightness     -
+ * @property {vec4} color            -
+ * @property {Number} noiseAmplitude -
+ * @property {Number} noiseFrequency -
+ * @property {Number} noiseOctaves   -
+ * @property {vec3} position         -
+ * @property {Number} radius         -
  */
 export default class Tr2PointLight extends Tw2BaseClass
 {

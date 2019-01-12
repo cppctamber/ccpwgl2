@@ -1,29 +1,29 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveBoosterSet2
  * @implements EveObjectSet
  *
- * @parameter {Boolean} alwaysOn             -
- * @parameter {Number} alwaysOnIntensity     -
- * @parameter {Tr2Effect} effect             -
- * @parameter {vec4} glowColor               -
- * @parameter {Number} glowScale             -
- * @parameter {EveSpriteSet} glows           -
- * @parameter {vec4} haloColor               -
- * @parameter {Number} haloScaleX            -
- * @parameter {Number} haloScaleY            -
- * @parameter {vec4} lightColor              -
- * @parameter {Number} lightFlickerAmplitude -
- * @parameter {Number} lightFlickerFrequency -
- * @parameter {Number} lightRadius           -
- * @parameter {vec4} lightWarpColor          -
- * @parameter {Number} lightWarpRadius       -
- * @parameter {Number} symHaloScale          -
- * @parameter {EveTrailsSet} trails          -
- * @parameter {vec4} warpGlowColor           -
- * @parameter {vec4} warpHaloColor           -
+ * @property {Boolean} alwaysOn             -
+ * @property {Number} alwaysOnIntensity     -
+ * @property {Tr2Effect} effect             -
+ * @property {vec4} glowColor               -
+ * @property {Number} glowScale             -
+ * @property {EveSpriteSet} glows           -
+ * @property {vec4} haloColor               -
+ * @property {Number} haloScaleX            -
+ * @property {Number} haloScaleY            -
+ * @property {vec4} lightColor              -
+ * @property {Number} lightFlickerAmplitude -
+ * @property {Number} lightFlickerFrequency -
+ * @property {Number} lightRadius           -
+ * @property {vec4} lightWarpColor          -
+ * @property {Number} lightWarpRadius       -
+ * @property {Number} symHaloScale          -
+ * @property {EveTrailsSet} trails          -
+ * @property {vec4} warpGlowColor           -
+ * @property {vec4} warpHaloColor           -
  */
 export default class EveBoosterSet2 extends Tw2BaseClass
 {

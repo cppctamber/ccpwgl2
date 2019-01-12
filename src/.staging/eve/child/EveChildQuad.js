@@ -1,18 +1,18 @@
 import {mat4, quat, vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildQuad
  * @implements ObjectChild
  *
- * @parameter {Number} brightness    -
- * @parameter {vec4} color           -
- * @parameter {Tr2Effect} effect     -
- * @parameter {mat4} localTransform  -
- * @parameter {Number} minScreenSize -
- * @parameter {quat} rotation        -
- * @parameter {vec3} scaling         -
- * @parameter {vec3} translation     -
+ * @property {Number} brightness    -
+ * @property {vec4} color           -
+ * @property {Tr2Effect} effect     -
+ * @property {mat4} localTransform  -
+ * @property {Number} minScreenSize -
+ * @property {quat} rotation        -
+ * @property {vec3} scaling         -
+ * @property {vec3} translation     -
  */
 export default class EveChildQuad extends Tw2BaseClass
 {

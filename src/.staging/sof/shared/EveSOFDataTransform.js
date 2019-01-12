@@ -1,12 +1,12 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataTransform
  *
- * @parameter {Number} boneIndex -
- * @parameter {vec3} position    -
- * @parameter {quat} rotation    -
+ * @property {Number} boneIndex -
+ * @property {vec3} position    -
+ * @property {quat} rotation    -
  */
 export default class EveSOFDataTransform extends Tw2BaseClass
 {

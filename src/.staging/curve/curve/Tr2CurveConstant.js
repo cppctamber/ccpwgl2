@@ -1,11 +1,11 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveConstant
  * @implements Curve
  *
- * @parameter {vec4} value -
+ * @property {vec4} value -
  */
 export default class Tr2CurveConstant extends Tw2BaseClass
 {

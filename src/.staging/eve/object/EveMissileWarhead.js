@@ -1,21 +1,21 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveMissileWarhead
  *
- * @parameter {Number} acceleration                         -
- * @parameter {Number} durationEjectPhase                   -
- * @parameter {Number} impactDuration                       -
- * @parameter {Number} impactSize                           -
- * @parameter {Number} maxExplosionDistance                 -
- * @parameter {Tr2Mesh} mesh                                -
- * @parameter {Array.<ParticleEmitterGPU>} particleEmitters -
- * @parameter {Number} pathOffsetNoiseScale                 -
- * @parameter {Number} pathOffsetNoiseSpeed                 -
- * @parameter {EveSpriteSet} spriteSet                      -
- * @parameter {Number} startEjectVelocity                   -
- * @parameter {Number} warheadLength                        -
- * @parameter {Number} warheadRadius                        -
+ * @property {Number} acceleration                         -
+ * @property {Number} durationEjectPhase                   -
+ * @property {Number} impactDuration                       -
+ * @property {Number} impactSize                           -
+ * @property {Number} maxExplosionDistance                 -
+ * @property {Tr2Mesh} mesh                                -
+ * @property {Array.<ParticleEmitterGPU>} particleEmitters -
+ * @property {Number} pathOffsetNoiseScale                 -
+ * @property {Number} pathOffsetNoiseSpeed                 -
+ * @property {EveSpriteSet} spriteSet                      -
+ * @property {Number} startEjectVelocity                   -
+ * @property {Number} warheadLength                        -
+ * @property {Number} warheadRadius                        -
  */
 export default class EveMissileWarhead extends Tw2BaseClass
 {

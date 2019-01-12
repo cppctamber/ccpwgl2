@@ -1,36 +1,36 @@
 import {quat, vec3, vec4} from "../../global";
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * EveSpaceScene
  *
- * @parameter {vec4} ambientColor                                                     -
- * @parameter {Tr2Effect} backgroundEffect                                            -
- * @parameter {Array.<EveObject>} backgroundObjects                                   -
- * @parameter {Boolean} backgroundRenderingEnabled                                    -
- * @parameter {Array.<TriCurveSet>} curveSets                                         -
- * @parameter {Boolean} enableShadows                                                 -
- * @parameter {String} envMap1ResPath                                                 -
- * @parameter {String} envMap2ResPath                                                 -
- * @parameter {String} envMapResPath                                                  -
- * @parameter {quat} envMapRotation                                                   -
- * @parameter {Array.<Parameter>} externalParameters                                  -
- * @parameter {vec4} fogColor                                                         -
- * @parameter {Number} fogEnd                                                         -
- * @parameter {Number} fogMax                                                         -
- * @parameter {Number} fogStart                                                       -
- * @parameter {Number} nebulaIntensity                                                -
- * @parameter {Array.<EveEffectRoot2|EveRootTransform|EveObject|EveStation2>} objects -
- * @parameter {String} postProcessPath                                                -
- * @parameter {Boolean} selfShadowOnly                                                -
- * @parameter {Tr2ShLightingManager} shLightingManager                                -
- * @parameter {Number} shadowFadeThreshold                                            -
- * @parameter {Number} shadowThreshold                                                -
- * @parameter {EveStarfield} starfield                                                -
- * @parameter {vec4} sunDiffuseColor                                                  -
- * @parameter {vec4} sunDiffuseColorWithDynamicLights                                 -
- * @parameter {vec3} sunDirection                                                     -
- * @parameter {Boolean} useSunDiffuseColorWithDynamicLights                           -
+ * @property {vec4} ambientColor                                                     -
+ * @property {Tr2Effect} backgroundEffect                                            -
+ * @property {Array.<EveObject>} backgroundObjects                                   -
+ * @property {Boolean} backgroundRenderingEnabled                                    -
+ * @property {Array.<TriCurveSet>} curveSets                                         -
+ * @property {Boolean} enableShadows                                                 -
+ * @property {String} envMap1ResPath                                                 -
+ * @property {String} envMap2ResPath                                                 -
+ * @property {String} envMapResPath                                                  -
+ * @property {quat} envMapRotation                                                   -
+ * @property {Array.<Parameter>} externalParameters                                  -
+ * @property {vec4} fogColor                                                         -
+ * @property {Number} fogEnd                                                         -
+ * @property {Number} fogMax                                                         -
+ * @property {Number} fogStart                                                       -
+ * @property {Number} nebulaIntensity                                                -
+ * @property {Array.<EveEffectRoot2|EveRootTransform|EveObject|EveStation2>} objects -
+ * @property {String} postProcessPath                                                -
+ * @property {Boolean} selfShadowOnly                                                -
+ * @property {Tr2ShLightingManager} shLightingManager                                -
+ * @property {Number} shadowFadeThreshold                                            -
+ * @property {Number} shadowThreshold                                                -
+ * @property {EveStarfield} starfield                                                -
+ * @property {vec4} sunDiffuseColor                                                  -
+ * @property {vec4} sunDiffuseColorWithDynamicLights                                 -
+ * @property {vec3} sunDirection                                                     -
+ * @property {Boolean} useSunDiffuseColorWithDynamicLights                           -
  */
 export default class EveSpaceScene extends Tw2BaseClass
 {

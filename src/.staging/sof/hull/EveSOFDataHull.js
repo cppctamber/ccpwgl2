@@ -1,42 +1,42 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHull
  *
- * @parameter {Array.<EveSOFDataHullArea>} additiveAreas           -
- * @parameter {Array.<EveSOFDataHullAnimation>} animations         -
- * @parameter {vec3} audioPosition                                 -
- * @parameter {Array.<EveSOFDataHullBanner>} banners               -
- * @parameter {EveSOFDataHullBooster} booster                      -
- * @parameter {vec4} boundingSphere                                -
- * @parameter {Number} buildClass                                  -
- * @parameter {Boolean} castShadow                                 -
- * @parameter {String} category                                    -
- * @parameter {Array.<EveSOFDataHullChild>} children               -
- * @parameter {Array.<EveSOFDataHullController>} controllers       -
- * @parameter {Array.<EveSOFDataHullArea>} decalAreas              -
- * @parameter {EveSOFDataPatternPerHull} defaultPattern            -
- * @parameter {String} description                                 -
- * @parameter {Array.<EveSOFDataHullArea>} distortionAreas         -
- * @parameter {Boolean} enableDynamicBoundingSphere                -
- * @parameter {String} geometryResFilePath                         -
- * @parameter {Array.<EveSOFDataHullHazeSet>} hazeSets             -
- * @parameter {Array.<EveSOFDataHullDecal>} hullDecals             -
- * @parameter {Number} impactEffectType                            -
- * @parameter {Array.<EveSOFDataInstancedMesh>} instancedMeshes    -
- * @parameter {Boolean} isSkinned                                  -
- * @parameter {Array.<EveSOFDataHullLocatorSet>} locatorSets       -
- * @parameter {Array.<EveSOFDataHullLocator>} locatorTurrets       -
- * @parameter {String} modelRotationCurvePath                      -
- * @parameter {Array.<EveSOFDataHullArea>} opaqueAreas             -
- * @parameter {Array.<EveSOFDataHullPlaneSet>} planeSets           -
- * @parameter {vec3} shapeEllipsoidCenter                          -
- * @parameter {vec3} shapeEllipsoidRadius                          -
- * @parameter {Array.<EveSOFDataHullSpotlightSet>} spotlightSets   -
- * @parameter {Array.<EveSOFDataHullSpriteLineSet>} spriteLineSets -
- * @parameter {Array.<EveSOFDataHullSpriteSet>} spriteSets         -
- * @parameter {Array.<EveSOFDataHullArea>} transparentAreas        -
+ * @property {Array.<EveSOFDataHullArea>} additiveAreas           -
+ * @property {Array.<EveSOFDataHullAnimation>} animations         -
+ * @property {vec3} audioPosition                                 -
+ * @property {Array.<EveSOFDataHullBanner>} banners               -
+ * @property {EveSOFDataHullBooster} booster                      -
+ * @property {vec4} boundingSphere                                -
+ * @property {Number} buildClass                                  -
+ * @property {Boolean} castShadow                                 -
+ * @property {String} category                                    -
+ * @property {Array.<EveSOFDataHullChild>} children               -
+ * @property {Array.<EveSOFDataHullController>} controllers       -
+ * @property {Array.<EveSOFDataHullArea>} decalAreas              -
+ * @property {EveSOFDataPatternPerHull} defaultPattern            -
+ * @property {String} description                                 -
+ * @property {Array.<EveSOFDataHullArea>} distortionAreas         -
+ * @property {Boolean} enableDynamicBoundingSphere                -
+ * @property {String} geometryResFilePath                         -
+ * @property {Array.<EveSOFDataHullHazeSet>} hazeSets             -
+ * @property {Array.<EveSOFDataHullDecal>} hullDecals             -
+ * @property {Number} impactEffectType                            -
+ * @property {Array.<EveSOFDataInstancedMesh>} instancedMeshes    -
+ * @property {Boolean} isSkinned                                  -
+ * @property {Array.<EveSOFDataHullLocatorSet>} locatorSets       -
+ * @property {Array.<EveSOFDataHullLocator>} locatorTurrets       -
+ * @property {String} modelRotationCurvePath                      -
+ * @property {Array.<EveSOFDataHullArea>} opaqueAreas             -
+ * @property {Array.<EveSOFDataHullPlaneSet>} planeSets           -
+ * @property {vec3} shapeEllipsoidCenter                          -
+ * @property {vec3} shapeEllipsoidRadius                          -
+ * @property {Array.<EveSOFDataHullSpotlightSet>} spotlightSets   -
+ * @property {Array.<EveSOFDataHullSpriteLineSet>} spriteLineSets -
+ * @property {Array.<EveSOFDataHullSpriteSet>} spriteSets         -
+ * @property {Array.<EveSOFDataHullArea>} transparentAreas        -
  */
 export default class EveSOFDataHull extends Tw2BaseClass
 {

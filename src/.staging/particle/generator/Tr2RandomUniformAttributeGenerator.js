@@ -1,14 +1,14 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2RandomUniformAttributeGenerator
  * @implements ParticleAttributeGenerator
  *
- * @parameter {String} customName  -
- * @parameter {String} elementType -
- * @parameter {vec4} maxRange      -
- * @parameter {vec4} minRange      -
+ * @property {String} customName  -
+ * @property {String} elementType -
+ * @property {vec4} maxRange      -
+ * @property {vec4} minRange      -
  */
 export default class Tr2RandomUniformAttributeGenerator extends Tw2BaseClass
 {

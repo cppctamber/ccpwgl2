@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveScalarExpression
  * @implements CurveExpression
  *
- * @parameter {String} expression    -
- * @parameter {Number} input1        -
- * @parameter {Array.<Curve>} inputs -
+ * @property {String} expression    -
+ * @property {Number} input1        -
+ * @property {Array.<Curve>} inputs -
  */
 export default class Tr2CurveScalarExpression extends Tw2BaseClass
 {

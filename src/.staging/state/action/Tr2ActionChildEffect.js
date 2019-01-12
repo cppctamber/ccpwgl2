@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ActionChildEffect
  * @implements StateAction
  *
- * @parameter {String} childName     -
- * @parameter {String} path          -
- * @parameter {Boolean} removeOnStop -
+ * @property {String} childName     -
+ * @property {String} path          -
+ * @property {Boolean} removeOnStop -
  */
 export default class Tr2ActionChildEffect extends Tw2BaseClass
 {

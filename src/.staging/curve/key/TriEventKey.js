@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriEventKey
  * @implements CurveKey
  *
- * @parameter {Number} time  -
- * @parameter {Number} value -
+ * @property {Number} time  -
+ * @property {Number} value -
  */
 export default class TriEventKey extends Tw2BaseClass
 {

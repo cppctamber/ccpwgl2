@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2Model
  *
- * @parameter {Array.<Mesh>} meshes -
+ * @property {Array.<Mesh>} meshes -
  */
 export default class Tr2Model extends Tw2BaseClass
 {

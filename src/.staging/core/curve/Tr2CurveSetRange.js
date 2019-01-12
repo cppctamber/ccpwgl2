@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveSetRange
  *
- * @parameter {Number} endTime   -
- * @parameter {Boolean} looped   -
- * @parameter {Number} startTime -
+ * @property {Number} endTime   -
+ * @property {Boolean} looped   -
+ * @property {Number} startTime -
  */
 export default class Tr2CurveSetRange extends Tw2BaseClass
 {

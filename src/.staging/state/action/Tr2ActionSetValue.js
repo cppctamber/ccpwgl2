@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ActionSetValue
  * @implements StateAction
  *
- * @parameter {String} attribute -
- * @parameter {String} path      -
- * @parameter {String} value     -
+ * @property {String} attribute -
+ * @property {String} path      -
+ * @property {String} value     -
  */
 export default class Tr2ActionSetValue extends Tw2BaseClass
 {

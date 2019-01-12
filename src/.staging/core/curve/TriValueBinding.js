@@ -1,15 +1,15 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriValueBinding
  *
- * @parameter {String} destinationAttribute -
- * @parameter {*} destinationObject         -
- * @parameter {vec4} offset                 -
- * @parameter {Number} scale                -
- * @parameter {String} sourceAttribute      -
- * @parameter {Curve|TriFloat} sourceObject -
+ * @property {String} destinationAttribute -
+ * @property {*} destinationObject         -
+ * @property {vec4} offset                 -
+ * @property {Number} scale                -
+ * @property {String} sourceAttribute      -
+ * @property {Curve|TriFloat} sourceObject -
  */
 export default class TriValueBinding extends Tw2BaseClass
 {

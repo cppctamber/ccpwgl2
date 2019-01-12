@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullBooster
  *
- * @parameter {Boolean} alwaysOn                        -
- * @parameter {Boolean} hasTrails                       -
- * @parameter {Array.<EveSOFDataHullBoosterItem>} items -
+ * @property {Boolean} alwaysOn                        -
+ * @property {Boolean} hasTrails                       -
+ * @property {Array.<EveSOFDataHullBoosterItem>} items -
  */
 export default class EveSOFDataHullBooster extends Tw2BaseClass
 {

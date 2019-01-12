@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullLocatorSet
  *
- * @parameter {Array.<EveSOFDataTransform>} locators -
+ * @property {Array.<EveSOFDataTransform>} locators -
  */
 export default class EveSOFDataHullLocatorSet extends Tw2BaseClass
 {

@@ -1,23 +1,23 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataFaction
  *
- * @parameter {EveSOFDataArea} areaTypes                               -
- * @parameter {Array.<EveSOFDataFactionChild>} children                -
- * @parameter {EveSOFDataFactionColorSet} colorSet                     -
- * @parameter {Array.<EveSOFDataFactionDecal>} decals                  -
- * @parameter {EveSOFDataPatternLayer} defaultPattern                  -
- * @parameter {String} defaultPatternLayer1MaterialName                -
- * @parameter {String} description                                     -
- * @parameter {Number} materialUsageMtl1                               -
- * @parameter {Number} materialUsageMtl2                               -
- * @parameter {Number} materialUsageMtl3                               -
- * @parameter {Number} materialUsageMtl4                               -
- * @parameter {Array.<EveSOFDataFactionPlaneSet>} planeSets            -
- * @parameter {String} resPathInsert                                   -
- * @parameter {Array.<EveSOFDataFactionSpotlightSet>} spotlightSets    -
- * @parameter {EveSOFDataFactionVisibilityGroupSet} visibilityGroupSet -
+ * @property {EveSOFDataArea} areaTypes                               -
+ * @property {Array.<EveSOFDataFactionChild>} children                -
+ * @property {EveSOFDataFactionColorSet} colorSet                     -
+ * @property {Array.<EveSOFDataFactionDecal>} decals                  -
+ * @property {EveSOFDataPatternLayer} defaultPattern                  -
+ * @property {String} defaultPatternLayer1MaterialName                -
+ * @property {String} description                                     -
+ * @property {Number} materialUsageMtl1                               -
+ * @property {Number} materialUsageMtl2                               -
+ * @property {Number} materialUsageMtl3                               -
+ * @property {Number} materialUsageMtl4                               -
+ * @property {Array.<EveSOFDataFactionPlaneSet>} planeSets            -
+ * @property {String} resPathInsert                                   -
+ * @property {Array.<EveSOFDataFactionSpotlightSet>} spotlightSets    -
+ * @property {EveSOFDataFactionVisibilityGroupSet} visibilityGroupSet -
  */
 export default class EveSOFDataFaction extends Tw2BaseClass
 {

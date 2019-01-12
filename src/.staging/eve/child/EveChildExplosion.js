@@ -1,23 +1,23 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildExplosion
  * @implements ObjectChild
  *
- * @parameter {Number} globalDuration                  -
- * @parameter {EveChildContainer} globalExplosion      -
- * @parameter {Number} globalExplosionDelay            -
- * @parameter {vec3} globalScaling                     -
- * @parameter {Number} localDuration                   -
- * @parameter {EveChildContainer} localExplosion       -
- * @parameter {Number} localExplosionInterval          -
- * @parameter {Number} localExplosionIntervalFactor    -
- * @parameter {EveChildContainer} localExplosionShared -
- * @parameter {Array.<ObjectChild>} localExplosions    -
- * @parameter {mat4} localTransform                    -
- * @parameter {quat} rotation                          -
- * @parameter {vec3} scaling                           -
+ * @property {Number} globalDuration                  -
+ * @property {EveChildContainer} globalExplosion      -
+ * @property {Number} globalExplosionDelay            -
+ * @property {vec3} globalScaling                     -
+ * @property {Number} localDuration                   -
+ * @property {EveChildContainer} localExplosion       -
+ * @property {Number} localExplosionInterval          -
+ * @property {Number} localExplosionIntervalFactor    -
+ * @property {EveChildContainer} localExplosionShared -
+ * @property {Array.<ObjectChild>} localExplosions    -
+ * @property {mat4} localTransform                    -
+ * @property {quat} rotation                          -
+ * @property {vec3} scaling                           -
  */
 export default class EveChildExplosion extends Tw2BaseClass
 {

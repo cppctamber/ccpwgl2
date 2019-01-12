@@ -1,15 +1,15 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullPlaneSet
  *
- * @parameter {Number} atlasSize                         -
- * @parameter {Array.<EveSOFDataHullPlaneSetItem>} items -
- * @parameter {String} layer1MapResPath                  -
- * @parameter {String} layer2MapResPath                  -
- * @parameter {String} maskMapResPath                    -
- * @parameter {Boolean} skinned                          -
- * @parameter {Number} usage                             -
+ * @property {Number} atlasSize                         -
+ * @property {Array.<EveSOFDataHullPlaneSetItem>} items -
+ * @property {String} layer1MapResPath                  -
+ * @property {String} layer2MapResPath                  -
+ * @property {String} maskMapResPath                    -
+ * @property {Boolean} skinned                          -
+ * @property {Number} usage                             -
  */
 export default class EveSOFDataHullPlaneSet extends Tw2BaseClass
 {

@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ControllerReference
  * @implements StateController
  *
- * @parameter {String} path -
+ * @property {String} path -
  */
 export default class Tr2ControllerReference extends Tw2BaseClass
 {

@@ -1,26 +1,26 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveShip2
  * @implements EveObject
  *
- * @parameter {Array.<EveObjectSet>} attachments    -
- * @parameter {EveBoosterSet2} boosters             -
- * @parameter {vec3} boundingSphereCenter           -
- * @parameter {Number} boundingSphereRadius         -
- * @parameter {Array.<EveObject>} children          -
- * @parameter {Array.<EveCustomMask>} customMasks   -
- * @parameter {Array.<EveObjectItem>} decals        -
- * @parameter {String} dna                          -
- * @parameter {Array.<EveObjectSet>} locatorSets    -
- * @parameter {Array.<EveObjectItem>} locators      -
- * @parameter {Mesh|Tr2MeshLod} mesh                -
- * @parameter {Curve|CurveAdapter} rotationCurve    -
- * @parameter {Tr2Effect} shadowEffect              -
- * @parameter {vec3} shapeEllipsoidCenter           -
- * @parameter {vec3} shapeEllipsoidRadius           -
- * @parameter {Curve|CurveAdapter} translationCurve -
+ * @property {Array.<EveObjectSet>} attachments    -
+ * @property {EveBoosterSet2} boosters             -
+ * @property {vec3} boundingSphereCenter           -
+ * @property {Number} boundingSphereRadius         -
+ * @property {Array.<EveObject>} children          -
+ * @property {Array.<EveCustomMask>} customMasks   -
+ * @property {Array.<EveObjectItem>} decals        -
+ * @property {String} dna                          -
+ * @property {Array.<EveObjectSet>} locatorSets    -
+ * @property {Array.<EveObjectItem>} locators      -
+ * @property {Mesh|Tr2MeshLod} mesh                -
+ * @property {Curve|CurveAdapter} rotationCurve    -
+ * @property {Tr2Effect} shadowEffect              -
+ * @property {vec3} shapeEllipsoidCenter           -
+ * @property {vec3} shapeEllipsoidRadius           -
+ * @property {Curve|CurveAdapter} translationCurve -
  */
 export default class EveShip2 extends Tw2BaseClass
 {

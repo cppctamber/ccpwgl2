@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2StaticEmitter
  * @implements ParticleEmitter
  *
- * @parameter {String} geometryResourcePath -
- * @parameter {Number} meshIndex            -
+ * @property {String} geometryResourcePath -
+ * @property {Number} meshIndex            -
  */
 export default class Tr2StaticEmitter extends Tw2BaseClass
 {

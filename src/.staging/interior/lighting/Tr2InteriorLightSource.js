@@ -1,20 +1,20 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2InteriorLightSource
  *
- * @parameter {vec4} color                 -
- * @parameter {Number} coneAlphaInner      -
- * @parameter {Number} coneAlphaOuter      -
- * @parameter {vec3} coneDirection         -
- * @parameter {Number} falloff             -
- * @parameter {Number} importanceBias      -
- * @parameter {Number} importanceScale     -
- * @parameter {Tr2KelvinColor} kelvinColor -
- * @parameter {vec3} position              -
- * @parameter {Number} radius              -
- * @parameter {Boolean} useKelvinColor     -
+ * @property {vec4} color                 -
+ * @property {Number} coneAlphaInner      -
+ * @property {Number} coneAlphaOuter      -
+ * @property {vec3} coneDirection         -
+ * @property {Number} falloff             -
+ * @property {Number} importanceBias      -
+ * @property {Number} importanceScale     -
+ * @property {Tr2KelvinColor} kelvinColor -
+ * @property {vec3} position              -
+ * @property {Number} radius              -
+ * @property {Boolean} useKelvinColor     -
  */
 export default class Tr2InteriorLightSource extends Tw2BaseClass
 {

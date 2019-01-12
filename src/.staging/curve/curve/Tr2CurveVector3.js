@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveVector3
  * @implements Curve
  *
- * @parameter {Tr2CurveScalar} x -
- * @parameter {Tr2CurveScalar} y -
- * @parameter {Tr2CurveScalar} z -
+ * @property {Tr2CurveScalar} x -
+ * @property {Tr2CurveScalar} y -
+ * @property {Tr2CurveScalar} z -
  */
 export default class Tr2CurveVector3 extends Tw2BaseClass
 {

@@ -1,14 +1,14 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveCustomMask
  *
- * @parameter {Number} materialIndex -
- * @parameter {vec3} position        -
- * @parameter {quat} rotation        -
- * @parameter {vec3} scaling         -
- * @parameter {vec4} targetMaterials -
+ * @property {Number} materialIndex -
+ * @property {vec3} position        -
+ * @property {quat} rotation        -
+ * @property {vec3} scaling         -
+ * @property {vec4} targetMaterials -
  */
 export default class EveCustomMask extends Tw2BaseClass
 {

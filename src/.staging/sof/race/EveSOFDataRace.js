@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataRace
  *
- * @parameter {EveSOFDataBooster} booster   -
- * @parameter {EveSOFDataRaceDamage} damage -
+ * @property {EveSOFDataBooster} booster   -
+ * @property {EveSOFDataRaceDamage} damage -
  */
 export default class EveSOFDataRace extends Tw2BaseClass
 {

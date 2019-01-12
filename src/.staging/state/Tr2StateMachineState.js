@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2StateMachineState
  *
- * @parameter {Array.<StateAction>} actions                   -
- * @parameter {Tr2SyncToAnimation} finalizer                  -
- * @parameter {Array.<Tr2StateMachineTransition>} transitions -
+ * @property {Array.<StateAction>} actions                   -
+ * @property {Tr2SyncToAnimation} finalizer                  -
+ * @property {Array.<Tr2StateMachineTransition>} transitions -
  */
 export default class Tr2StateMachineState extends Tw2BaseClass
 {

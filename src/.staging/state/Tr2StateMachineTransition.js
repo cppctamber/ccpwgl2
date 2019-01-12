@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2StateMachineTransition
  *
- * @parameter {String} condition -
+ * @property {String} condition -
  */
 export default class Tr2StateMachineTransition extends Tw2BaseClass
 {

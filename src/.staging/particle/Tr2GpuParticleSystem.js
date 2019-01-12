@@ -1,18 +1,18 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2GpuParticleSystem
  * @implements ParticleSystem
  *
- * @parameter {Tr2Effect} clear             -
- * @parameter {Tr2Effect} emit              -
- * @parameter {Tr2Effect} render            -
- * @parameter {Tr2Effect} setDrawParameters -
- * @parameter {Tr2Effect} setSortParameters -
- * @parameter {Tr2Effect} sort              -
- * @parameter {Tr2Effect} sortInner         -
- * @parameter {Tr2Effect} sortStep          -
- * @parameter {Tr2Effect} update            -
+ * @property {Tr2Effect} clear             -
+ * @property {Tr2Effect} emit              -
+ * @property {Tr2Effect} render            -
+ * @property {Tr2Effect} setDrawParameters -
+ * @property {Tr2Effect} setSortParameters -
+ * @property {Tr2Effect} sort              -
+ * @property {Tr2Effect} sortInner         -
+ * @property {Tr2Effect} sortStep          -
+ * @property {Tr2Effect} update            -
  */
 export default class Tr2GpuParticleSystem extends Tw2BaseClass
 {

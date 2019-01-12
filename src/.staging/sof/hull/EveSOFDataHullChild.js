@@ -1,15 +1,15 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullChild
  *
- * @parameter {Number} groupIndex       -
- * @parameter {Number} lowestLodVisible -
- * @parameter {String} redFilePath      -
- * @parameter {quat} rotation           -
- * @parameter {vec3} scaling            -
- * @parameter {vec3} translation        -
+ * @property {Number} groupIndex       -
+ * @property {Number} lowestLodVisible -
+ * @property {String} redFilePath      -
+ * @property {quat} rotation           -
+ * @property {vec3} scaling            -
+ * @property {vec3} translation        -
  */
 export default class EveSOFDataHullChild extends Tw2BaseClass
 {

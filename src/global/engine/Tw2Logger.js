@@ -1,4 +1,4 @@
-import {Tw2EventEmitter} from "../../core/Tw2EventEmitter";
+import Tw2EventEmitter from "../class/Tw2EventEmitter";
 import {assignIfExists, isError} from "../util";
 
 /**

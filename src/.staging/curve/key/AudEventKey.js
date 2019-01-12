@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * AudEventKey
  * @implements CurveKey
  *
- * @parameter {Number} time  -
- * @parameter {Number} value -
+ * @property {Number} time  -
+ * @property {Number} value -
  */
 export default class AudEventKey extends Tw2BaseClass
 {

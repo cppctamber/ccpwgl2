@@ -1,22 +1,22 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveEffectRoot2
  *
- * @parameter {vec3} boundingSphereCenter            -
- * @parameter {Number} boundingSphereRadius          -
- * @parameter {Array.<TriCurveSet>} curveSets        -
- * @parameter {Number} duration                      -
- * @parameter {Boolean} dynamicLOD                   -
- * @parameter {Array.<ObjectChild>} effectChildren   -
- * @parameter {Array.<Tr2PointLight>} lights         -
- * @parameter {Array} observers                      -
- * @parameter {quat} rotation                        -
- * @parameter {vec3} scaling                         -
- * @parameter {vec4} secondaryLightingEmissiveColor  -
- * @parameter {Number} secondaryLightingSphereRadius -
- * @parameter {vec3} translation                     -
+ * @property {vec3} boundingSphereCenter            -
+ * @property {Number} boundingSphereRadius          -
+ * @property {Array.<TriCurveSet>} curveSets        -
+ * @property {Number} duration                      -
+ * @property {Boolean} dynamicLOD                   -
+ * @property {Array.<ObjectChild>} effectChildren   -
+ * @property {Array.<Tr2PointLight>} lights         -
+ * @property {Array} observers                      -
+ * @property {quat} rotation                        -
+ * @property {vec3} scaling                         -
+ * @property {vec4} secondaryLightingEmissiveColor  -
+ * @property {Number} secondaryLightingSphereRadius -
+ * @property {vec3} translation                     -
  */
 export default class EveEffectRoot2 extends Tw2BaseClass
 {

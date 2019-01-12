@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSpriteSet
  * @implements EveObjectSet
  *
- * @parameter {Tr2Effect} effect                 -
- * @parameter {Number} intensity                 -
- * @parameter {Boolean} skinned                  -
- * @parameter {Array.<EveObjectSetItem>} sprites -
+ * @property {Tr2Effect} effect                 -
+ * @property {Number} intensity                 -
+ * @property {Boolean} skinned                  -
+ * @property {Array.<EveObjectSetItem>} sprites -
  */
 export default class EveSpriteSet extends Tw2BaseClass
 {

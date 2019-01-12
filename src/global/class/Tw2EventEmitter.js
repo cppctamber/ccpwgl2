@@ -8,7 +8,7 @@ const PRIVATE = new WeakMap();
  * Tw2EventEmitter
  * @class
  */
-export class Tw2EventEmitter
+export default class Tw2EventEmitter
 {
     /**
      * Emits an event

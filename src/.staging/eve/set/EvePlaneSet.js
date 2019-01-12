@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EvePlaneSet
  * @implements EveObjectSet
  *
- * @parameter {Tr2Effect} effect                -
- * @parameter {Boolean} hideOnLowQuality        -
- * @parameter {Number} pickBufferID             -
- * @parameter {Array.<EveObjectSetItem>} planes -
+ * @property {Tr2Effect} effect                -
+ * @property {Boolean} hideOnLowQuality        -
+ * @property {Number} pickBufferID             -
+ * @property {Array.<EveObjectSetItem>} planes -
  */
 export default class EvePlaneSet extends Tw2BaseClass
 {

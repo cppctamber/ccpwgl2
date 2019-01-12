@@ -1,14 +1,14 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ParticleTurbulenceForce
  * @implements ParticleForce
  *
- * @parameter {vec3} amplitude    -
- * @parameter {vec4} frequency    -
- * @parameter {Number} noiseLevel -
- * @parameter {Number} noiseRatio -
+ * @property {vec3} amplitude    -
+ * @property {vec4} frequency    -
+ * @property {Number} noiseLevel -
+ * @property {Number} noiseRatio -
  */
 export default class Tr2ParticleTurbulenceForce extends Tw2BaseClass
 {

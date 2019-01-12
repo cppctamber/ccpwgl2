@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2PostProcess
  *
- * @parameter {Array.<Tr2Effect>} stages -
+ * @property {Array.<Tr2Effect>} stages -
  */
 export default class Tr2PostProcess extends Tw2BaseClass
 {

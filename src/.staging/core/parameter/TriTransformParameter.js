@@ -1,11 +1,11 @@
 import {quat} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriTransformParameter
  * @implements Parameter
  *
- * @parameter {quat} rotation -
+ * @property {quat} rotation -
  */
 export default class TriTransformParameter extends Tw2BaseClass
 {

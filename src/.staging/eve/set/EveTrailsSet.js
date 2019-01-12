@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveTrailsSet
  * @implements EveObjectSet
  *
- * @parameter {Tr2Effect} effect       -
- * @parameter {String} geometryResPath -
+ * @property {Tr2Effect} effect       -
+ * @property {String} geometryResPath -
  */
 export default class EveTrailsSet extends Tw2BaseClass
 {

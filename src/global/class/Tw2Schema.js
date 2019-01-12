@@ -3,7 +3,7 @@ import {ErrFeatureNotImplemented, Tw2Error} from "../../core/Tw2Error";
 
 /**
  * Stores schemas
- * @type {WeakMap<Function|class, Tw2Schema>}
+ * @type {WeakMap<*, Tw2Schema>}
  */
 const PRIVATE = new WeakMap();
 
@@ -26,7 +26,7 @@ export default class Tw2Schema
 
     /**
      * Constructor
-     * @param {Function|class} Constructor
+     * @param {*} Constructor
      * @param {*} options
      * @param {Function|class} [inherits]
      */
@@ -105,7 +105,7 @@ export default class Tw2Schema
 
     /**
      * Gets a constructor's schema
-     * @param {Function|class} Constructor
+     * @param {*} Constructor
      * @returns {?Tw2Schema}
      */
     static get(Constructor)
@@ -115,7 +115,7 @@ export default class Tw2Schema
 
     /**
      * Sets a constructor's schema
-     * @param {Function|class} Constructor
+     * @param {*} Constructor
      * @param {Tw2Schema} schema
      * @returns {Boolean}
      */
@@ -134,7 +134,7 @@ export default class Tw2Schema
 
     /**
      * Checks if a constructor's schema exits
-     * @param {Function|class} Constructor
+     * @param {*} Constructor
      * @returns {boolean}
      */
     static has(Constructor)
@@ -144,7 +144,7 @@ export default class Tw2Schema
 
     /**
      * Creates a constructor's schema
-     * @param {Function|class} Constructor
+     * @param {*} Constructor
      * @param {Function} func
      * @param {Function} [inherits]
      */

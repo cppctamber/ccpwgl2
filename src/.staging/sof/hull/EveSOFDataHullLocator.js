@@ -1,10 +1,10 @@
 import {mat4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullLocator
  *
- * @parameter {mat4} transform -
+ * @property {mat4} transform -
  */
 export default class EveSOFDataHullLocator extends Tw2BaseClass
 {

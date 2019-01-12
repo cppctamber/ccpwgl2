@@ -1,16 +1,16 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveTacticalOverlay
  *
- * @parameter {Tr2Effect} anchorEffect      -
- * @parameter {Number} arcSegmentMultiplier -
- * @parameter {Tr2Effect} connectorEffect   -
- * @parameter {Number} segmentsHigh         -
- * @parameter {Number} segmentsLow          -
- * @parameter {Number} segmentsMedium       -
- * @parameter {Number} targetMaxSegments    -
- * @parameter {Tr2Effect} velocityEffect    -
+ * @property {Tr2Effect} anchorEffect      -
+ * @property {Number} arcSegmentMultiplier -
+ * @property {Tr2Effect} connectorEffect   -
+ * @property {Number} segmentsHigh         -
+ * @property {Number} segmentsLow          -
+ * @property {Number} segmentsMedium       -
+ * @property {Number} targetMaxSegments    -
+ * @property {Tr2Effect} velocityEffect    -
  */
 export default class EveTacticalOverlay extends Tw2BaseClass
 {

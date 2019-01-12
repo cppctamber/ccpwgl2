@@ -1,18 +1,18 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullHazeSetItem
  *
- * @parameter {Boolean} boosterGainInfluence -
- * @parameter {Number} colorType             -
- * @parameter {Number} hazeBrightness        -
- * @parameter {Number} hazeFalloff           -
- * @parameter {vec3} position                -
- * @parameter {quat} rotation                -
- * @parameter {vec3} scaling                 -
- * @parameter {Number} sourceBrightness      -
- * @parameter {Number} sourceSize            -
+ * @property {Boolean} boosterGainInfluence -
+ * @property {Number} colorType             -
+ * @property {Number} hazeBrightness        -
+ * @property {Number} hazeFalloff           -
+ * @property {vec3} position                -
+ * @property {quat} rotation                -
+ * @property {vec3} scaling                 -
+ * @property {Number} sourceBrightness      -
+ * @property {Number} sourceSize            -
  */
 export default class EveSOFDataHullHazeSetItem extends Tw2BaseClass
 {

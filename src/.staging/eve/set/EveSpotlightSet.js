@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSpotlightSet
  * @implements EveObjectSet
  *
- * @parameter {Tr2Effect} coneEffect                    -
- * @parameter {Tr2Effect} glowEffect                    -
- * @parameter {Number} intensity                        -
- * @parameter {Array.<EveObjectSetItem>} spotlightItems -
+ * @property {Tr2Effect} coneEffect                    -
+ * @property {Tr2Effect} glowEffect                    -
+ * @property {Number} intensity                        -
+ * @property {Array.<EveObjectSetItem>} spotlightItems -
  */
 export default class EveSpotlightSet extends Tw2BaseClass
 {

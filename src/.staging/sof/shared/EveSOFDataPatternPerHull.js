@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataPatternPerHull
  *
- * @parameter {EveSOFDataPatternTransform} transformLayer1 -
- * @parameter {EveSOFDataPatternTransform} transformLayer2 -
+ * @property {EveSOFDataPatternTransform} transformLayer1 -
+ * @property {EveSOFDataPatternTransform} transformLayer2 -
  */
 export default class EveSOFDataPatternPerHull extends Tw2BaseClass
 {

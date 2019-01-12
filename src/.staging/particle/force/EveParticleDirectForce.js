@@ -1,11 +1,11 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveParticleDirectForce
  * @implements ParticleForce
  *
- * @parameter {vec3} force -
+ * @property {vec3} force -
  */
 export default class EveParticleDirectForce extends Tw2BaseClass
 {

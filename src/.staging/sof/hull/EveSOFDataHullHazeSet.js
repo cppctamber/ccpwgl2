@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullHazeSet
  *
- * @parameter {Array.<EveSOFDataHullHazeSetItem>} items -
+ * @property {Array.<EveSOFDataHullHazeSetItem>} items -
  */
 export default class EveSOFDataHullHazeSet extends Tw2BaseClass
 {

@@ -1,37 +1,37 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2GpuSharedEmitter
  * @implements ParticleEmitterGPU
  *
- * @parameter {Number} angle                   -
- * @parameter {vec4} color0                    -
- * @parameter {vec4} color1                    -
- * @parameter {vec4} color2                    -
- * @parameter {vec4} color3                    -
- * @parameter {Number} colorMidpoint           -
- * @parameter {vec3} direction                 -
- * @parameter {Number} drag                    -
- * @parameter {Number} emissionDensity         -
- * @parameter {Number} gravity                 -
- * @parameter {Number} inheritVelocity         -
- * @parameter {Number} innerAngle              -
- * @parameter {Number} maxDisplacement         -
- * @parameter {Number} maxEmissionDensity      -
- * @parameter {Number} maxLifeTime             -
- * @parameter {Number} maxSpeed                -
- * @parameter {Number} minLifeTime             -
- * @parameter {Number} minSpeed                -
- * @parameter {vec3} position                  -
- * @parameter {Number} radius                  -
- * @parameter {Number} rate                    -
- * @parameter {Number} sizeVariance            -
- * @parameter {vec3} sizes                     -
- * @parameter {Number} textureIndex            -
- * @parameter {Number} turbulenceAmplitude     -
- * @parameter {Number} turbulenceFrequency     -
- * @parameter {Number} velocityStretchRotation -
+ * @property {Number} angle                   -
+ * @property {vec4} color0                    -
+ * @property {vec4} color1                    -
+ * @property {vec4} color2                    -
+ * @property {vec4} color3                    -
+ * @property {Number} colorMidpoint           -
+ * @property {vec3} direction                 -
+ * @property {Number} drag                    -
+ * @property {Number} emissionDensity         -
+ * @property {Number} gravity                 -
+ * @property {Number} inheritVelocity         -
+ * @property {Number} innerAngle              -
+ * @property {Number} maxDisplacement         -
+ * @property {Number} maxEmissionDensity      -
+ * @property {Number} maxLifeTime             -
+ * @property {Number} maxSpeed                -
+ * @property {Number} minLifeTime             -
+ * @property {Number} minSpeed                -
+ * @property {vec3} position                  -
+ * @property {Number} radius                  -
+ * @property {Number} rate                    -
+ * @property {Number} sizeVariance            -
+ * @property {vec3} sizes                     -
+ * @property {Number} textureIndex            -
+ * @property {Number} turbulenceAmplitude     -
+ * @property {Number} turbulenceFrequency     -
+ * @property {Number} velocityStretchRotation -
  */
 export default class Tr2GpuSharedEmitter extends Tw2BaseClass
 {

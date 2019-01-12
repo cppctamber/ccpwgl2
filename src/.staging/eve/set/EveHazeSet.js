@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveHazeSet
  * @implements EveObjectSet
  *
- * @parameter {EveObjectSetItem} items -
+ * @property {EveObjectSetItem} items -
  */
 export default class EveHazeSet extends Tw2BaseClass
 {

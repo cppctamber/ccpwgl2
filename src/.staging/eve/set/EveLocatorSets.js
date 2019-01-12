@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveLocatorSets
  * @implements EveObjectSet
  *
- * @parameter {Array} locators -
+ * @property {Array} locators -
  */
 export default class EveLocatorSets extends Tw2BaseClass
 {

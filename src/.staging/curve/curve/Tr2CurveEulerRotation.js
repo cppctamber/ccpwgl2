@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveEulerRotation
  * @implements Curve
  *
- * @parameter {Tr2CurveScalar} pitch -
- * @parameter {Tr2CurveScalar} roll  -
- * @parameter {Tr2CurveScalar} yaw   -
+ * @property {Tr2CurveScalar} pitch -
+ * @property {Tr2CurveScalar} roll  -
+ * @property {Tr2CurveScalar} yaw   -
  */
 export default class Tr2CurveEulerRotation extends Tw2BaseClass
 {

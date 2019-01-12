@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2Effect
  *
- * @parameter {Plain} constParameters        -
- * @parameter {String} effectFilePath        -
- * @parameter {Array} options                -
- * @parameter {Array.<Parameter>} parameters -
- * @parameter {Array.<Parameter>} resources  -
- * @parameter {Array} samplerOverrides       -
+ * @property {Plain} constParameters        -
+ * @property {String} effectFilePath        -
+ * @property {Array} options                -
+ * @property {Array.<Parameter>} parameters -
+ * @property {Array.<Parameter>} resources  -
+ * @property {Array} samplerOverrides       -
  */
 export default class Tr2Effect extends Tw2BaseClass
 {

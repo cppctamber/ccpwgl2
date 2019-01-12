@@ -1,11 +1,11 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2Vector4Parameter
  * @implements Parameter
  *
- * @parameter {vec4} value -
+ * @property {vec4} value -
  */
 export default class Tr2Vector4Parameter extends Tw2BaseClass
 {

@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ActionPlayCurveSet
  * @implements StateAction
  *
- * @parameter {String} curveSetName -
- * @parameter {String} rangeName    -
- * @parameter {Boolean} syncToRange -
+ * @property {String} curveSetName -
+ * @property {String} rangeName    -
+ * @property {Boolean} syncToRange -
  */
 export default class Tr2ActionPlayCurveSet extends Tw2BaseClass
 {

@@ -1,3 +1,4 @@
+export * from "./class";
 export * from "./math";
 export * from "./engine";
 

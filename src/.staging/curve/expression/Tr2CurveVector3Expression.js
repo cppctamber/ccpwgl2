@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveVector3Expression
  * @implements CurveExpression
  *
- * @parameter {String} expressionX                   -
- * @parameter {String} expressionY                   -
- * @parameter {String} expressionZ                   -
- * @parameter {Array.<Curve|CurveExpression>} inputs -
+ * @property {String} expressionX                   -
+ * @property {String} expressionY                   -
+ * @property {String} expressionZ                   -
+ * @property {Array.<Curve|CurveExpression>} inputs -
  */
 export default class Tr2CurveVector3Expression extends Tw2BaseClass
 {

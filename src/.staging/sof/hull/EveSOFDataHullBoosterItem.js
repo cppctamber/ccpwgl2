@@ -1,14 +1,14 @@
 import {mat4, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullBoosterItem
  *
- * @parameter {Number} atlasIndex0 -
- * @parameter {Number} atlasIndex1 -
- * @parameter {vec4} functionality -
- * @parameter {Boolean} hasTrail   -
- * @parameter {mat4} transform     -
+ * @property {Number} atlasIndex0 -
+ * @property {Number} atlasIndex1 -
+ * @property {vec4} functionality -
+ * @property {Boolean} hasTrail   -
+ * @property {mat4} transform     -
  */
 export default class EveSOFDataHullBoosterItem extends Tw2BaseClass
 {

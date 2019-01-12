@@ -1,10 +1,10 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveLocalPositionCurve
  *
- * @parameter {vec3} value -
+ * @property {vec3} value -
  */
 export default class EveLocalPositionCurve extends Tw2BaseClass
 {

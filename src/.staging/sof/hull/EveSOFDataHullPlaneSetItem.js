@@ -1,20 +1,20 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullPlaneSetItem
  *
- * @parameter {Number} boneIndex         -
- * @parameter {vec4} color               -
- * @parameter {Number} groupIndex        -
- * @parameter {vec4} layer1Scroll        -
- * @parameter {vec4} layer1Transform     -
- * @parameter {vec4} layer2Scroll        -
- * @parameter {vec4} layer2Transform     -
- * @parameter {Number} maskMapAtlasIndex -
- * @parameter {vec3} position            -
- * @parameter {quat} rotation            -
- * @parameter {vec3} scaling             -
+ * @property {Number} boneIndex         -
+ * @property {vec4} color               -
+ * @property {Number} groupIndex        -
+ * @property {vec4} layer1Scroll        -
+ * @property {vec4} layer1Transform     -
+ * @property {vec4} layer2Scroll        -
+ * @property {vec4} layer2Transform     -
+ * @property {Number} maskMapAtlasIndex -
+ * @property {vec3} position            -
+ * @property {quat} rotation            -
+ * @property {vec3} scaling             -
  */
 export default class EveSOFDataHullPlaneSetItem extends Tw2BaseClass
 {

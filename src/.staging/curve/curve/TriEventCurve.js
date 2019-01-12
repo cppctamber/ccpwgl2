@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriEventCurve
  * @implements Curve
  *
- * @parameter {Number} extrapolation  -
- * @parameter {Array.<CurveKey>} keys -
- * @parameter {Number} value          -
+ * @property {Number} extrapolation  -
+ * @property {Array.<CurveKey>} keys -
+ * @property {Number} value          -
  */
 export default class TriEventCurve extends Tw2BaseClass
 {

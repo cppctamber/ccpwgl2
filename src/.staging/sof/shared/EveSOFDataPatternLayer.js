@@ -1,17 +1,17 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataPatternLayer
  *
- * @parameter {Boolean} isTargetMtl1      -
- * @parameter {Boolean} isTargetMtl2      -
- * @parameter {Boolean} isTargetMtl3      -
- * @parameter {Boolean} isTargetMtl4      -
- * @parameter {Number} materialSource     -
- * @parameter {Number} projectionTypeU    -
- * @parameter {Number} projectionTypeV    -
- * @parameter {String} textureName        -
- * @parameter {String} textureResFilePath -
+ * @property {Boolean} isTargetMtl1      -
+ * @property {Boolean} isTargetMtl2      -
+ * @property {Boolean} isTargetMtl3      -
+ * @property {Boolean} isTargetMtl4      -
+ * @property {Number} materialSource     -
+ * @property {Number} projectionTypeU    -
+ * @property {Number} projectionTypeV    -
+ * @property {String} textureName        -
+ * @property {String} textureResFilePath -
  */
 export default class EveSOFDataPatternLayer extends Tw2BaseClass
 {

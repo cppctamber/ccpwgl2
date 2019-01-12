@@ -1,15 +1,15 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataBoosterShape
  *
- * @parameter {vec4} color               -
- * @parameter {vec4} noiseAmplitureEnd   -
- * @parameter {vec4} noiseAmplitureStart -
- * @parameter {vec4} noiseFrequency      -
- * @parameter {Number} noiseFunction     -
- * @parameter {Number} noiseSpeed        -
+ * @property {vec4} color               -
+ * @property {vec4} noiseAmplitureEnd   -
+ * @property {vec4} noiseAmplitureStart -
+ * @property {vec4} noiseFrequency      -
+ * @property {Number} noiseFunction     -
+ * @property {Number} noiseSpeed        -
  */
 export default class EveSOFDataBoosterShape extends Tw2BaseClass
 {

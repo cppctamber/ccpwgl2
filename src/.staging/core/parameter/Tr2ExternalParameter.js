@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ExternalParameter
  * @implements Parameter
  *
- * @parameter {String} destinationAttribute -
+ * @property {String} destinationAttribute -
  */
 export default class Tr2ExternalParameter extends Tw2BaseClass
 {

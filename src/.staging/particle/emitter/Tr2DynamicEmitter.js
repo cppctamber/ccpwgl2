@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2DynamicEmitter
  * @implements ParticleEmitter
  *
- * @parameter {Array.<ParticleAttributeGenerator>} generators -
- * @parameter {Number} maxParticles                           -
- * @parameter {Tr2ParticleSystem} particleSystem              -
- * @parameter {Number} rate                                   -
+ * @property {Array.<ParticleAttributeGenerator>} generators -
+ * @property {Number} maxParticles                           -
+ * @property {Tr2ParticleSystem} particleSystem              -
+ * @property {Number} rate                                   -
  */
 export default class Tr2DynamicEmitter extends Tw2BaseClass
 {

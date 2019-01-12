@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ActionPlayMeshAnimation
  * @implements StateAction
  *
- * @parameter {String} animation -
- * @parameter {Number} loops     -
- * @parameter {String} mask      -
+ * @property {String} animation -
+ * @property {Number} loops     -
+ * @property {String} mask      -
  */
 export default class Tr2ActionPlayMeshAnimation extends Tw2BaseClass
 {

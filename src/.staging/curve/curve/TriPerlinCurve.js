@@ -1,16 +1,16 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriPerlinCurve
  * @implements Curve
  *
- * @parameter {Number} N      -
- * @parameter {Number} alpha  -
- * @parameter {Number} beta   -
- * @parameter {Number} offset -
- * @parameter {Number} scale  -
- * @parameter {Number} speed  -
- * @parameter {Number} value  -
+ * @property {Number} N      -
+ * @property {Number} alpha  -
+ * @property {Number} beta   -
+ * @property {Number} offset -
+ * @property {Number} scale  -
+ * @property {Number} speed  -
+ * @property {Number} value  -
  */
 export default class TriPerlinCurve extends Tw2BaseClass
 {

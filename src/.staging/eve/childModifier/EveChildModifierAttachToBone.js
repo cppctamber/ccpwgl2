@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildModifierAttachToBone
  * @implements ChildModifier
  *
- * @parameter {Number} boneIndex -
+ * @property {Number} boneIndex -
  */
 export default class EveChildModifierAttachToBone extends Tw2BaseClass
 {

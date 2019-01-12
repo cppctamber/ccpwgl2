@@ -1,19 +1,19 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveMobile
  *
- * @parameter {Array.<EveObjectSet>} attachments    -
- * @parameter {vec3} boundingSphereCenter           -
- * @parameter {Number} boundingSphereRadius         -
- * @parameter {Array.<EveObject>} children          -
- * @parameter {Array.<StateController>} controllers -
- * @parameter {Array.<TriCurveSet>} curveSets       -
- * @parameter {Array.<EveObjectSet>} locatorSets    -
- * @parameter {Tr2MeshLod} meshLod                  -
- * @parameter {Array.<TriObserverLocal>} observers  -
- * @parameter {Tr2Effect} shadowEffect              -
+ * @property {Array.<EveObjectSet>} attachments    -
+ * @property {vec3} boundingSphereCenter           -
+ * @property {Number} boundingSphereRadius         -
+ * @property {Array.<EveObject>} children          -
+ * @property {Array.<StateController>} controllers -
+ * @property {Array.<TriCurveSet>} curveSets       -
+ * @property {Array.<EveObjectSet>} locatorSets    -
+ * @property {Tr2MeshLod} meshLod                  -
+ * @property {Array.<TriObserverLocal>} observers  -
+ * @property {Tr2Effect} shadowEffect              -
  */
 export default class EveMobile extends Tw2BaseClass
 {

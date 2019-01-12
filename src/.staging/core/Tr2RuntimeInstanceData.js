@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2RuntimeInstanceData

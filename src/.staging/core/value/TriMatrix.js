@@ -1,15 +1,15 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriMatrix
  *
- * @parameter {Number} _11 -
- * @parameter {Number} _22 -
- * @parameter {Number} _23 -
- * @parameter {Number} _32 -
- * @parameter {Number} _33 -
- * @parameter {Number} _42 -
- * @parameter {Number} _43 -
+ * @property {Number} _11 -
+ * @property {Number} _22 -
+ * @property {Number} _23 -
+ * @property {Number} _32 -
+ * @property {Number} _33 -
+ * @property {Number} _42 -
+ * @property {Number} _43 -
  */
 export default class TriMatrix extends Tw2BaseClass
 {

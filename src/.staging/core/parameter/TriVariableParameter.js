@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriVariableParameter
  * @implements Parameter
  *
- * @parameter {String} variableName -
+ * @property {String} variableName -
  */
 export default class TriVariableParameter extends Tw2BaseClass
 {

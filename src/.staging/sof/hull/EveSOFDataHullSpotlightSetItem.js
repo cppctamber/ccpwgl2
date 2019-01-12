@@ -1,17 +1,17 @@
 import {mat4, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullSpotlightSetItem
  *
- * @parameter {Number} boneIndex             -
- * @parameter {Boolean} boosterGainInfluence -
- * @parameter {Number} coneIntensity         -
- * @parameter {Number} flareIntensity        -
- * @parameter {Number} groupIndex            -
- * @parameter {Number} spriteIntensity       -
- * @parameter {vec3} spriteScale             -
- * @parameter {mat4} transform               -
+ * @property {Number} boneIndex             -
+ * @property {Boolean} boosterGainInfluence -
+ * @property {Number} coneIntensity         -
+ * @property {Number} flareIntensity        -
+ * @property {Number} groupIndex            -
+ * @property {Number} spriteIntensity       -
+ * @property {vec3} spriteScale             -
+ * @property {mat4} transform               -
  */
 export default class EveSOFDataHullSpotlightSetItem extends Tw2BaseClass
 {

@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataFactionChild
  *
- * @parameter {Number} groupIndex -
- * @parameter {Boolean} isVisible -
+ * @property {Number} groupIndex -
+ * @property {Boolean} isVisible -
  */
 export default class EveSOFDataFactionChild extends Tw2BaseClass
 {

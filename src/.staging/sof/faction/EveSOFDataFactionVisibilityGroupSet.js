@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataFactionVisibilityGroupSet
  *
- * @parameter {Array.<EveSOFDataGenericString>} visibilityGroups -
+ * @property {Array.<EveSOFDataGenericString>} visibilityGroups -
  */
 export default class EveSOFDataFactionVisibilityGroupSet extends Tw2BaseClass
 {

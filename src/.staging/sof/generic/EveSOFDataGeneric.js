@@ -1,24 +1,24 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataGeneric
  *
- * @parameter {String} areaShaderLocation                               -
- * @parameter {Array.<EveSOFDataGenericShader>} areaShaders             -
- * @parameter {EveSOFDataGenericShader} bannerShader                    -
- * @parameter {EveSOFDataGenericDamage} damage                          -
- * @parameter {String} decalShaderLocation                              -
- * @parameter {Array.<EveSOFDataGenericDecalShader>} decalShaders       -
- * @parameter {EveSOFDataAreaMaterial} genericWreckMaterial             -
- * @parameter {EveSOFDataGenericHullDamage} hullDamage                  -
- * @parameter {Array.<EveSOFDataGenericString>} materialPrefixes        -
- * @parameter {Array.<EveSOFDataGenericString>} patternMaterialPrefixes -
- * @parameter {String} resPathDefaultAlliance                           -
- * @parameter {String} resPathDefaultCeo                                -
- * @parameter {String} resPathDefaultCorp                               -
- * @parameter {String} shaderPrefixAnimated                             -
- * @parameter {EveSOFDataGenericSwarm} swarm                            -
- * @parameter {Array.<EveSOFDataGenericVariant>} variants               -
+ * @property {String} areaShaderLocation                               -
+ * @property {Array.<EveSOFDataGenericShader>} areaShaders             -
+ * @property {EveSOFDataGenericShader} bannerShader                    -
+ * @property {EveSOFDataGenericDamage} damage                          -
+ * @property {String} decalShaderLocation                              -
+ * @property {Array.<EveSOFDataGenericDecalShader>} decalShaders       -
+ * @property {EveSOFDataAreaMaterial} genericWreckMaterial             -
+ * @property {EveSOFDataGenericHullDamage} hullDamage                  -
+ * @property {Array.<EveSOFDataGenericString>} materialPrefixes        -
+ * @property {Array.<EveSOFDataGenericString>} patternMaterialPrefixes -
+ * @property {String} resPathDefaultAlliance                           -
+ * @property {String} resPathDefaultCeo                                -
+ * @property {String} resPathDefaultCorp                               -
+ * @property {String} shaderPrefixAnimated                             -
+ * @property {EveSOFDataGenericSwarm} swarm                            -
+ * @property {Array.<EveSOFDataGenericVariant>} variants               -
  */
 export default class EveSOFDataGeneric extends Tw2BaseClass
 {

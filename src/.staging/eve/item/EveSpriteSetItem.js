@@ -1,19 +1,19 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSpriteSetItem
  * @implements EveObjectSetItem
  *
- * @parameter {Number} blinkPhase -
- * @parameter {Number} blinkRate  -
- * @parameter {Number} boneIndex  -
- * @parameter {vec4} color        -
- * @parameter {Number} falloff    -
- * @parameter {Number} maxScale   -
- * @parameter {Number} minScale   -
- * @parameter {vec3} position     -
- * @parameter {vec4} warpColor    -
+ * @property {Number} blinkPhase -
+ * @property {Number} blinkRate  -
+ * @property {Number} boneIndex  -
+ * @property {vec4} color        -
+ * @property {Number} falloff    -
+ * @property {Number} maxScale   -
+ * @property {Number} minScale   -
+ * @property {vec3} position     -
+ * @property {vec4} warpColor    -
  */
 export default class EveSpriteSetItem extends Tw2BaseClass
 {

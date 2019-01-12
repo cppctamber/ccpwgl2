@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataGenericVariant
  *
- * @parameter {EveSOFDataHullArea} hullArea -
- * @parameter {Boolean} isTransparent       -
+ * @property {EveSOFDataHullArea} hullArea -
+ * @property {Boolean} isTransparent       -
  */
 export default class EveSOFDataGenericVariant extends Tw2BaseClass
 {

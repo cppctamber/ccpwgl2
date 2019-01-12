@@ -1,10 +1,10 @@
 import {vec3} from "../../global";
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * TriObserverLocal
  *
- * @parameter {vec3} front -
+ * @property {vec3} front -
  */
 export default class TriObserverLocal extends Tw2BaseClass
 {

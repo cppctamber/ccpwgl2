@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveParticleDragForce
  * @implements ParticleForce
  *
- * @parameter {Number} drag -
+ * @property {Number} drag -
  */
 export default class EveParticleDragForce extends Tw2BaseClass
 {

@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullSpriteSet
  *
- * @parameter {Array.<EveSOFDataHullSpriteSetItem>} items -
- * @parameter {Boolean} skinned                           -
- * @parameter {String} visibilityGroup                    -
+ * @property {Array.<EveSOFDataHullSpriteSetItem>} items -
+ * @property {Boolean} skinned                           -
+ * @property {String} visibilityGroup                    -
  */
 export default class EveSOFDataHullSpriteSet extends Tw2BaseClass
 {

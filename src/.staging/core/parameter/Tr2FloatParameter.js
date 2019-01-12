@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2FloatParameter
  * @implements Parameter
  *
- * @parameter {Number} value -
+ * @property {Number} value -
  */
 export default class Tr2FloatParameter extends Tw2BaseClass
 {

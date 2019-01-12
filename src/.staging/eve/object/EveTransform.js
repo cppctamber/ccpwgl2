@@ -1,31 +1,31 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveTransform
  * @implements EveObject
  *
- * @parameter {Array.<EveObject>} children                                  -
- * @parameter {Array.<TriCurveSet>} curveSets                               -
- * @parameter {Boolean} display                                             -
- * @parameter {Number} distanceBasedScaleArg1                               -
- * @parameter {Number} distanceBasedScaleArg2                               -
- * @parameter {Boolean} hideOnLowQuality                                    -
- * @parameter {Mesh|Tr2MeshLod} mesh                                        -
- * @parameter {Number} modifier                                             -
- * @parameter {Array.<TriObserverLocal>} observers                          -
- * @parameter {vec3} overrideBoundsMax                                      -
- * @parameter {vec3} overrideBoundsMin                                      -
- * @parameter {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
- * @parameter {Array.<ParticleSystem>} particleSystems                      -
- * @parameter {quat} rotation                                               -
- * @parameter {vec3} scaling                                                -
- * @parameter {Number} sortValueMultiplier                                  -
- * @parameter {vec3} translation                                            -
- * @parameter {Boolean} update                                              -
- * @parameter {Boolean} useDistanceBasedScale                               -
- * @parameter {Boolean} useLodLevel                                         -
- * @parameter {Number} visibilityThreshold                                  -
+ * @property {Array.<EveObject>} children                                  -
+ * @property {Array.<TriCurveSet>} curveSets                               -
+ * @property {Boolean} display                                             -
+ * @property {Number} distanceBasedScaleArg1                               -
+ * @property {Number} distanceBasedScaleArg2                               -
+ * @property {Boolean} hideOnLowQuality                                    -
+ * @property {Mesh|Tr2MeshLod} mesh                                        -
+ * @property {Number} modifier                                             -
+ * @property {Array.<TriObserverLocal>} observers                          -
+ * @property {vec3} overrideBoundsMax                                      -
+ * @property {vec3} overrideBoundsMin                                      -
+ * @property {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
+ * @property {Array.<ParticleSystem>} particleSystems                      -
+ * @property {quat} rotation                                               -
+ * @property {vec3} scaling                                                -
+ * @property {Number} sortValueMultiplier                                  -
+ * @property {vec3} translation                                            -
+ * @property {Boolean} update                                              -
+ * @property {Boolean} useDistanceBasedScale                               -
+ * @property {Boolean} useLodLevel                                         -
+ * @property {Number} visibilityThreshold                                  -
  */
 export default class EveTransform extends Tw2BaseClass
 {

@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriFloat
  *
- * @parameter {Number} value -
+ * @property {Number} value -
  */
 export default class TriFloat extends Tw2BaseClass
 {

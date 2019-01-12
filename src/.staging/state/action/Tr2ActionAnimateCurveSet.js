@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ActionAnimateCurveSet
  * @implements StateAction
  *
- * @parameter {TriCurveSet} curveSet -
- * @parameter {String} value         -
+ * @property {TriCurveSet} curveSet -
+ * @property {String} value         -
  */
 export default class Tr2ActionAnimateCurveSet extends Tw2BaseClass
 {

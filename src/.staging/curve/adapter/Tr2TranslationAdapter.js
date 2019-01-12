@@ -1,11 +1,11 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2TranslationAdapter
  * @implements CurveAdapter
  *
- * @parameter {vec3} value -
+ * @property {vec3} value -
  */
 export default class Tr2TranslationAdapter extends Tw2BaseClass
 {

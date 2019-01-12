@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullController
  *
- * @parameter {String} path -
+ * @property {String} path -
  */
 export default class EveSOFDataHullController extends Tw2BaseClass
 {

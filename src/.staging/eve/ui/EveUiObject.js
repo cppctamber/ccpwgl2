@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveUiObject
  *
- * @parameter {Number} boundingSphereRadius -
- * @parameter {Tr2Mesh} mesh                -
- * @parameter {Number} modelScale           -
+ * @property {Number} boundingSphereRadius -
+ * @property {Tr2Mesh} mesh                -
+ * @property {Number} modelScale           -
  */
 export default class EveUiObject extends Tw2BaseClass
 {

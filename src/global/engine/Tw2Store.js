@@ -1,5 +1,5 @@
 import {isString, isPlain, isArray, isFunction, toArray, isUndefined, enableUUID} from "../util";
-import {Tw2EventEmitter} from "../../core/Tw2EventEmitter";
+import Tw2EventEmitter from "../class/Tw2EventEmitter";
 import {logger} from "./Tw2Logger";
 import {resMan} from "./Tw2ResMan";
 

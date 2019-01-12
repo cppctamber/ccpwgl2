@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveCurveLineSet
  * @implements EveObjectSet
  *
- * @parameter {Tr2Effect} lineEffect -
- * @parameter {Tr2Effect} pickEffect -
+ * @property {Tr2Effect} lineEffect -
+ * @property {Tr2Effect} pickEffect -
  */
 export default class EveCurveLineSet extends Tw2BaseClass
 {

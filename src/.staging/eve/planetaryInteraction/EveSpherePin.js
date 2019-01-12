@@ -1,21 +1,21 @@
 import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSpherePin
  * @implements EveObject
  *
- * @parameter {vec3} centerNormal             -
- * @parameter {vec4} color                    -
- * @parameter {Array.<TriCurveSet>} curveSets -
- * @parameter {Boolean} enablePicking         -
- * @parameter {String} geometryResPath        -
- * @parameter {vec4} pinColor                 -
- * @parameter {Tr2Effect} pinEffect           -
- * @parameter {Number} pinMaxRadius           -
- * @parameter {Number} pinRadius              -
- * @parameter {Number} pinRotation            -
- * @parameter {Number} sortValueMultiplier    -
+ * @property {vec3} centerNormal             -
+ * @property {vec4} color                    -
+ * @property {Array.<TriCurveSet>} curveSets -
+ * @property {Boolean} enablePicking         -
+ * @property {String} geometryResPath        -
+ * @property {vec4} pinColor                 -
+ * @property {Tr2Effect} pinEffect           -
+ * @property {Number} pinMaxRadius           -
+ * @property {Number} pinRadius              -
+ * @property {Number} pinRotation            -
+ * @property {Number} sortValueMultiplier    -
  */
 export default class EveSpherePin extends Tw2BaseClass
 {

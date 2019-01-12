@@ -1,22 +1,22 @@
 import {vec2, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataGenericHullDamage
  *
- * @parameter {Number} hullParticleAngle               -
- * @parameter {vec4} hullParticleColor0                -
- * @parameter {vec4} hullParticleColor1                -
- * @parameter {vec4} hullParticleColor2                -
- * @parameter {Number} hullParticleColorMidpoint       -
- * @parameter {Number} hullParticleDrag                -
- * @parameter {vec2} hullParticleMinMaxLifeTime        -
- * @parameter {vec2} hullParticleMinMaxSpeed           -
- * @parameter {Number} hullParticleRate                -
- * @parameter {vec4} hullParticleSizes                 -
- * @parameter {Number} hullParticleTextureIndex        -
- * @parameter {Number} hullParticleTurbulenceAmplitude -
- * @parameter {Number} hullParticleTurbulenceFrequency -
+ * @property {Number} hullParticleAngle               -
+ * @property {vec4} hullParticleColor0                -
+ * @property {vec4} hullParticleColor1                -
+ * @property {vec4} hullParticleColor2                -
+ * @property {Number} hullParticleColorMidpoint       -
+ * @property {Number} hullParticleDrag                -
+ * @property {vec2} hullParticleMinMaxLifeTime        -
+ * @property {vec2} hullParticleMinMaxSpeed           -
+ * @property {Number} hullParticleRate                -
+ * @property {vec4} hullParticleSizes                 -
+ * @property {Number} hullParticleTextureIndex        -
+ * @property {Number} hullParticleTurbulenceAmplitude -
+ * @property {Number} hullParticleTurbulenceFrequency -
  */
 export default class EveSOFDataGenericHullDamage extends Tw2BaseClass
 {

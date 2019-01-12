@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * EveSOFData
  *
- * @parameter {Array.<EveSOFDataFaction>} faction   -
- * @parameter {EveSOFDataGeneric} generic           -
- * @parameter {Array.<EveSOFDataHull>} hull         -
- * @parameter {Array.<EveSOFDataMaterial>} material -
- * @parameter {Array.<EveSOFDataPattern>} pattern   -
- * @parameter {Array.<EveSOFDataRace>} race         -
+ * @property {Array.<EveSOFDataFaction>} faction   -
+ * @property {EveSOFDataGeneric} generic           -
+ * @property {Array.<EveSOFDataHull>} hull         -
+ * @property {Array.<EveSOFDataMaterial>} material -
+ * @property {Array.<EveSOFDataPattern>} pattern   -
+ * @property {Array.<EveSOFDataRace>} race         -
  */
 export default class EveSOFData extends Tw2BaseClass
 {

@@ -1,19 +1,19 @@
 import {quat, vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EvePlaneSetItem
  * @implements EveObjectSetItem
  *
- * @parameter {vec4} color           -
- * @parameter {vec4} layer1Scroll    -
- * @parameter {vec4} layer1Transform -
- * @parameter {vec4} layer2Scroll    -
- * @parameter {vec4} layer2Transform -
- * @parameter {Number} maskAtlasID   -
- * @parameter {vec3} position        -
- * @parameter {quat} rotation        -
- * @parameter {vec3} scaling         -
+ * @property {vec4} color           -
+ * @property {vec4} layer1Scroll    -
+ * @property {vec4} layer1Transform -
+ * @property {vec4} layer2Scroll    -
+ * @property {vec4} layer2Transform -
+ * @property {Number} maskAtlasID   -
+ * @property {vec3} position        -
+ * @property {quat} rotation        -
+ * @property {vec3} scaling         -
  */
 export default class EvePlaneSetItem extends Tw2BaseClass
 {

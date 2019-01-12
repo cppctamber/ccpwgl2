@@ -4,7 +4,7 @@ import {store} from "./Tw2Store";
 import {resMan} from "./Tw2ResMan";
 import {Tw2Effect} from "../../core/mesh/Tw2Effect";
 import {Tw2VertexDeclaration} from "../../core/vertex";
-import {Tw2EventEmitter} from "../../core/Tw2EventEmitter";
+import Tw2EventEmitter from "../class/Tw2EventEmitter";
 import {
     RM_ANY,
     RM_OPAQUE,

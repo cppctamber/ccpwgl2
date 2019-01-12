@@ -1,13 +1,13 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveMissile
  *
- * @parameter {vec3} boundingSphereCenter                   -
- * @parameter {Number} boundingSphereRadius                 -
- * @parameter {Tr2TranslationAdapter} modelTranslationCurve -
- * @parameter {Array.<EveMissileWarhead>} warheads          -
+ * @property {vec3} boundingSphereCenter                   -
+ * @property {Number} boundingSphereRadius                 -
+ * @property {Tr2TranslationAdapter} modelTranslationCurve -
+ * @property {Array.<EveMissileWarhead>} warheads          -
  */
 export default class EveMissile extends Tw2BaseClass
 {

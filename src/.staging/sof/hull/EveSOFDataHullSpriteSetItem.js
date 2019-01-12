@@ -1,18 +1,18 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullSpriteSetItem
  *
- * @parameter {Number} blinkPhase -
- * @parameter {Number} blinkRate  -
- * @parameter {Number} boneIndex  -
- * @parameter {Number} colorType  -
- * @parameter {Number} falloff    -
- * @parameter {Number} intensity  -
- * @parameter {Number} maxScale   -
- * @parameter {Number} minScale   -
- * @parameter {vec3} position     -
+ * @property {Number} blinkPhase -
+ * @property {Number} blinkRate  -
+ * @property {Number} boneIndex  -
+ * @property {Number} colorType  -
+ * @property {Number} falloff    -
+ * @property {Number} intensity  -
+ * @property {Number} maxScale   -
+ * @property {Number} minScale   -
+ * @property {vec3} position     -
  */
 export default class EveSOFDataHullSpriteSetItem extends Tw2BaseClass
 {

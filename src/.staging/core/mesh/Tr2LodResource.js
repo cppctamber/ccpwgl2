@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2LodResource
  *
- * @parameter {String} highDetailResPath   -
- * @parameter {String} lowDetailResPath    -
- * @parameter {String} mediumDetailResPath -
+ * @property {String} highDetailResPath   -
+ * @property {String} lowDetailResPath    -
+ * @property {String} mediumDetailResPath -
  */
 export default class Tr2LodResource extends Tw2BaseClass
 {

@@ -1,12 +1,12 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataRaceDamage
  *
- * @parameter {Array.<EveSOFDataParameter>} armorImpactParameters  -
- * @parameter {Array.<EveSOFDataTexture>} armorImpactTextures      -
- * @parameter {Array.<EveSOFDataParameter>} shieldImpactParameters -
- * @parameter {Array.<EveSOFDataTexture>} shieldImpactTextures     -
+ * @property {Array.<EveSOFDataParameter>} armorImpactParameters  -
+ * @property {Array.<EveSOFDataTexture>} armorImpactTextures      -
+ * @property {Array.<EveSOFDataParameter>} shieldImpactParameters -
+ * @property {Array.<EveSOFDataTexture>} shieldImpactTextures     -
  */
 export default class EveSOFDataRaceDamage extends Tw2BaseClass
 {

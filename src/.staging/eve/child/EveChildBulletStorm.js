@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildBulletStorm
  * @implements ObjectChild
  *
- * @parameter {Tr2Effect} effect        -
- * @parameter {Number} multiplier       -
- * @parameter {Number} range            -
- * @parameter {String} sourceLocatorSet -
- * @parameter {Number} speed            -
+ * @property {Tr2Effect} effect        -
+ * @property {Number} multiplier       -
+ * @property {Number} range            -
+ * @property {String} sourceLocatorSet -
+ * @property {Number} speed            -
  */
 export default class EveChildBulletStorm extends Tw2BaseClass
 {

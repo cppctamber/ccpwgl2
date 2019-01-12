@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ParticleElementDeclaration
  *
- * @parameter {String} customName  -
- * @parameter {Number} dimension   -
- * @parameter {String} elementType -
- * @parameter {Number} usageIndex  -
- * @parameter {Boolean} usedByGPU  -
+ * @property {String} customName  -
+ * @property {Number} dimension   -
+ * @property {String} elementType -
+ * @property {Number} usageIndex  -
+ * @property {Boolean} usedByGPU  -
  */
 export default class Tr2ParticleElementDeclaration extends Tw2BaseClass
 {

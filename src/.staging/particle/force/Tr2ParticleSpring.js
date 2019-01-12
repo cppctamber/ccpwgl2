@@ -1,12 +1,12 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ParticleSpring
  * @implements ParticleForce
  *
- * @parameter {vec3} position         -
- * @parameter {Number} springConstant -
+ * @property {vec3} position         -
+ * @property {Number} springConstant -
  */
 export default class Tr2ParticleSpring extends Tw2BaseClass
 {

@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveColor
  * @implements Curve
  *
- * @parameter {Tr2CurveScalar} a -
- * @parameter {Tr2CurveScalar} b -
- * @parameter {Tr2CurveScalar} g -
- * @parameter {Tr2CurveScalar} r -
+ * @property {Tr2CurveScalar} a -
+ * @property {Tr2CurveScalar} b -
+ * @property {Tr2CurveScalar} g -
+ * @property {Tr2CurveScalar} r -
  */
 export default class Tr2CurveColor extends Tw2BaseClass
 {

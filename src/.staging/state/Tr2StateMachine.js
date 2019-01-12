@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2StateMachine
  *
- * @parameter {Number} startState                   -
- * @parameter {Array.<Tr2StateMachineState>} states -
+ * @property {Number} startState                   -
+ * @property {Array.<Tr2StateMachineState>} states -
  */
 export default class Tr2StateMachine extends Tw2BaseClass
 {

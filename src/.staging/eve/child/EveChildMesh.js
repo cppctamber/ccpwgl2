@@ -1,23 +1,23 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildMesh
  * @implements ObjectChild
  *
- * @parameter {Boolean} display                          -
- * @parameter {mat4} localTransform                      -
- * @parameter {Number} lowestLodVisible                  -
- * @parameter {Mesh} mesh                                -
- * @parameter {Number} minScreenSize                     -
- * @parameter {quat} rotation                            -
- * @parameter {vec3} scaling                             -
- * @parameter {Number} sortValueOffset                   -
- * @parameter {Boolean} staticTransform                  -
- * @parameter {Array.<ChildModifier>} transformModifiers -
- * @parameter {vec3} translation                         -
- * @parameter {Boolean} useSRT                           -
- * @parameter {Boolean} useSpaceObjectData               -
+ * @property {Boolean} display                          -
+ * @property {mat4} localTransform                      -
+ * @property {Number} lowestLodVisible                  -
+ * @property {Mesh} mesh                                -
+ * @property {Number} minScreenSize                     -
+ * @property {quat} rotation                            -
+ * @property {vec3} scaling                             -
+ * @property {Number} sortValueOffset                   -
+ * @property {Boolean} staticTransform                  -
+ * @property {Array.<ChildModifier>} transformModifiers -
+ * @property {vec3} translation                         -
+ * @property {Boolean} useSRT                           -
+ * @property {Boolean} useSpaceObjectData               -
  */
 export default class EveChildMesh extends Tw2BaseClass
 {

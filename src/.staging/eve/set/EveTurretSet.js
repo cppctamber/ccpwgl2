@@ -1,32 +1,32 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveTurretSet
  * @implements EveObjectSet
  *
- * @parameter {Number} bottomClipHeight         -
- * @parameter {vec4} boundingSphere             -
- * @parameter {Boolean} chooseRandomLocator     -
- * @parameter {Number} cyclingFireGroupCount    -
- * @parameter {String} firingEffectResPath      -
- * @parameter {String} geometryResPath          -
- * @parameter {Number} impactSize               -
- * @parameter {Boolean} laserMissBehaviour      -
- * @parameter {String} locatorName              -
- * @parameter {Number} maxCyclingFirePos        -
- * @parameter {Boolean} projectileMissBehaviour -
- * @parameter {Number} sysBoneHeight            -
- * @parameter {Number} sysBonePitch01Factor     -
- * @parameter {Number} sysBonePitch02Factor     -
- * @parameter {Number} sysBonePitchFactor       -
- * @parameter {Number} sysBonePitchMax          -
- * @parameter {Number} sysBonePitchMin          -
- * @parameter {Number} sysBonePitchOffset       -
- * @parameter {Tr2Effect} turretEffect          -
- * @parameter {Boolean} updatePitchPose         -
- * @parameter {Boolean} useDynamicBounds        -
- * @parameter {Boolean} useRandomFiringDelay    -
+ * @property {Number} bottomClipHeight         -
+ * @property {vec4} boundingSphere             -
+ * @property {Boolean} chooseRandomLocator     -
+ * @property {Number} cyclingFireGroupCount    -
+ * @property {String} firingEffectResPath      -
+ * @property {String} geometryResPath          -
+ * @property {Number} impactSize               -
+ * @property {Boolean} laserMissBehaviour      -
+ * @property {String} locatorName              -
+ * @property {Number} maxCyclingFirePos        -
+ * @property {Boolean} projectileMissBehaviour -
+ * @property {Number} sysBoneHeight            -
+ * @property {Number} sysBonePitch01Factor     -
+ * @property {Number} sysBonePitch02Factor     -
+ * @property {Number} sysBonePitchFactor       -
+ * @property {Number} sysBonePitchMax          -
+ * @property {Number} sysBonePitchMin          -
+ * @property {Number} sysBonePitchOffset       -
+ * @property {Tr2Effect} turretEffect          -
+ * @property {Boolean} updatePitchPose         -
+ * @property {Boolean} useDynamicBounds        -
+ * @property {Boolean} useRandomFiringDelay    -
  */
 export default class EveTurretSet extends Tw2BaseClass
 {

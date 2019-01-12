@@ -1,15 +1,15 @@
 import {mat4, vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSpotlightSetItem
  * @implements EveObjectSetItem
  *
- * @parameter {vec4} coneColor   -
- * @parameter {vec4} flareColor  -
- * @parameter {vec4} spriteColor -
- * @parameter {vec3} spriteScale -
- * @parameter {mat4} transform   -
+ * @property {vec4} coneColor   -
+ * @property {vec4} flareColor  -
+ * @property {vec4} spriteColor -
+ * @property {vec3} spriteScale -
+ * @property {mat4} transform   -
  */
 export default class EveSpotlightSetItem extends Tw2BaseClass
 {

@@ -1,34 +1,34 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataBooster
  *
- * @parameter {vec4} glowColor                    -
- * @parameter {Number} glowScale                  -
- * @parameter {String} gradient0ResPath           -
- * @parameter {String} gradient1ResPath           -
- * @parameter {vec4} haloColor                    -
- * @parameter {Number} haloScaleX                 -
- * @parameter {Number} haloScaleY                 -
- * @parameter {vec4} lightColor                   -
- * @parameter {Number} lightFlickerAmplitude      -
- * @parameter {Number} lightFlickerFrequency      -
- * @parameter {Number} lightRadius                -
- * @parameter {vec4} lightWarpColor               -
- * @parameter {Number} lightWarpRadius            -
- * @parameter {EveSOFDataBoosterShape} shape0     -
- * @parameter {EveSOFDataBoosterShape} shape1     -
- * @parameter {Number} shapeAtlasCount            -
- * @parameter {Number} shapeAtlasHeight           -
- * @parameter {String} shapeAtlasResPath          -
- * @parameter {Number} symHaloScale               -
- * @parameter {vec4} trailColor                   -
- * @parameter {vec4} trailSize                    -
- * @parameter {vec4} warpGlowColor                -
- * @parameter {vec4} warpHalpColor                -
- * @parameter {EveSOFDataBoosterShape} warpShape0 -
- * @parameter {EveSOFDataBoosterShape} warpShape1 -
+ * @property {vec4} glowColor                    -
+ * @property {Number} glowScale                  -
+ * @property {String} gradient0ResPath           -
+ * @property {String} gradient1ResPath           -
+ * @property {vec4} haloColor                    -
+ * @property {Number} haloScaleX                 -
+ * @property {Number} haloScaleY                 -
+ * @property {vec4} lightColor                   -
+ * @property {Number} lightFlickerAmplitude      -
+ * @property {Number} lightFlickerFrequency      -
+ * @property {Number} lightRadius                -
+ * @property {vec4} lightWarpColor               -
+ * @property {Number} lightWarpRadius            -
+ * @property {EveSOFDataBoosterShape} shape0     -
+ * @property {EveSOFDataBoosterShape} shape1     -
+ * @property {Number} shapeAtlasCount            -
+ * @property {Number} shapeAtlasHeight           -
+ * @property {String} shapeAtlasResPath          -
+ * @property {Number} symHaloScale               -
+ * @property {vec4} trailColor                   -
+ * @property {vec4} trailSize                    -
+ * @property {vec4} warpGlowColor                -
+ * @property {vec4} warpHalpColor                -
+ * @property {EveSOFDataBoosterShape} warpShape0 -
+ * @property {EveSOFDataBoosterShape} warpShape1 -
  */
 export default class EveSOFDataBooster extends Tw2BaseClass
 {

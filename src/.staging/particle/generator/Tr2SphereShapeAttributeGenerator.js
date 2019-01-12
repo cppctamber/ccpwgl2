@@ -1,22 +1,22 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2SphereShapeAttributeGenerator
  * @implements ParticleAttributeGenerator
  *
- * @parameter {Number} distributionExponent -
- * @parameter {Number} maxPhi               -
- * @parameter {Number} maxRadius            -
- * @parameter {Number} maxSpeed             -
- * @parameter {Number} maxTheta             -
- * @parameter {Number} minPhi               -
- * @parameter {Number} minRadius            -
- * @parameter {Number} minSpeed             -
- * @parameter {Number} minTheta             -
- * @parameter {Number} parentVelocityFactor -
- * @parameter {vec3} position               -
- * @parameter {quat} rotation               -
+ * @property {Number} distributionExponent -
+ * @property {Number} maxPhi               -
+ * @property {Number} maxRadius            -
+ * @property {Number} maxSpeed             -
+ * @property {Number} maxTheta             -
+ * @property {Number} minPhi               -
+ * @property {Number} minRadius            -
+ * @property {Number} minSpeed             -
+ * @property {Number} minTheta             -
+ * @property {Number} parentVelocityFactor -
+ * @property {vec3} position               -
+ * @property {quat} rotation               -
  */
 export default class Tr2SphereShapeAttributeGenerator extends Tw2BaseClass
 {

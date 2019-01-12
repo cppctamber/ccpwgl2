@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ControllerFloatVariable
  * @implements StateVariable
  *
- * @parameter {Number} defaultValue -
- * @parameter {Number} variableType -
+ * @property {Number} defaultValue -
+ * @property {Number} variableType -
  */
 export default class Tr2ControllerFloatVariable extends Tw2BaseClass
 {

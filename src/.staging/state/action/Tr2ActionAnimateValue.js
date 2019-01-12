@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ActionAnimateValue
  * @implements StateAction
  *
- * @parameter {String} attribute               -
- * @parameter {Tr2CurveScalarExpression} curve -
- * @parameter {String} path                    -
- * @parameter {String} value                   -
+ * @property {String} attribute               -
+ * @property {Tr2CurveScalarExpression} curve -
+ * @property {String} path                    -
+ * @property {String} value                   -
  */
 export default class Tr2ActionAnimateValue extends Tw2BaseClass
 {

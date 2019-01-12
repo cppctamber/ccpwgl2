@@ -1,21 +1,21 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildParticleSystem
  * @implements ObjectChild
  *
- * @parameter {Boolean} display                                             -
- * @parameter {mat4} localTransform                                         -
- * @parameter {Number} lodSphereRadius                                      -
- * @parameter {Tr2InstancedMesh} mesh                                       -
- * @parameter {Number} minScreenSize                                        -
- * @parameter {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
- * @parameter {Array.<ParticleSystem>} particleSystems                      -
- * @parameter {quat} rotation                                               -
- * @parameter {vec3} scaling                                                -
- * @parameter {vec3} translation                                            -
- * @parameter {Boolean} useDynamicLod                                       -
+ * @property {Boolean} display                                             -
+ * @property {mat4} localTransform                                         -
+ * @property {Number} lodSphereRadius                                      -
+ * @property {Tr2InstancedMesh} mesh                                       -
+ * @property {Number} minScreenSize                                        -
+ * @property {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
+ * @property {Array.<ParticleSystem>} particleSystems                      -
+ * @property {quat} rotation                                               -
+ * @property {vec3} scaling                                                -
+ * @property {vec3} translation                                            -
+ * @property {Boolean} useDynamicLod                                       -
  */
 export default class EveChildParticleSystem extends Tw2BaseClass
 {

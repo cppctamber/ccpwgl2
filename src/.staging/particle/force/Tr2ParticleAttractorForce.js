@@ -1,12 +1,12 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ParticleAttractorForce
  * @implements ParticleForce
  *
- * @parameter {Number} magnitude -
- * @parameter {vec3} position    -
+ * @property {Number} magnitude -
+ * @property {vec3} position    -
  */
 export default class Tr2ParticleAttractorForce extends Tw2BaseClass
 {

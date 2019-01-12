@@ -1,13 +1,13 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataPatternTransform
  *
- * @parameter {Boolean} isMirrored -
- * @parameter {vec3} position      -
- * @parameter {quat} rotation      -
- * @parameter {vec3} scaling       -
+ * @property {Boolean} isMirrored -
+ * @property {vec3} position      -
+ * @property {quat} rotation      -
+ * @property {vec3} scaling       -
  */
 export default class EveSOFDataPatternTransform extends Tw2BaseClass
 {

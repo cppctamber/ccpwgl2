@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataArea
  *
- * @parameter {EveSOFDataAreaMaterial} Darkhull -
- * @parameter {EveSOFDataAreaMaterial} Glass    -
- * @parameter {EveSOFDataAreaMaterial} Primary  -
- * @parameter {EveSOFDataAreaMaterial} Reactor  -
- * @parameter {EveSOFDataAreaMaterial} Rock     -
- * @parameter {EveSOFDataAreaMaterial} Sails    -
+ * @property {EveSOFDataAreaMaterial} Darkhull -
+ * @property {EveSOFDataAreaMaterial} Glass    -
+ * @property {EveSOFDataAreaMaterial} Primary  -
+ * @property {EveSOFDataAreaMaterial} Reactor  -
+ * @property {EveSOFDataAreaMaterial} Rock     -
+ * @property {EveSOFDataAreaMaterial} Sails    -
  */
 export default class EveSOFDataArea extends Tw2BaseClass
 {

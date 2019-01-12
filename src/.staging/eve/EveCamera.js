@@ -1,25 +1,25 @@
 import {quat, vec3} from "../../global";
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * EveCamera
  *
- * @parameter {Number} fieldOfView             -
- * @parameter {Number} friction                -
- * @parameter {Number} frontClip               -
- * @parameter {Boolean} idleMove               -
- * @parameter {Number} idleScale               -
- * @parameter {Number} idleSpeed               -
- * @parameter {vec3} intr                      -
- * @parameter {Number} maxSpeed                -
- * @parameter {Number} noiseScale              -
- * @parameter {Tr2CurveScalar} noiseScaleCurve -
- * @parameter {Number} pitch                   -
- * @parameter {vec3} pos                       -
- * @parameter {quat} rotationAroundParent      -
- * @parameter {Number} translationFromParent   -
- * @parameter {Number} yaw                     -
- * @parameter {Tr2CurveScalar} zoomCurve       -
+ * @property {Number} fieldOfView             -
+ * @property {Number} friction                -
+ * @property {Number} frontClip               -
+ * @property {Boolean} idleMove               -
+ * @property {Number} idleScale               -
+ * @property {Number} idleSpeed               -
+ * @property {vec3} intr                      -
+ * @property {Number} maxSpeed                -
+ * @property {Number} noiseScale              -
+ * @property {Tr2CurveScalar} noiseScaleCurve -
+ * @property {Number} pitch                   -
+ * @property {vec3} pos                       -
+ * @property {quat} rotationAroundParent      -
+ * @property {Number} translationFromParent   -
+ * @property {Number} yaw                     -
+ * @property {Tr2CurveScalar} zoomCurve       -
  */
 export default class EveCamera extends Tw2BaseClass
 {

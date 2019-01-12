@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2InteriorScene
  *
- * @parameter {Array.<Tr2IntSkinnedObject>} dynamics  -
- * @parameter {Array.<Tr2InteriorLightSource>} lights -
+ * @property {Array.<Tr2IntSkinnedObject>} dynamics  -
+ * @property {Array.<Tr2InteriorLightSource>} lights -
  */
 export default class Tr2InteriorScene extends Tw2BaseClass
 {

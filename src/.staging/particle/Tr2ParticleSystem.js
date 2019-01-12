@@ -1,21 +1,21 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2ParticleSystem
  * @implements ParticleSystem
  *
- * @parameter {Boolean} applyAging                                               -
- * @parameter {Boolean} applyForce                                               -
- * @parameter {Array.<ParticleConstraint>} constraints                           -
- * @parameter {Array.<Tr2ParticleElementDeclaration>} elements                   -
- * @parameter {ParticleEmitter|ParticleEmitterGPU} emitParticleDuringLifeEmitter -
- * @parameter {ParticleEmitter|ParticleEmitterGPU} emitParticleOnDeathEmitter    -
- * @parameter {Array.<ParticleForce>} forces                                     -
- * @parameter {Number} maxParticleCount                                          -
- * @parameter {Boolean} requiresSorting                                          -
- * @parameter {Boolean} updateBoundingBox                                        -
- * @parameter {Boolean} updateSimulation                                         -
- * @parameter {Boolean} useSimTimeRebase                                         -
+ * @property {Boolean} applyAging                                               -
+ * @property {Boolean} applyForce                                               -
+ * @property {Array.<ParticleConstraint>} constraints                           -
+ * @property {Array.<Tr2ParticleElementDeclaration>} elements                   -
+ * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleDuringLifeEmitter -
+ * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleOnDeathEmitter    -
+ * @property {Array.<ParticleForce>} forces                                     -
+ * @property {Number} maxParticleCount                                          -
+ * @property {Boolean} requiresSorting                                          -
+ * @property {Boolean} updateBoundingBox                                        -
+ * @property {Boolean} updateSimulation                                         -
+ * @property {Boolean} useSimTimeRebase                                         -
  */
 export default class Tr2ParticleSystem extends Tw2BaseClass
 {

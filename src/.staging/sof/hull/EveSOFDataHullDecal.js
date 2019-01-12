@@ -1,21 +1,21 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullDecal
  *
- * @parameter {Number} boneIndex                       -
- * @parameter {Number} glowColorType                   -
- * @parameter {Number} groupIndex                      -
- * @parameter {TypedArray} indexBuffer                 -
- * @parameter {Number} meshIndex                       -
- * @parameter {Array.<EveSOFDataParameter>} parameters -
- * @parameter {vec3} position                          -
- * @parameter {quat} rotation                          -
- * @parameter {vec3} scaling                           -
- * @parameter {String} shader                          -
- * @parameter {Array.<EveSOFDataTexture>} textures     -
- * @parameter {Number} usage                           -
+ * @property {Number} boneIndex                       -
+ * @property {Number} glowColorType                   -
+ * @property {Number} groupIndex                      -
+ * @property {TypedArray} indexBuffer                 -
+ * @property {Number} meshIndex                       -
+ * @property {Array.<EveSOFDataParameter>} parameters -
+ * @property {vec3} position                          -
+ * @property {quat} rotation                          -
+ * @property {vec3} scaling                           -
+ * @property {String} shader                          -
+ * @property {Array.<EveSOFDataTexture>} textures     -
+ * @property {Number} usage                           -
  */
 export default class EveSOFDataHullDecal extends Tw2BaseClass
 {

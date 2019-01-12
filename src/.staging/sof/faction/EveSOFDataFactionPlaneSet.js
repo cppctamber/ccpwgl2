@@ -1,11 +1,11 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataFactionPlaneSet
  *
- * @parameter {vec4} color        -
- * @parameter {Number} groupIndex -
+ * @property {vec4} color        -
+ * @property {Number} groupIndex -
  */
 export default class EveSOFDataFactionPlaneSet extends Tw2BaseClass
 {

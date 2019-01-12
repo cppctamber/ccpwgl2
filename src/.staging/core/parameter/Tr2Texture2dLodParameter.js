@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2Texture2dLodParameter
  * @implements Parameter
  *
- * @parameter {Tr2LodResource} lodResource -
+ * @property {Tr2LodResource} lodResource -
  */
 export default class Tr2Texture2dLodParameter extends Tw2BaseClass
 {

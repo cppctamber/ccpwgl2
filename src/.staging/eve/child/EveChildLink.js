@@ -1,14 +1,14 @@
 import {quat} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildLink
  * @implements ObjectChild
  *
- * @parameter {Array.<TriValueBinding>} linkStrengthBindings -
- * @parameter {Array.<Curve>} linkStrengthCurves             -
- * @parameter {Tr2Mesh} mesh                                 -
- * @parameter {quat} rotation                                -
+ * @property {Array.<TriValueBinding>} linkStrengthBindings -
+ * @property {Array.<Curve>} linkStrengthCurves             -
+ * @property {Tr2Mesh} mesh                                 -
+ * @property {quat} rotation                                -
  */
 export default class EveChildLink extends Tw2BaseClass
 {

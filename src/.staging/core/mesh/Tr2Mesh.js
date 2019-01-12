@@ -1,21 +1,21 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2Mesh
  * @implements Mesh
  *
- * @parameter {Array.<MeshArea>} additiveAreas      -
- * @parameter {Array.<MeshArea>} decalAreas         -
- * @parameter {Boolean} deferGeometryLoad           -
- * @parameter {Array.<MeshArea>} depthAreas         -
- * @parameter {Array.<MeshArea>} depthNormalAreas   -
- * @parameter {Array.<MeshArea>} distortionAreas    -
- * @parameter {String} geometryResPath              -
- * @parameter {Number} meshIndex                    -
- * @parameter {Array.<MeshArea>} opaqueAreas        -
- * @parameter {Array.<MeshArea>} opaquePrepassAreas -
- * @parameter {Array.<MeshArea>} pickableAreas      -
- * @parameter {Array.<MeshArea>} transparentAreas   -
+ * @property {Array.<MeshArea>} additiveAreas      -
+ * @property {Array.<MeshArea>} decalAreas         -
+ * @property {Boolean} deferGeometryLoad           -
+ * @property {Array.<MeshArea>} depthAreas         -
+ * @property {Array.<MeshArea>} depthNormalAreas   -
+ * @property {Array.<MeshArea>} distortionAreas    -
+ * @property {String} geometryResPath              -
+ * @property {Number} meshIndex                    -
+ * @property {Array.<MeshArea>} opaqueAreas        -
+ * @property {Array.<MeshArea>} opaquePrepassAreas -
+ * @property {Array.<MeshArea>} pickableAreas      -
+ * @property {Array.<MeshArea>} transparentAreas   -
  */
 export default class Tr2Mesh extends Tw2BaseClass
 {

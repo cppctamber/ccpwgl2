@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2MeshArea
  * @implements MeshArea
  *
- * @parameter {Number} count          -
- * @parameter {Tr2Effect} effect      -
- * @parameter {Number} index          -
- * @parameter {Boolean} reversed      -
- * @parameter {Boolean} useSHLighting -
+ * @property {Number} count          -
+ * @property {Tr2Effect} effect      -
+ * @property {Number} index          -
+ * @property {Boolean} reversed      -
+ * @property {Boolean} useSHLighting -
  */
 export default class Tr2MeshArea extends Tw2BaseClass
 {

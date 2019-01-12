@@ -1,23 +1,23 @@
 import {mat4, quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildContainer
  * @implements ObjectChild
  *
- * @parameter {Array.<StateController>} controllers      -
- * @parameter {Array.<TriCurveSet>} curveSets            -
- * @parameter {Boolean} display                          -
- * @parameter {Boolean} hideOnLowQuality                 -
- * @parameter {Array.<Tr2PointLight>} lights             -
- * @parameter {mat4} localTransform                      -
- * @parameter {Array.<ObjectChild>} objects              -
- * @parameter {Array.<TriObserverLocal>} observers       -
- * @parameter {quat} rotation                            -
- * @parameter {vec3} scaling                             -
- * @parameter {Boolean} staticTransform                  -
- * @parameter {Array.<ChildModifier>} transformModifiers -
- * @parameter {vec3} translation                         -
+ * @property {Array.<StateController>} controllers      -
+ * @property {Array.<TriCurveSet>} curveSets            -
+ * @property {Boolean} display                          -
+ * @property {Boolean} hideOnLowQuality                 -
+ * @property {Array.<Tr2PointLight>} lights             -
+ * @property {mat4} localTransform                      -
+ * @property {Array.<ObjectChild>} objects              -
+ * @property {Array.<TriObserverLocal>} observers       -
+ * @property {quat} rotation                            -
+ * @property {vec3} scaling                             -
+ * @property {Boolean} staticTransform                  -
+ * @property {Array.<ChildModifier>} transformModifiers -
+ * @property {vec3} translation                         -
  */
 export default class EveChildContainer extends Tw2BaseClass
 {

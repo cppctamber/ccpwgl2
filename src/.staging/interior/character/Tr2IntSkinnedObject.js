@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2IntSkinnedObject
  *
- * @parameter {Array.<TriCurveSet>} curveSets -
- * @parameter {TriMatrix} transform           -
- * @parameter {Tr2SkinnedModel} visualModel   -
+ * @property {Array.<TriCurveSet>} curveSets -
+ * @property {TriMatrix} transform           -
+ * @property {Tr2SkinnedModel} visualModel   -
  */
 export default class Tr2IntSkinnedObject extends Tw2BaseClass
 {

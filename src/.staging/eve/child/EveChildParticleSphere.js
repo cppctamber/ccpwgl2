@@ -1,20 +1,20 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildParticleSphere
  * @implements ObjectChild
  *
- * @parameter {Array.<ParticleAttributeGenerator>} generators -
- * @parameter {Number} maxSpeed                               -
- * @parameter {Tr2InstancedMesh} mesh                         -
- * @parameter {Number} movementScale                          -
- * @parameter {Tr2ParticleSystem} particleSystem              -
- * @parameter {Number} positionShiftDecreaseSpeed             -
- * @parameter {Number} positionShiftIncreaseSpeed             -
- * @parameter {Number} positionShiftMax                       -
- * @parameter {Number} positionShiftMin                       -
- * @parameter {Number} radius                                 -
- * @parameter {Boolean} useSpaceObjectData                    -
+ * @property {Array.<ParticleAttributeGenerator>} generators -
+ * @property {Number} maxSpeed                               -
+ * @property {Tr2InstancedMesh} mesh                         -
+ * @property {Number} movementScale                          -
+ * @property {Tr2ParticleSystem} particleSystem              -
+ * @property {Number} positionShiftDecreaseSpeed             -
+ * @property {Number} positionShiftIncreaseSpeed             -
+ * @property {Number} positionShiftMax                       -
+ * @property {Number} positionShiftMin                       -
+ * @property {Number} radius                                 -
+ * @property {Boolean} useSpaceObjectData                    -
  */
 export default class EveChildParticleSphere extends Tw2BaseClass
 {

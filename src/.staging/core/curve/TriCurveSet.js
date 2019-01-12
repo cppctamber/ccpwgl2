@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriCurveSet
  *
- * @parameter {Array.<TriValueBinding>} bindings                    -
- * @parameter {Array.<Curve|CurveExpression|CurveSequencer>} curves -
- * @parameter {Boolean} playOnLoad                                  -
- * @parameter {Array.<Tr2CurveSetRange>} ranges                     -
- * @parameter {Number} scale                                        -
- * @parameter {Boolean} useSimTimeRebase                            -
+ * @property {Array.<TriValueBinding>} bindings                    -
+ * @property {Array.<Curve|CurveExpression|CurveSequencer>} curves -
+ * @property {Boolean} playOnLoad                                  -
+ * @property {Array.<Tr2CurveSetRange>} ranges                     -
+ * @property {Number} scale                                        -
+ * @property {Boolean} useSimTimeRebase                            -
  */
 export default class TriCurveSet extends Tw2BaseClass
 {

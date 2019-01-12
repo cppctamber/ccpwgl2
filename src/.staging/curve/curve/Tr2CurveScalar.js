@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2CurveScalar
  * @implements Curve
  *
- * @parameter {Number} extrapolationAfter  -
- * @parameter {Number} extrapolationBefore -
- * @parameter {Array} keys                 -
- * @parameter {Number} timeOffset          -
- * @parameter {Number} timeScale           -
+ * @property {Number} extrapolationAfter  -
+ * @property {Number} extrapolationBefore -
+ * @property {Array} keys                 -
+ * @property {Number} timeOffset          -
+ * @property {Number} timeScale           -
  */
 export default class Tr2CurveScalar extends Tw2BaseClass
 {

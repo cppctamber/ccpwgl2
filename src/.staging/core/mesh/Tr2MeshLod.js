@@ -1,16 +1,16 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2MeshLod
  *
- * @parameter {Array.<MeshArea>} additiveAreas    -
- * @parameter {Array} associatedResources         -
- * @parameter {Array.<MeshArea>} decalAreas       -
- * @parameter {Array.<MeshArea>} depthAreas       -
- * @parameter {Tr2LodResource} geometryRes        -
- * @parameter {Array.<MeshArea>} opaqueAreas      -
- * @parameter {Array.<MeshArea>} pickableAreas    -
- * @parameter {Array.<MeshArea>} transparentAreas -
+ * @property {Array.<MeshArea>} additiveAreas    -
+ * @property {Array} associatedResources         -
+ * @property {Array.<MeshArea>} decalAreas       -
+ * @property {Array.<MeshArea>} depthAreas       -
+ * @property {Tr2LodResource} geometryRes        -
+ * @property {Array.<MeshArea>} opaqueAreas      -
+ * @property {Array.<MeshArea>} pickableAreas    -
+ * @property {Array.<MeshArea>} transparentAreas -
  */
 export default class Tr2MeshLod extends Tw2BaseClass
 {

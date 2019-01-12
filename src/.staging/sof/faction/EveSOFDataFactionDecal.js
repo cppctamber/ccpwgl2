@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataFactionDecal
  *
- * @parameter {Number} groupIndex                      -
- * @parameter {Boolean} isVisible                      -
- * @parameter {Array.<EveSOFDataParameter>} parameters -
- * @parameter {String} shader                          -
- * @parameter {Array.<EveSOFDataTexture>} textures     -
+ * @property {Number} groupIndex                      -
+ * @property {Boolean} isVisible                      -
+ * @property {Array.<EveSOFDataParameter>} parameters -
+ * @property {String} shader                          -
+ * @property {Array.<EveSOFDataTexture>} textures     -
  */
 export default class EveSOFDataFactionDecal extends Tw2BaseClass
 {

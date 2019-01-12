@@ -1,22 +1,22 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2InstancedMesh
  * @implements Mesh
  *
- * @parameter {Array.<MeshArea>} additiveAreas                                          -
- * @parameter {Array.<MeshArea>} decalAreas                                             -
- * @parameter {Array.<MeshArea>} depthAreas                                             -
- * @parameter {Array.<MeshArea>} distortionAreas                                        -
- * @parameter {String} geometryResPath                                                  -
- * @parameter {String} instanceGeometryResPath                                          -
- * @parameter {ParticleSystem|Tr2RuntimeInstanceData|Resource} instanceGeometryResource -
- * @parameter {Number} instanceMeshIndex                                                -
- * @parameter {vec3} maxBounds                                                          -
- * @parameter {vec3} minBounds                                                          -
- * @parameter {Array.<MeshArea>} opaqueAreas                                            -
- * @parameter {Array.<MeshArea>} transparentAreas                                       -
+ * @property {Array.<MeshArea>} additiveAreas                                          -
+ * @property {Array.<MeshArea>} decalAreas                                             -
+ * @property {Array.<MeshArea>} depthAreas                                             -
+ * @property {Array.<MeshArea>} distortionAreas                                        -
+ * @property {String} geometryResPath                                                  -
+ * @property {String} instanceGeometryResPath                                          -
+ * @property {ParticleSystem|Tr2RuntimeInstanceData|Resource} instanceGeometryResource -
+ * @property {Number} instanceMeshIndex                                                -
+ * @property {vec3} maxBounds                                                          -
+ * @property {vec3} minBounds                                                          -
+ * @property {Array.<MeshArea>} opaqueAreas                                            -
+ * @property {Array.<MeshArea>} transparentAreas                                       -
  */
 export default class Tr2InstancedMesh extends Tw2BaseClass
 {

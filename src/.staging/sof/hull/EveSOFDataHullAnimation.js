@@ -1,16 +1,16 @@
 import {quat} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullAnimation
  *
- * @parameter {Number} endRate           -
- * @parameter {Number} endRotationTime   -
- * @parameter {quat} endRotationValue    -
- * @parameter {Number} id                -
- * @parameter {Number} startRate         -
- * @parameter {Number} startRotationTime -
- * @parameter {quat} startRotationValue  -
+ * @property {Number} endRate           -
+ * @property {Number} endRotationTime   -
+ * @property {quat} endRotationValue    -
+ * @property {Number} id                -
+ * @property {Number} startRate         -
+ * @property {Number} startRotationTime -
+ * @property {quat} startRotationValue  -
  */
 export default class EveSOFDataHullAnimation extends Tw2BaseClass
 {

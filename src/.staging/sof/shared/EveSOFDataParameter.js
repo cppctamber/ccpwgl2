@@ -1,10 +1,10 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataParameter
  *
- * @parameter {vec4} value -
+ * @property {vec4} value -
  */
 export default class EveSOFDataParameter extends Tw2BaseClass
 {

@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataMaterial
  *
- * @parameter {Array.<EveSOFDataParameter>} parameters -
+ * @property {Array.<EveSOFDataParameter>} parameters -
  */
 export default class EveSOFDataMaterial extends Tw2BaseClass
 {

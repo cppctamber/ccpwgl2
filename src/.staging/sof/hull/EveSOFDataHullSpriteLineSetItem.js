@@ -1,23 +1,23 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullSpriteLineSetItem
  *
- * @parameter {Number} blinkPhase      -
- * @parameter {Number} blinkPhaseShift -
- * @parameter {Number} blinkRate       -
- * @parameter {Number} boneIndex       -
- * @parameter {Number} colorType       -
- * @parameter {Number} falloff         -
- * @parameter {Number} intensity       -
- * @parameter {Boolean} isCircle       -
- * @parameter {Number} maxScale        -
- * @parameter {Number} minScale        -
- * @parameter {vec3} position          -
- * @parameter {quat} rotation          -
- * @parameter {vec3} scaling           -
- * @parameter {Number} spacing         -
+ * @property {Number} blinkPhase      -
+ * @property {Number} blinkPhaseShift -
+ * @property {Number} blinkRate       -
+ * @property {Number} boneIndex       -
+ * @property {Number} colorType       -
+ * @property {Number} falloff         -
+ * @property {Number} intensity       -
+ * @property {Boolean} isCircle       -
+ * @property {Number} maxScale        -
+ * @property {Number} minScale        -
+ * @property {vec3} position          -
+ * @property {quat} rotation          -
+ * @property {vec3} scaling           -
+ * @property {Number} spacing         -
  */
 export default class EveSOFDataHullSpriteLineSetItem extends Tw2BaseClass
 {

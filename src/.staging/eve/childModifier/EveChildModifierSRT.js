@@ -1,12 +1,12 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildModifierSRT
  * @implements ChildModifier
  *
- * @parameter {quat} rotation -
- * @parameter {vec3} scaling  -
+ * @property {quat} rotation -
+ * @property {vec3} scaling  -
  */
 export default class EveChildModifierSRT extends Tw2BaseClass
 {

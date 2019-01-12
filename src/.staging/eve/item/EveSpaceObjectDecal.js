@@ -1,15 +1,15 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSpaceObjectDecal
  * @implements EveObjectItem
  *
- * @parameter {Tr2Effect} decalEffect  -
- * @parameter {TypedArray} indexBuffer -
- * @parameter {vec3} position          -
- * @parameter {quat} rotation          -
- * @parameter {vec3} scaling           -
+ * @property {Tr2Effect} decalEffect  -
+ * @property {TypedArray} indexBuffer -
+ * @property {vec3} position          -
+ * @property {quat} rotation          -
+ * @property {vec3} scaling           -
  */
 export default class EveSpaceObjectDecal extends Tw2BaseClass
 {

@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataAreaMaterial
  *
- * @parameter {Number} colorType -
- * @parameter {String} material1 -
- * @parameter {String} material2 -
- * @parameter {String} material3 -
- * @parameter {String} material4 -
+ * @property {Number} colorType -
+ * @property {String} material1 -
+ * @property {String} material2 -
+ * @property {String} material3 -
+ * @property {String} material4 -
  */
 export default class EveSOFDataAreaMaterial extends Tw2BaseClass
 {

@@ -1,9 +1,9 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataTexture
  *
- * @parameter {String} resFilePath -
+ * @property {String} resFilePath -
  */
 export default class EveSOFDataTexture extends Tw2BaseClass
 {

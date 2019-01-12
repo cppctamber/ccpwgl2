@@ -1,31 +1,31 @@
 import {vec2, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataGenericDamage
  *
- * @parameter {Number} armorParticleAngle                   -
- * @parameter {vec4} armorParticleColor0                    -
- * @parameter {vec4} armorParticleColor1                    -
- * @parameter {vec4} armorParticleColor2                    -
- * @parameter {vec4} armorParticleColor3                    -
- * @parameter {Number} armorParticleDrag                    -
- * @parameter {vec2} armorParticleMinMaxLifeTime            -
- * @parameter {vec2} armorParticleMinMaxSpeed               -
- * @parameter {Number} armorParticleRate                    -
- * @parameter {vec4} armorParticleSizes                     -
- * @parameter {Number} armorParticleTextureIndex            -
- * @parameter {Number} armorParticleTurbulenceAmplitude     -
- * @parameter {Number} armorParticleTurbulenceFrequency     -
- * @parameter {Number} armorParticleVelocityStretchRotation -
- * @parameter {String} armorShader                          -
- * @parameter {Number} flickerPerlinAlpha                   -
- * @parameter {Number} flickerPerlinBeta                    -
- * @parameter {Number} flickerPerlinN                       -
- * @parameter {Number} flickerPerlinSpeed                   -
- * @parameter {String} shieldGeometryResFilePath            -
- * @parameter {String} shieldShaderEllipsoid                -
- * @parameter {String} shieldShaderHull                     -
+ * @property {Number} armorParticleAngle                   -
+ * @property {vec4} armorParticleColor0                    -
+ * @property {vec4} armorParticleColor1                    -
+ * @property {vec4} armorParticleColor2                    -
+ * @property {vec4} armorParticleColor3                    -
+ * @property {Number} armorParticleDrag                    -
+ * @property {vec2} armorParticleMinMaxLifeTime            -
+ * @property {vec2} armorParticleMinMaxSpeed               -
+ * @property {Number} armorParticleRate                    -
+ * @property {vec4} armorParticleSizes                     -
+ * @property {Number} armorParticleTextureIndex            -
+ * @property {Number} armorParticleTurbulenceAmplitude     -
+ * @property {Number} armorParticleTurbulenceFrequency     -
+ * @property {Number} armorParticleVelocityStretchRotation -
+ * @property {String} armorShader                          -
+ * @property {Number} flickerPerlinAlpha                   -
+ * @property {Number} flickerPerlinBeta                    -
+ * @property {Number} flickerPerlinN                       -
+ * @property {Number} flickerPerlinSpeed                   -
+ * @property {String} shieldGeometryResFilePath            -
+ * @property {String} shieldShaderEllipsoid                -
+ * @property {String} shieldShaderHull                     -
  */
 export default class EveSOFDataGenericDamage extends Tw2BaseClass
 {

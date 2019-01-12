@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2PlaneConstraint
  * @implements ParticleConstraint
  *
- * @parameter {Array.<ParticleAttributeGenerator>} generators -
- * @parameter {Number} reflectionNoise                        -
+ * @property {Array.<ParticleAttributeGenerator>} generators -
+ * @property {Number} reflectionNoise                        -
  */
 export default class Tr2PlaneConstraint extends Tw2BaseClass
 {

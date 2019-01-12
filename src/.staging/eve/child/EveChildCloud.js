@@ -1,17 +1,17 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildCloud
  * @implements ObjectChild
  *
- * @parameter {Number} cellScreenSize      -
- * @parameter {Tr2Effect} effect           -
- * @parameter {Number} preTesselationLevel -
- * @parameter {quat} rotation              -
- * @parameter {vec3} scaling               -
- * @parameter {Number} sortingModifier     -
- * @parameter {vec3} translation           -
+ * @property {Number} cellScreenSize      -
+ * @property {Tr2Effect} effect           -
+ * @property {Number} preTesselationLevel -
+ * @property {quat} rotation              -
+ * @property {vec3} scaling               -
+ * @property {Number} sortingModifier     -
+ * @property {vec3} translation           -
  */
 export default class EveChildCloud extends Tw2BaseClass
 {

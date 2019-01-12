@@ -1,27 +1,27 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataFactionColorSet
  *
- * @parameter {vec4} Black     -
- * @parameter {vec4} Blue      -
- * @parameter {vec4} Booster   -
- * @parameter {vec4} Cyan      -
- * @parameter {vec4} Darkhull  -
- * @parameter {vec4} Fire      -
- * @parameter {vec4} Glass     -
- * @parameter {vec4} Green     -
- * @parameter {vec4} Hull      -
- * @parameter {vec4} Killmark  -
- * @parameter {vec4} Orange    -
- * @parameter {vec4} Primary   -
- * @parameter {vec4} Reactor   -
- * @parameter {vec4} Red       -
- * @parameter {vec4} Secondary -
- * @parameter {vec4} Tertiary  -
- * @parameter {vec4} White     -
- * @parameter {vec4} Yellow    -
+ * @property {vec4} Black     -
+ * @property {vec4} Blue      -
+ * @property {vec4} Booster   -
+ * @property {vec4} Cyan      -
+ * @property {vec4} Darkhull  -
+ * @property {vec4} Fire      -
+ * @property {vec4} Glass     -
+ * @property {vec4} Green     -
+ * @property {vec4} Hull      -
+ * @property {vec4} Killmark  -
+ * @property {vec4} Orange    -
+ * @property {vec4} Primary   -
+ * @property {vec4} Reactor   -
+ * @property {vec4} Red       -
+ * @property {vec4} Secondary -
+ * @property {vec4} Tertiary  -
+ * @property {vec4} White     -
+ * @property {vec4} Yellow    -
  */
 export default class EveSOFDataFactionColorSet extends Tw2BaseClass
 {

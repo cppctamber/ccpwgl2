@@ -1,11 +1,11 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2ForceSphereVolume
  * @implements ParticleForce
  *
- * @parameter {Array.<ParticleForce>} forces -
- * @parameter {Number} radius                -
+ * @property {Array.<ParticleForce>} forces -
+ * @property {Number} radius                -
  */
 export default class Tr2ForceSphereVolume extends Tw2BaseClass
 {

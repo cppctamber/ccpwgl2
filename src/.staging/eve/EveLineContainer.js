@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../class";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * EveLineContainer
  * @implements EveObject
  *
- * @parameter {EveCurveLineSet} lineSet -
+ * @property {EveCurveLineSet} lineSet -
  */
 export default class EveLineContainer extends Tw2BaseClass
 {

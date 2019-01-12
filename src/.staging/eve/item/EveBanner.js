@@ -1,17 +1,17 @@
 import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveBanner
  * @implements EveObjectItem
  *
- * @parameter {Number} angleX    -
- * @parameter {Number} angleY    -
- * @parameter {Number} boneIndex -
- * @parameter {vec3} position    -
- * @parameter {quat} rotation    -
- * @parameter {vec3} scaling     -
- * @parameter {Number} usage     -
+ * @property {Number} angleX    -
+ * @property {Number} angleY    -
+ * @property {Number} boneIndex -
+ * @property {vec3} position    -
+ * @property {quat} rotation    -
+ * @property {vec3} scaling     -
+ * @property {Number} usage     -
  */
 export default class EveBanner extends Tw2BaseClass
 {

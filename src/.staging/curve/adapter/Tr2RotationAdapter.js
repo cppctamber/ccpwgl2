@@ -1,12 +1,12 @@
 import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2RotationAdapter
  * @implements CurveAdapter
  *
- * @parameter {Curve|CurveExpression} curve -
- * @parameter {vec4} value                  -
+ * @property {Curve|CurveExpression} curve -
+ * @property {vec4} value                  -
  */
 export default class Tr2RotationAdapter extends Tw2BaseClass
 {

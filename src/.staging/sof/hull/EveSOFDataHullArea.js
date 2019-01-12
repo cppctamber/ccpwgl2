@@ -1,15 +1,15 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullArea
  *
- * @parameter {Number} areaType                        -
- * @parameter {Number} blockedMaterials                -
- * @parameter {Number} count                           -
- * @parameter {Number} index                           -
- * @parameter {Array.<EveSOFDataParameter>} parameters -
- * @parameter {String} shader                          -
- * @parameter {Array.<EveSOFDataTexture>} textures     -
+ * @property {Number} areaType                        -
+ * @property {Number} blockedMaterials                -
+ * @property {Number} count                           -
+ * @property {Number} index                           -
+ * @property {Array.<EveSOFDataParameter>} parameters -
+ * @property {String} shader                          -
+ * @property {Array.<EveSOFDataTexture>} textures     -
  */
 export default class EveSOFDataHullArea extends Tw2BaseClass
 {

@@ -1,14 +1,14 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataGenericShader
  *
- * @parameter {Array.<EveSOFDataParameter>} defaultParameters -
- * @parameter {Array.<EveSOFDataTexture>} defaultTextures     -
- * @parameter {Boolean} doGenerateDepthArea                   -
- * @parameter {Array.<EveSOFDataGenericString>} parameters    -
- * @parameter {String} shader                                 -
- * @parameter {String} transparencyTextureName                -
+ * @property {Array.<EveSOFDataParameter>} defaultParameters -
+ * @property {Array.<EveSOFDataTexture>} defaultTextures     -
+ * @property {Boolean} doGenerateDepthArea                   -
+ * @property {Array.<EveSOFDataGenericString>} parameters    -
+ * @property {String} shader                                 -
+ * @property {String} transparencyTextureName                -
  */
 export default class EveSOFDataGenericShader extends Tw2BaseClass
 {

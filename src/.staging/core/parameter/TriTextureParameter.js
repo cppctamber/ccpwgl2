@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * TriTextureParameter
  * @implements Parameter
  *
- * @parameter {String} resourcePath -
+ * @property {String} resourcePath -
  */
 export default class TriTextureParameter extends Tw2BaseClass
 {

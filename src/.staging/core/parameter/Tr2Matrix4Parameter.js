@@ -1,10 +1,10 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * Tr2Matrix4Parameter
  * @implements Parameter
  *
- * @parameter {Array.<Vector>} value -
+ * @property {Array.<Vector>} value -
  */
 export default class Tr2Matrix4Parameter extends Tw2BaseClass
 {

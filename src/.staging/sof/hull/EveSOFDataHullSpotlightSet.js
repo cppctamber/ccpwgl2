@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataHullSpotlightSet
  *
- * @parameter {String} coneTextureResPath                    -
- * @parameter {String} glowTextureResPath                    -
- * @parameter {Array.<EveSOFDataHullSpotlightSetItem>} items -
- * @parameter {Boolean} skinned                              -
- * @parameter {Number} zOffset                               -
+ * @property {String} coneTextureResPath                    -
+ * @property {String} glowTextureResPath                    -
+ * @property {Array.<EveSOFDataHullSpotlightSetItem>} items -
+ * @property {Boolean} skinned                              -
+ * @property {Number} zOffset                               -
  */
 export default class EveSOFDataHullSpotlightSet extends Tw2BaseClass
 {

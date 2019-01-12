@@ -1,27 +1,27 @@
 import {vec3} from "../../../global";
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveStation2
  *
- * @parameter {Array.<EveObjectSet>} attachments       -
- * @parameter {vec3} boundingSphereCenter              -
- * @parameter {Number} boundingSphereRadius            -
- * @parameter {Array.<EveObject>} children             -
- * @parameter {Array.<TriCurveSet>} curveSets          -
- * @parameter {Array.<EveObjectItem>} decals           -
- * @parameter {Array.<ObjectChild>} effectChildren     -
- * @parameter {Array.<Tr2PointLight>} lights           -
- * @parameter {Array.<EveObjectSet>} locatorSets       -
- * @parameter {Array.<EveObjectItem>} locators         -
- * @parameter {Tr2Mesh} mesh                           -
- * @parameter {Tr2MeshLod} meshLod                     -
- * @parameter {Tr2RotationAdapter} modelRotationCurve  -
- * @parameter {Number} modelScale                      -
- * @parameter {Array.<TriObserverLocal>} observers     -
- * @parameter {Tr2RotationAdapter} rotationCurve       -
- * @parameter {Tr2Effect} shadowEffect                 -
- * @parameter {Tr2TranslationAdapter} translationCurve -
+ * @property {Array.<EveObjectSet>} attachments       -
+ * @property {vec3} boundingSphereCenter              -
+ * @property {Number} boundingSphereRadius            -
+ * @property {Array.<EveObject>} children             -
+ * @property {Array.<TriCurveSet>} curveSets          -
+ * @property {Array.<EveObjectItem>} decals           -
+ * @property {Array.<ObjectChild>} effectChildren     -
+ * @property {Array.<Tr2PointLight>} lights           -
+ * @property {Array.<EveObjectSet>} locatorSets       -
+ * @property {Array.<EveObjectItem>} locators         -
+ * @property {Tr2Mesh} mesh                           -
+ * @property {Tr2MeshLod} meshLod                     -
+ * @property {Tr2RotationAdapter} modelRotationCurve  -
+ * @property {Number} modelScale                      -
+ * @property {Array.<TriObserverLocal>} observers     -
+ * @property {Tr2RotationAdapter} rotationCurve       -
+ * @property {Tr2Effect} shadowEffect                 -
+ * @property {Tr2TranslationAdapter} translationCurve -
  */
 export default class EveStation2 extends Tw2BaseClass
 {

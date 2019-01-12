@@ -1,13 +1,13 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataInstancedMesh
  *
- * @parameter {String} geometryResPath             -
- * @parameter {Array.<Vector>} instances           -
- * @parameter {Number} lowestLodVisible            -
- * @parameter {String} shader                      -
- * @parameter {Array.<EveSOFDataTexture>} textures -
+ * @property {String} geometryResPath             -
+ * @property {Array.<Vector>} instances           -
+ * @property {Number} lowestLodVisible            -
+ * @property {String} shader                      -
+ * @property {Array.<EveSOFDataTexture>} textures -
  */
 export default class EveSOFDataInstancedMesh extends Tw2BaseClass
 {

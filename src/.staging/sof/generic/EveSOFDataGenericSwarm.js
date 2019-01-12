@@ -1,21 +1,21 @@
-import {Tw2BaseClass} from "../../class";
+import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveSOFDataGenericSwarm
  *
- * @parameter {Number} formationDistance  -
- * @parameter {Number} maxDeceleration    -
- * @parameter {Number} maxDistance0       -
- * @parameter {Number} separationDistance -
- * @parameter {Number} wanderDistance     -
- * @parameter {Number} wanderFluctuation  -
- * @parameter {Number} wanderRadius       -
- * @parameter {Number} weightAlign        -
- * @parameter {Number} weightAnchor       -
- * @parameter {Number} weightCohesion     -
- * @parameter {Number} weightDeceleration -
- * @parameter {Number} weightFormation    -
- * @parameter {Number} weightSeparation   -
+ * @property {Number} formationDistance  -
+ * @property {Number} maxDeceleration    -
+ * @property {Number} maxDistance0       -
+ * @property {Number} separationDistance -
+ * @property {Number} wanderDistance     -
+ * @property {Number} wanderFluctuation  -
+ * @property {Number} wanderRadius       -
+ * @property {Number} weightAlign        -
+ * @property {Number} weightAnchor       -
+ * @property {Number} weightCohesion     -
+ * @property {Number} weightDeceleration -
+ * @property {Number} weightFormation    -
+ * @property {Number} weightSeparation   -
  */
 export default class EveSOFDataGenericSwarm extends Tw2BaseClass
 {
