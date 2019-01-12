@@ -2,7 +2,9 @@ import * as math from "./global/math";
 import * as core from "./core";
 import * as curve from "./curve";
 import * as eve from "./eve";
+import * as interior from "./interior";
 import * as particle from "./particle";
+import * as state from "./state";
 import {device, store, resMan, logger, util, consts} from "./global";
 
 export * from "./core";
@@ -59,7 +61,9 @@ store.Register({
         core,
         curve,
         eve,
-        particle
+        interior,
+        particle,
+        state
     ],
 
     types: {

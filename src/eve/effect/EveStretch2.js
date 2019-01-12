@@ -2,7 +2,7 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * EveStretch2
- * TODO: Implement class
+ * TODO: Implement
  *
  * @property {Tr2Effect} effect -
  * @property {TriCurveSet} loop -

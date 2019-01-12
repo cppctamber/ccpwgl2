@@ -87,7 +87,7 @@ Tw2BaseClass.define(EvePerMuzzleData, Type =>
  * @property {Boolean} _isFiring                       - Identifies if the firing fx is firing
  * @property {Array.<EvePerMuzzleData>} _perMuzzleData -
  */
-export class EveTurretFiringFX extends Tw2BaseClass
+export default class EveTurretFiringFX extends Tw2BaseClass
 {
 
     // ccp

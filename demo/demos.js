@@ -354,7 +354,7 @@ function init()
 
     // @Override
     // Replace create method when DOM has finished loading
-    Toasts.create = function(options)
+    Toasts.create = function (options)
     {
         var toast = document.createElement('div');
         toast.id = ++autoincrement;
@@ -395,7 +395,7 @@ function init()
         }
 
         // toast api
-        toast.hide = function()
+        toast.hide = function ()
         {
             toast.className += ' toasts-fadeOut';
             toast.addEventListener('animationend', removeToast, false);
@@ -429,7 +429,7 @@ function init()
         return toast;
     };
 
-    Toasts.setTimeout = function(toastid, val)
+    Toasts.setTimeout = function (toastid, val)
     {
         if (Toasts.toasts[toastid])
         {
@@ -437,7 +437,7 @@ function init()
         }
     };
 
-    ccpwgl_int.logger.on('error', function(e)
+    ccpwgl_int.logger.on('error', function (e)
     {
         if (!e.hide)
         {
@@ -451,7 +451,7 @@ function init()
         }
     });
 
-    ccpwgl_int.logger.on('warn', function(e)
+    ccpwgl_int.logger.on('warn', function (e)
     {
         if (!e.hide)
         {
@@ -463,6 +463,17 @@ function init()
                 icon: 'https://image.eveonline.com/Type/24589_64.png'
             });
         }
+    });
+
+    ccpwgl_int.logger.on('debug', function (e)
+    {
+        Toasts.create({
+            type: 'warning',
+            title: e.name,
+            text: e.message,
+            timeout: 6000,
+            icon: 'https://image.eveonline.com/Type/24589_64.png'
+        });
     });
 }
 

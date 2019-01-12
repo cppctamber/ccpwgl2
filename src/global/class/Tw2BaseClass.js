@@ -16,6 +16,15 @@ export default class Tw2BaseClass
     _id = generateID();
     _parent = null;
 
+    /**
+     * Constructor
+     * @param {*} ctx
+     */
+    constructor(ctx)
+    {
+        const schema = Tw2Schema.get(this.constructor);
+        if (schema) schema.OnInstantiation(this);
+    }
 
     /**
      * Gets child resources

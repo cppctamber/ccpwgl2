@@ -29,7 +29,7 @@ import {Tw2Float} from "../../core";
  * @property {number} _time                     - The current stretch time
  * @property {Boolean} _useTransformsForStretch - Toggles using transforms for stretch objects
  */
-export class EveStretch extends Tw2BaseClass
+export default class EveStretch extends Tw2BaseClass
 {
 
     // ccp
@@ -325,7 +325,7 @@ Tw2BaseClass.define(EveStretch, Type =>
             display: Type.BOOLEAN,
             dest: ["Tr2CurveConstant", "Tr2TranslationAdapter"],
             destObject: ["EveTransform"],
-            length: ["TriFloat"],
+            length: ["Tw2Float"],
             moveCompletion: ["TriCurveSet"],
             moveObject: ["EveTransform"],
             progressCurve: ["Tr2CurveScalar"],

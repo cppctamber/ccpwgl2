@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../../global";
  * @property {vec4} offset                 -
  * @property {Number} scale                -
  * @property {String} sourceAttribute      -
- * @property {Curve|TriFloat} sourceObject -
+ * @property {Curve|Tw2Float} sourceObject -
  */
 export default class TriValueBinding extends Tw2BaseClass
 {
@@ -34,7 +34,7 @@ Tw2BaseClass.define(TriValueBinding, Type =>
             offset: Type.VECTOR4,
             scale: Type.NUMBER,
             sourceAttribute: Type.STRING,
-            sourceObject: ["Tr2CurveScalar", "TriFloat", "TriPerlinCurve"]
+            sourceObject: ["Tr2CurveScalar", "Tw2Float", "TriPerlinCurve"]
         }
     };
 });

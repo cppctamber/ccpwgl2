@@ -1,5 +1,5 @@
 import {ErrFeatureNotImplemented, Tw2Error} from "../../core/Tw2Error";
-
+import {logger} from "../engine";
 
 /**
  * Stores schemas
@@ -23,6 +23,7 @@ export default class Tw2Schema
     props = {
         name: Tw2Schema.Type.STRING
     };
+    watch = null;
 
     /**
      * Constructor
@@ -32,7 +33,15 @@ export default class Tw2Schema
      */
     constructor(Constructor, options = {}, inherits)
     {
-        let {type = Constructor.name, category = null, isStaging = false, isLeaf = false, props = {}} = options;
+        let {
+            type = Constructor.name,
+            category = null,
+            isStaging = false,
+            isLeaf = false,
+            props = {},
+            notImplemented,
+            watch
+        } = options;
 
         if (inherits)
         {
@@ -60,6 +69,117 @@ export default class Tw2Schema
         /*
         this.NormalizeProps();
         this.CacheProps();
+        */
+
+        if (watch)
+        {
+            for (let i = 0; i < watch.length; i++)
+            {
+                if (Array.isArray(watch[i]))
+                {
+                    this.AddWatchedProperty(watch[i][0], watch[i][1]);
+                }
+                else
+                {
+                    this.AddWatchedProperty(watch[i], "watching");
+                }
+            }
+        }
+
+        if (notImplemented)
+        {
+            for (let i = 0; i < notImplemented.length; i++)
+            {
+                if (Array.isArray(notImplemented[i]))
+                {
+                    this.AddWatchedProperty(notImplemented[i][0], notImplemented[i][1]);
+                }
+                else
+                {
+                    this.AddWatchedProperty(notImplemented[i], "not implemented");
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds a property name which needs to be watched
+     * @param {String} key
+     * @param {String} message
+     */
+    AddWatchedProperty(key, message)
+    {
+        if (!this.watch) this.watch = {};
+
+        if (this.watch[key])
+        {
+            this.watch[key] += ", " + message;
+        }
+        else
+        {
+            this.watch[key] = message.charAt(0).toUpperCase() + message.substring(1);
+        }
+    }
+
+    /**
+     * Fires when a base class has been instantiated
+     * - For development only
+     * @param {*} a
+     */
+    OnInstantiation(a)
+    {
+        /*
+        if (!Tw2Schema.DEBUG_ENABLED) return;
+
+        // This won't work when using class properties as webpack
+        // will redefined properties with Object.defineProperty
+        if (this.watch)
+        {
+            for (const key in this.watch)
+            {
+                if (this.watch.hasOwnProperty(key))
+                {
+                    const
+                        message = `${this.watch[key]} "${this.type}.${key}"`,
+                        setMessage = `${message} (Set)`,
+                        getMessage = `${message} (Get)`,
+                        isFirst = true;
+
+                    let originalValue = a[key];
+                    //Reflect.deleteProperty(a, key);
+                    Reflect.defineProperty(a, key, {
+                        get: function ()
+                        {
+                            if (!isFirst)
+                            {
+                                logger.log({
+                                    type: "debug",
+                                    name: "Schema",
+                                    message: getMessage
+                                });
+                            }
+                            isFirst = false;
+                            return originalValue;
+                        },
+                        set: function (a)
+                        {
+                            if (!isFirst)
+                            {
+                                logger.log({
+                                    type: "debug",
+                                    name: "Schema",
+                                    message: setMessage
+                                });
+                            }
+                            isFirst = false;
+                            originalValue = a;
+                        },
+                        configurable: true,
+                        enumerable: true
+                    });
+                }
+            }
+        }
         */
     }
 
@@ -152,6 +272,12 @@ export default class Tw2Schema
     {
         this.set(Constructor, new Tw2Schema(Constructor, func(this.Type), inherits));
     }
+
+    /**
+     * Enables debug mode
+     * @type {boolean}
+     */
+    static DEBUG_ENABLED = true;
 
     /**
      * Schema types

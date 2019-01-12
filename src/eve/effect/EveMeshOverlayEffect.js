@@ -22,7 +22,7 @@ import {util, Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM
  * @property {Boolean} visible.additiveEffects      - Enables/ disables additive effect batch accumulation
  * @property {Boolean} visible.distortionEffects    - Currently not supported
  */
-export class EveMeshOverlayEffect extends Tw2BaseClass
+export default class EveMeshOverlayEffect extends Tw2BaseClass
 {
     // ccp
     additiveEffects = [];

@@ -9,7 +9,7 @@ import {Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator} from "../../core";
  *
  * @property {Array.<EveTransform>} sprites
  */
-export class EveOccluder extends Tw2BaseClass
+export default class EveOccluder extends Tw2BaseClass
 {
 
     sprites = [];
