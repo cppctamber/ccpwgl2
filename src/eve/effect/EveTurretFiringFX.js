@@ -341,7 +341,7 @@ export default class EveTurretFiringFX extends Tw2BaseClass
                         }
                         else
                         {
-                            this.stretch[i].SetSourcePositionFromTransform(this._perMuzzleData[i].transform);
+                            this.stretch[i].SetSourcePositionFromTransform(this._perMuzzleData[i].muzzleTransform);
                         }
                         this.stretch[i].SetDestinationPosition(this._endPosition);
                         this.stretch[i].SetIsNegZForward(true);

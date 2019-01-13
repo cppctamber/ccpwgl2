@@ -14,7 +14,7 @@ export class Tw2VertexDeclaration
     elements = [];
     elementsSorted = [];
     stride = null;
-    vertexSize = null;
+    //vertexSize = null;
 
 
     /**
@@ -27,15 +27,28 @@ export class Tw2VertexDeclaration
     }
 
     /**
+     * Sets the vertex stride
+     * @param {Number} val
+     * @returns {Tw2VertexDeclaration}
+     */
+    SetStride(val)
+    {
+        this.stride = val;
+        return this;
+    }
+
+    /**
      * Rebuilds the declaration
      */
     RebuildHash()
     {
         this.elementsSorted.splice(0, this.elementsSorted.length);
-        this.vertexSize = 0;
+        //this.vertexSize = 0;
         for (let i = 0; i < this.elements.length; ++i)
         {
             this.elementsSorted.push(this.elements[i]);
+            /*
+            // Doesn't work on turrets
             if (typeof this.elements[i].elements === "number")
             {
                 this.vertexSize += this.elements[i].elements;
@@ -44,9 +57,10 @@ export class Tw2VertexDeclaration
             {
                 this.vertexSize = null;
             }
+            */
         }
         this.elementsSorted.sort(Tw2VertexDeclaration.CompareDeclarationElements);
-        this.stride = this.vertexSize !== null ? this.vertexSize * 4 : null;
+        //this.stride = this.vertexSize !== null ? this.vertexSize * 4 : null;
     }
 
     /**
