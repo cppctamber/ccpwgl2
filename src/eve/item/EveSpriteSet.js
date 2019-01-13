@@ -1,4 +1,4 @@
-import {vec3, vec4, util, device} from "../../global";
+import {vec3, vec4, util, device, Tw2BaseClass} from "../../global";
 import {Tw2VertexDeclaration, Tw2RenderBatch} from "../../core";
 import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
@@ -44,33 +44,34 @@ export class EveSpriteSetBatch extends Tw2RenderBatch
 /**
  * EveSpriteSetItem
  *
- * @property {vec3} position
- * @property {number} blinkRate
- * @property {number} blinkPhase
- * @property {number} minScale
- * @property {number} maxScale
- * @property {number} falloff
- * @property {vec4} color
- * @property {vec4} warpColor
- * @property {number} boneIndex
- * @property {number} groupIndex
- * @class
+ * @implements EveObjectSetItem
+ *
+ * @property {Number} blinkPhase -
+ * @property {Number} blinkRate  -
+ * @property {Number} boneIndex  -
+ * @property {vec4} color        -
+ * @property {Number} falloff    -
+ * @property {Number} maxScale   -
+ * @property {Number} minScale   -
+ * @property {vec3} position     -
+ * @property {vec4} warpColor    -
  */
 export class EveSpriteSetItem extends EveObjectSetItem
 {
-
-    position = vec3.create();
-    blinkRate = 0;
+    // ccp
     blinkPhase = 0;
-    minScale = 1;
-    maxScale = 1;
-    falloff = 0;
-    color = vec4.create();
-    warpColor = vec4.create();
+    blinkRate = 0;
     boneIndex = 0;
-    groupIndex = -1;
-
-
+    color = vec4.create();
+    falloff = 0;
+    maxScale = 0;
+    minScale = 0;
+    position = vec3.create();
+    warpColor = vec4.create();
+    
+    // ccpwgl
+    groupIndex = -1;            // Retain from EveSOF?
+    
     /**
      * Creates a sprite set item from an object
      * @param {*} [opt={}]
@@ -88,24 +89,50 @@ export class EveSpriteSetItem extends EveObjectSetItem
 
 }
 
+Tw2BaseClass.define(EveSpriteSetItem, Type =>
+{
+    return {
+        type: "EveSpriteSetItem",
+        category: "EveObjectSetItem",
+        props: {
+            blinkPhase: Type.NUMBER,
+            blinkRate: Type.NUMBER,
+            boneIndex: Type.NUMBER,
+            color: Type.RGBA_LINEAR,
+            falloff: Type.NUMBER,
+            groupIndex: Type.NUMBER,
+            maxScale: Type.NUMBER,
+            minScale: Type.NUMBER,
+            position: Type.TR_TRANSLATION,
+            warpColor: Type.RGBA_LINEAR
+        }
+    };
+});
+
 
 /**
  * EveSpriteSet
  *
- * @property {Tw2Effect} effect
- * @property {?Boolean} useQuads - Use quad rendering (CPU transform)
- * @property {?Boolean} isSkinned - Use bone transforms (when useQuads is true)
- * @property {number} _time
- * @property {WebGLBuffer} _vertexBuffer
- * @property {WebGLBuffer} _indexBuffer
- * @property {Tw2VertexDeclaration} _decl
+ * @property {Tr2Effect} effect                 - The sprite set's effect
+ * @property {Number} intensity                 - The sprite set's intensity
+ * @property {Boolean} skinned                  - Use bone transforms (when useQuads is true)
+ * @property {Array.<EveObjectSetItem>} sprites - The sprite's children
+ * @property {?Boolean} useQuads                - Use quad rendering (CPU transform)
+ * @property {number} _time                     - The sprite set's internal time
+ * @property {WebGLBuffer} _vertexBuffer        - The sprite set's vertex buffer
+ * @property {WebGLBuffer} _indexBuffer         - The sprite set's index buffer
+ * @property {Tw2VertexDeclaration} _decl       - The sprite set's vertex declarations
+ * @property {Tw2VertexDeclaration} _vdecl      -
  */
 export class EveSpriteSet extends EveObjectSet
 {
-
+    // ccp
     effect = null;
+    intensity = 0;
+    skinned = false;
+
+    // ccpwgl
     useQuads = null;
-    isSkinned = null;
     _time = 0;
     _vertexBuffer = null;
     _indexBuffer = null;
@@ -117,12 +144,12 @@ export class EveSpriteSet extends EveObjectSet
     /**
      * Constructor
      * @param {Boolean} [useQuads] - Use quad rendering (CPU transform)
-     * @param {Boolean} [isSkinned] - Use bone transforms (when useQuads is true)
+     * @param {Boolean} [skinned] - Use bone transforms (when useQuads is true)
      */
-    constructor(useQuads = false, isSkinned = false)
+    constructor(useQuads = false, skinned = false)
     {
         super();
-        this.UseQuads(useQuads, isSkinned);
+        this.UseQuads(useQuads, skinned);
     }
 
     /**
@@ -145,14 +172,14 @@ export class EveSpriteSet extends EveObjectSet
 
     /**
      * Use instanced rendering or 'quad' rendering
-     * @param {Boolean} useQuads      - Use quad rendering (CPU transform)
-     * @param {Boolean} isSkinned     - Use bone transforms (when useQuads is true)
+     * @param {Boolean} useQuads - Use quad rendering (CPU transform)
+     * @param {Boolean} skinned  - Use bone transforms (when useQuads is true)
      */
-    UseQuads(useQuads, isSkinned)
+    UseQuads(useQuads, skinned)
     {
         if (this.useQuads === useQuads) return;
         this.useQuads = useQuads;
-        this.isSkinned = isSkinned;
+        this.skinned = skinned;
         this._decl = Tw2VertexDeclaration.from(!useQuads ? EveSpriteSet.vertexDeclarations : EveSpriteSet.quadVertexDeclarations);
         this._rebuildPending = true;
     }
@@ -463,7 +490,7 @@ export class EveSpriteSet extends EveObjectSet
         for (let i = 0; i < itemCount; ++i)
         {
             const item = this._visibleItems[i];
-            if (this.isSkinned)
+            if (this.skinned)
             {
                 const offset = item.boneIndex * 12;
                 pos[0] = bones[offset] * item.position[0] + bones[offset + 1] * item.position[1] + bones[offset + 2] * item.position[2] + bones[offset + 3];
@@ -548,6 +575,25 @@ export class EveSpriteSet extends EveObjectSet
     ];
 
 }
+
+
+Tw2BaseClass.define(EveSpriteSet, Type =>
+{
+    return {
+        type: "EveSpriteSet",
+        category: "EveObjectSet",
+        props: {
+            effect: ["Tr2Effect"],
+            intensity: Type.NUMBER,
+            skinned: Type.BOOLEAN,
+            sprites: [["EveSpriteSetItem"]],
+            useQuads: Type.BOOLEAN
+        },
+        notImplemented: [
+            "intensity"
+        ]
+    };
+});
 
 
 

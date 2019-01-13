@@ -70,28 +70,6 @@ export default class EveLensflare extends Tw2BaseClass
     }
 
     /**
-     * Gets lensflares's res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-    GetResources(out = [])
-    {
-        if (this.mesh) this.mesh.GetResources(out);
-
-        for (let i = 0; i < this.flares.length; i++)
-        {
-            this.flares[i].GetResources(out);
-        }
-
-        if (EveOccluder.global && EveOccluder.global.effect && !out.includes(EveOccluder.global.effect))
-        {
-            out.push(EveOccluder.global.effect);
-        }
-
-        return out;
-    }
-
-    /**
      * Updates Occluders
      */
     UpdateOccluders()

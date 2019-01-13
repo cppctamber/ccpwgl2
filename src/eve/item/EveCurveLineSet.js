@@ -1,10 +1,11 @@
-import {vec3, vec4, quat, mat4, util, device} from "../../global";
+import {vec3, vec4, quat, mat4, util, device, Tw2BaseClass} from "../../global";
 import {Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch} from "../../core";
 import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
 
 /**
  * EveCurveLineSetItem
+ * @ccp n/a
  *
  * @property {number} type
  * @property {vec3} position1
@@ -23,20 +24,20 @@ import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
  */
 export class EveCurveLineSetItem extends EveObjectSetItem
 {
-
-    type = EveCurveLineSetItem.Type.INVALID;
-    position1 = vec3.create();
-    color1 = vec4.fromValues(1, 1, 1, 1);
-    position2 = vec3.create();
-    color2 = vec4.fromValues(1, 1, 1, 1);
-    intermediatePosition = vec3.create();
-    width = 1;
-    multiColor = vec4.fromValues(0, 0, 0, 1);
-    multiColorBorder = -1;
-    overlayColor = vec4.fromValues(0, 0, 0, 1);
+    // ccpwgl
     animationSpeed = 0;
     animationScale = 1;
+    color1 = vec4.fromValues(1, 1, 1, 1);
+    color2 = vec4.fromValues(1, 1, 1, 1);
+    intermediatePosition = vec3.create();
+    multiColor = vec4.fromValues(0, 0, 0, 1);
+    multiColorBorder = -1;
     numOfSegments = 1;
+    overlayColor = vec4.fromValues(0, 0, 0, 1);
+    position1 = vec3.create();
+    position2 = vec3.create();
+    type = EveCurveLineSetItem.Type.INVALID;
+    width = 1;
 
 
     /**
@@ -216,30 +217,57 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 
 }
 
+Tw2BaseClass.define(EveCurveLineSetItem, Type=>
+{
+    return {
+        type: "EveCurveLineSetItem",
+        category: "EveObjectSetItem",
+        props: {
+            animatedSpeed: Type.NUMBER,
+            animatedScale: Type.NUMBER,
+            color1: Type.RGBA_LINEAR,
+            color2: Type.RGBA_LINEAR,
+            intermediatePosition: Type.VECTOR3,
+            multiColor: Type.RGBA_LINEAR,
+            multiColorBorder: Type.NUMBER,
+            overlayColor: Type.RGBA_LINEAR,
+            position1: Type.VECTOR3,
+            position2: Type.VECTOR3,
+            type: { type: Type.NUMBER, values: EveCurveLineSetItem.Type },
+            width: Type.NUMBER
+        }
+    };
+});
+
 
 /**
  * EveCurveLineSet
+ * TODO: Share "lineEffect" between line sets?
+ * TODO: Share "pickEffect" between line sets?
+ * TODO: Replace "parentTransform" usages and cache with "worldTransform" instead?
+ * TODO: Is "lineWidthFactor" deprecated, or just for ccpwgl?
  *
- * @property {Tw2Effect} lineEffect
- * @property {?Tw2Effect} pickEffect
- * @property {number} lineWidthFactor
- * @property {Boolean} additive
- * @property {number} depthOffset
- * @property {vec3} translation
- * @property {quat} rotation
- * @property {vec3} scaling
- * @property {mat4} transform
- * @property {mat4} parentTransform
- * @property {number} _vertexSize
- * @property {number} _vbSize
- * @property {?WebGLBuffer} _vb
- * @property {Tw2PerObjectData} _perObjectData
- * @property {Tw2VertexDeclaration} _decl
+ * @property {Tw2Effect} lineEffect            -
+ * @property {?Tw2Effect} pickEffect           -
+ * @property {number} lineWidthFactor          -
+ * @property {Boolean} additive                -
+ * @property {number} depthOffset              -
+ * @property {vec3} translation                -
+ * @property {quat} rotation                   -
+ * @property {vec3} scaling                    -
+ * @property {mat4} transform                  -
+ * @property {mat4} parentTransform            -
+ * @property {number} _vertexSize              -
+ * @property {number} _vbSize                  -
+ * @property {?WebGLBuffer} _vb                -
+ * @property {Tw2PerObjectData} _perObjectData -
+ * @property {Tw2VertexDeclaration} _decl      -
  * @class
  */
 export class EveCurveLineSet extends EveObjectSet
 {
 
+    // cco
     lineEffect = Tw2Effect.create({
         effectFilePath: "res:/Graphics/Effect/Managed/Space/SpecialFX/Lines3D.fx",
         textures: {
@@ -248,20 +276,22 @@ export class EveCurveLineSet extends EveObjectSet
         }
     });
     pickEffect = null;
+
+    // ccpwgl
     lineWidthFactor = 1;
     additive = false;
-    pickable = true;
     depthOffset = 0;
-    translation = vec3.create();
+    parentTransform = mat4.create();
+    pickable = true;
     rotation = quat.create();
     scaling = vec3.fromValues(1, 1, 1);
+    translation = vec3.create();
     transform = mat4.create();
-    parentTransform = mat4.create();
     _vertexSize = 26;
     _vbSize = 0;
     _vb = null;
     _perObjectData = Tw2PerObjectData.from(EveCurveLineSet.perObjectData);
-    _decl = Tw2VertexDeclaration.from(EveCurveLineSet.vertexDeclarations);
+    _decl = Tw2VertexDeclaration.from(EveCurveLineSet.vertexDeclarations).SetStride(26 * 4);
 
 
     /**
@@ -884,4 +914,28 @@ export class EveCurveLineSet extends EveObjectSet
         {usage: "COLOR", usageIndex: 2, elements: 4}
     ];
 }
+
+Tw2BaseClass.define(EveCurveLineSet, Type =>
+{
+    return {
+        type: "EveCurveLineSet",
+        category: "EveObjectSet",
+        props: {
+            additive: Type.BOOLEAN,
+            depthOffset: Type.NUMBER,
+            lineEffect: ["Tr2Effect"],
+            lineWidthFactor: Type.NUMBER,
+            parentTransform: Type.MATRIX4,
+            pickable: Type.BOOLEAN,
+            pickEffect: ["Tr2Effect"],
+            position: Type.TR_TRANSLATION,
+            rotation: Type.TR_ROTATION,
+            scaling: Type.TR_SCALING,
+            transform: Type.TR_LOCAL
+        },
+        notImplemented: [
+            "depthOffset"
+        ]
+    };
+});
 

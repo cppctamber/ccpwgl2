@@ -1,9 +1,49 @@
-import {vec4} from "../../../global";
-import {Tw2BaseClass} from "../../../global";
+import {vec4, Tw2BaseClass} from "../../global";
+import {Tw2RenderBatch} from "../../core";
+
+/**
+ * Eve booster set 2 render batch
+ *
+ * @property {EveBoosterSet2} boosterSet
+ */
+export class EveBoosterSet2Batch extends Tw2RenderBatch
+{
+
+    boosterSet = null;
+
+    /**
+     * Commits the batch
+     * @param {String} technique - technique name
+     */
+    Commit(technique)
+    {
+        this.boosterSet.Render(technique);
+    }
+}
+
+/**
+ * EveBoosterSet2Item
+ * @ccp N/A
+ * TODO: Implement
+ */
+export class EveBoosterSet2Item extends Tw2BaseClass
+{
+
+}
+
+Tw2BaseClass.define(EveBoosterSet2Item, Type =>
+{
+    return {
+        type: "EveBoosterSet2Item",
+        staging: true,
+        notImplemented: ["*"]
+    };
+});
 
 /**
  * EveBoosterSet2
  * @implements EveObjectSet
+ * TODO: Implement
  *
  * @property {Boolean} alwaysOn             -
  * @property {Number} alwaysOnIntensity     -
@@ -25,7 +65,7 @@ import {Tw2BaseClass} from "../../../global";
  * @property {vec4} warpGlowColor           -
  * @property {vec4} warpHaloColor           -
  */
-export default class EveBoosterSet2 extends Tw2BaseClass
+export class EveBoosterSet2 extends Tw2BaseClass
 {
 
     alwaysOn = false;
@@ -76,7 +116,8 @@ Tw2BaseClass.define(EveBoosterSet2, Type =>
             trails: ["EveTrailsSet"],
             warpGlowColor: Type.RGBA_LINEAR,
             warpHaloColor: Type.RGBA_LINEAR
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

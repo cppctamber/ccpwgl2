@@ -30,11 +30,11 @@ Tw2BaseClass.define(TriValueBinding, Type =>
         type: "TriValueBinding",
         props: {
             destinationAttribute: Type.STRING,
-            destinationObject: Type.OBJECT,
+            destinationObject: Type.REF,
             offset: Type.VECTOR4,
             scale: Type.NUMBER,
             sourceAttribute: Type.STRING,
-            sourceObject: ["Tr2CurveScalar", "Tw2Float", "TriPerlinCurve"]
+            sourceObject: Type.REF
         }
     };
 });

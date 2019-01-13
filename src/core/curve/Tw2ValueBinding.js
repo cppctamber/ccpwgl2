@@ -223,9 +223,13 @@ export class Tw2ValueBinding
         if (this._copyFunc)
         {
             this._copyFunc.call(this);
-            if ("OnValueChanged" in this.destinationObject)
+            if ("UpdateValues" in this.destinationObject)
             {
-                this.destinationObject.OnValueChanged(controller, [this.destinationAttribute]);
+                this.destinationObject.UpdateValues(controller);
+            }
+            else if ("OnValueChanged" in this.destinationObject)
+            {
+                this.destinationObject.OnValueChanged(controller);
             }
         }
     }

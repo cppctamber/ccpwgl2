@@ -1,4 +1,4 @@
-import {vec3, vec4, mat4, util, device} from "../../global";
+import {vec3, vec4, mat4, util, device, Tw2BaseClass} from "../../global";
 import {Tw2VertexDeclaration, Tw2RenderBatch} from "../../core";
 import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
@@ -28,6 +28,7 @@ export class EveSpotlightSetBatch extends Tw2RenderBatch
 
 /**
  * Spotlight Item
+ * TODO: Identify if "boosterGainInfluence" is deprecated
  *
  * @property {mat4} transform               - The spotlight's transform
  * @property {vec4} coneColor               - Colour of the spotlight's cone
@@ -44,22 +45,25 @@ export class EveSpotlightSetBatch extends Tw2RenderBatch
  */
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
-
-    transform = mat4.create();
+    // ccp
     coneColor = vec4.create();
-    spriteColor = vec4.create();
     flareColor = vec4.create();
+    spriteColor = vec4.create();
     spriteScale = vec3.fromValues(1, 1, 1);
+    transform = mat4.create();
+
+    // ccpwgl
     boosterGainInfluence = 0;
-    boneIndex = 0;
-    groupIndex = -1;
-    coneIntensity = 0;
-    spriteIntensity = 0;
-    flareIntensity = 0;
+    boneIndex = 0;                  // retain from EveSOF?
+    groupIndex = -1;                // retain from EveSOF?
+    coneIntensity = 0;              // Faction intensity
+    spriteIntensity = 0;            // Faction intensity
+    flareIntensity = 0;             // faction intensity
 
 
     /**
      * Creates a spotlight set item from an object
+     * TODO: Replace with 'from'
      * @param {*} [opt={}
      * @returns {EveSpotlightSetItem}
      */
@@ -76,26 +80,56 @@ export class EveSpotlightSetItem extends EveObjectSetItem
 
 }
 
+Tw2BaseClass.define(EveSpotlightSetItem, Type =>
+{
+    return {
+        isStaging: true,
+        type: "EveSpotlightSetItem",
+        category: "EveObjectSetItem",
+        props: {
+            boosterGainInfluence: Type.NUMBER,
+            boneIndex: Type.NUMBER,
+            coneColor: Type.RGBA_LINEAR,
+            coneIntensity: Type.NUMBER,
+            flareColor: Type.RGBA_LINEAR,
+            flareIntensity: Type.NUMBER,
+            groupIndex: Type.NUMBER,
+            spriteColor: Type.RGBA_LINEAR,
+            spriteIntensity: Type.NUMBER,
+            spriteScale: Type.TR_SCALING,
+            transform: Type.MATRIX4
+        },
+        watch: [
+            "boosterGainInfluence"
+        ]
+    };
+});
+
+
 
 /**
  * EveSpotlightSet
+ * Todo: Implement "intensity"
+ * Todo: Use interface rather than extending EveObjectSet
  *
- * @property {String} name                               - The spotlight set's name
- * @property {Boolean} display                           - controls the visibility of the spotlight set, and all it's children
  * @property {Tw2Effect} coneEffect                      - The spotlight set's cone effect
- * @property {Tw2Effect} glowEffect                      - The spotlight set's glow    effect
+ * @property {Tw2Effect} glowEffect                      - The spotlight set's glow effect
+ * @property {Number} intensity                          - The spotlight set's intensity
  * @property {Array.<EveSpotlightSetItem) spotlightItems - The spotlight set's children
  * @property {WebGLBuffer} _coneVertexBuffer             - Webgl buffer for the spotlight set's cone vertices
  * @property {WebGLBuffer} _spriteVertexBuffer           - Webgl buffer for the spotlight set's sprite/glow vertices
  * @property {WebGLBuffer} _indexBuffer                  - Webgl buffer for the spotlight set
- * @property {Tw2VertexDeclaration{ usage: } _decl                - The spotlight set's vertex declarations
- * @class
+ * @property {Tw2VertexDeclaration{ usage: } _decl       - The spotlight set's vertex declarations
  */
 export class EveSpotlightSet extends EveObjectSet
 {
 
+    // ccp
     coneEffect = null;
     glowEffect = null;
+    intensity = 0;
+
+    // ccpwgl
     _coneVertexBuffer = null;
     _spriteVertexBuffer = null;
     _indexBuffer = null;
@@ -404,6 +438,24 @@ export class EveSpotlightSet extends EveObjectSet
     ];
 
 }
+
+
+Tw2BaseClass.define(EveSpotlightSet, Type =>
+{
+    return {
+        type: "EveSpotlightSet",
+        category: "EveObjectSet",
+        props: {
+            coneEffect: ["Tr2Effect"],
+            glowEffect: ["Tr2Effect"],
+            intensity: Type.NUMBER,
+            spotlightItems: [["EveSpotlightSetItem"]]
+        },
+        notImplemented: [
+            "intensity"
+        ]
+    };
+});
 
 
 

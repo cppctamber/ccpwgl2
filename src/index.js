@@ -1,4 +1,5 @@
 import * as math from "./global/math";
+import * as clazz from "./global/class";
 import * as core from "./core";
 import * as curve from "./curve";
 import * as eve from "./eve";
@@ -58,6 +59,7 @@ store.Register({
     },
 
     classes: [
+        clazz,
         core,
         curve,
         eve,

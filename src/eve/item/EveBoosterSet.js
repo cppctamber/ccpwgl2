@@ -26,6 +26,7 @@ export class EveBoosterBatch extends Tw2RenderBatch
 
 /**
  * EveBoosterSetItem
+ * TODO: Is this deprecated?
  *
  * @param {Boolean} enableCustomValues   - Enables custom values
  * @property {{}} visible                - Visibility options
@@ -46,6 +47,13 @@ export class EveBoosterBatch extends Tw2RenderBatch
 export class EveBoosterSetItem extends EveObjectSetItem
 {
 
+    atlas0 = 0;
+    atlas1 = 0;
+    customValues = null;
+    locatorName = null;
+    seed = Math.random() * 7;
+    transform = mat4.create();
+    updateFromLocator = false;
     visible = {
         glow: true,
         symHalo: true,
@@ -53,15 +61,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
         trail: true,
         customValues: true
     };
-    locatorName = null;
-    updateFromLocator = false;
-    seed = Math.random() * 7;
     wavePhase = Math.random();
-    atlas0 = 0;
-    atlas1 = 0;
-    transform = mat4.create();
-    customValues = null;
-
 
     /**
      * Gets the item's position
@@ -118,6 +118,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
 
 /**
  * EveBoosterSet
+ * TODO: Is this deprecated?
  *
  * @property {{}} visible                      - Visibility controls
  * @property {Boolean} visible.glows           - Toggles glow visibility

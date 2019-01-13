@@ -229,6 +229,13 @@ export class Tw2Resource
         }
     }
 
+    /**
+     * Identifies that this object is a resource
+     * @type {boolean}
+     * @private
+     */
+    static __isResource = true;
+
 }
 
 /**

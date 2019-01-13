@@ -42,15 +42,7 @@ Tw2BaseClass.define(EveStarfield, Type =>
             numStars: Type.NUMBER,
             seed: Type.NUMBER
         },
-        notImplemented: [
-            "maxDist",
-            "maxFlashRate",
-            "minDist",
-            "minFlashIntensity",
-            "minFlashRate",
-            "numStars",
-            "seed"
-        ]
+        notImplemented: ["*"]
     };
 });
 

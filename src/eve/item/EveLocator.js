@@ -1,22 +1,21 @@
-import {mat4} from "../../global";
+import {mat4, Tw2BaseClass} from "../../global";
 
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
+ * TODO: Make bone private and update all uses
  *
- * @property {String} name                  - The locator's name
- * @property {mat4} transform               - The locator's transform
  * @property {?number} atlasIndex0          - A booster locator's atlasIndex0
  * @property {?number} atlasIndex1          - A booster locator's atlasIndex1
  * @property {?Tw2Bone} bone                - A turret locator's bone
+ * @property {mat4} transform               - The locator's transform
  */
-export class EveLocator
+export class EveLocator extends Tw2BaseClass
 {
 
-    name = "";
-    transform = mat4.create();
     atlasIndex0 = null;
     atlasIndex1 = null;
     bone = null;
+    transform = mat4.create();
 
 
     /**
@@ -55,3 +54,66 @@ export class EveLocator
     };
 
 }
+
+Tw2BaseClass.define(EveLocator, Type =>
+{
+    return {
+        type: "EveLocator",
+        category: "Locator",
+        props: {
+            atlasIndex0: Type.NUMBER,
+            atlasIndex1: Type.NUMBER,
+            bone: Type.REF,
+            transform: Type.TR_LOCAL
+        }
+    };
+});
+
+/**
+ * EveLocator2
+ * TODO: Is there any difference between this and EveLocator ?
+ *
+ * @property {mat4} transform - The locators transform
+ */
+export class EveLocator2 extends Tw2BaseClass
+{
+
+    transform = mat4.create();
+
+}
+
+Tw2BaseClass.define(EveLocator2, Type =>
+{
+    return {
+        type: "EveLocator2",
+        category: "Locator",
+        isStaging: true,
+        props: {
+            transform: Type.TR_LOCAL
+        }
+    };
+});
+
+/**
+ * EveLocatorSets
+ *
+ * @property {Array<{position: vec4, direction: vec3}>} locators -
+ */
+export class EveLocatorSets extends Tw2BaseClass
+{
+
+    locators = [];
+
+}
+
+Tw2BaseClass.define(EveLocatorSets, Type =>
+{
+    return {
+        isStaging: true,
+        type: "EveLocatorSets",
+        props: {
+            locators: Type.ARRAY
+        }
+    };
+});
+

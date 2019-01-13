@@ -1,5 +1,4 @@
 import {ErrFeatureNotImplemented, Tw2Error} from "../../core/Tw2Error";
-import {logger} from "../engine";
 
 /**
  * Stores schemas
@@ -11,18 +10,18 @@ const PRIVATE = new WeakMap();
  * Tw2StagingSchema
  *
  * @property {String} type
+ * @property {*} Constructor
  * @property {*} props
- * @property {*} cache
+ * @property {*} keys
+ * @property {null|{}} watch
  */
 export default class Tw2Schema
 {
 
     type = null;
     Constructor = null;
-    cache = null;
-    props = {
-        name: Tw2Schema.Type.STRING
-    };
+    keys = null;
+    props = { name: Tw2Schema.Type.STRING }; // This should be inherited from Tw2BaseClass
     watch = null;
 
     /**
@@ -35,10 +34,10 @@ export default class Tw2Schema
     {
         let {
             type = Constructor.name,
-            category = null,
-            isStaging = false,
-            isLeaf = false,
+            category = Constructor.__category || null,
+            isStaging = !!Constructor.__isStaging,
             props = {},
+            isLeaf,
             notImplemented,
             watch
         } = options;
@@ -47,30 +46,36 @@ export default class Tw2Schema
         {
             const schema = Tw2Schema.get(inherits);
             if (!schema) throw new ErrSchemaUndefined();
-            Object.assign(this.props, schema.props);
+            props = Object.assign({}, schema.props, props);
             if (inherits["__isStaging"]) isStaging = true;
             category = category || inherits["__category"] || null;
         }
 
-        Object.defineProperties(this, {
-            Constructor: {value: Constructor},
-            type: {value: type}
-        });
+        this.Constructor = Constructor;
+        this.type = Type;
 
-        Object.defineProperties(Constructor, {
-            __type: {value: type},
-            __category: {value: category},
-            __isStaging: {value: isStaging},
-            __isLeaf: {value: isLeaf}
-        });
+        for (const key in props)
+        {
+            if (props.hasOwnProperty(key))
+            {
+                this.AddProperty(key, props[key]);
+            }
+        }
 
-        Object.assign(this.props, props);
+        if (isLeaf === undefined)
+        {
+            const hasChildren = this.keys && (this.keys.array || this.keys.object);
+            isLeaf = !hasChildren;
+        }
 
-        /*
-        this.NormalizeProps();
-        this.CacheProps();
-        */
 
+        // Meta data
+        Constructor.__type = type;
+        Constructor.__category = category;
+        Constructor.__isStaging = isStaging;
+        Constructor.__isLeaf = isLeaf;
+
+        // Replace with decorators once their cost in size is reduced
         if (watch)
         {
             for (let i = 0; i < watch.length; i++)
@@ -86,6 +91,20 @@ export default class Tw2Schema
             }
         }
 
+        // Catch all
+        if (notImplemented && notImplemented.includes("*"))
+        {
+            notImplemented = [];
+            for (const prop in this.props)
+            {
+                if (this.props.hasOwnProperty(prop))
+                {
+                    notImplemented.push(prop);
+                }
+            }
+        }
+
+        // Replace with decorators once their cost in size is reduced
         if (notImplemented)
         {
             for (let i = 0; i < notImplemented.length; i++)
@@ -103,6 +122,45 @@ export default class Tw2Schema
     }
 
     /**
+     * Adds a property and it's opt
+     * @param {String} name
+     * @param {*|String|Object|Array} opt
+     */
+    AddProperty(name, opt)
+    {
+        if (typeof opt === "number")
+        {
+            opt = { type: opt };
+        }
+        else if (Array.isArray(opt))
+        {
+            if (!Array.isArray(opt[0])) opt = { type: Type.OBJECT, elements: opt };
+            else opt = { type: Type.ARRAY, elements: opt[0] };
+        }
+        else if (typeof opt !== "object")
+        {
+            throw new ErrSchemaTypeInvalid({ name });
+        }
+
+        // Cache key names
+        const typeCategory = Tw2Schema.TypeCategory[opt.type];
+        if (typeCategory === undefined) throw new ErrSchemaTypeInvalid({ name });
+
+        if (!this.keys) this.keys = {};
+        if (!this.keys[typeCategory]) this.keys[typeCategory] = [];
+        if (!this.keys[typeCategory].includes(name)) this.keys[typeCategory].push(name);
+        this.keys[typeCategory].sort();
+
+        if (opt.type === Tw2Schema.Type.OBJECT || opt.type === Tw2Schema.Type.ARRAY)
+        {
+            this.constructor.__isLeaf = false;
+        }
+
+        opt.name = name;
+        this.props[name] = opt;
+    }
+
+    /**
      * Adds a property name which needs to be watched
      * @param {String} key
      * @param {String} message
@@ -110,15 +168,8 @@ export default class Tw2Schema
     AddWatchedProperty(key, message)
     {
         if (!this.watch) this.watch = {};
-
-        if (this.watch[key])
-        {
-            this.watch[key] += ", " + message;
-        }
-        else
-        {
-            this.watch[key] = message.charAt(0).toUpperCase() + message.substring(1);
-        }
+        if (this.watch[key]) this.watch[key] += ", " + message;
+        else this.watch[key] = message.charAt(0).toUpperCase() + message.substring(1);
     }
 
     /**
@@ -206,23 +257,7 @@ export default class Tw2Schema
     {
         throw new ErrFeatureNotImplemented();
     }
-
-    /**
-     * Normalizes the schema's props
-     */
-    NormalizeProps()
-    {
-        throw new ErrFeatureNotImplemented();
-    }
-
-    /**
-     * Caches props for performance
-     */
-    CacheProps()
-    {
-        throw new ErrFeatureNotImplemented();
-    }
-
+    
     /**
      * Gets a constructor's schema
      * @param {*} Constructor
@@ -278,40 +313,74 @@ export default class Tw2Schema
      * @type {boolean}
      */
     static DEBUG_ENABLED = true;
-
-    /**
-     * Schema types
-     * @type {*}
-     */
-    static Type = {
-        BOOLEAN: 0,
-        STRING: 1,
-        NUMBER: 2,
-        ARRAY: 3,
-        OBJECT: 4,
-        PLAIN: 5,
-        TYPE: 6,
-        REF: 7,
-        PATH: 8,
-        EXPRESSION: 9,
-        VECTOR: 10,
-        VECTOR2: 11,
-        VECTOR3: 12,
-        VECTOR4: 13,
-        QUATERNION: 14,
-        MATRIX3: 15,
-        MATRIX4: 16,
-        FLOAT32: 20,
-        RGBA: 30,
-        RGBA_LINEAR: 31,
-        TR_ROTATION: 100,
-        TR_SCALING: 101,
-        TR_TRANSLATION: 102,
-        TR_LOCAL: 103,
-        TR_WORLD: 104
-    };
-
+    
 }
+
+/**
+ * Schema types
+ * Todo: Replace with Tw2SchemaType object.type
+ * @type {*}
+ */
+const Type = Tw2Schema.Type = {
+    BOOLEAN: 0,
+    STRING: 1,
+    NUMBER: 2,
+    ARRAY: 3,
+    OBJECT: 4,
+    PLAIN: 5,
+    REF: 7,
+    PATH: 8,
+    EXPRESSION: 9,
+    VECTOR2: 11,
+    VECTOR3: 12,
+    VECTOR4: 13,
+    QUATERNION: 14,
+    MATRIX3: 15,
+    MATRIX4: 16,
+    TYPED: 20,    // Unfixed length
+    FLOAT32: 21,  // Unfixed length  
+    RGBA: 30,
+    RGBA_LINEAR: 31,
+    TR_ROTATION: 100,
+    TR_SCALING: 101,
+    TR_TRANSLATION: 102,
+    TR_LOCAL: 103,
+    TR_WORLD: 104
+};
+
+/**
+ * Todo: Replace with Tw2SchemaType object.typeCategory
+ * @type {*}
+ */
+Tw2Schema.TypeCategory = {
+    [Type.ARRAY]: "array",
+    [Type.OBJECT]: "object",
+    [Type.PLAIN]: "plain",
+    [Type.REF]: "ref",
+    // Primary
+    [Type.BOOLEAN]: "primary",
+    [Type.STRING]: "primary",
+    [Type.NUMBER]: "primary",
+    [Type.PATH]: "primary",
+    [Type.EXPRESSION]: "primary",
+    // Any length typed
+    [Type.TYPED]: "typed",
+    [Type.FLOAT32]: "typed",
+    // Fixed length typed
+    [Type.VECTOR2]: "vector",
+    [Type.VECTOR3]: "vector",
+    [Type.VECTOR4]: "vector",
+    [Type.QUATERNION]: "vector",
+    [Type.MATRIX3]: "vector",
+    [Type.MATRIX4]: "vector",
+    [Type.RGBA]: "vector",
+    [Type.RGBA_LINEAR]: "vector",
+    [Type.TR_ROTATION]: "vector",
+    [Type.TR_SCALING]: "vector",
+    [Type.TR_TRANSLATION]: "vector",
+    [Type.TR_LOCAL]: "vector",
+    [Type.TR_WORLD]: "vector",
+};
 
 /**
  * Throws when trying to register a class/constructor's schema more than once
@@ -332,5 +401,16 @@ class ErrSchemaUndefined extends Tw2Error
     constructor(data)
     {
         super(data, "Class has no schema");
+    }
+}
+
+/**
+ * Throws when a schema type is invalid
+ */
+class ErrSchemaTypeInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid schema type (%name%)");
     }
 }

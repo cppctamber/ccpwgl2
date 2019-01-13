@@ -26,7 +26,8 @@ Tw2BaseClass.define(EveStretch2, Type =>
             effect: ["Tr2Effect"],
             loop: ["TriCurveSet"],
             quadCount: Type.NUMBER
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

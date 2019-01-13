@@ -29,12 +29,11 @@ Tw2BaseClass.define(EvePerMuzzleData, Type =>
 {
     return {
         type: "EvePerMuzzleData",
-        isLeaf: true,
         props: {
             constantDelay: Type.NUMBER,
             currentStartDelay: Type.NUMBER,
             elapsedTime: Type.NUMBER,
-            muzzlePositionBone: Type.OBJECT,
+            muzzlePositionBone: Type.REF,
             muzzleTransform: Type.MATRIX4,
             readyToStart: Type.BOOLEAN,
             started: Type.BOOLEAN
@@ -376,8 +375,8 @@ export default class EveTurretFiringFX extends Tw2BaseClass
 Tw2BaseClass.define(EveTurretFiringFX, Type =>
 {
     return {
-        isStaging: true,
         type: "EveTurretFiringFX",
+        isStaging: true,
         props: {
             boneName: Type.STRING,
             destinationObserver: ["TriObserverLocal"],

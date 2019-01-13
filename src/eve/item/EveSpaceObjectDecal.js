@@ -1,46 +1,49 @@
-import {vec3, quat, mat4, util, device, store} from "../../global";
+import {vec3, quat, mat4, util, device, store, Tw2BaseClass} from "../../global";
 import {Tw2PerObjectData, Tw2ForwardingRenderBatch} from "../../core/";
 
 /**
  * EveSpaceObjectDecal
+ * TODO: Make "PickEffect" shared
+ * TODO: Identify if "groupIndex" is deprecated
+ * TODO: Identify if "parentBoneIndex" is deprecated
+ * If "groupIndex" and "parentBoneIndex" are just used by the EveSOF, we may need to record this information if
+ * we are going to convert this object back into a EveSOF object
  *
- * @property {String|number} _id
- * @property {String} name
- * @property {Boolean} display
- * @property {Tw2Effect} decalEffect
- * @property {Tw2Effect} pickEffect
- * @property {Tw2GeometryRes} parentGeometry
- * @property {number} parentBoneIndex
- * @property {number} groupIndex
- * @property {Boolean} pickable
- * @property {vec3} position
- * @property {quat} rotation
- * @property {vec3} scaling
- * @property {mat4} decalMatrix
- * @property {mat4} invDecalMatrix
- * @property {Array} indexBuffer
- * @property {*} _indexBuffer
- * @property {Tw2PerObjectData} _perObjectData
+ * @property {Tr2Effect} decalEffect           -
+ * @property {Boolean} display                 -
+ * @property {TypedArray} indexBuffer          -
+ * @property {number} groupIndex               -
+ * @property {number} parentBoneIndex          -
+ * @property {Tw2GeometryRes} parentGeometry   -
+ * @property {Boolean} pickable                -
+ * @property {Tw2Effect} pickEffect            -
+ * @property {vec3} position                   -
+ * @property {quat} rotation                   -
+ * @property {vec3} scaling                    -
+ * @property {mat4} transform                  -
+ * @property {mat4} transformInv               -
+ * @property {*} _indexBuffer                  -
+ * @property {Tw2PerObjectData} _perObjectData -
  * @class
  */
-export class EveSpaceObjectDecal
+export class EveSpaceObjectDecal extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-    display = true;
+    // ccp
     decalEffect = null;
-    pickEffect = null;
-    parentGeometry = null;
-    parentBoneIndex = -1;
-    groupIndex = -1;
-    pickable = true;
+    indexBuffer = [];
     position = vec3.create();
     rotation = quat.create();
-    scaling = vec3.create();
-    decalMatrix = mat4.create();
-    invDecalMatrix = mat4.create();
-    indexBuffer = [];
+    scaling = vec3.fromValues(1, 1, 1);
+
+    // ccpwgl
+    display = true;
+    groupIndex = -1;
+    parentGeometry = null;
+    parentBoneIndex = -1;
+    pickable = true;
+    pickEffect = null;
+    transform = mat4.create();
+    transformInv = mat4.create();
     _indexBuffer = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
 
@@ -69,8 +72,8 @@ export class EveSpaceObjectDecal
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
         }
 
-        mat4.fromRotationTranslationScale(this.decalMatrix, this.rotation, this.position, this.scaling);
-        mat4.invert(this.invDecalMatrix, this.decalMatrix);
+        mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+        mat4.invert(this.transformInv, this.transform);
     }
 
     /**
@@ -90,7 +93,7 @@ export class EveSpaceObjectDecal
     {
         this.indexBuffer = indices;
         this.Unload();
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -180,8 +183,8 @@ export class EveSpaceObjectDecal
             }
 
             mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
-            mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this.decalMatrix);
-            mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this.invDecalMatrix);
+            mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this.transform);
+            mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this.transformInv);
 
             this._perObjectData.ps.Get("displayData")[0] = counter || 0;
             this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
@@ -207,8 +210,8 @@ export class EveSpaceObjectDecal
             bkCount = this.parentGeometry.meshes[0].areas[0].count,
             bkIndexType = this.parentGeometry.meshes[0].indexType;
 
-        store.SetVariableValue("u_DecalMatrix", this.decalMatrix);
-        store.SetVariableValue("u_InvDecalMatrix", this.invDecalMatrix);
+        store.SetVariableValue("u_DecalMatrix", this.transform);
+        store.SetVariableValue("u_InvDecalMatrix", this.transformInv);
 
         this.parentGeometry.meshes[0].indexes = this._indexBuffer;
         this.parentGeometry.meshes[0].areas[0].start = 0;
@@ -232,7 +235,7 @@ export class EveSpaceObjectDecal
             ["invWorldMatrix", 16],
             ["decalMatrix", 16],
             ["invDecalMatrix", 16],
-            ["parentBoneMatrix", 16, mat4.identity([])]
+            ["parentBoneMatrix", mat4.identity([])]
         ],
         ps: [
             ["displayData", 4],
@@ -241,3 +244,28 @@ export class EveSpaceObjectDecal
     };
 
 }
+
+Tw2BaseClass.define(EveSpaceObjectDecal, Type =>
+{
+    return {
+        isStaging: true,
+        type: "EveSpaceObjectDecal",
+        category: "EveObjectItem",
+        props: {
+            decalEffect: ["Tr2Effect"],
+            display: Type.BOOLEAN,
+            indexBuffer: Type.ARRAY,
+            groupIndex: Type.NUMBER,
+            parentBoneIndex: Type.NUMBER,
+            parentGeometry: ["Tw2GeometryRes"],
+            pickable: Type.BOOLEAN,
+            pickEffect: ["Tw2Effect"],
+            position: Type.TR_TRANSLATION,
+            rotation: Type.TR_ROTATION,
+            scaling: Type.TR_SCALING,
+            transform: Type.TR_LOCAL,
+            transformInv: Type.MATRIX4
+        }
+    };
+});
+

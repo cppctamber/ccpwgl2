@@ -1174,7 +1174,7 @@ var ccpwgl = (function(ccpwgl_int)
                     {
                         if (this.wrappedObjects[j].turretSets[i].locatorName === name)
                         {
-                            vec3.copy(this.wrappedObjects[j].turretSets[i].targetPosition, target);
+                            this.wrappedObjects[j].turretSets[i].SetTargetPosition(target);
                             break;
                         }
                     }
@@ -1233,6 +1233,14 @@ var ccpwgl = (function(ccpwgl_int)
                 }
             }
 
+            const onTurretFired = function(turretSet, positions)
+            {
+                if (self.turretFireCallback)
+                {
+                    self.turretFireCallback(self, slot, positions);
+                }
+            };
+
 
             ship.RebuildTurretPositions();
             ccpwgl_int.resMan.GetObject(
@@ -1246,14 +1254,9 @@ var ccpwgl = (function(ccpwgl_int)
                     }
                     ship.turretSets.push(object);
                     ship.RebuildTurretPositions();
-                    object.targetPosition = targetPosition;
-                    object.fireCallback = function(turretSet, positions)
-                    {
-                        if (self.turretFireCallback)
-                        {
-                            self.turretFireCallback(self, slot, positions);
-                        }
-                    };
+                    object.SetTargetPosition(targetPosition);
+                    object.OnTurretFired(onTurretFired);
+
                     switch (state)
                     {
                         case ccpwgl.TurretState.FIRING:

@@ -43,22 +43,6 @@ export default class EveMeshOverlayEffect extends Tw2BaseClass
         distortionEffects: true
     };
 
-
-    /**
-     * Gets the mesh overlay's resources
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-    GetResources(out = [])
-    {
-        util.perArrayChild(this.opaqueEffects, "GetResources", out);
-        util.perArrayChild(this.decalEffects, "GetResources", out);
-        util.perArrayChild(this.transparentEffects, "GetResources", out);
-        util.perArrayChild(this.additiveEffects, "GetResources", out);
-        util.perArrayChild(this.distortionEffects, "GetResources", out);
-        return out;
-    }
-
     /**
      * Per frame update
      * @param {number} dt - delta Time
