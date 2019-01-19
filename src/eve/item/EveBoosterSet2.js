@@ -1,8 +1,10 @@
 import {vec4, Tw2BaseClass} from "../../global";
 import {Tw2RenderBatch} from "../../core";
+import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
 /**
  * Eve booster set 2 render batch
+ * @ccp N/A
  *
  * @property {EveBoosterSet2} boosterSet
  */
@@ -22,16 +24,16 @@ export class EveBoosterSet2Batch extends Tw2RenderBatch
 }
 
 /**
- * EveBoosterSet2Item
- * @ccp N/A
+ * Booster
  * TODO: Implement
+ * @ccp N/A
  */
-export class EveBoosterSet2Item extends Tw2BaseClass
+export class EveBoosterSet2Item extends EveObjectSetItem
 {
 
 }
 
-Tw2BaseClass.define(EveBoosterSet2Item, Type =>
+EveObjectSetItem.define(EveBoosterSet2Item, Type =>
 {
     return {
         type: "EveBoosterSet2Item",
@@ -41,9 +43,9 @@ Tw2BaseClass.define(EveBoosterSet2Item, Type =>
 });
 
 /**
- * EveBoosterSet2
- * @implements EveObjectSet
+ * Booster set
  * TODO: Implement
+ * @ccp EveBoosterSet2
  *
  * @property {Boolean} alwaysOn             -
  * @property {Number} alwaysOnIntensity     -
@@ -65,7 +67,7 @@ Tw2BaseClass.define(EveBoosterSet2Item, Type =>
  * @property {vec4} warpGlowColor           -
  * @property {vec4} warpHaloColor           -
  */
-export class EveBoosterSet2 extends Tw2BaseClass
+export class EveBoosterSet2 extends EveObjectSet
 {
 
     alwaysOn = false;
@@ -90,12 +92,11 @@ export class EveBoosterSet2 extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveBoosterSet2, Type =>
+EveObjectSet.define(EveBoosterSet2, Type =>
 {
     return {
         isStaging: true,
         type: "EveBoosterSet2",
-        category: "EveObjectSet",
         props: {
             alwaysOn: Type.BOOLEAN,
             alwaysOnIntensity: Type.NUMBER,

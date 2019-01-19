@@ -29941,7 +29941,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {{string:Tw2RenderTarget}} targets       - render targets
  * @property {Array<Tw2PostEffectStep>} steps         - post effect steps
  * @property {Array<Tw2PostEffectStep>} _visibleItems - visible and ordered post effect steps
- * @property {Boolean} _rebuildPending                - identifies if the post is pending a rebuild
+ * @property {Boolean} _dirty                - identifies if the post is pending a rebuild
  * @property {Function} _onChildModified              - a function called when a child step is modified
  * @property {?Function} _onModified                  - a function which is called when the post effect is modified
  */
@@ -29974,7 +29974,7 @@ function () {
 
     _defineProperty(this, "_visibleItems", []);
 
-    _defineProperty(this, "_rebuildPending", true);
+    _defineProperty(this, "_dirty", true);
 
     _defineProperty(this, "_onChildModified", item => this.OnValueChanged(item));
   }
@@ -29986,7 +29986,7 @@ function () {
      * Fires on value changes
      */
     value: function OnValueChanged() {
-      this._rebuildPending = true;
+      this._dirty = true;
     }
     /**
      * Checks if the post effect is good
@@ -30170,7 +30170,7 @@ function () {
         return false;
       }
 
-      if (width !== this.width || height !== this.height || this._rebuildPending || !this.texture) {
+      if (width !== this.width || height !== this.height || this._dirty || !this.texture) {
         if (!this.texture) {
           this.texture = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureRes"]();
           this.texture.Attach(gl.createTexture());
@@ -30274,7 +30274,7 @@ function () {
             this._visibleItems.push(item);
           }
 
-          item._rebuildPending = false;
+          item._dirty = false;
         } // Update item sort order
 
 
@@ -30601,7 +30601,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {?String} [target]                 - the step's render target name
  * @property {{string:string}} inputs           - the step's input render targets
  * @property {?Tw2RenderTarget} [_renderTarget] - the step's render target (if none is defined the current target is used)
- * @property {Boolean} _rebuildPending          - identifies if the post is pending a rebuild
+ * @property {Boolean} _dirty          - identifies if the post is pending a rebuild
  * @property {?Function} _onModified            - a function which is called when the step is modified
  */
 
@@ -30627,7 +30627,7 @@ function () {
 
     _defineProperty(this, "_renderTarget", null);
 
-    _defineProperty(this, "_rebuildPending", true);
+    _defineProperty(this, "_dirty", true);
 
     _defineProperty(this, "_onModified", null);
   }
@@ -30639,7 +30639,7 @@ function () {
      * Fires on value changes
      */
     value: function OnValueChanged() {
-      this._rebuildPending = true;
+      this._dirty = true;
 
       if (this._onModified) {
         this._onModified(this);
@@ -42292,7 +42292,7 @@ function EveSOF() {
     var items = _get(hullBooster, "items", []);
 
     for (var i = 0; i < items.length; ++i) {
-      var locator = new _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator"]();
+      var locator = new _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator2"]();
       locator.name = "locator_booster_" + (i + 1);
 
       if ("transform" in items[i]) {
@@ -42314,7 +42314,7 @@ function EveSOF() {
     var hullLocators = _get(hull, "locatorTurrets", []);
 
     for (var i = 0; i < hullLocators.length; ++i) {
-      var locator = new _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator"]();
+      var locator = new _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator2"]();
       locator.name = hullLocators[i].name;
 
       if ("transform" in hullLocators[i]) {
@@ -45790,7 +45790,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator, EveLocator2, EveLocatorSets, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailsSet, EveTurretSetItem, EveTurretSet */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -45869,11 +45869,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveHazeSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveHazeSet"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocator", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocator2", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocatorSets", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveLocatorSets"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveObjectSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveObjectSetItem"]; });
 
@@ -45904,6 +45900,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpriteSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSetItem"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpriteSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTrailSetRenderBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTrailSetRenderBatch"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTrailsSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTrailsSet"]; });
 
@@ -45959,6 +45957,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * EveBanner
  * TODO: Implement
+ * @ccp EveBanner
  *
  * @property {Number} angleX    -
  * @property {Number} angleY    -
@@ -46079,9 +46078,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Booster render batch
+ * @ccp N/A
  *
  * @property {EveBoosterSet} boosters
- * @class
  */
 
 let EveBoosterBatch =
@@ -46120,24 +46119,23 @@ function (_Tw2RenderBatch) {
   return EveBoosterBatch;
 }(_core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"]);
 /**
- * EveBoosterSetItem
+ * Booster
  * TODO: Is this deprecated?
+ * @ccp N/A
  *
- * @param {Boolean} enableCustomValues   - Enables custom values
+ * @property {Number} atlas0             - The booster's atlas index 0
+ * @property {Number} atlas1             - The booster's atlas index 1
+ * @property {*} customValues            - An optional object containing custom values
+ * @property {?String} locatorName       - The booster's locator name, if it was built from one
+ * @property {Number} seed               - A random seed which affects any glows built from this booster
+ * @property {mat4} transform            - The booster's local transform
+ * @property {Boolean} updateFromLocator - Sets whether the booster should be updated when it's locator is
  * @property {{}} visible                - Visibility options
  * @property {Boolean} visible.halo      - Toggles halo visibility
  * @property {Boolean} visible.symHalo   - Toggles symmetrical halo visibility
  * @property {Boolean} visible.glow      - Toggles glow visibility
  * @property {Boolean} visible.trail     - Toggles trail visibility (not implemented)
- * @property {?String} locatorName       - The item's locator name, if it was built from one
- * @property {Boolean} updateFromLocator - Sets whether the item should be updated when it's locator is
- * @property {mat4} transform            - The item's local transform
- * @property {number} atlas0             - The item's atlas index 0
- * @property {number} atlas1             - The item's atlas index 1
- * @property {number} seed               - A random seed which affects any glows built from this item
- * @property {number} wavePhase          - A random seed which affects the booster wave pattern
- * @property {*} customValues            - An optional object containing custom values
- * @class
+ * @property {Number} wavePhase          - A random seed which affects the booster wave pattern
  */
 
 let EveBoosterSetItem =
@@ -46211,7 +46209,7 @@ function (_EveObjectSetItem) {
     }
     /**
      * Gets the item's scale
-     * @returns {number}
+     * @returns {Number}
      */
 
   }, {
@@ -46222,13 +46220,14 @@ function (_EveObjectSetItem) {
     }
     /**
      * Creates an item from an object
+     * TODO: Remove this class once it is generated by the Tw2Schema
      * @param {*} [opt={}]
      * @returns {EveBoosterSetItem}
      */
 
   }], [{
-    key: "create",
-    value: function create() {
+    key: "from",
+    value: function from() {
       let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       const item = new this();
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item.visible, opt.visible, ["glow", "symHalo", "halo", "trail"]);
@@ -46239,37 +46238,53 @@ function (_EveObjectSetItem) {
 
   return EveBoosterSetItem;
 }(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"]);
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveBoosterSetItem, Type => {
+  return {
+    type: "EveBoosterSetItem",
+    props: {
+      atlas0: Type.NUMBER,
+      atlas1: Type.NUMBER,
+      customValues: Type.PLAIN,
+      locatorName: Type.STRING,
+      seed: Type.NUMBER,
+      transform: Type.TR_LOCAL,
+      updateFromLocator: Type.BOOLEAN,
+      visible: Type.PLAIN,
+      wavePhase: Type.NUMBER
+    }
+  };
+});
 /**
- * EveBoosterSet
+ * Booster set
  * TODO: Is this deprecated?
- *
+ * @ccp EveBoosterSet
+ * @property {Number} maxVel                   - (Not implemented)
+ * @property {Boolean} alwaysOn                - (Not implemented)
+ * @property {Tw2Effect} effect                - The booster's booster effect
+ * @property {Number} glowDistance             - The distance between the booster's locators and glow sprites
+ * @property {Number} glowScale                - The base scale of the booster's glow sprites
+ * @property {vec4} glowColor                  - The color of the booster set's glow sprites
+ * @property {?Tw2Effect} glows                - The booster's glows (sprites)
+ * @property {vec4} warpGlowColor              - The color of the booster set's glow sprites when warping (Not implemented)
+ * @property {Number} haloDistance             - The distance between the booster set's locators and halo sprites
+ * @property {Number} haloScaleX               - The base vertical scale of the booster set's halos
+ * @property {Number} haloScaleY               - The base horizontal scale of the booster set's halos
+ * @property {vec4} haloColor                  - The color of the booster set's halo sprites
+ * @property {vec4} warpHaloColor              - The color of the booster set's halo sprites when warping (Not implemented)
+ * @property {vec4} trailSize                  - The booster set's trail size (Not implemented)
+ * @property {vec4} trailColor                 - The booster set's trail color (Not implemented)
+ * @property {Number} symHaloDistance          - The distance between the booster set's locators and symmetrical halo sprites
+ * @property {Number} symHaloScale             - The base scale of the booster set's symmetrical halos
  * @property {{}} visible                      - Visibility controls
  * @property {Boolean} visible.glows           - Toggles glow visibility
  * @property {Boolean} visible.symHalos        - Toggles symmetrical halo visibility
  * @property {Boolean} visible.halos           - Toggles halo visibility
  * @property {Boolean} visible.trails          - Toggles trails visibility (Not implemented)
- * @property {Tw2Effect} effect                - The booster's booster effect
- * @property {?Tw2Effect} glows                - The booster's glows (sprites)
- * @property {number} maxVel                   - (Not implemented)
- * @property {Boolean} alwaysOn                - (Not implemented)
- * @property {number} glowDistance             - The distance between the booster's locators and glow sprites
- * @property {number} glowScale                - The base scale of the booster's glow sprites
- * @property {vec4} glowColor                  - The color of the booster set's glow sprites
- * @property {vec4} warpGlowColor              - The color of the booster set's glow sprites when warping (Not implemented)
- * @property {number} haloDistance             - The distance between the booster set's locators and halo sprites
- * @property {number} haloScaleX               - The base vertical scale of the booster set's halos
- * @property {number} haloScaleY               - The base horizontal scale of the booster set's halos
- * @property {vec4} haloColor                  - The color of the booster set's halo sprites
- * @property {vec4} warpHaloColor              - The color of the booster set's halo sprites when warping (Not implemented)
- * @property {vec4} trailSize                  - The booster set's trail size (Not implemented)
- * @property {vec4} trailColor                 - The booster set's trail color (Not implemented)
- * @property {number} symHaloDistance          - The distance between the booster set's locators and symmetrical halo sprites
- * @property {number} symHaloScale             - The base scale of the booster set's symmetrical halos
  * @property {mat4} _parentTransform           - The booster set's parent's transform
  * @property {WebGLBuffer} _positions          - The booster set's webgl buffer
  * @property {Tw2VertexDeclaration} _decl      - The booster set's vertex declarations
  * @property {Tw2PerObjectData} _perObjectData - The booster set's shader data
- * @property {Boolean} _locatorRebuildPending  - Identifies that the booster set needs to be rebuilt from locators
+ * @property {Boolean} _locatorDirty           - Identifies that the booster set needs to be rebuilt from locators
  * @class
  */
 
@@ -46289,46 +46304,46 @@ function (_EveObjectSet) {
 
     _this3 = _possibleConstructorReturn(this, _getPrototypeOf(EveBoosterSet).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "visible", {
-      glows: true,
-      symHalos: true,
-      halos: true,
-      trails: true
-    });
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "alwaysOn", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "effect", null);
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "glowColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "glows", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "alwaysOn", true);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "maxVel", 250);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "glowDistance", 2.5);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "glowScale", 1.0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "glowColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "warpGlowColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "haloDistance", 3.01);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "haloColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "haloScaleX", 1.0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "haloScaleY", 1.0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "haloColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "warpHaloColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "symHaloDistance", 3);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "maxVel", 250);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "symHaloScale", 1.0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "trailColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "trailSize", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "warpGlowColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "warpHaloColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "glowDistance", 2.5);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "haloDistance", 3.01);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "symHaloDistance", 3);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "visible", {
+      glows: true,
+      symHalos: true,
+      halos: true,
+      trails: true
+    });
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "_parentTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
@@ -46338,19 +46353,92 @@ function (_EveObjectSet) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "_perObjectData", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveBoosterSet.perObjectData));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "_locatorRebuildPending", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "_locatorDirty", true);
 
     return _this3;
   }
 
   _createClass(EveBoosterSet, [{
-    key: "FindItemByLocatorName",
+    key: "RebuildItems",
 
+    /**
+     * Rebuilds a booster set's items
+     * @param {Boolean} [skipUpdate]
+     */
+    value: function RebuildItems(skipUpdate) {
+      const glows = this.glows,
+            g = EveBoosterSet.global,
+            spritePos = g.vec3_0;
+      if (glows) glows.ClearItems();
+      this._visibleItems = [];
+
+      for (let i = 0; i < this.items.length; i++) {
+        const item = this.items[i];
+        item.SetParent(this);
+
+        if (item.display) {
+          this._visibleItems.push(item);
+
+          if (glows) {
+            const src = item.customValues && item.customValues.display ? item.customValues : this,
+                  pos = item.GetPosition(g.vec3_1),
+                  dir = item.GetDirection(g.vec3_2),
+                  scale = item.GetScale();
+
+            if (this.visible.glows && item.visible.glow) {
+              glows.CreateItem({
+                name: item.name + "_glow",
+                position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.glowDistance)),
+                blinkRate: item.seed,
+                blinkPhase: item.seed,
+                minScale: src.glowScale * scale,
+                maxScale: src.glowScale * scale,
+                color: src.glowColor,
+                warpColor: src.warpGlowColor
+              });
+            }
+
+            if (this.visible.symHalos && item.visible.symHalo) {
+              glows.CreateItem({
+                name: item.name + "_symHalo",
+                position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.symHaloDistance)),
+                blinkRate: item.seed,
+                blinkPhase: item.seed + 1,
+                minScale: src.symHaloScale * scale,
+                maxScale: src.symHaloScale * scale,
+                color: src.haloColor,
+                warpColor: src.warpHaloColor
+              });
+            }
+
+            if (this.visible.halos && item.visible.halo) {
+              glows.CreateItem({
+                name: item.name + "_halo",
+                position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.haloDistance)),
+                blinkRate: item.seed,
+                blinkPhase: item.seed + 1,
+                minScale: src.haloScaleX * scale,
+                maxScale: src.haloScaleY * scale,
+                color: src.haloColor,
+                warpColor: src.warpHaloColor
+              });
+            }
+          }
+
+          item._dirty = false;
+        }
+      }
+
+      this._dirty = true;
+    }
     /**
      * Finds a booster item that belongs to a locator by it's name
      * @param {String} locatorName
      * @returns {?EveBoosterSetItem}
      */
+
+  }, {
+    key: "FindItemByLocatorName",
     value: function FindItemByLocatorName(locatorName) {
       for (let i = 0; i < this.items.length; i++) {
         if (this.items[i].locatorName && this.items[i].locatorName === locatorName) {
@@ -46362,7 +46450,7 @@ function (_EveObjectSet) {
     }
     /**
      * Updates booster items that were built from locators
-     * @param {Array.<EveLocator>} locators
+     * @param {Array.<EveLocator2>} locators
      */
 
   }, {
@@ -46406,9 +46494,9 @@ function (_EveObjectSet) {
         }
       }
 
-      this._locatorRebuildPending = false;
+      this._locatorDirty = false;
 
-      if (this._rebuildPending) {
+      if (this._dirty) {
         this.Rebuild();
       }
     }
@@ -46419,32 +46507,11 @@ function (_EveObjectSet) {
   }, {
     key: "RebuildItemsFromLocators",
     value: function RebuildItemsFromLocators() {
-      this._locatorRebuildPending = true;
-    }
-    /**
-     * Gets booster set resources
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-      if (this.effect) {
-        this.effect.GetResources(out);
-      }
-
-      if (this.glows) {
-        this.glows.effect.GetResources(out);
-      }
-
-      return out;
+      this._locatorDirty = true;
     }
     /**
      * Per frame update
-     * @param {number} dt - DeltaTime
+     * @param {Number} dt - DeltaTime
      * @param {mat4} parentMatrix
      */
 
@@ -46452,7 +46519,7 @@ function (_EveObjectSet) {
     key: "Update",
     value: function Update(dt, parentMatrix) {
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentMatrix);
-      if (this._rebuildPending) this.Rebuild();
+      if (this._dirty) this.Rebuild();
       if (this.glows) this.glows.Update(dt);
     }
     /**
@@ -46478,9 +46545,9 @@ function (_EveObjectSet) {
   }, {
     key: "Rebuild",
     value: function Rebuild() {
-      this.constructor.RebuildItems(this);
+      this.RebuildItems();
       const itemCount = this._visibleItems.length;
-      this._rebuildPending = false;
+      this._dirty = false;
       if (!itemCount) return;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             box = EveBoosterSet._box,
@@ -46520,7 +46587,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
@@ -46556,7 +46623,7 @@ function (_EveObjectSet) {
   }, {
     key: "Render",
     value: function Render(technique) {
-      if (!this.effect || !this.effect.IsGood()) return false;
+      if (!this.effect || !this.effect.IsGood() || !this._positions) return false;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             gl = d.gl;
       gl.bindBuffer(gl.ARRAY_BUFFER, this._positions);
@@ -46569,77 +46636,6 @@ function (_EveObjectSet) {
       }
 
       return true;
-    }
-    /**
-     * Rebuilds a booster set's items
-     * @param {EveBoosterSet} boosters
-     */
-
-  }], [{
-    key: "RebuildItems",
-    value: function RebuildItems(boosters) {
-      const glows = boosters.glows,
-            g = EveBoosterSet.global,
-            spritePos = g.vec3_0;
-      if (glows) glows.ClearItems();
-      boosters._visibleItems = [];
-
-      for (let i = 0; i < boosters.items.length; i++) {
-        const item = boosters.items[i];
-        item._onModified = boosters._onChildModified;
-
-        if (item.display) {
-          boosters._visibleItems.push(item);
-
-          if (glows) {
-            const src = item.customValues && item.customValues.display ? item.customValues : boosters,
-                  pos = item.GetPosition(g.vec3_1),
-                  dir = item.GetDirection(g.vec3_2),
-                  scale = item.GetScale();
-
-            if (boosters.visible.glows && item.visible.glow) {
-              glows.CreateItem({
-                name: item.name + "_glow",
-                position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.glowDistance)),
-                blinkRate: item.seed,
-                blinkPhase: item.seed,
-                minScale: src.glowScale * scale,
-                maxScale: src.glowScale * scale,
-                color: src.glowColor,
-                warpColor: src.warpGlowColor
-              });
-            }
-
-            if (boosters.visible.symHalos && item.visible.symHalo) {
-              glows.CreateItem({
-                name: item.name + "_symHalo",
-                position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.symHaloDistance)),
-                blinkRate: item.seed,
-                blinkPhase: item.seed + 1,
-                minScale: src.symHaloScale * scale,
-                maxScale: src.symHaloScale * scale,
-                color: src.haloColor,
-                warpColor: src.warpHaloColor
-              });
-            }
-
-            if (boosters.visible.halos && item.visible.halo) {
-              glows.CreateItem({
-                name: item.name + "_halo",
-                position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.haloDistance)),
-                blinkRate: item.seed,
-                blinkPhase: item.seed + 1,
-                minScale: src.haloScaleX * scale,
-                maxScale: src.haloScaleY * scale,
-                color: src.haloColor,
-                warpColor: src.warpHaloColor
-              });
-            }
-          }
-
-          item._rebuildPending = false;
-        }
-      }
     }
     /**
      * The booster set's item constructor
@@ -46697,6 +46693,33 @@ _defineProperty(EveBoosterSet, "vertexDeclarations", [{
 
 _defineProperty(EveBoosterSet, "_box", [[[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]], [[-1.0, -1.0, -1.0], [-1.0, 1.0, -1.0], [1.0, 1.0, -1.0], [1.0, -1.0, -1.0]], [[-1.0, -1.0, 0.0], [-1.0, 1.0, 0.0], [-1.0, 1.0, -1.0], [-1.0, -1.0, -1.0]], [[1.0, -1.0, 0.0], [1.0, -1.0, -1.0], [1.0, 1.0, -1.0], [1.0, 1.0, 0.0]], [[-1.0, -1.0, 0.0], [-1.0, -1.0, -1.0], [1.0, -1.0, -1.0], [1.0, -1.0, 0.0]], [[-1.0, 1.0, 0.0], [1.0, 1.0, 0.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]]]);
 
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveBoosterSet, Type => {
+  return {
+    type: "EveBoosterSet",
+    props: {
+      alwaysOn: Type.BOOLEAN,
+      effect: ["Tw2Effect"],
+      glowColor: Type.RGBA_LINEAR,
+      glowDistance: Type.NUMBER,
+      glows: ["Tw2Effect"],
+      glowScale: Type.NUMBER,
+      haloColor: Type.RGBA_LINEAR,
+      haloDistance: Type.NUMBER,
+      haloScaleX: Type.NUMBER,
+      haloScaleY: Type.NUMBER,
+      maxVecl: Type.NUMBER,
+      symHaloDistance: Type.NUMBER,
+      symHaloScale: Type.NUMBER,
+      trailColor: Type.RGBA_LINEAR,
+      trailSize: Type.VECTOR4,
+      visible: Type.PLAIN,
+      warpGlowColor: Type.RGBA_LINEAR,
+      warpHaloColor: Type.RGBA_LINEAR
+    },
+    notImplemented: ["alwaysOn", "maxVel", "trailColor", "trailSize"]
+  };
+});
+
 /***/ }),
 
 /***/ "./eve/item/EveBoosterSet2.js":
@@ -46713,6 +46736,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2", function() { return EveBoosterSet2; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -46733,8 +46757,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 /**
  * Eve booster set 2 render batch
+ * @ccp N/A
  *
  * @property {EveBoosterSet2} boosterSet
  */
@@ -46775,15 +46801,15 @@ function (_Tw2RenderBatch) {
   return EveBoosterSet2Batch;
 }(_core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"]);
 /**
- * EveBoosterSet2Item
- * @ccp N/A
+ * Booster
  * TODO: Implement
+ * @ccp N/A
  */
 
 let EveBoosterSet2Item =
 /*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveBoosterSet2Item, _Tw2BaseClass);
+function (_EveObjectSetItem) {
+  _inherits(EveBoosterSet2Item, _EveObjectSetItem);
 
   function EveBoosterSet2Item() {
     _classCallCheck(this, EveBoosterSet2Item);
@@ -46792,8 +46818,8 @@ function (_Tw2BaseClass) {
   }
 
   return EveBoosterSet2Item;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveBoosterSet2Item, Type => {
+}(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"]);
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveBoosterSet2Item, Type => {
   return {
     type: "EveBoosterSet2Item",
     staging: true,
@@ -46801,9 +46827,9 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveBoosterSet2Item, 
   };
 });
 /**
- * EveBoosterSet2
- * @implements EveObjectSet
+ * Booster set
  * TODO: Implement
+ * @ccp EveBoosterSet2
  *
  * @property {Boolean} alwaysOn             -
  * @property {Number} alwaysOnIntensity     -
@@ -46828,8 +46854,8 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveBoosterSet2Item, 
 
 let EveBoosterSet2 =
 /*#__PURE__*/
-function (_Tw2BaseClass2) {
-  _inherits(EveBoosterSet2, _Tw2BaseClass2);
+function (_EveObjectSet) {
+  _inherits(EveBoosterSet2, _EveObjectSet);
 
   function EveBoosterSet2() {
     var _this2;
@@ -46884,12 +46910,11 @@ function (_Tw2BaseClass2) {
   }
 
   return EveBoosterSet2;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveBoosterSet2, Type => {
+}(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"]);
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveBoosterSet2, Type => {
   return {
     isStaging: true,
     type: "EveBoosterSet2",
-    category: "EveObjectSet",
     props: {
       alwaysOn: Type.BOOLEAN,
       alwaysOnIntensity: Type.NUMBER,
@@ -46953,23 +46978,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 /**
- * EveCurveLineSetItem
- * @ccp n/a
- *
- * @property {number} type
- * @property {vec3} position1
- * @property {vec4} color1
- * @property {vec3} position2
- * @property {vec4} color2
- * @property {vec3} intermediatePosition
- * @property {number} width
- * @property {vec4} multiColor
- * @property {number} multiColorBorder
- * @property {vec4} overlayColor
- * @property {number} animationSpeed
- * @property {number} animationScale
- * @property {number} numOfSegments
- * @class
+ * Curve line set item
+ * @ccp N/A
+ * 
+ * @property {Number} animationSpeed     - Line's animation speed
+ * @property {Number} animationScale     - Line's animation scale
+ * @property {vec4} color1               - Line's start color
+ * @property {vec4} color2               - Line's end color
+ * @property {vec3} intermediatePosition - Line's intermediate/middle position (not used with straight lines) 
+ * @property {vec4} multiColor           - 
+ * @property {Number} multiColorBorder   -
+ * @property {Number} numOfSegments      - The amount of segments for a curved or sphered line
+ * @property {vec4} overlayColor         - Line's overlay color
+ * @property {vec3} position1            - Line's start position
+ * @property {vec3} position2            - Line's end position
+ * @property {Number} type               - Line's type
+ * @property {Number} width              - Line's width
  */
 
 let EveCurveLineSetItem =
@@ -47032,7 +47056,7 @@ function (_EveObjectSetItem) {
     }
     /**
      * Changes the line's width
-     * @param {number} width
+     * @param {Number} width
      */
 
   }, {
@@ -47125,7 +47149,7 @@ function (_EveObjectSetItem) {
     /**
      * Changes multi line color
      * @param {vec4} color
-     * @param {number} border
+     * @param {Number} border
      */
 
   }, {
@@ -47138,8 +47162,8 @@ function (_EveObjectSetItem) {
     /**
      * Changes animated color settings
      * @param {vec4} color
-     * @param {number} speed
-     * @param {number} scale
+     * @param {Number} speed
+     * @param {Number} scale
      */
 
   }, {
@@ -47152,7 +47176,7 @@ function (_EveObjectSetItem) {
     }
     /**
      * Changes line segmentation
-     * @param {number} numOfSegments
+     * @param {Number} numOfSegments
      */
 
   }, {
@@ -47165,13 +47189,14 @@ function (_EveObjectSetItem) {
     }
     /**
      * Creates a line from an object
+     * TODO: Remove this class once it is generated by the Tw2Schema
      * @param {*} [opt={}]
      * @returns {EveCurveLineSetItem}
      */
 
   }], [{
-    key: "create",
-    value: function create() {
+    key: "from",
+    value: function from() {
       let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       const item = new this();
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "type", "position1", "color1", "position2", "color2", "intermediatePosition", "width", "multiColor", "multiColorBorder", "overlayColor", "animationSpeed", "animationScale", "numOfSegments"]);
@@ -47198,10 +47223,9 @@ _defineProperty(EveCurveLineSetItem, "DEFAULT_CURVED_SEGMENTS", 20);
 
 _defineProperty(EveCurveLineSetItem, "DEFAULT_SPHERED_SEGMENTS", 20);
 
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveCurveLineSetItem, Type => {
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveCurveLineSetItem, Type => {
   return {
     type: "EveCurveLineSetItem",
-    category: "EveObjectSetItem",
     props: {
       animatedSpeed: Type.NUMBER,
       animatedScale: Type.NUMBER,
@@ -47222,28 +47246,28 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveCurveLineSetItem,
   };
 });
 /**
- * EveCurveLineSet
+ * Curve line set
  * TODO: Share "lineEffect" between line sets?
  * TODO: Share "pickEffect" between line sets?
  * TODO: Replace "parentTransform" usages and cache with "worldTransform" instead?
  * TODO: Is "lineWidthFactor" deprecated, or just for ccpwgl?
- *
+ * @ccp EveCurveLineSet
+ * 
  * @property {Tw2Effect} lineEffect            -
  * @property {?Tw2Effect} pickEffect           -
- * @property {number} lineWidthFactor          -
+ * @property {Number} lineWidthFactor          -
  * @property {Boolean} additive                -
- * @property {number} depthOffset              -
+ * @property {Number} depthOffset              -
  * @property {vec3} translation                -
  * @property {quat} rotation                   -
  * @property {vec3} scaling                    -
  * @property {mat4} transform                  -
- * @property {mat4} parentTransform            -
- * @property {number} _vertexSize              -
- * @property {number} _vbSize                  -
+ * @property {mat4} _parentTransform           -
+ * @property {Number} _vertexSize              -
+ * @property {Number} _vbSize                  -
  * @property {?WebGLBuffer} _vb                -
  * @property {Tw2PerObjectData} _perObjectData -
  * @property {Tw2VertexDeclaration} _decl      -
- * @class
  */
 
 let EveCurveLineSet =
@@ -47251,7 +47275,7 @@ let EveCurveLineSet =
 function (_EveObjectSet) {
   _inherits(EveCurveLineSet, _EveObjectSet);
 
-  // cco
+  // ccp
   // ccpwgl
 
   /**
@@ -47280,8 +47304,6 @@ function (_EveObjectSet) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "depthOffset", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "parentTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "pickable", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
@@ -47291,6 +47313,8 @@ function (_EveObjectSet) {
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "translation", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "transform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_parentTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_vertexSize", 26);
 
@@ -47325,7 +47349,7 @@ function (_EveObjectSet) {
      * Creates a straight line
      * @param {vec3} start
      * @param {vec3} end
-     * @param {number} [width]
+     * @param {Number} [width]
      * @param {vec4} [startColor]
      * @param {vec4} [endColor]
      * @returns {EveCurveLineSetItem}
@@ -47348,7 +47372,7 @@ function (_EveObjectSet) {
      * @param {vec3} start
      * @param {vec3} end
      * @param {vec3} center
-     * @param {number} [width]
+     * @param {Number} [width]
      * @param {vec4} [startColor]
      * @param {vec4} [endColor]
      * @returns {EveCurveLineSetItem}
@@ -47374,7 +47398,7 @@ function (_EveObjectSet) {
      * @param {vec3} end
      * @param {vec3} center
      * @param {vec3} middle
-     * @param {number} [width]
+     * @param {Number} [width]
      * @param {vec4} [startColor]
      * @param {vec4} [endColor]
      * @returns {EveCurveLineSetItem}
@@ -47400,7 +47424,7 @@ function (_EveObjectSet) {
      * @param {vec3} start
      * @param {vec3} end
      * @param {vec3} center
-     * @param {number} [width]
+     * @param {Number} [width]
      * @param {vec4} [startColor]
      * @param {vec4} [endColor]
      * @returns {EveCurveLineSetItem}
@@ -47426,7 +47450,7 @@ function (_EveObjectSet) {
      * @param {vec3} end
      * @param {vec3} center
      * @param {vec3} middle
-     * @param {number} [width]
+     * @param {Number} [width]
      * @param {vec4} [startColor]
      * @param {vec4} [endColor]
      * @returns {EveCurveLineSetItem}
@@ -47455,7 +47479,7 @@ function (_EveObjectSet) {
     key: "OnValueChanged",
     value: function OnValueChanged() {
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
-      this._rebuildPending = true;
+      this._dirty = true;
     }
     /**
      * Per frame update
@@ -47465,18 +47489,7 @@ function (_EveObjectSet) {
   }, {
     key: "UpdateViewDependentData",
     value: function UpdateViewDependentData(parentTransform) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.parentTransform, parentTransform);
-    }
-    /**
-     * Per frame update
-     */
-
-  }, {
-    key: "Update",
-    value: function Update() {
-      if (this._rebuildPending) {
-        this.Rebuild();
-      }
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentTransform);
     }
     /**
      * Unloads the line set's buffers
@@ -47497,10 +47510,10 @@ function (_EveObjectSet) {
   }, {
     key: "Rebuild",
     value: function Rebuild() {
-      EveCurveLineSet.RebuildItems(this);
-      this._vb = null;
+      this.Unload();
+      this.RebuildItems();
       this._vbSize = this.lineCount;
-      this._rebuildPending = false;
+      this._dirty = false;
       const visibleItems = this._visibleItems.length;
       if (!visibleItems) return;
       const g = EveCurveLineSet.global,
@@ -47602,13 +47615,14 @@ function (_EveObjectSet) {
     }
     /**
      * Gets render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} [perObjectData]
      */
 
   }, {
     key: "GetBatches",
-    value: function GetBatches(mode, accumulator) {
+    value: function GetBatches(mode, accumulator, perObjectData) {
       if (!this.display || !this._vb) return;
       let effect;
 
@@ -47630,7 +47644,7 @@ function (_EveObjectSet) {
 
       const batch = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"](),
             worldTransform = EveCurveLineSet.global.mat4_0;
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldTransform, this.transform, this.parentTransform);
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldTransform, this.transform, this._parentTransform);
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), worldTransform);
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ps.Get("WorldMat"), worldTransform);
       batch.perObjectData = this._perObjectData;
@@ -47649,7 +47663,7 @@ function (_EveObjectSet) {
   }, {
     key: "Render",
     value: function Render(batch, technique) {
-      if (!batch.effect || !batch.effect.IsGood()) return false;
+      if (!batch.effect || !batch.effect.IsGood() || !this._vb) return false;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             gl = d.gl;
       gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
@@ -47669,8 +47683,8 @@ function (_EveObjectSet) {
      * Fills color vertices
      * @param {EveCurveLineSetItem} item
      * @param buffer
-     * @param {number} offset
-     * @returns {number}
+     * @param {Number} offset
+     * @returns {Number}
      */
 
   }, {
@@ -47688,7 +47702,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets the current line count
-     * @returns {number}
+     * @returns {Number}
      */
 
   }, {
@@ -47942,13 +47956,11 @@ _defineProperty(EveCurveLineSet, "vertexDeclarations", [{
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveCurveLineSet, Type => {
   return {
     type: "EveCurveLineSet",
-    category: "EveObjectSet",
     props: {
       additive: Type.BOOLEAN,
       depthOffset: Type.NUMBER,
       lineEffect: ["Tr2Effect"],
       lineWidthFactor: Type.NUMBER,
-      parentTransform: Type.MATRIX4,
       pickable: Type.BOOLEAN,
       pickEffect: ["Tr2Effect"],
       position: Type.TR_TRANSLATION,
@@ -47993,13 +48005,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 /**
- * EveCustomMask
+ * Custom mask for patterns
+ * @ccp EveCustomMask
  *
- * @property {Number} materialIndex -
- * @property {vec3} position        -
- * @property {quat} rotation        -
- * @property {vec3} scaling         -
- * @property {vec4} targetMaterials -
+ * @property {Boolean} display      - Toggles mask visibility
+ * @property {Boolean} isMirrored   - Identifies if the mask is mirrored
+ * @property {Number} materialIndex - The material this mask is for (ie. Mtl1, Mtl2, Mtl3, Mtl4, PMt1, PMt2)
+ * @property {vec3} position        - Mask's position
+ * @property {quat} rotation        - Mask's rotation
+ * @property {vec3} scaling         - Mask's scale
+ * @property {vec4} targetMaterials - The target materials this mask is for
+ * @property {mat4} transform       - Mask's transform
  */
 
 let EveCustomMask =
@@ -48105,6 +48121,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveHazeSet", function() { return EveHazeSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -48125,8 +48142,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 /**
  * Haze set render batch
+ * @ccp N/A
  *
  * @property {EveHazeSet} hazeSet
  */
@@ -48167,26 +48186,25 @@ function (_Tw2RenderBatch) {
   return EveHazeSetBatch;
 }(_core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"]);
 /**
- * EveHazeSetItem
- * @implements EveObjectSetItem
+ * Haze item
+ * @ccp EveHazeSetItem
  *
  * @property {Boolean} boosterGainInfluence -
  * @property {Number} colorType             -
  * @property {Number} hazeBrightness        -
  * @property {Number} hazeFalloff           -
- * @property {vec3} position                -
- * @property {quat} rotation                -
- * @property {vec3} scaling                 -
+ * @property {vec3} position                - Item's position
+ * @property {quat} rotation                - Item's rotation
+ * @property {vec3} scaling                 - Item's scaling
  * @property {Number} sourceBrightness      -
  * @property {Number} sourceSize            -
- * @property {Boolean} display              - Toggles item visibility
- * @property {mat4} transform               - The item's local transform
+ * @property {mat4} transform               - Item's local transform
  */
 
 let EveHazeSetItem =
 /*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveHazeSetItem, _Tw2BaseClass);
+function (_EveObjectSetItem) {
+  _inherits(EveHazeSetItem, _EveObjectSetItem);
 
   function EveHazeSetItem() {
     var _this2;
@@ -48217,15 +48235,25 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "sourceSize", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "display", true);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "transform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     return _this2;
   }
 
+  _createClass(EveHazeSetItem, [{
+    key: "OnValueChanged",
+
+    /**
+     * Fires on value changes
+     */
+    value: function OnValueChanged() {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+      this._dirty = true;
+    }
+  }]);
+
   return EveHazeSetItem;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+}(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"]);
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveHazeSetItem, Type => {
   return {
     isStaging: true,
@@ -48234,7 +48262,6 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveHazeSetItem, Type
     props: {
       boosterGainInfluence: Type.BOOLEAN,
       colorType: Type.NUMBER,
-      display: Type.BOOLEAN,
       hazeBrightness: Type.NUMBER,
       hazeFalloff: Type.NUMBER,
       position: Type.TR_TRANSLATION,
@@ -48248,44 +48275,68 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveHazeSetItem, Type
   };
 });
 /**
- * EveHazeSet
- * @implements EveObjectSet
- *
- * @property {EveObjectSetItem} items - Haze set items
+ * Haze set
+ * TODO: Implement
+ * @ccp EveHazeSet
  */
 
 let EveHazeSet =
 /*#__PURE__*/
-function (_Tw2BaseClass2) {
-  _inherits(EveHazeSet, _Tw2BaseClass2);
+function (_EveObjectSet) {
+  _inherits(EveHazeSet, _EveObjectSet);
 
   function EveHazeSet() {
-    var _this3;
-
     _classCallCheck(this, EveHazeSet);
 
-    for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-      args[_key3] = arguments[_key3];
-    }
-
-    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(EveHazeSet).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "items", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "display", true);
-
-    return _this3;
+    return _possibleConstructorReturn(this, _getPrototypeOf(EveHazeSet).apply(this, arguments));
   }
 
+  _createClass(EveHazeSet, [{
+    key: "Unload",
+
+    /**
+     * Unloads the object's buffers
+     */
+    value: function Unload() {} // TODO: Unload buffers
+
+    /**
+     * Rebuilds the haze set's buffers
+     */
+
+  }, {
+    key: "Rebuild",
+    value: function Rebuild() {} // TODO: Rebuild buffers
+
+    /**
+     * Gets the plane set's render batches
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+
+  }, {
+    key: "GetBatches",
+    value: function GetBatches(mode, accumulator, perObjectData) {} // TODO: GetBatches
+
+    /**
+     * Renders the haze set
+     * @param {String} technique - technique name
+     */
+
+  }, {
+    key: "Render",
+    value: function Render(technique) {// TODO: Render
+    }
+  }]);
+
   return EveHazeSet;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+}(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"]);
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveHazeSet, Type => {
   return {
     isStaging: true,
     type: "EveHazeSet",
     category: "EveObjectSet",
     props: {
-      display: Type.BOOLEAN,
       items: ["EveHazeSetItem"]
     },
     notImplemented: ["*"]
@@ -48294,18 +48345,16 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveHazeSet, Type => 
 
 /***/ }),
 
-/***/ "./eve/item/EveLocator.js":
-/*!********************************!*\
-  !*** ./eve/item/EveLocator.js ***!
-  \********************************/
-/*! exports provided: EveLocator, EveLocator2, EveLocatorSets */
+/***/ "./eve/item/EveLocator2.js":
+/*!*********************************!*\
+  !*** ./eve/item/EveLocator2.js ***!
+  \*********************************/
+/*! exports provided: EveLocator2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLocator", function() { return EveLocator; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLocator2", function() { return EveLocator2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLocatorSets", function() { return EveLocatorSets; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48329,6 +48378,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
  * TODO: Make bone private and update all uses
+ * @ccp EveLocator2
  *
  * @property {?number} atlasIndex0          - A booster locator's atlasIndex0
  * @property {?number} atlasIndex1          - A booster locator's atlasIndex1
@@ -48336,21 +48386,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {mat4} transform               - The locator's transform
  */
 
-let EveLocator =
+let EveLocator2 =
 /*#__PURE__*/
 function (_Tw2BaseClass) {
-  _inherits(EveLocator, _Tw2BaseClass);
+  _inherits(EveLocator2, _Tw2BaseClass);
 
-  function EveLocator() {
+  function EveLocator2() {
     var _this;
 
-    _classCallCheck(this, EveLocator);
+    _classCallCheck(this, EveLocator2);
 
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveLocator).call(this, ...args));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveLocator2).call(this, ...args));
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "atlasIndex0", null);
 
@@ -48363,7 +48413,7 @@ function (_Tw2BaseClass) {
     return _this;
   }
 
-  _createClass(EveLocator, [{
+  _createClass(EveLocator2, [{
     key: "FindBone",
 
     /**
@@ -48393,10 +48443,10 @@ function (_Tw2BaseClass) {
 
   }]);
 
-  return EveLocator;
+  return EveLocator2;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
-_defineProperty(EveLocator, "Prefix", {
+_defineProperty(EveLocator2, "Prefix", {
   AUDIO: "locator_audio",
   ATTACH: "locator_attach",
   BOOSTER: "locator_booster",
@@ -48404,93 +48454,15 @@ _defineProperty(EveLocator, "Prefix", {
   XL_TURRET: "locator_xl"
 });
 
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveLocator, Type => {
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveLocator2, Type => {
   return {
-    type: "EveLocator",
+    type: "EveLocator2",
     category: "Locator",
     props: {
       atlasIndex0: Type.NUMBER,
       atlasIndex1: Type.NUMBER,
       bone: Type.REF,
       transform: Type.TR_LOCAL
-    }
-  };
-});
-/**
- * EveLocator2
- * TODO: Is there any difference between this and EveLocator ?
- *
- * @property {mat4} transform - The locators transform
- */
-
-let EveLocator2 =
-/*#__PURE__*/
-function (_Tw2BaseClass2) {
-  _inherits(EveLocator2, _Tw2BaseClass2);
-
-  function EveLocator2() {
-    var _this2;
-
-    _classCallCheck(this, EveLocator2);
-
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-
-    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(EveLocator2).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "transform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
-
-    return _this2;
-  }
-
-  return EveLocator2;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveLocator2, Type => {
-  return {
-    type: "EveLocator2",
-    category: "Locator",
-    isStaging: true,
-    props: {
-      transform: Type.TR_LOCAL
-    }
-  };
-});
-/**
- * EveLocatorSets
- *
- * @property {Array<{position: vec4, direction: vec3}>} locators -
- */
-
-let EveLocatorSets =
-/*#__PURE__*/
-function (_Tw2BaseClass3) {
-  _inherits(EveLocatorSets, _Tw2BaseClass3);
-
-  function EveLocatorSets() {
-    var _this3;
-
-    _classCallCheck(this, EveLocatorSets);
-
-    for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-      args[_key3] = arguments[_key3];
-    }
-
-    _this3 = _possibleConstructorReturn(this, _getPrototypeOf(EveLocatorSets).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "locators", []);
-
-    return _this3;
-  }
-
-  return EveLocatorSets;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveLocatorSets, Type => {
-  return {
-    isStaging: true,
-    type: "EveLocatorSets",
-    props: {
-      locators: Type.ARRAY
     }
   };
 });
@@ -48509,40 +48481,58 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObjectSetItem", function() { return EveObjectSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObjectSet", function() { return EveObjectSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* eslint no-unused-vars:0 */
 
+
+
 /**
  * EveObjectSetItem base class
+ * @ccp N/A
  *
- * @property {String|number} _id     - The set item's id
- * @property {String} name           - The set item's name
- * @property {Boolean} display       - Toggles the set item's visibility
- * @property {?Function} _onModified - A callback which is fired on value changes
+ * @property {Boolean} display - Toggles the set item's visibility
+ * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
 
 let EveObjectSetItem =
 /*#__PURE__*/
-function () {
+function (_Tw2BaseClass) {
+  _inherits(EveObjectSetItem, _Tw2BaseClass);
+
   function EveObjectSetItem() {
+    var _this;
+
     _classCallCheck(this, EveObjectSetItem);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _defineProperty(this, "name", "");
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveObjectSetItem).call(this, ...args));
 
-    _defineProperty(this, "display", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
 
-    _defineProperty(this, "_rebuildPending", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_dirty", true);
 
-    _defineProperty(this, "_onModified", null);
+    return _this;
   }
 
   _createClass(EveObjectSetItem, [{
@@ -48552,44 +48542,73 @@ function () {
      * Fire on value changes
      */
     value: function OnValueChanged() {
-      this._rebuildPending = true;
-      if (this._onModified) this._onModified(this);
+      this._dirty = true;
+
+      if (this._parent) {
+        this._parent.OnChildValueChanged(this);
+      }
+    }
+    /**
+     * Fires when the object is destroyed
+     */
+
+  }, {
+    key: "OnDestroyed",
+    value: function OnDestroyed() {
+      if (this._parent) {
+        this._parent.RemoveItem(this);
+      }
     }
   }]);
 
   return EveObjectSetItem;
-}();
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveObjectSetItem, Type => {
+  return {
+    type: "EveObjectSetItem",
+    category: "ObjectSetItem",
+    isLeaf: true,
+    isAbstract: true,
+    props: {
+      display: Type.BOOLEAN
+    }
+  };
+});
 /**
  * EveObjectSet base class
+ * @ccp N/A
  *
- * @property {number|String} _id                     - The set's id
- * @property {String} name                           - The set's name
- * @property {Boolean} display                       - Toggles set visibility
- * @property {Array<EveObjectSetItem>} items         - The set's items
- * @property {Array<EveObjectSetItem>} _visibleItems - The set's items that will be rendered when the set is visible
- * @property {Boolean} _rebuildPending               - Identifies if the set requires rebuilding
- * @class
+ * @property {Boolean} display        - Toggles set visibility
+ * @property {Array<*>} items         - The set's items
+ * @property {Array<*>} _visibleItems - The set's items that will be rendered when the set is visible
+ * @property {Boolean} _dirty         - Identifies if the set requires rebuilding
  */
 
 let EveObjectSet =
 /*#__PURE__*/
-function () {
+function (_Tw2BaseClass2) {
+  _inherits(EveObjectSet, _Tw2BaseClass2);
+
   function EveObjectSet() {
+    var _this2;
+
     _classCallCheck(this, EveObjectSet);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
 
-    _defineProperty(this, "name", "");
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(EveObjectSet).call(this, ...args));
 
-    _defineProperty(this, "display", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "display", true);
 
-    _defineProperty(this, "items", []);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "items", []);
 
-    _defineProperty(this, "_visibleItems", []);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_dirty", true);
 
-    _defineProperty(this, "_rebuildPending", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_visibleItems", []);
 
-    _defineProperty(this, "_onChildModified", item => this.OnValueChanged(item));
+    return _this2;
   }
 
   _createClass(EveObjectSet, [{
@@ -48608,114 +48627,130 @@ function () {
   }, {
     key: "OnValueChanged",
     value: function OnValueChanged() {
-      this._rebuildPending = true;
+      this._dirty = true;
+    }
+    /**
+     * Fires on child value changes
+     * @param {*} child
+     */
+
+  }, {
+    key: "OnChildValueChanged",
+    value: function OnChildValueChanged(child) {
+      this.EmitEvent("child_modified", {
+        child
+      });
+      this._dirty = true; //this.UpdateValues(child);
     }
     /**
      * Creates an item from an options object and then adds it to the set
+     * @param {*} {values}
      * @param {*} [opt={}]
-     * @returns {?EveObjectSetItem|*}
+     * @returns {*}
      */
 
   }, {
     key: "CreateItem",
     value: function CreateItem() {
-      let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      const Item = this.constructor.Item;
-
-      if (Item && "create" in Item) {
-        const item = Item.create(opt);
-        this.AddItem(item);
-        return item;
-      }
-
-      return null;
+      let values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      let opt = arguments.length > 1 ? arguments[1] : undefined;
+      const item = this.constructor.Item.from(values, opt);
+      this.AddItem(item, opt ? opt.skipUpdate : false);
+      return item;
     }
     /**
      * Adds a set item
-     * @param {EveObjectSetItem|*} item
+     * @param {*} item
+     * @param {Boolean} [skipUpdate]
      */
 
   }, {
     key: "AddItem",
-    value: function AddItem(item) {
+    value: function AddItem(item, skipUpdate) {
       if (!this.items.includes(item)) {
-        item._onModified = this._onChildModified;
+        this.EmitEvent("child_added", {
+          ctx: item
+        });
+        item.SetParent(this);
         this.items.push(item);
-        this.OnValueChanged();
+        this._dirty = true;
+        if (!skipUpdate) this.UpdateValues(item);
+        return true;
       }
+
+      return false;
     }
     /**
      * Removes a set item
-     * @param {EveObjectSetItem|*} item
+     * @param {*} item
+     * @param {Boolean} [skipUpdate]
      */
 
   }, {
     key: "RemoveItem",
-    value: function RemoveItem(item) {
+    value: function RemoveItem(item, skipUpdate) {
       const index = this.items.indexOf(item);
 
       if (index !== -1) {
-        item._onModified = null;
+        this.EmitEvent("child_removed", {
+          ctx: item
+        });
+        item.UnsetParent(this);
         this.items.splice(index, 1);
-        this.OnValueChanged();
+        this._dirty = true;
+        if (!skipUpdate) this.UpdateValues(item);
+        return true;
       }
+
+      return false;
     }
     /**
-     * Clears all set items
+     * Clears all items
+     * @param {Boolean} [skipUpdate]
      */
 
   }, {
     key: "ClearItems",
-    value: function ClearItems() {
+    value: function ClearItems(skipUpdate) {
       for (let i = 0; i < this.items.length; i++) {
-        this.items[i]._onModified = null;
+        this.RemoveItem(this.items[i], true);
+        i--;
       }
 
-      this.items = [];
-      this.OnValueChanged();
+      if (!skipUpdate) this.UpdateValues();
     }
     /**
-     * Finds an item by it's id
-     * @param {?number} [id=null]
-     * @returns {?EveObjectSetItem|*}
+     * Rebuilds items
      */
 
   }, {
-    key: "FindItemByID",
-    value: function FindItemByID() {
-      let id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    key: "RebuildItems",
+    value: function RebuildItems() {
+      this._visibleItems.splice(0);
 
-      if (id !== null) {
-        for (let i = 0; i < this.items.length; i++) {
-          if (this.items[i]._id === id) {
-            return this.items[i];
-          }
+      for (let i = 0; i < this.items.length; i++) {
+        const item = this.items[i];
+        item.SetParent(this);
+
+        if (item.display) {
+          this._visibleItems.push(item);
         }
+
+        item._dirty = false;
       }
 
-      return null;
-    }
-    /**
-     * Gets the set's resources
-     * @param {Array} [out=[]]
-     * @returns {Array<Tw2Resource>}
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      return out;
+      this._dirty = true;
     }
     /**
      * Per frame update
-     * @param {number} dt
+     * @param {Number} dt
+     * @param {mat4} parentMatrix
      */
 
   }, {
     key: "Update",
-    value: function Update(dt) {
-      if (this._rebuildPending) {
+    value: function Update(dt, parentMatrix) {
+      if (this._dirty) {
         this.Rebuild();
       }
     }
@@ -48725,7 +48760,9 @@ function () {
 
   }, {
     key: "Unload",
-    value: function Unload() {}
+    value: function Unload() {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
     /**
      * Rebuilds the set
      */
@@ -48733,46 +48770,28 @@ function () {
   }, {
     key: "Rebuild",
     value: function Rebuild() {
-      this.constructor.RebuildItems(this);
-      this._rebuildPending = false;
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
     }
     /**
      * Gets render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
 
   }, {
     key: "GetBatches",
-    value: function GetBatches(mode, accumulator, perObjectData) {}
+    value: function GetBatches(mode, accumulator, perObjectData) {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
     /**
      * Renders the set
      */
 
   }, {
     key: "Render",
-    value: function Render() {}
-    /**
-     * Rebuilds the set's items
-     *
-     * @param {EveObjectSet|*} eveSet
-     */
-
-  }], [{
-    key: "RebuildItems",
-    value: function RebuildItems(eveSet) {
-      eveSet._visibleItems = [];
-
-      for (let i = 0; i < eveSet.items.length; i++) {
-        const item = eveSet.items[i];
-        item._onModified = eveSet._onChildModified;
-        item._rebuildPending = false;
-
-        if (item.display) {
-          eveSet._visibleItems.push(item);
-        }
-      }
+    value: function Render() {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
     }
     /**
      * The object set's item
@@ -48782,7 +48801,7 @@ function () {
   }]);
 
   return EveObjectSet;
-}();
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
 _defineProperty(EveObjectSet, "Item", null);
 
@@ -48793,6 +48812,18 @@ _defineProperty(EveObjectSet, "global", {
   vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
   vec4_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
   mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+});
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveObjectSet, Type => {
+  return {
+    type: "EveObjectSet",
+    category: "ObjectSet",
+    isAbstract: true,
+    props: {
+      display: Type.BOOLEAN,
+      items: Type.ARRAY
+    }
+  };
 });
 
 /***/ }),
@@ -48835,9 +48866,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Plane set render batch
- *
+ * @ccp N/A
  * @property {EvePlaneSet} planeSet
- * @class
  */
 
 let EvePlaneSetBatch =
@@ -48876,11 +48906,12 @@ function (_Tw2RenderBatch) {
   return EvePlaneSetBatch;
 }(_core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"]);
 /**
- * EvePlaneSetItem
+ * Plane set item
  * TODO: Identify if "boneIndex" is deprecated
  * TODO: Identify if "groupIndex" is deprecated
  * If "boneIndex" and "groupIndex" are just used by the EveSOF, we may need to record this information if
  * we are going to convert this object back into a EveSOF object
+ * @ccp EvePlaneSetItem
  *
  * @property {vec4} color           -
  * @property {vec4} layer1Scroll    -
@@ -48933,8 +48964,6 @@ function (_EveObjectSetItem) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "boneIndex", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "display", true);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "groupIndex", -1);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "transform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
@@ -48942,16 +48971,26 @@ function (_EveObjectSetItem) {
     return _this2;
   }
 
-  _createClass(EvePlaneSetItem, null, [{
-    key: "create",
+  _createClass(EvePlaneSetItem, [{
+    key: "OnValueChanged",
 
+    /**
+     * Fires on value changes
+     */
+    value: function OnValueChanged() {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
+      this._dirty = true;
+    }
     /**
      * Creates a plane set item from an object
      * TODO: Remove this class once it is generated by the Tw2Schema
      * @param {*} opt
      * @returns {EvePlaneSetItem}
      */
-    value: function create() {
+
+  }], [{
+    key: "from",
+    value: function from() {
       let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       const item = new this();
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "boneIndex", "groupIndex", "maskAtlasID", "position", "scaling", "rotation", "transform", "color", "layer1Transform", "layer2Transform", "layer1Scroll", "layer2Scroll"]);
@@ -48961,7 +49000,7 @@ function (_EveObjectSetItem) {
 
   return EvePlaneSetItem;
 }(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EvePlaneSetItem, Type => {
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EvePlaneSetItem, Type => {
   return {
     isStaging: true,
     type: "EvePlaneSetItem",
@@ -48969,7 +49008,6 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EvePlaneSetItem, Typ
     props: {
       boneIndex: Type.NUMBER,
       color: Type.RGBA_LINEAR,
-      display: Type.BOOLEAN,
       groupIndex: Type.NUMBER,
       layer1Scroll: Type.VECTOR4,
       layer1Transform: Type.VECTOR4,
@@ -48985,16 +49023,17 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EvePlaneSetItem, Typ
   };
 });
 /**
- * EvePlaneSet
+ * Plane set
  * Todo: Implement "hideOnLowQuality"
  * Todo: Implement "pickBufferID" (Assuming we will add picking)
+ * @ccp EvePlaneSet
  *
  * @property {Tr2Effect} effect                -
  * @property {Boolean} hideOnLowQuality        -
  * @property {Number} pickBufferID             -
  * @property {Array.<EveObjectSetItem>} planes -
  * @property {Boolean} display                 -
- * @property {number} _time                    -
+ * @property {Number} _time                    -
  * @property {WebGLBuffer} _vertexBuffer       -
  * @property {WebGLBuffer} _indexBuffer        -
  * @property {Tw2VertexDeclaration} _decl      -
@@ -49022,8 +49061,6 @@ function (_EveObjectSet) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "pickBufferID", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "display", true);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "_time", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this3)), "_vertexBuffer", null);
@@ -49036,33 +49073,17 @@ function (_EveObjectSet) {
   }
 
   _createClass(EvePlaneSet, [{
-    key: "GetResources",
+    key: "Update",
 
-    /**
-     * Gets plane set res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array} {Array.<Tw2Resource>} [out]
-     */
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-      if (this.effect) {
-        this.effect.GetResources(out);
-      }
-
-      return out;
-    }
     /**
      * Per frame update
-     * @param {number} dt - Delta Time
+     * @param {Number} dt - Delta Time
+     * @param {mat4} [parentMatrix]
      */
-
-  }, {
-    key: "Update",
-    value: function Update(dt) {
+    value: function Update(dt, parentMatrix) {
       this._time += dt;
 
-      if (this._rebuildPending) {
+      if (this._dirty) {
         this.Rebuild();
       }
     }
@@ -49091,8 +49112,8 @@ function (_EveObjectSet) {
     key: "Rebuild",
     value: function Rebuild() {
       this.Unload();
-      EvePlaneSet.RebuildItems(this);
-      this._rebuildPending = false;
+      this.RebuildItems();
+      this._dirty = false;
       const itemCount = this._visibleItems.length;
       if (!itemCount) return;
       const vertexSize = 35,
@@ -49106,7 +49127,7 @@ function (_EveObjectSet) {
         array[offset + vertexSize + vertexSize - 3] = 1;
         array[offset + 2 * vertexSize + vertexSize - 3] = 2;
         array[offset + 3 * vertexSize + vertexSize - 3] = 3;
-        const itemTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(mat4_0, item.rotation, item.position, item.scaling);
+        const itemTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(item.transform, item.rotation, item.position, item.scaling);
 
         for (let j = 0; j < 4; ++j) {
           const vtxOffset = offset + j * vertexSize;
@@ -49172,7 +49193,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets the plane set's render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
@@ -49180,7 +49201,7 @@ function (_EveObjectSet) {
   }, {
     key: "GetBatches",
     value: function GetBatches(mode, accumulator, perObjectData) {
-      if (this.display && mode === _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._visibleItems.length) {
+      if (this.display && mode === _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._vertexBuffer && this._visibleItems.length) {
         const batch = new EvePlaneSetBatch();
         batch.renderMode = _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
         batch.planeSet = this;
@@ -49196,7 +49217,7 @@ function (_EveObjectSet) {
   }, {
     key: "Render",
     value: function Render(technique) {
-      if (!this.effect || !this.effect.IsGood()) return false;
+      if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer) return false;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             gl = d.gl;
       d.SetStandardStates(d.RM_ADDITIVE);
@@ -49280,17 +49301,16 @@ _defineProperty(EvePlaneSet, "vertexDeclarations", [{
   elements: 3
 }]);
 
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EvePlaneSet, Type => {
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EvePlaneSet, Type => {
   return {
     isStaging: true,
     type: "EvePlaneSet",
     category: "EveObjectSet",
     props: {
-      display: Type.BOOLEAN,
       effect: ["Tr2Effect"],
       hideOnLowQuality: Type.BOOLEAN,
       pickBufferID: Type.NUMBER,
-      planes: [["EvePlaneSetItem"]]
+      items: [["EvePlaneSetItem"]]
     },
     notImplemented: ["hideOnLowQuality", "pickBufferID"]
   };
@@ -49331,29 +49351,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 /**
- * EveSpaceObjectDecal
+ * Decal
  * TODO: Make "PickEffect" shared
  * TODO: Identify if "groupIndex" is deprecated
  * TODO: Identify if "parentBoneIndex" is deprecated
  * If "groupIndex" and "parentBoneIndex" are just used by the EveSOF, we may need to record this information if
  * we are going to convert this object back into a EveSOF object
+ * @ccp EveSpaceObjectDecal
  *
- * @property {Tr2Effect} decalEffect           -
- * @property {Boolean} display                 -
- * @property {TypedArray} indexBuffer          -
- * @property {number} groupIndex               -
- * @property {number} parentBoneIndex          -
- * @property {Tw2GeometryRes} parentGeometry   -
- * @property {Boolean} pickable                -
- * @property {Tw2Effect} pickEffect            -
- * @property {vec3} position                   -
- * @property {quat} rotation                   -
- * @property {vec3} scaling                    -
- * @property {mat4} transform                  -
- * @property {mat4} transformInv               -
- * @property {*} _indexBuffer                  -
- * @property {Tw2PerObjectData} _perObjectData -
- * @class
+ * @property {Tr2Effect} decalEffect           - Decal effect
+ * @property {Boolean} display                 - Toggles decal visibility
+ * @property {TypedArray} indexBuffer          - Decal index buffer
+ * @property {Number} groupIndex               - Decals SOF group index
+ * @property {Number} parentBoneIndex          - Decal's parent bone index
+ * @property {Tw2GeometryRes} parentGeometry   - Decal's parent geometry
+ * @property {Boolean} pickable                - Identifies if the decal is pickable
+ * @property {Tw2Effect} pickEffect            - Decal pick effect
+ * @property {vec3} position                   - Decal position
+ * @property {quat} rotation                   - Decal rotation
+ * @property {vec3} scaling                    - Decal scaling
+ * @property {mat4} transform                  - Decal local transform
+ * @property {mat4} transformInv               - Decal local transform inverse
+ * @property {WebGLBuffer} _indexBuffer        - Decal index buffer
+ * @property {Tw2PerObjectData} _perObjectData - Decal per object data
  */
 
 let EveSpaceObjectDecal =
@@ -49402,6 +49422,8 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_perObjectData", _core___WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObjectDecal.perObjectData));
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_dirty", true);
+
     return _this;
   }
 
@@ -49412,7 +49434,8 @@ function (_Tw2BaseClass) {
      * Initializes the decal
      */
     value: function Initialize() {
-      this.SetIndexBuffer(this.indexBuffer);
+      this.Rebuild();
+      this.UpdateValues();
     }
     /**
      * Fire on value changes
@@ -49421,14 +49444,6 @@ function (_Tw2BaseClass) {
   }, {
     key: "OnValueChanged",
     value: function OnValueChanged() {
-      if (!this._indexBuffer && this.indexBuffer) {
-        const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-              indexes = new Uint16Array(this.indexBuffer);
-        this._indexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
-      }
-
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this.transformInv, this.transform);
     }
@@ -49443,37 +49458,6 @@ function (_Tw2BaseClass) {
       this.parentGeometry = geometryRes;
     }
     /**
-     * Sets the decal's index buffer
-     * @param {number[]} indices
-     */
-
-  }, {
-    key: "SetIndexBuffer",
-    value: function SetIndexBuffer(indices) {
-      this.indexBuffer = indices;
-      this.Unload();
-      this.UpdateValues();
-    }
-    /**
-     * Gets decal resources
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-      if (this.parentGeometry && !out.includes(this.parentGeometry)) {
-        out.push(this.parentGeometry);
-      }
-
-      if (this.decalEffect) this.decalEffect.GetResources(out);
-      if (this.pickEffect) this.pickEffect.GetResources(out);
-      return out;
-    }
-    /**
      * Unloads the decal's buffers
      */
 
@@ -49486,11 +49470,30 @@ function (_Tw2BaseClass) {
       }
     }
     /**
+     * Rebuilds the object's buffers
+     */
+
+  }, {
+    key: "Rebuild",
+    value: function Rebuild() {
+      this.Unload();
+
+      if (this.indexBuffer) {
+        const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+              indexes = new Uint16Array(this.indexBuffer);
+        this._indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
+      }
+
+      this._dirty = false;
+    }
+    /**
      * Gets batches for rendering
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
-     * @param {number} [counter=0]
+     * @param {Number} [counter=0]
      */
 
   }, {
@@ -49508,7 +49511,11 @@ function (_Tw2BaseClass) {
           break;
       }
 
-      if (this.display && effect && effect.IsGood() && this.indexBuffer.length && this.parentGeometry && this.parentGeometry.IsGood()) {
+      if (this._dirty) {
+        this.Rebuild();
+      }
+
+      if (this.display && effect && effect.IsGood() && this._indexBuffer && this.parentGeometry && this.parentGeometry.IsGood()) {
         const batch = new _core___WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
 
         this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
@@ -49656,10 +49663,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 /**
- * EveSpotlightSetBatch
- *
+ * Spotlight set render batch
  * @property {EveSpotlightSet} spotlightSet
- * @class
  */
 
 let EveSpotlightSetBatch =
@@ -49699,21 +49704,21 @@ function (_Tw2RenderBatch) {
   return EveSpotlightSetBatch;
 }(_core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"]);
 /**
- * Spotlight Item
+ * Spotlight
  * TODO: Identify if "boosterGainInfluence" is deprecated
+ * @ccp EveSpotlightSetItem
  *
  * @property {mat4} transform               - The spotlight's transform
  * @property {vec4} coneColor               - Colour of the spotlight's cone
  * @property {vec4} spriteColor             - Colour of the spotlight's sprite texture
  * @property {vec4} flareColor              - Colour of the spotlight's flare
  * @property {vec4} spriteScale             - The size of the spotlight
- * @property {number} boosterGainInfluence  - If true, the spotlight can change size on booster gain
- * @property {number} boneIndex             - The spotlight's bone index
- * @property {number} groupIndex            - The sof faction group that the spotlight belongs to
- * @property {number} coneIntensity         - Scales the spotlight's cone colour, set by an object's sof Faction
- * @property {number} spriteIntensity       - Scales the spotlight's sprite colour, set by an object's sof Faction
- * @property {number} flareIntensity        - Scales the spotlight's flare colour, set by an object's sof Faction
- * @class
+ * @property {Number} boosterGainInfluence  - If true, the spotlight can change size on booster gain
+ * @property {Number} boneIndex             - The spotlight's bone index
+ * @property {Number} groupIndex            - The sof faction group that the spotlight belongs to
+ * @property {Number} coneIntensity         - Scales the spotlight's cone colour, set by an object's sof Faction
+ * @property {Number} spriteIntensity       - Scales the spotlight's sprite colour, set by an object's sof Faction
+ * @property {Number} flareIntensity        - Scales the spotlight's flare colour, set by an object's sof Faction
  */
 
 let EveSpotlightSetItem =
@@ -49758,16 +49763,16 @@ function (_EveObjectSetItem) {
   }
 
   _createClass(EveSpotlightSetItem, null, [{
-    key: "create",
+    key: "from",
     // faction intensity
 
     /**
      * Creates a spotlight set item from an object
-     * TODO: Replace with 'from'
+     * TODO: Remove this class once it is generated by the Tw2Schema
      * @param {*} [opt={}
      * @returns {EveSpotlightSetItem}
      */
-    value: function create() {
+    value: function from() {
       let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       const item = new this();
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "boosterGainInfluence", "boneIndex", "groupIndex", "coneIntensity", "spriteIntensity", "flareIntensity", "transform", "coneColor", "spriteColor", "flareColor", "spriteScale"]);
@@ -49779,9 +49784,7 @@ function (_EveObjectSetItem) {
 }(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"]);
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpotlightSetItem, Type => {
   return {
-    isStaging: true,
     type: "EveSpotlightSetItem",
-    category: "EveObjectSetItem",
     props: {
       boosterGainInfluence: Type.NUMBER,
       boneIndex: Type.NUMBER,
@@ -49799,18 +49802,18 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpotlightSetItem,
   };
 });
 /**
- * EveSpotlightSet
+ * Spotlight set
  * Todo: Implement "intensity"
- * Todo: Use interface rather than extending EveObjectSet
+ * @ccp EveSpotlightSet
  *
  * @property {Tw2Effect} coneEffect                      - The spotlight set's cone effect
  * @property {Tw2Effect} glowEffect                      - The spotlight set's glow effect
  * @property {Number} intensity                          - The spotlight set's intensity
  * @property {Array.<EveSpotlightSetItem) spotlightItems - The spotlight set's children
- * @property {WebGLBuffer} _coneVertexBuffer             - Webgl buffer for the spotlight set's cone vertices
- * @property {WebGLBuffer} _spriteVertexBuffer           - Webgl buffer for the spotlight set's sprite/glow vertices
- * @property {WebGLBuffer} _indexBuffer                  - Webgl buffer for the spotlight set
- * @property {Tw2VertexDeclaration{ usage: } _decl       - The spotlight set's vertex declarations
+ * @property {WebGLBuffer} _coneVertexBuffer             - Vertex buffer for the spotlight set's cone vertices
+ * @property {WebGLBuffer} _spriteVertexBuffer           - Vertex buffer for the spotlight set's sprite/glow vertices
+ * @property {WebGLBuffer} _indexBuffer                  - Index buffer for the spotlight set
+ * @property {Tw2VertexDeclaration} _decl                - The spotlight set's vertex declarations
  */
 
 let EveSpotlightSet =
@@ -49847,32 +49850,11 @@ function (_EveObjectSet) {
   }
 
   _createClass(EveSpotlightSet, [{
-    key: "GetResources",
+    key: "Unload",
 
-    /**
-     * Gets the spotlight set's resources
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-      if (this.coneEffect) {
-        this.coneEffect.GetResources(out);
-      }
-
-      if (this.glowEffect) {
-        this.glowEffect.GetResources(out);
-      }
-
-      return out;
-    }
     /**
      * Unloads the spotlight set's buffers
      */
-
-  }, {
-    key: "Unload",
     value: function Unload() {
       if (this._coneVertexBuffer) {
         _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._coneVertexBuffer);
@@ -49897,8 +49879,8 @@ function (_EveObjectSet) {
     key: "Rebuild",
     value: function Rebuild() {
       this.Unload();
-      EveSpotlightSet.RebuildItems(this);
-      this._rebuildPending = false;
+      this.RebuildItems();
+      this._dirty = false;
       const itemCount = this._visibleItems.length;
       if (!itemCount) return;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
@@ -50019,7 +50001,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets the spotlight set's render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
@@ -50088,7 +50070,7 @@ function (_EveObjectSet) {
   }], [{
     key: "Render",
     value: function Render(spotlightSet, effect, technique, buffer) {
-      if (!effect || !effect.IsGood() || !buffer) return false;
+      if (!effect || !effect.IsGood() || !buffer || !spotlightSet._indexBuffer) return false;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             gl = d.gl,
             stride = 22 * 4;
@@ -50146,7 +50128,6 @@ _defineProperty(EveSpotlightSet, "vertexDeclarations", [{
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpotlightSet, Type => {
   return {
     type: "EveSpotlightSet",
-    category: "EveObjectSet",
     props: {
       coneEffect: ["Tr2Effect"],
       glowEffect: ["Tr2Effect"],
@@ -50172,6 +50153,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteLineSetItem", function() { return EveSpriteLineSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteLineSet", function() { return EveSpriteLineSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
@@ -50189,6 +50171,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 /**
@@ -50221,9 +50204,9 @@ function () {
   return EveSpriteLineSetBatch;
 }();
 /**
- * EveSpriteLineSetItem
- * @implements EveObjectSetItem
+ * Sprite line
  * Todo: Is this actually a class?
+ * @ccp ???
  *
  * @property {Number} blinkPhase      -
  * @property {Number} blinkPhaseShift -
@@ -50244,8 +50227,8 @@ function () {
 
 let EveSpriteLineSetItem =
 /*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveSpriteLineSetItem, _Tw2BaseClass);
+function (_EveObjectSetItem) {
+  _inherits(EveSpriteLineSetItem, _EveObjectSetItem);
 
   function EveSpriteLineSetItem() {
     var _this;
@@ -50290,6 +50273,8 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_dirty", true);
+
     return _this;
   }
 
@@ -50301,15 +50286,15 @@ function (_Tw2BaseClass) {
      */
     value: function OnValueChanged() {
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+      this._dirty = true;
     }
   }]);
 
   return EveSpriteLineSetItem;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpriteLineSetItem, Type => {
+}(_EveObjectSet__WEBPACK_IMPORTED_MODULE_1__["EveObjectSetItem"]);
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_1__["EveObjectSet"].define(EveSpriteLineSetItem, Type => {
   return {
     type: "EveSpriteLineSetItem",
-    category: "EveObjectSetItem",
     isStaging: true,
     props: {
       blinkPhase: Type.NUMBER,
@@ -50333,44 +50318,70 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpriteLineSetItem
   };
 });
 /**
- * EveSpriteLineSet
+ * Sprite line set
  * @TODO: Is this actually a class?
+ * @ccp ???
  *
- * @property items
+ * @property {Array<EveSpriteLineSetItem>} items
  */
 
 let EveSpriteLineSet =
 /*#__PURE__*/
-function (_Tw2BaseClass2) {
-  _inherits(EveSpriteLineSet, _Tw2BaseClass2);
+function (_EveObjectSet) {
+  _inherits(EveSpriteLineSet, _EveObjectSet);
 
   function EveSpriteLineSet() {
-    var _this2;
-
     _classCallCheck(this, EveSpriteLineSet);
 
-    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-
-    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(EveSpriteLineSet).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "items", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "display", true);
-
-    return _this2;
+    return _possibleConstructorReturn(this, _getPrototypeOf(EveSpriteLineSet).apply(this, arguments));
   }
 
+  _createClass(EveSpriteLineSet, [{
+    key: "Unload",
+
+    /**
+     * Unloads the sprite line set's buffers
+     */
+    value: function Unload() {} // TODO: Unload
+
+    /**
+     * Rebuilds the sprite line set's buffers
+     */
+
+  }, {
+    key: "Rebuild",
+    value: function Rebuild() {} // TODO: Rebuild
+
+    /**
+     * Gets the sprite line set's render batches
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+
+  }, {
+    key: "GetBatches",
+    value: function GetBatches(mode, accumulator, perObjectData) {} // TODO: GetBatches
+
+    /**
+     * Renders the sprite line set
+     * @param {String} technique - technique name
+     * @returns {Boolean}        - true if rendered
+     */
+
+  }, {
+    key: "Render",
+    value: function Render(technique) {// TODO: Render
+    }
+  }]);
+
   return EveSpriteLineSet;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpriteLineSet, Type => {
+}(_EveObjectSet__WEBPACK_IMPORTED_MODULE_1__["EveObjectSet"]);
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_1__["EveObjectSet"].define(EveSpriteLineSet, Type => {
   return {
     type: "EveSpriteLineSet",
-    category: "EveObjectSet",
     isStaging: true,
     props: {
-      display: Type.BOOLEAN,
       items: [["EveSpriteLineSetItem"]]
     },
     notImplemented: ["*"]
@@ -50417,13 +50428,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Sprite set render batch
- *
+ * @ccp N/A
+ * 
  * @property {Boolean} boosterGlow
  * @property {EveSpriteSet} spriteSet
  * @property {mat4} world
- * @property {number}
- * @property {number}
- * @class
+ * @property {Number}
+ * @property {Number}
  */
 
 let EveSpriteSetBatch =
@@ -50474,10 +50485,9 @@ function (_Tw2RenderBatch) {
   return EveSpriteSetBatch;
 }(_core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"]);
 /**
- * EveSpriteSetItem
- *
- * @implements EveObjectSetItem
- *
+ * Sprite
+ * @ccp EveSpriteSetItem
+ * 
  * @property {Number} blinkPhase -
  * @property {Number} blinkRate  -
  * @property {Number} boneIndex  -
@@ -50529,15 +50539,16 @@ function (_EveObjectSetItem) {
   }
 
   _createClass(EveSpriteSetItem, null, [{
-    key: "create",
+    key: "from",
     // Retain from EveSOF?
 
     /**
      * Creates a sprite set item from an object
+     * TODO: Remove this class once it is generated by the Tw2Schema
      * @param {*} [opt={}]
      * @returns {EveSpriteSetItem}
      */
-    value: function create() {
+    value: function from() {
       let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       const item = new this();
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale", "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor"]);
@@ -50547,10 +50558,9 @@ function (_EveObjectSetItem) {
 
   return EveSpriteSetItem;
 }(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpriteSetItem, Type => {
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveSpriteSetItem, Type => {
   return {
     type: "EveSpriteSetItem",
-    category: "EveObjectSetItem",
     props: {
       blinkPhase: Type.NUMBER,
       blinkRate: Type.NUMBER,
@@ -50566,14 +50576,14 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpriteSetItem, Ty
   };
 });
 /**
- * EveSpriteSet
+ * Sprite set
+ * @ccp EveSpriteSet
  *
  * @property {Tr2Effect} effect                 - The sprite set's effect
  * @property {Number} intensity                 - The sprite set's intensity
  * @property {Boolean} skinned                  - Use bone transforms (when useQuads is true)
- * @property {Array.<EveObjectSetItem>} sprites - The sprite's children
  * @property {?Boolean} useQuads                - Use quad rendering (CPU transform)
- * @property {number} _time                     - The sprite set's internal time
+ * @property {Number} _time                     - The sprite set's internal time
  * @property {WebGLBuffer} _vertexBuffer        - The sprite set's vertex buffer
  * @property {WebGLBuffer} _indexBuffer         - The sprite set's index buffer
  * @property {Tw2VertexDeclaration} _decl       - The sprite set's vertex declarations
@@ -50590,6 +50600,7 @@ function (_EveObjectSet) {
 
   /**
    * Constructor
+   * TODO: Implement this constructor without having to pass these options, or use Initialize
    * @param {Boolean} [useQuads] - Use quad rendering (CPU transform)
    * @param {Boolean} [skinned] - Use bone transforms (when useQuads is true)
    */
@@ -50638,48 +50649,45 @@ function (_EveObjectSet) {
 
 
   _createClass(EveSpriteSet, [{
-    key: "UseQuads",
+    key: "Initialize",
 
+    /**
+     * Initializes the object
+     */
+    value: function Initialize() {
+      if (this.useQuads !== null) {
+        this.UseQuads(this.useQuads, this.skinned);
+      }
+
+      this.Rebuild();
+    }
     /**
      * Use instanced rendering or 'quad' rendering
      * @param {Boolean} useQuads - Use quad rendering (CPU transform)
      * @param {Boolean} skinned  - Use bone transforms (when useQuads is true)
      */
+
+  }, {
+    key: "UseQuads",
     value: function UseQuads(useQuads, skinned) {
       if (this.useQuads === useQuads) return;
       this.useQuads = useQuads;
       this.skinned = skinned;
       this._decl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(!useQuads ? EveSpriteSet.vertexDeclarations : EveSpriteSet.quadVertexDeclarations);
-      this._rebuildPending = true;
-    }
-    /**
-     * Gets Sprite Set Resource Objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-      if (this.effect) {
-        this.effect.GetResources(out);
-      }
-
-      return out;
+      this._dirty = true;
     }
     /**
      * Per frame update
-     * @param {number} dt - Delta time
+     * @param {Number} dt - Delta time
+     * @param {mat4} [parentMatrix]
      */
 
   }, {
     key: "Update",
-    value: function Update(dt) {
+    value: function Update(dt, parentMatrix) {
       this._time += dt;
 
-      if (this._rebuildPending) {
+      if (this._dirty) {
         this.Rebuild();
       }
     }
@@ -50716,8 +50724,8 @@ function (_EveObjectSet) {
   }, {
     key: "Rebuild",
     value: function Rebuild() {
-      this.constructor.RebuildItems(this);
-      this._rebuildPending = false;
+      this.RebuildItems();
+      this._dirty = false;
       const itemCount = this._visibleItems.length;
       if (!itemCount) return;
       const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
@@ -50784,7 +50792,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {mat4} world
@@ -50804,7 +50812,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets render batches for booster glows
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {mat4} world
@@ -50842,7 +50850,7 @@ function (_EveObjectSet) {
         return this.RenderQuads(technique, world, perObjectData);
       }
 
-      if (!this.effect || !this.effect.IsGood() || !this._indexBuffer) return false;
+      if (!this.effect || !this.effect.IsGood() || !this._indexBuffer || !this._vertexBuffer) return false;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             gl = d.gl;
       d.SetStandardStates(d.RM_ADDITIVE);
@@ -50870,7 +50878,7 @@ function (_EveObjectSet) {
   }, {
     key: "RenderBoosterGlow",
     value: function RenderBoosterGlow(technique, world, boosterGain, warpIntensity) {
-      if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer) return false;
+      if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             gl = d.gl,
             pos = _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].global.vec3_0,
@@ -50934,7 +50942,7 @@ function (_EveObjectSet) {
   }, {
     key: "RenderQuads",
     value: function RenderQuads(technique, world, perObjectData) {
-      if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer) return false;
+      if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             gl = d.gl,
             itemCount = this._visibleItems.length,
@@ -51079,10 +51087,9 @@ _defineProperty(EveSpriteSet, "quadVertexDeclarations", [{
   elements: 4
 }]);
 
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpriteSet, Type => {
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveSpriteSet, Type => {
   return {
     type: "EveSpriteSet",
-    category: "EveObjectSet",
     props: {
       effect: ["Tr2Effect"],
       intensity: Type.NUMBER,
@@ -51100,14 +51107,20 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpriteSet, Type =
 /*!**********************************!*\
   !*** ./eve/item/EveTrailsSet.js ***!
   \**********************************/
-/*! exports provided: EveTrailsSet */
+/*! exports provided: EveTrailSetRenderBatch, EveTrailsSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTrailSetRenderBatch", function() { return EveTrailSetRenderBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTrailsSet", function() { return EveTrailsSet; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _core_batch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/batch */ "./core/batch/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
@@ -51122,13 +51135,59 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
+
 /**
- * EveTrailsSet
- * @implements EveObjectSet
- * Todo: Implement
+ * EveTrailSetRenderBatch
+ * TODO: Implement (Probably a forwarding render batch or geometry render batch)
+ * @ccp N/A
  *
- * @property {Tr2Effect} effect       -
- * @property {String} geometryResPath -
+ * @property {EveTrailsSet} trailsSet
+ */
+
+let EveTrailSetRenderBatch =
+/*#__PURE__*/
+function (_Tw2RenderBatch) {
+  _inherits(EveTrailSetRenderBatch, _Tw2RenderBatch);
+
+  function EveTrailSetRenderBatch() {
+    var _this;
+
+    _classCallCheck(this, EveTrailSetRenderBatch);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveTrailSetRenderBatch).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "trailsSet", null);
+
+    return _this;
+  }
+
+  _createClass(EveTrailSetRenderBatch, [{
+    key: "Commit",
+
+    /**
+     * Commits the batch
+     * @param {String} technique - technique name
+     */
+    value: function Commit(technique) {
+      this.boosters.Render(technique);
+    }
+  }]);
+
+  return EveTrailSetRenderBatch;
+}(_core_batch__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"]);
+/**
+ * Trails set
+ * Todo: Implement
+ * @ccp EveTrailSet
+ *
+ * @property {Tr2Effect} effect           -
+ * @property {String} geometryResPath     -
+ * @property {Boolean} display            -
+ * @property {Tw2GeometryRes} geometryRes -
  */
 
 let EveTrailsSet =
@@ -51137,28 +51196,119 @@ function (_Tw2BaseClass) {
   _inherits(EveTrailsSet, _Tw2BaseClass);
 
   function EveTrailsSet() {
-    var _this;
+    var _this2;
 
     _classCallCheck(this, EveTrailsSet);
 
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
     }
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveTrailsSet).call(this, ...args));
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(EveTrailsSet).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "effect", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "effect", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResPath", "");
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "geometryResPath", "");
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "display", true);
 
-    return _this;
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "geometryRes", null);
+
+    return _this2;
   }
 
+  _createClass(EveTrailsSet, [{
+    key: "Initialize",
+
+    /**
+     * Initializes the object
+     */
+    value: function Initialize() {
+      if (this.geometryResPath) {
+        this.geometryRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
+        this.geometryRes.RegisterNotification(this);
+      }
+    }
+    /**
+     * Rebuilds cached data
+     * @param {Tw2GeometryRes} res
+     */
+
+  }, {
+    key: "RebuildCachedData",
+    value: function RebuildCachedData(res) {} //TODO: RebuildCachedData
+
+    /**
+     * Gets resources
+     * @param {Array} [out=[]]
+     * @returns {Array<Tw2Resource>}
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      if (this.effect) {
+        this.effect.GetResources(out);
+      }
+
+      if (this.geometryRes && !out.includes(this.geometryRes)) {
+        out.push(this.geometryRes);
+      }
+
+      return out;
+    }
+    /**
+     * Per frame update
+     * @param {Number} dt - delta time
+     */
+
+  }, {
+    key: "Update",
+    value: function Update(dt) {} //TODO: Implement
+
+    /**
+     * Unloads the object's buffers
+     */
+
+  }, {
+    key: "Unload",
+    value: function Unload() {} // TODO: Unload buffers
+
+    /**
+     * Rebuilds the haze set's buffers
+     */
+
+  }, {
+    key: "Rebuild",
+    value: function Rebuild() {} // TODO: Rebuild buffers
+
+    /**
+     * Gets the plane set's render batches
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+
+  }, {
+    key: "GetBatches",
+    value: function GetBatches(mode, accumulator, perObjectData) {} // TODO: GetBatches
+
+    /**
+     * Renders the haze set
+     * @param {String} technique - technique name
+     */
+
+  }, {
+    key: "Render",
+    value: function Render(technique) {// TODO: Render
+    }
+  }]);
+
   return EveTrailsSet;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTrailsSet, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTrailsSet, Type => {
   return {
     type: "EveTrailsSet",
     category: "EveObjectSet",
@@ -51260,11 +51410,25 @@ function (_EveObjectSetItem) {
   }
 
   _createClass(EveTurretSetItem, [{
-    key: "UpdateTransforms",
+    key: "OnValueChanged",
 
+    /**
+     * Fires on value changes
+     */
+    value: function OnValueChanged() {
+      this._dirty = true;
+      this.UpdateTransforms();
+
+      if (this._parent) {
+        this._parent.OnChildValueChanged(this);
+      }
+    }
     /**
      * Updates the turret's transforms
      */
+
+  }, {
+    key: "UpdateTransforms",
     value: function UpdateTransforms() {
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslation(this._localTransform, this.rotation, this.position);
 
@@ -51282,19 +51446,19 @@ function (_EveObjectSetItem) {
      */
 
   }], [{
-    key: "create",
-    value: function create() {
+    key: "from",
+    value: function from() {
       let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       const item = new this();
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "locatorName", "updateFromLocator", "position", "rotation", "bone", "canFireWhenHidden"]);
-      item.UpdateTransforms();
+      item.UpdateValues();
       return item;
     }
   }]);
 
   return EveTurretSetItem;
 }(_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"]);
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTurretSetItem, Type => {
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveTurretSetItem, Type => {
   return {
     type: "EveTurretSetItem",
     props: {
@@ -51310,6 +51474,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTurretSetItem, Ty
 /**
  * EveTurretSet
  * Todo: Implement
+ * @ccp EveTurretSet
  *
  * @property {Number} bottomClipHeight                  -
  * @property {vec4} boundingSphere                      -
@@ -51333,24 +51498,24 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTurretSetItem, Ty
  * @property {Boolean} updatePitchPose                  -
  * @property {Boolean} useDynamicBounds                 -
  * @property {Boolean} useRandomFiringDelay             -
- * @property {Tw2AnimationController} activeAnimation   -
+ * @property {Tw2AnimationController} _activeAnimation  -
  * @property {Tw2GeometryRes} geometryResource          -
- * @property {?Function} fireCallback                   -
- * @property {?Function} fireCallbackPending            -
+ * @property {?Function} _fireCallback                   -
+ * @property {?Function} _fireCallbackPending            -
  * @property {Boolean} _hasCyclingFiringPos              -
- * @property {Tw2AnimationController} inactiveAnimation -
- * @property {mat4} parentMatrix                        -
- * @property {Number} state                             -
- * @property {vec3} targetPosition                      -
+ * @property {Tw2AnimationController} _inactiveAnimation -
+ * @property {mat4} _parentMatrix                        -
+ * @property {Number} _state                             -
+ * @property {vec3} _targetPosition                      -
  * @property {Object} visible                           -
  * @property {Boolean} visible.turrets                  -
  * @property {Boolean} visible.firingEffects            -
- * @property {number} _activeTurret                     -
- * @property {number} _currentCyclingFiresPos           -
- * @property {Boolean} _locatorRebuildPending           -
+ * @property {Number} _activeTurret                     -
+ * @property {Number} _currentCyclingFiresPos           -
+ * @property {Boolean} _locatorDirty           -
  * @property {Tw2PerObjectData} _perObjectDataActive    -
  * @property {Tw2PerObjectData} _perObjectDataInactive  -
- * @property {number} _recheckTimeLeft                  -
+ * @property {Number} _recheckTimeLeft                  -
  */
 
 let EveTurretSet =
@@ -51426,7 +51591,7 @@ function (_EveObjectSet) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_activeTurret", -1);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_currentCyclingFirePos", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_currentCyclingFiresPos", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_fireCallback", null);
 
@@ -51436,7 +51601,7 @@ function (_EveObjectSet) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_inactiveAnimation", new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_locatorRebuildPending", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_locatorDirty", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "_parentMatrix", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
@@ -51515,7 +51680,7 @@ function (_EveObjectSet) {
     }
     /**
      * Helper function for finding out what turret should be firing
-     * @returns {number}
+     * @returns {Number}
      */
 
   }, {
@@ -51583,10 +51748,7 @@ function (_EveObjectSet) {
       }
 
       this._activeTurret = -1;
-
-      if (this.firingEffect) {
-        this.firingEffect.StopFiring();
-      }
+      this.DoStopFiring();
     }
     /**
      * Animation helper function for putting a turret set into idle state
@@ -51626,10 +51788,7 @@ function (_EveObjectSet) {
       }
 
       this._activeTurret = -1;
-
-      if (this.firingEffect) {
-        this.firingEffect.StopFiring();
-      }
+      this.DoStopFiring();
     }
     /**
      * Animation helper function for putting a turret set into a firing state
@@ -51639,7 +51798,7 @@ function (_EveObjectSet) {
     key: "EnterStateFiring",
     value: function EnterStateFiring() {
       if (!this.turretEffect || this._state === EveTurretSet.State.FIRING) {
-        EveTurretSet.DoStartFiring(this);
+        this.DoStartFiring();
 
         if (this.turretEffect) {
           this._activeAnimation.PlayAnimation("Fire", false, () => {
@@ -51656,7 +51815,7 @@ function (_EveObjectSet) {
 
       if (this._state === EveTurretSet.State.INACTIVE) {
         this._activeAnimation.PlayAnimation("Deploy", false, () => {
-          EveTurretSet.DoStartFiring(this);
+          this.DoStartFiring();
 
           this._activeAnimation.PlayAnimation("Fire", false, () => {
             this._activeAnimation.PlayAnimation("Active", true);
@@ -51669,7 +51828,7 @@ function (_EveObjectSet) {
 
         this._state = EveTurretSet.State.UNPACKING;
       } else {
-        EveTurretSet.DoStartFiring(this);
+        this.DoStartFiring();
 
         this._activeAnimation.PlayAnimation("Fire", false, () => {
           this._activeAnimation.PlayAnimation("Active", true);
@@ -51744,7 +51903,7 @@ function (_EveObjectSet) {
     /**
      * Updates the turret set's items that were created from locators
      * - Turrets without locator names are ignored
-     * @param {Array<EveLocator>} locators
+     * @param {Array<EveLocator2>} locators
      */
 
   }, {
@@ -51780,7 +51939,7 @@ function (_EveObjectSet) {
           _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(8, 11), norm.subarray(8, 11));
           _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(item.rotation, norm);
           _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(item.position, norm);
-          item.OnValueChanged();
+          item.UpdateValues();
         }
       }
 
@@ -51791,8 +51950,8 @@ function (_EveObjectSet) {
         }
       }
 
-      this._locatorRebuildPending = false;
-      if (this._rebuildPending) this.Rebuild();
+      this._locatorDirty = false;
+      if (this._dirty) this.Rebuild();
     }
     /**
      * Rebuilds the turret set's items from it's parent's locators
@@ -51801,32 +51960,7 @@ function (_EveObjectSet) {
   }, {
     key: "RebuildItemsFromLocators",
     value: function RebuildItemsFromLocators() {
-      this._locatorRebuildPending = true;
-    }
-    /**
-     * Gets turret set res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-      if (this.geometryResource && !out.includes(this.geometryResource)) {
-        out.push(this.geometryResource);
-      }
-
-      if (this.turretEffect) {
-        this.turretEffect.GetResources(out);
-      }
-
-      if (this.firingEffect) {
-        this.firingEffect.GetResources(out);
-      }
-
-      return out;
+      this._locatorDirty = true;
     }
     /**
      * Updates view dependent data
@@ -51840,15 +51974,26 @@ function (_EveObjectSet) {
       }
     }
     /**
+     * Rebuilds the turret set
+     * Todo: Move all rebuild methods here
+     */
+
+  }, {
+    key: "Rebuild",
+    value: function Rebuild() {
+      this.RebuildItems();
+      this._dirty = false;
+    }
+    /**
      * Per frame update
-     * @param {number} dt - Delta Time
+     * @param {Number} dt - Delta Time
      * @param {mat4} parentMatrix
      */
 
   }, {
     key: "Update",
     value: function Update(dt, parentMatrix) {
-      if (this._rebuildPending) {
+      if (this._dirty) {
         this.Rebuild();
       }
 
@@ -51867,12 +52012,12 @@ function (_EveObjectSet) {
               this._recheckTimeLeft -= dt;
 
               if (this._recheckTimeLeft <= 0) {
-                EveTurretSet.DoStartFiring(this);
+                this.DoStartFiring();
               }
             }
           }
 
-          const activeItem = this.items[this._activeTurret];
+          const activeTurret = this.items[this._activeTurret];
 
           if (this._activeAnimation.models.length) {
             const bones = this._activeAnimation.models[0].bonesByName;
@@ -51880,24 +52025,24 @@ function (_EveObjectSet) {
             for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
               const transform = bones[EveTurretSet.positionBoneSkeletonNames[i]].worldTransform,
                     out = this.firingEffect.GetMuzzleTransform(i);
-              _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, activeItem._localTransform, transform);
+              _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, activeTurret._localTransform, transform);
               _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, out, parentMatrix);
             }
           } else {
             for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
-              _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.firingEffect.GetMuzzleTransform(i), parentMatrix, activeItem._localTransform);
+              _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.firingEffect.GetMuzzleTransform(i), parentMatrix, activeTurret._localTransform);
             }
           }
 
           if (this._fireCallbackPending) {
             if (this._fireCallback) {
-              const cbTransforms = [];
+              const transforms = [];
 
               for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
-                cbTransforms.push(this.firingEffect.GetMuzzleTransform(i));
+                transforms.push(this.firingEffect.GetMuzzleTransform(i));
               }
 
-              this._fireCallback(this, cbTransforms);
+              this._fireCallback(this, transforms, activeTurret);
             }
 
             this._fireCallbackPending = false;
@@ -51910,7 +52055,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets turret set render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {Boolean} [hideFiringEffect]
@@ -51925,7 +52070,7 @@ function (_EveObjectSet) {
         const transforms = this._inactiveAnimation.GetBoneMatrices(0);
 
         if (transforms.length !== 0) {
-          EveTurretSet.UpdatePerObjectData(this, this._perObjectDataInactive.vs, transforms);
+          this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms);
           this._perObjectDataInactive.ps = perObjectData.ps;
           const batch = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
           batch.renderMode = mode;
@@ -51938,7 +52083,7 @@ function (_EveObjectSet) {
             const transforms = this._activeAnimation.GetBoneMatrices(0);
 
             if (transforms.length !== 0) {
-              EveTurretSet.UpdatePerObjectData(this, this._perObjectDataActive.vs, transforms, true);
+              this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true);
               this._perObjectDataActive.ps = perObjectData.ps;
               const batch = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
               batch.renderActive = true;
@@ -51954,7 +52099,7 @@ function (_EveObjectSet) {
     }
     /**
      * Gets turret firing effect batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {Boolean} [hideFiringEffect]
@@ -52006,51 +52151,7 @@ function (_EveObjectSet) {
       return !!rendered;
     }
     /**
-     * Rebuilds the set's items
-     *
-     * @param {EveTurretSet} turretSet
-     */
-
-  }, {
-    key: "turrets",
-
-    /**
-     * Alias for this.items
-     * @returns {Array}
-     */
-    get: function get() {
-      return this.items;
-    }
-    /**
-     * Alias for this.items
-     * @param {Array} arr
-     */
-    ,
-    set: function set(arr) {
-      this.items = arr;
-    }
-  }], [{
-    key: "RebuildItems",
-    value: function RebuildItems(turretSet) {
-      turretSet._visibleItems = [];
-
-      for (let i = 0; i < turretSet.items.length; i++) {
-        const item = turretSet.items[i];
-        item._onModified = turretSet._onChildModified;
-
-        if (item.display) {
-          turretSet._visibleItems.push(item);
-
-          if (item._rebuildPending) {
-            item.UpdateTransforms();
-            item._rebuildPending = false;
-          }
-        }
-      }
-    }
-    /**
      * Updates per object data
-     * @param {EveTurretSet} turretSet
      * @param {Tw2RawData} perObjectData
      * @param transforms
      * @param {Boolean} [skipBoneCalculations]
@@ -52058,17 +52159,17 @@ function (_EveObjectSet) {
 
   }, {
     key: "UpdatePerObjectData",
-    value: function UpdatePerObjectData(turretSet, perObjectData, transforms, skipBoneCalculations) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(perObjectData.Get("shipMatrix"), turretSet._parentMatrix);
+    value: function UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations) {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(perObjectData.Get("shipMatrix"), this._parentMatrix);
       const transformCount = transforms.length / 12;
       perObjectData.Get("turretSetData")[0] = transformCount;
-      perObjectData.Get("baseCutoffData")[0] = turretSet.bottomClipHeight;
+      perObjectData.Get("baseCutoffData")[0] = this.bottomClipHeight;
       const translation = perObjectData.Get("turretTranslation"),
             rotation = perObjectData.Get("turretRotation"),
             pose = perObjectData.Get("turretPoseTransAndRot");
 
-      for (let i = 0; i < turretSet._visibleItems.length; ++i) {
-        const item = turretSet._visibleItems[i];
+      for (let i = 0; i < this._visibleItems.length; ++i) {
+        const item = this._visibleItems[i];
 
         for (let j = 0; j < transformCount; ++j) {
           pose[(i * transformCount + j) * 2 * 4] = transforms[j * 12 + 3];
@@ -52094,27 +52195,37 @@ function (_EveObjectSet) {
     }
     /**
      * Animation helper function for turret firing
-     * @param {EveTurretSet} turretSet
      * @returns {EveTurretSetItem} the closest turret
      */
 
   }, {
     key: "DoStartFiring",
-    value: function DoStartFiring(turretSet) {
-      if (turretSet._hasCyclingFiringPos) {
-        turretSet._currentCyclingFiresPos = 1 - turretSet._currentCyclingFiresPos;
+    value: function DoStartFiring() {
+      if (this._hasCyclingFiringPos) {
+        this._currentCyclingFiresPos = 1 - this._currentCyclingFiresPos;
       }
 
-      if (turretSet.firingEffect) {
-        turretSet.firingEffect.PrepareFiring(0, turretSet._hasCyclingFiringPos ? turretSet._currentCyclingFiresPos : -1);
+      if (this.firingEffect) {
+        this.firingEffect.PrepareFiring(0, this._hasCyclingFiringPos ? this._currentCyclingFiresPos : -1);
       }
 
-      turretSet._activeTurret = turretSet.GetClosestTurret();
-      turretSet._state = EveTurretSet.State.FIRING;
-      turretSet._recheckTimeLeft = 2;
+      this._activeTurret = this.GetClosestTurret();
+      this._state = EveTurretSet.State.FIRING;
+      this._recheckTimeLeft = 2;
 
-      if (turretSet._fireCallback) {
-        turretSet._fireCallbackPending = true;
+      if (this._fireCallback) {
+        this._fireCallbackPending = true;
+      }
+    }
+    /**
+     * Animation helper function for stopping a turret firing
+     */
+
+  }, {
+    key: "DoStopFiring",
+    value: function DoStopFiring() {
+      if (this.firingEffect) {
+        this.firingEffect.StopFiring();
       }
     }
     /**
@@ -52122,6 +52233,24 @@ function (_EveObjectSet) {
      * @type {EveTurretSetItem}
      */
 
+  }, {
+    key: "turrets",
+
+    /**
+     * Alias for this.items
+     * @returns {Array}
+     */
+    get: function get() {
+      return this.items;
+    }
+    /**
+     * Alias for this.items
+     * @param {Array} arr
+     */
+    ,
+    set: function set(arr) {
+      this.items = arr;
+    }
   }]);
 
   return EveTurretSet;
@@ -52183,11 +52312,10 @@ _defineProperty(EveTurretSet, "mat3x4toquat", function () {
   };
 }());
 
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTurretSet, Type => {
+_EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveTurretSet, Type => {
   return {
     isStaging: true,
     type: "EveTurretSet",
-    category: "EveObjectSet",
     props: {
       bottomClipHeight: Type.NUMBER,
       boundingSphere: Type.VECTOR4,
@@ -52223,7 +52351,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTurretSet, Type =
 /*!***************************!*\
   !*** ./eve/item/index.js ***!
   \***************************/
-/*! exports provided: EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator, EveLocator2, EveLocatorSets, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailsSet, EveTurretSetItem, EveTurretSet */
+/*! exports provided: EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52260,12 +52388,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveHazeSet", function() { return _EveHazeSet__WEBPACK_IMPORTED_MODULE_5__["EveHazeSet"]; });
 
-/* harmony import */ var _EveLocator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveLocator */ "./eve/item/EveLocator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocator", function() { return _EveLocator__WEBPACK_IMPORTED_MODULE_6__["EveLocator"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocator2", function() { return _EveLocator__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocatorSets", function() { return _EveLocator__WEBPACK_IMPORTED_MODULE_6__["EveLocatorSets"]; });
+/* harmony import */ var _EveLocator2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveLocator2 */ "./eve/item/EveLocator2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocator2", function() { return _EveLocator2__WEBPACK_IMPORTED_MODULE_6__["EveLocator2"]; });
 
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveObjectSetItem", function() { return _EveObjectSet__WEBPACK_IMPORTED_MODULE_7__["EveObjectSetItem"]; });
@@ -52304,6 +52428,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpriteSet", function() { return _EveSpriteSet__WEBPACK_IMPORTED_MODULE_12__["EveSpriteSet"]; });
 
 /* harmony import */ var _EveTrailsSet__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./EveTrailsSet */ "./eve/item/EveTrailsSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTrailSetRenderBatch", function() { return _EveTrailsSet__WEBPACK_IMPORTED_MODULE_13__["EveTrailSetRenderBatch"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTrailsSet", function() { return _EveTrailsSet__WEBPACK_IMPORTED_MODULE_13__["EveTrailsSet"]; });
 
 /* harmony import */ var _EveTurretSet__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./EveTurretSet */ "./eve/item/EveTurretSet.js");
@@ -53708,7 +53834,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Boolean} visible.boosters        - Enables/ disables booster batch accumulation
  * @property {Number} lod
  * @property {Tw2Mesh} mesh
- * @property {Array.<EveLocator>} locators
+ * @property {Array.<EveLocator2>} locators
  * @property {Array.<EveSpriteSet>} spriteSets
  * @property {Array.<EveTurretSet>} turretSets
  * @property {Array.<EveSpaceObjectDecal>} decals
@@ -53952,7 +54078,7 @@ function (_EveObject) {
     /**
      * Finds a locator by name
      * @param {String} name
-     * @returns {?EveLocator}
+     * @returns {?EveLocator2}
      */
 
   }, {
@@ -53969,7 +54095,7 @@ function (_EveObject) {
     /**
      * Finds locators with a given prefix
      * @param {String} prefix
-     * @returns {Array<EveLocator>}
+     * @returns {Array<EveLocator2>}
      */
 
   }, {
@@ -54759,7 +54885,7 @@ function () {
      * Creates an object from values
      * @param [values]
      * @param [opt={}]
-     * @returns {Tw2BaseClass}
+     * @returns {*}
      */
 
   }, {
@@ -54829,6 +54955,17 @@ function () {
     key: "OnceEvent",
     value: function OnceEvent(eventName, listener, context) {
       return this.OnEvent(eventName, listener, context, true);
+    }
+    /**
+     * Checks if an event name has a listener
+     * @param eventName
+     * @returns {boolean}
+     */
+
+  }, {
+    key: "HasEventListener",
+    value: function HasEventListener(eventName) {
+      return this._events ? eventName in this._events && this._events[eventName].size > 0 : false;
     }
     /**
      * Removes a listener from an event
@@ -54907,6 +55044,10 @@ function () {
     value: function UpdateValues(controller, skipEvents) {
       this.OnValueChanged();
 
+      if (this._parent && this._parent.OnChildValueChanged) {
+        this._parent.OnChildValueChanged(this, controller, skipEvents);
+      }
+
       if (!skipEvents) {
         this.EmitEvent("modified", {
           ctx: this,
@@ -54946,8 +55087,35 @@ function () {
                                                       Traversal
       -----------------------------------------------------------------------------------------------------------------*/
 
+  }, {
+    key: "UnsetParent",
+    value: function UnsetParent(parent) {
+      if (this._parent && this._parent === parent) {
+        this._parent = null;
+        this.EmitEvent("parent_removed", {
+          parent
+        });
+        return true;
+      }
+
+      return false;
+    }
+  }, {
+    key: "SetParent",
+    value: function SetParent(parent) {
+      if (this._parent === null) {
+        this._parent = parent;
+        this.EmitEvent("parent_added", {
+          parent
+        });
+        return true;
+      }
+
+      return false;
+    }
     /**
      * Gets child resources
+     * TODO: Geometry properties aren't stored in props so this needs to be overridden for classes with resources
      * @param {Array<Tw2Resource>} [out=[]]
      * @returns {Array<Tw2Resource>} out
      */
@@ -54958,10 +55126,6 @@ function () {
       let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       const con = this.constructor;
       con.perChild(this, (parent, child) => {
-        if (child.constructor.__isResource && !out.includes(child)) {
-          out.push(child);
-        }
-
         if ("GetResources" in child) {
           child.GetResources(out);
         }
@@ -55000,7 +55164,7 @@ function () {
       return this._parent ? this._parent.FindIDFromRoot(id) : this.FindID(id);
     }
     /**
-     * Traverses the object
+     * Traverses the object, including itself
      * @param {Function} callback
      * @param {*} [parent]
      * @param {String} [prop]
@@ -55022,7 +55186,7 @@ function () {
       });
     }
     /**
-     * Fires a callback on an object's first children
+     * Fires a callback on an object's children, and no further
      * @param {*} obj
      * @param {Function} callback
      * @returns {*}
@@ -55481,6 +55645,8 @@ function () {
       if (!schema) throw new ErrSchemaUndefined();
       props = Object.assign({}, schema.props, props);
       if (inherits["__isStaging"]) isStaging = true;
+      if (inherits["__isLeaf"] && isLeaf === undefined) isLeaf = true; // Don't really need this now...
+
       category = category || inherits["__category"] || null;
     }
 
@@ -63508,11 +63674,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveHazeSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveHazeSet"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocator", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveLocator"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocator2", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveLocator2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocatorSets", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveLocatorSets"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveObjectSetItem", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveObjectSetItem"]; });
 
@@ -63544,13 +63706,15 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpriteSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpriteSet"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTrailSetRenderBatch", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveTrailSetRenderBatch"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTrailsSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveTrailsSet"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSetItem", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveTurretSetItem"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveTurretSet"]; });
 
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _particle__WEBPACK_IMPORTED_MODULE_6__) if(["math","util","device","store","resMan","logger","consts","staging","useStaging","Tr2RuntimeInstanceData","TriObserverLocal","Tr2PointLight","Tr2ShLightingManager","Tr2PostProcess","Tw2Float","TriMatrix","Tw2Error","ErrHTTPRequest","ErrHTTPRequestSend","ErrHTTPInstance","ErrHTTPStatus","ErrHTTPReadyState","ErrXMLBinaryFormat","ErrXMLObjectTypeUndefined","ErrGeometryMeshMissingParticleElement","ErrGeometryMeshElementComponentsMissing","ErrGeometryMeshBoneNameInvalid","ErrGeometryMeshEffectBinding","ErrGeometryFileType","ErrResourcePrefixUnregistered","ErrResourcePrefixUndefined","ErrResourceExtensionUnregistered","ErrResourceExtensionUndefined","ErrResourceFormat","ErrShaderVersion","ErrShaderHeaderSize","ErrShaderPermutationValue","ErrShaderCompile","ErrShaderLink","ErrDeclarationValueType","ErrSingletonInstantiation","ErrAbstractClassMethod","ErrFeatureNotImplemented","ErrIndexBounds","Tw2Frustum","Tw2RenderTarget","Tw2BatchAccumulator","Tw2ForwardingRenderBatch","Tw2GeometryBatch","Tw2GeometryLineBatch","Tw2RenderBatch","Tw2InstancedMeshBatch","Tw2CurveSet","Tw2ValueBinding","Tw2PerObjectData","Tw2RawData","Tw2BlendShapeData","Tw2GeometryAnimation","Tw2GeometryBone","Tw2GeometryCurve","Tw2GeometryMesh","Tw2GeometryMeshArea","Tw2GeometryMeshBinding","Tw2GeometryModel","Tw2GeometrySkeleton","Tw2GeometryTrackGroup","Tw2GeometryTransformTrack","Tw2Effect","Tw2InstancedMesh","Tw2Mesh","Tw2MeshArea","Tw2MeshLineArea","Tw2Animation","Tw2AnimationController","Tw2Bone","Tw2Model","Tw2Track","Tw2TrackGroup","Tw2Parameter","Tw2VectorParameter","Tw2FloatParameter","Tw2MatrixParameter","Tw2TransformParameter","Tw2VariableParameter","Tw2Vector2Parameter","Tw2Vector3Parameter","Tw2Vector4Parameter","Tw2TextureParameter","Tw2PostEffect","Tw2PostEffectManager","Tw2PostEffectStep","Tw2BinaryReader","Tw2ObjectReader","Tw2EffectRes","Tw2GeometryRes","Tw2LoadingObject","Tw2Resource","Tw2TextureRes","Tw2VideoRes","Tw2SamplerState","Tw2SamplerOverride","Tw2VertexDeclaration","Tw2VertexElement","Tw2CurveKey","Tw2Curve","Tw2ColorKey","Tw2ColorCurve","Tw2ColorKey2","Tw2ColorCurve2","Tw2EventKey","Tw2EventCurve","Tw2PerlinCurve","Tw2QuaternionKey2","Tw2QuaternionCurve","Tw2RandomConstantCurve","Tw2Torque","Tw2RigidOrientation","Tw2QuaternionKey","Tw2RotationCurve","Tw2ScalarKey","Tw2ScalarCurve","Tw2ScalarKey2","Tw2ScalarCurve2","Tw2SineCurve","Tw2Vector2Key","Tw2Vector2Curve","Tw2Vector3Key","Tw2Vector3Curve","Tw2VectorKey","Tw2VectorCurve","Tw2ColorSequencer","Tw2EulerRotation","Tw2QuaternionSequencer","Tw2RGBAScalarSequencer","Tw2ScalarSequencer","Tw2VectorSequencer","Tw2XYZScalarSequencer","Tw2YPRSequencer","Tw2WbgTrack","Tw2WbgTransformTrack","Tw2TransformTrack","Tw2MayaEulerRotationCurve","Tw2MayaScalarCurve","Tw2MayaVector3Curve","Tw2MayaAnimationEngine","EveLensflare","EveMeshOverlayEffect","EveOccluder","EveStarfield","EveStretch","EveStretch2","EveTurretFiringFX","EvePerMuzzleData","EveSpaceScene","EveSOF","EveChild","EveChildBillboard","EveChildContainer","EveChildMesh","EveChildParticleSystem","EveObject","EveEffectRoot","EveMissileWarhead","EveMissile","EvePlanet","EveShip","EveSpaceObject","EveStation","EveTransform","EveBanner","EveBoosterBatch","EveBoosterSetItem","EveBoosterSet","EveBoosterSet2Batch","EveBoosterSet2Item","EveBoosterSet2","EveCurveLineSetItem","EveCurveLineSet","EveCustomMask","EveHazeSetBatch","EveHazeSetItem","EveHazeSet","EveLocator","EveLocator2","EveLocatorSets","EveObjectSetItem","EveObjectSet","EvePlaneSetBatch","EvePlaneSetItem","EvePlaneSet","EveSpaceObjectDecal","EveSpotlightSetBatch","EveSpotlightSetItem","EveSpotlightSet","EveSpriteLineSetBatch","EveSpriteLineSetItem","EveSpriteLineSet","EveSpriteSetBatch","EveSpriteSetItem","EveSpriteSet","EveTrailsSet","EveTurretSetItem","EveTurretSet","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _particle__WEBPACK_IMPORTED_MODULE_6__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _particle__WEBPACK_IMPORTED_MODULE_6__) if(["math","util","device","store","resMan","logger","consts","staging","useStaging","Tr2RuntimeInstanceData","TriObserverLocal","Tr2PointLight","Tr2ShLightingManager","Tr2PostProcess","Tw2Float","TriMatrix","Tw2Error","ErrHTTPRequest","ErrHTTPRequestSend","ErrHTTPInstance","ErrHTTPStatus","ErrHTTPReadyState","ErrXMLBinaryFormat","ErrXMLObjectTypeUndefined","ErrGeometryMeshMissingParticleElement","ErrGeometryMeshElementComponentsMissing","ErrGeometryMeshBoneNameInvalid","ErrGeometryMeshEffectBinding","ErrGeometryFileType","ErrResourcePrefixUnregistered","ErrResourcePrefixUndefined","ErrResourceExtensionUnregistered","ErrResourceExtensionUndefined","ErrResourceFormat","ErrShaderVersion","ErrShaderHeaderSize","ErrShaderPermutationValue","ErrShaderCompile","ErrShaderLink","ErrDeclarationValueType","ErrSingletonInstantiation","ErrAbstractClassMethod","ErrFeatureNotImplemented","ErrIndexBounds","Tw2Frustum","Tw2RenderTarget","Tw2BatchAccumulator","Tw2ForwardingRenderBatch","Tw2GeometryBatch","Tw2GeometryLineBatch","Tw2RenderBatch","Tw2InstancedMeshBatch","Tw2CurveSet","Tw2ValueBinding","Tw2PerObjectData","Tw2RawData","Tw2BlendShapeData","Tw2GeometryAnimation","Tw2GeometryBone","Tw2GeometryCurve","Tw2GeometryMesh","Tw2GeometryMeshArea","Tw2GeometryMeshBinding","Tw2GeometryModel","Tw2GeometrySkeleton","Tw2GeometryTrackGroup","Tw2GeometryTransformTrack","Tw2Effect","Tw2InstancedMesh","Tw2Mesh","Tw2MeshArea","Tw2MeshLineArea","Tw2Animation","Tw2AnimationController","Tw2Bone","Tw2Model","Tw2Track","Tw2TrackGroup","Tw2Parameter","Tw2VectorParameter","Tw2FloatParameter","Tw2MatrixParameter","Tw2TransformParameter","Tw2VariableParameter","Tw2Vector2Parameter","Tw2Vector3Parameter","Tw2Vector4Parameter","Tw2TextureParameter","Tw2PostEffect","Tw2PostEffectManager","Tw2PostEffectStep","Tw2BinaryReader","Tw2ObjectReader","Tw2EffectRes","Tw2GeometryRes","Tw2LoadingObject","Tw2Resource","Tw2TextureRes","Tw2VideoRes","Tw2SamplerState","Tw2SamplerOverride","Tw2VertexDeclaration","Tw2VertexElement","Tw2CurveKey","Tw2Curve","Tw2ColorKey","Tw2ColorCurve","Tw2ColorKey2","Tw2ColorCurve2","Tw2EventKey","Tw2EventCurve","Tw2PerlinCurve","Tw2QuaternionKey2","Tw2QuaternionCurve","Tw2RandomConstantCurve","Tw2Torque","Tw2RigidOrientation","Tw2QuaternionKey","Tw2RotationCurve","Tw2ScalarKey","Tw2ScalarCurve","Tw2ScalarKey2","Tw2ScalarCurve2","Tw2SineCurve","Tw2Vector2Key","Tw2Vector2Curve","Tw2Vector3Key","Tw2Vector3Curve","Tw2VectorKey","Tw2VectorCurve","Tw2ColorSequencer","Tw2EulerRotation","Tw2QuaternionSequencer","Tw2RGBAScalarSequencer","Tw2ScalarSequencer","Tw2VectorSequencer","Tw2XYZScalarSequencer","Tw2YPRSequencer","Tw2WbgTrack","Tw2WbgTransformTrack","Tw2TransformTrack","Tw2MayaEulerRotationCurve","Tw2MayaScalarCurve","Tw2MayaVector3Curve","Tw2MayaAnimationEngine","EveLensflare","EveMeshOverlayEffect","EveOccluder","EveStarfield","EveStretch","EveStretch2","EveTurretFiringFX","EvePerMuzzleData","EveSpaceScene","EveSOF","EveChild","EveChildBillboard","EveChildContainer","EveChildMesh","EveChildParticleSystem","EveObject","EveEffectRoot","EveMissileWarhead","EveMissile","EvePlanet","EveShip","EveSpaceObject","EveStation","EveTransform","EveBanner","EveBoosterBatch","EveBoosterSetItem","EveBoosterSet","EveBoosterSet2Batch","EveBoosterSet2Item","EveBoosterSet2","EveCurveLineSetItem","EveCurveLineSet","EveCustomMask","EveHazeSetBatch","EveHazeSetItem","EveHazeSet","EveLocator2","EveObjectSetItem","EveObjectSet","EvePlaneSetBatch","EvePlaneSetItem","EvePlaneSet","EveSpaceObjectDecal","EveSpotlightSetBatch","EveSpotlightSetItem","EveSpotlightSet","EveSpriteLineSetBatch","EveSpriteLineSetItem","EveSpriteLineSet","EveSpriteSetBatch","EveSpriteSetItem","EveSpriteSet","EveTrailSetRenderBatch","EveTrailsSet","EveTurretSetItem","EveTurretSet","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _particle__WEBPACK_IMPORTED_MODULE_6__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 /* harmony import */ var _staging__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./.staging */ "./.staging/index.js");
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "staging", function() { return _staging__WEBPACK_IMPORTED_MODULE_9__; });
 

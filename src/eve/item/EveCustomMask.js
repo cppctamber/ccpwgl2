@@ -1,13 +1,17 @@
 import {quat, vec3, vec4, mat4, Tw2BaseClass} from "../../global";
 
 /**
- * EveCustomMask
+ * Custom mask for patterns
+ * @ccp EveCustomMask
  *
- * @property {Number} materialIndex -
- * @property {vec3} position        -
- * @property {quat} rotation        -
- * @property {vec3} scaling         -
- * @property {vec4} targetMaterials -
+ * @property {Boolean} display      - Toggles mask visibility
+ * @property {Boolean} isMirrored   - Identifies if the mask is mirrored
+ * @property {Number} materialIndex - The material this mask is for (ie. Mtl1, Mtl2, Mtl3, Mtl4, PMt1, PMt2)
+ * @property {vec3} position        - Mask's position
+ * @property {quat} rotation        - Mask's rotation
+ * @property {vec3} scaling         - Mask's scale
+ * @property {vec4} targetMaterials - The target materials this mask is for
+ * @property {mat4} transform       - Mask's transform
  */
 export class EveCustomMask extends Tw2BaseClass
 {

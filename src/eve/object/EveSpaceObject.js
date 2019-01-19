@@ -23,7 +23,7 @@ import {EveObject} from "./EveObject";
  * @property {Boolean} visible.boosters        - Enables/ disables booster batch accumulation
  * @property {Number} lod
  * @property {Tw2Mesh} mesh
- * @property {Array.<EveLocator>} locators
+ * @property {Array.<EveLocator2>} locators
  * @property {Array.<EveSpriteSet>} spriteSets
  * @property {Array.<EveTurretSet>} turretSets
  * @property {Array.<EveSpaceObjectDecal>} decals
@@ -231,7 +231,7 @@ export class EveSpaceObject extends EveObject
     /**
      * Finds a locator by name
      * @param {String} name
-     * @returns {?EveLocator}
+     * @returns {?EveLocator2}
      */
     FindLocatorByName(name)
     {
@@ -248,7 +248,7 @@ export class EveSpaceObject extends EveObject
     /**
      * Finds locators with a given prefix
      * @param {String} prefix
-     * @returns {Array<EveLocator>}
+     * @returns {Array<EveLocator2>}
      */
     FindLocatorsByPrefix(prefix)
     {

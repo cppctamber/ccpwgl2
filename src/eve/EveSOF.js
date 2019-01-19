@@ -11,7 +11,7 @@ import {Tw2ValueBinding} from "../core";
 import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve";
 import {EveBoosterSet} from "./item";
 import {EveChildMesh} from "./child";
-import {EveLocator} from "./item";
+import {EveLocator2} from "./item";
 import {EvePlaneSet, EvePlaneSetItem} from "./item";
 import {EveSpaceObjectDecal} from "./item";
 import {EveSpotlightSet, EveSpotlightSetItem} from "./item";
@@ -704,7 +704,7 @@ export function EveSOF()
         var items = _get(hullBooster, "items", []);
         for (var i = 0; i < items.length; ++i)
         {
-            var locator = new EveLocator();
+            var locator = new EveLocator2();
             locator.name = "locator_booster_" + (i + 1);
             if ("transform" in items[i])
             {
@@ -727,7 +727,7 @@ export function EveSOF()
         var hullLocators = _get(hull, "locatorTurrets", []);
         for (var i = 0; i < hullLocators.length; ++i)
         {
-            var locator = new EveLocator();
+            var locator = new EveLocator2();
             locator.name = hullLocators[i].name;
             if ("transform" in hullLocators[i])
             {

@@ -1,56 +1,77 @@
 /* eslint no-unused-vars:0 */
 import {vec3, vec4, mat4, util} from "../../global";
+import { Tw2BaseClass } from "../../global";
+import {ErrAbstractClassMethod} from "../../core";
 
 /**
  * EveObjectSetItem base class
+ * @ccp N/A
  *
- * @property {String|number} _id     - The set item's id
- * @property {String} name           - The set item's name
- * @property {Boolean} display       - Toggles the set item's visibility
- * @property {?Function} _onModified - A callback which is fired on value changes
+ * @property {Boolean} display - Toggles the set item's visibility
+ * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
-export class EveObjectSetItem
+export class EveObjectSetItem extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
+    
     display = true;
-    _rebuildPending = true;
-    _onModified = null;
-
-
+    _dirty = true;
+    
     /**
      * Fire on value changes
      */
     OnValueChanged()
     {
-        this._rebuildPending = true;
-        if (this._onModified) this._onModified(this);
+        this._dirty = true;
+        if (this._parent)
+        {
+            this._parent.OnChildValueChanged(this);
+        }
+    }
+
+    /**
+     * Fires when the object is destroyed
+     */
+    OnDestroyed()
+    {
+        if (this._parent)
+        {
+            this._parent.RemoveItem(this);
+        }
     }
 
 }
 
+Tw2BaseClass.define(EveObjectSetItem, Type =>
+{
+    return {
+        type: "EveObjectSetItem",
+        category: "ObjectSetItem",
+        isLeaf: true,
+        isAbstract: true,
+        props: {
+            display: Type.BOOLEAN
+        }
+    };
+});
+
+
+
 /**
  * EveObjectSet base class
+ * @ccp N/A
  *
- * @property {number|String} _id                     - The set's id
- * @property {String} name                           - The set's name
- * @property {Boolean} display                       - Toggles set visibility
- * @property {Array<EveObjectSetItem>} items         - The set's items
- * @property {Array<EveObjectSetItem>} _visibleItems - The set's items that will be rendered when the set is visible
- * @property {Boolean} _rebuildPending               - Identifies if the set requires rebuilding
- * @class
+ * @property {Boolean} display        - Toggles set visibility
+ * @property {Array<*>} items         - The set's items
+ * @property {Array<*>} _visibleItems - The set's items that will be rendered when the set is visible
+ * @property {Boolean} _dirty         - Identifies if the set requires rebuilding
  */
-export class EveObjectSet
+export class EveObjectSet extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
+    // ccpwgl
     display = true;
     items = [];
+    _dirty = true;
     _visibleItems = [];
-    _rebuildPending = false;
-    _onChildModified = item => this.OnValueChanged(item);
 
 
     /**
@@ -66,105 +87,115 @@ export class EveObjectSet
      */
     OnValueChanged()
     {
-        this._rebuildPending = true;
+        this._dirty = true;
+    }
+
+    /**
+     * Fires on child value changes
+     * @param {*} child
+     */
+    OnChildValueChanged(child)
+    {
+        this.EmitEvent("child_modified", { child });
+        this._dirty = true;
+        //this.UpdateValues(child);
     }
 
     /**
      * Creates an item from an options object and then adds it to the set
+     * @param {*} {values}
      * @param {*} [opt={}]
-     * @returns {?EveObjectSetItem|*}
+     * @returns {*}
      */
-    CreateItem(opt = {})
+    CreateItem(values={}, opt)
     {
-        const Item = this.constructor.Item;
-        if (Item && "create" in Item)
-        {
-            const item = Item.create(opt);
-            this.AddItem(item);
-            return item;
-        }
-        return null;
+        const item = this.constructor.Item.from(values, opt);
+        this.AddItem(item, opt ? opt.skipUpdate : false);
+        return item;
     }
 
     /**
      * Adds a set item
-     * @param {EveObjectSetItem|*} item
+     * @param {*} item
+     * @param {Boolean} [skipUpdate]
      */
-    AddItem(item)
+    AddItem(item, skipUpdate)
     {
         if (!this.items.includes(item))
         {
-            item._onModified = this._onChildModified;
+            this.EmitEvent("child_added", {ctx: item});
+            item.SetParent(this);
             this.items.push(item);
-            this.OnValueChanged();
+            this._dirty = true;
+            if (!skipUpdate) this.UpdateValues(item);
+            return true;
         }
+        return false;
     }
 
     /**
      * Removes a set item
-     * @param {EveObjectSetItem|*} item
+     * @param {*} item
+     * @param {Boolean} [skipUpdate]
      */
-    RemoveItem(item)
+    RemoveItem(item, skipUpdate)
     {
         const index = this.items.indexOf(item);
         if (index !== -1)
         {
-            item._onModified = null;
+            this.EmitEvent("child_removed", { ctx: item });
+            item.UnsetParent(this);
             this.items.splice(index, 1);
-            this.OnValueChanged();
+            this._dirty = true;
+            if (!skipUpdate) this.UpdateValues(item);
+            return true;
         }
+        return false;
     }
 
     /**
-     * Clears all set items
+     * Clears all items
+     * @param {Boolean} [skipUpdate]
      */
-    ClearItems()
+    ClearItems(skipUpdate)
     {
         for (let i = 0; i < this.items.length; i++)
         {
-            this.items[i]._onModified = null;
+            this.RemoveItem(this.items[i], true);
+            i--;
         }
-        this.items = [];
-        this.OnValueChanged();
+        if (!skipUpdate) this.UpdateValues();
     }
 
     /**
-     * Finds an item by it's id
-     * @param {?number} [id=null]
-     * @returns {?EveObjectSetItem|*}
+     * Rebuilds items
      */
-    FindItemByID(id = null)
+    RebuildItems()
     {
-        if (id !== null)
+        this._visibleItems.splice(0);
+        for (let i = 0; i < this.items.length; i++)
         {
-            for (let i = 0; i < this.items.length; i++)
-            {
-                if (this.items[i]._id === id)
-                {
-                    return this.items[i];
-                }
-            }
-        }
-        return null;
-    }
+            const item = this.items[i];
+            item.SetParent(this);
 
-    /**
-     * Gets the set's resources
-     * @param {Array} [out=[]]
-     * @returns {Array<Tw2Resource>}
-     */
-    GetResources(out = [])
-    {
-        return out;
+            if (item.display)
+            {
+                this._visibleItems.push(item);
+            }
+
+            item._dirty = false;
+        }
+        this._dirty = true;
     }
 
     /**
      * Per frame update
-     * @param {number} dt
+     * @param {Number} dt
+     * @param {mat4} parentMatrix
      */
-    Update(dt)
+    Update(dt, parentMatrix)
     {
-        if (this._rebuildPending)
+        if (this._dirty)
         {
             this.Rebuild();
         }
@@ -175,7 +206,7 @@ export class EveObjectSet
      */
     Unload()
     {
-
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -183,19 +214,18 @@ export class EveObjectSet
      */
     Rebuild()
     {
-        this.constructor.RebuildItems(this);
-        this._rebuildPending = false;
+        throw new ErrAbstractClassMethod();
     }
 
     /**
      * Gets render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -203,28 +233,7 @@ export class EveObjectSet
      */
     Render()
     {
-
-    }
-
-    /**
-     * Rebuilds the set's items
-     *
-     * @param {EveObjectSet|*} eveSet
-     */
-    static RebuildItems(eveSet)
-    {
-        eveSet._visibleItems = [];
-        for (let i = 0; i < eveSet.items.length; i++)
-        {
-            const item = eveSet.items[i];
-            item._onModified = eveSet._onChildModified;
-            item._rebuildPending = false;
-
-            if (item.display)
-            {
-                eveSet._visibleItems.push(item);
-            }
-        }
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -248,3 +257,15 @@ export class EveObjectSet
 
 }
 
+Tw2BaseClass.define(EveObjectSet, Type =>
+{
+    return {
+        type: "EveObjectSet",
+        category: "ObjectSet",
+        isAbstract: true,
+        props : {
+            display : Type.BOOLEAN,
+            items: Type.ARRAY
+        }
+    };
+});

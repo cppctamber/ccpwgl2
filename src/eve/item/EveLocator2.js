@@ -3,13 +3,14 @@ import {mat4, Tw2BaseClass} from "../../global";
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
  * TODO: Make bone private and update all uses
+ * @ccp EveLocator2
  *
  * @property {?number} atlasIndex0          - A booster locator's atlasIndex0
  * @property {?number} atlasIndex1          - A booster locator's atlasIndex1
  * @property {?Tw2Bone} bone                - A turret locator's bone
  * @property {mat4} transform               - The locator's transform
  */
-export class EveLocator extends Tw2BaseClass
+export class EveLocator2 extends Tw2BaseClass
 {
 
     atlasIndex0 = null;
@@ -55,10 +56,10 @@ export class EveLocator extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveLocator, Type =>
+Tw2BaseClass.define(EveLocator2, Type =>
 {
     return {
-        type: "EveLocator",
+        type: "EveLocator2",
         category: "Locator",
         props: {
             atlasIndex0: Type.NUMBER,
@@ -68,52 +69,3 @@ Tw2BaseClass.define(EveLocator, Type =>
         }
     };
 });
-
-/**
- * EveLocator2
- * TODO: Is there any difference between this and EveLocator ?
- *
- * @property {mat4} transform - The locators transform
- */
-export class EveLocator2 extends Tw2BaseClass
-{
-
-    transform = mat4.create();
-
-}
-
-Tw2BaseClass.define(EveLocator2, Type =>
-{
-    return {
-        type: "EveLocator2",
-        category: "Locator",
-        isStaging: true,
-        props: {
-            transform: Type.TR_LOCAL
-        }
-    };
-});
-
-/**
- * EveLocatorSets
- *
- * @property {Array<{position: vec4, direction: vec3}>} locators -
- */
-export class EveLocatorSets extends Tw2BaseClass
-{
-
-    locators = [];
-
-}
-
-Tw2BaseClass.define(EveLocatorSets, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveLocatorSets",
-        props: {
-            locators: Type.ARRAY
-        }
-    };
-});
-

@@ -1,13 +1,16 @@
 import {quat, vec3, mat4, Tw2BaseClass} from "../../global";
 import {Tw2RenderBatch} from "../../core";
+import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
 /**
  * Haze set render batch
+ * @ccp N/A
  *
  * @property {EveHazeSet} hazeSet
  */
 export class EveHazeSetBatch extends Tw2RenderBatch
 {
+    
     hazeSet = null;
 
     /**
@@ -18,27 +21,26 @@ export class EveHazeSetBatch extends Tw2RenderBatch
     {
         this.hazeSet.Render(technique);
     }
-
+    
 }
 
 
 /**
- * EveHazeSetItem
- * @implements EveObjectSetItem
+ * Haze item
+ * @ccp EveHazeSetItem
  *
  * @property {Boolean} boosterGainInfluence -
  * @property {Number} colorType             -
  * @property {Number} hazeBrightness        -
  * @property {Number} hazeFalloff           -
- * @property {vec3} position                -
- * @property {quat} rotation                -
- * @property {vec3} scaling                 -
+ * @property {vec3} position                - Item's position
+ * @property {quat} rotation                - Item's rotation
+ * @property {vec3} scaling                 - Item's scaling
  * @property {Number} sourceBrightness      -
  * @property {Number} sourceSize            -
- * @property {Boolean} display              - Toggles item visibility
- * @property {mat4} transform               - The item's local transform
+ * @property {mat4} transform               - Item's local transform
  */
-export class EveHazeSetItem extends Tw2BaseClass
+export class EveHazeSetItem extends EveObjectSetItem
 {
     // ccp
     boosterGainInfluence = false;
@@ -52,8 +54,16 @@ export class EveHazeSetItem extends Tw2BaseClass
     sourceSize = 0;
 
     // ccpwgl
-    display = true;
     transform = mat4.create();
+
+    /**
+     * Fires on value changes
+     */
+    OnValueChanged()
+    {
+        mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+        this._dirty = true;
+    }
 
 }
 
@@ -66,7 +76,6 @@ Tw2BaseClass.define(EveHazeSetItem, Type =>
         props: {
             boosterGainInfluence: Type.BOOLEAN,
             colorType: Type.NUMBER,
-            display: Type.BOOLEAN,
             hazeBrightness: Type.NUMBER,
             hazeFalloff: Type.NUMBER,
             position: Type.TR_TRANSLATION,
@@ -82,19 +91,49 @@ Tw2BaseClass.define(EveHazeSetItem, Type =>
 
 
 /**
- * EveHazeSet
- * @implements EveObjectSet
- *
- * @property {EveObjectSetItem} items - Haze set items
+ * Haze set
+ * TODO: Implement
+ * @ccp EveHazeSet
  */
-export class EveHazeSet extends Tw2BaseClass
+export class EveHazeSet extends EveObjectSet
 {
-    // ccp
-    items = null;
 
-    // ccpwgl
-    display = true;
+    /**
+     * Unloads the object's buffers
+     */
+    Unload()
+    {
+        // TODO: Unload buffers
+    }
 
+    /**
+     * Rebuilds the haze set's buffers
+     */
+    Rebuild()
+    {
+        // TODO: Rebuild buffers
+    }
+
+    /**
+     * Gets the plane set's render batches
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+    GetBatches(mode, accumulator, perObjectData)
+    {
+        // TODO: GetBatches
+    }
+
+    /**
+     * Renders the haze set
+     * @param {String} technique - technique name
+     */
+    Render(technique)
+    {
+        // TODO: Render
+    }
+    
 }
 
 Tw2BaseClass.define(EveHazeSet, Type =>
@@ -104,7 +143,6 @@ Tw2BaseClass.define(EveHazeSet, Type =>
         type: "EveHazeSet",
         category: "EveObjectSet",
         props: {
-            display: Type.BOOLEAN,
             items: ["EveHazeSetItem"]
         },
         notImplemented: ["*"]

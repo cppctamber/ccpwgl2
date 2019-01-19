@@ -1,4 +1,4 @@
-import {vec3, vec4, quat, mat4, util, resMan, device, Tw2BaseClass} from "../../global";
+import {vec3, vec4, quat, mat4, util, resMan, device} from "../../global";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,
@@ -35,6 +35,18 @@ export class EveTurretSetItem extends EveObjectSetItem
     _localTransform = mat4.create();
     _localRotation = quat.create();
 
+    /**
+     * Fires on value changes
+     */
+    OnValueChanged()
+    {
+        this._dirty = true;
+        this.UpdateTransforms();
+        if (this._parent)
+        {
+            this._parent.OnChildValueChanged(this);
+        }
+    }
 
     /**
      * Updates the turret's transforms
@@ -59,19 +71,19 @@ export class EveTurretSetItem extends EveObjectSetItem
      * @param {*} [opt={}]
      * @returns {EveTurretSetItem}
      */
-    static create(opt = {})
+    static from(opt = {})
     {
         const item = new this();
         util.assignIfExists(item, opt, [
             "name", "display", "locatorName", "updateFromLocator", "position", "rotation", "bone", "canFireWhenHidden"
         ]);
-        item.UpdateTransforms();
+        item.UpdateValues();
         return item;
     }
 
 }
 
-Tw2BaseClass.define(EveTurretSetItem, Type =>
+EveObjectSetItem.define(EveTurretSetItem, Type =>
 {
     return {
         type: "EveTurretSetItem",
@@ -90,6 +102,7 @@ Tw2BaseClass.define(EveTurretSetItem, Type =>
 /**
  * EveTurretSet
  * Todo: Implement
+ * @ccp EveTurretSet
  *
  * @property {Number} bottomClipHeight                  -
  * @property {vec4} boundingSphere                      -
@@ -113,24 +126,24 @@ Tw2BaseClass.define(EveTurretSetItem, Type =>
  * @property {Boolean} updatePitchPose                  -
  * @property {Boolean} useDynamicBounds                 -
  * @property {Boolean} useRandomFiringDelay             -
- * @property {Tw2AnimationController} activeAnimation   -
+ * @property {Tw2AnimationController} _activeAnimation  -
  * @property {Tw2GeometryRes} geometryResource          -
- * @property {?Function} fireCallback                   -
- * @property {?Function} fireCallbackPending            -
+ * @property {?Function} _fireCallback                   -
+ * @property {?Function} _fireCallbackPending            -
  * @property {Boolean} _hasCyclingFiringPos              -
- * @property {Tw2AnimationController} inactiveAnimation -
- * @property {mat4} parentMatrix                        -
- * @property {Number} state                             -
- * @property {vec3} targetPosition                      -
+ * @property {Tw2AnimationController} _inactiveAnimation -
+ * @property {mat4} _parentMatrix                        -
+ * @property {Number} _state                             -
+ * @property {vec3} _targetPosition                      -
  * @property {Object} visible                           -
  * @property {Boolean} visible.turrets                  -
  * @property {Boolean} visible.firingEffects            -
- * @property {number} _activeTurret                     -
- * @property {number} _currentCyclingFiresPos           -
- * @property {Boolean} _locatorRebuildPending           -
+ * @property {Number} _activeTurret                     -
+ * @property {Number} _currentCyclingFiresPos           -
+ * @property {Boolean} _locatorDirty           -
  * @property {Tw2PerObjectData} _perObjectDataActive    -
  * @property {Tw2PerObjectData} _perObjectDataInactive  -
- * @property {number} _recheckTimeLeft                  -
+ * @property {Number} _recheckTimeLeft                  -
  */
 export class EveTurretSet extends EveObjectSet
 {
@@ -168,12 +181,12 @@ export class EveTurretSet extends EveObjectSet
 
     _activeAnimation = new Tw2AnimationController();
     _activeTurret = -1;
-    _currentCyclingFirePos = 0;
+    _currentCyclingFiresPos = 0;
     _fireCallback = null;
     _fireCallbackPending = false;
     _hasCyclingFiringPos = false;
     _inactiveAnimation = new Tw2AnimationController();
-    _locatorRebuildPending = true;
+    _locatorDirty = true;
     _parentMatrix = mat4.create();
     _perObjectDataActive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _perObjectDataInactive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
@@ -257,7 +270,7 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Helper function for finding out what turret should be firing
-     * @returns {number}
+     * @returns {Number}
      */
     GetClosestTurret()
     {
@@ -328,11 +341,7 @@ export class EveTurretSet extends EveObjectSet
         }
 
         this._activeTurret = -1;
-
-        if (this.firingEffect)
-        {
-            this.firingEffect.StopFiring();
-        }
+        this.DoStopFiring();
     }
 
     /**
@@ -375,11 +384,7 @@ export class EveTurretSet extends EveObjectSet
         }
 
         this._activeTurret = -1;
-
-        if (this.firingEffect)
-        {
-            this.firingEffect.StopFiring();
-        }
+        this.DoStopFiring();
     }
 
     /**
@@ -389,7 +394,7 @@ export class EveTurretSet extends EveObjectSet
     {
         if (!this.turretEffect || this._state === EveTurretSet.State.FIRING)
         {
-            EveTurretSet.DoStartFiring(this);
+            this.DoStartFiring();
             if (this.turretEffect)
             {
                 this._activeAnimation.PlayAnimation("Fire", false, () =>
@@ -406,7 +411,7 @@ export class EveTurretSet extends EveObjectSet
         {
             this._activeAnimation.PlayAnimation("Deploy", false, () =>
             {
-                EveTurretSet.DoStartFiring(this);
+                this.DoStartFiring();
                 this._activeAnimation.PlayAnimation("Fire", false, () =>
                 {
                     this._activeAnimation.PlayAnimation("Active", true);
@@ -421,7 +426,7 @@ export class EveTurretSet extends EveObjectSet
         }
         else
         {
-            EveTurretSet.DoStartFiring(this);
+            this.DoStartFiring();
             this._activeAnimation.PlayAnimation("Fire", false, () =>
             {
                 this._activeAnimation.PlayAnimation("Active", true);
@@ -437,7 +442,11 @@ export class EveTurretSet extends EveObjectSet
     RebuildCachedData()
     {
         const
-            instancedElement = Tw2VertexElement.from({usage: "TEXCOORD", usageIndex: 1, elements: 2}),
+            instancedElement = Tw2VertexElement.from({
+                usage: "TEXCOORD",
+                usageIndex: 1,
+                elements: 2
+            }),
             meshes = this.geometryResource.meshes,
             active = this._activeAnimation,
             inactive = this._inactiveAnimation;
@@ -495,7 +504,7 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Updates the turret set's items that were created from locators
      * - Turrets without locator names are ignored
-     * @param {Array<EveLocator>} locators
+     * @param {Array<EveLocator2>} locators
      */
     UpdateItemsFromLocators(locators)
     {
@@ -531,7 +540,7 @@ export class EveTurretSet extends EveObjectSet
                 vec3.normalize(norm.subarray(8, 11), norm.subarray(8, 11));
                 mat4.getRotation(item.rotation, norm);
                 mat4.getTranslation(item.position, norm);
-                item.OnValueChanged();
+                item.UpdateValues();
             }
         }
 
@@ -544,8 +553,8 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
-        this._locatorRebuildPending = false;
-        if (this._rebuildPending) this.Rebuild();
+        this._locatorDirty = false;
+        if (this._dirty) this.Rebuild();
     }
 
     /**
@@ -553,34 +562,9 @@ export class EveTurretSet extends EveObjectSet
      */
     RebuildItemsFromLocators()
     {
-        this._locatorRebuildPending = true;
+        this._locatorDirty = true;
     }
-
-    /**
-     * Gets turret set res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-    GetResources(out = [])
-    {
-        if (this.geometryResource && !out.includes(this.geometryResource))
-        {
-            out.push(this.geometryResource);
-        }
-
-        if (this.turretEffect)
-        {
-            this.turretEffect.GetResources(out);
-        }
-
-        if (this.firingEffect)
-        {
-            this.firingEffect.GetResources(out);
-        }
-
-        return out;
-    }
-
+    
     /**
      * Updates view dependent data
      */
@@ -593,13 +577,23 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Rebuilds the turret set
+     * Todo: Move all rebuild methods here
+     */
+    Rebuild()
+    {
+        this.RebuildItems();
+        this._dirty = false;
+    }
+
+    /**
      * Per frame update
-     * @param {number} dt - Delta Time
+     * @param {Number} dt - Delta Time
      * @param {mat4} parentMatrix
      */
     Update(dt, parentMatrix)
     {
-        if (this._rebuildPending)
+        if (this._dirty)
         {
             this.Rebuild();
         }
@@ -623,12 +617,12 @@ export class EveTurretSet extends EveObjectSet
                         this._recheckTimeLeft -= dt;
                         if (this._recheckTimeLeft <= 0)
                         {
-                            EveTurretSet.DoStartFiring(this);
+                            this.DoStartFiring();
                         }
                     }
                 }
 
-                const activeItem = this.items[this._activeTurret];
+                const activeTurret = this.items[this._activeTurret];
 
                 if (this._activeAnimation.models.length)
                 {
@@ -639,7 +633,7 @@ export class EveTurretSet extends EveObjectSet
                             transform = bones[EveTurretSet.positionBoneSkeletonNames[i]].worldTransform,
                             out = this.firingEffect.GetMuzzleTransform(i);
 
-                        mat4.multiply(out, activeItem._localTransform, transform);
+                        mat4.multiply(out, activeTurret._localTransform, transform);
                         mat4.multiply(out, out, parentMatrix);
                     }
                 }
@@ -647,7 +641,7 @@ export class EveTurretSet extends EveObjectSet
                 {
                     for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
                     {
-                        mat4.multiply(this.firingEffect.GetMuzzleTransform(i), parentMatrix, activeItem._localTransform);
+                        mat4.multiply(this.firingEffect.GetMuzzleTransform(i), parentMatrix, activeTurret._localTransform);
                     }
                 }
 
@@ -655,12 +649,12 @@ export class EveTurretSet extends EveObjectSet
                 {
                     if (this._fireCallback)
                     {
-                        const cbTransforms = [];
+                        const transforms = [];
                         for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
                         {
-                            cbTransforms.push(this.firingEffect.GetMuzzleTransform(i));
+                            transforms.push(this.firingEffect.GetMuzzleTransform(i));
                         }
-                        this._fireCallback(this, cbTransforms);
+                        this._fireCallback(this, transforms, activeTurret);
                     }
                     this._fireCallbackPending = false;
                 }
@@ -673,7 +667,7 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Gets turret set render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {Boolean} [hideFiringEffect]
@@ -687,7 +681,7 @@ export class EveTurretSet extends EveObjectSet
             const transforms = this._inactiveAnimation.GetBoneMatrices(0);
             if (transforms.length !== 0)
             {
-                EveTurretSet.UpdatePerObjectData(this, this._perObjectDataInactive.vs, transforms);
+                this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms);
                 this._perObjectDataInactive.ps = perObjectData.ps;
 
                 const batch = new Tw2ForwardingRenderBatch();
@@ -702,7 +696,7 @@ export class EveTurretSet extends EveObjectSet
                     const transforms = this._activeAnimation.GetBoneMatrices(0);
                     if (transforms.length !== 0)
                     {
-                        EveTurretSet.UpdatePerObjectData(this, this._perObjectDataActive.vs, transforms, true);
+                        this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true);
                         this._perObjectDataActive.ps = perObjectData.ps;
 
                         const batch = new Tw2ForwardingRenderBatch();
@@ -720,7 +714,7 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Gets turret firing effect batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      * @param {Boolean} [hideFiringEffect]
@@ -772,55 +766,28 @@ export class EveTurretSet extends EveObjectSet
 
         return !!rendered;
     }
-
-    /**
-     * Rebuilds the set's items
-     *
-     * @param {EveTurretSet} turretSet
-     */
-    static RebuildItems(turretSet)
-    {
-        turretSet._visibleItems = [];
-
-        for (let i = 0; i < turretSet.items.length; i++)
-        {
-            const item = turretSet.items[i];
-            item._onModified = turretSet._onChildModified;
-
-            if (item.display)
-            {
-                turretSet._visibleItems.push(item);
-                if (item._rebuildPending)
-                {
-                    item.UpdateTransforms();
-                    item._rebuildPending = false;
-                }
-            }
-        }
-    }
-
+    
     /**
      * Updates per object data
-     * @param {EveTurretSet} turretSet
      * @param {Tw2RawData} perObjectData
      * @param transforms
      * @param {Boolean} [skipBoneCalculations]
      */
-    static UpdatePerObjectData(turretSet, perObjectData, transforms, skipBoneCalculations)
+    UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations)
     {
-        mat4.transpose(perObjectData.Get("shipMatrix"), turretSet._parentMatrix);
+        mat4.transpose(perObjectData.Get("shipMatrix"), this._parentMatrix);
         const transformCount = transforms.length / 12;
         perObjectData.Get("turretSetData")[0] = transformCount;
-        perObjectData.Get("baseCutoffData")[0] = turretSet.bottomClipHeight;
+        perObjectData.Get("baseCutoffData")[0] = this.bottomClipHeight;
 
         const
             translation = perObjectData.Get("turretTranslation"),
             rotation = perObjectData.Get("turretRotation"),
             pose = perObjectData.Get("turretPoseTransAndRot");
 
-        for (let i = 0; i < turretSet._visibleItems.length; ++i)
+        for (let i = 0; i < this._visibleItems.length; ++i)
         {
-            const item = turretSet._visibleItems[i];
+            const item = this._visibleItems[i];
 
             for (let j = 0; j < transformCount; ++j)
             {
@@ -850,28 +817,38 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Animation helper function for turret firing
-     * @param {EveTurretSet} turretSet
      * @returns {EveTurretSetItem} the closest turret
      */
-    static DoStartFiring(turretSet)
+    DoStartFiring()
     {
-        if (turretSet._hasCyclingFiringPos)
+        if (this._hasCyclingFiringPos)
         {
-            turretSet._currentCyclingFiresPos = 1 - turretSet._currentCyclingFiresPos;
+            this._currentCyclingFiresPos = 1 - this._currentCyclingFiresPos;
         }
 
-        if (turretSet.firingEffect)
+        if (this.firingEffect)
         {
-            turretSet.firingEffect.PrepareFiring(0, turretSet._hasCyclingFiringPos ? turretSet._currentCyclingFiresPos : -1);
+            this.firingEffect.PrepareFiring(0, this._hasCyclingFiringPos ? this._currentCyclingFiresPos : -1);
         }
 
-        turretSet._activeTurret = turretSet.GetClosestTurret();
-        turretSet._state = EveTurretSet.State.FIRING;
-        turretSet._recheckTimeLeft = 2;
+        this._activeTurret = this.GetClosestTurret();
+        this._state = EveTurretSet.State.FIRING;
+        this._recheckTimeLeft = 2;
 
-        if (turretSet._fireCallback)
+        if (this._fireCallback)
         {
-            turretSet._fireCallbackPending = true;
+            this._fireCallbackPending = true;
+        }
+    }
+
+    /**
+     * Animation helper function for stopping a turret firing
+     */
+    DoStopFiring()
+    {
+        if (this.firingEffect)
+        {
+            this.firingEffect.StopFiring();
         }
     }
 
@@ -978,12 +955,11 @@ export class EveTurretSet extends EveObjectSet
 
 }
 
-Tw2BaseClass.define(EveTurretSet, Type =>
+EveObjectSet.define(EveTurretSet, Type =>
 {
     return {
         isStaging: true,
         type: "EveTurretSet",
-        category: "EveObjectSet",
         props: {
             bottomClipHeight: Type.NUMBER,
             boundingSphere: Type.VECTOR4,

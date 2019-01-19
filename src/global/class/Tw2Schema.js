@@ -48,6 +48,7 @@ export default class Tw2Schema
             if (!schema) throw new ErrSchemaUndefined();
             props = Object.assign({}, schema.props, props);
             if (inherits["__isStaging"]) isStaging = true;
+            if (inherits["__isLeaf"] && isLeaf === undefined) isLeaf = true; // Don't really need this now...
             category = category || inherits["__category"] || null;
         }
 

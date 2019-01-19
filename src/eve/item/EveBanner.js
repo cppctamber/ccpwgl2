@@ -3,6 +3,7 @@ import {quat, vec3, mat4, Tw2BaseClass} from "../../global";
 /**
  * EveBanner
  * TODO: Implement
+ * @ccp EveBanner
  *
  * @property {Number} angleX    -
  * @property {Number} angleY    -

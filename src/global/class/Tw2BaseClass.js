@@ -82,7 +82,7 @@ export default class Tw2BaseClass
      * Creates an object from values
      * @param [values]
      * @param [opt={}]
-     * @returns {Tw2BaseClass}
+     * @returns {*}
      */
     static from(values, opt={})
     {
@@ -203,6 +203,16 @@ export default class Tw2BaseClass
     }
 
     /**
+     * Checks if an event name has a listener
+     * @param eventName
+     * @returns {boolean}
+     */
+    HasEventListener(eventName)
+    {
+        return this._events ? eventName in this._events && this._events[eventName].size > 0 : false;
+    }
+
+    /**
      * Removes a listener from an event
      * @param eventName
      * @param listener
@@ -277,9 +287,14 @@ export default class Tw2BaseClass
     {
         this.OnValueChanged();
 
+        if (this._parent && this._parent.OnChildValueChanged)
+        {
+            this._parent.OnChildValueChanged(this, controller, skipEvents);
+        }
+
         if (!skipEvents)
         {
-            this.EmitEvent("modified", {ctx: this, controller});
+            this.EmitEvent("modified", {controller});
         }
     }
 
@@ -317,7 +332,38 @@ export default class Tw2BaseClass
     -----------------------------------------------------------------------------------------------------------------*/
 
     /**
+     * Unsets the object's parent
+     * @param {*} parent
+     * @returns {boolean}
+     */
+    UnsetParent(parent)
+    {
+        if (this._parent && this._parent === parent)
+        {
+            this._parent = null;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Sets the object's parent
+     * @param {*} parent
+     * @returns {boolean}
+     */
+    SetParent(parent)
+    {
+        if (this._parent === null)
+        {
+            this._parent = parent;
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Gets child resources
+     * TODO: resource properties aren't stored in props so this needs to be overridden for classes with resources
      * @param {Array<Tw2Resource>} [out=[]]
      * @returns {Array<Tw2Resource>} out
      */
@@ -326,11 +372,6 @@ export default class Tw2BaseClass
         const con = this.constructor;
         con.perChild(this, (parent, child) =>
         {
-            if (child.constructor.__isResource && !out.includes(child))
-            {
-                out.push(child);
-            }
-
             if ("GetResources" in child)
             {
                 child.GetResources(out);

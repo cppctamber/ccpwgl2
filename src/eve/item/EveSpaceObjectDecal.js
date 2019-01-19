@@ -2,29 +2,29 @@ import {vec3, quat, mat4, util, device, store, Tw2BaseClass} from "../../global"
 import {Tw2PerObjectData, Tw2ForwardingRenderBatch} from "../../core/";
 
 /**
- * EveSpaceObjectDecal
+ * Decal
  * TODO: Make "PickEffect" shared
  * TODO: Identify if "groupIndex" is deprecated
  * TODO: Identify if "parentBoneIndex" is deprecated
  * If "groupIndex" and "parentBoneIndex" are just used by the EveSOF, we may need to record this information if
  * we are going to convert this object back into a EveSOF object
+ * @ccp EveSpaceObjectDecal
  *
- * @property {Tr2Effect} decalEffect           -
- * @property {Boolean} display                 -
- * @property {TypedArray} indexBuffer          -
- * @property {number} groupIndex               -
- * @property {number} parentBoneIndex          -
- * @property {Tw2GeometryRes} parentGeometry   -
- * @property {Boolean} pickable                -
- * @property {Tw2Effect} pickEffect            -
- * @property {vec3} position                   -
- * @property {quat} rotation                   -
- * @property {vec3} scaling                    -
- * @property {mat4} transform                  -
- * @property {mat4} transformInv               -
- * @property {*} _indexBuffer                  -
- * @property {Tw2PerObjectData} _perObjectData -
- * @class
+ * @property {Tr2Effect} decalEffect           - Decal effect
+ * @property {Boolean} display                 - Toggles decal visibility
+ * @property {TypedArray} indexBuffer          - Decal index buffer
+ * @property {Number} groupIndex               - Decals SOF group index
+ * @property {Number} parentBoneIndex          - Decal's parent bone index
+ * @property {Tw2GeometryRes} parentGeometry   - Decal's parent geometry
+ * @property {Boolean} pickable                - Identifies if the decal is pickable
+ * @property {Tw2Effect} pickEffect            - Decal pick effect
+ * @property {vec3} position                   - Decal position
+ * @property {quat} rotation                   - Decal rotation
+ * @property {vec3} scaling                    - Decal scaling
+ * @property {mat4} transform                  - Decal local transform
+ * @property {mat4} transformInv               - Decal local transform inverse
+ * @property {WebGLBuffer} _indexBuffer        - Decal index buffer
+ * @property {Tw2PerObjectData} _perObjectData - Decal per object data
  */
 export class EveSpaceObjectDecal extends Tw2BaseClass
 {
@@ -46,6 +46,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     transformInv = mat4.create();
     _indexBuffer = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
+    _dirty = true;
 
 
     /**
@@ -53,7 +54,8 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
      */
     Initialize()
     {
-        this.SetIndexBuffer(this.indexBuffer);
+        this.Rebuild();
+        this.UpdateValues();
     }
 
     /**
@@ -61,17 +63,6 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
      */
     OnValueChanged()
     {
-        if (!this._indexBuffer && this.indexBuffer)
-        {
-            const
-                gl = device.gl,
-                indexes = new Uint16Array(this.indexBuffer);
-
-            this._indexBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
-        }
-
         mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
         mat4.invert(this.transformInv, this.transform);
     }
@@ -83,34 +74,6 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     SetParentGeometry(geometryRes)
     {
         this.parentGeometry = geometryRes;
-    }
-
-    /**
-     * Sets the decal's index buffer
-     * @param {number[]} indices
-     */
-    SetIndexBuffer(indices)
-    {
-        this.indexBuffer = indices;
-        this.Unload();
-        this.UpdateValues();
-    }
-
-    /**
-     * Gets decal resources
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-    GetResources(out = [])
-    {
-        if (this.parentGeometry && !out.includes(this.parentGeometry))
-        {
-            out.push(this.parentGeometry);
-        }
-
-        if (this.decalEffect) this.decalEffect.GetResources(out);
-        if (this.pickEffect) this.pickEffect.GetResources(out);
-        return out;
     }
 
     /**
@@ -126,11 +89,30 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     }
 
     /**
+     * Rebuilds the object's buffers
+     */
+    Rebuild()
+    {
+        this.Unload();
+        if (this.indexBuffer)
+        {
+            const
+                gl = device.gl,
+                indexes = new Uint16Array(this.indexBuffer);
+
+            this._indexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
+        }
+        this._dirty = false;
+    }
+
+    /**
      * Gets batches for rendering
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
-     * @param {number} [counter=0]
+     * @param {Number} [counter=0]
      */
     GetBatches(mode, accumulator, perObjectData, counter)
     {
@@ -146,9 +128,14 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
                 break;
         }
 
+        if (this._dirty)
+        {
+            this.Rebuild();
+        }
+
         if
         (
-            this.display && effect && effect.IsGood() && this.indexBuffer.length && this.parentGeometry && this.parentGeometry.IsGood()
+            this.display && effect && effect.IsGood() && this._indexBuffer && this.parentGeometry && this.parentGeometry.IsGood()
         )
         {
             const batch = new Tw2ForwardingRenderBatch();

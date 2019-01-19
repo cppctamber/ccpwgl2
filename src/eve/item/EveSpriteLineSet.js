@@ -1,4 +1,5 @@
-import {vec3, quat, mat4, Tw2BaseClass} from "../../global";
+import {vec3, quat, mat4} from "../../global";
+import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
 /**
  * Eve sprite line set render batch
@@ -22,9 +23,9 @@ export class EveSpriteLineSetBatch
 }
 
 /**
- * EveSpriteLineSetItem
- * @implements EveObjectSetItem
+ * Sprite line
  * Todo: Is this actually a class?
+ * @ccp ???
  *
  * @property {Number} blinkPhase      -
  * @property {Number} blinkPhaseShift -
@@ -42,9 +43,9 @@ export class EveSpriteLineSetBatch
  * @property {Number} spacing         -
  * @property {mat4} transform         -
  */
-export class EveSpriteLineSetItem extends Tw2BaseClass
+export class EveSpriteLineSetItem extends EveObjectSetItem
 {
-    // ccp ??
+    // ccp
     blinkPhase = 0;
     blinkPhaseShift = 0;
     blinkRate = 0;
@@ -63,6 +64,7 @@ export class EveSpriteLineSetItem extends Tw2BaseClass
     // ccpwgl
     display = true;
     transform = mat4.create();
+    _dirty = true;
 
     /**
      * Fires on value changes
@@ -70,15 +72,15 @@ export class EveSpriteLineSetItem extends Tw2BaseClass
     OnValueChanged()
     {
         mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+        this._dirty = true;
     }
 
 }
 
-Tw2BaseClass.define(EveSpriteLineSetItem, Type =>
+EveObjectSet.define(EveSpriteLineSetItem, Type =>
 {
     return {
         type: "EveSpriteLineSetItem",
-        category: "EveObjectSetItem",
         isStaging: true,
         props: {
             blinkPhase: Type.NUMBER,
@@ -105,28 +107,60 @@ Tw2BaseClass.define(EveSpriteLineSetItem, Type =>
 
 
 /**
- * EveSpriteLineSet
+ * Sprite line set
  * @TODO: Is this actually a class?
+ * @ccp ???
  *
- * @property items
+ * @property {Array<EveSpriteLineSetItem>} items
  */
-export class EveSpriteLineSet extends Tw2BaseClass
+export class EveSpriteLineSet extends EveObjectSet
 {
-    // ccp?
-    items = [];
 
-    // ccpwgl
-    display = true;
+    /**
+     * Unloads the sprite line set's buffers
+     */
+    Unload()
+    {
+        // TODO: Unload
+    }
+
+    /**
+     * Rebuilds the sprite line set's buffers
+     */
+    Rebuild()
+    {
+        // TODO: Rebuild
+    }
+
+    /**
+     * Gets the sprite line set's render batches
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+    GetBatches(mode, accumulator, perObjectData)
+    {
+        // TODO: GetBatches
+    }
+
+    /**
+     * Renders the sprite line set
+     * @param {String} technique - technique name
+     * @returns {Boolean}        - true if rendered
+     */
+    Render(technique)
+    {
+        // TODO: Render
+    }
+    
 }
 
-Tw2BaseClass.define(EveSpriteLineSet, Type =>
+EveObjectSet.define(EveSpriteLineSet, Type =>
 {
     return {
         type: "EveSpriteLineSet",
-        category: "EveObjectSet",
         isStaging: true,
         props: {
-            display: Type.BOOLEAN,
             items: [["EveSpriteLineSetItem"]]
         },
         notImplemented: ["*"]

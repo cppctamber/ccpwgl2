@@ -4,9 +4,8 @@ import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
 /**
  * Plane set render batch
- *
+ * @ccp N/A
  * @property {EvePlaneSet} planeSet
- * @class
  */
 export class EvePlaneSetBatch extends Tw2RenderBatch
 {
@@ -27,11 +26,12 @@ export class EvePlaneSetBatch extends Tw2RenderBatch
 
 
 /**
- * EvePlaneSetItem
+ * Plane set item
  * TODO: Identify if "boneIndex" is deprecated
  * TODO: Identify if "groupIndex" is deprecated
  * If "boneIndex" and "groupIndex" are just used by the EveSOF, we may need to record this information if
  * we are going to convert this object back into a EveSOF object
+ * @ccp EvePlaneSetItem
  *
  * @property {vec4} color           -
  * @property {vec4} layer1Scroll    -
@@ -63,10 +63,17 @@ export class EvePlaneSetItem extends EveObjectSetItem
 
     // ccpwgl
     boneIndex = 0;
-    display = true;
     groupIndex = -1;
     transform = mat4.create();
 
+    /**
+     * Fires on value changes
+     */
+    OnValueChanged()
+    {
+        mat4.fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
+        this._dirty = true;
+    }
 
     /**
      * Creates a plane set item from an object
@@ -74,7 +81,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
      * @param {*} opt
      * @returns {EvePlaneSetItem}
      */
-    static create(opt = {})
+    static from(opt = {})
     {
         const item = new this();
         util.assignIfExists(item, opt, [
@@ -87,7 +94,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
 
 }
 
-Tw2BaseClass.define(EvePlaneSetItem, Type =>
+EveObjectSetItem.define(EvePlaneSetItem, Type =>
 {
     return {
         isStaging: true,
@@ -96,7 +103,6 @@ Tw2BaseClass.define(EvePlaneSetItem, Type =>
         props: {
             boneIndex: Type.NUMBER,
             color: Type.RGBA_LINEAR,
-            display: Type.BOOLEAN,
             groupIndex: Type.NUMBER,
             layer1Scroll: Type.VECTOR4,
             layer1Transform: Type.VECTOR4,
@@ -116,16 +122,17 @@ Tw2BaseClass.define(EvePlaneSetItem, Type =>
 });
 
 /**
- * EvePlaneSet
+ * Plane set
  * Todo: Implement "hideOnLowQuality"
  * Todo: Implement "pickBufferID" (Assuming we will add picking)
+ * @ccp EvePlaneSet
  *
  * @property {Tr2Effect} effect                -
  * @property {Boolean} hideOnLowQuality        -
  * @property {Number} pickBufferID             -
  * @property {Array.<EveObjectSetItem>} planes -
  * @property {Boolean} display                 -
- * @property {number} _time                    -
+ * @property {Number} _time                    -
  * @property {WebGLBuffer} _vertexBuffer       -
  * @property {WebGLBuffer} _indexBuffer        -
  * @property {Tw2VertexDeclaration} _decl      -
@@ -138,7 +145,6 @@ export class EvePlaneSet extends EveObjectSet
     pickBufferID = 0;
 
     // ccpwgl
-    display = true;
     _time = 0;
     _vertexBuffer = null;
     _indexBuffer = null;
@@ -164,28 +170,15 @@ export class EvePlaneSet extends EveObjectSet
     }
 
     /**
-     * Gets plane set res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array} {Array.<Tw2Resource>} [out]
-     */
-    GetResources(out = [])
-    {
-        if (this.effect)
-        {
-            this.effect.GetResources(out);
-        }
-        return out;
-    }
-
-    /**
      * Per frame update
-     * @param {number} dt - Delta Time
+     * @param {Number} dt - Delta Time
+     * @param {mat4} [parentMatrix]
      */
-    Update(dt)
+    Update(dt, parentMatrix)
     {
         this._time += dt;
 
-        if (this._rebuildPending)
+        if (this._dirty)
         {
             this.Rebuild();
         }
@@ -215,8 +208,8 @@ export class EvePlaneSet extends EveObjectSet
     Rebuild()
     {
         this.Unload();
-        EvePlaneSet.RebuildItems(this);
-        this._rebuildPending = false;
+        this.RebuildItems();
+        this._dirty = false;
         const itemCount = this._visibleItems.length;
         if (!itemCount) return;
 
@@ -236,7 +229,7 @@ export class EvePlaneSet extends EveObjectSet
             array[offset + 2 * vertexSize + vertexSize - 3] = 2;
             array[offset + 3 * vertexSize + vertexSize - 3] = 3;
 
-            const itemTransform = mat4.fromRotationTranslationScale(mat4_0, item.rotation, item.position, item.scaling);
+            const itemTransform = mat4.fromRotationTranslationScale(item.transform, item.rotation, item.position, item.scaling);
 
             for (let j = 0; j < 4; ++j)
             {
@@ -313,13 +306,13 @@ export class EvePlaneSet extends EveObjectSet
 
     /**
      * Gets the plane set's render batches
-     * @param {number} mode
+     * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (this.display && mode === device.RM_ADDITIVE && this._indexBuffer && this._visibleItems.length)
+        if (this.display && mode === device.RM_ADDITIVE && this._indexBuffer && this._vertexBuffer && this._visibleItems.length)
         {
             const batch = new EvePlaneSetBatch();
             batch.renderMode = device.RM_ADDITIVE;
@@ -335,7 +328,7 @@ export class EvePlaneSet extends EveObjectSet
      */
     Render(technique)
     {
-        if (!this.effect || !this.effect.IsGood()) return false;
+        if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer) return false;
 
         const
             d = device,
@@ -379,18 +372,17 @@ export class EvePlaneSet extends EveObjectSet
 
 }
 
-Tw2BaseClass.define(EvePlaneSet, Type =>
+EveObjectSet.define(EvePlaneSet, Type =>
 {
     return {
         isStaging: true,
         type: "EvePlaneSet",
         category: "EveObjectSet",
         props: {
-            display: Type.BOOLEAN,
             effect: ["Tr2Effect"],
             hideOnLowQuality: Type.BOOLEAN,
             pickBufferID: Type.NUMBER,
-            planes: [["EvePlaneSetItem"]]
+            items: [["EvePlaneSetItem"]]
         },
         notImplemented: [
             "hideOnLowQuality",
