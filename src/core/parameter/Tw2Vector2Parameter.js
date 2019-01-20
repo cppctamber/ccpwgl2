@@ -1,10 +1,10 @@
 import {vec2} from "../../global";
-import {Tw2VectorParameter} from "./Tw2Parameter";
+import {Tw2VectorParameter} from "./Tw2VectorParameter";
 
 /**
  * Tw2Vector2Parameter
- *
- * @class
+ * TODO: Is this deprecated?
+ * @ccp N/A
  */
 export class Tw2Vector2Parameter extends Tw2VectorParameter
 {
@@ -62,3 +62,14 @@ export class Tw2Vector2Parameter extends Tw2VectorParameter
     static constantBufferSize = 2;
 
 }
+
+Tw2VectorParameter.define(Tw2Vector2Parameter, Type =>
+{
+    return {
+        type: "Tw2Vector2Parameter",
+        props: {
+            value: Type.VECTOR2
+        }
+    };
+});
+

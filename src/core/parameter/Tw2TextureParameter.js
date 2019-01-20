@@ -5,8 +5,12 @@ import {Tw2TextureRes} from "../resource/Tw2TextureRes";
 
 /**
  * Tw2TextureParameter
+ * TODO: Remove constructor parameters
+ * TODO: Identify if override samplers are handled differently for TriTextureParameter (e.g. directly on effects)
+ * TODO: Make textureRes private
+ * TODO: Remove Override methods once utility functions working
+ * @ccp TriTextureParameter
  *
- * @property {String} name
  * @property {Boolean} useAllOverrides
  * @property {Number} addressUMode
  * @property {Number} addressVMode
@@ -16,20 +20,23 @@ import {Tw2TextureRes} from "../resource/Tw2TextureRes";
  * @property {Number} maxAnisotropy
  * @property {Tw2TextureRes} textureRes
  * @property {Tw2SamplerState} _sampler
- * @class
  */
 export class Tw2TextureParameter extends Tw2Parameter
 {
 
+    // ccp
     resourcePath = "";
-    useAllOverrides = false;
+
+    // ccpwgl
     addressUMode = 1;
     addressVMode = 1;
     addressWMode = 1;
     filterMode = 2;
-    mipFilterMode = 2;
     maxAnisotropy = 4;
+    mipFilterMode = 2;
     textureRes = null;
+    useAllOverrides = false;
+
     _sampler = null;
 
 
@@ -63,7 +70,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     Initialize()
     {
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -71,7 +78,7 @@ export class Tw2TextureParameter extends Tw2Parameter
      * @param {String} value
      * @returns {Boolean} true if changed
      */
-    SetTexturePath(value)
+    SetValue(value)
     {
         this.resourcePath = value;
         this.OnValueChanged();
@@ -103,10 +110,11 @@ export class Tw2TextureParameter extends Tw2Parameter
     /**
      * Fire on value changes
      * @param {*} [controller]        - An optional parameter for tracking the object that called this function
-     * @param {String[]} [properties] - An optional array for tracking the properties that were modified
+     * @param {String[]} [skipUpdate] -
      */
-    OnValueChanged(controller, properties)
+    OnValueChanged(controller, skipUpdate)
     {
+        this.resourcePath = this.resourcePath.toLowerCase();
         if (this.resourcePath !== "")
         {
             if (this.resourcePath.indexOf("rgba:/") === 0)
@@ -129,13 +137,15 @@ export class Tw2TextureParameter extends Tw2Parameter
             }
             else
             {
-                this.resourcePath = this.resourcePath.toLowerCase();
-                this.textureRes = this.resourcePath !== "" ? resMan.GetResource(this.resourcePath) : null;
+                this.textureRes = resMan.GetResource(this.resourcePath);
             }
+        }
+        else
+        {
+            this.textureRes = null;
         }
 
         this.UpdateOverrides();
-        super.OnValueChanged(controller, properties);
     }
 
     /**
@@ -162,6 +172,7 @@ export class Tw2TextureParameter extends Tw2Parameter
 
     /**
      * Sets the textures overrides
+     * TODO: Remove once utility functions working
      * @param {{}} [opt={}] - An object containing the override options to set
      */
     SetOverrides(opt = {})
@@ -172,6 +183,7 @@ export class Tw2TextureParameter extends Tw2Parameter
 
     /**
      * Gets the texture's overrides
+     * TODO: Remove once utility functions working
      * @returns {{}}
      */
     GetOverrides(out = {})
@@ -182,6 +194,7 @@ export class Tw2TextureParameter extends Tw2Parameter
 
     /**
      * Updates the parameter's overrides
+     * TODO: Move to OnValueChanged
      */
     UpdateOverrides()
     {
@@ -254,29 +267,6 @@ export class Tw2TextureParameter extends Tw2Parameter
     }
 
     /**
-     * Copies another texture parameter's values
-     * @param {Tw2TextureParameter} parameter
-     * @param {Boolean} [includeName]
-     */
-    Copy(parameter, includeName)
-    {
-        if (includeName) this.name = parameter.name;
-        this.resourcePath = parameter.resourcePath;
-        this.SetOverrides(parameter.GetOverrides);
-    }
-
-    /**
-     * Clones the texture parameter
-     * @returns {Tw2TextureParameter}
-     */
-    Clone()
-    {
-        const parameter = new Tw2TextureParameter();
-        parameter.Copy(this, true);
-        return parameter;
-    }
-
-    /**
      * Gets the texture's resources
      * @param {Array} [out=[]]
      * @returns {Array.<Tw2Resource>}
@@ -316,8 +306,19 @@ export class Tw2TextureParameter extends Tw2Parameter
 
 }
 
-/**
- * Alias for {@link Tw2TextureParameter.SetTexturePath}
- * @type {Tw2TextureParameter.SetTexturePath}
- */
-Tw2TextureParameter.prototype.SetValue = Tw2TextureParameter.prototype.SetTexturePath;
+Tw2Parameter.define(Tw2TextureParameter, Type=>
+{
+    return {
+        type: "Tw2TextureParameter",
+        props: {
+            resourcePath: Type.PATH,
+            addressUMode : Type.NUMBER,
+            addressVMode : Type.NUMBER,
+            addressWMode : Type.NUMBER,
+            filterMode : Type.NUMBER,
+            maxAnisotropy : Type.NUMBER,
+            mipFilterMode : Type.NUMBER,
+            useAllOverrides : Type.BOOLEAN,
+        }
+    };
+});

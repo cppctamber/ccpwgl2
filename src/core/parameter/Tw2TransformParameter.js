@@ -3,27 +3,32 @@ import {Tw2Parameter} from "./Tw2Parameter";
 
 /**
  * Tw2TransformParameter
- *
- * @parameter {String} name
+ * TODO: Original ccp class looks to only have rotation, reference "/probecursor.black"
+ * TODO: If rotationCenter isn't required remove it (I don't recall seeing it used anywhere and not used in new files)
+ * @ccp TriTransformParameter
+ * 
  * @parameter {vec3} scaling=[1,1,1]
  * @parameter {quat} rotation=[0,0,0,1]
  * @parameter {vec3} translation=[0,0,0]
  * @parameter {mat4} transform
- * @parameter {mat4} transformTranspose
- * @class
+ * @parameter {mat4} _transformTranspose
+ * @parameter {Float32Array} _constantBuffer
+ * @parameter {Number} _offset
  */
 export class Tw2TransformParameter extends Tw2Parameter
 {
-
-    name = "";
+    // ccp
+    rotation = quat.create();
+    
+    // ccpwgl
     scaling = vec3.fromValues(1, 1, 1);
     rotationCenter = vec3.create();
-    rotation = quat.create();
     translation = vec3.create();
     transform = mat4.create();
-    worldTransform = mat4.create();
-    constantBuffer = null;
-    offset = null;
+    
+    _transformTranspose = mat4.create();
+    _constantBuffer = null;
+    _offset = null;
 
 
     /**
@@ -31,7 +36,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     Initialize()
     {
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -46,14 +51,13 @@ export class Tw2TransformParameter extends Tw2Parameter
 
     /**
      * Fire on value changes
-     * @param {*} [controller]        - An optional argument to track the object that called this function
-     * @param {String[]} [properties] - An option array containing the properties that were updated
+     * @param {*} [controller]       - An optional argument to track the object that called this function
+     * @param {Boolean} [skipUpdate] - 
      */
-    OnValueChanged(controller, properties)
+    OnValueChanged(controller, skipUpdate)
     {
         mat4.fromRotationTranslationScaleOrigin(this.transform, this.rotation, this.translation, this.scaling, this.rotationCenter);
-        mat4.transpose(this.worldTransform, this.transform);
-        super.OnValueChanged(controller, properties);
+        mat4.transpose(this._transformTranspose, this.transform);
     }
 
     /**
@@ -65,10 +69,10 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     Bind(constantBuffer, offset, size)
     {
-        if (!this.constantBuffer && size >= this.size)
+        if (!this._constantBuffer && size >= this.size)
         {
-            this.constantBuffer = constantBuffer;
-            this.offset = offset;
+            this._constantBuffer = constantBuffer;
+            this._offset = offset;
             this.Apply(constantBuffer, offset, size);
             return true;
         }
@@ -85,29 +89,14 @@ export class Tw2TransformParameter extends Tw2Parameter
     {
         if (size >= this.constructor.constantBufferSize)
         {
-            constantBuffer.set(this.worldTransform, offset);
+            constantBuffer.set(this._transformTranspose, offset);
         }
         else
         {
-            constantBuffer.set(this.worldTransform.subarray(0, size), offset);
+            constantBuffer.set(this._transformTranspose.subarray(0, size), offset);
         }
     }
-
-    /**
-     * Copies another transform parameter's values
-     * @param {Tw2TransformParameter} parameter
-     * @param {Boolean} [includeName]
-     */
-    Copy(parameter, includeName)
-    {
-        if (includeName) this.name = parameter.name;
-        quat.copy(this.rotation, parameter.rotation);
-        vec3.copy(this.translation, parameter.translation);
-        vec3.copy(this.scaling, parameter.scaling);
-        vec3.copy(this.rotationCenter, parameter.rotationCenter);
-        this.OnValueChanged();
-    }
-
+    
     /**
      * The parameter's constant buffer size
      * @type {Number}

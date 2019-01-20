@@ -3,21 +3,21 @@ import {util} from "../../global";
 
 /**
  * Tw2FloatParameter
+ * TODO: Remove constructor parameters
+ * @ccp Tr2FloatParameter
  *
  * @property {String} name
  * @property {Number} value
- * @property {?Float32Array} constantBuffer
- * @property {?Number} offset
+ * @property {?Float32Array} _constantBuffer
+ * @property {?Number} _offset
  * @class
  */
 export class Tw2FloatParameter extends Tw2Parameter
 {
 
-    name = "";
     value = 1;
-    constantBuffer = null;
-    offset = null;
-
+    _constantBuffer = null;
+    _offset = null;
 
     /**
      * Constructor
@@ -33,12 +33,13 @@ export class Tw2FloatParameter extends Tw2Parameter
     /**
      * Sets the parameter's value
      * @param {Number} value
-     * @returns {Boolean} true if updated
+     * @param {*} [controller]
+     * @param {Boolean} [skipUpdate]
      */
-    SetValue(value)
+    SetValue(value, controller, skipUpdate)
     {
         this.value = value;
-        this.OnValueChanged();
+        this.UpdateValues(controller, skipUpdate);
     }
 
     /**
@@ -61,6 +62,33 @@ export class Tw2FloatParameter extends Tw2Parameter
     }
 
     /**
+     * Binds the parameter to a constant buffer
+     * @param constantBuffer
+     * @param offset
+     * @param size
+     * @returns {Boolean} true if bound
+     */
+    Bind(constantBuffer, offset, size)
+    {
+        if (!this._constantBuffer)
+        {
+            this._constantBuffer = constantBuffer;
+            this._offset = offset;
+            this.Apply(constantBuffer, offset);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Unbinds the parameter from a constant buffer
+     */
+    Unbind()
+    {
+        this._constantBuffer = null;
+    }
+
+    /**
      * Checks if a value equals the parameter's value
      * @param {Number} value
      * @returns {Boolean}
@@ -68,17 +96,6 @@ export class Tw2FloatParameter extends Tw2Parameter
     EqualsValue(value)
     {
         return this.value === value;
-    }
-
-    /**
-     * Copies another float parameter's value
-     * @param {Tw2FloatParameter} parameter
-     * @param {Boolean} [includeName]
-     */
-    Copy(parameter, includeName)
-    {
-        if (includeName) this.name = parameter.name;
-        this.SetValue(parameter.GetValue());
     }
 
     /**
@@ -98,3 +115,13 @@ export class Tw2FloatParameter extends Tw2Parameter
     static constantBufferSize = 1;
 
 }
+
+Tw2Parameter.define(Tw2FloatParameter, Type =>
+{
+    return {
+        type: "Tw2FloatParameter",
+        props: {
+            value: Type.NUMBER
+        }
+    };
+});

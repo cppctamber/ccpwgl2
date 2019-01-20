@@ -1,9 +1,11 @@
-import {Tw2BaseClass} from "../../../global";
+import {Tw2BaseClass} from "../global/index";
 
 /**
  * Tr2Model
+ * TODO: The ccpwgl class Tw2Model is for a different purpose than this one...
+ * @ccp Tr2Model
  *
- * @property {Array.<Mesh>} meshes -
+ * @property {Array.<Tr2Mesh>} meshes -
  */
 export default class Tr2Model extends Tw2BaseClass
 {

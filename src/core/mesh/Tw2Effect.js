@@ -459,7 +459,7 @@ export class Tw2Effect
                     {
                         if (!param.EqualsValue(value))
                         {
-                            param.SetTexturePath(value);
+                            param.SetValue(value);
                             updated = true;
                         }
                     }

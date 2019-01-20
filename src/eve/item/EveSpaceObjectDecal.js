@@ -235,7 +235,6 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
 Tw2BaseClass.define(EveSpaceObjectDecal, Type =>
 {
     return {
-        isStaging: true,
         type: "EveSpaceObjectDecal",
         category: "EveObjectItem",
         props: {

@@ -78,7 +78,7 @@ store.Register({
         "vector2": core.Tw2Vector2Parameter,
         "vector3": core.Tw2Vector3Parameter,
         "vector4": core.Tw2Vector4Parameter,
-        "matrix4": core.Tw2MatrixParameter
+        "matrix4": core.Tw2Matrix4Parameter
     },
 
     variables: {

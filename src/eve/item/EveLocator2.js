@@ -69,3 +69,5 @@ Tw2BaseClass.define(EveLocator2, Type =>
         }
     };
 });
+
+export { EveLocator2 as EveLocator };

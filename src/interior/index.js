@@ -1,4 +1,5 @@
-export * from "./character/index";
-export * from "./lighting/index";
-export * from "./scene/index";
+export * from "./character";
+export * from "./lighting";
+export * from "./scene";
+export Tr2Model from "./Tr2Model";
 

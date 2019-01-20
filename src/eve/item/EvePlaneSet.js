@@ -97,7 +97,6 @@ export class EvePlaneSetItem extends EveObjectSetItem
 EveObjectSetItem.define(EvePlaneSetItem, Type =>
 {
     return {
-        isStaging: true,
         type: "EvePlaneSetItem",
         category: "EveObjectSetItem",
         props: {
@@ -375,7 +374,6 @@ export class EvePlaneSet extends EveObjectSet
 EveObjectSet.define(EvePlaneSet, Type =>
 {
     return {
-        isStaging: true,
         type: "EvePlaneSet",
         category: "EveObjectSet",
         props: {

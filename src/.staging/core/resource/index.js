@@ -1,2 +1,0 @@
-export TriGeometryRes from "./TriGeometryRes";
-

@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {Tw2VectorParameter} from "./Tw2Parameter";
+import {Tw2VectorParameter} from "./Tw2VectorParameter";
 
 /**
  * Tw2Vector4Parameter
@@ -98,3 +98,13 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
     static constantBufferSize = 4;
 
 }
+
+Tw2VectorParameter.define(Tw2Vector4Parameter, Type =>
+{
+    return {
+        type: "Tw2Vector4Parameter",
+        props: {
+            value: Type.VECTOR4
+        }
+    };
+});

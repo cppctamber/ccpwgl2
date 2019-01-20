@@ -66,25 +66,15 @@ export class Tw2VariableParameter extends Tw2Parameter
         }
     }
 
-    /**
-     * Not implemented for Variable Parameters
-     * @returns {Boolean} true if successful
-     */
-    AddCallback()
-    {
-        return false;
-    }
-
-    /**
-     * Copies another variable parameter's value
-     * @param {Tw2VariableParameter} parameter
-     * @param {Boolean} [includeName]
-     */
-    Copy(parameter, includeName)
-    {
-        if (includeName) this.name = parameter.name;
-        this.variableName = parameter.variableName;
-    }
-
 }
+
+Tw2Parameter.define(Tw2VariableParameter, Type =>
+{
+    return {
+        type: "Tw2VariableParameter",
+        props: {
+            variableName: Type.STRING
+        }
+    };
+});
 

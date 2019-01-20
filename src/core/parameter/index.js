@@ -1,6 +1,6 @@
 export * from "./Tw2Parameter";
 export * from "./Tw2FloatParameter";
-export * from "./Tw2MatrixParameter";
+export * from "./Tw2Matrix4Parameter";
 export * from "./Tw2TransformParameter";
 export * from "./Tw2VariableParameter";
 export * from "./Tw2Vector2Parameter";

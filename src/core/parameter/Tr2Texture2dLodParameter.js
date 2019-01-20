@@ -1,8 +1,9 @@
-import {Tw2BaseClass} from "../../../global";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * Tr2Texture2dLodParameter
- * @implements Parameter
+ * TODO: Implement
+ * @ccp Tr2Texture2dLodParameter
  *
  * @property {Tr2LodResource} lodResource -
  */
