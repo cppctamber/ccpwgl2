@@ -1,48 +1,80 @@
-import {quat, util} from "../../global";
+import {quat, util, vec4, Tw2BaseClass} from "../../global";
 import {Tw2Vector4Parameter} from "../parameter";
+import {isArrayLike, isBoolean, isNumber} from "../../global/util";
+import {ErrBindingType, ErrBindingValueUndefined, ErrBindingReference} from "../Tw2Error";
+
 
 /**
  * Tw2ValueBinding
+ * TODO: Looks like there are less swizzles than before, might be able to simplify this class (v1,v2,v3,v4 gone)
+ * TODO: Handle utility functions
+ * TODO: Figure out a way of telling if a source/destination is RGBA when building from a UI rather than a swizzle
+ * @ccp TriValueBinding
  *
- * @property {String|Number} _id
- * @property {String} name
- * @property {Object} sourceObject
- * @property {String} sourceAttribute
- * @property {?Number} _sourceElement
- * @property {?Boolean} sourceIsArray
- * @property {Object} destinationObject
- * @property {String} destinationAttribute
- * @property {?Number} _destinationElement
- * @property {?Boolean} destinationIsArray
- * @property {Number} scale
- * @property {quat} offset
- * @property {null|Function} _copyFunc - The function to use when updating destination attributes
+ * @property {String} destinationAttribute -
+ * @property {*} destinationObject         -
+ * @property {vec4} offset                 -
+ * @property {Number} scale                -
+ * @property {String} sourceAttribute      -
+ * @property {*} sourceObject              -
+ * @property {Function} _copyFunc          -
+ * @property {Number} _destinationElement  -
+ * @property {Boolean} _destinationIsArray -
+ * @property {Boolean} _destinationIsRGBA  -
+ * @property {Number} _sourceElement       -
+ * @property {Boolean} _sourceIsArray      -
+ * @property {Boolean} _sourceIsRGBA       -
  */
-export class Tw2ValueBinding
+export class Tw2ValueBinding extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-    sourceObject = null;
-    sourceAttribute = "";
-    _sourceElement = null;
-    sourceIsArray = null;
-    destinationObject = null;
+    // ccp
     destinationAttribute = "";
-    _destinationElement = null;
-    destinationIsArray = null;
+    destinationObject = null;
+    offset = vec4.create();
     scale = 1;
-    offset = quat.create();
-    _copyFunc = null;
+    sourceAttribute = "";
+    sourceObject = null;
 
+    // ccpwgl
+    _copyFunc = null;
+    _destinationElement = null;
+    _destinationIsArray = null;
+    _destinationIsRGBA = null;
+    _sourceElement = null;
+    _sourceIsArray = null;
+    _sourceIsRGBA = null;
 
     /**
-     * Initializes the Value Binding
+     * Initializes the binding
      */
     Initialize()
     {
+        this.UpdateValues();
+    }
+
+    /**
+     * Fires on value changes
+     */
+    OnValueChanged()
+    {
+        if (this._copyFunc !== null) return;
+
         if (!this.sourceObject || this.sourceAttribute === "") return;
         if (!this.destinationObject || this.destinationAttribute === "") return;
+
+        // Handle source by reference
+        if (this.sourceObject && "_ref" in this.sourceObject)
+        {
+            this.sourceObject = this.FindIDFromRoot(this.sourceObject._ref);
+            if (!this.sourceObject) throw new ErrBindingReference({object: "source"});
+        }
+
+        // Handle destination by reference
+        if (this.destinationObject && "_ref" in this.destinationObject)
+        {
+            this.destinationObject = this.FindIDFromRoot(this.destinationObject._ref);
+            if (!this.destinationObject) throw new ErrBindingReference({object: "destination"});
+        }
 
         let srcSwizzled = false,
             destSwizzled = false,
@@ -53,24 +85,28 @@ export class Tw2ValueBinding
             srcSwizzled = true;
             this._sourceElement = 0;
             this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
+            this._sourceIsRGBA = srcSwizzle === ".r";
         }
         else if (srcSwizzle === ".y" || srcSwizzle === ".g")
         {
             srcSwizzled = true;
             this._sourceElement = 1;
             this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
+            this._sourceIsRGBA = srcSwizzle === ".g";
         }
         else if (srcSwizzle === ".z" || srcSwizzle === ".b")
         {
             srcSwizzled = true;
             this._sourceElement = 2;
             this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
+            this._sourceIsRGBA = srcSwizzle === ".b";
         }
         else if (srcSwizzle === ".w" || srcSwizzle === ".a")
         {
             srcSwizzled = true;
             this._sourceElement = 3;
             this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
+            this._sourceIsRGBA = srcSwizzle === ".a";
         }
         else if (this.sourceObject instanceof Tw2Vector4Parameter)
         {
@@ -106,24 +142,28 @@ export class Tw2ValueBinding
             destSwizzled = true;
             this._destinationElement = 0;
             this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
+            this._destinationIsRGBA = destSwizzle === ".r";
         }
         else if (destSwizzle === ".y" || destSwizzle === ".g")
         {
             destSwizzled = true;
             this._destinationElement = 1;
             this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
+            this._destinationIsRGBA = destSwizzle === ".g";
         }
         else if (destSwizzle === ".z" || destSwizzle === ".b")
         {
             destSwizzled = true;
             this._destinationElement = 2;
             this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
+            this._destinationIsRGBA = destSwizzle === ".b";
         }
         else if (destSwizzle === ".w" || destSwizzle === ".a")
         {
             destSwizzled = true;
             this._destinationElement = 3;
             this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
+            this._destinationIsRGBA = destSwizzle === ".a";
         }
         else if (this.destinationObject instanceof Tw2Vector4Parameter)
         {
@@ -153,65 +193,69 @@ export class Tw2ValueBinding
             }
         }
 
-        if (!(this.sourceAttribute in this.sourceObject) || !(this.destinationAttribute in this.destinationObject))
+        const
+            src = this.sourceObject[this.sourceAttribute],
+            dest = this.destinationObject[this.destinationAttribute];
+
+        // Targets must be defined
+        if (src === undefined)
         {
-            return;
+            throw new ErrBindingValueUndefined({object: "source", property: this.sourceAttribute});
         }
 
-        this.sourceIsArray = util.isArrayLike(this.sourceObject[this.sourceAttribute]);
-        this.destinationIsArray = util.isArrayLike(this.destinationObject[this.destinationAttribute]);
+        if (dest === undefined)
+        {
+            throw new ErrBindingValueUndefined({object: "destination", property: this.destinationAttribute});
+        }
 
-        if (this.sourceIsArray === this.destinationIsArray && typeof this.sourceObject[this.sourceAttribute] === typeof this.destinationObject[this.destinationAttribute])
+        const
+            srcIsArr = this._sourceIsArray = isArrayLike(src),
+            destIsArr = this._destinationIsArray = isArrayLike(dest),
+            con = Tw2ValueBinding;
+
+        let copyFunc;
+        if (srcIsArr === destIsArr && typeof src === typeof dest)
         {
-            if (this.sourceIsArray)
+            if (!srcIsArr)
             {
-                if (srcSwizzled)
-                {
-                    if (destSwizzled)
-                    {
-                        this._copyFunc = Tw2ValueBinding.CopyElementToElement;
-                    }
-                    else
-                    {
-                        this._copyFunc = Tw2ValueBinding.ReplicateElement;
-                    }
-                }
-                else
-                {
-                    if (this.sourceObject[this.sourceAttribute].length <= this.destinationObject[this.destinationAttribute].length)
-                    {
-                        this._copyFunc = Tw2ValueBinding.CopyArray;
-                    }
-                    else if (this.sourceObject[this.sourceAttribute].length === 16)
-                    {
-                        this._copyFunc = Tw2ValueBinding.ExtractPos;
-                    }
-                }
+                copyFunc = con.CopyValueToValue;
             }
-            else
+            else if (srcSwizzled)
             {
-                this._copyFunc = Tw2ValueBinding.CopyValueToValue;
+                copyFunc = destSwizzled ? con.CopyElementToElement : con.ReplicateElement;
+            }
+            else if (src.length <= dest.length)
+            {
+                copyFunc = con.CopyArray;
+            }
+            else if (src.length === 16)
+            {
+                copyFunc = con.ExtractPos;
             }
         }
-        else if (this.sourceIsArray && srcSwizzled && util.isNumber(this.destinationObject[this.destinationAttribute]))
+        else if (srcIsArr && srcSwizzled && isNumber(dest))
         {
-            this._copyFunc = Tw2ValueBinding.CopyElementToValue;
+            copyFunc = con.CopyElementToValue;
         }
-        else if (this.destinationIsArray && util.isNumber(this.sourceObject[this.sourceAttribute]))
+        else if (destIsArr && isNumber(src))
         {
-            if (destSwizzled)
-            {
-                this._copyFunc = Tw2ValueBinding.CopyValueToElement;
-            }
-            else
-            {
-                this._copyFunc = Tw2ValueBinding.ReplicateValue;
-            }
+            copyFunc = destSwizzled ? con.CopyValueToElement : con.ReplicateValue;
         }
-        else if (util.isNumber(this.sourceObject[this.sourceAttribute]) && util.isBoolean(this.destinationObject[this.destinationAttribute]))
+        else if (isNumber(src) && isBoolean(dest))
         {
-            this._copyFunc = Tw2ValueBinding.CopyFloatToBoolean;
+            copyFunc = con.CopyFloatToBoolean;
         }
+        else if (isBoolean(src) && isNumber(dest))
+        {
+            copyFunc = con.CopyBooleanToFloat;
+        }
+
+        if (!copyFunc)
+        {
+            throw new ErrBindingType();
+        }
+
+        this._copyFunc = copyFunc;
     }
 
     /**
@@ -222,7 +266,8 @@ export class Tw2ValueBinding
     {
         if (this._copyFunc)
         {
-            this._copyFunc.call(this);
+            this._copyFunc(this);
+
             if ("UpdateValues" in this.destinationObject)
             {
                 this.destinationObject.UpdateValues(controller);
@@ -235,88 +280,308 @@ export class Tw2ValueBinding
     }
 
     /**
-     * _CopyValueToValue
+     * Gets the destination target (attribute with swizzles)
+     * @returns {String}
      */
-    static CopyValueToValue()
+    GetDestinationTarget()
     {
-        this.destinationObject[this.destinationAttribute] = this.sourceObject[this.sourceAttribute] * this.scale + this.offset[0];
+        if (!this._copyFunc) return this.destinationAttribute;
+        
+        return this.constructor.GetAttribute(
+            this.destinationObject,
+            this.destinationAttribute,
+            this._destinationElement,
+            this._destinationIsRGBA
+        );
     }
 
     /**
-     * _CopyArray
+     * Gets the source target (attribute with swizzles)
+     * @returns {String}
      */
-    static CopyArray()
+    GetSourceTarget()
     {
-        let count = Math.min(this.destinationObject[this.destinationAttribute].length, this.sourceObject[this.sourceAttribute].length);
+        if (!this._copyFunc) return this.sourceAttribute;
+        
+        return this.constructor.GetAttribute(
+            this.sourceObject,
+            this.sourceAttribute,
+            this._sourceElement,
+            this._sourceIsRGBA
+        );
+    }
+
+    /**
+     * Sets source object and attribute
+     * @param {*} obj
+     * @param {String} attr
+     * @param {Number} [element]
+     * @param {Boolean} [isRGBA]
+     */
+    SetSource(obj, attr, element, isRGBA)
+    {
+        const { object, attribute } = this.constructor.GetTargets(obj, attr, element, isRGBA);
+        this.sourceObject = object;
+        this.sourceAttribute = attribute;
+        this._copyFunc = null;
+        //this.UpdateValues();
+    }
+
+    /**
+     * Sets destination object and attribute
+     * @param {*} obj
+     * @param {String} attr
+     * @param {Number} [element]
+     * @param {Boolean} [isRGBA]
+     */
+    SetDestination(obj, attr, element, isRGBA)
+    {
+        const { object, attribute } = this.constructor.GetTargets(obj, attr, element, isRGBA);
+        this.destinationObject = object;
+        this.destinationAttribute = attribute;
+        this._copyFunc = null;
+        //this.UpdateValues();
+    }
+
+    /**
+     * Gets a value bindings attribute and swizzles for serialization
+     * @param {*} object
+     * @param {String} attribute
+     * @param {?Number} element
+     * @param {Boolean} isRGBA
+     * @returns {String}
+     */
+    static GetAttribute(object, attribute, element, isRGBA)
+    {
+        // Looks to be deprecated
+        if (object instanceof Tw2Vector4Parameter && attribute === "value")
+        {
+            switch(element)
+            {
+                case 0:
+                    return "v0";
+
+                case 1:
+                    return "v1";
+
+                case 2:
+                    return "v2";
+
+                case 3:
+                    return "v4";
+
+                default:
+                    return attribute;
+            }
+        }
+
+        switch(element)
+        {
+            case 0:
+                return attribute + isRGBA ? ".r" : ".x";
+
+            case 1:
+                return attribute + isRGBA ? ".g" : ".y";
+
+            case 2:
+                return attribute + isRGBA ? ".b" : ".z";
+
+            case 3:
+                return attribute + isRGBA ? ".a" : ".w";
+
+            default:
+                return attribute;
+        }
+    }
+
+    /**
+     * Gets target values
+     * @param {*} object
+     * @param {String} attribute
+     * @param {Number} [element]
+     * @param {Boolean} [isRGBA]
+     * @returns {{object: *, attribute: String}}
+     */
+    static GetTargets(object, attribute, element, isRGBA)
+    {
+        // Try to guess if rgba
+        if (element !== undefined && isRGBA === undefined)
+        {
+            isRGBA = attribute.toUpperCase().includes("COLOR");
+        }
+
+        // Looks to be depreciated
+        if (object instanceof Tw2Vector4Parameter && attribute === "value")
+        {
+            switch(element)
+            {
+                case 0:
+                    attribute = "v0";
+                    break;
+
+                case 1:
+                    attribute = "v1";
+                    break;
+
+                case 2:
+                    attribute = "v2";
+                    break;
+
+                case 3:
+                    attribute = "v3";
+                    break;
+            }
+        }
+        else
+        {
+            switch (element)
+            {
+                case 0:
+                    attribute += isRGBA ? ".r" : ".x";
+                    break;
+
+                case 1:
+                    attribute += isRGBA ? ".g" : ".y";
+                    break;
+
+                case 2:
+                    attribute += isRGBA ? ".b" : ".z";
+                    break;
+
+                case 3:
+                    attribute += isRGBA ? ".a" : ".w";
+                    break;
+            }
+        }
+
+        return { object, attribute };
+    }
+
+    /**
+     * CopyValueToValue
+     * @param {Tw2ValueBinding} a
+     */
+    static CopyValueToValue(a)
+    {
+        a.destinationObject[a.destinationAttribute] = a.sourceObject[a.sourceAttribute] * a.scale + a.offset[0];
+    }
+
+    /**
+     * CopyArray
+     * @param {Tw2ValueBinding} a
+     */
+    static CopyArray(a)
+    {
+        let count = Math.min(a.destinationObject[a.destinationAttribute].length, a.sourceObject[a.sourceAttribute].length);
         for (let i = 0; i < count; ++i)
         {
-            this.destinationObject[this.destinationAttribute][i] = this.sourceObject[this.sourceAttribute][i] * this.scale + this.offset[i];
+            a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute][i] * a.scale + a.offset[i];
         }
     }
 
     /**
-     * _CopyElementToElement
+     * CopyElementToElement
+     * @param {Tw2ValueBinding} a
      */
-    static CopyElementToElement()
+    static CopyElementToElement(a)
     {
-        this.destinationObject[this.destinationAttribute][this._destinationElement] = this.sourceObject[this.sourceAttribute][this._sourceElement] * this.scale + this.offset[0];
+        a.destinationObject[a.destinationAttribute][a._destinationElement] = a.sourceObject[a.sourceAttribute][a._sourceElement] * a.scale + a.offset[0];
     }
 
     /**
-     * _ReplicateValue
+     * ReplicateValue
+     * @param {Tw2ValueBinding} a
      */
-    static ReplicateValue()
+    static ReplicateValue(a)
     {
-        for (let i = 0; i < this.destinationObject[this.destinationAttribute].length; ++i)
+        for (let i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i)
         {
-            this.destinationObject[this.destinationAttribute][i] = this.sourceObject[this.sourceAttribute] * this.scale + this.offset[i];
+            a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute] * a.scale + a.offset[i];
         }
     }
 
     /**
-     * _CopyArray
+     * CopyArray
+     * @param {Tw2ValueBinding} a
      */
-    static ReplicateElement()
+    static ReplicateElement(a)
     {
-        for (let i = 0; i < this.destinationObject[this.destinationAttribute].length; ++i)
+        for (let i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i)
         {
-            this.destinationObject[this.destinationAttribute][i] = this.sourceObject[this.sourceAttribute][this._sourceElement] * this.scale + this.offset[i];
+            a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute][a._sourceElement] * a.scale + a.offset[i];
         }
     }
 
     /**
-     * _ExtractPos
+     * ExtractPos
+     * @param {Tw2ValueBinding} a
      */
-    static ExtractPos()
+    static ExtractPos(a)
     {
-        for (let i = 0; i < this.destinationObject[this.destinationAttribute].length; ++i)
+        for (let i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i)
         {
-            this.destinationObject[this.destinationAttribute][i] = this.sourceObject[this.sourceAttribute][i + 12] * this.scale + this.offset[i];
+            a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute][i + 12] * a.scale + a.offset[i];
         }
     }
 
     /**
-     * _CopyElementToValue
+     * CopyElementToValue
+     * @param {Tw2ValueBinding} a
      */
-    static CopyElementToValue()
+    static CopyElementToValue(a)
     {
-        this.destinationObject[this.destinationAttribute] = this.sourceObject[this.sourceAttribute][this._sourceElement] * this.scale + this.offset[0];
+        a.destinationObject[a.destinationAttribute] = a.sourceObject[a.sourceAttribute][a._sourceElement] * a.scale + a.offset[0];
     }
 
     /**
-     * _CopyValueToElement
+     * CopyValueToElement
+     * @param {Tw2ValueBinding} a
      */
-    static CopyValueToElement()
+    static CopyValueToElement(a)
     {
-        this.destinationObject[this.destinationAttribute][this._destinationElement] = this.sourceObject[this.sourceAttribute] * this.scale + this.offset[0];
+        a.destinationObject[a.destinationAttribute][a._destinationElement] = a.sourceObject[a.sourceAttribute] * a.scale + a.offset[0];
     }
 
     /**
-     * _CopyFloatToBoolean
+     * CopyFloatToBoolean
+     * @param {Tw2ValueBinding} a
      */
-    static CopyFloatToBoolean()
+    static CopyFloatToBoolean(a)
     {
-        this.destinationObject[this.destinationAttribute] = this.sourceObject[this.sourceAttribute] !== 0;
+        a.destinationObject[a.destinationAttribute] = a.sourceObject[a.sourceAttribute] !== 0;
+    }
+
+    /**
+     * CopyFloatToBoolean
+     * @param {Tw2ValueBinding} a
+     */
+    static CopyBooleanToFloat(a)
+    {
+        a.destinationObject[a.destinationAttribute] = a.sourceObject[a.sourceAttribute] ? 1 : 0;
     }
 
 }
+
+Tw2BaseClass.define(Tw2ValueBinding, Type =>
+{
+    return {
+        isStaging: true,
+        type: "Tw2ValueBinding",
+        isLeaf: true, // Do not traverse references
+        props: {
+            destinationAttribute: {
+                type: Type.STRING,
+                serialize: (a) => a.GetDestinationTarget()
+            },
+            destinationObject: Type.REF,
+            offset: Type.VECTOR4,
+            scale: Type.NUMBER,
+            sourceAttribute: {
+                type: Type.STRING,
+                serialize: (a) => a.GetSourceTarget()
+            },
+            sourceObject: Type.REF
+        }
+    };
+});
+

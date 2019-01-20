@@ -5,6 +5,7 @@ import * as curve from "./curve";
 import * as eve from "./eve";
 import * as interior from "./interior";
 import * as particle from "./particle";
+import * as sof from "./sof";
 import * as state from "./state";
 import {device, store, resMan, logger, util, consts} from "./global";
 
@@ -55,7 +56,8 @@ store.Register({
         "cube": core.Tw2TextureRes,
         "mp4": core.Tw2VideoRes,
         "ogg": core.Tw2VideoRes,
-        "webm": core.Tw2VideoRes
+        "webm": core.Tw2VideoRes,
+        "black": core.Tw2BlackRes
     },
 
     classes: [
@@ -65,6 +67,7 @@ store.Register({
         eve,
         interior,
         particle,
+        sof,
         state
     ],
 

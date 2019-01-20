@@ -1,36 +1,44 @@
-import {util} from "../../global";
+import {util, Tw2BaseClass} from "../../global";
 
 /**
- * Tw2CurveSet
+ * Curve set
+ * TODO: Implement useSimTimeRebase
+ * TODO: Implement ranges - Are these read only or do they need to relate back to an AnimationRes some how?
+ * @ccp TriCurveSet
  *
- * @property {String|Number} _id
- * @property {String} name
- * @property {Array.<Tw2Curve|Tw2CurveSequencer>} curves
- * @property {Array} bindings
- * @property {Number} scale
- * @property {Boolean} playOnLoad
- * @property {Boolean} isPlaying
- * @property {Number} scaledTime
+ * @property {Array.<Tw2ValueBinding>} bindings                    -
+ * @property {Array.<Curve|CurveExpression|CurveSequencer>} curves -
+ * @property {Boolean} playOnLoad                                  -
+ * @property {Array.<Tw2CurveSetRange>} ranges                     -
+ * @property {Number} scale                                        -
+ * @property {Boolean} useSimTimeRebase                            -
+ * @property {Boolean} _isPlaying                                  -
+ * @property {Number} scaledTime                                  -
  */
-export class Tw2CurveSet
+export class Tw2CurveSet extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-    curves = [];
+    // ccp
     bindings = [];
-    scale = 1;
-    playOnLoad = true;
-    isPlaying = false;
+    curves = [];
+    playOnLoad = false;
+    ranges = [];
+    scale = 0;
+    useSimTimeRebase = false;
     scaledTime = 0;
 
+    // ccpwgl
+    _isPlaying = false;
+    
 
     /**
      * Initializes the Tw2CurveSet
      */
     Initialize()
     {
-        if (this.playOnLoad) this.Play();
+        if (this.playOnLoad)
+        {
+            this.Play();
+        }
     }
 
     /**
@@ -38,7 +46,7 @@ export class Tw2CurveSet
      */
     Play()
     {
-        this.isPlaying = true;
+        this._isPlaying = true;
         this.scaledTime = 0;
     }
 
@@ -48,8 +56,8 @@ export class Tw2CurveSet
      */
     PlayFrom(time = 0)
     {
-        this.isPlaying = true;
-        this.scaledTime = time;
+        this._isPlaying = true;
+        this.scaledTime = time * this.scale;
     }
 
     /**
@@ -57,7 +65,7 @@ export class Tw2CurveSet
      */
     Stop()
     {
-        this.isPlaying = false;
+        this._isPlaying = false;
     }
 
     /**
@@ -66,7 +74,7 @@ export class Tw2CurveSet
      */
     Update(dt)
     {
-        if (this.isPlaying)
+        if (this._isPlaying)
         {
             this.scaledTime += dt * this.scale;
 
@@ -80,6 +88,23 @@ export class Tw2CurveSet
                 this.bindings[i].CopyValue();
             }
         }
+    }
+
+    /**
+     * Gets a range by name
+     * @param {String}name
+     * @returns {?Tw2CurveSetRange}
+     */
+    GetRangeByName(name)
+    {
+        for (let i = 0; i < this.ranges.length; i++)
+        {
+            if (this.ranges[i].name === name)
+            {
+                return this.ranges[i];
+            }
+        }
+        return null;
     }
 
     /**
@@ -101,3 +126,24 @@ export class Tw2CurveSet
     }
 
 }
+
+Tw2BaseClass.define(Tw2CurveSet, Type =>
+{
+    return {
+        isStaging: true,
+        type: "Tw2CurveSet",
+        props: {
+            bindings: [["Tw2ValueBinding"]],
+            curves: Type.ARRAY,
+            playOnLoad: Type.BOOLEAN,
+            ranges: [["Tw2CurveSetRange"]],
+            scale: Type.NUMBER,
+            scaledTime: Type.NUMBER,
+            useSimTimeRebase: Type.BOOLEAN
+        },
+        notImplemented: [
+            "simTimeRebase"
+        ]
+    };
+});
+

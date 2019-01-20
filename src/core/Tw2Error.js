@@ -398,3 +398,36 @@ export class ErrIndexBounds extends Tw2Error
         super(data, "Array index out of bounds");
     }
 }
+
+/**
+ * Throws when there's an error binding an object
+ */
+export class ErrBindingValueUndefined extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error binding object, %object% property is undefined (%property%)");
+    }
+}
+
+/**
+ * Throws when there's an error binding a value
+ */
+export class ErrBindingType extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error binding object, cannot identify binding type");
+    }
+}
+
+/**
+ * Throws when trying to bind an object by it's id and it can't be found
+ */
+export class ErrBindingReference extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error binding object, could not find %object% object reference");
+    }
+}
