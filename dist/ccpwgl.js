@@ -4,6 +4,18 @@ var ccpwgl = (function(ccpwgl_int)
     var vec3 = ccpwgl_int.math.vec3;
     var mat4 = ccpwgl_int.math.mat4;
 
+    // Enables debug mode
+    Object.defineProperty(ccpwgl, "debug", {
+        get: function ()
+        {
+            return ccpwgl_int.Tw2ObjectReader.DEBUG_ENABLED;
+        },
+        set: function (a)
+        {
+            ccpwgl_int.Tw2ObjectReader.DEBUG_ENABLED = !!a;
+        }
+    });
+
     /**
      * Values for textureQuality option that can be passed to ccpwgl.initialize.
      */
@@ -1534,6 +1546,8 @@ var ccpwgl = (function(ccpwgl_int)
     {
         /** Wrapped ccpwgl_int scene object @type {ccpwgl_int.EveSpaceScene} **/
         this.wrappedScene = null;
+        /** Scene objects that were loaded with the scene **/
+        this.wrappedObjects = [];
         /** Array of rendered objects: SpaceObject, Ship or Planet **/
         this.objects = [];
         /** Current wrapped ccpwgl_int lensflare @type {ccpwgl_int.EveLensflare} **/
@@ -1575,6 +1589,12 @@ var ccpwgl = (function(ccpwgl_int)
                         }
                     }
                 }
+            }
+
+            // Add objects that were loaded with the scene back
+            for (var i = 0; i < self.wrappedObjects.length; i++)
+            {
+                self.wrappedScene.objects.push(self.wrappedObjects[i]);
             }
         }
 
@@ -1629,7 +1649,15 @@ var ccpwgl = (function(ccpwgl_int)
                 resPath,
                 function(obj)
                 {
+                    // Cache scene objects
+                    for (var i = 0; i < obj.objects.length; i++)
+                    {
+                        self.wrappedObjects.push(obj.objects[i]);
+                    }
+                    obj.objects = [];
+
                     onSceneLoaded(self, obj);
+
                     if (onload)
                     {
                         onload.call(self);
