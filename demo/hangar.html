@@ -70,6 +70,7 @@
                         }
                         catch (e)
                         {
+
                         }
                         ship = scene[constructor](dna, function()
                         {
@@ -85,7 +86,7 @@
                             // Turn boosters down
                             if (this.setBoosterStrength)
                             {
-                                this.setBoosterStrength(1);
+                                this.setBoosterStrength(0.1);
                             }
 
                             var hull = dna.split(':')[0];
@@ -95,10 +96,6 @@
                                 lastHull = hull;
                             }
                         });
-                        if ('setBoosterStrength' in ship)
-                        {
-                            ship.setBoosterStrength($('#booster-intensity').val() / 50);
-                        }
                     }
                 });
             }
