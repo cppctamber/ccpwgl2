@@ -13,7 +13,7 @@ import {util, Tw2BaseClass} from "../../global";
  * @property {Number} scale                                        -
  * @property {Boolean} useSimTimeRebase                            -
  * @property {Boolean} _isPlaying                                  -
- * @property {Number} scaledTime                                  -
+ * @property {Number} scaledTime                                   -
  */
 export class Tw2CurveSet extends Tw2BaseClass
 {
@@ -22,7 +22,7 @@ export class Tw2CurveSet extends Tw2BaseClass
     curves = [];
     playOnLoad = false;
     ranges = [];
-    scale = 0;
+    scale = 1;
     useSimTimeRebase = false;
     scaledTime = 0;
 
