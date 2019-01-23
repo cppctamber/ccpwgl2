@@ -17556,9 +17556,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Boolean} playOnLoad                                  -
  * @property {Array.<Tw2CurveSetRange>} ranges                     -
  * @property {Number} scale                                        -
+ * @property {Number} scaledTime                                   -
  * @property {Boolean} useSimTimeRebase                            -
  * @property {Boolean} _isPlaying                                  -
- * @property {Number} scaledTime                                   -
  */
 
 let Tw2CurveSet =
@@ -17581,7 +17581,7 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curves", []);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "playOnLoad", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "playOnLoad", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "ranges", []);
 

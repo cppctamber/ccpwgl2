@@ -11,16 +11,16 @@ import {util, Tw2BaseClass} from "../../global";
  * @property {Boolean} playOnLoad                                  -
  * @property {Array.<Tw2CurveSetRange>} ranges                     -
  * @property {Number} scale                                        -
+ * @property {Number} scaledTime                                   -
  * @property {Boolean} useSimTimeRebase                            -
  * @property {Boolean} _isPlaying                                  -
- * @property {Number} scaledTime                                   -
  */
 export class Tw2CurveSet extends Tw2BaseClass
 {
     // ccp
     bindings = [];
     curves = [];
-    playOnLoad = false;
+    playOnLoad = true;
     ranges = [];
     scale = 1;
     useSimTimeRebase = false;
