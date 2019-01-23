@@ -1,25 +1,27 @@
 import {vec4} from "../../global";
-import {Tw2ParticleElement} from "../Tw2ParticleElement";
+import {Tw2ParticleElement} from "../element/Tw2ParticleElement";
 import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 
 /**
  * Tw2RandomUniformAttributeGenerator
+ * @ccp Tr2RandomUniformAttributeGenerator
  *
- * @property {number} elementType
- * @property {String} customName
- * @property {vec4} minRange
- * @property {vec4} maxRange
- * @property {Tw2ParticleElement} _element
- * @inherits Tw2ParticleAttributeGenerator
- * @class
+ * @property {String} customName           -
+ * @property {Number} elementType          -
+ * @property {vec4} maxRange               -
+ * @property {vec4} minRange               -
+ * @property {Tw2ParticleElement} _element -
  */
 export class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
-    elementType = Tw2ParticleElement.Type.CUSTOM;
+    // ccp
     customName = "";
+    elementType = Tw2ParticleElement.Type.CUSTOM;
     minRange = vec4.create();
     maxRange = vec4.create();
+
+    // ccpwgl
     _element = null;
 
 
@@ -61,3 +63,17 @@ export class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGene
     }
 
 }
+
+Tw2ParticleAttributeGenerator.define(Tw2RandomUniformAttributeGenerator, Type =>
+{
+    return {
+        type: "Tw2RandomUniformAttributeGenerator",
+        props: {
+            customName: Type.STRING,
+            elementType: Type.NUMBER,
+            maxRange: Type.VECTOR4,
+            minRange: Type.VECTOR4
+        }
+    };
+});
+

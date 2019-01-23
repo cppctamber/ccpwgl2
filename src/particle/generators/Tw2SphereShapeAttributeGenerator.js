@@ -1,43 +1,51 @@
 import {vec3, quat} from "../../global";
-import {Tw2ParticleElement} from "../Tw2ParticleElement";
+import {Tw2ParticleElement} from "../element/Tw2ParticleElement";
 import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 
 /**
  * Tw2SphereShapeAttributeGenerator
+ * TODO: Is "controlPosition" deprecated?
+ * TODO: Is "controlVelocity" deprecated?
+ * TODO: Implement "distributionExponent"
+ * @ccp Tr2SphereShapeAttributeGenerator
  *
- * @property {number} minRadius
- * @property {number} maxRadius
- * @property {number} minPhi
- * @property {number} maxPhi
- * @property {number} minTheta
- * @property {number} maxTheta
- * @property {Boolean} controlPosition
- * @property {Boolean} controlVelocity
- * @property {number} minSpeed
- * @property {number} maxSpeed
- * @property {number} parentVelocityFactor
- * @property {vec3} position
- * @property {quat} rotation
- * @property {?Tw2ParticleElement} _position
- * @property {?Tw2ParticleElement}_velocity
- * @inherits Tw2ParticleAttributeGenerator
+ * @property {Boolean} controlPosition       -
+ * @property {Boolean} controlVelocity       -
+ * @property {Number} distributionExponent   -
+ * @property {Number} maxPhi                 -
+ * @property {Number} maxRadius              -
+ * @property {Number} maxSpeed               -
+ * @property {Number} maxTheta               -
+ * @property {Number} minPhi                 -
+ * @property {Number} minRadius              -
+ * @property {Number} minSpeed               -
+ * @property {Number} minTheta               -
+ * @property {Number} parentVelocityFactor   -
+ * @property {vec3} position                 -
+ * @property {quat} rotation                 -
+ * @property {?Tw2ParticleElement} _position -
+ * @property {?Tw2ParticleElement}_velocity  -
  */
 export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
-    minRadius = 0;
-    maxRadius = 0;
-    minPhi = 0;
+    // ccp
+    distributionExponent = 0;
     maxPhi = 360;
-    minTheta = 0;
-    maxTheta = 360;
-    controlPosition = true;
-    controlVelocity = true;
-    minSpeed = 0;
+    maxRadius = 0;
     maxSpeed = 0;
+    maxTheta = 360;
+    minPhi = 0;
+    minRadius = 0;
+    minSpeed = 0;
+    minTheta = 0;
     parentVelocityFactor = 1;
     position = vec3.create();
     rotation = quat.create();
+
+    //ccpwgl
+    controlPosition = true;
+    controlVelocity = true;
     _position = null;
     _velocity = null;
 
@@ -122,3 +130,25 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
     }
 
 }
+
+Tw2ParticleAttributeGenerator.define(Tw2SphereShapeAttributeGenerator, Type =>
+{
+    return {
+        type: "Tw2SphereShapeAttributeGenerator",
+        props: {
+            distributionExponent: Type.NUMBER,
+            maxPhi: Type.NUMBER,
+            maxRadius: Type.NUMBER,
+            maxSpeed: Type.NUMBER,
+            maxTheta: Type.NUMBER,
+            minPhi: Type.NUMBER,
+            minRadius: Type.NUMBER,
+            minSpeed: Type.NUMBER,
+            minTheta: Type.NUMBER,
+            parentVelocityFactor: Type.NUMBER,
+            position: Type.TR_TRANSLATION,
+            rotation: Type.TR_ROTATION
+        }
+    };
+});
+

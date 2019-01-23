@@ -1,5 +1,6 @@
 /* eslint no-unused-vars:0 */
-import {util, vec3} from "../../global";
+import {util, vec3, Tw2BaseClass} from "../../global";
+import {ErrAbstractClassMethod} from "../../core";
 
 /**
  * Tw2ParticleAttributeGenerator base class
@@ -8,13 +9,8 @@ import {util, vec3} from "../../global";
  * @property {String} name
  * @class
  */
-export class Tw2ParticleAttributeGenerator
+export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-
-
     /**
      * Binds a particle system element to the generator
      * @param {Tw2ParticleSystem} ps
@@ -22,7 +18,7 @@ export class Tw2ParticleAttributeGenerator
      */
     Bind(ps)
     {
-        return false;
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -33,7 +29,7 @@ export class Tw2ParticleAttributeGenerator
      */
     Generate(position, velocity, index)
     {
-
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -45,3 +41,12 @@ export class Tw2ParticleAttributeGenerator
     };
 
 }
+
+Tw2BaseClass.define(Tw2ParticleAttributeGenerator, Type=>
+{
+    return {
+        type: "Tw2ParticleAttributeGenerator",
+        category: "ParticleAttributeGenerator",
+        isAbstract: true
+    };
+});

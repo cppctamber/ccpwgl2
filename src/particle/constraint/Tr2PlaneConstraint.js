@@ -1,13 +1,14 @@
-import {Tw2BaseClass} from "../../../global";
+import {Tw2ParticleConstraint} from "./Tw2ParticleConstraint";
 
 /**
  * Tr2PlaneConstraint
- * @implements ParticleConstraint
+ * TODO: Impelement
+ * @ccp Tr2PlaneConstraint
  *
  * @property {Array.<ParticleAttributeGenerator>} generators -
  * @property {Number} reflectionNoise                        -
  */
-export default class Tr2PlaneConstraint extends Tw2BaseClass
+export class Tr2PlaneConstraint extends Tw2ParticleConstraint
 {
 
     generators = [];
@@ -15,7 +16,7 @@ export default class Tr2PlaneConstraint extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(Tr2PlaneConstraint, Type =>
+Tw2ParticleConstraint.define(Tr2PlaneConstraint, Type =>
 {
     return {
         isStaging: true,
@@ -24,7 +25,8 @@ Tw2BaseClass.define(Tr2PlaneConstraint, Type =>
         props: {
             generators: [["Tr2RandomUniformAttributeGenerator"]],
             reflectionNoise: Type.NUMBER
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

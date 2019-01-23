@@ -13352,7 +13352,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./.staging/index.js ***!
   \***************************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, Tr2GpuParticleSystem, Tr2ParticleSystem, Tr2Effect, Tr2InstancedMesh, Tr2LodResource, Tr2Mesh, Tr2MeshArea, Tr2MeshLod, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveColor, Tr2CurveConstant, Tr2CurveEulerRotation, Tr2CurveScalar, Tr2CurveVector3, TriEventCurve, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, AudEventKey, TriEventKey, TriColorSequencer, EveChildBulletStorm, EveChildContainer, EveChildCloud, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSystem, EveChildParticleSphere, EveChildQuad, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, Tr2PlaneConstraint, Tr2ParticleElementDeclaration, Tr2DynamicEmitter, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2StaticEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleAttractorForce, Tr2ParticleDirectForce, Tr2ParticleDragForce, Tr2ParticleFluidDragForce, Tr2ParticleSpring, Tr2ParticleTurbulenceForce, Tr2ParticleVortexForce, Tr2RandomIntegerAttributeGenerator, Tr2RandomUniformAttributeGenerator, Tr2SphereShapeAttributeGenerator */
+/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, Tr2Effect, Tr2InstancedMesh, Tr2LodResource, Tr2Mesh, Tr2MeshArea, Tr2MeshLod, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveColor, Tr2CurveConstant, Tr2CurveEulerRotation, Tr2CurveScalar, Tr2CurveVector3, TriEventCurve, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, AudEventKey, TriEventKey, TriColorSequencer, EveChildBulletStorm, EveChildContainer, EveChildCloud, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSystem, EveChildParticleSphere, EveChildQuad, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13468,2207 +13468,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveUiObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveUiObject"]; });
 
-/* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./particle */ "./.staging/particle/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuParticleSystem", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2GpuParticleSystem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleSystem", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleSystem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2PlaneConstraint"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleElementDeclaration", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleElementDeclaration"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2DynamicEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2DynamicEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2GpuSharedEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2GpuUniqueEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StaticEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2StaticEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["EveParticleDirectForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["EveParticleDragForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ForceSphereVolume"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleAttractorForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleAttractorForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleDirectForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleDragForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleDragForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleFluidDragForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleFluidDragForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleSpring", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleSpring"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleTurbulenceForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleTurbulenceForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleVortexForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RandomIntegerAttributeGenerator", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2RandomIntegerAttributeGenerator"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RandomUniformAttributeGenerator", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2RandomUniformAttributeGenerator"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SphereShapeAttributeGenerator", function() { return _particle__WEBPACK_IMPORTED_MODULE_3__["Tr2SphereShapeAttributeGenerator"]; });
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/particle/Tr2GpuParticleSystem.js":
-/*!***************************************************!*\
-  !*** ./.staging/particle/Tr2GpuParticleSystem.js ***!
-  \***************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2GpuParticleSystem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2GpuParticleSystem
- * @implements ParticleSystem
- *
- * @property {Tr2Effect} clear             -
- * @property {Tr2Effect} emit              -
- * @property {Tr2Effect} render            -
- * @property {Tr2Effect} setDrawParameters -
- * @property {Tr2Effect} setSortParameters -
- * @property {Tr2Effect} sort              -
- * @property {Tr2Effect} sortInner         -
- * @property {Tr2Effect} sortStep          -
- * @property {Tr2Effect} update            -
- */
-
-let Tr2GpuParticleSystem =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2GpuParticleSystem, _Tw2BaseClass);
-
-  function Tr2GpuParticleSystem() {
-    var _this;
-
-    _classCallCheck(this, Tr2GpuParticleSystem);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2GpuParticleSystem).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "clear", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emit", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "render", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setDrawParameters", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setSortParameters", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sort", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortInner", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortStep", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "update", null);
-
-    return _this;
-  }
-
-  return Tr2GpuParticleSystem;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2GpuParticleSystem, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2GpuParticleSystem",
-    category: "ParticleSystem",
-    props: {
-      clear: ["Tr2Effect"],
-      emit: ["Tr2Effect"],
-      render: ["Tr2Effect"],
-      setDrawParameters: ["Tr2Effect"],
-      setSortParameters: ["Tr2Effect"],
-      sort: ["Tr2Effect"],
-      sortInner: ["Tr2Effect"],
-      sortStep: ["Tr2Effect"],
-      update: ["Tr2Effect"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/Tr2ParticleSystem.js":
-/*!************************************************!*\
-  !*** ./.staging/particle/Tr2ParticleSystem.js ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleSystem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2ParticleSystem
- * @implements ParticleSystem
- *
- * @property {Boolean} applyAging                                               -
- * @property {Boolean} applyForce                                               -
- * @property {Array.<ParticleConstraint>} constraints                           -
- * @property {Array.<Tr2ParticleElementDeclaration>} elements                   -
- * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleDuringLifeEmitter -
- * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleOnDeathEmitter    -
- * @property {Array.<ParticleForce>} forces                                     -
- * @property {Number} maxParticleCount                                          -
- * @property {Boolean} requiresSorting                                          -
- * @property {Boolean} updateBoundingBox                                        -
- * @property {Boolean} updateSimulation                                         -
- * @property {Boolean} useSimTimeRebase                                         -
- */
-
-let Tr2ParticleSystem =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleSystem, _Tw2BaseClass);
-
-  function Tr2ParticleSystem() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleSystem);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleSystem).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "applyAging", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "applyForce", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "constraints", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elements", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emitParticleDuringLifeEmitter", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emitParticleOnDeathEmitter", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "forces", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxParticleCount", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "requiresSorting", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateBoundingBox", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateSimulation", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useSimTimeRebase", false);
-
-    return _this;
-  }
-
-  return Tr2ParticleSystem;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleSystem, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleSystem",
-    category: "ParticleSystem",
-    props: {
-      applyAging: Type.BOOLEAN,
-      applyForce: Type.BOOLEAN,
-      constraints: [["Tr2PlaneConstraint"]],
-      elements: [["Tr2ParticleElementDeclaration"]],
-      emitParticleDuringLifeEmitter: ["Tr2DynamicEmitter", "Tr2GpuUniqueEmitter"],
-      emitParticleOnDeathEmitter: ["Tr2DynamicEmitter", "Tr2GpuUniqueEmitter"],
-      forces: Type.ARRAY,
-      maxParticleCount: Type.NUMBER,
-      requiresSorting: Type.BOOLEAN,
-      updateBoundingBox: Type.BOOLEAN,
-      updateSimulation: Type.BOOLEAN,
-      useSimTimeRebase: Type.BOOLEAN
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/constraint/Tr2PlaneConstraint.js":
-/*!************************************************************!*\
-  !*** ./.staging/particle/constraint/Tr2PlaneConstraint.js ***!
-  \************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2PlaneConstraint; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2PlaneConstraint
- * @implements ParticleConstraint
- *
- * @property {Array.<ParticleAttributeGenerator>} generators -
- * @property {Number} reflectionNoise                        -
- */
-
-let Tr2PlaneConstraint =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2PlaneConstraint, _Tw2BaseClass);
-
-  function Tr2PlaneConstraint() {
-    var _this;
-
-    _classCallCheck(this, Tr2PlaneConstraint);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2PlaneConstraint).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generators", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "reflectionNoise", 0);
-
-    return _this;
-  }
-
-  return Tr2PlaneConstraint;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2PlaneConstraint, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2PlaneConstraint",
-    category: "ParticleConstraint",
-    props: {
-      generators: [["Tr2RandomUniformAttributeGenerator"]],
-      reflectionNoise: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/constraint/index.js":
-/*!***********************************************!*\
-  !*** ./.staging/particle/constraint/index.js ***!
-  \***********************************************/
-/*! exports provided: Tr2PlaneConstraint */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tr2PlaneConstraint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2PlaneConstraint */ "./.staging/particle/constraint/Tr2PlaneConstraint.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _Tr2PlaneConstraint__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/particle/element/Tr2ParticleElementDeclaration.js":
-/*!********************************************************************!*\
-  !*** ./.staging/particle/element/Tr2ParticleElementDeclaration.js ***!
-  \********************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleElementDeclaration; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2ParticleElementDeclaration
- *
- * @property {String} customName  -
- * @property {Number} dimension   -
- * @property {String} elementType -
- * @property {Number} usageIndex  -
- * @property {Boolean} usedByGPU  -
- */
-
-let Tr2ParticleElementDeclaration =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleElementDeclaration, _Tw2BaseClass);
-
-  function Tr2ParticleElementDeclaration() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleElementDeclaration);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleElementDeclaration).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customName", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dimension", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elementType", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "usageIndex", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "usedByGPU", false);
-
-    return _this;
-  }
-
-  return Tr2ParticleElementDeclaration;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleElementDeclaration, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleElementDeclaration",
-    props: {
-      customName: Type.STRING,
-      dimension: Type.NUMBER,
-      elementType: Type.STRING,
-      usageIndex: Type.NUMBER,
-      usedByGPU: Type.BOOLEAN
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/element/index.js":
-/*!********************************************!*\
-  !*** ./.staging/particle/element/index.js ***!
-  \********************************************/
-/*! exports provided: Tr2ParticleElementDeclaration */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tr2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2ParticleElementDeclaration */ "./.staging/particle/element/Tr2ParticleElementDeclaration.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleElementDeclaration", function() { return _Tr2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/particle/emitter/Tr2DynamicEmitter.js":
-/*!********************************************************!*\
-  !*** ./.staging/particle/emitter/Tr2DynamicEmitter.js ***!
-  \********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2DynamicEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2DynamicEmitter
- * @implements ParticleEmitter
- *
- * @property {Array.<ParticleAttributeGenerator>} generators -
- * @property {Number} maxParticles                           -
- * @property {Tr2ParticleSystem} particleSystem              -
- * @property {Number} rate                                   -
- */
-
-let Tr2DynamicEmitter =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2DynamicEmitter, _Tw2BaseClass);
-
-  function Tr2DynamicEmitter() {
-    var _this;
-
-    _classCallCheck(this, Tr2DynamicEmitter);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2DynamicEmitter).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generators", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxParticles", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleSystem", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rate", 0);
-
-    return _this;
-  }
-
-  return Tr2DynamicEmitter;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2DynamicEmitter, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2DynamicEmitter",
-    category: "ParticleEmitter",
-    props: {
-      generators: [["Tr2RandomIntegerAttributeGenerator", "Tr2RandomUniformAttributeGenerator", "Tr2SphereShapeAttributeGenerator"]],
-      maxParticles: Type.NUMBER,
-      particleSystem: ["Tr2ParticleSystem"],
-      rate: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/emitter/Tr2GpuSharedEmitter.js":
-/*!**********************************************************!*\
-  !*** ./.staging/particle/emitter/Tr2GpuSharedEmitter.js ***!
-  \**********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2GpuSharedEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2GpuSharedEmitter
- * @implements ParticleEmitterGPU
- *
- * @property {Number} angle                   -
- * @property {vec4} color0                    -
- * @property {vec4} color1                    -
- * @property {vec4} color2                    -
- * @property {vec4} color3                    -
- * @property {Number} colorMidpoint           -
- * @property {vec3} direction                 -
- * @property {Number} drag                    -
- * @property {Number} emissionDensity         -
- * @property {Number} gravity                 -
- * @property {Number} inheritVelocity         -
- * @property {Number} innerAngle              -
- * @property {Number} maxDisplacement         -
- * @property {Number} maxEmissionDensity      -
- * @property {Number} maxLifeTime             -
- * @property {Number} maxSpeed                -
- * @property {Number} minLifeTime             -
- * @property {Number} minSpeed                -
- * @property {vec3} position                  -
- * @property {Number} radius                  -
- * @property {Number} rate                    -
- * @property {Number} sizeVariance            -
- * @property {vec3} sizes                     -
- * @property {Number} textureIndex            -
- * @property {Number} turbulenceAmplitude     -
- * @property {Number} turbulenceFrequency     -
- * @property {Number} velocityStretchRotation -
- */
-
-let Tr2GpuSharedEmitter =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2GpuSharedEmitter, _Tw2BaseClass);
-
-  function Tr2GpuSharedEmitter() {
-    var _this;
-
-    _classCallCheck(this, Tr2GpuSharedEmitter);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2GpuSharedEmitter).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "angle", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color0", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color1", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color2", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color3", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "colorMidpoint", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "direction", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emissionDensity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "gravity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inheritVelocity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "innerAngle", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxDisplacement", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxEmissionDensity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxLifeTime", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minLifeTime", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rate", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizeVariance", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizes", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "textureIndex", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceAmplitude", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceFrequency", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "velocityStretchRotation", 0);
-
-    return _this;
-  }
-
-  return Tr2GpuSharedEmitter;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2GpuSharedEmitter, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2GpuSharedEmitter",
-    category: "ParticleEmitterGPU",
-    props: {
-      angle: Type.NUMBER,
-      color0: Type.RGBA_LINEAR,
-      color1: Type.RGBA_LINEAR,
-      color2: Type.RGBA_LINEAR,
-      color3: Type.RGBA_LINEAR,
-      colorMidpoint: Type.NUMBER,
-      direction: Type.VECTOR3,
-      drag: Type.NUMBER,
-      emissionDensity: Type.NUMBER,
-      gravity: Type.NUMBER,
-      inheritVelocity: Type.NUMBER,
-      innerAngle: Type.NUMBER,
-      maxDisplacement: Type.NUMBER,
-      maxEmissionDensity: Type.NUMBER,
-      maxLifeTime: Type.NUMBER,
-      maxSpeed: Type.NUMBER,
-      minLifeTime: Type.NUMBER,
-      minSpeed: Type.NUMBER,
-      position: Type.TR_TRANSLATION,
-      radius: Type.NUMBER,
-      rate: Type.NUMBER,
-      sizeVariance: Type.NUMBER,
-      sizes: Type.VECTOR3,
-      textureIndex: Type.NUMBER,
-      turbulenceAmplitude: Type.NUMBER,
-      turbulenceFrequency: Type.NUMBER,
-      velocityStretchRotation: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/emitter/Tr2GpuUniqueEmitter.js":
-/*!**********************************************************!*\
-  !*** ./.staging/particle/emitter/Tr2GpuUniqueEmitter.js ***!
-  \**********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2GpuUniqueEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2GpuUniqueEmitter
- * @implements ParticleEmitterGPU
- *
- * @property {Number} angle                   -
- * @property {vec3} attractorPosition         -
- * @property {Number} attractorStrength       -
- * @property {vec4} color0                    -
- * @property {vec4} color1                    -
- * @property {vec4} color2                    -
- * @property {vec4} color3                    -
- * @property {Number} colorMidpoint           -
- * @property {Boolean} continuousEmitter      -
- * @property {vec3} direction                 -
- * @property {Number} drag                    -
- * @property {Number} emissionDensity         -
- * @property {Number} gravity                 -
- * @property {Number} inheritVelocity         -
- * @property {Number} innerAngle              -
- * @property {Number} maxDisplacement         -
- * @property {Number} maxEmissionDensity      -
- * @property {Number} maxLifeTime             -
- * @property {Number} maxSpeed                -
- * @property {Number} minLifeTime             -
- * @property {Number} minSpeed                -
- * @property {vec3} position                  -
- * @property {Number} radius                  -
- * @property {Number} rate                    -
- * @property {Boolean} scaledByParent         -
- * @property {Number} sizeVariance            -
- * @property {vec3} sizes                     -
- * @property {Number} textureIndex            -
- * @property {Number} turbulenceAmplitude     -
- * @property {Number} turbulenceFrequency     -
- * @property {Number} velocityStretchRotation -
- */
-
-let Tr2GpuUniqueEmitter =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2GpuUniqueEmitter, _Tw2BaseClass);
-
-  function Tr2GpuUniqueEmitter() {
-    var _this;
-
-    _classCallCheck(this, Tr2GpuUniqueEmitter);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2GpuUniqueEmitter).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "angle", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attractorPosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attractorStrength", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color0", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color1", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color2", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color3", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "colorMidpoint", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "continuousEmitter", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "direction", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emissionDensity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "gravity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inheritVelocity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "innerAngle", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxDisplacement", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxEmissionDensity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxLifeTime", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minLifeTime", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rate", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaledByParent", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizeVariance", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizes", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "textureIndex", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceAmplitude", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceFrequency", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "velocityStretchRotation", 0);
-
-    return _this;
-  }
-
-  return Tr2GpuUniqueEmitter;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2GpuUniqueEmitter, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2GpuUniqueEmitter",
-    category: "ParticleEmitterGPU",
-    props: {
-      angle: Type.NUMBER,
-      attractorPosition: Type.TR_TRANSLATION,
-      attractorStrength: Type.NUMBER,
-      color0: Type.RGBA_LINEAR,
-      color1: Type.RGBA_LINEAR,
-      color2: Type.RGBA_LINEAR,
-      color3: Type.RGBA_LINEAR,
-      colorMidpoint: Type.NUMBER,
-      continuousEmitter: Type.BOOLEAN,
-      direction: Type.VECTOR3,
-      drag: Type.NUMBER,
-      emissionDensity: Type.NUMBER,
-      gravity: Type.NUMBER,
-      inheritVelocity: Type.NUMBER,
-      innerAngle: Type.NUMBER,
-      maxDisplacement: Type.NUMBER,
-      maxEmissionDensity: Type.NUMBER,
-      maxLifeTime: Type.NUMBER,
-      maxSpeed: Type.NUMBER,
-      minLifeTime: Type.NUMBER,
-      minSpeed: Type.NUMBER,
-      position: Type.TR_TRANSLATION,
-      radius: Type.NUMBER,
-      rate: Type.NUMBER,
-      scaledByParent: Type.BOOLEAN,
-      sizeVariance: Type.NUMBER,
-      sizes: Type.VECTOR3,
-      textureIndex: Type.NUMBER,
-      turbulenceAmplitude: Type.NUMBER,
-      turbulenceFrequency: Type.NUMBER,
-      velocityStretchRotation: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/emitter/Tr2StaticEmitter.js":
-/*!*******************************************************!*\
-  !*** ./.staging/particle/emitter/Tr2StaticEmitter.js ***!
-  \*******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2StaticEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2StaticEmitter
- * @implements ParticleEmitter
- *
- * @property {String} geometryResourcePath -
- * @property {Number} meshIndex            -
- */
-
-let Tr2StaticEmitter =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2StaticEmitter, _Tw2BaseClass);
-
-  function Tr2StaticEmitter() {
-    var _this;
-
-    _classCallCheck(this, Tr2StaticEmitter);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2StaticEmitter).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResourcePath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "meshIndex", 0);
-
-    return _this;
-  }
-
-  return Tr2StaticEmitter;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StaticEmitter, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2StaticEmitter",
-    category: "ParticleEmitter",
-    props: {
-      geometryResourcePath: Type.PATH,
-      meshIndex: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/emitter/index.js":
-/*!********************************************!*\
-  !*** ./.staging/particle/emitter/index.js ***!
-  \********************************************/
-/*! exports provided: Tr2DynamicEmitter, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2StaticEmitter */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tr2DynamicEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2DynamicEmitter */ "./.staging/particle/emitter/Tr2DynamicEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2DynamicEmitter", function() { return _Tr2DynamicEmitter__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _Tr2GpuSharedEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2GpuSharedEmitter */ "./.staging/particle/emitter/Tr2GpuSharedEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _Tr2GpuSharedEmitter__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _Tr2GpuUniqueEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2GpuUniqueEmitter */ "./.staging/particle/emitter/Tr2GpuUniqueEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return _Tr2GpuUniqueEmitter__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-/* harmony import */ var _Tr2StaticEmitter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2StaticEmitter */ "./.staging/particle/emitter/Tr2StaticEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StaticEmitter", function() { return _Tr2StaticEmitter__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/particle/force/EveParticleDirectForce.js":
-/*!***********************************************************!*\
-  !*** ./.staging/particle/force/EveParticleDirectForce.js ***!
-  \***********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveParticleDirectForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveParticleDirectForce
- * @implements ParticleForce
- *
- * @property {vec3} force -
- */
-
-let EveParticleDirectForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveParticleDirectForce, _Tw2BaseClass);
-
-  function EveParticleDirectForce() {
-    var _this;
-
-    _classCallCheck(this, EveParticleDirectForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveParticleDirectForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "force", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    return _this;
-  }
-
-  return EveParticleDirectForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveParticleDirectForce, Type => {
-  return {
-    isStaging: true,
-    type: "EveParticleDirectForce",
-    category: "ParticleForce",
-    props: {
-      force: Type.VECTOR3
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/EveParticleDragForce.js":
-/*!*********************************************************!*\
-  !*** ./.staging/particle/force/EveParticleDragForce.js ***!
-  \*********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveParticleDragForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * EveParticleDragForce
- * @implements ParticleForce
- *
- * @property {Number} drag -
- */
-
-let EveParticleDragForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveParticleDragForce, _Tw2BaseClass);
-
-  function EveParticleDragForce() {
-    var _this;
-
-    _classCallCheck(this, EveParticleDragForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveParticleDragForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
-
-    return _this;
-  }
-
-  return EveParticleDragForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveParticleDragForce, Type => {
-  return {
-    isStaging: true,
-    type: "EveParticleDragForce",
-    category: "ParticleForce",
-    props: {
-      drag: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ForceSphereVolume.js":
-/*!*********************************************************!*\
-  !*** ./.staging/particle/force/Tr2ForceSphereVolume.js ***!
-  \*********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ForceSphereVolume; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2ForceSphereVolume
- * @implements ParticleForce
- *
- * @property {Array.<ParticleForce>} forces -
- * @property {Number} radius                -
- */
-
-let Tr2ForceSphereVolume =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ForceSphereVolume, _Tw2BaseClass);
-
-  function Tr2ForceSphereVolume() {
-    var _this;
-
-    _classCallCheck(this, Tr2ForceSphereVolume);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ForceSphereVolume).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "forces", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
-
-    return _this;
-  }
-
-  return Tr2ForceSphereVolume;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ForceSphereVolume, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ForceSphereVolume",
-    category: "ParticleForce",
-    props: {
-      forces: [["Tr2ParticleAttractorForce", "Tr2ParticleTurbulenceForce"]],
-      radius: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ParticleAttractorForce.js":
-/*!**************************************************************!*\
-  !*** ./.staging/particle/force/Tr2ParticleAttractorForce.js ***!
-  \**************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleAttractorForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2ParticleAttractorForce
- * @implements ParticleForce
- *
- * @property {Number} magnitude -
- * @property {vec3} position    -
- */
-
-let Tr2ParticleAttractorForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleAttractorForce, _Tw2BaseClass);
-
-  function Tr2ParticleAttractorForce() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleAttractorForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleAttractorForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "magnitude", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    return _this;
-  }
-
-  return Tr2ParticleAttractorForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleAttractorForce, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleAttractorForce",
-    category: "ParticleForce",
-    props: {
-      magnitude: Type.NUMBER,
-      position: Type.TR_TRANSLATION
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ParticleDirectForce.js":
-/*!***********************************************************!*\
-  !*** ./.staging/particle/force/Tr2ParticleDirectForce.js ***!
-  \***********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleDirectForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2ParticleDirectForce
- * @implements ParticleForce
- *
- * @property {vec3} force -
- */
-
-let Tr2ParticleDirectForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleDirectForce, _Tw2BaseClass);
-
-  function Tr2ParticleDirectForce() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleDirectForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleDirectForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "force", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    return _this;
-  }
-
-  return Tr2ParticleDirectForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleDirectForce, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleDirectForce",
-    category: "ParticleForce",
-    props: {
-      force: Type.VECTOR3
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ParticleDragForce.js":
-/*!*********************************************************!*\
-  !*** ./.staging/particle/force/Tr2ParticleDragForce.js ***!
-  \*********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleDragForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2ParticleDragForce
- * @implements ParticleForce
- *
- * @property {Number} drag -
- */
-
-let Tr2ParticleDragForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleDragForce, _Tw2BaseClass);
-
-  function Tr2ParticleDragForce() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleDragForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleDragForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
-
-    return _this;
-  }
-
-  return Tr2ParticleDragForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleDragForce, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleDragForce",
-    category: "ParticleForce",
-    props: {
-      drag: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ParticleFluidDragForce.js":
-/*!**************************************************************!*\
-  !*** ./.staging/particle/force/Tr2ParticleFluidDragForce.js ***!
-  \**************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleFluidDragForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2ParticleFluidDragForce
- * @implements ParticleForce
- *
- * @property {Number} drag -
- */
-
-let Tr2ParticleFluidDragForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleFluidDragForce, _Tw2BaseClass);
-
-  function Tr2ParticleFluidDragForce() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleFluidDragForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleFluidDragForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
-
-    return _this;
-  }
-
-  return Tr2ParticleFluidDragForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleFluidDragForce, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleFluidDragForce",
-    category: "ParticleForce",
-    props: {
-      drag: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ParticleSpring.js":
-/*!******************************************************!*\
-  !*** ./.staging/particle/force/Tr2ParticleSpring.js ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleSpring; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2ParticleSpring
- * @implements ParticleForce
- *
- * @property {vec3} position         -
- * @property {Number} springConstant -
- */
-
-let Tr2ParticleSpring =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleSpring, _Tw2BaseClass);
-
-  function Tr2ParticleSpring() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleSpring);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleSpring).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "springConstant", 0);
-
-    return _this;
-  }
-
-  return Tr2ParticleSpring;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleSpring, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleSpring",
-    category: "ParticleForce",
-    props: {
-      position: Type.TR_TRANSLATION,
-      springConstant: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ParticleTurbulenceForce.js":
-/*!***************************************************************!*\
-  !*** ./.staging/particle/force/Tr2ParticleTurbulenceForce.js ***!
-  \***************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleTurbulenceForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2ParticleTurbulenceForce
- * @implements ParticleForce
- *
- * @property {vec3} amplitude    -
- * @property {vec4} frequency    -
- * @property {Number} noiseLevel -
- * @property {Number} noiseRatio -
- */
-
-let Tr2ParticleTurbulenceForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleTurbulenceForce, _Tw2BaseClass);
-
-  function Tr2ParticleTurbulenceForce() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleTurbulenceForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleTurbulenceForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "amplitude", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "frequency", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseLevel", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseRatio", 0);
-
-    return _this;
-  }
-
-  return Tr2ParticleTurbulenceForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleTurbulenceForce, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleTurbulenceForce",
-    category: "ParticleForce",
-    props: {
-      amplitude: Type.VECTOR3,
-      frequency: Type.VECTOR4,
-      noiseLevel: Type.NUMBER,
-      noiseRatio: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/Tr2ParticleVortexForce.js":
-/*!***********************************************************!*\
-  !*** ./.staging/particle/force/Tr2ParticleVortexForce.js ***!
-  \***********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ParticleVortexForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2ParticleVortexForce
- * @implements ParticleForce
- *
- * @property {vec3} axis        -
- * @property {Number} magnitude -
- * @property {vec3} position    -
- */
-
-let Tr2ParticleVortexForce =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2ParticleVortexForce, _Tw2BaseClass);
-
-  function Tr2ParticleVortexForce() {
-    var _this;
-
-    _classCallCheck(this, Tr2ParticleVortexForce);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleVortexForce).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "axis", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "magnitude", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    return _this;
-  }
-
-  return Tr2ParticleVortexForce;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ParticleVortexForce, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2ParticleVortexForce",
-    category: "ParticleForce",
-    props: {
-      axis: Type.VECTOR3,
-      magnitude: Type.NUMBER,
-      position: Type.TR_TRANSLATION
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/force/index.js":
-/*!******************************************!*\
-  !*** ./.staging/particle/force/index.js ***!
-  \******************************************/
-/*! exports provided: EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleAttractorForce, Tr2ParticleDirectForce, Tr2ParticleDragForce, Tr2ParticleFluidDragForce, Tr2ParticleSpring, Tr2ParticleTurbulenceForce, Tr2ParticleVortexForce */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _EveParticleDirectForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveParticleDirectForce */ "./.staging/particle/force/EveParticleDirectForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _EveParticleDirectForce__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _EveParticleDragForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveParticleDragForce */ "./.staging/particle/force/EveParticleDragForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return _EveParticleDragForce__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _Tr2ForceSphereVolume__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2ForceSphereVolume */ "./.staging/particle/force/Tr2ForceSphereVolume.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return _Tr2ForceSphereVolume__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-/* harmony import */ var _Tr2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2ParticleAttractorForce */ "./.staging/particle/force/Tr2ParticleAttractorForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleAttractorForce", function() { return _Tr2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-/* harmony import */ var _Tr2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tr2ParticleDirectForce */ "./.staging/particle/force/Tr2ParticleDirectForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleDirectForce", function() { return _Tr2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_4__["default"]; });
-
-/* harmony import */ var _Tr2ParticleDragForce__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2ParticleDragForce */ "./.staging/particle/force/Tr2ParticleDragForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleDragForce", function() { return _Tr2ParticleDragForce__WEBPACK_IMPORTED_MODULE_5__["default"]; });
-
-/* harmony import */ var _Tr2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tr2ParticleFluidDragForce */ "./.staging/particle/force/Tr2ParticleFluidDragForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleFluidDragForce", function() { return _Tr2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
-/* harmony import */ var _Tr2ParticleSpring__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tr2ParticleSpring */ "./.staging/particle/force/Tr2ParticleSpring.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleSpring", function() { return _Tr2ParticleSpring__WEBPACK_IMPORTED_MODULE_7__["default"]; });
-
-/* harmony import */ var _Tr2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tr2ParticleTurbulenceForce */ "./.staging/particle/force/Tr2ParticleTurbulenceForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleTurbulenceForce", function() { return _Tr2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_8__["default"]; });
-
-/* harmony import */ var _Tr2ParticleVortexForce__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Tr2ParticleVortexForce */ "./.staging/particle/force/Tr2ParticleVortexForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return _Tr2ParticleVortexForce__WEBPACK_IMPORTED_MODULE_9__["default"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/particle/generator/Tr2RandomIntegerAttributeGenerator.js":
-/*!***************************************************************************!*\
-  !*** ./.staging/particle/generator/Tr2RandomIntegerAttributeGenerator.js ***!
-  \***************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2RandomIntegerAttributeGenerator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2RandomIntegerAttributeGenerator
- * @implements ParticleAttributeGenerator
- *
- * @property {String} customName -
- * @property {vec4} maxRange     -
- * @property {vec4} minRange     -
- */
-
-let Tr2RandomIntegerAttributeGenerator =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2RandomIntegerAttributeGenerator, _Tw2BaseClass);
-
-  function Tr2RandomIntegerAttributeGenerator() {
-    var _this;
-
-    _classCallCheck(this, Tr2RandomIntegerAttributeGenerator);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2RandomIntegerAttributeGenerator).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customName", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxRange", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minRange", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    return _this;
-  }
-
-  return Tr2RandomIntegerAttributeGenerator;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2RandomIntegerAttributeGenerator, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2RandomIntegerAttributeGenerator",
-    category: "ParticleAttributeGenerator",
-    props: {
-      customName: Type.STRING,
-      maxRange: Type.VECTOR4,
-      minRange: Type.VECTOR4
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/generator/Tr2RandomUniformAttributeGenerator.js":
-/*!***************************************************************************!*\
-  !*** ./.staging/particle/generator/Tr2RandomUniformAttributeGenerator.js ***!
-  \***************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2RandomUniformAttributeGenerator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2RandomUniformAttributeGenerator
- * @implements ParticleAttributeGenerator
- *
- * @property {String} customName  -
- * @property {String} elementType -
- * @property {vec4} maxRange      -
- * @property {vec4} minRange      -
- */
-
-let Tr2RandomUniformAttributeGenerator =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2RandomUniformAttributeGenerator, _Tw2BaseClass);
-
-  function Tr2RandomUniformAttributeGenerator() {
-    var _this;
-
-    _classCallCheck(this, Tr2RandomUniformAttributeGenerator);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2RandomUniformAttributeGenerator).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customName", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elementType", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxRange", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minRange", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    return _this;
-  }
-
-  return Tr2RandomUniformAttributeGenerator;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2RandomUniformAttributeGenerator, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2RandomUniformAttributeGenerator",
-    category: "ParticleAttributeGenerator",
-    props: {
-      customName: Type.STRING,
-      elementType: Type.STRING,
-      maxRange: Type.VECTOR4,
-      minRange: Type.VECTOR4
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/generator/Tr2SphereShapeAttributeGenerator.js":
-/*!*************************************************************************!*\
-  !*** ./.staging/particle/generator/Tr2SphereShapeAttributeGenerator.js ***!
-  \*************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2SphereShapeAttributeGenerator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2SphereShapeAttributeGenerator
- * @implements ParticleAttributeGenerator
- *
- * @property {Number} distributionExponent -
- * @property {Number} maxPhi               -
- * @property {Number} maxRadius            -
- * @property {Number} maxSpeed             -
- * @property {Number} maxTheta             -
- * @property {Number} minPhi               -
- * @property {Number} minRadius            -
- * @property {Number} minSpeed             -
- * @property {Number} minTheta             -
- * @property {Number} parentVelocityFactor -
- * @property {vec3} position               -
- * @property {quat} rotation               -
- */
-
-let Tr2SphereShapeAttributeGenerator =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2SphereShapeAttributeGenerator, _Tw2BaseClass);
-
-  function Tr2SphereShapeAttributeGenerator() {
-    var _this;
-
-    _classCallCheck(this, Tr2SphereShapeAttributeGenerator);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2SphereShapeAttributeGenerator).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distributionExponent", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxPhi", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxTheta", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minPhi", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minTheta", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "parentVelocityFactor", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    return _this;
-  }
-
-  return Tr2SphereShapeAttributeGenerator;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2SphereShapeAttributeGenerator, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2SphereShapeAttributeGenerator",
-    category: "ParticleAttributeGenerator",
-    props: {
-      distributionExponent: Type.NUMBER,
-      maxPhi: Type.NUMBER,
-      maxRadius: Type.NUMBER,
-      maxSpeed: Type.NUMBER,
-      maxTheta: Type.NUMBER,
-      minPhi: Type.NUMBER,
-      minRadius: Type.NUMBER,
-      minSpeed: Type.NUMBER,
-      minTheta: Type.NUMBER,
-      parentVelocityFactor: Type.NUMBER,
-      position: Type.TR_TRANSLATION,
-      rotation: Type.TR_ROTATION
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/particle/generator/index.js":
-/*!**********************************************!*\
-  !*** ./.staging/particle/generator/index.js ***!
-  \**********************************************/
-/*! exports provided: Tr2RandomIntegerAttributeGenerator, Tr2RandomUniformAttributeGenerator, Tr2SphereShapeAttributeGenerator */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tr2RandomIntegerAttributeGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2RandomIntegerAttributeGenerator */ "./.staging/particle/generator/Tr2RandomIntegerAttributeGenerator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RandomIntegerAttributeGenerator", function() { return _Tr2RandomIntegerAttributeGenerator__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _Tr2RandomUniformAttributeGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2RandomUniformAttributeGenerator */ "./.staging/particle/generator/Tr2RandomUniformAttributeGenerator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RandomUniformAttributeGenerator", function() { return _Tr2RandomUniformAttributeGenerator__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _Tr2SphereShapeAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2SphereShapeAttributeGenerator */ "./.staging/particle/generator/Tr2SphereShapeAttributeGenerator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SphereShapeAttributeGenerator", function() { return _Tr2SphereShapeAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/particle/index.js":
-/*!************************************!*\
-  !*** ./.staging/particle/index.js ***!
-  \************************************/
-/*! exports provided: Tr2GpuParticleSystem, Tr2ParticleSystem, Tr2PlaneConstraint, Tr2ParticleElementDeclaration, Tr2DynamicEmitter, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tr2StaticEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleAttractorForce, Tr2ParticleDirectForce, Tr2ParticleDragForce, Tr2ParticleFluidDragForce, Tr2ParticleSpring, Tr2ParticleTurbulenceForce, Tr2ParticleVortexForce, Tr2RandomIntegerAttributeGenerator, Tr2RandomUniformAttributeGenerator, Tr2SphereShapeAttributeGenerator */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _constraint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constraint */ "./.staging/particle/constraint/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _constraint__WEBPACK_IMPORTED_MODULE_0__["Tr2PlaneConstraint"]; });
-
-/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./.staging/particle/element/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tr2ParticleElementDeclaration"]; });
-
-/* harmony import */ var _emitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./emitter */ "./.staging/particle/emitter/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2DynamicEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2DynamicEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuSharedEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuUniqueEmitter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StaticEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2StaticEmitter"]; });
-
-/* harmony import */ var _force__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./force */ "./.staging/particle/force/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["EveParticleDirectForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["EveParticleDragForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ForceSphereVolume"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleAttractorForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleAttractorForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleDirectForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleDirectForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleDragForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleDragForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleFluidDragForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleFluidDragForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleSpring", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleSpring"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleTurbulenceForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleTurbulenceForce"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleVortexForce"]; });
-
-/* harmony import */ var _generator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./generator */ "./.staging/particle/generator/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RandomIntegerAttributeGenerator", function() { return _generator__WEBPACK_IMPORTED_MODULE_4__["Tr2RandomIntegerAttributeGenerator"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RandomUniformAttributeGenerator", function() { return _generator__WEBPACK_IMPORTED_MODULE_4__["Tr2RandomUniformAttributeGenerator"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SphereShapeAttributeGenerator", function() { return _generator__WEBPACK_IMPORTED_MODULE_4__["Tr2SphereShapeAttributeGenerator"]; });
-
-/* harmony import */ var _Tr2GpuParticleSystem__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2GpuParticleSystem */ "./.staging/particle/Tr2GpuParticleSystem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuParticleSystem", function() { return _Tr2GpuParticleSystem__WEBPACK_IMPORTED_MODULE_5__["default"]; });
-
-/* harmony import */ var _Tr2ParticleSystem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tr2ParticleSystem */ "./.staging/particle/Tr2ParticleSystem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleSystem", function() { return _Tr2ParticleSystem__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
-
-
-
-
-
-
 
 
 
@@ -15687,7 +13486,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2RuntimeInstanceData; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vertex */ "./core/vertex/index.js");
-/* harmony import */ var _particle_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../particle/Tw2ParticleElementDeclaration */ "./particle/Tw2ParticleElementDeclaration.js");
+/* harmony import */ var _particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../particle/element/Tw2ParticleElementDeclaration */ "./particle/element/Tw2ParticleElementDeclaration.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -15779,7 +13578,7 @@ function (_Tw2BaseClass) {
       this._declaration = new _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
 
       for (let i = 0; i < decl.length; ++i) {
-        const element = new _particle_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElementDeclaration"]();
+        const element = new _particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElementDeclaration"]();
         element.elementType = decl[i][0];
         element.dimension = decl[i][2];
         element.usageIndex = decl[i][1];
@@ -57386,7 +55185,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! no static exports found */
+/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57813,7 +55612,40 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveTurretSet"]; });
 
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _particle__WEBPACK_IMPORTED_MODULE_6__) if(["math","util","device","store","resMan","logger","consts","staging","useStaging","Tr2RuntimeInstanceData","TriObserverLocal","Tr2PointLight","Tr2ShLightingManager","Tr2PostProcess","Tw2Float","TriMatrix","Tw2Error","ErrHTTPRequest","ErrHTTPRequestSend","ErrHTTPInstance","ErrHTTPStatus","ErrHTTPReadyState","ErrXMLBinaryFormat","ErrXMLObjectTypeUndefined","ErrGeometryMeshMissingParticleElement","ErrGeometryMeshElementComponentsMissing","ErrGeometryMeshBoneNameInvalid","ErrGeometryMeshEffectBinding","ErrGeometryFileType","ErrResourcePrefixUnregistered","ErrResourcePrefixUndefined","ErrResourceExtensionUnregistered","ErrResourceExtensionUndefined","ErrResourceFormat","ErrShaderVersion","ErrShaderHeaderSize","ErrShaderPermutationValue","ErrShaderCompile","ErrShaderLink","ErrDeclarationValueType","ErrSingletonInstantiation","ErrAbstractClassMethod","ErrFeatureNotImplemented","ErrIndexBounds","ErrBindingValueUndefined","ErrBindingType","ErrBindingReference","Tw2Frustum","Tw2RenderTarget","Tw2BatchAccumulator","Tw2ForwardingRenderBatch","Tw2GeometryBatch","Tw2GeometryLineBatch","Tw2RenderBatch","Tw2InstancedMeshBatch","Tw2CurveSet","Tw2ValueBinding","Tw2PerObjectData","Tw2RawData","Tw2BlendShapeData","Tw2GeometryAnimation","Tw2GeometryBone","Tw2GeometryCurve","Tw2GeometryMesh","Tw2GeometryMeshArea","Tw2GeometryMeshBinding","Tw2GeometryModel","Tw2GeometrySkeleton","Tw2GeometryTrackGroup","Tw2GeometryTransformTrack","Tw2Effect","Tw2InstancedMesh","Tw2Mesh","Tw2MeshArea","Tw2MeshLineArea","Tw2Animation","Tw2AnimationController","Tw2Bone","Tw2Model","Tw2Track","Tw2TrackGroup","Tw2Parameter","Tw2FloatParameter","Tw2Matrix4Parameter","Tw2MatrixParameter","Tw2TransformParameter","Tw2VariableParameter","Tw2Vector2Parameter","Tw2Vector3Parameter","Tw2Vector4Parameter","Tw2TextureParameter","Tw2PostEffect","Tw2PostEffectManager","Tw2PostEffectStep","Tw2BinaryReader","Tw2BlackReader","Tw2ObjectReader","Tw2BlackRes","Tw2EffectRes","Tw2GeometryRes","Tw2LoadingObject","Tw2Resource","Tw2TextureRes","Tw2VideoRes","Tw2SamplerState","Tw2SamplerOverride","Tw2VertexDeclaration","Tw2VertexElement","Tw2CurveKey","Tw2Curve","Tw2ColorKey","Tw2ColorCurve","Tw2ColorKey2","Tw2ColorCurve2","Tw2EventKey","Tw2EventCurve","Tw2PerlinCurve","Tw2QuaternionKey2","Tw2QuaternionCurve","Tw2RandomConstantCurve","Tw2Torque","Tw2RigidOrientation","Tw2QuaternionKey","Tw2RotationCurve","Tw2ScalarKey","Tw2ScalarCurve","Tw2ScalarKey2","Tw2ScalarCurve2","Tw2SineCurve","Tw2Vector2Key","Tw2Vector2Curve","Tw2Vector3Key","Tw2Vector3Curve","Tw2VectorKey","Tw2VectorCurve","Tw2ColorSequencer","Tw2EulerRotation","Tw2QuaternionSequencer","Tw2RGBAScalarSequencer","Tw2ScalarSequencer","Tw2VectorSequencer","Tw2XYZScalarSequencer","Tw2YPRSequencer","Tw2WbgTrack","Tw2WbgTransformTrack","Tw2TransformTrack","Tw2MayaEulerRotationCurve","Tw2MayaScalarCurve","Tw2MayaVector3Curve","Tw2MayaAnimationEngine","EveLensflare","EveMeshOverlayEffect","EveOccluder","EveStarfield","EveStretch","EveStretch2","EveTurretFiringFX","EvePerMuzzleData","EveSpaceScene","EveSOF","EveChild","EveChildBillboard","EveChildContainer","EveChildMesh","EveChildParticleSystem","EveObject","EveEffectRoot","EveMissileWarhead","EveMissile","EvePlanet","EveShip","EveSpaceObject","EveStation","EveTransform","EveBanner","EveBoosterBatch","EveBoosterSetItem","EveBoosterSet","EveBoosterSet2Batch","EveBoosterSet2Item","EveBoosterSet2","EveCurveLineSetItem","EveCurveLineSet","EveCustomMask","EveHazeSetBatch","EveHazeSetItem","EveHazeSet","EveLocator2","EveLocator","EveObjectSetItem","EveObjectSet","EvePlaneSetBatch","EvePlaneSetItem","EvePlaneSet","EveSpaceObjectDecal","EveSpotlightSetBatch","EveSpotlightSetItem","EveSpotlightSet","EveSpriteLineSetBatch","EveSpriteLineSetItem","EveSpriteLineSet","EveSpriteSetBatch","EveSpriteSetItem","EveSpriteSet","EveTrailSetRenderBatch","EveTrailsSet","EveTurretSetItem","EveTurretSet","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _particle__WEBPACK_IMPORTED_MODULE_6__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSystem", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleSystem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tr2PlaneConstraint"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleElement"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleElementDeclaration"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tr2GpuSharedEmitter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tr2GpuUniqueEmitter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2StaticEmitter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2DynamicEmitter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleAttractorForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleDirectForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDragForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleDragForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleFluidDragForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleSpring"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleTurbulenceForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomIntegerAttributeGenerator", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2RandomIntegerAttributeGenerator"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomUniformAttributeGenerator", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2RandomUniformAttributeGenerator"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SphereShapeAttributeGenerator", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2SphereShapeAttributeGenerator"]; });
+
 /* harmony import */ var _staging__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./.staging */ "./.staging/index.js");
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "staging", function() { return _staging__WEBPACK_IMPORTED_MODULE_10__; });
 
@@ -58684,10 +56516,919 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./particle/Tw2ParticleElement.js":
-/*!****************************************!*\
-  !*** ./particle/Tw2ParticleElement.js ***!
-  \****************************************/
+/***/ "./particle/Tw2GpuParticleSystem.js":
+/*!******************************************!*\
+  !*** ./particle/Tw2GpuParticleSystem.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2GpuParticleSystem; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2GpuParticleSystem
+ * TODO: Implement
+ * @ccp Tr2GpuParticleSystem
+ *
+ * @property {Tr2Effect} clear             -
+ * @property {Tr2Effect} emit              -
+ * @property {Tr2Effect} render            -
+ * @property {Tr2Effect} setDrawParameters -
+ * @property {Tr2Effect} setSortParameters -
+ * @property {Tr2Effect} sort              -
+ * @property {Tr2Effect} sortInner         -
+ * @property {Tr2Effect} sortStep          -
+ * @property {Tr2Effect} update            -
+ */
+
+let Tr2GpuParticleSystem =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2GpuParticleSystem, _Tw2BaseClass);
+
+  function Tr2GpuParticleSystem() {
+    var _this;
+
+    _classCallCheck(this, Tr2GpuParticleSystem);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2GpuParticleSystem).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "clear", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emit", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "render", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setDrawParameters", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setSortParameters", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sort", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortInner", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortStep", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "update", null);
+
+    return _this;
+  }
+
+  return Tr2GpuParticleSystem;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2GpuParticleSystem, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2GpuParticleSystem",
+    category: "ParticleSystem",
+    props: {
+      clear: ["Tr2Effect"],
+      emit: ["Tr2Effect"],
+      render: ["Tr2Effect"],
+      setDrawParameters: ["Tr2Effect"],
+      setSortParameters: ["Tr2Effect"],
+      sort: ["Tr2Effect"],
+      sortInner: ["Tr2Effect"],
+      sortStep: ["Tr2Effect"],
+      update: ["Tr2Effect"]
+    },
+    notImplemented: ["*"]
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/Tw2ParticleSystem.js":
+/*!***************************************!*\
+  !*** ./particle/Tw2ParticleSystem.js ***!
+  \***************************************/
+/*! exports provided: Tw2ParticleSystem */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSystem", function() { return Tw2ParticleSystem; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
+/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./element */ "./particle/element/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+/**
+ * Tw2ParticleSystem
+ * TODO: Identify where "aabbMin" is used
+ * TODO: Identify where "aabbMax" is used
+ * TODO: Is "isGlobal" deprecated, it isn't used anywhere
+ * TODO: Is "peakAliveCount" deprecated, it isn't used anywhere
+ * TODO: Implement "useSimTimeRebase"
+ * @ccp Tr2ParticleSystem
+ *
+ * @property {vec3} aabbMin                                                     - Where is this used?
+ * @property {vec3} aabbMax                                                     - Where is this used?
+ * @property {Boolean} applyAging                                               - Applies aging
+ * @property {Boolean} applyForce                                               - Applies particle forces
+ * @property {Array.<Tw2ParticleConstraint>} constraints                        - Particle constraints
+ * @property {Array.<Tr2ParticleElementDeclaration>} elements                   - Particle elements
+ * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleDuringLifeEmitter - Particle emitter called when alive
+ * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleOnDeathEmitter    - Particle emitter called when dead
+ * @property {Array.<Tw2ParticleForce>} forces                                  - Particle forces
+ * @property {Boolean} isGlobal                                                 - unused?
+ * @property {Number} maxParticleCount                                          - Maximum particle count
+ * @property {number} peakAliveCount                                            - unused?
+ * @property {Boolean} requiresSorting                                          - Identifies that particles require sorting
+ * @property {Boolean} updateBoundingBox                                        - Identifies that bounds require updating
+ * @property {Boolean} updateSimulation                                         - Identifies that forces an constraints are used
+ * @property {Boolean} useSimTimeRebase                                         -
+ * @property {number} _aliveCount                                               - The current particle count
+ * @property {Boolean} _bufferDirty                                             - Identifies that buffers require rebuilding
+ * @property {Array} _buffers                                                   -
+ * @property {Tw2VertexDeclaration} _declaration                                - Instance declaration
+ * @property {Array<Tw2ParticleElement>} _elements                              -
+ * @property {Array} _instanceStride                                            -
+ * @property {Boolean} _isValid                                                 - Identifies that the particle system is good
+ * @property {Float32Array} _distancesBuffer                                    -
+ * @property {Float32Array} _sortedBuffer                                       -
+ * @property {Array} _sortedIndexes                                             -
+ * @property {Array<Tw2ParticleElement>} _stdElements                           - Standard particle elements
+ * @property {WebGLBuffer} _vb                                                  - Vertex buffer
+ * @property {Array} _vertexStride                                              - Vertex stride
+ */
+
+let Tw2ParticleSystem =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tw2ParticleSystem, _Tw2BaseClass);
+
+  // ccp
+  // ccpwgl
+  //Float32Array
+  //Float32Array
+  // Array
+
+  /**
+   * Constructor
+   */
+  function Tw2ParticleSystem() {
+    var _this;
+
+    _classCallCheck(this, Tw2ParticleSystem);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2ParticleSystem).call(this));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "applyAging", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "applyForce", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "constraints", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elements", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emitParticleDuringLifeEmitter", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emitParticleOnDeathEmitter", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "forces", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxParticleCount", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "requiresSorting", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateBoundingBox", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateSimulation", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useSimTimeRebase", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isGlobal", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "aabbMin", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "aabbMax", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "peakAliveCount", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_aliveCount", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_bufferDirty", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_buffers", [null, null]);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_declaration", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_elements", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_instanceStride", [null, null]);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_isValid", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_distancesBuffer", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_sortedBuffer", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_sortedIndexes", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_stdElements", [null, null, null, null]);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_vb", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_vertexStride", [null, null]);
+
+    Tw2ParticleSystem.init();
+    return _this;
+  }
+  /**
+   * Initializes the Particle System
+   */
+
+
+  _createClass(Tw2ParticleSystem, [{
+    key: "Initialize",
+    value: function Initialize() {
+      this.UpdateElementDeclaration();
+    }
+    /**
+     * Updates Element Declarations
+     */
+
+  }, {
+    key: "UpdateElementDeclaration",
+    value: function UpdateElementDeclaration() {
+      this._isValid = false;
+      const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+
+      if (this._vb) {
+        gl.deleteBuffer(this._vb);
+        this._vb = null;
+      }
+
+      this._declaration = null;
+      this._aliveCount = 0;
+      if (this.elements.length === 0) return;
+      this._stdElements = [null, null, null, null];
+      this._elements = [];
+      this._instanceStride = [0, 0];
+      this._vertexStride = [0, 0];
+      this._declaration = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
+      this._buffers = [null, null];
+
+      for (let i = 0; i < this.elements.length; ++i) {
+        const bufferIndex = this.elements[i].usedByGPU ? 0 : 1,
+              src = this.elements[i];
+        const el = _element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].from({
+          elementType: src.elementType,
+          customName: src.customName,
+          dimension: src.GetDimension(),
+          usageIndex: src.usageIndex,
+          usedByGPU: src.usedByGPU
+        }); //el.buffer = this._buffers[bufferIndex];
+
+        el.startOffset = this._vertexStride[bufferIndex];
+        el.offset = el.startOffset;
+
+        if (this.elements[i].elementType !== _element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.CUSTOM) {
+          this._stdElements[this.elements[i].elementType] = el;
+        }
+
+        this._vertexStride[bufferIndex] += el.dimension;
+
+        this._elements.push(el);
+
+        if (bufferIndex === 0) {
+          const d = this.elements[i].GetDeclaration();
+          d.offset = el.startOffset * 4;
+
+          this._declaration.elements.push(d);
+        }
+      }
+
+      this._declaration.RebuildHash();
+
+      for (let i = 0; i < this._elements.length; ++i) {
+        const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
+        this._elements[i].vertexStride = this._vertexStride[bufferIndex];
+      }
+
+      this._instanceStride[0] = this._vertexStride[0] * 4;
+      this._instanceStride[1] = this._vertexStride[1] * 4;
+
+      for (let i = 0; i < this._elements.length; ++i) {
+        const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
+        this._elements[i].instanceStride = this._instanceStride[bufferIndex];
+      }
+
+      this._buffers = [null, null];
+
+      if (this._instanceStride[0] && this.maxParticleCount) {
+        this._buffers[0] = new Float32Array(this._instanceStride[0] * this.maxParticleCount);
+        this._vb = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
+        gl.bufferData(gl.ARRAY_BUFFER, this._buffers[0].length, gl.DYNAMIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      }
+
+      if (this._instanceStride[1]) {
+        this._buffers[1] = new Float32Array(this._instanceStride[1] * this.maxParticleCount);
+      }
+
+      for (let i = 0; i < this._elements.length; ++i) {
+        const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
+        this._elements[i].buffer = this._buffers[bufferIndex];
+      }
+
+      if (this.requiresSorting) {
+        this._sortedIndexes = new Array(this.maxParticleCount);
+        this._sortedBuffer = new Float32Array(this._instanceStride[0] * this.maxParticleCount);
+        this._distancesBuffer = new Float32Array(this.maxParticleCount);
+      }
+
+      this._isValid = true;
+      this._bufferDirty = true;
+    }
+    /**
+     * Checks if an element type exists
+     * @param {number} type
+     * @returns {Boolean}
+     */
+
+  }, {
+    key: "HasElement",
+    value: function HasElement(type) {
+      return this._stdElements[type] !== null;
+    }
+    /**
+     * Gets an element by it's type
+     * @param {number} type
+     * @returns {Tw2ParticleElement}
+     */
+
+  }, {
+    key: "GetElement",
+    value: function GetElement(type) {
+      if (this._stdElements[type]) {
+        this._stdElements[type].offset = this._stdElements[type].startOffset;
+      }
+
+      return this._stdElements[type];
+    }
+    /**
+     * Begins particle spawning
+     * @returns {?number}
+     */
+
+  }, {
+    key: "BeginSpawnParticle",
+    value: function BeginSpawnParticle() {
+      if (!this._isValid || this._aliveCount >= this.maxParticleCount) return null;
+      return this._aliveCount++;
+    }
+    /**
+     * Ends particle spawning
+     */
+
+  }, {
+    key: "EndSpawnParticle",
+    value: function EndSpawnParticle() {
+      this._bufferDirty = true;
+    }
+    /**
+     * Per frame update
+     * @param {number} dt - delta time
+     */
+
+  }, {
+    key: "Update",
+    value: function Update(dt) {
+      dt = Math.min(dt, 0.1);
+
+      if (this.applyAging && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.LIFETIME)) {
+        const lifetime = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.LIFETIME),
+              position = this.emitParticleOnDeathEmitter ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) : null,
+              velocity = this.emitParticleOnDeathEmitter ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY) : null;
+
+        for (let i = 0; i < this._aliveCount; ++i) {
+          lifetime.buffer[lifetime.offset] += dt / lifetime.buffer[lifetime.offset + 1];
+
+          if (lifetime.buffer[lifetime.offset] > 1) {
+            if (this.emitParticleOnDeathEmitter) {
+              this.emitParticleOnDeathEmitter.SpawnParticles(position, velocity, 1);
+            }
+
+            this._aliveCount--;
+
+            if (i < this._aliveCount) {
+              for (let j = 0; j < 2; ++j) {
+                if (this._buffers[j]) {
+                  this._buffers[j].set(this._buffers[j].subarray(this._instanceStride[j] * this._aliveCount, this._instanceStride[j] * this._aliveCount + this._instanceStride[j]), i * this._instanceStride[j]);
+                }
+              }
+
+              --i;
+              this._bufferDirty = true;
+            }
+          } else {
+            lifetime.offset += lifetime.instanceStride;
+            if (position) position.offset += position.instanceStride;
+            if (velocity) velocity.offset += velocity.instanceStride;
+          }
+        }
+
+        lifetime.dirty = true;
+      }
+
+      const vec3_0 = Tw2ParticleSystem.global.vec3_0;
+
+      if (this.updateSimulation && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY)) {
+        const hasForces = this.applyForce && this.forces.length;
+
+        for (let i = 0; i < this.forces.length; ++i) {
+          this.forces[i].Update(dt);
+        }
+
+        const position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
+              velocity = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY),
+              mass = hasForces ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.MASS) : null;
+
+        for (let i = 0; i < this._aliveCount; ++i) {
+          if (hasForces) {
+            const amass = mass ? mass.buffer[mass.offset] : 1,
+                  force = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, 0, 0, 0);
+
+            for (let j = 0; j < this.forces.length; ++j) {
+              this.forces[j].ApplyForce(position, velocity, force, dt, amass);
+            }
+
+            if (mass) _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(force, force, 1 / mass.buffer[mass.offset]);
+            velocity.buffer[velocity.offset] += force[0] * dt;
+            velocity.buffer[velocity.offset + 1] += force[1] * dt;
+            velocity.buffer[velocity.offset + 2] += force[2] * dt;
+          }
+
+          position.buffer[position.offset] += velocity.buffer[velocity.offset] * dt;
+          position.buffer[position.offset + 1] += velocity.buffer[velocity.offset + 1] * dt;
+          position.buffer[position.offset + 2] += velocity.buffer[velocity.offset + 2] * dt;
+
+          if (this.emitParticleDuringLifeEmitter) {
+            this.emitParticleDuringLifeEmitter.SpawnParticles(position, velocity, dt);
+          }
+
+          position.offset += position.instanceStride;
+          velocity.offset += velocity.instanceStride;
+          if (mass) mass.offset += mass.instanceStride;
+        }
+
+        position.dirty = true;
+        velocity.dirty = true;
+      }
+
+      if (this.updateSimulation && this.constraints.length) {
+        for (let i = 0; i < this.constraints.length; ++i) {
+          this.constraints[i].ApplyConstraint(this._buffers, this._instanceStride, this._aliveCount, dt);
+        }
+      }
+
+      if (this.updateBoundingBox) {
+        this.GetBoundingBox(this.aabbMin, this.aabbMax);
+      }
+
+      if (this.emitParticleDuringLifeEmitter && !(this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY)) && this.updateSimulation) {
+        const position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
+              velocity = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY);
+
+        for (let i = 0; i < this._aliveCount; ++i) {
+          this.emitParticleDuringLifeEmitter.SpawnParticles(position, velocity, 1);
+          if (position) position.offset += position.instanceStride;
+          if (velocity) velocity.offset += velocity.instanceStride;
+        }
+      }
+
+      for (let i = 0; i < this._elements.length; ++i) {
+        const el = this._elements[i];
+        el.offset = el.startOffset;
+
+        if (el.dirty) {
+          this._bufferDirty = true;
+          el.dirty = false;
+        }
+      }
+    }
+    /**
+     * Gets bounding box
+     * @param {vec3} aabbMin
+     * @param {vec3} aabbMax
+     * @returns {Boolean}
+     */
+
+  }, {
+    key: "GetBoundingBox",
+    value: function GetBoundingBox(aabbMin, aabbMax) {
+      if (this._aliveCount && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION)) {
+        const position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION);
+        aabbMin[0] = position.buffer[position.offset];
+        aabbMin[1] = position.buffer[position.offset + 1];
+        aabbMin[2] = position.buffer[position.offset + 2];
+        aabbMax[0] = position.buffer[position.offset];
+        aabbMax[1] = position.buffer[position.offset + 1];
+        aabbMax[2] = position.buffer[position.offset + 2];
+
+        for (let i = 0; i < this._aliveCount; ++i) {
+          aabbMin[0] = Math.min(aabbMin[0], position.buffer[position.offset]);
+          aabbMin[1] = Math.min(aabbMin[1], position.buffer[position.offset + 1]);
+          aabbMin[2] = Math.min(aabbMin[2], position.buffer[position.offset + 2]);
+          aabbMax[0] = Math.max(aabbMax[0], position.buffer[position.offset]);
+          aabbMax[1] = Math.max(aabbMax[1], position.buffer[position.offset + 1]);
+          aabbMax[2] = Math.max(aabbMax[2], position.buffer[position.offset + 2]);
+          position.offset += position.instanceStride;
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+    /**
+     * _Sort
+     * @private
+     */
+
+  }, {
+    key: "_Sort",
+    value: function _Sort() {
+      const eye = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(Tw2ParticleSystem.global.mat4_0, _global__WEBPACK_IMPORTED_MODULE_0__["device"].projection, _global__WEBPACK_IMPORTED_MODULE_0__["device"].view),
+            //device.viewInverse;
+      position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
+            count = this._aliveCount,
+            distances = this._distancesBuffer;
+
+      for (let i = 0; i < count; ++i) {
+        const o0 = position.offset + position.instanceStride * i;
+        let dd = position.buffer[o0] - eye[12],
+            l0 = dd * dd;
+        dd = position.buffer[o0 + 1] - eye[13];
+        l0 += dd * dd;
+        dd = position.buffer[o0 + 2] - eye[14];
+        l0 += dd * dd;
+        distances[i] = l0;
+      }
+      /**
+       * sortItems
+       * @param a
+       * @param b
+       * @returns {number}
+       * @private
+       */
+
+
+      function sortItems(a, b) {
+        if (a >= count && b >= count) {
+          if (a < b) return -1;
+          if (a > b) return 1;
+          return 0;
+        }
+
+        if (a >= count) return 1;
+        if (b >= count) return -1;
+        const l0 = distances[a],
+              l1 = distances[b];
+        if (l0 < l1) return 1;
+        if (l0 > l1) return -1;
+        return 0;
+      }
+
+      for (let i = 0; i < this.maxParticleCount; ++i) {
+        this._sortedIndexes[i] = i;
+      }
+
+      this._sortedIndexes.sort(sortItems);
+    }
+    /**
+     * Updates and gets the particle system's InstanceBuffer
+     * @returns {?WebGLBuffer}
+     */
+
+  }, {
+    key: "GetInstanceBuffer",
+    value: function GetInstanceBuffer() {
+      if (this._aliveCount === 0) return undefined;
+      const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+
+      if (this.requiresSorting && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this._buffers) {
+        this._Sort();
+
+        const stride = this._instanceStride[0],
+              gpuBuffer = this._buffers[0];
+
+        for (let i = 0; i < this._aliveCount; ++i) {
+          const toOffset = i * stride,
+                fromOffset = this._sortedIndexes[i] * stride;
+
+          for (let j = 0; j < stride; ++j) {
+            this._sortedBuffer[toOffset + j] = gpuBuffer[j + fromOffset];
+          }
+        }
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this._sortedBuffer.subarray(0, this._vertexStride[0] * this._aliveCount));
+        this._bufferDirty = false;
+      } else if (this._bufferDirty) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this._buffers[0].subarray(0, this._vertexStride[0] * this._aliveCount));
+        this._bufferDirty = false;
+      }
+
+      return this._vb;
+    }
+    /**
+     * Gets the particle system's InstanceDeclaration
+     * @returns {Tw2VertexDeclaration}
+     */
+
+  }, {
+    key: "GetInstanceDeclaration",
+    value: function GetInstanceDeclaration() {
+      return this._declaration;
+    }
+    /**
+     * Gets the particle system's InstanceStride
+     * @returns {number}
+     */
+
+  }, {
+    key: "GetInstanceStride",
+    value: function GetInstanceStride() {
+      return this._instanceStride[0];
+    }
+    /**
+     * Gets the particle system's InstanceCount
+     * @returns {number}
+     */
+
+  }, {
+    key: "GetInstanceCount",
+    value: function GetInstanceCount() {
+      return this._aliveCount;
+    }
+    /**
+     * Initializes class globals
+     */
+
+  }], [{
+    key: "init",
+    value: function init() {
+      if (!Tw2ParticleSystem.global) {
+        Tw2ParticleSystem.global = {
+          vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+          mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+        };
+      }
+    }
+    /**
+     * Global and scratch variables
+     */
+
+  }]);
+
+  return Tw2ParticleSystem;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+_defineProperty(Tw2ParticleSystem, "global", null);
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2ParticleSystem, Type => {
+  return {
+    type: "Tw2ParticleSystem",
+    category: "ParticleSystem",
+    props: {
+      applyAging: Type.BOOLEAN,
+      applyForce: Type.BOOLEAN,
+      constraints: [["Tw2PlaneConstraint"]],
+      elements: [["Tw2ParticleElementDeclaration"]],
+      emitParticleDuringLifeEmitter: ["Tw2DynamicEmitter", "Tw2GpuUniqueEmitter"],
+      emitParticleOnDeathEmitter: ["Tw2DynamicEmitter", "Tw2GpuUniqueEmitter"],
+      forces: Type.ARRAY,
+      maxParticleCount: Type.NUMBER,
+      requiresSorting: Type.BOOLEAN,
+      updateBoundingBox: Type.BOOLEAN,
+      updateSimulation: Type.BOOLEAN,
+      useSimTimeRebase: Type.BOOLEAN
+    },
+    notImplemented: ["isGlobal", "peakAliveCount", "useSimTimeRebase"]
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/constraint/Tr2PlaneConstraint.js":
+/*!***************************************************!*\
+  !*** ./particle/constraint/Tr2PlaneConstraint.js ***!
+  \***************************************************/
+/*! exports provided: Tr2PlaneConstraint */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return Tr2PlaneConstraint; });
+/* harmony import */ var _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleConstraint */ "./particle/constraint/Tw2ParticleConstraint.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2PlaneConstraint
+ * TODO: Impelement
+ * @ccp Tr2PlaneConstraint
+ *
+ * @property {Array.<ParticleAttributeGenerator>} generators -
+ * @property {Number} reflectionNoise                        -
+ */
+
+let Tr2PlaneConstraint =
+/*#__PURE__*/
+function (_Tw2ParticleConstrain) {
+  _inherits(Tr2PlaneConstraint, _Tw2ParticleConstrain);
+
+  function Tr2PlaneConstraint() {
+    var _this;
+
+    _classCallCheck(this, Tr2PlaneConstraint);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2PlaneConstraint).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generators", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "reflectionNoise", 0);
+
+    return _this;
+  }
+
+  return Tr2PlaneConstraint;
+}(_Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleConstraint"]);
+_Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleConstraint"].define(Tr2PlaneConstraint, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2PlaneConstraint",
+    category: "ParticleConstraint",
+    props: {
+      generators: [["Tr2RandomUniformAttributeGenerator"]],
+      reflectionNoise: Type.NUMBER
+    },
+    notImplemented: ["*"]
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/constraint/Tw2ParticleConstraint.js":
+/*!******************************************************!*\
+  !*** ./particle/constraint/Tw2ParticleConstraint.js ***!
+  \******************************************************/
+/*! exports provided: Tw2ParticleConstraint */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleConstraint", function() { return Tw2ParticleConstraint; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+/* eslint no-unused-vars:0 */
+
+
+/**
+ * Tw2ParticleConstraint base class
+ * - Not implemented yet
+ *
+ * @property {String|number} _id
+ * @property {String} name
+ */
+
+let Tw2ParticleConstraint =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tw2ParticleConstraint, _Tw2BaseClass);
+
+  function Tw2ParticleConstraint() {
+    _classCallCheck(this, Tw2ParticleConstraint);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Tw2ParticleConstraint).apply(this, arguments));
+  }
+
+  _createClass(Tw2ParticleConstraint, [{
+    key: "ApplyConstraint",
+
+    /**
+     * Applies constraints
+     * @param {Array} buffers
+     * @param {Array} instanceStride
+     * @param {number} aliveCount
+     * @param {number} dt
+     */
+    value: function ApplyConstraint(buffers, instanceStride, aliveCount, dt) {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
+  }]);
+
+  return Tw2ParticleConstraint;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2ParticleConstraint, Type => {
+  return {
+    type: "Tw2ParticleConstraint",
+    category: "ParticleConstraint",
+    isAbstract: true
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/constraint/index.js":
+/*!**************************************!*\
+  !*** ./particle/constraint/index.js ***!
+  \**************************************/
+/*! exports provided: Tr2PlaneConstraint */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tr2PlaneConstraint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2PlaneConstraint */ "./particle/constraint/Tr2PlaneConstraint.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _Tr2PlaneConstraint__WEBPACK_IMPORTED_MODULE_0__["Tr2PlaneConstraint"]; });
+
+
+
+/***/ }),
+
+/***/ "./particle/element/Tw2ParticleElement.js":
+/*!************************************************!*\
+  !*** ./particle/element/Tw2ParticleElement.js ***!
+  \************************************************/
 /*! exports provided: Tw2ParticleElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -58789,61 +57530,86 @@ _defineProperty(Tw2ParticleElement, "Type", {
 
 /***/ }),
 
-/***/ "./particle/Tw2ParticleElementDeclaration.js":
-/*!***************************************************!*\
-  !*** ./particle/Tw2ParticleElementDeclaration.js ***!
-  \***************************************************/
+/***/ "./particle/element/Tw2ParticleElementDeclaration.js":
+/*!***********************************************************!*\
+  !*** ./particle/element/Tw2ParticleElementDeclaration.js ***!
+  \***********************************************************/
 /*! exports provided: Tw2ParticleElementDeclaration */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return Tw2ParticleElementDeclaration; });
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../core */ "./core/index.js");
-/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleElement */ "./particle/Tw2ParticleElement.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
 /**
  * Tw2ParticleElementDeclaration
+ * TODO: Handle "elementType" if passed a string by .black format
+ * @ccp Tr2ParticleElementDeclaration
  *
- * @property {number} elementType=4
- * @property {String} customName
- * @property {number} dimension=1
- * @property {number} usageIndex
- * @property {Boolean} usedByGPU
- * @class
+ * @property {String} customName  -
+ * @property {Number} dimension   -
+ * @property {Number} elementType -
+ * @property {Number} usageIndex  -
+ * @property {Boolean} usedByGPU  -
  */
 
 let Tw2ParticleElementDeclaration =
 /*#__PURE__*/
-function () {
+function (_Tw2BaseClass) {
+  _inherits(Tw2ParticleElementDeclaration, _Tw2BaseClass);
+
   function Tw2ParticleElementDeclaration() {
+    var _this;
+
     _classCallCheck(this, Tw2ParticleElementDeclaration);
 
-    _defineProperty(this, "elementType", 4);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _defineProperty(this, "customName", "");
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2ParticleElementDeclaration).call(this, ...args));
 
-    _defineProperty(this, "dimension", 1);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customName", "");
 
-    _defineProperty(this, "usageIndex", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dimension", 1);
 
-    _defineProperty(this, "usedByGPU", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elementType", 4);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "usageIndex", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "usedByGPU", true);
+
+    return _this;
   }
 
   _createClass(Tw2ParticleElementDeclaration, [{
     key: "GetDimension",
 
     /**
-     * Gets the dimension of an element type
+     * Gets the element's dimension
      * @returns {number}
      */
     value: function GetDimension() {
@@ -58864,7 +57630,7 @@ function () {
       return this.dimension;
     }
     /**
-     * GetDeclaration
+     * Gets the object's vertex declaration
      * @returns {Tw2VertexElement}
      */
 
@@ -58903,614 +57669,447 @@ function () {
   }]);
 
   return Tw2ParticleElementDeclaration;
-}();
+}(_global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"].define(Tw2ParticleElementDeclaration, Type => {
+  return {
+    type: "Tw2ParticleElementDeclaration",
+    category: "ElementDeclaration",
+    props: {
+      customName: Type.STRING,
+      dimension: Type.NUMBER,
+      elementType: Type.NUMBER,
+      // Possibly Type.STRING,
+      usageIndex: Type.NUMBER,
+      usedByGPU: Type.BOOLEAN
+    }
+  };
+});
 
 /***/ }),
 
-/***/ "./particle/Tw2ParticleSystem.js":
-/*!***************************************!*\
-  !*** ./particle/Tw2ParticleSystem.js ***!
-  \***************************************/
-/*! exports provided: Tw2ParticleSystem */
+/***/ "./particle/element/index.js":
+/*!***********************************!*\
+  !*** ./particle/element/index.js ***!
+  \***********************************/
+/*! exports provided: Tw2ParticleElement, Tw2ParticleElementDeclaration */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSystem", function() { return Tw2ParticleSystem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
-/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleElement */ "./particle/Tw2ParticleElement.js");
-/* harmony import */ var _Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2ParticleElementDeclaration */ "./particle/Tw2ParticleElementDeclaration.js");
+/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleElement"]; });
+
+/* harmony import */ var _Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleElementDeclaration */ "./particle/element/Tw2ParticleElementDeclaration.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
+
+
+
+
+/***/ }),
+
+/***/ "./particle/emitter/Tr2GpuSharedEmitter.js":
+/*!*************************************************!*\
+  !*** ./particle/emitter/Tr2GpuSharedEmitter.js ***!
+  \*************************************************/
+/*! exports provided: Tr2GpuSharedEmitter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return Tr2GpuSharedEmitter; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitter/Tw2ParticleEmitter.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
+/**
+ * Tr2GpuSharedEmitter
+ * TODO: Implement
+ * @ccp Tr2GpuSharedEmitter
+ *
+ * @property {Number} angle                        -
+ * @property {vec3} attractorPosition              -
+ * @property {Number} attractorStrength            -
+ * @property {vec4} color0                         -
+ * @property {vec4} color1                         -
+ * @property {vec4} color2                         -
+ * @property {vec4} color3                         -
+ * @property {Number} colorMidpoint                -
+ * @property {Boolean} continuousEmitter           -
+ * @property {vec3} direction                      -
+ * @property {Number} drag                         -
+ * @property {Number} emissionDensity              -
+ * @property {Number} gravity                      -
+ * @property {Number} inheritVelocity              -
+ * @property {Number} innerAngle                   -
+ * @property {Number} maxDisplacement              -
+ * @property {Number} maxEmissionDensity           -
+ * @property {Number} maxLifeTime                  -
+ * @property {Number} maxSpeed                     -
+ * @property {Number} minLifeTime                  -
+ * @property {Number} minSpeed                     -
+ * @property {Tw2GpuParticleSystem} particleSystem -
+ * @property {vec3} position                       -
+ * @property {Number} radius                       -
+ * @property {Number} rate                         -
+ * @property {Boolean} scaledByParent              -
+ * @property {Number} sizeVariance                 -
+ * @property {vec3} sizes                          -
+ * @property {Number} textureIndex                 -
+ * @property {Number} turbulenceAmplitude          -
+ * @property {Number} turbulenceFrequency          -
+ * @property {Number} velocityStretchRotation      -
+ */
+
+let Tr2GpuSharedEmitter =
+/*#__PURE__*/
+function (_Tw2ParticleEmitter) {
+  _inherits(Tr2GpuSharedEmitter, _Tw2ParticleEmitter);
+
+  function Tr2GpuSharedEmitter() {
+    var _this;
+
+    _classCallCheck(this, Tr2GpuSharedEmitter);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2GpuSharedEmitter).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "angle", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attractorPosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attractorStrength", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color0", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color1", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color2", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color3", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "colorMidpoint", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "continuousEmitter", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "direction", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emissionDensity", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "gravity", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inheritVelocity", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "innerAngle", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxDisplacement", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxEmissionDensity", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxLifeTime", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minLifeTime", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minSpeed", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleSystem", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rate", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaledByParent", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizeVariance", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizes", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "textureIndex", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceAmplitude", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceFrequency", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "velocityStretchRotation", 0);
+
+    return _this;
+  }
+
+  return Tr2GpuSharedEmitter;
+}(_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"]);
+_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"].define(Tr2GpuSharedEmitter, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2GpuSharedEmitter",
+    category: "ParticleEmitter",
+    props: {
+      angle: Type.NUMBER,
+      attractorPosition: Type.VECTOR3,
+      attractorStrength: Type.NUMBER,
+      color0: Type.RGBA_LINEAR,
+      color1: Type.RGBA_LINEAR,
+      color2: Type.RGBA_LINEAR,
+      color3: Type.RGBA_LINEAR,
+      colorMidpoint: Type.NUMBER,
+      continuousEmitter: Type.BOOLEAN,
+      direction: Type.VECTOR3,
+      drag: Type.NUMBER,
+      emissionDensity: Type.NUMBER,
+      gravity: Type.NUMBER,
+      inheritVelocity: Type.NUMBER,
+      innerAngle: Type.NUMBER,
+      maxDisplacement: Type.NUMBER,
+      maxEmissionDensity: Type.NUMBER,
+      maxLifeTime: Type.NUMBER,
+      maxSpeed: Type.NUMBER,
+      minLifeTime: Type.NUMBER,
+      minSpeed: Type.NUMBER,
+      particleSystem: ["Tw2GpuParticleSystem"],
+      position: Type.TR_TRANSLATION,
+      radius: Type.NUMBER,
+      rate: Type.NUMBER,
+      sizeVariance: Type.NUMBER,
+      sizes: Type.VECTOR3,
+      textureIndex: Type.NUMBER,
+      turbulenceAmplitude: Type.NUMBER,
+      turbulenceFrequency: Type.NUMBER,
+      velocityStretchRotation: Type.NUMBER
+    },
+    notImplemented: ["*"]
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/emitter/Tr2GpuUniqueEmitter.js":
+/*!*************************************************!*\
+  !*** ./particle/emitter/Tr2GpuUniqueEmitter.js ***!
+  \*************************************************/
+/*! exports provided: Tr2GpuUniqueEmitter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return Tr2GpuUniqueEmitter; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitter/Tw2ParticleEmitter.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 /**
- * Tw2ParticleSystem
+ * Tr2GpuUniqueEmitter
+ * TODO: Implement
+ * @ccp Tr2GpuUniqueEmitter
  *
- * @property {number|String} id
- * @property {String} name
- * @property {number} aliveCount
- * @property {number} maxParticleCount
- * @property {*} emitParticleOnDeathEmitter
- * @property {*} emitParticleDuringLifeEmitter
- * @property {Array.<Tw2ParticleElementDeclaration>} elements
- * @property {Boolean} isValid
- * @property {Boolean} requiresSorting
- * @property {Boolean} updateSimulation
- * @property {Boolean} applyForce
- * @property {Boolean} applyAging
- * @property {Boolean} isGlobal
- * @property {Array<Tw2ParticleForce>} forces
- * @property {Array<Tw2ParticleConstraint>} constraints
- * @property {Boolean} updateBoundingBox
- * @property {vec3} aabbMin
- * @property {vec3} aabbMax
- * @property {number} peakAliveCount
- * @property {Boolean} bufferDirty
- * @property {WebGLBuffer} _vb
- * @property {Tw2VertexDeclaration} _declaration
- * @property {Array<Tw2ParticleElement>} _stdElements
- * @property {Array<Tw2ParticleElement>} _elements
- * @property {Array} instanceStride
- * @property {Array} vertexStride
- * @property {Array} buffers
- * @class
+ * @property {Number} angle                        -
+ * @property {vec3} attractorPosition              -
+ * @property {Number} attractorStrength            -
+ * @property {vec4} color0                         -
+ * @property {vec4} color1                         -
+ * @property {vec4} color2                         -
+ * @property {vec4} color3                         -
+ * @property {Number} colorMidpoint                -
+ * @property {Boolean} continuousEmitter           -
+ * @property {vec3} direction                      -
+ * @property {Number} drag                         -
+ * @property {Number} emissionDensity              -
+ * @property {Number} gravity                      -
+ * @property {Number} inheritVelocity              -
+ * @property {Number} innerAngle                   -
+ * @property {Number} maxDisplacement              -
+ * @property {Number} maxEmissionDensity           -
+ * @property {Number} maxLifeTime                  -
+ * @property {Number} maxSpeed                     -
+ * @property {Number} minLifeTime                  -
+ * @property {Number} minSpeed                     -
+ * @property {Tw2GpuParticleSystem} particleSystem -
+ * @property {vec3} position                       -
+ * @property {Number} radius                       -
+ * @property {Number} rate                         -
+ * @property {Boolean} scaledByParent              -
+ * @property {Number} sizeVariance                 -
+ * @property {vec3} sizes                          -
+ * @property {Number} textureIndex                 -
+ * @property {Number} turbulenceAmplitude          -
+ * @property {Number} turbulenceFrequency          -
+ * @property {Number} velocityStretchRotation      -
  */
 
-let Tw2ParticleSystem =
+let Tr2GpuUniqueEmitter =
 /*#__PURE__*/
-function () {
-  /**
-   * Constructor
-   */
-  function Tw2ParticleSystem() {
-    _classCallCheck(this, Tw2ParticleSystem);
+function (_Tw2ParticleEmitter) {
+  _inherits(Tr2GpuUniqueEmitter, _Tw2ParticleEmitter);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+  function Tr2GpuUniqueEmitter() {
+    var _this;
 
-    _defineProperty(this, "name", "");
+    _classCallCheck(this, Tr2GpuUniqueEmitter);
 
-    _defineProperty(this, "aliveCount", 0);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _defineProperty(this, "maxParticleCount", 0);
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2GpuUniqueEmitter).call(this, ...args));
 
-    _defineProperty(this, "emitParticleOnDeathEmitter", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "angle", 0);
 
-    _defineProperty(this, "emitParticleDuringLifeEmitter", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attractorPosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(this, "elements", []);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attractorStrength", 0);
 
-    _defineProperty(this, "isValid", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color0", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(this, "requiresSorting", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color1", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(this, "updateSimulation", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color2", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(this, "applyForce", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color3", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(this, "applyAging", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "colorMidpoint", 0);
 
-    _defineProperty(this, "isGlobal", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "continuousEmitter", false);
 
-    _defineProperty(this, "forces", []);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "direction", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(this, "constraints", []);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
 
-    _defineProperty(this, "updateBoundingBox", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "emissionDensity", 0);
 
-    _defineProperty(this, "aabbMin", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "gravity", 0);
 
-    _defineProperty(this, "aabbMax", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inheritVelocity", 0);
 
-    _defineProperty(this, "peakAliveCount", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "innerAngle", 0);
 
-    _defineProperty(this, "bufferDirty", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxDisplacement", 0);
 
-    _defineProperty(this, "_vb", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxEmissionDensity", 0);
 
-    _defineProperty(this, "_declaration", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxLifeTime", 0);
 
-    _defineProperty(this, "_stdElements", [null, null, null, null]);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
 
-    _defineProperty(this, "_elements", []);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minLifeTime", 0);
 
-    _defineProperty(this, "instanceStride", [null, null]);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minSpeed", 0);
 
-    _defineProperty(this, "vertexStride", [null, null]);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleSystem", null);
 
-    _defineProperty(this, "buffers", [null, null]);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    Tw2ParticleSystem.init();
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rate", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaledByParent", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizeVariance", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sizes", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "textureIndex", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceAmplitude", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "turbulenceFrequency", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "velocityStretchRotation", 0);
+
+    return _this;
   }
-  /**
-   * Initializes the Particle System
-   */
 
-
-  _createClass(Tw2ParticleSystem, [{
-    key: "Initialize",
-    value: function Initialize() {
-      this.UpdateElementDeclaration();
-    }
-    /**
-     * Updates Element Declarations
-     */
-
-  }, {
-    key: "UpdateElementDeclaration",
-    value: function UpdateElementDeclaration() {
-      this.isValid = false;
-      const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
-
-      if (this._vb) {
-        gl.deleteBuffer(this._vb);
-        this._vb = null;
-      }
-
-      this._declaration = null;
-      this.aliveCount = 0;
-      if (this.elements.length === 0) return;
-      this._stdElements = [null, null, null, null];
-      this._elements = [];
-      this.instanceStride = [0, 0];
-      this.vertexStride = [0, 0];
-      this._declaration = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
-      this.buffers = [null, null];
-
-      for (let i = 0; i < this.elements.length; ++i) {
-        const bufferIndex = this.elements[i].usedByGPU ? 0 : 1,
-              src = this.elements[i];
-        const el = _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].from({
-          elementType: src.elementType,
-          customName: src.customName,
-          dimension: src.GetDimension(),
-          usageIndex: src.usageIndex,
-          usedByGPU: src.usedByGPU
-        }); //el.buffer = this.buffers[bufferIndex];
-
-        el.startOffset = this.vertexStride[bufferIndex];
-        el.offset = el.startOffset;
-
-        if (this.elements[i].elementType !== _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.CUSTOM) {
-          this._stdElements[this.elements[i].elementType] = el;
-        }
-
-        this.vertexStride[bufferIndex] += el.dimension;
-
-        this._elements.push(el);
-
-        if (bufferIndex === 0) {
-          const d = this.elements[i].GetDeclaration();
-          d.offset = el.startOffset * 4;
-
-          this._declaration.elements.push(d);
-        }
-      }
-
-      this._declaration.RebuildHash();
-
-      for (let i = 0; i < this._elements.length; ++i) {
-        const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-        this._elements[i].vertexStride = this.vertexStride[bufferIndex];
-      }
-
-      this.instanceStride[0] = this.vertexStride[0] * 4;
-      this.instanceStride[1] = this.vertexStride[1] * 4;
-
-      for (let i = 0; i < this._elements.length; ++i) {
-        const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-        this._elements[i].instanceStride = this.instanceStride[bufferIndex];
-      }
-
-      this.buffers = [null, null];
-
-      if (this.instanceStride[0] && this.maxParticleCount) {
-        this.buffers[0] = new Float32Array(this.instanceStride[0] * this.maxParticleCount);
-        this._vb = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-        gl.bufferData(gl.ARRAY_BUFFER, this.buffers[0].length, gl.DYNAMIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-      }
-
-      if (this.instanceStride[1]) {
-        this.buffers[1] = new Float32Array(this.instanceStride[1] * this.maxParticleCount);
-      }
-
-      for (let i = 0; i < this._elements.length; ++i) {
-        const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-        this._elements[i].buffer = this.buffers[bufferIndex];
-      }
-
-      if (this.requiresSorting) {
-        this._sortedIndexes = new Array(this.maxParticleCount);
-        this._sortedBuffer = new Float32Array(this.instanceStride[0] * this.maxParticleCount);
-        this._distancesBuffer = new Float32Array(this.maxParticleCount);
-      }
-
-      this.isValid = true;
-      this.bufferDirty = true;
-    }
-    /**
-     * Checks if an element type exists
-     * @param {number} type
-     * @returns {Boolean}
-     */
-
-  }, {
-    key: "HasElement",
-    value: function HasElement(type) {
-      return this._stdElements[type] !== null;
-    }
-    /**
-     * Gets an element by it's type
-     * @param {number} type
-     * @returns {Tw2ParticleElement}
-     */
-
-  }, {
-    key: "GetElement",
-    value: function GetElement(type) {
-      if (this._stdElements[type]) {
-        this._stdElements[type].offset = this._stdElements[type].startOffset;
-      }
-
-      return this._stdElements[type];
-    }
-    /**
-     * Begins particle spawning
-     * @returns {?number}
-     */
-
-  }, {
-    key: "BeginSpawnParticle",
-    value: function BeginSpawnParticle() {
-      if (!this.isValid || this.aliveCount >= this.maxParticleCount) return null;
-      return this.aliveCount++;
-    }
-    /**
-     * Ends particle spawning
-     */
-
-  }, {
-    key: "EndSpawnParticle",
-    value: function EndSpawnParticle() {
-      this.bufferDirty = true;
-    }
-    /**
-     * Per frame update
-     * @param {number} dt - delta time
-     */
-
-  }, {
-    key: "Update",
-    value: function Update(dt) {
-      dt = Math.min(dt, 0.1);
-
-      if (this.applyAging && this.HasElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.LIFETIME)) {
-        const lifetime = this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.LIFETIME),
-              position = this.emitParticleOnDeathEmitter ? this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) : null,
-              velocity = this.emitParticleOnDeathEmitter ? this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY) : null;
-
-        for (let i = 0; i < this.aliveCount; ++i) {
-          lifetime.buffer[lifetime.offset] += dt / lifetime.buffer[lifetime.offset + 1];
-
-          if (lifetime.buffer[lifetime.offset] > 1) {
-            if (this.emitParticleOnDeathEmitter) {
-              this.emitParticleOnDeathEmitter.SpawnParticles(position, velocity, 1);
-            }
-
-            this.aliveCount--;
-
-            if (i < this.aliveCount) {
-              for (let j = 0; j < 2; ++j) {
-                if (this.buffers[j]) {
-                  this.buffers[j].set(this.buffers[j].subarray(this.instanceStride[j] * this.aliveCount, this.instanceStride[j] * this.aliveCount + this.instanceStride[j]), i * this.instanceStride[j]);
-                }
-              }
-
-              --i;
-              this.bufferDirty = true;
-            }
-          } else {
-            lifetime.offset += lifetime.instanceStride;
-            if (position) position.offset += position.instanceStride;
-            if (velocity) velocity.offset += velocity.instanceStride;
-          }
-        }
-
-        lifetime.dirty = true;
-      }
-
-      const vec3_0 = Tw2ParticleSystem.global.vec3_0;
-
-      if (this.updateSimulation && this.HasElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this.HasElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY)) {
-        const hasForces = this.applyForce && this.forces.length;
-
-        for (let i = 0; i < this.forces.length; ++i) {
-          this.forces[i].Update(dt);
-        }
-
-        const position = this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
-              velocity = this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY),
-              mass = hasForces ? this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.MASS) : null;
-
-        for (let i = 0; i < this.aliveCount; ++i) {
-          if (hasForces) {
-            const amass = mass ? mass.buffer[mass.offset] : 1,
-                  force = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, 0, 0, 0);
-
-            for (let j = 0; j < this.forces.length; ++j) {
-              this.forces[j].ApplyForce(position, velocity, force, dt, amass);
-            }
-
-            if (mass) _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(force, force, 1 / mass.buffer[mass.offset]);
-            velocity.buffer[velocity.offset] += force[0] * dt;
-            velocity.buffer[velocity.offset + 1] += force[1] * dt;
-            velocity.buffer[velocity.offset + 2] += force[2] * dt;
-          }
-
-          position.buffer[position.offset] += velocity.buffer[velocity.offset] * dt;
-          position.buffer[position.offset + 1] += velocity.buffer[velocity.offset + 1] * dt;
-          position.buffer[position.offset + 2] += velocity.buffer[velocity.offset + 2] * dt;
-
-          if (this.emitParticleDuringLifeEmitter) {
-            this.emitParticleDuringLifeEmitter.SpawnParticles(position, velocity, dt);
-          }
-
-          position.offset += position.instanceStride;
-          velocity.offset += velocity.instanceStride;
-          if (mass) mass.offset += mass.instanceStride;
-        }
-
-        position.dirty = true;
-        velocity.dirty = true;
-      }
-
-      if (this.updateSimulation && this.constraints.length) {
-        for (let i = 0; i < this.constraints.length; ++i) {
-          this.constraints[i].ApplyConstraint(this.buffers, this.instanceStride, this.aliveCount, dt);
-        }
-      }
-
-      if (this.updateBoundingBox) {
-        this.GetBoundingBox(this.aabbMin, this.aabbMax);
-      }
-
-      if (this.emitParticleDuringLifeEmitter && !(this.HasElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this.HasElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY)) && this.updateSimulation) {
-        const position = this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
-              velocity = this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY);
-
-        for (let i = 0; i < this.aliveCount; ++i) {
-          this.emitParticleDuringLifeEmitter.SpawnParticles(position, velocity, 1);
-          if (position) position.offset += position.instanceStride;
-          if (velocity) velocity.offset += velocity.instanceStride;
-        }
-      }
-
-      for (let i = 0; i < this._elements.length; ++i) {
-        const el = this._elements[i];
-        el.offset = el.startOffset;
-
-        if (el.dirty) {
-          this.bufferDirty = true;
-          el.dirty = false;
-        }
-      }
-    }
-    /**
-     * Gets bounding box
-     * @param {vec3} aabbMin
-     * @param {vec3} aabbMax
-     * @returns {Boolean}
-     */
-
-  }, {
-    key: "GetBoundingBox",
-    value: function GetBoundingBox(aabbMin, aabbMax) {
-      if (this.aliveCount && this.HasElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION)) {
-        const position = this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION);
-        aabbMin[0] = position.buffer[position.offset];
-        aabbMin[1] = position.buffer[position.offset + 1];
-        aabbMin[2] = position.buffer[position.offset + 2];
-        aabbMax[0] = position.buffer[position.offset];
-        aabbMax[1] = position.buffer[position.offset + 1];
-        aabbMax[2] = position.buffer[position.offset + 2];
-
-        for (let i = 0; i < this.aliveCount; ++i) {
-          aabbMin[0] = Math.min(aabbMin[0], position.buffer[position.offset]);
-          aabbMin[1] = Math.min(aabbMin[1], position.buffer[position.offset + 1]);
-          aabbMin[2] = Math.min(aabbMin[2], position.buffer[position.offset + 2]);
-          aabbMax[0] = Math.max(aabbMax[0], position.buffer[position.offset]);
-          aabbMax[1] = Math.max(aabbMax[1], position.buffer[position.offset + 1]);
-          aabbMax[2] = Math.max(aabbMax[2], position.buffer[position.offset + 2]);
-          position.offset += position.instanceStride;
-        }
-
-        return true;
-      }
-
-      return false;
-    }
-    /**
-     * _Sort
-     * @private
-     */
-
-  }, {
-    key: "_Sort",
-    value: function _Sort() {
-      const eye = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(Tw2ParticleSystem.global.mat4_0, _global__WEBPACK_IMPORTED_MODULE_0__["device"].projection, _global__WEBPACK_IMPORTED_MODULE_0__["device"].view),
-            //device.viewInverse;
-      position = this.GetElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
-            count = this.aliveCount,
-            distances = this._distancesBuffer;
-
-      for (let i = 0; i < count; ++i) {
-        const o0 = position.offset + position.instanceStride * i;
-        let dd = position.buffer[o0] - eye[12],
-            l0 = dd * dd;
-        dd = position.buffer[o0 + 1] - eye[13];
-        l0 += dd * dd;
-        dd = position.buffer[o0 + 2] - eye[14];
-        l0 += dd * dd;
-        distances[i] = l0;
-      }
-      /**
-       * sortItems
-       * @param a
-       * @param b
-       * @returns {number}
-       * @private
-       */
-
-
-      function sortItems(a, b) {
-        if (a >= count && b >= count) {
-          if (a < b) return -1;
-          if (a > b) return 1;
-          return 0;
-        }
-
-        if (a >= count) return 1;
-        if (b >= count) return -1;
-        const l0 = distances[a],
-              l1 = distances[b];
-        if (l0 < l1) return 1;
-        if (l0 > l1) return -1;
-        return 0;
-      }
-
-      for (let i = 0; i < this.maxParticleCount; ++i) {
-        this._sortedIndexes[i] = i;
-      }
-
-      this._sortedIndexes.sort(sortItems);
-    }
-    /**
-     * Updates and gets the particle system's InstanceBuffer
-     * @returns {?WebGLBuffer}
-     */
-
-  }, {
-    key: "GetInstanceBuffer",
-    value: function GetInstanceBuffer() {
-      if (this.aliveCount === 0) return undefined;
-      const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
-
-      if (this.requiresSorting && this.HasElement(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this.buffers) {
-        this._Sort();
-
-        const stride = this.instanceStride[0],
-              gpuBuffer = this.buffers[0];
-
-        for (let i = 0; i < this.aliveCount; ++i) {
-          const toOffset = i * stride,
-                fromOffset = this._sortedIndexes[i] * stride;
-
-          for (let j = 0; j < stride; ++j) {
-            this._sortedBuffer[toOffset + j] = gpuBuffer[j + fromOffset];
-          }
-        }
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this._sortedBuffer.subarray(0, this.vertexStride[0] * this.aliveCount));
-        this.bufferDirty = false;
-      } else if (this.bufferDirty) {
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.buffers[0].subarray(0, this.vertexStride[0] * this.aliveCount));
-        this.bufferDirty = false;
-      }
-
-      return this._vb;
-    }
-    /**
-     * Gets the particle system's InstanceDeclaration
-     * @returns {Tw2VertexDeclaration}
-     */
-
-  }, {
-    key: "GetInstanceDeclaration",
-    value: function GetInstanceDeclaration() {
-      return this._declaration;
-    }
-    /**
-     * Gets the particle system's InstanceStride
-     * @returns {number}
-     */
-
-  }, {
-    key: "GetInstanceStride",
-    value: function GetInstanceStride() {
-      return this.instanceStride[0];
-    }
-    /**
-     * Gets the particle system's InstanceCount
-     * @returns {number}
-     */
-
-  }, {
-    key: "GetInstanceCount",
-    value: function GetInstanceCount() {
-      return this.aliveCount;
-    }
-    /**
-     * Initializes class globals
-     */
-
-  }], [{
-    key: "init",
-    value: function init() {
-      if (!Tw2ParticleSystem.global) {
-        Tw2ParticleSystem.global = {
-          vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-          mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
-        };
-      }
-    }
-    /**
-     * Global and scratch variables
-     */
-
-  }]);
-
-  return Tw2ParticleSystem;
-}();
-
-_defineProperty(Tw2ParticleSystem, "global", null);
+  return Tr2GpuUniqueEmitter;
+}(_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"]);
+_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"].define(Tr2GpuUniqueEmitter, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2GpuUniqueEmitter",
+    category: "ParticleEmitter",
+    props: {
+      angle: Type.NUMBER,
+      attractorPosition: Type.VECTOR3,
+      attractorStrength: Type.NUMBER,
+      color0: Type.RGBA_LINEAR,
+      color1: Type.RGBA_LINEAR,
+      color2: Type.RGBA_LINEAR,
+      color3: Type.RGBA_LINEAR,
+      colorMidpoint: Type.NUMBER,
+      continuousEmitter: Type.BOOLEAN,
+      direction: Type.VECTOR3,
+      drag: Type.NUMBER,
+      emissionDensity: Type.NUMBER,
+      gravity: Type.NUMBER,
+      inheritVelocity: Type.NUMBER,
+      innerAngle: Type.NUMBER,
+      maxDisplacement: Type.NUMBER,
+      maxEmissionDensity: Type.NUMBER,
+      maxLifeTime: Type.NUMBER,
+      maxSpeed: Type.NUMBER,
+      minLifeTime: Type.NUMBER,
+      minSpeed: Type.NUMBER,
+      particleSystem: ["Tw2GpuParticleSystem"],
+      position: Type.TR_TRANSLATION,
+      radius: Type.NUMBER,
+      rate: Type.NUMBER,
+      sizeVariance: Type.NUMBER,
+      sizes: Type.VECTOR3,
+      textureIndex: Type.NUMBER,
+      turbulenceAmplitude: Type.NUMBER,
+      turbulenceFrequency: Type.NUMBER,
+      velocityStretchRotation: Type.NUMBER
+    },
+    notImplemented: ["*"]
+  };
+});
 
 /***/ }),
 
-/***/ "./particle/constraints/index.js":
-/*!***************************************!*\
-  !*** ./particle/constraints/index.js ***!
-  \***************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-
-
-/***/ }),
-
-/***/ "./particle/emitters/Tw2DynamicEmitter.js":
-/*!************************************************!*\
-  !*** ./particle/emitters/Tw2DynamicEmitter.js ***!
-  \************************************************/
+/***/ "./particle/emitter/Tw2DynamicEmitter.js":
+/*!***********************************************!*\
+  !*** ./particle/emitter/Tw2DynamicEmitter.js ***!
+  \***********************************************/
 /*! exports provided: Tw2DynamicEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return Tw2DynamicEmitter; });
-/* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitters/Tw2ParticleEmitter.js");
+/* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitter/Tw2ParticleEmitter.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -59532,14 +58131,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2DynamicEmitter
+ * Todo: Implement "maxParticles"
+ * @ccp Tr2DynamicEmitter
  *
- * @property {String} name
- * @property {number} rate
- * @property {Boolean} isValid
- * @property {number} _accumulatedRate
- * @property {Array<Tw2ParticleAttributeGenerator>}} generators
- * @inherits Tw2ParticleEmitter
- * @class
+ * @property {Array.<Tw2ParticleAttributeGenerator>} generators -
+ * @property {Number} maxParticles                              -
+ * @property {Tw2ParticleSystem} particleSystem                 -
+ * @property {Number} rate                                      -
+ * @property {number} _accumulatedRate                          -
+ * @property {Boolean} _isValid                                 -
  */
 
 let Tw2DynamicEmitter =
@@ -59558,13 +58158,17 @@ function (_Tw2ParticleEmitter) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2DynamicEmitter).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rate", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generators", []);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isValid", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxParticles", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleSystem", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rate", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_accumulatedRate", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "generators", []);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_isValid", false);
 
     return _this;
   }
@@ -59595,14 +58199,14 @@ function (_Tw2ParticleEmitter) {
   }, {
     key: "Rebind",
     value: function Rebind() {
-      this.isValid = false;
+      this._isValid = false;
       if (!this.particleSystem) return;
 
       for (let i = 0; i < this.generators.length; ++i) {
         if (!this.generators[i].Bind(this.particleSystem)) return;
       }
 
-      this.isValid = true;
+      this._isValid = true;
     }
     /**
      * Spawn particles
@@ -59614,7 +58218,7 @@ function (_Tw2ParticleEmitter) {
   }, {
     key: "SpawnParticles",
     value: function SpawnParticles(position, velocity, rateModifier) {
-      if (!this.isValid) return;
+      if (!this._isValid) return;
       this._accumulatedRate += this.rate * rateModifier;
       const count = Math.floor(this._accumulatedRate);
       this._accumulatedRate -= count;
@@ -59634,13 +58238,26 @@ function (_Tw2ParticleEmitter) {
 
   return Tw2DynamicEmitter;
 }(_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleEmitter"]);
+_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleEmitter"].define(Tw2DynamicEmitter, Type => {
+  return {
+    type: "Tw2DynamicEmitter",
+    category: "ParticleEmitter",
+    props: {
+      generators: [["Tr2RandomIntegerAttributeGenerator", "Tr2RandomUniformAttributeGenerator", "Tr2SphereShapeAttributeGenerator"]],
+      maxParticles: Type.NUMBER,
+      particleSystem: ["Tw2ParticleSystem"],
+      rate: Type.NUMBER
+    },
+    notImplemented: ["maxParticles"]
+  };
+});
 
 /***/ }),
 
-/***/ "./particle/emitters/Tw2ParticleEmitter.js":
-/*!*************************************************!*\
-  !*** ./particle/emitters/Tw2ParticleEmitter.js ***!
-  \*************************************************/
+/***/ "./particle/emitter/Tw2ParticleEmitter.js":
+/*!************************************************!*\
+  !*** ./particle/emitter/Tw2ParticleEmitter.js ***!
+  \************************************************/
 /*! exports provided: Tw2ParticleEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -59648,36 +58265,54 @@ function (_Tw2ParticleEmitter) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleEmitter", function() { return Tw2ParticleEmitter; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* eslint no-unused-vars:0 */
 
+
 /**
  * Particle Emitter base class
+ * @ccp N/A
  *
- * @property {number|String} id
- * @property {String} name
  * @property {Tw2ParticleSystem} particleSystem
- * @class
  */
 
 let Tw2ParticleEmitter =
 /*#__PURE__*/
-function () {
+function (_Tw2BaseClass) {
+  _inherits(Tw2ParticleEmitter, _Tw2BaseClass);
+
   function Tw2ParticleEmitter() {
+    var _this;
+
     _classCallCheck(this, Tw2ParticleEmitter);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _defineProperty(this, "name", "");
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2ParticleEmitter).call(this, ...args));
 
-    _defineProperty(this, "particleSystem", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleSystem", null);
+
+    return _this;
   }
 
   _createClass(Tw2ParticleEmitter, [{
@@ -59686,7 +58321,9 @@ function () {
     /**
      * Initializes the particle emitter
      */
-    value: function Initialize() {}
+    value: function Initialize() {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
     /**
      * Per frame update
      * @param {number} dt - delta time
@@ -59694,18 +58331,30 @@ function () {
 
   }, {
     key: "Update",
-    value: function Update(dt) {}
+    value: function Update(dt) {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
   }]);
 
   return Tw2ParticleEmitter;
-}();
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2ParticleEmitter, Type => {
+  return {
+    type: "Tw2ParticleEmitter",
+    category: "ParticleEmitter",
+    isAbstract: true,
+    props: {
+      particleSystem: ["Tw2GpuParticleSystem", "Tw2ParticleSystem"]
+    }
+  };
+});
 
 /***/ }),
 
-/***/ "./particle/emitters/Tw2StaticEmitter.js":
-/*!***********************************************!*\
-  !*** ./particle/emitters/Tw2StaticEmitter.js ***!
-  \***********************************************/
+/***/ "./particle/emitter/Tw2StaticEmitter.js":
+/*!**********************************************!*\
+  !*** ./particle/emitter/Tw2StaticEmitter.js ***!
+  \**********************************************/
 /*! exports provided: Tw2StaticEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -59714,7 +58363,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return Tw2StaticEmitter; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
-/* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitters/Tw2ParticleEmitter.js");
+/* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitter/Tw2ParticleEmitter.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -59738,6 +58387,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2StaticEmitter
+ * @ccp Tr2StaticEmitter
  *
  * @property {Tw2GeometryRes} geometryResource
  * @property {Number} geometryIndex
@@ -59764,9 +58414,9 @@ function (_Tw2ParticleEmitter) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResourcePath", "");
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResource", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "meshIndex", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryIndex", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResource", null);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_spawned", false);
 
@@ -59787,6 +58437,23 @@ function (_Tw2ParticleEmitter) {
       }
 
       this._spawned = false;
+    }
+    /**
+     * Gets resources
+     * @param {Array} [out=[]]
+     * @returns {Array<Tw2Resource>} out
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      if (this.geometryResource && !out.includes(this.geometryResource)) {
+        out.push(this.geometryResource);
+      }
+
+      return out;
     }
     /**
      * Rebuilds cached data
@@ -59811,9 +58478,9 @@ function (_Tw2ParticleEmitter) {
     value: function Update() {
       const res = this.geometryResource;
 
-      if (!this._spawned && this.particleSystem && res && res.IsGood() && res.meshes.length > this.geometryIndex && res.meshes[this.geometryIndex].bufferData) {
+      if (!this._spawned && this.particleSystem && res && res.IsGood() && res.meshes.length > this.meshIndex && res.meshes[this.meshIndex].bufferData) {
         this._spawned = true;
-        const mesh = res.meshes[this.geometryIndex],
+        const mesh = res.meshes[this.meshIndex],
               elts = this.particleSystem.elements,
               inputs = new Array(elts.length);
 
@@ -59862,37 +58529,73 @@ function (_Tw2ParticleEmitter) {
         }
       }
     }
+  }, {
+    key: "geometryIndex",
+
+    /**
+     * Alias for meshIndex
+     * @returns {Number}
+     */
+    get: function get() {
+      return this.meshIndex;
+    }
+    /**
+     * Alias for meshIndex
+     * @param {Number} val
+     */
+    ,
+    set: function set(val) {
+      this.meshIndex = val;
+    }
   }]);
 
   return Tw2StaticEmitter;
 }(_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleEmitter"]);
+_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleEmitter"].define(Tw2StaticEmitter, Type => {
+  return {
+    type: "Tw2StaticEmitter",
+    category: "ParticleEmitter",
+    props: {
+      geometryResourcePath: Type.PATH,
+      meshIndex: Type.NUMBER
+    }
+  };
+});
 
 /***/ }),
 
-/***/ "./particle/emitters/index.js":
-/*!************************************!*\
-  !*** ./particle/emitters/index.js ***!
-  \************************************/
-/*! exports provided: Tw2StaticEmitter, Tw2DynamicEmitter */
+/***/ "./particle/emitter/index.js":
+/*!***********************************!*\
+  !*** ./particle/emitter/index.js ***!
+  \***********************************/
+/*! exports provided: Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2StaticEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2StaticEmitter */ "./particle/emitters/Tw2StaticEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return _Tw2StaticEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2StaticEmitter"]; });
+/* harmony import */ var _Tr2GpuSharedEmitter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2GpuSharedEmitter */ "./particle/emitter/Tr2GpuSharedEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _Tr2GpuSharedEmitter__WEBPACK_IMPORTED_MODULE_0__["Tr2GpuSharedEmitter"]; });
 
-/* harmony import */ var _Tw2DynamicEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2DynamicEmitter */ "./particle/emitters/Tw2DynamicEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return _Tw2DynamicEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2DynamicEmitter"]; });
+/* harmony import */ var _Tr2GpuUniqueEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2GpuUniqueEmitter */ "./particle/emitter/Tr2GpuUniqueEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return _Tr2GpuUniqueEmitter__WEBPACK_IMPORTED_MODULE_1__["Tr2GpuUniqueEmitter"]; });
+
+/* harmony import */ var _Tw2StaticEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2StaticEmitter */ "./particle/emitter/Tw2StaticEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return _Tw2StaticEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2StaticEmitter"]; });
+
+/* harmony import */ var _Tw2DynamicEmitter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2DynamicEmitter */ "./particle/emitter/Tw2DynamicEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return _Tw2DynamicEmitter__WEBPACK_IMPORTED_MODULE_3__["Tw2DynamicEmitter"]; });
+
+
 
 
 
 
 /***/ }),
 
-/***/ "./particle/forces/Tw2ParticleAttractorForce.js":
-/*!******************************************************!*\
-  !*** ./particle/forces/Tw2ParticleAttractorForce.js ***!
-  \******************************************************/
+/***/ "./particle/force/Tw2ParticleAttractorForce.js":
+/*!*****************************************************!*\
+  !*** ./particle/force/Tw2ParticleAttractorForce.js ***!
+  \*****************************************************/
 /*! exports provided: Tw2ParticleAttractorForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -59900,7 +58603,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return Tw2ParticleAttractorForce; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/forces/Tw2ParticleForce.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -59979,10 +58682,10 @@ function (_Tw2ParticleForce) {
 
 /***/ }),
 
-/***/ "./particle/forces/Tw2ParticleDirectForce.js":
-/*!***************************************************!*\
-  !*** ./particle/forces/Tw2ParticleDirectForce.js ***!
-  \***************************************************/
+/***/ "./particle/force/Tw2ParticleDirectForce.js":
+/*!**************************************************!*\
+  !*** ./particle/force/Tw2ParticleDirectForce.js ***!
+  \**************************************************/
 /*! exports provided: Tw2ParticleDirectForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -59990,7 +58693,7 @@ function (_Tw2ParticleForce) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return Tw2ParticleDirectForce; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/forces/Tw2ParticleForce.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -60059,17 +58762,17 @@ function (_Tw2ParticleForce) {
 
 /***/ }),
 
-/***/ "./particle/forces/Tw2ParticleDragForce.js":
-/*!*************************************************!*\
-  !*** ./particle/forces/Tw2ParticleDragForce.js ***!
-  \*************************************************/
+/***/ "./particle/force/Tw2ParticleDragForce.js":
+/*!************************************************!*\
+  !*** ./particle/force/Tw2ParticleDragForce.js ***!
+  \************************************************/
 /*! exports provided: Tw2ParticleDragForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDragForce", function() { return Tw2ParticleDragForce; });
-/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/forces/Tw2ParticleForce.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -60139,10 +58842,10 @@ function (_Tw2ParticleForce) {
 
 /***/ }),
 
-/***/ "./particle/forces/Tw2ParticleFluidDragForce.js":
-/*!******************************************************!*\
-  !*** ./particle/forces/Tw2ParticleFluidDragForce.js ***!
-  \******************************************************/
+/***/ "./particle/force/Tw2ParticleFluidDragForce.js":
+/*!*****************************************************!*\
+  !*** ./particle/force/Tw2ParticleFluidDragForce.js ***!
+  \*****************************************************/
 /*! exports provided: Tw2ParticleFluidDragForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -60150,7 +58853,7 @@ function (_Tw2ParticleForce) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return Tw2ParticleFluidDragForce; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/forces/Tw2ParticleForce.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -60239,10 +58942,10 @@ function (_Tw2ParticleForce) {
 
 /***/ }),
 
-/***/ "./particle/forces/Tw2ParticleForce.js":
-/*!*********************************************!*\
-  !*** ./particle/forces/Tw2ParticleForce.js ***!
-  \*********************************************/
+/***/ "./particle/force/Tw2ParticleForce.js":
+/*!********************************************!*\
+  !*** ./particle/force/Tw2ParticleForce.js ***!
+  \********************************************/
 /*! exports provided: Tw2ParticleForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -60317,10 +59020,10 @@ _defineProperty(Tw2ParticleForce, "global", {
 
 /***/ }),
 
-/***/ "./particle/forces/Tw2ParticleSpring.js":
-/*!**********************************************!*\
-  !*** ./particle/forces/Tw2ParticleSpring.js ***!
-  \**********************************************/
+/***/ "./particle/force/Tw2ParticleSpring.js":
+/*!*********************************************!*\
+  !*** ./particle/force/Tw2ParticleSpring.js ***!
+  \*********************************************/
 /*! exports provided: Tw2ParticleSpring */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -60328,7 +59031,7 @@ _defineProperty(Tw2ParticleForce, "global", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return Tw2ParticleSpring; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/forces/Tw2ParticleForce.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -60402,10 +59105,10 @@ function (_Tw2ParticleForce) {
 
 /***/ }),
 
-/***/ "./particle/forces/Tw2ParticleTurbulenceForce.js":
-/*!*******************************************************!*\
-  !*** ./particle/forces/Tw2ParticleTurbulenceForce.js ***!
-  \*******************************************************/
+/***/ "./particle/force/Tw2ParticleTurbulenceForce.js":
+/*!******************************************************!*\
+  !*** ./particle/force/Tw2ParticleTurbulenceForce.js ***!
+  \******************************************************/
 /*! exports provided: Tw2ParticleTurbulenceForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -60413,7 +59116,7 @@ function (_Tw2ParticleForce) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return Tw2ParticleTurbulenceForce; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/forces/Tw2ParticleForce.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -60526,31 +59229,31 @@ function (_Tw2ParticleForce) {
 
 /***/ }),
 
-/***/ "./particle/forces/index.js":
-/*!**********************************!*\
-  !*** ./particle/forces/index.js ***!
-  \**********************************/
+/***/ "./particle/force/index.js":
+/*!*********************************!*\
+  !*** ./particle/force/index.js ***!
+  \*********************************/
 /*! exports provided: Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleAttractorForce */ "./particle/forces/Tw2ParticleAttractorForce.js");
+/* harmony import */ var _Tw2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleAttractorForce */ "./particle/force/Tw2ParticleAttractorForce.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _Tw2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleAttractorForce"]; });
 
-/* harmony import */ var _Tw2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleDirectForce */ "./particle/forces/Tw2ParticleDirectForce.js");
+/* harmony import */ var _Tw2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleDirectForce */ "./particle/force/Tw2ParticleDirectForce.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return _Tw2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleDirectForce"]; });
 
-/* harmony import */ var _Tw2ParticleDragForce__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleDragForce */ "./particle/forces/Tw2ParticleDragForce.js");
+/* harmony import */ var _Tw2ParticleDragForce__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleDragForce */ "./particle/force/Tw2ParticleDragForce.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDragForce", function() { return _Tw2ParticleDragForce__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleDragForce"]; });
 
-/* harmony import */ var _Tw2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2ParticleFluidDragForce */ "./particle/forces/Tw2ParticleFluidDragForce.js");
+/* harmony import */ var _Tw2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2ParticleFluidDragForce */ "./particle/force/Tw2ParticleFluidDragForce.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return _Tw2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleFluidDragForce"]; });
 
-/* harmony import */ var _Tw2ParticleSpring__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ParticleSpring */ "./particle/forces/Tw2ParticleSpring.js");
+/* harmony import */ var _Tw2ParticleSpring__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ParticleSpring */ "./particle/force/Tw2ParticleSpring.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return _Tw2ParticleSpring__WEBPACK_IMPORTED_MODULE_4__["Tw2ParticleSpring"]; });
 
-/* harmony import */ var _Tw2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2ParticleTurbulenceForce */ "./particle/forces/Tw2ParticleTurbulenceForce.js");
+/* harmony import */ var _Tw2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2ParticleTurbulenceForce */ "./particle/force/Tw2ParticleTurbulenceForce.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return _Tw2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_5__["Tw2ParticleTurbulenceForce"]; });
 
 
@@ -60573,15 +59276,27 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttributeGenerator", function() { return Tw2ParticleAttributeGenerator; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* eslint no-unused-vars:0 */
+
 
 /**
  * Tw2ParticleAttributeGenerator base class
@@ -60593,13 +59308,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 let Tw2ParticleAttributeGenerator =
 /*#__PURE__*/
-function () {
+function (_Tw2BaseClass) {
+  _inherits(Tw2ParticleAttributeGenerator, _Tw2BaseClass);
+
   function Tw2ParticleAttributeGenerator() {
     _classCallCheck(this, Tw2ParticleAttributeGenerator);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
-
-    _defineProperty(this, "name", "");
+    return _possibleConstructorReturn(this, _getPrototypeOf(Tw2ParticleAttributeGenerator).apply(this, arguments));
   }
 
   _createClass(Tw2ParticleAttributeGenerator, [{
@@ -60611,7 +59326,7 @@ function () {
      * @returns {Boolean} True if successfully bound
      */
     value: function Bind(ps) {
-      return false;
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
     }
     /**
      * Generates the attributes
@@ -60622,7 +59337,9 @@ function () {
 
   }, {
     key: "Generate",
-    value: function Generate(position, velocity, index) {}
+    value: function Generate(position, velocity, index) {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
     /**
      * Global and scratch variables
      * @type {*}
@@ -60631,10 +59348,18 @@ function () {
   }]);
 
   return Tw2ParticleAttributeGenerator;
-}();
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
 _defineProperty(Tw2ParticleAttributeGenerator, "global", {
   vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
+});
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2ParticleAttributeGenerator, Type => {
+  return {
+    type: "Tw2ParticleAttributeGenerator",
+    category: "ParticleAttributeGenerator",
+    isAbstract: true
+  };
 });
 
 /***/ }),
@@ -60650,7 +59375,7 @@ _defineProperty(Tw2ParticleAttributeGenerator, "global", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomIntegerAttributeGenerator", function() { return Tw2RandomIntegerAttributeGenerator; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2ParticleElement */ "./particle/Tw2ParticleElement.js");
+/* harmony import */ var _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../element/Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
 /* harmony import */ var _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleAttributeGenerator */ "./particle/generators/Tw2ParticleAttributeGenerator.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60675,14 +59400,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2RandomIntegerAttributeGenerator
+ * @ccp Tr2RandomIntegerAttributeGenerator
  *
- * @property {number} elementType
- * @property {String} customName
- * @property {vec4} minRange
- * @property {vec4} maxRange
- * @property {Tw2ParticleElement} _element
- * @inherits Tw2ParticleAttributeGenerator
- * @class
+ * @property {String} customName           -
+ * @property {Number} elementType          -
+ * @property {vec4} maxRange               -
+ * @property {vec4} minRange               -
+ * @property {Tw2ParticleElement} _element -
  */
 
 let Tw2RandomIntegerAttributeGenerator =
@@ -60701,9 +59425,9 @@ function (_Tw2ParticleAttribute) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2RandomIntegerAttributeGenerator).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elementType", _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customName", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elementType", _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minRange", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
@@ -60724,7 +59448,7 @@ function (_Tw2ParticleAttribute) {
      */
     value: function Bind(ps) {
       for (let i = 0; i < ps._elements.length; ++i) {
-        if (ps._elements[i].elementType === this.elementType && (this.elementType !== _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM || ps._elements[i].customName === this.customName)) {
+        if (ps._elements[i].elementType === this.elementType && (this.elementType !== _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM || ps._elements[i].customName === this.customName)) {
           this._element = ps._elements[i];
           return true;
         }
@@ -60750,6 +59474,17 @@ function (_Tw2ParticleAttribute) {
 
   return Tw2RandomIntegerAttributeGenerator;
 }(_Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"]);
+_Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"].define(Tw2RandomIntegerAttributeGenerator, Type => {
+  return {
+    type: "Tw2RandomIntegerAttributeGenerator",
+    props: {
+      customName: Type.STRING,
+      elementType: Type.NUMBER,
+      maxRange: Type.VECTOR4,
+      minRange: Type.VECTOR4
+    }
+  };
+});
 
 /***/ }),
 
@@ -60764,7 +59499,7 @@ function (_Tw2ParticleAttribute) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomUniformAttributeGenerator", function() { return Tw2RandomUniformAttributeGenerator; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2ParticleElement */ "./particle/Tw2ParticleElement.js");
+/* harmony import */ var _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../element/Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
 /* harmony import */ var _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleAttributeGenerator */ "./particle/generators/Tw2ParticleAttributeGenerator.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60789,14 +59524,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2RandomUniformAttributeGenerator
+ * @ccp Tr2RandomUniformAttributeGenerator
  *
- * @property {number} elementType
- * @property {String} customName
- * @property {vec4} minRange
- * @property {vec4} maxRange
- * @property {Tw2ParticleElement} _element
- * @inherits Tw2ParticleAttributeGenerator
- * @class
+ * @property {String} customName           -
+ * @property {Number} elementType          -
+ * @property {vec4} maxRange               -
+ * @property {vec4} minRange               -
+ * @property {Tw2ParticleElement} _element -
  */
 
 let Tw2RandomUniformAttributeGenerator =
@@ -60815,9 +59549,9 @@ function (_Tw2ParticleAttribute) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2RandomUniformAttributeGenerator).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elementType", _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customName", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "elementType", _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minRange", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
@@ -60838,7 +59572,7 @@ function (_Tw2ParticleAttribute) {
      */
     value: function Bind(ps) {
       for (let i = 0; i < ps._elements.length; ++i) {
-        if (ps._elements[i].elementType === this.elementType && (this.elementType !== _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM || ps._elements[i].customName === this.customName)) {
+        if (ps._elements[i].elementType === this.elementType && (this.elementType !== _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM || ps._elements[i].customName === this.customName)) {
           this._element = ps._elements[i];
           return true;
         }
@@ -60864,6 +59598,17 @@ function (_Tw2ParticleAttribute) {
 
   return Tw2RandomUniformAttributeGenerator;
 }(_Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"]);
+_Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"].define(Tw2RandomUniformAttributeGenerator, Type => {
+  return {
+    type: "Tw2RandomUniformAttributeGenerator",
+    props: {
+      customName: Type.STRING,
+      elementType: Type.NUMBER,
+      maxRange: Type.VECTOR4,
+      minRange: Type.VECTOR4
+    }
+  };
+});
 
 /***/ }),
 
@@ -60878,7 +59623,7 @@ function (_Tw2ParticleAttribute) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SphereShapeAttributeGenerator", function() { return Tw2SphereShapeAttributeGenerator; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2ParticleElement */ "./particle/Tw2ParticleElement.js");
+/* harmony import */ var _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../element/Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
 /* harmony import */ var _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleAttributeGenerator */ "./particle/generators/Tw2ParticleAttributeGenerator.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60903,23 +59648,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2SphereShapeAttributeGenerator
+ * TODO: Is "controlPosition" deprecated?
+ * TODO: Is "controlVelocity" deprecated?
+ * TODO: Implement "distributionExponent"
+ * @ccp Tr2SphereShapeAttributeGenerator
  *
- * @property {number} minRadius
- * @property {number} maxRadius
- * @property {number} minPhi
- * @property {number} maxPhi
- * @property {number} minTheta
- * @property {number} maxTheta
- * @property {Boolean} controlPosition
- * @property {Boolean} controlVelocity
- * @property {number} minSpeed
- * @property {number} maxSpeed
- * @property {number} parentVelocityFactor
- * @property {vec3} position
- * @property {quat} rotation
- * @property {?Tw2ParticleElement} _position
- * @property {?Tw2ParticleElement}_velocity
- * @inherits Tw2ParticleAttributeGenerator
+ * @property {Boolean} controlPosition       -
+ * @property {Boolean} controlVelocity       -
+ * @property {Number} distributionExponent   -
+ * @property {Number} maxPhi                 -
+ * @property {Number} maxRadius              -
+ * @property {Number} maxSpeed               -
+ * @property {Number} maxTheta               -
+ * @property {Number} minPhi                 -
+ * @property {Number} minRadius              -
+ * @property {Number} minSpeed               -
+ * @property {Number} minTheta               -
+ * @property {Number} parentVelocityFactor   -
+ * @property {vec3} position                 -
+ * @property {quat} rotation                 -
+ * @property {?Tw2ParticleElement} _position -
+ * @property {?Tw2ParticleElement}_velocity  -
  */
 
 let Tw2SphereShapeAttributeGenerator =
@@ -60938,31 +59687,33 @@ function (_Tw2ParticleAttribute) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2SphereShapeAttributeGenerator).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minPhi", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distributionExponent", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxPhi", 360);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minTheta", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxTheta", 360);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "controlPosition", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minPhi", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "controlVelocity", true);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minRadius", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minSpeed", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minTheta", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "parentVelocityFactor", 1);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "controlPosition", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "controlVelocity", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_position", null);
 
@@ -60984,9 +59735,9 @@ function (_Tw2ParticleAttribute) {
       this._velocity = null;
 
       for (let i = 0; i < ps._elements.length; ++i) {
-        if (ps._elements[i].elementType === _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.POSITION && this.controlPosition) {
+        if (ps._elements[i].elementType === _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.POSITION && this.controlPosition) {
           this._position = ps._elements[i];
-        } else if (ps._elements[i].elementType === _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.VELOCITY && this.controlVelocity) {
+        } else if (ps._elements[i].elementType === _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.VELOCITY && this.controlVelocity) {
           this._velocity = ps._elements[i];
         }
       }
@@ -61045,6 +59796,25 @@ function (_Tw2ParticleAttribute) {
 
   return Tw2SphereShapeAttributeGenerator;
 }(_Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"]);
+_Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"].define(Tw2SphereShapeAttributeGenerator, Type => {
+  return {
+    type: "Tw2SphereShapeAttributeGenerator",
+    props: {
+      distributionExponent: Type.NUMBER,
+      maxPhi: Type.NUMBER,
+      maxRadius: Type.NUMBER,
+      maxSpeed: Type.NUMBER,
+      maxTheta: Type.NUMBER,
+      minPhi: Type.NUMBER,
+      minRadius: Type.NUMBER,
+      minSpeed: Type.NUMBER,
+      minTheta: Type.NUMBER,
+      parentVelocityFactor: Type.NUMBER,
+      position: Type.TR_TRANSLATION,
+      rotation: Type.TR_ROTATION
+    }
+  };
+});
 
 /***/ }),
 
@@ -61076,47 +59846,51 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./particle/index.js ***!
   \***************************/
-/*! no static exports found */
+/*! exports provided: Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _emitters__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./emitters */ "./particle/emitters/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return _emitters__WEBPACK_IMPORTED_MODULE_0__["Tw2StaticEmitter"]; });
+/* harmony import */ var _constraint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constraint */ "./particle/constraint/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _constraint__WEBPACK_IMPORTED_MODULE_0__["Tr2PlaneConstraint"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return _emitters__WEBPACK_IMPORTED_MODULE_0__["Tw2DynamicEmitter"]; });
+/* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./particle/element/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"]; });
 
-/* harmony import */ var _forces__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./forces */ "./particle/forces/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _forces__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleAttractorForce"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return _forces__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleDirectForce"]; });
+/* harmony import */ var _emitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./emitter */ "./particle/emitter/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuSharedEmitter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDragForce", function() { return _forces__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleDragForce"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuUniqueEmitter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return _forces__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleFluidDragForce"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tw2StaticEmitter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return _forces__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleSpring"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tw2DynamicEmitter"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return _forces__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleTurbulenceForce"]; });
+/* harmony import */ var _force__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./force */ "./particle/force/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleAttractorForce"]; });
 
-/* harmony import */ var _generators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./generators */ "./particle/generators/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomIntegerAttributeGenerator", function() { return _generators__WEBPACK_IMPORTED_MODULE_2__["Tw2RandomIntegerAttributeGenerator"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleDirectForce"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomUniformAttributeGenerator", function() { return _generators__WEBPACK_IMPORTED_MODULE_2__["Tw2RandomUniformAttributeGenerator"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDragForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleDragForce"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SphereShapeAttributeGenerator", function() { return _generators__WEBPACK_IMPORTED_MODULE_2__["Tw2SphereShapeAttributeGenerator"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleFluidDragForce"]; });
 
-/* harmony import */ var _constraints__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./constraints */ "./particle/constraints/index.js");
-/* harmony import */ var _constraints__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_constraints__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _constraints__WEBPACK_IMPORTED_MODULE_3__) if(["Tw2StaticEmitter","Tw2DynamicEmitter","Tw2ParticleAttractorForce","Tw2ParticleDirectForce","Tw2ParticleDragForce","Tw2ParticleFluidDragForce","Tw2ParticleSpring","Tw2ParticleTurbulenceForce","Tw2RandomIntegerAttributeGenerator","Tw2RandomUniformAttributeGenerator","Tw2SphereShapeAttributeGenerator","default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _constraints__WEBPACK_IMPORTED_MODULE_3__[key]; }) }(__WEBPACK_IMPORT_KEY__));
-/* harmony import */ var _Tw2ParticleSystem__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ParticleSystem */ "./particle/Tw2ParticleSystem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSystem", function() { return _Tw2ParticleSystem__WEBPACK_IMPORTED_MODULE_4__["Tw2ParticleSystem"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleSpring"]; });
 
-/* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2ParticleElement */ "./particle/Tw2ParticleElement.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_5__["Tw2ParticleElement"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleTurbulenceForce"]; });
 
-/* harmony import */ var _Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2ParticleElementDeclaration */ "./particle/Tw2ParticleElementDeclaration.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleElementDeclaration"]; });
+/* harmony import */ var _generators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./generators */ "./particle/generators/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomIntegerAttributeGenerator", function() { return _generators__WEBPACK_IMPORTED_MODULE_4__["Tw2RandomIntegerAttributeGenerator"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomUniformAttributeGenerator", function() { return _generators__WEBPACK_IMPORTED_MODULE_4__["Tw2RandomUniformAttributeGenerator"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SphereShapeAttributeGenerator", function() { return _generators__WEBPACK_IMPORTED_MODULE_4__["Tw2SphereShapeAttributeGenerator"]; });
+
+/* harmony import */ var _Tw2GpuParticleSystem__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2GpuParticleSystem */ "./particle/Tw2GpuParticleSystem.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _Tw2ParticleSystem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2ParticleSystem */ "./particle/Tw2ParticleSystem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSystem", function() { return _Tw2ParticleSystem__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleSystem"]; });
 
 
 

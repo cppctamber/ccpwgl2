@@ -1,6 +1,6 @@
 import {Tw2BaseClass, device} from "../global";
 import {Tw2VertexDeclaration} from "./vertex";
-import {Tw2ParticleElementDeclaration} from "../particle/Tw2ParticleElementDeclaration";
+import {Tw2ParticleElementDeclaration} from "../particle/element/Tw2ParticleElementDeclaration";
 
 /**
  * Tr2RuntimeInstanceData

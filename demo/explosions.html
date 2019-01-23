@@ -10,19 +10,19 @@
     <script type="text/javascript" src="demos.js"></script>
 
     <script type="text/javascript">
+
+        var canvas, camera, scene, sizes, races, radius = 5000, explosions = [];
+
         function OnDocLoad()
         {
-            var canvas = document.getElementById('mainCanvas');
+            canvas = document.getElementById('mainCanvas');
             ccpwgl.initialize(canvas, demos.options);
 
-            var camera = ccpwgl.createCamera(canvas, undefined, true);
-            camera.distance = 75000;
-            var scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
-            var sizes = ['c', 'd', 'h', 'l', 'm', 's', 't'];
-            var races = ['amarr', 'angel', 'blooodraider', 'caldari', 'concord', 'gallente', 'generic', 'jove', 'minmatar', 'ore', 'rogue', 'sansha', 'sepentis', 'sleeper', 'soct', 'soe', 'talocan'];
-            var radius = 5000;
+            camera = ccpwgl.createCamera(canvas, { distance: 75000 }, true);
+            scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
+            sizes = ['c', 'd', 'h', 'l', 'm', 's', 't'];
+            races = ['amarr', 'angel', 'blooodraider', 'caldari', 'concord', 'gallente', 'generic', 'jove', 'minmatar', 'ore', 'rogue', 'sansha', 'sepentis', 'sleeper', 'soct', 'soe', 'talocan'];
 
-            var explosions = [];
             var currentTime = 0;
 
             function getRandomExplosion(explodionData)

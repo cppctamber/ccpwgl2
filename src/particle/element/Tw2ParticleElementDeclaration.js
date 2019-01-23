@@ -1,28 +1,31 @@
-import {Tw2VertexElement} from "../core";
+import {Tw2VertexElement} from "../../core";
 import {Tw2ParticleElement} from "./Tw2ParticleElement";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tw2ParticleElementDeclaration
+ * TODO: Handle "elementType" if passed a string by .black format
+ * @ccp Tr2ParticleElementDeclaration
  *
- * @property {number} elementType=4
- * @property {String} customName
- * @property {number} dimension=1
- * @property {number} usageIndex
- * @property {Boolean} usedByGPU
- * @class
+ * @property {String} customName  -
+ * @property {Number} dimension   -
+ * @property {Number} elementType -
+ * @property {Number} usageIndex  -
+ * @property {Boolean} usedByGPU  -
  */
-export class Tw2ParticleElementDeclaration
+export class Tw2ParticleElementDeclaration extends Tw2BaseClass
 {
 
-    elementType = 4;
+    // ccp
     customName = "";
     dimension = 1;
+    elementType = 4;
     usageIndex = 0;
     usedByGPU = true;
 
 
     /**
-     * Gets the dimension of an element type
+     * Gets the element's dimension
      * @returns {number}
      */
     GetDimension()
@@ -45,7 +48,7 @@ export class Tw2ParticleElementDeclaration
     }
 
     /**
-     * GetDeclaration
+     * Gets the object's vertex declaration
      * @returns {Tw2VertexElement}
      */
     GetDeclaration()
@@ -82,3 +85,17 @@ export class Tw2ParticleElementDeclaration
 
 }
 
+Tw2BaseClass.define(Tw2ParticleElementDeclaration, Type=>
+{
+    return {
+        type: "Tw2ParticleElementDeclaration",
+        category: "ElementDeclaration",
+        props: {
+            customName: Type.STRING,
+            dimension: Type.NUMBER,
+            elementType: Type.NUMBER, // Possibly Type.STRING,
+            usageIndex: Type.NUMBER,
+            usedByGPU: Type.BOOLEAN
+        }
+    };
+});

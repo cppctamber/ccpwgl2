@@ -1,77 +1,88 @@
-import {vec3, mat4, util, device} from "../global";
+import {vec3, mat4, util, device, Tw2BaseClass} from "../global";
 import {Tw2VertexDeclaration} from "../core";
-import {Tw2ParticleElement} from "./Tw2ParticleElement";
-import {Tw2ParticleElementDeclaration} from "./Tw2ParticleElementDeclaration";
-
+import {Tw2ParticleElement} from "./element";
 
 /**
  * Tw2ParticleSystem
+ * TODO: Identify where "aabbMin" is used
+ * TODO: Identify where "aabbMax" is used
+ * TODO: Is "isGlobal" deprecated, it isn't used anywhere
+ * TODO: Is "peakAliveCount" deprecated, it isn't used anywhere
+ * TODO: Implement "useSimTimeRebase"
+ * @ccp Tr2ParticleSystem
  *
- * @property {number|String} id
- * @property {String} name
- * @property {number} aliveCount
- * @property {number} maxParticleCount
- * @property {*} emitParticleOnDeathEmitter
- * @property {*} emitParticleDuringLifeEmitter
- * @property {Array.<Tw2ParticleElementDeclaration>} elements
- * @property {Boolean} isValid
- * @property {Boolean} requiresSorting
- * @property {Boolean} updateSimulation
- * @property {Boolean} applyForce
- * @property {Boolean} applyAging
- * @property {Boolean} isGlobal
- * @property {Array<Tw2ParticleForce>} forces
- * @property {Array<Tw2ParticleConstraint>} constraints
- * @property {Boolean} updateBoundingBox
- * @property {vec3} aabbMin
- * @property {vec3} aabbMax
- * @property {number} peakAliveCount
- * @property {Boolean} bufferDirty
- * @property {WebGLBuffer} _vb
- * @property {Tw2VertexDeclaration} _declaration
- * @property {Array<Tw2ParticleElement>} _stdElements
- * @property {Array<Tw2ParticleElement>} _elements
- * @property {Array} instanceStride
- * @property {Array} vertexStride
- * @property {Array} buffers
- * @class
+ * @property {vec3} aabbMin                                                     - Where is this used?
+ * @property {vec3} aabbMax                                                     - Where is this used?
+ * @property {Boolean} applyAging                                               - Applies aging
+ * @property {Boolean} applyForce                                               - Applies particle forces
+ * @property {Array.<Tw2ParticleConstraint>} constraints                        - Particle constraints
+ * @property {Array.<Tr2ParticleElementDeclaration>} elements                   - Particle elements
+ * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleDuringLifeEmitter - Particle emitter called when alive
+ * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleOnDeathEmitter    - Particle emitter called when dead
+ * @property {Array.<Tw2ParticleForce>} forces                                  - Particle forces
+ * @property {Boolean} isGlobal                                                 - unused?
+ * @property {Number} maxParticleCount                                          - Maximum particle count
+ * @property {number} peakAliveCount                                            - unused?
+ * @property {Boolean} requiresSorting                                          - Identifies that particles require sorting
+ * @property {Boolean} updateBoundingBox                                        - Identifies that bounds require updating
+ * @property {Boolean} updateSimulation                                         - Identifies that forces an constraints are used
+ * @property {Boolean} useSimTimeRebase                                         -
+ * @property {number} _aliveCount                                               - The current particle count
+ * @property {Boolean} _bufferDirty                                             - Identifies that buffers require rebuilding
+ * @property {Array} _buffers                                                   -
+ * @property {Tw2VertexDeclaration} _declaration                                - Instance declaration
+ * @property {Array<Tw2ParticleElement>} _elements                              -
+ * @property {Array} _instanceStride                                            -
+ * @property {Boolean} _isValid                                                 - Identifies that the particle system is good
+ * @property {Float32Array} _distancesBuffer                                    -
+ * @property {Float32Array} _sortedBuffer                                       -
+ * @property {Array} _sortedIndexes                                             -
+ * @property {Array<Tw2ParticleElement>} _stdElements                           - Standard particle elements
+ * @property {WebGLBuffer} _vb                                                  - Vertex buffer
+ * @property {Array} _vertexStride                                              - Vertex stride
  */
-export class Tw2ParticleSystem
+export class Tw2ParticleSystem extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-    aliveCount = 0;
-    maxParticleCount = 0;
-    emitParticleOnDeathEmitter = null;
-    emitParticleDuringLifeEmitter = null;
-    elements = [];
-    isValid = false;
-    requiresSorting = false;
-    updateSimulation = true;
-    applyForce = true;
+    // ccp
     applyAging = true;
-    isGlobal = false;
-    forces = [];
+    applyForce = true;
     constraints = [];
+    elements = [];
+    emitParticleDuringLifeEmitter = null;
+    emitParticleOnDeathEmitter = null;
+    forces = [];
+    maxParticleCount = 0;
+    requiresSorting = false;
     updateBoundingBox = false;
+    updateSimulation = true;
+    useSimTimeRebase = false;
+
+    // ccpwgl
+    isGlobal = false;
     aabbMin = vec3.create();
     aabbMax = vec3.create();
     peakAliveCount = 0;
-    bufferDirty = false;
-    _vb = null;
+
+    _aliveCount = 0;
+    _bufferDirty = false;
+    _buffers = [null, null];
     _declaration = null;
-    _stdElements = [null, null, null, null];
     _elements = [];
-    instanceStride = [null, null];
-    vertexStride = [null, null];
-    buffers = [null, null];
+    _instanceStride = [null, null];
+    _isValid = false;
+    _distancesBuffer = null; //Float32Array
+    _sortedBuffer = null; //Float32Array
+    _sortedIndexes = null; // Array
+    _stdElements = [null, null, null, null];
+    _vb = null;
+    _vertexStride = [null, null];
 
     /**
      * Constructor
      */
     constructor()
     {
+        super();
         Tw2ParticleSystem.init();
     }
 
@@ -88,7 +99,7 @@ export class Tw2ParticleSystem
      */
     UpdateElementDeclaration()
     {
-        this.isValid = false;
+        this._isValid = false;
         const gl = device.gl;
 
         if (this._vb)
@@ -98,16 +109,16 @@ export class Tw2ParticleSystem
         }
 
         this._declaration = null;
-        this.aliveCount = 0;
+        this._aliveCount = 0;
 
         if (this.elements.length === 0) return;
 
         this._stdElements = [null, null, null, null];
         this._elements = [];
-        this.instanceStride = [0, 0];
-        this.vertexStride = [0, 0];
+        this._instanceStride = [0, 0];
+        this._vertexStride = [0, 0];
         this._declaration = new Tw2VertexDeclaration();
-        this.buffers = [null, null];
+        this._buffers = [null, null];
 
         for (let i = 0; i < this.elements.length; ++i)
         {
@@ -123,15 +134,15 @@ export class Tw2ParticleSystem
                 usedByGPU: src.usedByGPU
             });
 
-            //el.buffer = this.buffers[bufferIndex];
+            //el.buffer = this._buffers[bufferIndex];
 
-            el.startOffset = this.vertexStride[bufferIndex];
+            el.startOffset = this._vertexStride[bufferIndex];
             el.offset = el.startOffset;
             if (this.elements[i].elementType !== Tw2ParticleElement.Type.CUSTOM)
             {
                 this._stdElements[this.elements[i].elementType] = el;
             }
-            this.vertexStride[bufferIndex] += el.dimension;
+            this._vertexStride[bufferIndex] += el.dimension;
             this._elements.push(el);
             if (bufferIndex === 0)
             {
@@ -146,48 +157,48 @@ export class Tw2ParticleSystem
         for (let i = 0; i < this._elements.length; ++i)
         {
             const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-            this._elements[i].vertexStride = this.vertexStride[bufferIndex];
+            this._elements[i].vertexStride = this._vertexStride[bufferIndex];
         }
 
-        this.instanceStride[0] = this.vertexStride[0] * 4;
-        this.instanceStride[1] = this.vertexStride[1] * 4;
+        this._instanceStride[0] = this._vertexStride[0] * 4;
+        this._instanceStride[1] = this._vertexStride[1] * 4;
 
         for (let i = 0; i < this._elements.length; ++i)
         {
             const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-            this._elements[i].instanceStride = this.instanceStride[bufferIndex];
+            this._elements[i].instanceStride = this._instanceStride[bufferIndex];
         }
 
-        this.buffers = [null, null];
-        if (this.instanceStride[0] && this.maxParticleCount)
+        this._buffers = [null, null];
+        if (this._instanceStride[0] && this.maxParticleCount)
         {
-            this.buffers[0] = new Float32Array(this.instanceStride[0] * this.maxParticleCount);
+            this._buffers[0] = new Float32Array(this._instanceStride[0] * this.maxParticleCount);
             this._vb = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-            gl.bufferData(gl.ARRAY_BUFFER, this.buffers[0].length, gl.DYNAMIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, this._buffers[0].length, gl.DYNAMIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
         }
 
-        if (this.instanceStride[1])
+        if (this._instanceStride[1])
         {
-            this.buffers[1] = new Float32Array(this.instanceStride[1] * this.maxParticleCount);
+            this._buffers[1] = new Float32Array(this._instanceStride[1] * this.maxParticleCount);
         }
 
         for (let i = 0; i < this._elements.length; ++i)
         {
             const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-            this._elements[i].buffer = this.buffers[bufferIndex];
+            this._elements[i].buffer = this._buffers[bufferIndex];
         }
 
         if (this.requiresSorting)
         {
             this._sortedIndexes = new Array(this.maxParticleCount);
-            this._sortedBuffer = new Float32Array(this.instanceStride[0] * this.maxParticleCount);
+            this._sortedBuffer = new Float32Array(this._instanceStride[0] * this.maxParticleCount);
             this._distancesBuffer = new Float32Array(this.maxParticleCount);
         }
 
-        this.isValid = true;
-        this.bufferDirty = true;
+        this._isValid = true;
+        this._bufferDirty = true;
     }
 
     /**
@@ -220,8 +231,8 @@ export class Tw2ParticleSystem
      */
     BeginSpawnParticle()
     {
-        if (!this.isValid || this.aliveCount >= this.maxParticleCount) return null;
-        return this.aliveCount++;
+        if (!this._isValid || this._aliveCount >= this.maxParticleCount) return null;
+        return this._aliveCount++;
     }
 
     /**
@@ -229,7 +240,7 @@ export class Tw2ParticleSystem
      */
     EndSpawnParticle()
     {
-        this.bufferDirty = true;
+        this._bufferDirty = true;
     }
 
     /**
@@ -247,7 +258,7 @@ export class Tw2ParticleSystem
                 position = this.emitParticleOnDeathEmitter ? this.GetElement(Tw2ParticleElement.Type.POSITION) : null,
                 velocity = this.emitParticleOnDeathEmitter ? this.GetElement(Tw2ParticleElement.Type.VELOCITY) : null;
 
-            for (let i = 0; i < this.aliveCount; ++i)
+            for (let i = 0; i < this._aliveCount; ++i)
             {
                 lifetime.buffer[lifetime.offset] += dt / lifetime.buffer[lifetime.offset + 1];
                 if (lifetime.buffer[lifetime.offset] > 1)
@@ -257,18 +268,18 @@ export class Tw2ParticleSystem
                         this.emitParticleOnDeathEmitter.SpawnParticles(position, velocity, 1);
                     }
 
-                    this.aliveCount--;
-                    if (i < this.aliveCount)
+                    this._aliveCount--;
+                    if (i < this._aliveCount)
                     {
                         for (let j = 0; j < 2; ++j)
                         {
-                            if (this.buffers[j])
+                            if (this._buffers[j])
                             {
-                                this.buffers[j].set(this.buffers[j].subarray(this.instanceStride[j] * this.aliveCount, this.instanceStride[j] * this.aliveCount + this.instanceStride[j]), i * this.instanceStride[j]);
+                                this._buffers[j].set(this._buffers[j].subarray(this._instanceStride[j] * this._aliveCount, this._instanceStride[j] * this._aliveCount + this._instanceStride[j]), i * this._instanceStride[j]);
                             }
                         }
                         --i;
-                        this.bufferDirty = true;
+                        this._bufferDirty = true;
                     }
                 }
                 else
@@ -296,7 +307,7 @@ export class Tw2ParticleSystem
                 velocity = this.GetElement(Tw2ParticleElement.Type.VELOCITY),
                 mass = hasForces ? this.GetElement(Tw2ParticleElement.Type.MASS) : null;
 
-            for (let i = 0; i < this.aliveCount; ++i)
+            for (let i = 0; i < this._aliveCount; ++i)
             {
                 if (hasForces)
                 {
@@ -338,7 +349,7 @@ export class Tw2ParticleSystem
         {
             for (let i = 0; i < this.constraints.length; ++i)
             {
-                this.constraints[i].ApplyConstraint(this.buffers, this.instanceStride, this.aliveCount, dt);
+                this.constraints[i].ApplyConstraint(this._buffers, this._instanceStride, this._aliveCount, dt);
             }
         }
 
@@ -353,7 +364,7 @@ export class Tw2ParticleSystem
                 position = this.GetElement(Tw2ParticleElement.Type.POSITION),
                 velocity = this.GetElement(Tw2ParticleElement.Type.VELOCITY);
 
-            for (let i = 0; i < this.aliveCount; ++i)
+            for (let i = 0; i < this._aliveCount; ++i)
             {
                 this.emitParticleDuringLifeEmitter.SpawnParticles(position, velocity, 1);
                 if (position) position.offset += position.instanceStride;
@@ -367,7 +378,7 @@ export class Tw2ParticleSystem
             el.offset = el.startOffset;
             if (el.dirty)
             {
-                this.bufferDirty = true;
+                this._bufferDirty = true;
                 el.dirty = false;
             }
         }
@@ -381,7 +392,7 @@ export class Tw2ParticleSystem
      */
     GetBoundingBox(aabbMin, aabbMax)
     {
-        if (this.aliveCount && this.HasElement(Tw2ParticleElement.Type.POSITION))
+        if (this._aliveCount && this.HasElement(Tw2ParticleElement.Type.POSITION))
         {
             const position = this.GetElement(Tw2ParticleElement.Type.POSITION);
             aabbMin[0] = position.buffer[position.offset];
@@ -390,7 +401,7 @@ export class Tw2ParticleSystem
             aabbMax[0] = position.buffer[position.offset];
             aabbMax[1] = position.buffer[position.offset + 1];
             aabbMax[2] = position.buffer[position.offset + 2];
-            for (let i = 0; i < this.aliveCount; ++i)
+            for (let i = 0; i < this._aliveCount; ++i)
             {
                 aabbMin[0] = Math.min(aabbMin[0], position.buffer[position.offset]);
                 aabbMin[1] = Math.min(aabbMin[1], position.buffer[position.offset + 1]);
@@ -414,7 +425,7 @@ export class Tw2ParticleSystem
         const
             eye = mat4.multiply(Tw2ParticleSystem.global.mat4_0, device.projection, device.view), //device.viewInverse;
             position = this.GetElement(Tw2ParticleElement.Type.POSITION),
-            count = this.aliveCount,
+            count = this._aliveCount,
             distances = this._distancesBuffer;
 
         for (let i = 0; i < count; ++i)
@@ -472,18 +483,18 @@ export class Tw2ParticleSystem
      */
     GetInstanceBuffer()
     {
-        if (this.aliveCount === 0) return undefined;
+        if (this._aliveCount === 0) return undefined;
 
         const gl = device.gl;
-        if (this.requiresSorting && this.HasElement(Tw2ParticleElement.Type.POSITION) && this.buffers)
+        if (this.requiresSorting && this.HasElement(Tw2ParticleElement.Type.POSITION) && this._buffers)
         {
             this._Sort();
 
             const
-                stride = this.instanceStride[0],
-                gpuBuffer = this.buffers[0];
+                stride = this._instanceStride[0],
+                gpuBuffer = this._buffers[0];
 
-            for (let i = 0; i < this.aliveCount; ++i)
+            for (let i = 0; i < this._aliveCount; ++i)
             {
                 const
                     toOffset = i * stride,
@@ -496,14 +507,14 @@ export class Tw2ParticleSystem
             }
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this._sortedBuffer.subarray(0, this.vertexStride[0] * this.aliveCount));
-            this.bufferDirty = false;
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this._sortedBuffer.subarray(0, this._vertexStride[0] * this._aliveCount));
+            this._bufferDirty = false;
         }
-        else if (this.bufferDirty)
+        else if (this._bufferDirty)
         {
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.buffers[0].subarray(0, this.vertexStride[0] * this.aliveCount));
-            this.bufferDirty = false;
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this._buffers[0].subarray(0, this._vertexStride[0] * this._aliveCount));
+            this._bufferDirty = false;
         }
 
         return this._vb;
@@ -524,7 +535,7 @@ export class Tw2ParticleSystem
      */
     GetInstanceStride()
     {
-        return this.instanceStride[0];
+        return this._instanceStride[0];
     }
 
     /**
@@ -533,7 +544,7 @@ export class Tw2ParticleSystem
      */
     GetInstanceCount()
     {
-        return this.aliveCount;
+        return this._aliveCount;
     }
 
     /**
@@ -557,3 +568,29 @@ export class Tw2ParticleSystem
 
 }
 
+Tw2BaseClass.define(Tw2ParticleSystem, Type =>
+{
+    return {
+        type: "Tw2ParticleSystem",
+        category: "ParticleSystem",
+        props: {
+            applyAging: Type.BOOLEAN,
+            applyForce: Type.BOOLEAN,
+            constraints: [["Tw2PlaneConstraint"]],
+            elements: [["Tw2ParticleElementDeclaration"]],
+            emitParticleDuringLifeEmitter: ["Tw2DynamicEmitter", "Tw2GpuUniqueEmitter"],
+            emitParticleOnDeathEmitter: ["Tw2DynamicEmitter", "Tw2GpuUniqueEmitter"],
+            forces: Type.ARRAY,
+            maxParticleCount: Type.NUMBER,
+            requiresSorting: Type.BOOLEAN,
+            updateBoundingBox: Type.BOOLEAN,
+            updateSimulation: Type.BOOLEAN,
+            useSimTimeRebase: Type.BOOLEAN
+        },
+        notImplemented: [
+            "isGlobal",
+            "peakAliveCount",
+            "useSimTimeRebase"
+        ]
+    };
+});

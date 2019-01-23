@@ -2,23 +2,27 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
 
 /**
  * Tw2DynamicEmitter
+ * Todo: Implement "maxParticles"
+ * @ccp Tr2DynamicEmitter
  *
- * @property {String} name
- * @property {number} rate
- * @property {Boolean} isValid
- * @property {number} _accumulatedRate
- * @property {Array<Tw2ParticleAttributeGenerator>}} generators
- * @inherits Tw2ParticleEmitter
- * @class
+ * @property {Array.<Tw2ParticleAttributeGenerator>} generators -
+ * @property {Number} maxParticles                              -
+ * @property {Tw2ParticleSystem} particleSystem                 -
+ * @property {Number} rate                                      -
+ * @property {number} _accumulatedRate                          -
+ * @property {Boolean} _isValid                                 -
  */
 export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 {
-
-    rate = 0;
-    isValid = false;
-    _accumulatedRate = 0;
+    // ccp
     generators = [];
-
+    maxParticles = 0;
+    particleSystem = null;
+    rate = 0;
+    
+    // ccpwgl
+    _accumulatedRate = 0;
+    _isValid = false;
 
     /**
      * Initializes the particle emitter
@@ -42,7 +46,7 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
      */
     Rebind()
     {
-        this.isValid = false;
+        this._isValid = false;
         if (!this.particleSystem) return;
 
         for (let i = 0; i < this.generators.length; ++i)
@@ -50,7 +54,7 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
             if (!this.generators[i].Bind(this.particleSystem)) return;
         }
 
-        this.isValid = true;
+        this._isValid = true;
     }
 
     /**
@@ -61,7 +65,7 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
      */
     SpawnParticles(position, velocity, rateModifier)
     {
-        if (!this.isValid) return;
+        if (!this._isValid) return;
 
         this._accumulatedRate += this.rate * rateModifier;
         const count = Math.floor(this._accumulatedRate);
@@ -82,3 +86,20 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
     }
 
 }
+
+Tw2ParticleEmitter.define(Tw2DynamicEmitter, Type =>
+{
+    return {
+        type: "Tw2DynamicEmitter",
+        category: "ParticleEmitter",
+        props: {
+            generators: [["Tr2RandomIntegerAttributeGenerator", "Tr2RandomUniformAttributeGenerator", "Tr2SphereShapeAttributeGenerator"]],
+            maxParticles: Type.NUMBER,
+            particleSystem: ["Tw2ParticleSystem"],
+            rate: Type.NUMBER
+        },
+        notImplemented: [
+            "maxParticles"
+        ]
+    };
+});

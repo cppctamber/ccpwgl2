@@ -2,8 +2,10 @@ import {resMan,} from "../../global";
 import {ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement} from "../../core";
 import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
 
+
 /**
  * Tw2StaticEmitter
+ * @ccp Tr2StaticEmitter
  *
  * @property {Tw2GeometryRes} geometryResource
  * @property {Number} geometryIndex
@@ -14,12 +16,32 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
 export class Tw2StaticEmitter extends Tw2ParticleEmitter
 {
 
+    // ccp
     geometryResourcePath = "";
+    meshIndex = 0;
+    
+    // ccpwgl
     geometryResource = null;
-    geometryIndex = 0;
     _spawned = false;
 
+    /**
+     * Alias for meshIndex
+     * @returns {Number}
+     */
+    get geometryIndex()
+    {
+        return this.meshIndex;
+    }
 
+    /**
+     * Alias for meshIndex
+     * @param {Number} val
+     */
+    set geometryIndex(val)
+    {
+        this.meshIndex = val;
+    }
+    
     /**
      * Initializes the particle emitter
      */
@@ -32,6 +54,20 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
             this.geometryResource.RegisterNotification(this);
         }
         this._spawned = false;
+    }
+
+    /**
+     * Gets resources
+     * @param {Array} [out=[]]
+     * @returns {Array<Tw2Resource>} out
+     */
+    GetResources(out=[])
+    {
+        if (this.geometryResource && !out.includes(this.geometryResource))
+        {
+            out.push(this.geometryResource);
+        }
+        return out;
     }
 
     /**
@@ -60,13 +96,13 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
             this.particleSystem &&
             res &&
             res.IsGood() &&
-            res.meshes.length > this.geometryIndex &&
-            res.meshes[this.geometryIndex].bufferData)
+            res.meshes.length > this.meshIndex &&
+            res.meshes[this.meshIndex].bufferData)
         {
             this._spawned = true;
 
             const
-                mesh = res.meshes[this.geometryIndex],
+                mesh = res.meshes[this.meshIndex],
                 elts = this.particleSystem.elements,
                 inputs = new Array(elts.length);
 
@@ -121,3 +157,16 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     }
 
 }
+
+Tw2ParticleEmitter.define(Tw2StaticEmitter, Type =>
+{
+    return {
+        type: "Tw2StaticEmitter",
+        category: "ParticleEmitter",
+        props: {
+            geometryResourcePath: Type.PATH,
+            meshIndex: Type.NUMBER
+        }
+    };
+});
+
