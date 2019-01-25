@@ -75,6 +75,7 @@ export class EveSpaceScene
             }
         });
 
+        this.curveSets = [];
         this.lensflares = [];
         this.objects = [];
         this.planets = [];
@@ -263,6 +264,11 @@ export class EveSpaceScene
      */
     Update(dt)
     {
+        for (let i = 0; i < this.curveSets.length; i++)
+        {
+            this.curveSets[i].Update(dt);
+        }
+
         for (let i = 0; i < this.planets.length; ++i)
         {
             if ("Update" in this.planets[i])

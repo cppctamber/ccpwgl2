@@ -2,7 +2,12 @@ import {vec3, quat, mat3, mat4, device} from "../../global";
 import {Tw2BinaryReader} from "../reader";
 import {Tw2VertexElement} from "../vertex";
 import {Tw2Resource} from "./Tw2Resource";
-import {ErrGeometryFileType, ErrGeometryMeshEffectBinding, ErrGeometryMeshBoneNameInvalid} from "../Tw2Error";
+import {
+    ErrGeometryFileType,
+    ErrGeometryMeshEffectBinding,
+    ErrGeometryMeshBoneNameInvalid,
+    ErrGeometryMeshAreaMissing
+} from "../Tw2Error";
 import {
     Tw2BlendShapeData,
     Tw2GeometryAnimation,
@@ -388,6 +393,16 @@ export class Tw2GeometryRes extends Tw2Resource
                     while (i + 1 < count)
                     {
                         area = mesh.areas[i + 1 + start];
+
+                        if (!area)
+                        {
+                            this.OnError(new ErrGeometryMeshAreaMissing({
+                                path: this.path,
+                                areaIndex: i + 1 + start
+                            }));
+                            return false;
+                        }
+
                         if (area.start !== areaStart + acount * 2) break;
                         acount += area.count;
                         ++i;
@@ -451,6 +466,16 @@ export class Tw2GeometryRes extends Tw2Resource
                     while (i + 1 < count)
                     {
                         area = mesh.areas[i + 1 + start];
+
+                        if (!area)
+                        {
+                            this.OnError(new ErrGeometryMeshAreaMissing({
+                                path: this.path,
+                                areaIndex: i + 1 + start
+                            }));
+                            return false;
+                        }
+
                         if (area.start !== areaStart + acount * 2) break;
                         acount += area.count;
                         ++i;
@@ -513,6 +538,16 @@ export class Tw2GeometryRes extends Tw2Resource
                     while (i + 1 < count)
                     {
                         area = mesh.areas[i + 1 + start];
+
+                        if (!area)
+                        {
+                            this.OnError(new ErrGeometryMeshAreaMissing({
+                                path: this.path,
+                                areaIndex: i + 1 + start
+                            }));
+                            return false;
+                        }
+
                         if (area.start !== areaStart + acount * 2) break;
                         acount += area.count;
                         ++i;

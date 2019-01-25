@@ -13835,7 +13835,7 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriObserverLoc
 /*!**************************!*\
   !*** ./core/Tw2Error.js ***!
   \**************************/
-/*! exports provided: Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
+/*! exports provided: Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -13850,6 +13850,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrXMLObjectTypeUndefined", function() { return ErrXMLObjectTypeUndefined; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return ErrGeometryMeshMissingParticleElement; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return ErrGeometryMeshElementComponentsMissing; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return ErrGeometryMeshAreaMissing; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return ErrGeometryMeshBoneNameInvalid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshEffectBinding", function() { return ErrGeometryMeshEffectBinding; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryFileType", function() { return ErrGeometryFileType; });
@@ -14143,13 +14144,30 @@ function (_Tw2Error9) {
   return ErrGeometryMeshElementComponentsMissing;
 }(Tw2Error);
 /**
+ * Throws when a geometry mesh area is missing
+ */
+
+let ErrGeometryMeshAreaMissing =
+/*#__PURE__*/
+function (_Tw2Error10) {
+  _inherits(ErrGeometryMeshAreaMissing, _Tw2Error10);
+
+  function ErrGeometryMeshAreaMissing(data) {
+    _classCallCheck(this, ErrGeometryMeshAreaMissing);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ErrGeometryMeshAreaMissing).call(this, data, "Geometry mesh missing area (index:%areaIndex%)"));
+  }
+
+  return ErrGeometryMeshAreaMissing;
+}(Tw2Error);
+/**
  * Throws when a geometry mesh has an invalid bone name for a model
  */
 
 let ErrGeometryMeshBoneNameInvalid =
 /*#__PURE__*/
-function (_Tw2Error10) {
-  _inherits(ErrGeometryMeshBoneNameInvalid, _Tw2Error10);
+function (_Tw2Error11) {
+  _inherits(ErrGeometryMeshBoneNameInvalid, _Tw2Error11);
 
   function ErrGeometryMeshBoneNameInvalid(data) {
     _classCallCheck(this, ErrGeometryMeshBoneNameInvalid);
@@ -14165,8 +14183,8 @@ function (_Tw2Error10) {
 
 let ErrGeometryMeshEffectBinding =
 /*#__PURE__*/
-function (_Tw2Error11) {
-  _inherits(ErrGeometryMeshEffectBinding, _Tw2Error11);
+function (_Tw2Error12) {
+  _inherits(ErrGeometryMeshEffectBinding, _Tw2Error12);
 
   function ErrGeometryMeshEffectBinding(data) {
     _classCallCheck(this, ErrGeometryMeshEffectBinding);
@@ -14182,8 +14200,8 @@ function (_Tw2Error11) {
 
 let ErrGeometryFileType =
 /*#__PURE__*/
-function (_Tw2Error12) {
-  _inherits(ErrGeometryFileType, _Tw2Error12);
+function (_Tw2Error13) {
+  _inherits(ErrGeometryFileType, _Tw2Error13);
 
   function ErrGeometryFileType(data) {
     _classCallCheck(this, ErrGeometryFileType);
@@ -14199,8 +14217,8 @@ function (_Tw2Error12) {
 
 let ErrResourcePrefixUnregistered =
 /*#__PURE__*/
-function (_Tw2Error13) {
-  _inherits(ErrResourcePrefixUnregistered, _Tw2Error13);
+function (_Tw2Error14) {
+  _inherits(ErrResourcePrefixUnregistered, _Tw2Error14);
 
   function ErrResourcePrefixUnregistered(data) {
     _classCallCheck(this, ErrResourcePrefixUnregistered);
@@ -14216,8 +14234,8 @@ function (_Tw2Error13) {
 
 let ErrResourcePrefixUndefined =
 /*#__PURE__*/
-function (_Tw2Error14) {
-  _inherits(ErrResourcePrefixUndefined, _Tw2Error14);
+function (_Tw2Error15) {
+  _inherits(ErrResourcePrefixUndefined, _Tw2Error15);
 
   function ErrResourcePrefixUndefined(data) {
     _classCallCheck(this, ErrResourcePrefixUndefined);
@@ -14233,8 +14251,8 @@ function (_Tw2Error14) {
 
 let ErrResourceExtensionUnregistered =
 /*#__PURE__*/
-function (_Tw2Error15) {
-  _inherits(ErrResourceExtensionUnregistered, _Tw2Error15);
+function (_Tw2Error16) {
+  _inherits(ErrResourceExtensionUnregistered, _Tw2Error16);
 
   function ErrResourceExtensionUnregistered(data) {
     _classCallCheck(this, ErrResourceExtensionUnregistered);
@@ -14250,8 +14268,8 @@ function (_Tw2Error15) {
 
 let ErrResourceExtensionUndefined =
 /*#__PURE__*/
-function (_Tw2Error16) {
-  _inherits(ErrResourceExtensionUndefined, _Tw2Error16);
+function (_Tw2Error17) {
+  _inherits(ErrResourceExtensionUndefined, _Tw2Error17);
 
   function ErrResourceExtensionUndefined(data) {
     _classCallCheck(this, ErrResourceExtensionUndefined);
@@ -14267,8 +14285,8 @@ function (_Tw2Error16) {
 
 let ErrResourceFormat =
 /*#__PURE__*/
-function (_Tw2Error17) {
-  _inherits(ErrResourceFormat, _Tw2Error17);
+function (_Tw2Error18) {
+  _inherits(ErrResourceFormat, _Tw2Error18);
 
   function ErrResourceFormat(data) {
     _classCallCheck(this, ErrResourceFormat);
@@ -14284,8 +14302,8 @@ function (_Tw2Error17) {
 
 let ErrShaderVersion =
 /*#__PURE__*/
-function (_Tw2Error18) {
-  _inherits(ErrShaderVersion, _Tw2Error18);
+function (_Tw2Error19) {
+  _inherits(ErrShaderVersion, _Tw2Error19);
 
   function ErrShaderVersion(data) {
     _classCallCheck(this, ErrShaderVersion);
@@ -14301,8 +14319,8 @@ function (_Tw2Error18) {
 
 let ErrShaderHeaderSize =
 /*#__PURE__*/
-function (_Tw2Error19) {
-  _inherits(ErrShaderHeaderSize, _Tw2Error19);
+function (_Tw2Error20) {
+  _inherits(ErrShaderHeaderSize, _Tw2Error20);
 
   function ErrShaderHeaderSize(data) {
     _classCallCheck(this, ErrShaderHeaderSize);
@@ -14318,8 +14336,8 @@ function (_Tw2Error19) {
 
 let ErrShaderPermutationValue =
 /*#__PURE__*/
-function (_Tw2Error20) {
-  _inherits(ErrShaderPermutationValue, _Tw2Error20);
+function (_Tw2Error21) {
+  _inherits(ErrShaderPermutationValue, _Tw2Error21);
 
   function ErrShaderPermutationValue(data) {
     _classCallCheck(this, ErrShaderPermutationValue);
@@ -14335,8 +14353,8 @@ function (_Tw2Error20) {
 
 let ErrShaderCompile =
 /*#__PURE__*/
-function (_Tw2Error21) {
-  _inherits(ErrShaderCompile, _Tw2Error21);
+function (_Tw2Error22) {
+  _inherits(ErrShaderCompile, _Tw2Error22);
 
   function ErrShaderCompile(data) {
     _classCallCheck(this, ErrShaderCompile);
@@ -14352,8 +14370,8 @@ function (_Tw2Error21) {
 
 let ErrShaderLink =
 /*#__PURE__*/
-function (_Tw2Error22) {
-  _inherits(ErrShaderLink, _Tw2Error22);
+function (_Tw2Error23) {
+  _inherits(ErrShaderLink, _Tw2Error23);
 
   function ErrShaderLink(data) {
     _classCallCheck(this, ErrShaderLink);
@@ -14369,8 +14387,8 @@ function (_Tw2Error22) {
 
 let ErrDeclarationValueType =
 /*#__PURE__*/
-function (_Tw2Error23) {
-  _inherits(ErrDeclarationValueType, _Tw2Error23);
+function (_Tw2Error24) {
+  _inherits(ErrDeclarationValueType, _Tw2Error24);
 
   function ErrDeclarationValueType(data) {
     _classCallCheck(this, ErrDeclarationValueType);
@@ -14386,8 +14404,8 @@ function (_Tw2Error23) {
 
 let ErrSingletonInstantiation =
 /*#__PURE__*/
-function (_Tw2Error24) {
-  _inherits(ErrSingletonInstantiation, _Tw2Error24);
+function (_Tw2Error25) {
+  _inherits(ErrSingletonInstantiation, _Tw2Error25);
 
   function ErrSingletonInstantiation(data) {
     _classCallCheck(this, ErrSingletonInstantiation);
@@ -14403,8 +14421,8 @@ function (_Tw2Error24) {
 
 let ErrAbstractClassMethod =
 /*#__PURE__*/
-function (_Tw2Error25) {
-  _inherits(ErrAbstractClassMethod, _Tw2Error25);
+function (_Tw2Error26) {
+  _inherits(ErrAbstractClassMethod, _Tw2Error26);
 
   function ErrAbstractClassMethod(data) {
     _classCallCheck(this, ErrAbstractClassMethod);
@@ -14420,8 +14438,8 @@ function (_Tw2Error25) {
 
 let ErrFeatureNotImplemented =
 /*#__PURE__*/
-function (_Tw2Error26) {
-  _inherits(ErrFeatureNotImplemented, _Tw2Error26);
+function (_Tw2Error27) {
+  _inherits(ErrFeatureNotImplemented, _Tw2Error27);
 
   function ErrFeatureNotImplemented(data) {
     _classCallCheck(this, ErrFeatureNotImplemented);
@@ -14437,8 +14455,8 @@ function (_Tw2Error26) {
 
 let ErrIndexBounds =
 /*#__PURE__*/
-function (_Tw2Error27) {
-  _inherits(ErrIndexBounds, _Tw2Error27);
+function (_Tw2Error28) {
+  _inherits(ErrIndexBounds, _Tw2Error28);
 
   function ErrIndexBounds(data) {
     _classCallCheck(this, ErrIndexBounds);
@@ -14454,8 +14472,8 @@ function (_Tw2Error27) {
 
 let ErrBindingValueUndefined =
 /*#__PURE__*/
-function (_Tw2Error28) {
-  _inherits(ErrBindingValueUndefined, _Tw2Error28);
+function (_Tw2Error29) {
+  _inherits(ErrBindingValueUndefined, _Tw2Error29);
 
   function ErrBindingValueUndefined(data) {
     _classCallCheck(this, ErrBindingValueUndefined);
@@ -14471,8 +14489,8 @@ function (_Tw2Error28) {
 
 let ErrBindingType =
 /*#__PURE__*/
-function (_Tw2Error29) {
-  _inherits(ErrBindingType, _Tw2Error29);
+function (_Tw2Error30) {
+  _inherits(ErrBindingType, _Tw2Error30);
 
   function ErrBindingType(data) {
     _classCallCheck(this, ErrBindingType);
@@ -14488,8 +14506,8 @@ function (_Tw2Error29) {
 
 let ErrBindingReference =
 /*#__PURE__*/
-function (_Tw2Error30) {
-  _inherits(ErrBindingReference, _Tw2Error30);
+function (_Tw2Error31) {
+  _inherits(ErrBindingReference, _Tw2Error31);
 
   function ErrBindingReference(data) {
     _classCallCheck(this, ErrBindingReference);
@@ -17047,7 +17065,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17220,6 +17238,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrGeometryMeshMissingParticleElement"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrGeometryMeshElementComponentsMissing"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrGeometryMeshAreaMissing"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrGeometryMeshBoneNameInvalid"]; });
 
@@ -23904,6 +23924,15 @@ function (_Tw2Resource) {
 
             while (i + 1 < count) {
               area = mesh.areas[i + 1 + start];
+
+              if (!area) {
+                this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshAreaMissing"]({
+                  path: this.path,
+                  areaIndex: i + 1 + start
+                }));
+                return false;
+              }
+
               if (area.start !== areaStart + acount * 2) break;
               acount += area.count;
               ++i;
@@ -23964,6 +23993,15 @@ function (_Tw2Resource) {
 
             while (i + 1 < count) {
               area = mesh.areas[i + 1 + start];
+
+              if (!area) {
+                this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshAreaMissing"]({
+                  path: this.path,
+                  areaIndex: i + 1 + start
+                }));
+                return false;
+              }
+
               if (area.start !== areaStart + acount * 2) break;
               acount += area.count;
               ++i;
@@ -24022,6 +24060,15 @@ function (_Tw2Resource) {
 
             while (i + 1 < count) {
               area = mesh.areas[i + 1 + start];
+
+              if (!area) {
+                this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshAreaMissing"]({
+                  path: this.path,
+                  areaIndex: i + 1 + start
+                }));
+                return false;
+              }
+
               if (area.start !== areaStart + acount * 2) break;
               acount += area.count;
               ++i;
@@ -55190,7 +55237,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55252,6 +55299,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshMissingParticleElement", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["ErrGeometryMeshMissingParticleElement"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshElementComponentsMissing", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["ErrGeometryMeshElementComponentsMissing"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshAreaMissing", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["ErrGeometryMeshAreaMissing"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrGeometryMeshBoneNameInvalid", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["ErrGeometryMeshBoneNameInvalid"]; });
 

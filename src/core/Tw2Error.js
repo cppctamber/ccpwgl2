@@ -185,6 +185,16 @@ export class ErrGeometryMeshElementComponentsMissing extends Tw2Error
     }
 }
 
+/**
+ * Throws when a geometry mesh area is missing
+ */
+export class ErrGeometryMeshAreaMissing extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Geometry mesh missing expected area at index %areaIndex%");
+    }
+}
 
 /**
  * Throws when a geometry mesh has an invalid bone name for a model
