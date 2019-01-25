@@ -3,11 +3,10 @@ import {Tw2ParticleForce} from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleSpring
+ * @ccp Tr2ParticleSpring
  *
  * @property {number} springConstant
  * @property {vec3} position
- * @inherits Tw2ParticleForce
- * @class
  */
 export class Tw2ParticleSpring extends Tw2ParticleForce
 {
@@ -17,12 +16,14 @@ export class Tw2ParticleSpring extends Tw2ParticleForce
 
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    ApplyForce(position, velocity, force)
+    ApplyForce(position, velocity, force, dt, mass)
     {
         force[0] += (this.position[0] - position.buffer[position.offset]) * this.springConstant;
         force[1] += (this.position[1] - position.buffer[position.offset + 1]) * this.springConstant;
@@ -30,3 +31,15 @@ export class Tw2ParticleSpring extends Tw2ParticleForce
     }
 
 }
+
+Tw2ParticleForce.define(Tw2ParticleSpring, Type =>
+{
+    return {
+        type: "Tw2ParticleSpring",
+        props: {
+            position: Type.TR_TRANSLATION,
+            springConstant: Type.NUMBER
+        }
+    };
+});
+

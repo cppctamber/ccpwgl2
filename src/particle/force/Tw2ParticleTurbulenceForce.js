@@ -3,32 +3,35 @@ import {Tw2ParticleForce} from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleTurbulenceForce
+ * @ccp Tr2ParticleTurbulenceForce
  *
- * @property {number} noiseLevel
- * @property {number} noiseRatio
- * @property {vec3} amplitude
- * @property {quat} frequency
- * @property {number} _time
- * @inherits Tw2ParticleForce
- * @class
+ * @property {vec3} amplitude    -
+ * @property {vec4} frequency    -
+ * @property {Number} noiseLevel -
+ * @property {Number} noiseRatio -
+ * @property {number} _time      -
  */
 export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
 {
-
-    noiseLevel = 3;
-    noiseRatio = 0.5;
+    //ccp
     amplitude = vec3.fromValues(1, 1, 1);
     frequency = vec4.fromValues(1, 1, 1, 1);
+    noiseLevel = 3;
+    noiseRatio = 0.5;
+
+    //ccpwgl
     _time = 0;
 
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    ApplyForce(position, velocity, force)
+    ApplyForce(position, velocity, force, dt, mass)
     {
         if (this.noiseLevel === 0) return;
 
@@ -69,3 +72,17 @@ export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
     }
 
 }
+
+Tw2ParticleForce.define(Tw2ParticleTurbulenceForce, Type =>
+{
+    return {
+        type: "Tw2ParticleTurbulenceForce",
+        props: {
+            amplitude: Type.VECTOR3,
+            frequency: Type.VECTOR4,
+            noiseLevel: Type.NUMBER,
+            noiseRatio: Type.NUMBER
+        }
+    };
+});
+

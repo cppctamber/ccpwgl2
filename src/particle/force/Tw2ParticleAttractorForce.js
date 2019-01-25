@@ -3,12 +3,10 @@ import {Tw2ParticleForce} from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleAttractorForce
+ * @ccp Tr2ParticleAttractorForce
  *
  * @property {number} magnitude
  * @property {vec3} position
- * @property {vec3} _tempVec
- * @inherits Tw2ParticleForce
- * @class
  */
 export class Tw2ParticleAttractorForce extends Tw2ParticleForce
 {
@@ -18,12 +16,14 @@ export class Tw2ParticleAttractorForce extends Tw2ParticleForce
 
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    ApplyForce(position, velocity, force)
+    ApplyForce(position, velocity, force, dt, mass)
     {
         const vec3_0 = Tw2ParticleForce.global.vec3_0;
 
@@ -37,3 +37,15 @@ export class Tw2ParticleAttractorForce extends Tw2ParticleForce
     }
 
 }
+
+Tw2ParticleForce.define(Tw2ParticleAttractorForce, Type =>
+{
+    return {
+        type: "Tw2ParticleAttractorForce",
+        props: {
+            magnitude: Type.NUMBER,
+            position: Type.TR_TRANSLATION
+        }
+    };
+});
+

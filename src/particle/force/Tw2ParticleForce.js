@@ -1,31 +1,25 @@
 /* eslint no-unused-vars:0 */
-import {util, vec3, vec4} from "../../global";
+import {util, vec3, vec4, Tw2BaseClass} from "../../global";
+import {ErrAbstractClassMethod} from "../../core";
 
 /**
  * Tw2ParticleForce base class
- *
- * @property {number|String} id
- * @property {String} name
- * @class
+ * @ccp N/A
  */
-export class Tw2ParticleForce
+export class Tw2ParticleForce extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-
 
     /**
      * Applies forces
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
-     * @param {number} [dt]
-     * @param {number} [mass]
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
     ApplyForce(position, velocity, force, dt, mass)
     {
-
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -48,3 +42,12 @@ export class Tw2ParticleForce
     };
 
 }
+
+Tw2BaseClass.define(Tw2ParticleForce, Type =>
+{
+    return {
+        type: "Tw2ParticleForce",
+        category: "ParticleForce",
+        isAbstract: true
+    };
+});

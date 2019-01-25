@@ -34628,6 +34628,7 @@ function () {
         this.backgroundRenderingEnabled = bool ? 1 : 0;
       }
     });
+    this.curveSets = [];
     this.lensflares = [];
     this.objects = [];
     this.planets = [];
@@ -34820,6 +34821,10 @@ function () {
   }, {
     key: "Update",
     value: function Update(dt) {
+      for (let i = 0; i < this.curveSets.length; i++) {
+        this.curveSets[i].Update(dt);
+      }
+
       for (let i = 0; i < this.planets.length; ++i) {
         if ("Update" in this.planets[i]) {
           this.planets[i].Update(dt);
@@ -55185,7 +55190,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55627,6 +55632,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2StaticEmitter"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2DynamicEmitter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["EveParticleDirectForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["EveParticleDragForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tr2ForceSphereVolume"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tr2ParticleVortexForce"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleAttractorForce"]; });
 
@@ -56547,15 +56560,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * TODO: Implement
  * @ccp Tr2GpuParticleSystem
  *
- * @property {Tr2Effect} clear             -
- * @property {Tr2Effect} emit              -
- * @property {Tr2Effect} render            -
- * @property {Tr2Effect} setDrawParameters -
- * @property {Tr2Effect} setSortParameters -
- * @property {Tr2Effect} sort              -
- * @property {Tr2Effect} sortInner         -
- * @property {Tr2Effect} sortStep          -
- * @property {Tr2Effect} update            -
+ * @property {Tw2Effect} clear             -
+ * @property {Tw2Effect} emit              -
+ * @property {Tw2Effect} render            -
+ * @property {Tw2Effect} setDrawParameters -
+ * @property {Tw2Effect} setSortParameters -
+ * @property {Tw2Effect} sort              -
+ * @property {Tw2Effect} sortInner         -
+ * @property {Tw2Effect} sortStep          -
+ * @property {Tw2Effect} update            -
  */
 
 let Tr2GpuParticleSystem =
@@ -56605,15 +56618,15 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2GpuParticleSystem
     type: "Tr2GpuParticleSystem",
     category: "ParticleSystem",
     props: {
-      clear: ["Tr2Effect"],
-      emit: ["Tr2Effect"],
-      render: ["Tr2Effect"],
-      setDrawParameters: ["Tr2Effect"],
-      setSortParameters: ["Tr2Effect"],
-      sort: ["Tr2Effect"],
-      sortInner: ["Tr2Effect"],
-      sortStep: ["Tr2Effect"],
-      update: ["Tr2Effect"]
+      clear: ["Tw2Effect"],
+      emit: ["Tw2Effect"],
+      render: ["Tw2Effect"],
+      setDrawParameters: ["Tw2Effect"],
+      setSortParameters: ["Tw2Effect"],
+      sort: ["Tw2Effect"],
+      sortInner: ["Tw2Effect"],
+      sortStep: ["Tw2Effect"],
+      update: ["Tw2Effect"]
     },
     notImplemented: ["*"]
   };
@@ -58592,6 +58605,362 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./particle/force/EveParticleDirectForce.js":
+/*!**************************************************!*\
+  !*** ./particle/force/EveParticleDirectForce.js ***!
+  \**************************************************/
+/*! exports provided: EveParticleDirectForce */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return EveParticleDirectForce; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveParticleDirectForce
+ * Todo: Is this just a copy of Tw2ParticleDirectForce?
+ *
+ * @property {vec3} force -
+ */
+
+let EveParticleDirectForce =
+/*#__PURE__*/
+function (_Tw2ParticleForce) {
+  _inherits(EveParticleDirectForce, _Tw2ParticleForce);
+
+  function EveParticleDirectForce() {
+    var _this;
+
+    _classCallCheck(this, EveParticleDirectForce);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveParticleDirectForce).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "force", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    return _this;
+  }
+
+  return EveParticleDirectForce;
+}(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].define(EveParticleDirectForce, Type => {
+  return {
+    isStaging: true,
+    type: "EveParticleDirectForce",
+    props: {
+      force: Type.VECTOR3
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/force/EveParticleDragForce.js":
+/*!************************************************!*\
+  !*** ./particle/force/EveParticleDragForce.js ***!
+  \************************************************/
+/*! exports provided: EveParticleDragForce */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return EveParticleDragForce; });
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * EveParticleDragForce
+ * Todo: Is this just a copy of Tw2ParticleDragForce?
+ *
+ * @property {Number} drag -
+ */
+
+let EveParticleDragForce =
+/*#__PURE__*/
+function (_Tw2ParticleForce) {
+  _inherits(EveParticleDragForce, _Tw2ParticleForce);
+
+  function EveParticleDragForce() {
+    var _this;
+
+    _classCallCheck(this, EveParticleDragForce);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveParticleDragForce).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "drag", 0);
+
+    return _this;
+  }
+
+  return EveParticleDragForce;
+}(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"].define(EveParticleDragForce, Type => {
+  return {
+    isStaging: true,
+    type: "EveParticleDragForce",
+    props: {
+      drag: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/force/Tr2ForceSphereVolume.js":
+/*!************************************************!*\
+  !*** ./particle/force/Tr2ForceSphereVolume.js ***!
+  \************************************************/
+/*! exports provided: Tr2ForceSphereVolume */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return Tr2ForceSphereVolume; });
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tr2ForceSphereVolume
+ * TODO: Implement
+ * @ccp Tr2ForceSphereVolume
+ *
+ * @property {Array.<Tw2ParticleForce>} forces -
+ * @property {Number} radius                -
+ */
+
+let Tr2ForceSphereVolume =
+/*#__PURE__*/
+function (_Tw2ParticleForce) {
+  _inherits(Tr2ForceSphereVolume, _Tw2ParticleForce);
+
+  function Tr2ForceSphereVolume() {
+    var _this;
+
+    _classCallCheck(this, Tr2ForceSphereVolume);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ForceSphereVolume).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "forces", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
+
+    return _this;
+  }
+
+  _createClass(Tr2ForceSphereVolume, [{
+    key: "ApplyForce",
+
+    /**
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
+     */
+    value: function ApplyForce(position, velocity, force, dt, mass) {
+      // Todo: Implement ApplyForce
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]();
+    }
+    /**
+     * Per frame update
+     * @param {Number} dt
+     */
+
+  }, {
+    key: "Update",
+    value: function Update(dt) {
+      // Todo: Implement Update
+      for (let i = 0; i < this.forces.length; i++) {
+        this.forces[i].Update(dt);
+      }
+    }
+  }]);
+
+  return Tr2ForceSphereVolume;
+}(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"].define(Tr2ForceSphereVolume, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2ForceSphereVolume",
+    props: {
+      forces: [["ParticleForce"]],
+      radius: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./particle/force/Tr2ParticleVortexForce.js":
+/*!**************************************************!*\
+  !*** ./particle/force/Tr2ParticleVortexForce.js ***!
+  \**************************************************/
+/*! exports provided: Tr2ParticleVortexForce */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return Tr2ParticleVortexForce; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+/**
+ * Tr2ParticleVortexForce
+ * Todo: Implement
+ * @ccp Tr2ParticleVortexForce
+ *
+ * @property {vec3} axis        -
+ * @property {Number} magnitude -
+ * @property {vec3} position    -
+ */
+
+let Tr2ParticleVortexForce =
+/*#__PURE__*/
+function (_Tw2ParticleForce) {
+  _inherits(Tr2ParticleVortexForce, _Tw2ParticleForce);
+
+  function Tr2ParticleVortexForce() {
+    var _this;
+
+    _classCallCheck(this, Tr2ParticleVortexForce);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2ParticleVortexForce).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "axis", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "magnitude", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    return _this;
+  }
+
+  _createClass(Tr2ParticleVortexForce, [{
+    key: "ApplyForce",
+
+    /**
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
+     */
+    value: function ApplyForce(position, velocity, force, dt, mass) {} // Todo: Implement ApplyForce
+
+    /**
+     * Per frame update
+     * @param {Number} dt
+     */
+
+  }, {
+    key: "Update",
+    value: function Update(dt) {// Todo: Implement Update
+    }
+  }]);
+
+  return Tr2ParticleVortexForce;
+}(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].define(Tr2ParticleVortexForce, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2ParticleVortexForce",
+    props: {
+      axis: Type.VECTOR3,
+      magnitude: Type.NUMBER,
+      position: Type.TR_TRANSLATION
+    }
+  };
+});
+
+/***/ }),
+
 /***/ "./particle/force/Tw2ParticleAttractorForce.js":
 /*!*****************************************************!*\
   !*** ./particle/force/Tw2ParticleAttractorForce.js ***!
@@ -58626,12 +58995,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2ParticleAttractorForce
+ * @ccp Tr2ParticleAttractorForce
  *
  * @property {number} magnitude
  * @property {vec3} position
- * @property {vec3} _tempVec
- * @inherits Tw2ParticleForce
- * @class
  */
 
 let Tw2ParticleAttractorForce =
@@ -58661,12 +59028,14 @@ function (_Tw2ParticleForce) {
     key: "ApplyForce",
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    value: function ApplyForce(position, velocity, force) {
+    value: function ApplyForce(position, velocity, force, dt, mass) {
       const vec3_0 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_0;
       vec3_0[0] = this.position[0] - position.buffer[position.offset];
       vec3_0[1] = this.position[1] - position.buffer[position.offset + 1];
@@ -58679,6 +59048,15 @@ function (_Tw2ParticleForce) {
 
   return Tw2ParticleAttractorForce;
 }(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].define(Tw2ParticleAttractorForce, Type => {
+  return {
+    type: "Tw2ParticleAttractorForce",
+    props: {
+      magnitude: Type.NUMBER,
+      position: Type.TR_TRANSLATION
+    }
+  };
+});
 
 /***/ }),
 
@@ -58716,10 +59094,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2ParticleDirectForce
+ * @ccp Tr2ParticleDirectForce
  *
  * @property {vec3} force
- * @inherits Tw2ParticleForce
- * @class
  */
 
 let Tw2ParticleDirectForce =
@@ -58747,18 +59124,29 @@ function (_Tw2ParticleForce) {
     key: "ApplyForce",
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    value: function ApplyForce(position, velocity, force) {
+    value: function ApplyForce(position, velocity, force, dt, mass) {
       _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(force, force, this.force);
     }
   }]);
 
   return Tw2ParticleDirectForce;
 }(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].define(Tw2ParticleDirectForce, Type => {
+  return {
+    type: "Tw2ParticleDirectForce",
+    category: "ParticleForce",
+    props: {
+      force: Type.VECTOR3
+    }
+  };
+});
 
 /***/ }),
 
@@ -58794,10 +59182,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2ParticleDragForce
+ * @ccp Tr2ParticleDragForce
  *
  * @property {number} drag
- * @inherits Tw2ParticleForce
- * @class
  */
 
 let Tw2ParticleDragForce =
@@ -58825,12 +59212,14 @@ function (_Tw2ParticleForce) {
     key: "ApplyForce",
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    value: function ApplyForce(position, velocity, force) {
+    value: function ApplyForce(position, velocity, force, dt, mass) {
       force[0] += velocity.buffer[velocity.offset] * -this.drag;
       force[1] += velocity.buffer[velocity.offset + 1] * -this.drag;
       force[2] += velocity.buffer[velocity.offset + 2] * -this.drag;
@@ -58839,6 +59228,14 @@ function (_Tw2ParticleForce) {
 
   return Tw2ParticleDragForce;
 }(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"].define(Tw2ParticleDragForce, Type => {
+  return {
+    type: "Tw2ParticleDragForce",
+    props: {
+      drag: Type.NUMBER
+    }
+  };
+});
 
 /***/ }),
 
@@ -58876,10 +59273,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2ParticleFluidDragForce
+ * @ccp Tr2ParticleFluidDragForce
  *
  * @property {number} drag
- * @inherits Tw2ParticleForce
- * @class
  */
 
 let Tw2ParticleFluidDragForce =
@@ -58907,12 +59303,12 @@ function (_Tw2ParticleForce) {
     key: "ApplyForce",
 
     /**
-     * Applies forces
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
-     * @param {number} dt - delta time
-     * @param { number} mass
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
     value: function ApplyForce(position, velocity, force, dt, mass) {
       const vec3_0 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_0,
@@ -58939,6 +59335,15 @@ function (_Tw2ParticleForce) {
 
   return Tw2ParticleFluidDragForce;
 }(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].define(Tw2ParticleFluidDragForce, Type => {
+  return {
+    type: "Tw2ParticleFluidDragForce",
+    category: "ParticleForce",
+    props: {
+      drag: Type.NUMBER
+    }
+  };
+});
 
 /***/ }),
 
@@ -58953,33 +59358,42 @@ function (_Tw2ParticleForce) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleForce", function() { return Tw2ParticleForce; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /* eslint no-unused-vars:0 */
 
+
 /**
  * Tw2ParticleForce base class
- *
- * @property {number|String} id
- * @property {String} name
- * @class
+ * @ccp N/A
  */
 
 let Tw2ParticleForce =
 /*#__PURE__*/
-function () {
+function (_Tw2BaseClass) {
+  _inherits(Tw2ParticleForce, _Tw2BaseClass);
+
   function Tw2ParticleForce() {
     _classCallCheck(this, Tw2ParticleForce);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
-
-    _defineProperty(this, "name", "");
+    return _possibleConstructorReturn(this, _getPrototypeOf(Tw2ParticleForce).apply(this, arguments));
   }
 
   _createClass(Tw2ParticleForce, [{
@@ -58987,13 +59401,15 @@ function () {
 
     /**
      * Applies forces
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
-     * @param {number} [dt]
-     * @param {number} [mass]
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    value: function ApplyForce(position, velocity, force, dt, mass) {}
+    value: function ApplyForce(position, velocity, force, dt, mass) {
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
     /**
      * Per frame update (Called before ApplyForce)
      * @param {number} dt - delta time
@@ -59010,12 +59426,20 @@ function () {
   }]);
 
   return Tw2ParticleForce;
-}();
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
 _defineProperty(Tw2ParticleForce, "global", {
   vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()
+});
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2ParticleForce, Type => {
+  return {
+    type: "Tw2ParticleForce",
+    category: "ParticleForce",
+    isAbstract: true
+  };
 });
 
 /***/ }),
@@ -59054,11 +59478,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2ParticleSpring
+ * @ccp Tr2ParticleSpring
  *
  * @property {number} springConstant
  * @property {vec3} position
- * @inherits Tw2ParticleForce
- * @class
  */
 
 let Tw2ParticleSpring =
@@ -59088,12 +59511,14 @@ function (_Tw2ParticleForce) {
     key: "ApplyForce",
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    value: function ApplyForce(position, velocity, force) {
+    value: function ApplyForce(position, velocity, force, dt, mass) {
       force[0] += (this.position[0] - position.buffer[position.offset]) * this.springConstant;
       force[1] += (this.position[1] - position.buffer[position.offset + 1]) * this.springConstant;
       force[2] += (this.position[2] - position.buffer[position.offset + 2]) * this.springConstant;
@@ -59102,6 +59527,15 @@ function (_Tw2ParticleForce) {
 
   return Tw2ParticleSpring;
 }(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].define(Tw2ParticleSpring, Type => {
+  return {
+    type: "Tw2ParticleSpring",
+    props: {
+      position: Type.TR_TRANSLATION,
+      springConstant: Type.NUMBER
+    }
+  };
+});
 
 /***/ }),
 
@@ -59139,14 +59573,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2ParticleTurbulenceForce
+ * @ccp Tr2ParticleTurbulenceForce
  *
- * @property {number} noiseLevel
- * @property {number} noiseRatio
- * @property {vec3} amplitude
- * @property {quat} frequency
- * @property {number} _time
- * @inherits Tw2ParticleForce
- * @class
+ * @property {vec3} amplitude    -
+ * @property {vec4} frequency    -
+ * @property {Number} noiseLevel -
+ * @property {Number} noiseRatio -
+ * @property {number} _time      -
  */
 
 let Tw2ParticleTurbulenceForce =
@@ -59165,13 +59598,13 @@ function (_Tw2ParticleForce) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2ParticleTurbulenceForce).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseLevel", 3);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseRatio", 0.5);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "amplitude", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "frequency", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseLevel", 3);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseRatio", 0.5);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_time", 0);
 
@@ -59182,12 +59615,14 @@ function (_Tw2ParticleForce) {
     key: "ApplyForce",
 
     /**
-     * ApplyForce
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
-    value: function ApplyForce(position, velocity, force) {
+    value: function ApplyForce(position, velocity, force, dt, mass) {
       if (this.noiseLevel === 0) return;
       let pos_0 = position.buffer[position.offset] * this.frequency[0],
           pos_1 = position.buffer[position.offset + 1] * this.frequency[1],
@@ -59226,6 +59661,17 @@ function (_Tw2ParticleForce) {
 
   return Tw2ParticleTurbulenceForce;
 }(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"]);
+_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].define(Tw2ParticleTurbulenceForce, Type => {
+  return {
+    type: "Tw2ParticleTurbulenceForce",
+    props: {
+      amplitude: Type.VECTOR3,
+      frequency: Type.VECTOR4,
+      noiseLevel: Type.NUMBER,
+      noiseRatio: Type.NUMBER
+    }
+  };
+});
 
 /***/ }),
 
@@ -59233,28 +59679,44 @@ function (_Tw2ParticleForce) {
 /*!*********************************!*\
   !*** ./particle/force/index.js ***!
   \*********************************/
-/*! exports provided: Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce */
+/*! exports provided: EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleAttractorForce */ "./particle/force/Tw2ParticleAttractorForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _Tw2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleAttractorForce"]; });
+/* harmony import */ var _EveParticleDirectForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveParticleDirectForce */ "./particle/force/EveParticleDirectForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _EveParticleDirectForce__WEBPACK_IMPORTED_MODULE_0__["EveParticleDirectForce"]; });
 
-/* harmony import */ var _Tw2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleDirectForce */ "./particle/force/Tw2ParticleDirectForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return _Tw2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleDirectForce"]; });
+/* harmony import */ var _EveParticleDragForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveParticleDragForce */ "./particle/force/EveParticleDragForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return _EveParticleDragForce__WEBPACK_IMPORTED_MODULE_1__["EveParticleDragForce"]; });
 
-/* harmony import */ var _Tw2ParticleDragForce__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleDragForce */ "./particle/force/Tw2ParticleDragForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDragForce", function() { return _Tw2ParticleDragForce__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleDragForce"]; });
+/* harmony import */ var _Tr2ForceSphereVolume__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2ForceSphereVolume */ "./particle/force/Tr2ForceSphereVolume.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return _Tr2ForceSphereVolume__WEBPACK_IMPORTED_MODULE_2__["Tr2ForceSphereVolume"]; });
 
-/* harmony import */ var _Tw2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2ParticleFluidDragForce */ "./particle/force/Tw2ParticleFluidDragForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return _Tw2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleFluidDragForce"]; });
+/* harmony import */ var _Tr2ParticleVortexForce__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2ParticleVortexForce */ "./particle/force/Tr2ParticleVortexForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return _Tr2ParticleVortexForce__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleVortexForce"]; });
 
-/* harmony import */ var _Tw2ParticleSpring__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ParticleSpring */ "./particle/force/Tw2ParticleSpring.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return _Tw2ParticleSpring__WEBPACK_IMPORTED_MODULE_4__["Tw2ParticleSpring"]; });
+/* harmony import */ var _Tw2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ParticleAttractorForce */ "./particle/force/Tw2ParticleAttractorForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _Tw2ParticleAttractorForce__WEBPACK_IMPORTED_MODULE_4__["Tw2ParticleAttractorForce"]; });
 
-/* harmony import */ var _Tw2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2ParticleTurbulenceForce */ "./particle/force/Tw2ParticleTurbulenceForce.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return _Tw2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_5__["Tw2ParticleTurbulenceForce"]; });
+/* harmony import */ var _Tw2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2ParticleDirectForce */ "./particle/force/Tw2ParticleDirectForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return _Tw2ParticleDirectForce__WEBPACK_IMPORTED_MODULE_5__["Tw2ParticleDirectForce"]; });
+
+/* harmony import */ var _Tw2ParticleDragForce__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2ParticleDragForce */ "./particle/force/Tw2ParticleDragForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDragForce", function() { return _Tw2ParticleDragForce__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleDragForce"]; });
+
+/* harmony import */ var _Tw2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2ParticleFluidDragForce */ "./particle/force/Tw2ParticleFluidDragForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return _Tw2ParticleFluidDragForce__WEBPACK_IMPORTED_MODULE_7__["Tw2ParticleFluidDragForce"]; });
+
+/* harmony import */ var _Tw2ParticleSpring__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tw2ParticleSpring */ "./particle/force/Tw2ParticleSpring.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return _Tw2ParticleSpring__WEBPACK_IMPORTED_MODULE_8__["Tw2ParticleSpring"]; });
+
+/* harmony import */ var _Tw2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Tw2ParticleTurbulenceForce */ "./particle/force/Tw2ParticleTurbulenceForce.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return _Tw2ParticleTurbulenceForce__WEBPACK_IMPORTED_MODULE_9__["Tw2ParticleTurbulenceForce"]; });
+
+
+
+
 
 
 
@@ -59846,7 +60308,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./particle/index.js ***!
   \***************************/
-/*! exports provided: Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59869,6 +60331,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2DynamicEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tw2DynamicEmitter"]; });
 
 /* harmony import */ var _force__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./force */ "./particle/force/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["EveParticleDirectForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["EveParticleDragForce"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ForceSphereVolume"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tr2ParticleVortexForce"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleAttractorForce"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return _force__WEBPACK_IMPORTED_MODULE_3__["Tw2ParticleDirectForce"]; });

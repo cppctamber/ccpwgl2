@@ -3,10 +3,9 @@ import {Tw2ParticleForce} from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleFluidDragForce
+ * @ccp Tr2ParticleFluidDragForce
  *
  * @property {number} drag
- * @inherits Tw2ParticleForce
- * @class
  */
 export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
 {
@@ -15,12 +14,12 @@ export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
 
 
     /**
-     * Applies forces
-     * @param {Tw2ParticleElement} position
-     * @param {Tw2ParticleElement} velocity
-     * @param {Tw2ParticleElement} force
-     * @param {number} dt - delta time
-     * @param { number} mass
+     * Applies force
+     * @param {Tw2ParticleElement} position - Position
+     * @param {Tw2ParticleElement} velocity - Velocity
+     * @param {Tw2ParticleElement} force    - force
+     * @param {Number} [dt]                 - unused
+     * @param {Number} [mass]               - unused
      */
     ApplyForce(position, velocity, force, dt, mass)
     {
@@ -60,3 +59,15 @@ export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
     }
 
 }
+
+Tw2ParticleForce.define(Tw2ParticleFluidDragForce, Type =>
+{
+    return {
+        type: "Tw2ParticleFluidDragForce",
+        category: "ParticleForce",
+        props: {
+            drag: Type.NUMBER
+        }
+    };
+});
+

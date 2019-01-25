@@ -1,24 +1,24 @@
-import {Tw2BaseClass} from "../../../global";
+
+import {Tw2ParticleForce} from "./Tw2ParticleForce";
 
 /**
  * EveParticleDragForce
- * @implements ParticleForce
+ * Todo: Is this just a copy of Tw2ParticleDragForce?
  *
  * @property {Number} drag -
  */
-export default class EveParticleDragForce extends Tw2BaseClass
+export class EveParticleDragForce extends Tw2ParticleForce
 {
 
     drag = 0;
 
 }
 
-Tw2BaseClass.define(EveParticleDragForce, Type =>
+Tw2ParticleForce.define(EveParticleDragForce, Type =>
 {
     return {
         isStaging: true,
         type: "EveParticleDragForce",
-        category: "ParticleForce",
         props: {
             drag: Type.NUMBER
         }
