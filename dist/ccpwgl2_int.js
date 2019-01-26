@@ -7756,33 +7756,17 @@ var forEach = function () {
 
 /***/ }),
 
-/***/ "./.staging/core/index.js":
-/*!********************************!*\
-  !*** ./.staging/core/index.js ***!
-  \********************************/
-/*! exports provided: Tr2Effect */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _mesh__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mesh */ "./.staging/core/mesh/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_0__["Tr2Effect"]; });
-
-
-
-/***/ }),
-
-/***/ "./.staging/core/mesh/Tr2Effect.js":
-/*!*****************************************!*\
-  !*** ./.staging/core/mesh/Tr2Effect.js ***!
-  \*****************************************/
+/***/ "./.staging/Tr2Effect.js":
+/*!*******************************!*\
+  !*** ./.staging/Tr2Effect.js ***!
+  \*******************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2Effect; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -7841,10 +7825,10 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2Effect;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
 
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Effect, Type => {
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Effect, Type => {
   return {
     isStaging: true,
     type: "Tr2Effect",
@@ -7858,1552 +7842,6 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Effect, Type => {
     }
   };
 });
-
-/***/ }),
-
-/***/ "./.staging/core/mesh/index.js":
-/*!*************************************!*\
-  !*** ./.staging/core/mesh/index.js ***!
-  \*************************************/
-/*! exports provided: Tr2Effect */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2Effect */ "./.staging/core/mesh/Tr2Effect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/curve/adapter/Tr2RotationAdapter.js":
-/*!******************************************************!*\
-  !*** ./.staging/curve/adapter/Tr2RotationAdapter.js ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2RotationAdapter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2RotationAdapter
- * @implements CurveAdapter
- *
- * @property {Curve|CurveExpression} curve -
- * @property {vec4} value                  -
- */
-
-let Tr2RotationAdapter =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2RotationAdapter, _Tw2BaseClass);
-
-  function Tr2RotationAdapter() {
-    var _this;
-
-    _classCallCheck(this, Tr2RotationAdapter);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2RotationAdapter).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curve", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    return _this;
-  }
-
-  return Tr2RotationAdapter;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2RotationAdapter, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2RotationAdapter",
-    category: "CurveAdapter",
-    props: {
-      curve: ["Tr2CurveEulerRotation", "Tr2CurveEulerRotationExpression"],
-      value: Type.VECTOR4
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/adapter/Tr2TranslationAdapter.js":
-/*!*********************************************************!*\
-  !*** ./.staging/curve/adapter/Tr2TranslationAdapter.js ***!
-  \*********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2TranslationAdapter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2TranslationAdapter
- * @implements CurveAdapter
- *
- * @property {vec3} value -
- */
-
-let Tr2TranslationAdapter =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2TranslationAdapter, _Tw2BaseClass);
-
-  function Tr2TranslationAdapter() {
-    var _this;
-
-    _classCallCheck(this, Tr2TranslationAdapter);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2TranslationAdapter).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    return _this;
-  }
-
-  return Tr2TranslationAdapter;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2TranslationAdapter, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2TranslationAdapter",
-    category: "CurveAdapter",
-    props: {
-      value: Type.VECTOR3
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/adapter/index.js":
-/*!*****************************************!*\
-  !*** ./.staging/curve/adapter/index.js ***!
-  \*****************************************/
-/*! exports provided: Tr2RotationAdapter, Tr2TranslationAdapter */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tr2RotationAdapter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2RotationAdapter */ "./.staging/curve/adapter/Tr2RotationAdapter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return _Tr2RotationAdapter__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _Tr2TranslationAdapter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2TranslationAdapter */ "./.staging/curve/adapter/Tr2TranslationAdapter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2TranslationAdapter", function() { return _Tr2TranslationAdapter__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/AudEventCurve.js":
-/*!***********************************************!*\
-  !*** ./.staging/curve/curve/AudEventCurve.js ***!
-  \***********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AudEventCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * AudEventCurve
- * @implements Curve
- *
- * @property {Number} extrapolation               -
- * @property {Array.<CurveKey>} keys              -
- * @property {TriObserverLocal} sourceTriObserver -
- */
-
-let AudEventCurve =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(AudEventCurve, _Tw2BaseClass);
-
-  function AudEventCurve() {
-    var _this;
-
-    _classCallCheck(this, AudEventCurve);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(AudEventCurve).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "extrapolation", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keys", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sourceTriObserver", null);
-
-    return _this;
-  }
-
-  return AudEventCurve;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(AudEventCurve, Type => {
-  return {
-    isStaging: true,
-    type: "AudEventCurve",
-    category: "Curve",
-    props: {
-      extrapolation: Type.NUMBER,
-      keys: [["AudEventKey"]],
-      sourceTriObserver: ["TriObserverLocal"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/Tr2BoneMatrixCurve.js":
-/*!****************************************************!*\
-  !*** ./.staging/curve/curve/Tr2BoneMatrixCurve.js ***!
-  \****************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2BoneMatrixCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-
-/**
- * Tr2BoneMatrixCurve
- * @implements Curve
- *
- */
-
-let Tr2BoneMatrixCurve =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2BoneMatrixCurve, _Tw2BaseClass);
-
-  function Tr2BoneMatrixCurve() {
-    _classCallCheck(this, Tr2BoneMatrixCurve);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(Tr2BoneMatrixCurve).apply(this, arguments));
-  }
-
-  return Tr2BoneMatrixCurve;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2BoneMatrixCurve, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2BoneMatrixCurve",
-    category: "Curve",
-    props: {}
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/Tr2CurveColor.js":
-/*!***********************************************!*\
-  !*** ./.staging/curve/curve/Tr2CurveColor.js ***!
-  \***********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveColor; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2CurveColor
- * @implements Curve
- *
- * @property {Tr2CurveScalar} a -
- * @property {Tr2CurveScalar} b -
- * @property {Tr2CurveScalar} g -
- * @property {Tr2CurveScalar} r -
- */
-
-let Tr2CurveColor =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveColor, _Tw2BaseClass);
-
-  function Tr2CurveColor() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveColor);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveColor).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "a", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "b", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "g", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "r", null);
-
-    return _this;
-  }
-
-  return Tr2CurveColor;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveColor, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveColor",
-    category: "Curve",
-    props: {
-      a: ["Tr2CurveScalar"],
-      b: ["Tr2CurveScalar"],
-      g: ["Tr2CurveScalar"],
-      r: ["Tr2CurveScalar"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/Tr2CurveConstant.js":
-/*!**************************************************!*\
-  !*** ./.staging/curve/curve/Tr2CurveConstant.js ***!
-  \**************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveConstant; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2CurveConstant
- * @implements Curve
- *
- * @property {vec4} value -
- */
-
-let Tr2CurveConstant =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveConstant, _Tw2BaseClass);
-
-  function Tr2CurveConstant() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveConstant);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveConstant).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    return _this;
-  }
-
-  return Tr2CurveConstant;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveConstant, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveConstant",
-    category: "Curve",
-    props: {
-      value: Type.VECTOR4
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/Tr2CurveEulerRotation.js":
-/*!*******************************************************!*\
-  !*** ./.staging/curve/curve/Tr2CurveEulerRotation.js ***!
-  \*******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveEulerRotation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2CurveEulerRotation
- * @implements Curve
- *
- * @property {Tr2CurveScalar} pitch -
- * @property {Tr2CurveScalar} roll  -
- * @property {Tr2CurveScalar} yaw   -
- */
-
-let Tr2CurveEulerRotation =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveEulerRotation, _Tw2BaseClass);
-
-  function Tr2CurveEulerRotation() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveEulerRotation);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveEulerRotation).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pitch", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "roll", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "yaw", null);
-
-    return _this;
-  }
-
-  return Tr2CurveEulerRotation;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveEulerRotation, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveEulerRotation",
-    category: "Curve",
-    props: {
-      pitch: ["Tr2CurveScalar"],
-      roll: ["Tr2CurveScalar"],
-      yaw: ["Tr2CurveScalar"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/Tr2CurveScalar.js":
-/*!************************************************!*\
-  !*** ./.staging/curve/curve/Tr2CurveScalar.js ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveScalar; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2CurveScalar
- * @implements Curve
- *
- * @property {Number} extrapolationAfter  -
- * @property {Number} extrapolationBefore -
- * @property {Array} keys                 -
- * @property {Number} timeOffset          -
- * @property {Number} timeScale           -
- */
-
-let Tr2CurveScalar =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveScalar, _Tw2BaseClass);
-
-  function Tr2CurveScalar() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveScalar);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveScalar).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "extrapolationAfter", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "extrapolationBefore", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keys", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "timeOffset", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "timeScale", 0);
-
-    return _this;
-  }
-
-  return Tr2CurveScalar;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveScalar, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveScalar",
-    category: "Curve",
-    props: {
-      extrapolationAfter: Type.NUMBER,
-      extrapolationBefore: Type.NUMBER,
-      keys: Type.ARRAY,
-      timeOffset: Type.NUMBER,
-      timeScale: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/Tr2CurveVector3.js":
-/*!*************************************************!*\
-  !*** ./.staging/curve/curve/Tr2CurveVector3.js ***!
-  \*************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveVector3; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2CurveVector3
- * @implements Curve
- *
- * @property {Tr2CurveScalar} x -
- * @property {Tr2CurveScalar} y -
- * @property {Tr2CurveScalar} z -
- */
-
-let Tr2CurveVector3 =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveVector3, _Tw2BaseClass);
-
-  function Tr2CurveVector3() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveVector3);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveVector3).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "x", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "y", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "z", null);
-
-    return _this;
-  }
-
-  return Tr2CurveVector3;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveVector3, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveVector3",
-    category: "Curve",
-    props: {
-      x: ["Tr2CurveScalar"],
-      y: ["Tr2CurveScalar"],
-      z: ["Tr2CurveScalar"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/TriEventCurve.js":
-/*!***********************************************!*\
-  !*** ./.staging/curve/curve/TriEventCurve.js ***!
-  \***********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TriEventCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * TriEventCurve
- * @implements Curve
- *
- * @property {Number} extrapolation  -
- * @property {Array.<CurveKey>} keys -
- * @property {Number} value          -
- */
-
-let TriEventCurve =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(TriEventCurve, _Tw2BaseClass);
-
-  function TriEventCurve() {
-    var _this;
-
-    _classCallCheck(this, TriEventCurve);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(TriEventCurve).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "extrapolation", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "keys", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0);
-
-    return _this;
-  }
-
-  return TriEventCurve;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriEventCurve, Type => {
-  return {
-    isStaging: true,
-    type: "TriEventCurve",
-    category: "Curve",
-    props: {
-      extrapolation: Type.NUMBER,
-      keys: [["TriEventKey"]],
-      value: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/TriPerlinCurve.js":
-/*!************************************************!*\
-  !*** ./.staging/curve/curve/TriPerlinCurve.js ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TriPerlinCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * TriPerlinCurve
- * @implements Curve
- *
- * @property {Number} N      -
- * @property {Number} alpha  -
- * @property {Number} beta   -
- * @property {Number} offset -
- * @property {Number} scale  -
- * @property {Number} speed  -
- * @property {Number} value  -
- */
-
-let TriPerlinCurve =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(TriPerlinCurve, _Tw2BaseClass);
-
-  function TriPerlinCurve() {
-    var _this;
-
-    _classCallCheck(this, TriPerlinCurve);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(TriPerlinCurve).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "N", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "alpha", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "beta", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "offset", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scale", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "speed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0);
-
-    return _this;
-  }
-
-  return TriPerlinCurve;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriPerlinCurve, Type => {
-  return {
-    isStaging: true,
-    type: "TriPerlinCurve",
-    category: "Curve",
-    props: {
-      N: Type.NUMBER,
-      alpha: Type.NUMBER,
-      beta: Type.NUMBER,
-      offset: Type.NUMBER,
-      scale: Type.NUMBER,
-      speed: Type.NUMBER,
-      value: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/curve/index.js":
-/*!***************************************!*\
-  !*** ./.staging/curve/curve/index.js ***!
-  \***************************************/
-/*! exports provided: AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveColor, Tr2CurveConstant, Tr2CurveEulerRotation, Tr2CurveScalar, Tr2CurveVector3, TriEventCurve, TriPerlinCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _AudEventCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AudEventCurve */ "./.staging/curve/curve/AudEventCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventCurve", function() { return _AudEventCurve__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _Tr2BoneMatrixCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2BoneMatrixCurve */ "./.staging/curve/curve/Tr2BoneMatrixCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2BoneMatrixCurve", function() { return _Tr2BoneMatrixCurve__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _Tr2CurveColor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2CurveColor */ "./.staging/curve/curve/Tr2CurveColor.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveColor", function() { return _Tr2CurveColor__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-/* harmony import */ var _Tr2CurveConstant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2CurveConstant */ "./.staging/curve/curve/Tr2CurveConstant.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveConstant", function() { return _Tr2CurveConstant__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-/* harmony import */ var _Tr2CurveEulerRotation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tr2CurveEulerRotation */ "./.staging/curve/curve/Tr2CurveEulerRotation.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotation", function() { return _Tr2CurveEulerRotation__WEBPACK_IMPORTED_MODULE_4__["default"]; });
-
-/* harmony import */ var _Tr2CurveScalar__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2CurveScalar */ "./.staging/curve/curve/Tr2CurveScalar.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalar", function() { return _Tr2CurveScalar__WEBPACK_IMPORTED_MODULE_5__["default"]; });
-
-/* harmony import */ var _Tr2CurveVector3__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tr2CurveVector3 */ "./.staging/curve/curve/Tr2CurveVector3.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3", function() { return _Tr2CurveVector3__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
-/* harmony import */ var _TriEventCurve__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./TriEventCurve */ "./.staging/curve/curve/TriEventCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventCurve", function() { return _TriEventCurve__WEBPACK_IMPORTED_MODULE_7__["default"]; });
-
-/* harmony import */ var _TriPerlinCurve__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./TriPerlinCurve */ "./.staging/curve/curve/TriPerlinCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriPerlinCurve", function() { return _TriPerlinCurve__WEBPACK_IMPORTED_MODULE_8__["default"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/curve/expression/Tr2CurveEulerRotationExpression.js":
-/*!**********************************************************************!*\
-  !*** ./.staging/curve/expression/Tr2CurveEulerRotationExpression.js ***!
-  \**********************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveEulerRotationExpression; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2CurveEulerRotationExpression
- * @implements CurveExpression
- *
- * @property {String} expressionPitch               -
- * @property {String} expressionRoll                -
- * @property {String} expressionYaw                 -
- * @property {Array.<Curve|CurveExpression>} inputs -
- */
-
-let Tr2CurveEulerRotationExpression =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveEulerRotationExpression, _Tw2BaseClass);
-
-  function Tr2CurveEulerRotationExpression() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveEulerRotationExpression);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveEulerRotationExpression).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionPitch", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionRoll", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionYaw", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inputs", []);
-
-    return _this;
-  }
-
-  return Tr2CurveEulerRotationExpression;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveEulerRotationExpression, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveEulerRotationExpression",
-    category: "CurveExpression",
-    props: {
-      expressionPitch: Type.EXPRESSION,
-      expressionRoll: Type.EXPRESSION,
-      expressionYaw: Type.EXPRESSION,
-      inputs: [["Tr2CurveScalar", "Tr2CurveScalarExpression", "TriPerlinCurve"]]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/expression/Tr2CurveScalarExpression.js":
-/*!***************************************************************!*\
-  !*** ./.staging/curve/expression/Tr2CurveScalarExpression.js ***!
-  \***************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveScalarExpression; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2CurveScalarExpression
- * @implements CurveExpression
- *
- * @property {String} expression    -
- * @property {Number} input1        -
- * @property {Array.<Curve>} inputs -
- */
-
-let Tr2CurveScalarExpression =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveScalarExpression, _Tw2BaseClass);
-
-  function Tr2CurveScalarExpression() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveScalarExpression);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveScalarExpression).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expression", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "input1", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inputs", []);
-
-    return _this;
-  }
-
-  return Tr2CurveScalarExpression;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveScalarExpression, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveScalarExpression",
-    category: "CurveExpression",
-    props: {
-      expression: Type.EXPRESSION,
-      input1: Type.NUMBER,
-      inputs: [["Tr2CurveScalar", "TriPerlinCurve"]]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/expression/Tr2CurveVector3Expression.js":
-/*!****************************************************************!*\
-  !*** ./.staging/curve/expression/Tr2CurveVector3Expression.js ***!
-  \****************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveVector3Expression; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2CurveVector3Expression
- * @implements CurveExpression
- *
- * @property {String} expressionX                   -
- * @property {String} expressionY                   -
- * @property {String} expressionZ                   -
- * @property {Array.<Curve|CurveExpression>} inputs -
- */
-
-let Tr2CurveVector3Expression =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2CurveVector3Expression, _Tw2BaseClass);
-
-  function Tr2CurveVector3Expression() {
-    var _this;
-
-    _classCallCheck(this, Tr2CurveVector3Expression);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveVector3Expression).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionX", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionY", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionZ", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inputs", []);
-
-    return _this;
-  }
-
-  return Tr2CurveVector3Expression;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveVector3Expression, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2CurveVector3Expression",
-    category: "CurveExpression",
-    props: {
-      expressionX: Type.EXPRESSION,
-      expressionY: Type.EXPRESSION,
-      expressionZ: Type.EXPRESSION,
-      inputs: [["Tr2CurveScalar", "Tr2CurveScalarExpression", "TriPerlinCurve"]]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/expression/index.js":
-/*!********************************************!*\
-  !*** ./.staging/curve/expression/index.js ***!
-  \********************************************/
-/*! exports provided: Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tr2CurveEulerRotationExpression__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2CurveEulerRotationExpression */ "./.staging/curve/expression/Tr2CurveEulerRotationExpression.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _Tr2CurveEulerRotationExpression__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _Tr2CurveScalarExpression__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2CurveScalarExpression */ "./.staging/curve/expression/Tr2CurveScalarExpression.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalarExpression", function() { return _Tr2CurveScalarExpression__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _Tr2CurveVector3Expression__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2CurveVector3Expression */ "./.staging/curve/expression/Tr2CurveVector3Expression.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3Expression", function() { return _Tr2CurveVector3Expression__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/curve/index.js":
-/*!*********************************!*\
-  !*** ./.staging/curve/index.js ***!
-  \*********************************/
-/*! exports provided: Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveColor, Tr2CurveConstant, Tr2CurveEulerRotation, Tr2CurveScalar, Tr2CurveVector3, TriEventCurve, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, AudEventKey, TriEventKey, TriColorSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _adapter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./adapter */ "./.staging/curve/adapter/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return _adapter__WEBPACK_IMPORTED_MODULE_0__["Tr2RotationAdapter"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2TranslationAdapter", function() { return _adapter__WEBPACK_IMPORTED_MODULE_0__["Tr2TranslationAdapter"]; });
-
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curve */ "./.staging/curve/curve/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["AudEventCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2BoneMatrixCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2BoneMatrixCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveColor", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveColor"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveConstant", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveConstant"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotation", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveEulerRotation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalar", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveScalar"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveVector3"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriEventCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriPerlinCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriPerlinCurve"]; });
-
-/* harmony import */ var _expression__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./expression */ "./.staging/curve/expression/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _expression__WEBPACK_IMPORTED_MODULE_2__["Tr2CurveEulerRotationExpression"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalarExpression", function() { return _expression__WEBPACK_IMPORTED_MODULE_2__["Tr2CurveScalarExpression"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3Expression", function() { return _expression__WEBPACK_IMPORTED_MODULE_2__["Tr2CurveVector3Expression"]; });
-
-/* harmony import */ var _key__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./key */ "./.staging/curve/key/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventKey", function() { return _key__WEBPACK_IMPORTED_MODULE_3__["AudEventKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventKey", function() { return _key__WEBPACK_IMPORTED_MODULE_3__["TriEventKey"]; });
-
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sequencer */ "./.staging/curve/sequencer/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriColorSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_4__["TriColorSequencer"]; });
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/curve/key/AudEventKey.js":
-/*!*******************************************!*\
-  !*** ./.staging/curve/key/AudEventKey.js ***!
-  \*******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AudEventKey; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * AudEventKey
- * @implements CurveKey
- *
- * @property {Number} time  -
- * @property {Number} value -
- */
-
-let AudEventKey =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(AudEventKey, _Tw2BaseClass);
-
-  function AudEventKey() {
-    var _this;
-
-    _classCallCheck(this, AudEventKey);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(AudEventKey).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "time", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0);
-
-    return _this;
-  }
-
-  return AudEventKey;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(AudEventKey, Type => {
-  return {
-    isStaging: true,
-    type: "AudEventKey",
-    category: "CurveKey",
-    props: {
-      time: Type.NUMBER,
-      value: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/key/TriEventKey.js":
-/*!*******************************************!*\
-  !*** ./.staging/curve/key/TriEventKey.js ***!
-  \*******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TriEventKey; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * TriEventKey
- * @implements CurveKey
- *
- * @property {Number} time  -
- * @property {Number} value -
- */
-
-let TriEventKey =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(TriEventKey, _Tw2BaseClass);
-
-  function TriEventKey() {
-    var _this;
-
-    _classCallCheck(this, TriEventKey);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(TriEventKey).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "time", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0);
-
-    return _this;
-  }
-
-  return TriEventKey;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriEventKey, Type => {
-  return {
-    isStaging: true,
-    type: "TriEventKey",
-    category: "CurveKey",
-    props: {
-      time: Type.NUMBER,
-      value: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/key/index.js":
-/*!*************************************!*\
-  !*** ./.staging/curve/key/index.js ***!
-  \*************************************/
-/*! exports provided: AudEventKey, TriEventKey */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _AudEventKey__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AudEventKey */ "./.staging/curve/key/AudEventKey.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventKey", function() { return _AudEventKey__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _TriEventKey__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TriEventKey */ "./.staging/curve/key/TriEventKey.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventKey", function() { return _TriEventKey__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/curve/sequencer/TriColorSequencer.js":
-/*!*******************************************************!*\
-  !*** ./.staging/curve/sequencer/TriColorSequencer.js ***!
-  \*******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TriColorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * TriColorSequencer
- * @implements CurveSequencer
- *
- * @property {Array.<Curve|CurveExpression>} functions -
- * @property {vec4} value                              -
- */
-
-let TriColorSequencer =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(TriColorSequencer, _Tw2BaseClass);
-
-  function TriColorSequencer() {
-    var _this;
-
-    _classCallCheck(this, TriColorSequencer);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(TriColorSequencer).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "functions", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    return _this;
-  }
-
-  return TriColorSequencer;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriColorSequencer, Type => {
-  return {
-    isStaging: true,
-    type: "TriColorSequencer",
-    category: "CurveSequencer",
-    props: {
-      functions: [["Tr2CurveColor", "Tr2CurveConstant", "Tr2CurveVector3Expression"]],
-      value: Type.VECTOR4
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/curve/sequencer/index.js":
-/*!*******************************************!*\
-  !*** ./.staging/curve/sequencer/index.js ***!
-  \*******************************************/
-/*! exports provided: TriColorSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _TriColorSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TriColorSequencer */ "./.staging/curve/sequencer/TriColorSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriColorSequencer", function() { return _TriColorSequencer__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-
-
 
 /***/ }),
 
@@ -12825,111 +11263,76 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./.staging/index.js ***!
   \***************************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, Tr2Effect, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveColor, Tr2CurveConstant, Tr2CurveEulerRotation, Tr2CurveScalar, Tr2CurveVector3, TriEventCurve, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, AudEventKey, TriEventKey, TriColorSequencer, EveChildBulletStorm, EveChildContainer, EveChildCloud, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSystem, EveChildParticleSphere, EveChildQuad, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
+/*! exports provided: Tr2Effect, EveCamera, EveLineContainer, EveSpaceScene, EveChildBulletStorm, EveChildContainer, EveChildCloud, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSystem, EveChildParticleSphere, EveChildQuad, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core */ "./.staging/core/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2Effect"]; });
+/* harmony import */ var _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2Effect */ "./.staging/Tr2Effect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__["default"]; });
 
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curve */ "./.staging/curve/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2RotationAdapter"]; });
+/* harmony import */ var _eve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./eve */ "./.staging/eve/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveCamera"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2TranslationAdapter", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2TranslationAdapter"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLineContainer", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveLineContainer"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["AudEventCurve"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveSpaceScene"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2BoneMatrixCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2BoneMatrixCurve"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildBulletStorm", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildBulletStorm"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveColor", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveColor"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildContainer", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildContainer"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveConstant", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveConstant"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildCloud", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildCloud"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotation", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveEulerRotation"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildExplosion", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildExplosion"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalar", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveScalar"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildLink", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildLink"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveVector3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildMesh", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildMesh"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriEventCurve"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSystem", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildParticleSystem"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriPerlinCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriPerlinCurve"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSphere", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildParticleSphere"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveEulerRotationExpression"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildQuad", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildQuad"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalarExpression", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveScalarExpression"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierAttachToBone", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildModifierAttachToBone"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3Expression", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveVector3Expression"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard2D", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildModifierBillboard2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["AudEventKey"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard3D", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildModifierBillboard3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriEventKey"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierCameraOrientedRotationConstrained", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildModifierCameraOrientedRotationConstrained"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriColorSequencer", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriColorSequencer"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildModifierSRT"]; });
 
-/* harmony import */ var _eve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./eve */ "./.staging/eve/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveCamera"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveChildModifierTranslateWithCamera"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLineContainer", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveLineContainer"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveEffectRoot2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveSpaceScene"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveMissile"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildBulletStorm", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildBulletStorm"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveMissileWarhead"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildContainer", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildContainer"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveMobile"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildCloud", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildCloud"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveRootTransform"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildExplosion", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildExplosion"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveShip2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildLink", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildLink"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveStation2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildMesh", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildMesh"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveTransform"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSystem", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildParticleSystem"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveConnector"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSphere", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildParticleSphere"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveLocalPositionCurve"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildQuad", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildQuad"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveSpherePin"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierAttachToBone", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildModifierAttachToBone"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTacticalOverlay", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveTacticalOverlay"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard2D", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildModifierBillboard2D"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard3D", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildModifierBillboard3D"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierCameraOrientedRotationConstrained", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildModifierCameraOrientedRotationConstrained"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildModifierSRT"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveChildModifierTranslateWithCamera"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveEffectRoot2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveMissile"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveMissileWarhead"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveMobile"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveRootTransform"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveShip2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveStation2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveTransform"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveConnector"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveLocalPositionCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveSpherePin"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTacticalOverlay", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveTacticalOverlay"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveUiObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_2__["EveUiObject"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveUiObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveUiObject"]; });
 
 
 
@@ -27385,10 +25788,1253 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2ColorCurve.js":
+/***/ "./curve/adapter/Tr2RotationAdapter.js":
+/*!*********************************************!*\
+  !*** ./curve/adapter/Tr2RotationAdapter.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2RotationAdapter; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2RotationAdapter
+ * @implements CurveAdapter
+ *
+ * @property {Curve|CurveExpression} curve -
+ * @property {vec4} value                  -
+ */
+
+let Tr2RotationAdapter =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2RotationAdapter, _Tw2BaseClass);
+
+  function Tr2RotationAdapter() {
+    var _this;
+
+    _classCallCheck(this, Tr2RotationAdapter);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2RotationAdapter).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curve", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    return _this;
+  }
+
+  return Tr2RotationAdapter;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2RotationAdapter, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2RotationAdapter",
+    category: "CurveAdapter",
+    props: {
+      curve: ["Tr2CurveEulerRotation", "Tr2CurveEulerRotationExpression"],
+      value: Type.VECTOR4
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/adapter/Tr2TranslationAdapter.js":
+/*!************************************************!*\
+  !*** ./curve/adapter/Tr2TranslationAdapter.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2TranslationAdapter; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2TranslationAdapter
+ * @implements CurveAdapter
+ *
+ * @property {vec3} value -
+ */
+
+let Tr2TranslationAdapter =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2TranslationAdapter, _Tw2BaseClass);
+
+  function Tr2TranslationAdapter() {
+    var _this;
+
+    _classCallCheck(this, Tr2TranslationAdapter);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2TranslationAdapter).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    return _this;
+  }
+
+  return Tr2TranslationAdapter;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2TranslationAdapter, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2TranslationAdapter",
+    category: "CurveAdapter",
+    props: {
+      value: Type.VECTOR3
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/adapter/index.js":
+/*!********************************!*\
+  !*** ./curve/adapter/index.js ***!
+  \********************************/
+/*! exports provided: Tr2RotationAdapter, Tr2TranslationAdapter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tr2RotationAdapter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2RotationAdapter */ "./curve/adapter/Tr2RotationAdapter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return _Tr2RotationAdapter__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _Tr2TranslationAdapter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2TranslationAdapter */ "./curve/adapter/Tr2TranslationAdapter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2TranslationAdapter", function() { return _Tr2TranslationAdapter__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./curve/curve/AudEventCurve.js":
+/*!**************************************!*\
+  !*** ./curve/curve/AudEventCurve.js ***!
+  \**************************************/
+/*! exports provided: AudEventKey, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AudEventKey", function() { return AudEventKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AudEventCurve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * AudEventKey
+ *
+ * @property {Number} time  -
+ * @property {Number} value -
+ */
+
+let AudEventKey =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(AudEventKey, _Tw2BaseClass);
+
+  function AudEventKey() {
+    var _this;
+
+    _classCallCheck(this, AudEventKey);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(AudEventKey).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "time", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0);
+
+    return _this;
+  }
+
+  return AudEventKey;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(AudEventKey, Type => {
+  return {
+    isStaging: true,
+    type: "AudEventKey",
+    category: "CurveKey",
+    props: {
+      time: Type.NUMBER,
+      value: Type.NUMBER
+    }
+  };
+});
+/**
+ * AudEventCurve
+ * @implements Curve
+ *
+ * @property {Number} extrapolation               -
+ * @property {Array.<CurveKey>} keys              -
+ * @property {TriObserverLocal} sourceTriObserver -
+ */
+
+let AudEventCurve =
+/*#__PURE__*/
+function (_Tw2BaseClass2) {
+  _inherits(AudEventCurve, _Tw2BaseClass2);
+
+  function AudEventCurve() {
+    var _this2;
+
+    _classCallCheck(this, AudEventCurve);
+
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(AudEventCurve).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "extrapolation", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "keys", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "sourceTriObserver", null);
+
+    return _this2;
+  }
+
+  return AudEventCurve;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(AudEventCurve, Type => {
+  return {
+    isStaging: true,
+    type: "AudEventCurve",
+    category: "Curve",
+    props: {
+      extrapolation: Type.NUMBER,
+      keys: [["AudEventKey"]],
+      sourceTriObserver: ["TriObserverLocal"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/curve/Tr2BoneMatrixCurve.js":
+/*!*******************************************!*\
+  !*** ./curve/curve/Tr2BoneMatrixCurve.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2BoneMatrixCurve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+
+/**
+ * Tr2BoneMatrixCurve
+ *
+ */
+
+let Tr2BoneMatrixCurve =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2BoneMatrixCurve, _Tw2BaseClass);
+
+  function Tr2BoneMatrixCurve() {
+    _classCallCheck(this, Tr2BoneMatrixCurve);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(Tr2BoneMatrixCurve).apply(this, arguments));
+  }
+
+  return Tr2BoneMatrixCurve;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2BoneMatrixCurve, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2BoneMatrixCurve",
+    category: "Curve",
+    props: {}
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/curve/Tr2CurveConstant.js":
+/*!*****************************************!*\
+  !*** ./curve/curve/Tr2CurveConstant.js ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveConstant; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2CurveConstant
+ * @implements Curve
+ *
+ * @property {vec4} value -
+ */
+
+let Tr2CurveConstant =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2CurveConstant, _Tw2BaseClass);
+
+  function Tr2CurveConstant() {
+    var _this;
+
+    _classCallCheck(this, Tr2CurveConstant);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveConstant).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    return _this;
+  }
+
+  return Tr2CurveConstant;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveConstant, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveConstant",
+    category: "Curve",
+    props: {
+      value: Type.VECTOR4
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/curve/Tr2CurveScalar.js":
 /*!***************************************!*\
-  !*** ./curve/curves/Tw2ColorCurve.js ***!
+  !*** ./curve/curve/Tr2CurveScalar.js ***!
   \***************************************/
+/*! exports provided: Tw2CurveScalarKey, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveScalarKey", function() { return Tw2CurveScalarKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveScalar; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tw2ScalarKey2
+ * @ccp N/A
+ *
+ */
+
+let Tw2CurveScalarKey =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tw2CurveScalarKey, _Tw2BaseClass);
+
+  function Tw2CurveScalarKey() {
+    var _this;
+
+    _classCallCheck(this, Tw2CurveScalarKey);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2CurveScalarKey).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "endTangent", 0.0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "extrapolation", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "index", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "interpolation", 1);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "startTangent", 0.0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "time", 0.0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0.0);
+
+    return _this;
+  }
+
+  return Tw2CurveScalarKey;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2CurveScalarKey, Type => {
+  return {
+    isStaging: true,
+    type: "Tw2CurveScalarKey",
+    category: "CurveKey",
+    props: {
+      endTangent: Type.NUMBER,
+      extrapolation: Type.NUMBER,
+      index: Type.NUMBER,
+      interpolation: Type.NUMBER,
+      startTangent: Type.NUMBER,
+      time: Type.NUMBER,
+      value: Type.NUMBER
+    }
+  };
+});
+/**
+ * Tr2CurveScalar
+ * @ccp Tr2CurveScalar
+ *
+ * @property {Number} extrapolationAfter  -
+ * @property {Number} extrapolationBefore -
+ * @property {Array} keys                 -
+ * @property {Number} timeOffset          -
+ * @property {Number} timeScale           -
+ */
+
+let Tr2CurveScalar =
+/*#__PURE__*/
+function (_Tw2BaseClass2) {
+  _inherits(Tr2CurveScalar, _Tw2BaseClass2);
+
+  function Tr2CurveScalar() {
+    var _this2;
+
+    _classCallCheck(this, Tr2CurveScalar);
+
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveScalar).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "extrapolationAfter", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "extrapolationBefore", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "keys", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "timeOffset", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "timeScale", 0);
+
+    return _this2;
+  }
+
+  return Tr2CurveScalar;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveScalar, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveScalar",
+    category: "Curve",
+    props: {
+      extrapolationAfter: Type.NUMBER,
+      extrapolationBefore: Type.NUMBER,
+      keys: Type.ARRAY,
+      timeOffset: Type.NUMBER,
+      timeScale: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/curve/TriEventCurve.js":
+/*!**************************************!*\
+  !*** ./curve/curve/TriEventCurve.js ***!
+  \**************************************/
+/*! exports provided: TriEventKey, default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TriEventKey", function() { return TriEventKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TriEventCurve; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * TriEventKey
+ * @implements CurveKey
+ *
+ * @property {Number} time  -
+ * @property {Number} value -
+ */
+
+let TriEventKey =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(TriEventKey, _Tw2BaseClass);
+
+  function TriEventKey() {
+    var _this;
+
+    _classCallCheck(this, TriEventKey);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TriEventKey).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "time", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0);
+
+    return _this;
+  }
+
+  return TriEventKey;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriEventKey, Type => {
+  return {
+    isStaging: true,
+    type: "TriEventKey",
+    category: "CurveKey",
+    props: {
+      time: Type.NUMBER,
+      value: Type.NUMBER
+    }
+  };
+});
+/**
+ * TriEventCurve
+ * @implements Curve
+ *
+ * @property {Number} extrapolation  -
+ * @property {Array.<CurveKey>} keys -
+ * @property {Number} value          -
+ */
+
+let TriEventCurve =
+/*#__PURE__*/
+function (_Tw2BaseClass2) {
+  _inherits(TriEventCurve, _Tw2BaseClass2);
+
+  function TriEventCurve() {
+    var _this2;
+
+    _classCallCheck(this, TriEventCurve);
+
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(TriEventCurve).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "extrapolation", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "keys", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", 0);
+
+    return _this2;
+  }
+
+  return TriEventCurve;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriEventCurve, Type => {
+  return {
+    isStaging: true,
+    type: "TriEventCurve",
+    category: "Curve",
+    props: {
+      extrapolation: Type.NUMBER,
+      keys: [["TriEventKey"]],
+      value: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/curve/TriPerlinCurve.js":
+/*!***************************************!*\
+  !*** ./curve/curve/TriPerlinCurve.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TriPerlinCurve; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * TriPerlinCurve
+ * @implements Curve
+ *
+ * @property {Number} N      -
+ * @property {Number} alpha  -
+ * @property {Number} beta   -
+ * @property {Number} offset -
+ * @property {Number} scale  -
+ * @property {Number} speed  -
+ * @property {Number} value  -
+ */
+
+let TriPerlinCurve =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(TriPerlinCurve, _Tw2BaseClass);
+
+  function TriPerlinCurve() {
+    var _this;
+
+    _classCallCheck(this, TriPerlinCurve);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TriPerlinCurve).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "N", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "alpha", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "beta", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "offset", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scale", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "speed", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", 0);
+
+    return _this;
+  }
+
+  return TriPerlinCurve;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriPerlinCurve, Type => {
+  return {
+    isStaging: true,
+    type: "TriPerlinCurve",
+    category: "Curve",
+    props: {
+      N: Type.NUMBER,
+      alpha: Type.NUMBER,
+      beta: Type.NUMBER,
+      offset: Type.NUMBER,
+      scale: Type.NUMBER,
+      speed: Type.NUMBER,
+      value: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/curve/index.js":
+/*!******************************!*\
+  !*** ./curve/curve/index.js ***!
+  \******************************/
+/*! exports provided: AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _AudEventCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AudEventCurve */ "./curve/curve/AudEventCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventCurve", function() { return _AudEventCurve__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventKey", function() { return _AudEventCurve__WEBPACK_IMPORTED_MODULE_0__["AudEventKey"]; });
+
+/* harmony import */ var _Tr2BoneMatrixCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2BoneMatrixCurve */ "./curve/curve/Tr2BoneMatrixCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2BoneMatrixCurve", function() { return _Tr2BoneMatrixCurve__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _Tr2CurveConstant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2CurveConstant */ "./curve/curve/Tr2CurveConstant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveConstant", function() { return _Tr2CurveConstant__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _Tr2CurveScalar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2CurveScalar */ "./curve/curve/Tr2CurveScalar.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalar", function() { return _Tr2CurveScalar__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveScalarKey", function() { return _Tr2CurveScalar__WEBPACK_IMPORTED_MODULE_3__["Tw2CurveScalarKey"]; });
+
+/* harmony import */ var _TriEventCurve__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TriEventCurve */ "./curve/curve/TriEventCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventCurve", function() { return _TriEventCurve__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventKey", function() { return _TriEventCurve__WEBPACK_IMPORTED_MODULE_4__["TriEventKey"]; });
+
+/* harmony import */ var _TriPerlinCurve__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./TriPerlinCurve */ "./curve/curve/TriPerlinCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriPerlinCurve", function() { return _TriPerlinCurve__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./curve/expression/Tr2CurveEulerRotationExpression.js":
+/*!*************************************************************!*\
+  !*** ./curve/expression/Tr2CurveEulerRotationExpression.js ***!
+  \*************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveEulerRotationExpression; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2CurveEulerRotationExpression
+ *
+ * @property {String} expressionPitch               -
+ * @property {String} expressionRoll                -
+ * @property {String} expressionYaw                 -
+ * @property {Array.<Curve|CurveExpression>} inputs -
+ */
+
+let Tr2CurveEulerRotationExpression =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2CurveEulerRotationExpression, _Tw2BaseClass);
+
+  function Tr2CurveEulerRotationExpression() {
+    var _this;
+
+    _classCallCheck(this, Tr2CurveEulerRotationExpression);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveEulerRotationExpression).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionPitch", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionRoll", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionYaw", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inputs", []);
+
+    return _this;
+  }
+
+  return Tr2CurveEulerRotationExpression;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveEulerRotationExpression, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveEulerRotationExpression",
+    category: "CurveExpression",
+    props: {
+      expressionPitch: Type.EXPRESSION,
+      expressionRoll: Type.EXPRESSION,
+      expressionYaw: Type.EXPRESSION,
+      inputs: [["Tr2CurveScalar", "Tr2CurveScalarExpression", "TriPerlinCurve"]]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/expression/Tr2CurveScalarExpression.js":
+/*!******************************************************!*\
+  !*** ./curve/expression/Tr2CurveScalarExpression.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveScalarExpression; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2CurveScalarExpression
+ *
+ * @property {String} expression    -
+ * @property {Number} input1        -
+ * @property {Array.<Curve>} inputs -
+ */
+
+let Tr2CurveScalarExpression =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2CurveScalarExpression, _Tw2BaseClass);
+
+  function Tr2CurveScalarExpression() {
+    var _this;
+
+    _classCallCheck(this, Tr2CurveScalarExpression);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveScalarExpression).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expression", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "input1", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inputs", []);
+
+    return _this;
+  }
+
+  return Tr2CurveScalarExpression;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveScalarExpression, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveScalarExpression",
+    category: "CurveExpression",
+    props: {
+      expression: Type.EXPRESSION,
+      input1: Type.NUMBER,
+      inputs: [["Tr2CurveScalar", "TriPerlinCurve"]]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/expression/Tr2CurveVector3Expression.js":
+/*!*******************************************************!*\
+  !*** ./curve/expression/Tr2CurveVector3Expression.js ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveVector3Expression; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2CurveVector3Expression
+ *
+ * @property {String} expressionX                   -
+ * @property {String} expressionY                   -
+ * @property {String} expressionZ                   -
+ * @property {Array.<Curve|CurveExpression>} inputs -
+ */
+
+let Tr2CurveVector3Expression =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2CurveVector3Expression, _Tw2BaseClass);
+
+  function Tr2CurveVector3Expression() {
+    var _this;
+
+    _classCallCheck(this, Tr2CurveVector3Expression);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveVector3Expression).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionX", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionY", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "expressionZ", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inputs", []);
+
+    return _this;
+  }
+
+  return Tr2CurveVector3Expression;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveVector3Expression, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveVector3Expression",
+    category: "CurveExpression",
+    props: {
+      expressionX: Type.EXPRESSION,
+      expressionY: Type.EXPRESSION,
+      expressionZ: Type.EXPRESSION,
+      inputs: [["Tr2CurveScalar", "Tr2CurveScalarExpression", "TriPerlinCurve"]]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/expression/index.js":
+/*!***********************************!*\
+  !*** ./curve/expression/index.js ***!
+  \***********************************/
+/*! exports provided: Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tr2CurveEulerRotationExpression__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2CurveEulerRotationExpression */ "./curve/expression/Tr2CurveEulerRotationExpression.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _Tr2CurveEulerRotationExpression__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _Tr2CurveScalarExpression__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2CurveScalarExpression */ "./curve/expression/Tr2CurveScalarExpression.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalarExpression", function() { return _Tr2CurveScalarExpression__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _Tr2CurveVector3Expression__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2CurveVector3Expression */ "./curve/expression/Tr2CurveVector3Expression.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3Expression", function() { return _Tr2CurveVector3Expression__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./curve/index.js":
+/*!************************!*\
+  !*** ./curve/index.js ***!
+  \************************/
+/*! exports provided: Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _adapter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./adapter */ "./curve/adapter/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return _adapter__WEBPACK_IMPORTED_MODULE_0__["Tr2RotationAdapter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2TranslationAdapter", function() { return _adapter__WEBPACK_IMPORTED_MODULE_0__["Tr2TranslationAdapter"]; });
+
+/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curve */ "./curve/curve/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["AudEventCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["AudEventKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2BoneMatrixCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2BoneMatrixCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveConstant", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveConstant"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalar", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2CurveScalar"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveScalarKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveScalarKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriEventCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriEventKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriPerlinCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["TriPerlinCurve"]; });
+
+/* harmony import */ var _expression__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./expression */ "./curve/expression/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _expression__WEBPACK_IMPORTED_MODULE_2__["Tr2CurveEulerRotationExpression"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalarExpression", function() { return _expression__WEBPACK_IMPORTED_MODULE_2__["Tr2CurveScalarExpression"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3Expression", function() { return _expression__WEBPACK_IMPORTED_MODULE_2__["Tr2CurveVector3Expression"]; });
+
+/* harmony import */ var _legacy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./legacy */ "./curve/legacy/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2CurveKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ColorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ColorCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ColorKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ColorCurve2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2EventKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2EventCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PerlinCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2PerlinCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2QuaternionKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2QuaternionCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2RandomConstantCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2Torque"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2RigidOrientation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2QuaternionKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2RotationCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ScalarKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ScalarCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ScalarKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ScalarCurve2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2SineCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector2Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector2Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector3Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector3Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2VectorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2VectorCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ColorSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2EulerRotation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2QuaternionSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2RGBAScalarSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2ScalarSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2VectorSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2XYZScalarSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2YPRSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2WbgTrack"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2WbgTransformTrack"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformTrack", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2TransformTrack"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaEulerRotationCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaEulerRotationCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaScalarCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaScalarCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaVector3Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaVector3Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaAnimationEngine", function() { return _legacy__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaAnimationEngine"]; });
+
+/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sequencer */ "./curve/sequencer/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriColorSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_4__["TriColorSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveColor", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_4__["Tr2CurveColor"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotation", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_4__["Tr2CurveEulerRotation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_4__["Tr2CurveVector3"]; });
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./curve/legacy/curves/Tw2ColorCurve.js":
+/*!**********************************************!*\
+  !*** ./curve/legacy/curves/Tw2ColorCurve.js ***!
+  \**********************************************/
 /*! exports provided: Tw2ColorKey, Tw2ColorCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -27396,8 +27042,8 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return Tw2ColorKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return Tw2ColorCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -27444,11 +27090,11 @@ function (_Tw2CurveKey) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2ColorKey).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "left", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "right", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "interpolation", 0);
 
@@ -27487,7 +27133,7 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "start", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "extrapolation", 0);
 
@@ -27540,7 +27186,7 @@ function (_Tw2Curve) {
     key: "GetValueAt",
     value: function GetValueAt(time, value) {
       if (this.length === 0) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+        return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
       }
 
       const firstKey = this.keys[0],
@@ -27549,13 +27195,13 @@ function (_Tw2Curve) {
       if (time >= lastKey.time) {
         switch (this.extrapolation) {
           case Tw2ColorCurve.Extrapolation.NONE:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
 
           case Tw2ColorCurve.Extrapolation.CONSTANT:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, lastKey.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, lastKey.value);
 
           case Tw2ColorCurve.Extrapolation.GRADIENT:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
 
           default:
             time = time % lastKey.time;
@@ -27563,13 +27209,13 @@ function (_Tw2Curve) {
       } else if (time < 0 || time < firstKey.time) {
         switch (this.extrapolation) {
           case Tw2ColorCurve.Extrapolation.NONE:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
 
           case Tw2ColorCurve.Extrapolation.GRADIENT:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
 
           default:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, firstKey.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, firstKey.value);
         }
       }
 
@@ -27587,7 +27233,7 @@ function (_Tw2Curve) {
 
       switch (ck_1.interpolation) {
         case Tw2ColorCurve.Interpolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, ck_1.value);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, ck_1.value);
 
         default:
           value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
@@ -27632,10 +27278,10 @@ _defineProperty(Tw2ColorCurve, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2ColorCurve2.js":
-/*!****************************************!*\
-  !*** ./curve/curves/Tw2ColorCurve2.js ***!
-  \****************************************/
+/***/ "./curve/legacy/curves/Tw2ColorCurve2.js":
+/*!***********************************************!*\
+  !*** ./curve/legacy/curves/Tw2ColorCurve2.js ***!
+  \***********************************************/
 /*! exports provided: Tw2ColorKey2, Tw2ColorCurve2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -27643,8 +27289,8 @@ _defineProperty(Tw2ColorCurve, "Interpolation", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return Tw2ColorKey2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return Tw2ColorCurve2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -27919,10 +27565,10 @@ _defineProperty(Tw2ColorCurve2, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2Curve.js":
-/*!**********************************!*\
-  !*** ./curve/curves/Tw2Curve.js ***!
-  \**********************************/
+/***/ "./curve/legacy/curves/Tw2Curve.js":
+/*!*****************************************!*\
+  !*** ./curve/legacy/curves/Tw2Curve.js ***!
+  \*****************************************/
 /*! exports provided: Tw2CurveKey, Tw2Curve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -27930,7 +27576,7 @@ _defineProperty(Tw2ColorCurve2, "Interpolation", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return Tw2CurveKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return Tw2Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -28112,10 +27758,10 @@ _defineProperty(Tw2Curve, "global", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2EventCurve.js":
-/*!***************************************!*\
-  !*** ./curve/curves/Tw2EventCurve.js ***!
-  \***************************************/
+/***/ "./curve/legacy/curves/Tw2EventCurve.js":
+/*!**********************************************!*\
+  !*** ./curve/legacy/curves/Tw2EventCurve.js ***!
+  \**********************************************/
 /*! exports provided: Tw2EventKey, Tw2EventCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -28123,7 +27769,7 @@ _defineProperty(Tw2Curve, "global", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventKey", function() { return Tw2EventKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventCurve", function() { return Tw2EventCurve; });
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -28295,18 +27941,18 @@ _defineProperty(Tw2EventCurve, "Extrapolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2PerlinCurve.js":
-/*!****************************************!*\
-  !*** ./curve/curves/Tw2PerlinCurve.js ***!
-  \****************************************/
+/***/ "./curve/legacy/curves/Tw2PerlinCurve.js":
+/*!***********************************************!*\
+  !*** ./curve/legacy/curves/Tw2PerlinCurve.js ***!
+  \***********************************************/
 /*! exports provided: Tw2PerlinCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2PerlinCurve", function() { return Tw2PerlinCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -28418,10 +28064,10 @@ _defineProperty(Tw2PerlinCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2QuaternionCurve.js":
-/*!********************************************!*\
-  !*** ./curve/curves/Tw2QuaternionCurve.js ***!
-  \********************************************/
+/***/ "./curve/legacy/curves/Tw2QuaternionCurve.js":
+/*!***************************************************!*\
+  !*** ./curve/legacy/curves/Tw2QuaternionCurve.js ***!
+  \***************************************************/
 /*! exports provided: Tw2QuaternionKey2, Tw2QuaternionCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -28429,8 +28075,8 @@ _defineProperty(Tw2PerlinCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return Tw2QuaternionKey2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return Tw2QuaternionCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -28477,11 +28123,11 @@ function (_Tw2CurveKey) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2QuaternionKey2).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "leftTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rightTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "interpolation", 1);
 
@@ -28532,15 +28178,15 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "timeScale", 1);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "currentValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "interpolation", 1);
 
@@ -28679,7 +28325,7 @@ function (_Tw2Curve) {
             deltaTime = this.length - lastKey.time;
           }
 
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, startValue, endValue, time / deltaTime);
+          _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, startValue, endValue, time / deltaTime);
           return value;
 
         default:
@@ -28713,17 +28359,17 @@ _defineProperty(Tw2QuaternionCurve, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2RandomConstantCurve.js":
-/*!************************************************!*\
-  !*** ./curve/curves/Tw2RandomConstantCurve.js ***!
-  \************************************************/
+/***/ "./curve/legacy/curves/Tw2RandomConstantCurve.js":
+/*!*******************************************************!*\
+  !*** ./curve/legacy/curves/Tw2RandomConstantCurve.js ***!
+  \*******************************************************/
 /*! exports provided: Tw2RandomConstantCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return Tw2RandomConstantCurve; });
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -28817,10 +28463,10 @@ _defineProperty(Tw2RandomConstantCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2RigidOrientation.js":
-/*!*********************************************!*\
-  !*** ./curve/curves/Tw2RigidOrientation.js ***!
-  \*********************************************/
+/***/ "./curve/legacy/curves/Tw2RigidOrientation.js":
+/*!****************************************************!*\
+  !*** ./curve/legacy/curves/Tw2RigidOrientation.js ***!
+  \****************************************************/
 /*! exports provided: Tw2Torque, Tw2RigidOrientation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -28828,8 +28474,8 @@ _defineProperty(Tw2RandomConstantCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return Tw2Torque; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return Tw2RigidOrientation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -28875,11 +28521,11 @@ function (_Tw2CurveKey) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2Torque).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rot0", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rot0", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "omega0", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "omega0", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "torque", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "torque", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     return _this;
   }
@@ -28921,7 +28567,7 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "drag", 1);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "start", 0);
 
@@ -28972,7 +28618,7 @@ function (_Tw2Curve) {
     key: "GetValueAt",
     value: function GetValueAt(time, value) {
       if (this.states.length === 0 || time < 0 || time < this.states[0].time) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+        return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
       }
 
       let key = 0;
@@ -28990,9 +28636,9 @@ function (_Tw2Curve) {
       const vec3_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.vec3_0,
             quat_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.quat_0;
       const ck = this.states[key];
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay(vec3_0, ck.omega0, ck.torque, this.I, this.drag, time - ck.time);
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].exp(quat_0, vec3_0);
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, this.states[key].rot0, quat_0);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay(vec3_0, ck.omega0, ck.torque, this.I, this.drag, time - ck.time);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].exp(quat_0, vec3_0);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, this.states[key].rot0, quat_0);
       return value;
     }
     /**
@@ -29017,10 +28663,10 @@ _defineProperty(Tw2RigidOrientation, "Key", Tw2Torque);
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2RotationCurve.js":
-/*!******************************************!*\
-  !*** ./curve/curves/Tw2RotationCurve.js ***!
-  \******************************************/
+/***/ "./curve/legacy/curves/Tw2RotationCurve.js":
+/*!*************************************************!*\
+  !*** ./curve/legacy/curves/Tw2RotationCurve.js ***!
+  \*************************************************/
 /*! exports provided: Tw2QuaternionKey, Tw2RotationCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -29028,8 +28674,8 @@ _defineProperty(Tw2RigidOrientation, "Key", Tw2Torque);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return Tw2QuaternionKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return Tw2RotationCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -29076,11 +28722,11 @@ function (_Tw2CurveKey) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2QuaternionKey).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "left", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "right", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "interpolation", 5);
 
@@ -29119,7 +28765,7 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "start", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "extrapolation", 0);
 
@@ -29172,7 +28818,7 @@ function (_Tw2Curve) {
     key: "GetValueAt",
     value: function GetValueAt(time, value) {
       if (this.length === 0) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+        return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
       }
 
       const scratch = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global,
@@ -29182,10 +28828,10 @@ function (_Tw2Curve) {
       if (time >= lastKey.time) {
         switch (this.extrapolation) {
           case Tw2RotationCurve.Extrapolation.NONE:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
 
           case Tw2RotationCurve.Extrapolation.CONSTANT:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, lastKey.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, lastKey.value);
 
           default:
             time = time % lastKey.time;
@@ -29193,10 +28839,10 @@ function (_Tw2Curve) {
       } else if (time < 0 || time < firstKey.time) {
         switch (this.extrapolation) {
           case Tw2RotationCurve.Extrapolation.NONE:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
 
           default:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, firstKey.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, firstKey.value);
         }
       }
 
@@ -29214,7 +28860,7 @@ function (_Tw2Curve) {
 
       switch (ck_1.interpolation) {
         case Tw2RotationCurve.Interpolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, ck_1.value);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, ck_1.value);
 
         case Tw2RotationCurve.Interpolation.LINEAR:
           value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
@@ -29224,28 +28870,28 @@ function (_Tw2Curve) {
           return value;
 
         case Tw2RotationCurve.Interpolation.HERMITE:
-          const collect = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
+          const collect = _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
                 arr = [ck_1.value, ck_1.right, ck.left, ck.value];
 
           for (let i = 3; i > 0; i--) {
-            const power = _global__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
-            if (power > 1) _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, arr[i]);
+            const power = _global_index__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
+            if (power > 1) _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, arr[i]);
             value[0] = -arr[i - 1][0];
             value[1] = -arr[i - 1][1];
             value[2] = -arr[i - 1][2];
             value[3] = arr[i - 1][3];
-            _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, arr[i]);
-            _global__WEBPACK_IMPORTED_MODULE_0__["quat"].pow(value, value, power);
-            _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(collect, collect, value);
+            _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, arr[i]);
+            _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].pow(value, value, power);
+            _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(collect, collect, value);
           }
 
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, ck_1.value);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, ck_1.value);
 
         case Tw2RotationCurve.Interpolation.SLERP:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, ck_1.value, ck.value, nt);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, ck_1.value, ck.value, nt);
 
         default:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].sqlerp(value, ck_1.value, ck_1.right, ck.left, ck.value, nt);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].sqlerp(value, ck_1.value, ck_1.right, ck.left, ck.value, nt);
       }
     }
     /**
@@ -29286,10 +28932,10 @@ _defineProperty(Tw2RotationCurve, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2ScalarCurve.js":
-/*!****************************************!*\
-  !*** ./curve/curves/Tw2ScalarCurve.js ***!
-  \****************************************/
+/***/ "./curve/legacy/curves/Tw2ScalarCurve.js":
+/*!***********************************************!*\
+  !*** ./curve/legacy/curves/Tw2ScalarCurve.js ***!
+  \***********************************************/
 /*! exports provided: Tw2ScalarKey, Tw2ScalarCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -29297,7 +28943,7 @@ _defineProperty(Tw2RotationCurve, "Interpolation", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return Tw2ScalarKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return Tw2ScalarCurve; });
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -29549,10 +29195,10 @@ _defineProperty(Tw2ScalarCurve, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2ScalarCurve2.js":
-/*!*****************************************!*\
-  !*** ./curve/curves/Tw2ScalarCurve2.js ***!
-  \*****************************************/
+/***/ "./curve/legacy/curves/Tw2ScalarCurve2.js":
+/*!************************************************!*\
+  !*** ./curve/legacy/curves/Tw2ScalarCurve2.js ***!
+  \************************************************/
 /*! exports provided: Tw2ScalarKey2, Tw2ScalarCurve2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -29560,7 +29206,7 @@ _defineProperty(Tw2ScalarCurve, "Interpolation", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return Tw2ScalarKey2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return Tw2ScalarCurve2; });
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -29857,17 +29503,17 @@ _defineProperty(Tw2ScalarCurve2, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2SineCurve.js":
-/*!**************************************!*\
-  !*** ./curve/curves/Tw2SineCurve.js ***!
-  \**************************************/
+/***/ "./curve/legacy/curves/Tw2SineCurve.js":
+/*!*********************************************!*\
+  !*** ./curve/legacy/curves/Tw2SineCurve.js ***!
+  \*********************************************/
 /*! exports provided: Tw2SineCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return Tw2SineCurve; });
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -29963,10 +29609,10 @@ _defineProperty(Tw2SineCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_0_
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2Vector2Curve.js":
-/*!*****************************************!*\
-  !*** ./curve/curves/Tw2Vector2Curve.js ***!
-  \*****************************************/
+/***/ "./curve/legacy/curves/Tw2Vector2Curve.js":
+/*!************************************************!*\
+  !*** ./curve/legacy/curves/Tw2Vector2Curve.js ***!
+  \************************************************/
 /*! exports provided: Tw2Vector2Key, Tw2Vector2Curve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -29974,8 +29620,8 @@ _defineProperty(Tw2SineCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_0_
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return Tw2Vector2Key; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return Tw2Vector2Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -30022,11 +29668,11 @@ function (_Tw2CurveKey) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2Vector2Key).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "leftTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rightTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "interpolation", 1);
 
@@ -30077,15 +29723,15 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "timeScale", 1);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "currentValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "interpolation", 1);
 
@@ -30139,16 +29785,16 @@ function (_Tw2Curve) {
       time = time / this.timeScale + this.timeOffset;
 
       if (this.length <= 0 || time <= 0) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+        return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
       }
 
       if (time > this.length) {
         if (this.cycle) {
           time = time % this.length;
         } else if (this.reversed) {
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
         } else {
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.endValue);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.endValue);
         }
       }
 
@@ -30189,7 +29835,7 @@ function (_Tw2Curve) {
   }, {
     key: "Interpolate",
     value: function Interpolate(time, lastKey, nextKey, value) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
       let startValue = this.startValue,
           endValue = this.endValue,
           interp = this.interpolation,
@@ -30281,10 +29927,10 @@ _defineProperty(Tw2Vector2Curve, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2Vector3Curve.js":
-/*!*****************************************!*\
-  !*** ./curve/curves/Tw2Vector3Curve.js ***!
-  \*****************************************/
+/***/ "./curve/legacy/curves/Tw2Vector3Curve.js":
+/*!************************************************!*\
+  !*** ./curve/legacy/curves/Tw2Vector3Curve.js ***!
+  \************************************************/
 /*! exports provided: Tw2Vector3Key, Tw2Vector3Curve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -30292,8 +29938,8 @@ _defineProperty(Tw2Vector2Curve, "Interpolation", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return Tw2Vector3Key; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return Tw2Vector3Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -30341,11 +29987,11 @@ function (_Tw2CurveKey) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2Vector3Key).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "leftTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rightTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "interpolation", 1);
 
@@ -30396,15 +30042,15 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "timeScale", 1);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "currentValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "startTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "endTangent", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "interpolation", 1);
 
@@ -30457,16 +30103,16 @@ function (_Tw2Curve) {
       time = time / this.timeScale + this.timeOffset;
 
       if (this.length <= 0 || time <= 0) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+        return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
       }
 
       if (time > this.length) {
         if (this.cycle) {
           time = time % this.length;
         } else if (this.reversed) {
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
         } else {
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.endValue);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.endValue);
         }
       }
 
@@ -30507,7 +30153,7 @@ function (_Tw2Curve) {
   }, {
     key: "Interpolate",
     value: function Interpolate(time, lastKey, nextKey, value) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
       let startValue = this.startValue,
           endValue = this.endValue,
           interp = this.interpolation,
@@ -30601,10 +30247,10 @@ _defineProperty(Tw2Vector3Curve, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/Tw2VectorCurve.js":
-/*!****************************************!*\
-  !*** ./curve/curves/Tw2VectorCurve.js ***!
-  \****************************************/
+/***/ "./curve/legacy/curves/Tw2VectorCurve.js":
+/*!***********************************************!*\
+  !*** ./curve/legacy/curves/Tw2VectorCurve.js ***!
+  \***********************************************/
 /*! exports provided: Tw2VectorKey, Tw2VectorCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -30612,8 +30258,8 @@ _defineProperty(Tw2Vector3Curve, "Interpolation", {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return Tw2VectorKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return Tw2VectorCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -30661,11 +30307,11 @@ function (_Tw2CurveKey) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2VectorKey).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "left", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "right", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "interpolation", 0);
 
@@ -30705,7 +30351,7 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "start", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "extrapolation", 0);
 
@@ -30758,7 +30404,7 @@ function (_Tw2Curve) {
     key: "GetValueAt",
     value: function GetValueAt(time, value) {
       if (this.length === 0) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+        return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
       }
 
       const firstKey = this.keys[0],
@@ -30767,13 +30413,13 @@ function (_Tw2Curve) {
       if (time >= lastKey.time) {
         switch (this.extrapolation) {
           case Tw2VectorCurve.Extrapolation.NONE:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
 
           case Tw2VectorCurve.Extrapolation.CONSTANT:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, lastKey.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, lastKey.value);
 
           case Tw2VectorCurve.Extrapolation.GRADIENT:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
 
           default:
             time = time % lastKey.time;
@@ -30781,13 +30427,13 @@ function (_Tw2Curve) {
       } else if (time < 0 || time < firstKey.time) {
         switch (this.extrapolation) {
           case Tw2VectorCurve.Extrapolation.NONE:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
 
           case Tw2VectorCurve.Extrapolation.GRADIENT:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
 
           default:
-            return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, firstKey.value);
+            return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, firstKey.value);
         }
       }
 
@@ -30805,7 +30451,7 @@ function (_Tw2Curve) {
 
       switch (ck_1.interpolation) {
         case Tw2VectorCurve.Interpolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, ck_1.value);
+          return _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, ck_1.value);
 
         case Tw2VectorCurve.Interpolation.LINEAR:
           value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
@@ -30863,80 +30509,80 @@ _defineProperty(Tw2VectorCurve, "Interpolation", {
 
 /***/ }),
 
-/***/ "./curve/curves/index.js":
-/*!*******************************!*\
-  !*** ./curve/curves/index.js ***!
-  \*******************************/
+/***/ "./curve/legacy/curves/index.js":
+/*!**************************************!*\
+  !*** ./curve/legacy/curves/index.js ***!
+  \**************************************/
 /*! exports provided: Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curves/Tw2Curve.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/legacy/curves/Tw2Curve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]; });
 
-/* harmony import */ var _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ColorCurve */ "./curve/curves/Tw2ColorCurve.js");
+/* harmony import */ var _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ColorCurve */ "./curve/legacy/curves/Tw2ColorCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorCurve"]; });
 
-/* harmony import */ var _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ColorCurve2 */ "./curve/curves/Tw2ColorCurve2.js");
+/* harmony import */ var _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ColorCurve2 */ "./curve/legacy/curves/Tw2ColorCurve2.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_2__["Tw2ColorKey2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_2__["Tw2ColorCurve2"]; });
 
-/* harmony import */ var _Tw2EventCurve__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2EventCurve */ "./curve/curves/Tw2EventCurve.js");
+/* harmony import */ var _Tw2EventCurve__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2EventCurve */ "./curve/legacy/curves/Tw2EventCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventKey", function() { return _Tw2EventCurve__WEBPACK_IMPORTED_MODULE_3__["Tw2EventKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventCurve", function() { return _Tw2EventCurve__WEBPACK_IMPORTED_MODULE_3__["Tw2EventCurve"]; });
 
-/* harmony import */ var _Tw2PerlinCurve__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2PerlinCurve */ "./curve/curves/Tw2PerlinCurve.js");
+/* harmony import */ var _Tw2PerlinCurve__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2PerlinCurve */ "./curve/legacy/curves/Tw2PerlinCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2PerlinCurve", function() { return _Tw2PerlinCurve__WEBPACK_IMPORTED_MODULE_4__["Tw2PerlinCurve"]; });
 
-/* harmony import */ var _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2QuaternionCurve */ "./curve/curves/Tw2QuaternionCurve.js");
+/* harmony import */ var _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2QuaternionCurve */ "./curve/legacy/curves/Tw2QuaternionCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_5__["Tw2QuaternionKey2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_5__["Tw2QuaternionCurve"]; });
 
-/* harmony import */ var _Tw2RandomConstantCurve__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2RandomConstantCurve */ "./curve/curves/Tw2RandomConstantCurve.js");
+/* harmony import */ var _Tw2RandomConstantCurve__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2RandomConstantCurve */ "./curve/legacy/curves/Tw2RandomConstantCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _Tw2RandomConstantCurve__WEBPACK_IMPORTED_MODULE_6__["Tw2RandomConstantCurve"]; });
 
-/* harmony import */ var _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2RigidOrientation */ "./curve/curves/Tw2RigidOrientation.js");
+/* harmony import */ var _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2RigidOrientation */ "./curve/legacy/curves/Tw2RigidOrientation.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_7__["Tw2Torque"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_7__["Tw2RigidOrientation"]; });
 
-/* harmony import */ var _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tw2RotationCurve */ "./curve/curves/Tw2RotationCurve.js");
+/* harmony import */ var _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tw2RotationCurve */ "./curve/legacy/curves/Tw2RotationCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_8__["Tw2QuaternionKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_8__["Tw2RotationCurve"]; });
 
-/* harmony import */ var _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Tw2ScalarCurve */ "./curve/curves/Tw2ScalarCurve.js");
+/* harmony import */ var _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Tw2ScalarCurve */ "./curve/legacy/curves/Tw2ScalarCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_9__["Tw2ScalarKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_9__["Tw2ScalarCurve"]; });
 
-/* harmony import */ var _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Tw2ScalarCurve2 */ "./curve/curves/Tw2ScalarCurve2.js");
+/* harmony import */ var _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Tw2ScalarCurve2 */ "./curve/legacy/curves/Tw2ScalarCurve2.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_10__["Tw2ScalarKey2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_10__["Tw2ScalarCurve2"]; });
 
-/* harmony import */ var _Tw2SineCurve__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Tw2SineCurve */ "./curve/curves/Tw2SineCurve.js");
+/* harmony import */ var _Tw2SineCurve__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Tw2SineCurve */ "./curve/legacy/curves/Tw2SineCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _Tw2SineCurve__WEBPACK_IMPORTED_MODULE_11__["Tw2SineCurve"]; });
 
-/* harmony import */ var _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Tw2Vector2Curve */ "./curve/curves/Tw2Vector2Curve.js");
+/* harmony import */ var _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Tw2Vector2Curve */ "./curve/legacy/curves/Tw2Vector2Curve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_12__["Tw2Vector2Key"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_12__["Tw2Vector2Curve"]; });
 
-/* harmony import */ var _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Tw2Vector3Curve */ "./curve/curves/Tw2Vector3Curve.js");
+/* harmony import */ var _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Tw2Vector3Curve */ "./curve/legacy/curves/Tw2Vector3Curve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_13__["Tw2Vector3Key"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_13__["Tw2Vector3Curve"]; });
 
-/* harmony import */ var _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Tw2VectorCurve */ "./curve/curves/Tw2VectorCurve.js");
+/* harmony import */ var _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Tw2VectorCurve */ "./curve/legacy/curves/Tw2VectorCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_14__["Tw2VectorKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_14__["Tw2VectorCurve"]; });
@@ -30959,16 +30605,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./curve/index.js":
-/*!************************!*\
-  !*** ./curve/index.js ***!
-  \************************/
+/***/ "./curve/legacy/index.js":
+/*!*******************************!*\
+  !*** ./curve/legacy/index.js ***!
+  \*******************************/
 /*! exports provided: Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./curves */ "./curve/curves/index.js");
+/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./curves */ "./curve/legacy/curves/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]; });
@@ -31023,7 +30669,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2VectorCurve"]; });
 
-/* harmony import */ var _sequencers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sequencers */ "./curve/sequencers/index.js");
+/* harmony import */ var _sequencers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sequencers */ "./curve/legacy/sequencers/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorSequencer"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2EulerRotation"]; });
@@ -31040,14 +30686,14 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2YPRSequencer"]; });
 
-/* harmony import */ var _tracks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tracks */ "./curve/tracks/index.js");
+/* harmony import */ var _tracks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tracks */ "./curve/legacy/tracks/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_2__["Tw2WbgTrack"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_2__["Tw2WbgTransformTrack"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_2__["Tw2TransformTrack"]; });
 
-/* harmony import */ var _maya__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./maya */ "./curve/maya/index.js");
+/* harmony import */ var _maya__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./maya */ "./curve/legacy/maya/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaEulerRotationCurve", function() { return _maya__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaEulerRotationCurve"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaScalarCurve", function() { return _maya__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaScalarCurve"]; });
@@ -31063,18 +30709,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./curve/maya/Tw2MayaAnimationEngine.js":
-/*!**********************************************!*\
-  !*** ./curve/maya/Tw2MayaAnimationEngine.js ***!
-  \**********************************************/
+/***/ "./curve/legacy/maya/Tw2MayaAnimationEngine.js":
+/*!*****************************************************!*\
+  !*** ./curve/legacy/maya/Tw2MayaAnimationEngine.js ***!
+  \*****************************************************/
 /*! exports provided: Tw2MayaAnimationEngine */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaAnimationEngine", function() { return Tw2MayaAnimationEngine; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _core_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/index */ "./core/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -31103,7 +30749,7 @@ function () {
   function Tw2MayaAnimationEngine() {
     _classCallCheck(this, Tw2MayaAnimationEngine);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    _defineProperty(this, "_id", _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
 
     _defineProperty(this, "curves", []);
 
@@ -31285,7 +30931,7 @@ function () {
   }, {
     key: "_EvaluateInfinities",
     value: function _EvaluateInfinities(curve, segments, startSegment, time, bool) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
+      throw new _core_index__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
         feature: "Maya animation engine evaluate infinities"
       });
     }
@@ -31322,13 +30968,13 @@ function () {
       if (segment[Tw2MayaAnimationEngine.BezierSegment.IS_LINEAR]) {
         t = s;
       } else {
-        let poly = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+        let poly = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
         poly[3] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][3];
         poly[2] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][2];
         poly[1] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][1];
         poly[0] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][0] - s;
         let roots = [];
-        if (_global__WEBPACK_IMPORTED_MODULE_0__["curve"].polyZeroes(poly, 3, 0.0, 1, 1.0, 1, roots) === 1) t = roots[0];else t = 0.0;
+        if (_global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].polyZeroes(poly, 3, 0.0, 1, 1.0, 1, roots) === 1) t = roots[0];else t = 0.0;
       }
 
       let poly = segment[Tw2MayaAnimationEngine.BezierSegment.POLYY];
@@ -31458,18 +31104,18 @@ _defineProperty(Tw2MayaAnimationEngine, "INFINITY", 0);
 
 /***/ }),
 
-/***/ "./curve/maya/Tw2MayaEulerRotationCurve.js":
-/*!*************************************************!*\
-  !*** ./curve/maya/Tw2MayaEulerRotationCurve.js ***!
-  \*************************************************/
+/***/ "./curve/legacy/maya/Tw2MayaEulerRotationCurve.js":
+/*!********************************************************!*\
+  !*** ./curve/legacy/maya/Tw2MayaEulerRotationCurve.js ***!
+  \********************************************************/
 /*! exports provided: Tw2MayaEulerRotationCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaEulerRotationCurve", function() { return Tw2MayaEulerRotationCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../curves */ "./curve/curves/index.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../curves */ "./curve/legacy/curves/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -31529,11 +31175,11 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationEngine", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "eulerValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "eulerValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateQuaternion", false);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "quatValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "quatValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "length", 0);
 
@@ -31642,17 +31288,17 @@ _defineProperty(Tw2MayaEulerRotationCurve, "curveType", _curves__WEBPACK_IMPORTE
 
 /***/ }),
 
-/***/ "./curve/maya/Tw2MayaScalarCurve.js":
-/*!******************************************!*\
-  !*** ./curve/maya/Tw2MayaScalarCurve.js ***!
-  \******************************************/
+/***/ "./curve/legacy/maya/Tw2MayaScalarCurve.js":
+/*!*************************************************!*\
+  !*** ./curve/legacy/maya/Tw2MayaScalarCurve.js ***!
+  \*************************************************/
 /*! exports provided: Tw2MayaScalarCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaScalarCurve", function() { return Tw2MayaScalarCurve; });
-/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../curves */ "./curve/curves/index.js");
+/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../curves */ "./curve/legacy/curves/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -31768,18 +31414,18 @@ _defineProperty(Tw2MayaScalarCurve, "curveType", _curves__WEBPACK_IMPORTED_MODUL
 
 /***/ }),
 
-/***/ "./curve/maya/Tw2MayaVector3Curve.js":
-/*!*******************************************!*\
-  !*** ./curve/maya/Tw2MayaVector3Curve.js ***!
-  \*******************************************/
+/***/ "./curve/legacy/maya/Tw2MayaVector3Curve.js":
+/*!**************************************************!*\
+  !*** ./curve/legacy/maya/Tw2MayaVector3Curve.js ***!
+  \**************************************************/
 /*! exports provided: Tw2MayaVector3Curve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaVector3Curve", function() { return Tw2MayaVector3Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../curves */ "./curve/curves/index.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../curves */ "./curve/legacy/curves/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -31836,7 +31482,7 @@ function (_Tw2Curve) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationEngine", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "length", 0);
 
@@ -31932,25 +31578,25 @@ _defineProperty(Tw2MayaVector3Curve, "curveType", _curves__WEBPACK_IMPORTED_MODU
 
 /***/ }),
 
-/***/ "./curve/maya/index.js":
-/*!*****************************!*\
-  !*** ./curve/maya/index.js ***!
-  \*****************************/
+/***/ "./curve/legacy/maya/index.js":
+/*!************************************!*\
+  !*** ./curve/legacy/maya/index.js ***!
+  \************************************/
 /*! exports provided: Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2MayaEulerRotationCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2MayaEulerRotationCurve */ "./curve/maya/Tw2MayaEulerRotationCurve.js");
+/* harmony import */ var _Tw2MayaEulerRotationCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2MayaEulerRotationCurve */ "./curve/legacy/maya/Tw2MayaEulerRotationCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaEulerRotationCurve", function() { return _Tw2MayaEulerRotationCurve__WEBPACK_IMPORTED_MODULE_0__["Tw2MayaEulerRotationCurve"]; });
 
-/* harmony import */ var _Tw2MayaScalarCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2MayaScalarCurve */ "./curve/maya/Tw2MayaScalarCurve.js");
+/* harmony import */ var _Tw2MayaScalarCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2MayaScalarCurve */ "./curve/legacy/maya/Tw2MayaScalarCurve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaScalarCurve", function() { return _Tw2MayaScalarCurve__WEBPACK_IMPORTED_MODULE_1__["Tw2MayaScalarCurve"]; });
 
-/* harmony import */ var _Tw2MayaVector3Curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2MayaVector3Curve */ "./curve/maya/Tw2MayaVector3Curve.js");
+/* harmony import */ var _Tw2MayaVector3Curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2MayaVector3Curve */ "./curve/legacy/maya/Tw2MayaVector3Curve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaVector3Curve", function() { return _Tw2MayaVector3Curve__WEBPACK_IMPORTED_MODULE_2__["Tw2MayaVector3Curve"]; });
 
-/* harmony import */ var _Tw2MayaAnimationEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2MayaAnimationEngine */ "./curve/maya/Tw2MayaAnimationEngine.js");
+/* harmony import */ var _Tw2MayaAnimationEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2MayaAnimationEngine */ "./curve/legacy/maya/Tw2MayaAnimationEngine.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaAnimationEngine", function() { return _Tw2MayaAnimationEngine__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaAnimationEngine"]; });
 
 
@@ -31960,18 +31606,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2ColorSequencer.js":
-/*!***********************************************!*\
-  !*** ./curve/sequencers/Tw2ColorSequencer.js ***!
-  \***********************************************/
+/***/ "./curve/legacy/sequencers/Tw2ColorSequencer.js":
+/*!******************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2ColorSequencer.js ***!
+  \******************************************************/
 /*! exports provided: Tw2ColorSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return Tw2ColorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -32020,7 +31666,7 @@ function (_Tw2CurveSequencer) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "start", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "operator", 0);
 
@@ -32080,21 +31726,21 @@ function (_Tw2CurveSequencer) {
 
       switch (this.operator) {
         case Tw2ColorSequencer.Operator.MULTIPLY:
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 1, 1, 1, 1);
+          _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 1, 1, 1, 1);
 
           for (let i = 0; i < this.functions.length; ++i) {
             this.functions[i].GetValueAt(time, vec4_0);
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(value, value, vec4_0);
+            _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(value, value, vec4_0);
           }
 
           return value;
 
         default:
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 0, 0, 0, 0);
+          _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 0, 0, 0, 0);
 
           for (let i = 0; i < this.functions.length; ++i) {
             this.functions[i].GetValueAt(time, vec4_0);
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
+            _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
           }
 
           return value;
@@ -32127,17 +31773,17 @@ _defineProperty(Tw2ColorSequencer, "Operator", {
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2CurveSequencer.js":
-/*!***********************************************!*\
-  !*** ./curve/sequencers/Tw2CurveSequencer.js ***!
-  \***********************************************/
+/***/ "./curve/legacy/sequencers/Tw2CurveSequencer.js":
+/*!******************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2CurveSequencer.js ***!
+  \******************************************************/
 /*! exports provided: Tw2CurveSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveSequencer", function() { return Tw2CurveSequencer; });
-/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../curves */ "./curve/curves/index.js");
+/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../curves */ "./curve/legacy/curves/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -32225,18 +31871,18 @@ _defineProperty(Tw2CurveSequencer, "Operator", null);
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2EulerRotation.js":
-/*!**********************************************!*\
-  !*** ./curve/sequencers/Tw2EulerRotation.js ***!
-  \**********************************************/
+/***/ "./curve/legacy/sequencers/Tw2EulerRotation.js":
+/*!*****************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2EulerRotation.js ***!
+  \*****************************************************/
 /*! exports provided: Tw2EulerRotation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return Tw2EulerRotation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -32290,7 +31936,7 @@ function (_Tw2CurveSequencer) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rollCurve", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "currentValue", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
     return _this;
   }
@@ -32375,18 +32021,18 @@ _defineProperty(Tw2EulerRotation, "childProperties", ["yawCurve", "pitchCurve", 
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2QuaternionSequencer.js":
-/*!****************************************************!*\
-  !*** ./curve/sequencers/Tw2QuaternionSequencer.js ***!
-  \****************************************************/
+/***/ "./curve/legacy/sequencers/Tw2QuaternionSequencer.js":
+/*!***********************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2QuaternionSequencer.js ***!
+  \***********************************************************/
 /*! exports provided: Tw2QuaternionSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return Tw2QuaternionSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -32435,7 +32081,7 @@ function (_Tw2CurveSequencer) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "start", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "functions", []);
 
@@ -32489,12 +32135,12 @@ function (_Tw2CurveSequencer) {
   }, {
     key: "GetValueAt",
     value: function GetValueAt(time, value) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(value);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(value);
       const quat_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.quat_0;
 
       for (let i = 0; i < this.functions.length; ++i) {
         this.functions[i].GetValueAt(time, quat_0);
-        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, quat_0);
+        _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, quat_0);
       }
 
       return value;
@@ -32521,18 +32167,18 @@ _defineProperty(Tw2QuaternionSequencer, "childArray", "functions");
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2RGBAScalarSequencer.js":
-/*!****************************************************!*\
-  !*** ./curve/sequencers/Tw2RGBAScalarSequencer.js ***!
-  \****************************************************/
+/***/ "./curve/legacy/sequencers/Tw2RGBAScalarSequencer.js":
+/*!***********************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2RGBAScalarSequencer.js ***!
+  \***********************************************************/
 /*! exports provided: Tw2RGBAScalarSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return Tw2RGBAScalarSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -32580,7 +32226,7 @@ function (_Tw2CurveSequencer) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2RGBAScalarSequencer).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "RedCurve", null);
 
@@ -32665,17 +32311,17 @@ _defineProperty(Tw2RGBAScalarSequencer, "childProperties", ["RedCurve", "GreenCu
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2ScalarSequencer.js":
-/*!************************************************!*\
-  !*** ./curve/sequencers/Tw2ScalarSequencer.js ***!
-  \************************************************/
+/***/ "./curve/legacy/sequencers/Tw2ScalarSequencer.js":
+/*!*******************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2ScalarSequencer.js ***!
+  \*******************************************************/
 /*! exports provided: Tw2ScalarSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return Tw2ScalarSequencer; });
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -32859,18 +32505,18 @@ _defineProperty(Tw2ScalarSequencer, "Operator", {
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2VectorSequencer.js":
-/*!************************************************!*\
-  !*** ./curve/sequencers/Tw2VectorSequencer.js ***!
-  \************************************************/
+/***/ "./curve/legacy/sequencers/Tw2VectorSequencer.js":
+/*!*******************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2VectorSequencer.js ***!
+  \*******************************************************/
 /*! exports provided: Tw2VectorSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return Tw2VectorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -32920,7 +32566,7 @@ function (_Tw2CurveSequencer) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "start", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "operator", 0);
 
@@ -32980,21 +32626,21 @@ function (_Tw2CurveSequencer) {
 
       switch (this.operator) {
         case Tw2VectorSequencer.Operator.MULTIPLY:
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 1, 1, 1);
+          _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 1, 1, 1);
 
           for (let i = 0; i < this.functions.length; ++i) {
             this.functions[i].GetValueAt(time, vec3_0);
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(value, value, vec3_0);
+            _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(value, value, vec3_0);
           }
 
           return value;
 
         default:
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 0, 0, 0);
+          _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 0, 0, 0);
 
           for (let i = 0; i < this.functions.length; ++i) {
             this.functions[i].GetValueAt(time, vec3_0);
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(value, value, vec3_0);
+            _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(value, value, vec3_0);
           }
 
           return value;
@@ -33027,18 +32673,18 @@ _defineProperty(Tw2VectorSequencer, "Operator", {
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2XYZScalarSequencer.js":
-/*!***************************************************!*\
-  !*** ./curve/sequencers/Tw2XYZScalarSequencer.js ***!
-  \***************************************************/
+/***/ "./curve/legacy/sequencers/Tw2XYZScalarSequencer.js":
+/*!**********************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2XYZScalarSequencer.js ***!
+  \**********************************************************/
 /*! exports provided: Tw2XYZScalarSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return Tw2XYZScalarSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -33086,7 +32732,7 @@ function (_Tw2CurveSequencer) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2XYZScalarSequencer).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "XCurve", null);
 
@@ -33167,18 +32813,18 @@ _defineProperty(Tw2XYZScalarSequencer, "childProperties", ["XCurve", "YCurve", "
 
 /***/ }),
 
-/***/ "./curve/sequencers/Tw2YPRSequencer.js":
-/*!*********************************************!*\
-  !*** ./curve/sequencers/Tw2YPRSequencer.js ***!
-  \*********************************************/
+/***/ "./curve/legacy/sequencers/Tw2YPRSequencer.js":
+/*!****************************************************!*\
+  !*** ./curve/legacy/sequencers/Tw2YPRSequencer.js ***!
+  \****************************************************/
 /*! exports provided: Tw2YPRSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return Tw2YPRSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencers/Tw2CurveSequencer.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/legacy/sequencers/Tw2CurveSequencer.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -33226,9 +32872,9 @@ function (_Tw2CurveSequencer) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2YPRSequencer).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "YawPitchRoll", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "YawPitchRoll", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "YawCurve", null);
 
@@ -33321,37 +32967,37 @@ _defineProperty(Tw2YPRSequencer, "childProperties", ["YawCurve", "PitchCurve", "
 
 /***/ }),
 
-/***/ "./curve/sequencers/index.js":
-/*!***********************************!*\
-  !*** ./curve/sequencers/index.js ***!
-  \***********************************/
+/***/ "./curve/legacy/sequencers/index.js":
+/*!******************************************!*\
+  !*** ./curve/legacy/sequencers/index.js ***!
+  \******************************************/
 /*! exports provided: Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2ColorSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ColorSequencer */ "./curve/sequencers/Tw2ColorSequencer.js");
+/* harmony import */ var _Tw2ColorSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ColorSequencer */ "./curve/legacy/sequencers/Tw2ColorSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _Tw2ColorSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorSequencer"]; });
 
-/* harmony import */ var _Tw2EulerRotation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2EulerRotation */ "./curve/sequencers/Tw2EulerRotation.js");
+/* harmony import */ var _Tw2EulerRotation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2EulerRotation */ "./curve/legacy/sequencers/Tw2EulerRotation.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _Tw2EulerRotation__WEBPACK_IMPORTED_MODULE_1__["Tw2EulerRotation"]; });
 
-/* harmony import */ var _Tw2QuaternionSequencer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2QuaternionSequencer */ "./curve/sequencers/Tw2QuaternionSequencer.js");
+/* harmony import */ var _Tw2QuaternionSequencer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2QuaternionSequencer */ "./curve/legacy/sequencers/Tw2QuaternionSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _Tw2QuaternionSequencer__WEBPACK_IMPORTED_MODULE_2__["Tw2QuaternionSequencer"]; });
 
-/* harmony import */ var _Tw2RGBAScalarSequencer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2RGBAScalarSequencer */ "./curve/sequencers/Tw2RGBAScalarSequencer.js");
+/* harmony import */ var _Tw2RGBAScalarSequencer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2RGBAScalarSequencer */ "./curve/legacy/sequencers/Tw2RGBAScalarSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _Tw2RGBAScalarSequencer__WEBPACK_IMPORTED_MODULE_3__["Tw2RGBAScalarSequencer"]; });
 
-/* harmony import */ var _Tw2ScalarSequencer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ScalarSequencer */ "./curve/sequencers/Tw2ScalarSequencer.js");
+/* harmony import */ var _Tw2ScalarSequencer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ScalarSequencer */ "./curve/legacy/sequencers/Tw2ScalarSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _Tw2ScalarSequencer__WEBPACK_IMPORTED_MODULE_4__["Tw2ScalarSequencer"]; });
 
-/* harmony import */ var _Tw2VectorSequencer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2VectorSequencer */ "./curve/sequencers/Tw2VectorSequencer.js");
+/* harmony import */ var _Tw2VectorSequencer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2VectorSequencer */ "./curve/legacy/sequencers/Tw2VectorSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _Tw2VectorSequencer__WEBPACK_IMPORTED_MODULE_5__["Tw2VectorSequencer"]; });
 
-/* harmony import */ var _Tw2XYZScalarSequencer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2XYZScalarSequencer */ "./curve/sequencers/Tw2XYZScalarSequencer.js");
+/* harmony import */ var _Tw2XYZScalarSequencer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2XYZScalarSequencer */ "./curve/legacy/sequencers/Tw2XYZScalarSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _Tw2XYZScalarSequencer__WEBPACK_IMPORTED_MODULE_6__["Tw2XYZScalarSequencer"]; });
 
-/* harmony import */ var _Tw2YPRSequencer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2YPRSequencer */ "./curve/sequencers/Tw2YPRSequencer.js");
+/* harmony import */ var _Tw2YPRSequencer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2YPRSequencer */ "./curve/legacy/sequencers/Tw2YPRSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _Tw2YPRSequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2YPRSequencer"]; });
 
 
@@ -33365,17 +33011,17 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./curve/tracks/Tw2TransformTrack.js":
-/*!*******************************************!*\
-  !*** ./curve/tracks/Tw2TransformTrack.js ***!
-  \*******************************************/
+/***/ "./curve/legacy/tracks/Tw2TransformTrack.js":
+/*!**************************************************!*\
+  !*** ./curve/legacy/tracks/Tw2TransformTrack.js ***!
+  \**************************************************/
 /*! exports provided: Tw2TransformTrack */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformTrack", function() { return Tw2TransformTrack; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -33411,7 +33057,7 @@ function () {
   function Tw2TransformTrack() {
     _classCallCheck(this, Tw2TransformTrack);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    _defineProperty(this, "_id", _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
 
     _defineProperty(this, "name", "");
 
@@ -33425,13 +33071,13 @@ function () {
 
     _defineProperty(this, "duration", 0);
 
-    _defineProperty(this, "translation", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(this, "translation", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(this, "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+    _defineProperty(this, "rotation", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-    _defineProperty(this, "scale", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
+    _defineProperty(this, "scale", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
 
-    _defineProperty(this, "scaleShear", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+    _defineProperty(this, "scaleShear", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     _defineProperty(this, "positionCurve", null);
 
@@ -33448,7 +33094,7 @@ function () {
      */
     value: function Initialize() {
       if (this.resPath !== "") {
-        this.res = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.resPath);
+        this.res = _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.resPath);
       }
     }
     /**
@@ -33476,11 +33122,11 @@ function () {
       if (!this.positionCurve) return;
       if (this.cycle) time = time % this.duration;
       if (time > this.duration || time < 0) return;
-      _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.positionCurve, time, this.translation, this.cycle, this.duration);
-      _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.orientationCurve, time, this.rotation, this.cycle, this.duration);
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
-      _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.scaleCurve, time, this.scaleShear, this.cycle, this.duration);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scale, this.scaleCurve);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.positionCurve, time, this.translation, this.cycle, this.duration);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.orientationCurve, time, this.rotation, this.cycle, this.duration);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.scaleCurve, time, this.scaleShear, this.cycle, this.duration);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scale, this.scaleCurve);
     }
     /**
      * FindTracks
@@ -33519,10 +33165,10 @@ function () {
 
 /***/ }),
 
-/***/ "./curve/tracks/Tw2WbgTrack.js":
-/*!*************************************!*\
-  !*** ./curve/tracks/Tw2WbgTrack.js ***!
-  \*************************************/
+/***/ "./curve/legacy/tracks/Tw2WbgTrack.js":
+/*!********************************************!*\
+  !*** ./curve/legacy/tracks/Tw2WbgTrack.js ***!
+  \********************************************/
 /*! exports provided: Tw2WbgTrack, Tw2WbgTransformTrack */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -33530,7 +33176,7 @@ function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return Tw2WbgTrack; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return Tw2WbgTransformTrack; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
 
 /**
  * Tw2WbgTrack
@@ -33545,7 +33191,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function Tw2WbgTrack() {
-  this._id = _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
+  this._id = _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
   this.name = "";
   this.geometryResPath = "";
   this.geometryRes = null;
@@ -33581,7 +33227,7 @@ function Tw2WbgTrack() {
 
   this.Initialize = function () {
     if (this.geometryResPath) {
-      this.geometryRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
+      this.geometryRes = _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
       const self = this;
       let notification = {
         OnResPrepared: function OnResPrepared() {
@@ -33618,15 +33264,15 @@ function Tw2WbgTrack() {
  */
 
 function Tw2WbgTransformTrack() {
-  this._id = _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
-  this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-  this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+  this._id = _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
+  this.translation = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  this.rotation = _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   this.rotation[3] = 1;
-  this.scale = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  this.scale = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   let positionCurve = null;
   let rotationCurve = null;
   let scaleCurve = null;
-  let scaleShear = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+  let scaleShear = _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   /**
    * _TracksReady
    * @returns {*}
@@ -33667,16 +33313,16 @@ function Tw2WbgTransformTrack() {
 
   this._UpdateValue = function (time) {
     if (positionCurve) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(positionCurve, time, this.translation, this.cycle, this.duration);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(positionCurve, time, this.translation, this.cycle, this.duration);
     }
 
     if (rotationCurve) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(rotationCurve, time, this.rotation, this.cycle, this.duration);
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(rotationCurve, time, this.rotation, this.cycle, this.duration);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
     }
 
     if (scaleCurve) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(scaleCurve, time, scaleShear, this.cycle, this.duration);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(scaleCurve, time, scaleShear, this.cycle, this.duration);
     }
 
     this.scale[0] = scaleShear[0];
@@ -33693,22 +33339,367 @@ Tw2WbgTransformTrack.prototype = new Tw2WbgTrack();
 
 /***/ }),
 
-/***/ "./curve/tracks/index.js":
-/*!*******************************!*\
-  !*** ./curve/tracks/index.js ***!
-  \*******************************/
+/***/ "./curve/legacy/tracks/index.js":
+/*!**************************************!*\
+  !*** ./curve/legacy/tracks/index.js ***!
+  \**************************************/
 /*! exports provided: Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2WbgTrack__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2WbgTrack */ "./curve/tracks/Tw2WbgTrack.js");
+/* harmony import */ var _Tw2WbgTrack__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2WbgTrack */ "./curve/legacy/tracks/Tw2WbgTrack.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return _Tw2WbgTrack__WEBPACK_IMPORTED_MODULE_0__["Tw2WbgTrack"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return _Tw2WbgTrack__WEBPACK_IMPORTED_MODULE_0__["Tw2WbgTransformTrack"]; });
 
-/* harmony import */ var _Tw2TransformTrack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2TransformTrack */ "./curve/tracks/Tw2TransformTrack.js");
+/* harmony import */ var _Tw2TransformTrack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2TransformTrack */ "./curve/legacy/tracks/Tw2TransformTrack.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformTrack", function() { return _Tw2TransformTrack__WEBPACK_IMPORTED_MODULE_1__["Tw2TransformTrack"]; });
+
+
+
+
+/***/ }),
+
+/***/ "./curve/sequencer/Tr2CurveColor.js":
+/*!******************************************!*\
+  !*** ./curve/sequencer/Tr2CurveColor.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveColor; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2CurveColor
+ *
+ * @property {Tr2CurveScalar} a -
+ * @property {Tr2CurveScalar} b -
+ * @property {Tr2CurveScalar} g -
+ * @property {Tr2CurveScalar} r -
+ */
+
+let Tr2CurveColor =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2CurveColor, _Tw2BaseClass);
+
+  function Tr2CurveColor() {
+    var _this;
+
+    _classCallCheck(this, Tr2CurveColor);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveColor).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "a", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "b", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "g", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "r", null);
+
+    return _this;
+  }
+
+  return Tr2CurveColor;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveColor, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveColor",
+    category: "Curve",
+    props: {
+      a: ["Tr2CurveScalar"],
+      b: ["Tr2CurveScalar"],
+      g: ["Tr2CurveScalar"],
+      r: ["Tr2CurveScalar"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/sequencer/Tr2CurveEulerRotation.js":
+/*!**************************************************!*\
+  !*** ./curve/sequencer/Tr2CurveEulerRotation.js ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveEulerRotation; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2CurveEulerRotation
+ *
+ * @property {Tr2CurveScalar} pitch -
+ * @property {Tr2CurveScalar} roll  -
+ * @property {Tr2CurveScalar} yaw   -
+ */
+
+let Tr2CurveEulerRotation =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2CurveEulerRotation, _Tw2BaseClass);
+
+  function Tr2CurveEulerRotation() {
+    var _this;
+
+    _classCallCheck(this, Tr2CurveEulerRotation);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveEulerRotation).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pitch", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "roll", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "yaw", null);
+
+    return _this;
+  }
+
+  return Tr2CurveEulerRotation;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveEulerRotation, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveEulerRotation",
+    category: "Curve",
+    props: {
+      pitch: ["Tr2CurveScalar"],
+      roll: ["Tr2CurveScalar"],
+      yaw: ["Tr2CurveScalar"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/sequencer/Tr2CurveVector3.js":
+/*!********************************************!*\
+  !*** ./curve/sequencer/Tr2CurveVector3.js ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2CurveVector3; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2CurveVector3
+ *
+ * @property {Tr2CurveScalar} x -
+ * @property {Tr2CurveScalar} y -
+ * @property {Tr2CurveScalar} z -
+ */
+
+let Tr2CurveVector3 =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2CurveVector3, _Tw2BaseClass);
+
+  function Tr2CurveVector3() {
+    var _this;
+
+    _classCallCheck(this, Tr2CurveVector3);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2CurveVector3).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "x", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "y", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "z", null);
+
+    return _this;
+  }
+
+  return Tr2CurveVector3;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2CurveVector3, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2CurveVector3",
+    category: "Curve",
+    props: {
+      x: ["Tr2CurveScalar"],
+      y: ["Tr2CurveScalar"],
+      z: ["Tr2CurveScalar"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/sequencer/TriColorSequencer.js":
+/*!**********************************************!*\
+  !*** ./curve/sequencer/TriColorSequencer.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TriColorSequencer; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * TriColorSequencer
+ *
+ * @property {Array.<Curve|CurveExpression>} functions -
+ * @property {vec4} value                              -
+ */
+
+let TriColorSequencer =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(TriColorSequencer, _Tw2BaseClass);
+
+  function TriColorSequencer() {
+    var _this;
+
+    _classCallCheck(this, TriColorSequencer);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(TriColorSequencer).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "functions", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    return _this;
+  }
+
+  return TriColorSequencer;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(TriColorSequencer, Type => {
+  return {
+    isStaging: true,
+    type: "TriColorSequencer",
+    category: "CurveSequencer",
+    props: {
+      functions: [["Tr2CurveColor", "Tr2CurveConstant", "Tr2CurveVector3Expression"]],
+      value: Type.VECTOR4
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./curve/sequencer/index.js":
+/*!**********************************!*\
+  !*** ./curve/sequencer/index.js ***!
+  \**********************************/
+/*! exports provided: TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _TriColorSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TriColorSequencer */ "./curve/sequencer/TriColorSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriColorSequencer", function() { return _TriColorSequencer__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _Tr2CurveColor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2CurveColor */ "./curve/sequencer/Tr2CurveColor.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveColor", function() { return _Tr2CurveColor__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _Tr2CurveEulerRotation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2CurveEulerRotation */ "./curve/sequencer/Tr2CurveEulerRotation.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotation", function() { return _Tr2CurveEulerRotation__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _Tr2CurveVector3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2CurveVector3 */ "./curve/sequencer/Tr2CurveVector3.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3", function() { return _Tr2CurveVector3__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+
+
+
+
+
 
 
 
@@ -33727,7 +33718,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return EveSOF; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../curve */ "./curve/index.js");
+/* harmony import */ var _curve_legacy__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../curve/legacy */ "./curve/legacy/index.js");
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
 /* harmony import */ var _child__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./child */ "./eve/child/index.js");
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
@@ -34504,9 +34495,9 @@ function EveSOF() {
           curveSet = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSet"]();
         }
 
-        var curve = new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarCurve2"]();
-        curve.keys.push(new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
-        curve.keys.push(new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
+        var curve = new _curve_legacy__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarCurve2"]();
+        curve.keys.push(new _curve_legacy__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
+        curve.keys.push(new _curve_legacy__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
         curve.keys[0].value = _get(animations[i], "startRate", -1);
         curve.keys[1].time = 1;
         curve.keys[1].value = _get(animations[i], "endRate", -1);
@@ -39109,13 +39100,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * Curve line set item
  * @ccp N/A
- * 
+ *
  * @property {Number} animationSpeed     - Line's animation speed
  * @property {Number} animationScale     - Line's animation scale
  * @property {vec4} color1               - Line's start color
  * @property {vec4} color2               - Line's end color
- * @property {vec3} intermediatePosition - Line's intermediate/middle position (not used with straight lines) 
- * @property {vec4} multiColor           - 
+ * @property {vec3} intermediatePosition - Line's intermediate/middle position (not used with straight lines)
+ * @property {vec4} multiColor           -
  * @property {Number} multiColorBorder   -
  * @property {Number} numOfSegments      - The amount of segments for a curved or sphered line
  * @property {vec4} overlayColor         - Line's overlay color
@@ -39381,7 +39372,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveCurveLi
  * TODO: Replace "parentTransform" usages and cache with "worldTransform" instead?
  * TODO: Is "lineWidthFactor" deprecated, or just for ccpwgl?
  * @ccp EveCurveLineSet
- * 
+ *
  * @property {Tw2Effect} lineEffect            -
  * @property {?Tw2Effect} pickEffect           -
  * @property {Number} lineWidthFactor          -
@@ -42557,7 +42548,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * Sprite set render batch
  * @ccp N/A
- * 
+ *
  * @property {Boolean} boosterGlow
  * @property {EveSpriteSet} spriteSet
  * @property {mat4} world
@@ -42615,7 +42606,7 @@ function (_Tw2RenderBatch) {
 /**
  * Sprite
  * @ccp EveSpriteSetItem
- * 
+ *
  * @property {Number} blinkPhase -
  * @property {Number} blinkRate  -
  * @property {Number} boneIndex  -
@@ -45314,7 +45305,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
 /* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveTransform */ "./eve/object/EveTransform.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveObject */ "./eve/object/EveObject.js");
-/* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/EveSpaceObject.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -45332,7 +45322,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -45392,8 +45381,6 @@ function (_EveObject) {
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lockedResources", []);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "watchedResources", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lod", 3);
 
     return _this;
   }
@@ -45460,45 +45447,6 @@ function (_EveObject) {
       });
     }
     /**
-     * Resets the lod
-     */
-
-  }, {
-    key: "ResetLod",
-    value: function ResetLod() {
-      this.lod = 3;
-    }
-    /**
-     * Updates the lod
-     * @param {Tw2Frustum} frustum
-     */
-
-  }, {
-    key: "UpdateLod",
-    value: function UpdateLod(frustum) {
-      const center = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(_EveSpaceObject__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"].global.vec3_0, this.highDetail.worldTransform),
-            radius = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(_EveSpaceObject__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"].global.vec3_1, this.highDetail.worldTransform)[0];
-
-      if (frustum.IsSphereVisible(center, radius)) {
-        const size = frustum.GetPixelSizeAcross(center, radius);
-
-        if (size <= EvePlanet.LOD_THRESHOLD_NONE) {
-          this.lod = 0;
-        } else if (size <= EvePlanet.LOD_THRESHOLD_LOW) {
-          this.lod = 1;
-        } else if (size <= EvePlanet.LOD_THRESHOLD_MEDIUM) {
-          this.lod = 2;
-        } else {
-          this.lod = 3;
-        }
-
-        this._pixels = size;
-      } else {
-        this.lod = 0;
-        this._pixels = 0;
-      }
-    }
-    /**
      * GetPlanetResources
      * Todo: Replace this, using this.GetResources();
      * @param obj
@@ -45550,8 +45498,8 @@ function (_EveObject) {
       this.highDetail.UpdateViewDependentData(parentTransform);
 
       if (this.zOnlyModel) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.zOnlyModel.translation, this.highDetail.translation);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.zOnlyModel.scaling, this.highDetail.scaling);
+        this.zOnlyModel.translation = this.highDetail.translation;
+        this.zOnlyModel.scaling = this.highDetail.scaling;
         this.zOnlyModel.UpdateViewDependentData(parentTransform);
       }
     }
@@ -45712,21 +45660,10 @@ function (_EveObject) {
         }
       }
     }
-    /**
-     * LOD threshold for hiding object
-     * @type {number}
-     */
-
   }]);
 
   return EvePlanet;
 }(_EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"]);
-
-_defineProperty(EvePlanet, "LOD_THRESHOLD_NONE", 0);
-
-_defineProperty(EvePlanet, "LOD_THRESHOLD_LOW", 100);
-
-_defineProperty(EvePlanet, "LOD_THRESHOLD_MEDIUM", 200);
 
 /***/ }),
 
@@ -55517,7 +55454,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55749,6 +55686,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexDeclaration", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2VertexDeclaration"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexElement", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2VertexElement"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2RotationAdapter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2TranslationAdapter", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2TranslationAdapter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["AudEventCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AudEventKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["AudEventKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2BoneMatrixCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2BoneMatrixCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveConstant", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveConstant"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalar", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveScalar"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveScalarKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tw2CurveScalarKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["TriEventCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriEventKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["TriEventKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriPerlinCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["TriPerlinCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveEulerRotationExpression"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveScalarExpression", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveScalarExpression"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3Expression", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveVector3Expression"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TriColorSequencer", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["TriColorSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveColor", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveColor"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotation", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveEulerRotation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tr2CurveVector3"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_3__["Tw2CurveKey"]; });
 

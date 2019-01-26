@@ -1,4 +1,3 @@
-export * from "./core";
-export * from "./curve";
+export Tr2Effect from "./Tr2Effect";
 export * from "./eve";
 

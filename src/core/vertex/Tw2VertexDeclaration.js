@@ -14,6 +14,7 @@ export class Tw2VertexDeclaration
     elements = [];
     elementsSorted = [];
     stride = null;
+
     //vertexSize = null;
 
 
