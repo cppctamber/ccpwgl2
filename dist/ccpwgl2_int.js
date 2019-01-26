@@ -7760,23 +7760,13 @@ var forEach = function () {
 /*!********************************!*\
   !*** ./.staging/core/index.js ***!
   \********************************/
-/*! exports provided: Tr2Effect, Tr2InstancedMesh, Tr2LodResource, Tr2Mesh, Tr2MeshArea, Tr2MeshLod */
+/*! exports provided: Tr2Effect */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mesh__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mesh */ "./.staging/core/mesh/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_0__["Tr2Effect"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InstancedMesh", function() { return _mesh__WEBPACK_IMPORTED_MODULE_0__["Tr2InstancedMesh"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2LodResource", function() { return _mesh__WEBPACK_IMPORTED_MODULE_0__["Tr2LodResource"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Mesh", function() { return _mesh__WEBPACK_IMPORTED_MODULE_0__["Tr2Mesh"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshArea", function() { return _mesh__WEBPACK_IMPORTED_MODULE_0__["Tr2MeshArea"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _mesh__WEBPACK_IMPORTED_MODULE_0__["Tr2MeshLod"]; });
 
 
 
@@ -7871,534 +7861,17 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Effect, Type => {
 
 /***/ }),
 
-/***/ "./.staging/core/mesh/Tr2InstancedMesh.js":
-/*!************************************************!*\
-  !*** ./.staging/core/mesh/Tr2InstancedMesh.js ***!
-  \************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2InstancedMesh; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tr2InstancedMesh
- * @implements Mesh
- *
- * @property {Array.<MeshArea>} additiveAreas                                          -
- * @property {Array.<MeshArea>} decalAreas                                             -
- * @property {Array.<MeshArea>} depthAreas                                             -
- * @property {Array.<MeshArea>} distortionAreas                                        -
- * @property {String} geometryResPath                                                  -
- * @property {String} instanceGeometryResPath                                          -
- * @property {ParticleSystem|Tr2RuntimeInstanceData|Resource} instanceGeometryResource -
- * @property {Number} instanceMeshIndex                                                -
- * @property {vec3} maxBounds                                                          -
- * @property {vec3} minBounds                                                          -
- * @property {Array.<MeshArea>} opaqueAreas                                            -
- * @property {Array.<MeshArea>} transparentAreas                                       -
- */
-
-let Tr2InstancedMesh =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2InstancedMesh, _Tw2BaseClass);
-
-  function Tr2InstancedMesh() {
-    var _this;
-
-    _classCallCheck(this, Tr2InstancedMesh);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2InstancedMesh).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "additiveAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decalAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "depthAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distortionAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "instanceGeometryResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "instanceGeometryResource", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "instanceMeshIndex", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "opaqueAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transparentAreas", []);
-
-    return _this;
-  }
-
-  return Tr2InstancedMesh;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InstancedMesh, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2InstancedMesh",
-    category: "Mesh",
-    props: {
-      additiveAreas: [["Tr2MeshArea"]],
-      decalAreas: [["Tr2MeshArea"]],
-      depthAreas: [["Tr2MeshArea"]],
-      distortionAreas: [["Tr2MeshArea"]],
-      geometryResPath: Type.PATH,
-      instanceGeometryResPath: Type.PATH,
-      instanceGeometryResource: ["Tr2ParticleSystem", "Tr2RuntimeInstanceData", "TriGeometryRes"],
-      instanceMeshIndex: Type.NUMBER,
-      maxBounds: Type.VECTOR3,
-      minBounds: Type.VECTOR3,
-      opaqueAreas: [["Tr2MeshArea"]],
-      transparentAreas: [["Tr2MeshArea"]]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/core/mesh/Tr2LodResource.js":
-/*!**********************************************!*\
-  !*** ./.staging/core/mesh/Tr2LodResource.js ***!
-  \**********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2LodResource; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2LodResource
- *
- * @property {String} highDetailResPath   -
- * @property {String} lowDetailResPath    -
- * @property {String} mediumDetailResPath -
- */
-
-let Tr2LodResource =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2LodResource, _Tw2BaseClass);
-
-  function Tr2LodResource() {
-    var _this;
-
-    _classCallCheck(this, Tr2LodResource);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2LodResource).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "highDetailResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lowDetailResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mediumDetailResPath", "");
-
-    return _this;
-  }
-
-  return Tr2LodResource;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2LodResource, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2LodResource",
-    props: {
-      highDetailResPath: Type.PATH,
-      lowDetailResPath: Type.PATH,
-      mediumDetailResPath: Type.PATH
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/core/mesh/Tr2Mesh.js":
-/*!***************************************!*\
-  !*** ./.staging/core/mesh/Tr2Mesh.js ***!
-  \***************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2Mesh; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2Mesh
- * @implements Mesh
- *
- * @property {Array.<MeshArea>} additiveAreas      -
- * @property {Array.<MeshArea>} decalAreas         -
- * @property {Boolean} deferGeometryLoad           -
- * @property {Array.<MeshArea>} depthAreas         -
- * @property {Array.<MeshArea>} depthNormalAreas   -
- * @property {Array.<MeshArea>} distortionAreas    -
- * @property {String} geometryResPath              -
- * @property {Number} meshIndex                    -
- * @property {Array.<MeshArea>} opaqueAreas        -
- * @property {Array.<MeshArea>} opaquePrepassAreas -
- * @property {Array.<MeshArea>} pickableAreas      -
- * @property {Array.<MeshArea>} transparentAreas   -
- */
-
-let Tr2Mesh =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2Mesh, _Tw2BaseClass);
-
-  function Tr2Mesh() {
-    var _this;
-
-    _classCallCheck(this, Tr2Mesh);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2Mesh).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "additiveAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decalAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "deferGeometryLoad", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "depthAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "depthNormalAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distortionAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "meshIndex", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "opaqueAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "opaquePrepassAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pickableAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transparentAreas", []);
-
-    return _this;
-  }
-
-  return Tr2Mesh;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Mesh, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2Mesh",
-    category: "Mesh",
-    props: {
-      additiveAreas: [["Tr2MeshArea"]],
-      decalAreas: [["Tr2MeshArea"]],
-      deferGeometryLoad: Type.BOOLEAN,
-      depthAreas: [["Tr2MeshArea"]],
-      depthNormalAreas: [["Tr2MeshArea"]],
-      distortionAreas: [["Tr2MeshArea"]],
-      geometryResPath: Type.PATH,
-      meshIndex: Type.NUMBER,
-      opaqueAreas: [["Tr2MeshArea"]],
-      opaquePrepassAreas: [["Tr2MeshArea"]],
-      pickableAreas: [["Tr2MeshArea"]],
-      transparentAreas: [["Tr2MeshArea"]]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/core/mesh/Tr2MeshArea.js":
-/*!*******************************************!*\
-  !*** ./.staging/core/mesh/Tr2MeshArea.js ***!
-  \*******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2MeshArea; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2MeshArea
- * @implements MeshArea
- *
- * @property {Number} count          -
- * @property {Tr2Effect} effect      -
- * @property {Number} index          -
- * @property {Boolean} reversed      -
- * @property {Boolean} useSHLighting -
- */
-
-let Tr2MeshArea =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2MeshArea, _Tw2BaseClass);
-
-  function Tr2MeshArea() {
-    var _this;
-
-    _classCallCheck(this, Tr2MeshArea);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2MeshArea).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "count", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "effect", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "index", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "reversed", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useSHLighting", false);
-
-    return _this;
-  }
-
-  return Tr2MeshArea;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2MeshArea, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2MeshArea",
-    category: "MeshArea",
-    props: {
-      count: Type.NUMBER,
-      effect: ["Tr2Effect"],
-      index: Type.NUMBER,
-      reversed: Type.BOOLEAN,
-      useSHLighting: Type.BOOLEAN
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/core/mesh/Tr2MeshLod.js":
-/*!******************************************!*\
-  !*** ./.staging/core/mesh/Tr2MeshLod.js ***!
-  \******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2MeshLod; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tr2MeshLod
- *
- * @property {Array.<MeshArea>} additiveAreas    -
- * @property {Array} associatedResources         -
- * @property {Array.<MeshArea>} decalAreas       -
- * @property {Array.<MeshArea>} depthAreas       -
- * @property {Tr2LodResource} geometryRes        -
- * @property {Array.<MeshArea>} opaqueAreas      -
- * @property {Array.<MeshArea>} pickableAreas    -
- * @property {Array.<MeshArea>} transparentAreas -
- */
-
-let Tr2MeshLod =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(Tr2MeshLod, _Tw2BaseClass);
-
-  function Tr2MeshLod() {
-    var _this;
-
-    _classCallCheck(this, Tr2MeshLod);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2MeshLod).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "additiveAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "associatedResources", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decalAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "depthAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryRes", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "opaqueAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pickableAreas", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transparentAreas", []);
-
-    return _this;
-  }
-
-  return Tr2MeshLod;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2MeshLod, Type => {
-  return {
-    isStaging: true,
-    type: "Tr2MeshLod",
-    props: {
-      additiveAreas: [["Tr2MeshArea"]],
-      associatedResources: Type.ARRAY,
-      decalAreas: [["Tr2MeshArea"]],
-      depthAreas: [["Tr2MeshArea"]],
-      geometryRes: ["Tr2LodResource"],
-      opaqueAreas: [["Tr2MeshArea"]],
-      pickableAreas: [["Tr2MeshArea"]],
-      transparentAreas: [["Tr2MeshArea"]]
-    }
-  };
-});
-
-/***/ }),
-
 /***/ "./.staging/core/mesh/index.js":
 /*!*************************************!*\
   !*** ./.staging/core/mesh/index.js ***!
   \*************************************/
-/*! exports provided: Tr2Effect, Tr2InstancedMesh, Tr2LodResource, Tr2Mesh, Tr2MeshArea, Tr2MeshLod */
+/*! exports provided: Tr2Effect */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2Effect */ "./.staging/core/mesh/Tr2Effect.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _Tr2InstancedMesh__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2InstancedMesh */ "./.staging/core/mesh/Tr2InstancedMesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InstancedMesh", function() { return _Tr2InstancedMesh__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _Tr2LodResource__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2LodResource */ "./.staging/core/mesh/Tr2LodResource.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2LodResource", function() { return _Tr2LodResource__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-/* harmony import */ var _Tr2Mesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2Mesh */ "./.staging/core/mesh/Tr2Mesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Mesh", function() { return _Tr2Mesh__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-/* harmony import */ var _Tr2MeshArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tr2MeshArea */ "./.staging/core/mesh/Tr2MeshArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshArea", function() { return _Tr2MeshArea__WEBPACK_IMPORTED_MODULE_4__["default"]; });
-
-/* harmony import */ var _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2MeshLod */ "./.staging/core/mesh/Tr2MeshLod.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_5__["default"]; });
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -13352,23 +12825,13 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./.staging/index.js ***!
   \***************************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, Tr2Effect, Tr2InstancedMesh, Tr2LodResource, Tr2Mesh, Tr2MeshArea, Tr2MeshLod, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveColor, Tr2CurveConstant, Tr2CurveEulerRotation, Tr2CurveScalar, Tr2CurveVector3, TriEventCurve, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, AudEventKey, TriEventKey, TriColorSequencer, EveChildBulletStorm, EveChildContainer, EveChildCloud, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSystem, EveChildParticleSphere, EveChildQuad, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
+/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, Tr2Effect, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, Tr2BoneMatrixCurve, Tr2CurveColor, Tr2CurveConstant, Tr2CurveEulerRotation, Tr2CurveScalar, Tr2CurveVector3, TriEventCurve, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, AudEventKey, TriEventKey, TriColorSequencer, EveChildBulletStorm, EveChildContainer, EveChildCloud, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSystem, EveChildParticleSphere, EveChildQuad, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core */ "./.staging/core/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2Effect"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InstancedMesh", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2InstancedMesh"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2LodResource", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2LodResource"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Mesh", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2Mesh"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshArea", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2MeshArea"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _core__WEBPACK_IMPORTED_MODULE_0__["Tr2MeshLod"]; });
 
 /* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./curve */ "./.staging/curve/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return _curve__WEBPACK_IMPORTED_MODULE_1__["Tr2RotationAdapter"]; });
@@ -14155,7 +13618,7 @@ function (_Tw2Error10) {
   function ErrGeometryMeshAreaMissing(data) {
     _classCallCheck(this, ErrGeometryMeshAreaMissing);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ErrGeometryMeshAreaMissing).call(this, data, "Geometry mesh missing area (index:%areaIndex%)"));
+    return _possibleConstructorReturn(this, _getPrototypeOf(ErrGeometryMeshAreaMissing).call(this, data, "Geometry mesh missing expected area at index %areaIndex%"));
   }
 
   return ErrGeometryMeshAreaMissing;
@@ -17065,7 +16528,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17122,6 +16585,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ShLightingManager", function() { return _lighting__WEBPACK_IMPORTED_MODULE_4__["Tr2ShLightingManager"]; });
 
 /* harmony import */ var _mesh__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./mesh */ "./core/mesh/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tr2MeshLod"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2Effect"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2InstancedMesh"]; });
@@ -17190,6 +16655,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2GeometryRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LoadingObject", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2LoadingObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LodResource", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2LodResource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2Resource"]; });
 
@@ -17502,6 +16969,356 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+/***/ }),
+
+/***/ "./core/mesh/Tr2MeshLod.js":
+/*!*********************************!*\
+  !*** ./core/mesh/Tr2MeshLod.js ***!
+  \*********************************/
+/*! exports provided: Tr2MeshLod */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return Tr2MeshLod; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _global_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/engine */ "./global/engine/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tr2MeshLod
+ * TODO: Implement "depthAreas"
+ * TODO: What should the mesh index be for it's render batch?
+ * TODO: Confirm "associatedResources" is geometryRes cache
+ * @ccp Tr2MeshLod
+ *
+ * @property {Array.<Tw2MeshArea>} additiveAreas         -
+ * @property {Array<Tw2GeometryRes>} associatedResources -
+ * @property {Array.<Tw2MeshArea>} decalAreas            -
+ * @property {Array.<Tw2MeshArea>} depthAreas            -
+ * @property {Boolean} display                           -
+ * @property {Tw2LodResource} geometryRes                -
+ * @property {Tw2GeometryRes} geometryResource           -
+ * @property {Array.<Tw2MeshArea>} opaqueAreas           -
+ * @property {Array.<Tw2MeshArea>} pickableAreas         -
+ * @property {Array.<Tw2MeshArea>} transparentAreas      -
+ * @property {null|Tw2GeometryRes} _geometryPending      -
+ * @property {null|Tw2GeometryRes} _geometryQuality      -
+ */
+
+let Tr2MeshLod =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tr2MeshLod, _Tw2BaseClass);
+
+  function Tr2MeshLod() {
+    var _this;
+
+    _classCallCheck(this, Tr2MeshLod);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2MeshLod).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "additiveAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "associatedResources", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decalAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "depthAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryRes", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "opaqueAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pickableAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transparentAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResource", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "visible", {
+      opaqueAreas: true,
+      transparentAreas: true,
+      additiveAreas: true,
+      pickableAreas: true,
+      decalAreas: true,
+      depthAreas: true
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_geometryPending", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_geometryQuality", null);
+
+    return _this;
+  }
+
+  _createClass(Tr2MeshLod, [{
+    key: "Initialize",
+
+    /**
+     * Initializes the mesh
+     */
+    value: function Initialize() {
+      this.SetQuality(0);
+    }
+    /**
+     * Sets lod level
+     * @param {Number} [level=3]
+     */
+
+  }, {
+    key: "SetQuality",
+    value: function SetQuality() {
+      let level = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 3;
+      level = Math.min(3, Math.max(0, level));
+      if (this._geometryQuality === level) return; // Clear any pending geometry changes
+
+      if (this._geometryPending) {
+        this._geometryPending.UnregisterNotification(this);
+
+        this._geometryPending = null;
+      }
+
+      let res = null;
+
+      if (this.geometryRes && level < 3) {
+        const aRes = this.associatedResources,
+              path = this.geometryRes; // Low
+
+        if (level === 2) {
+          if (!aRes[2] && path.lowDetailResPath) aRes[2] = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path.lowDetailResPath);
+          res = aRes[2];
+        } // Medium
+
+
+        if (level === 1 || !res) {
+          if (!aRes[1] && path.mediumDetailResPath) aRes[1] = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path.mediumDetailResPath);
+          res = aRes[1];
+        } // High
+
+
+        if (!res) {
+          if (!aRes[0] && path.highDetailResPath) aRes[0] = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path.highDetailResPath);
+          res = aRes[0];
+        }
+      } else {
+        this.geometryResource = null;
+      }
+
+      if (res && res !== this.geometryResource) {
+        if (res.IsGood()) {
+          this.geometryResource = res;
+        } else {
+          this._geometryPending = res;
+          res.RegisterNotification(this);
+        }
+      }
+
+      this.EmitEvent("lod_changed", {
+        level
+      });
+      this._geometryQuality = level;
+    }
+    /**
+     * Rebuilds cached data
+     * @param {Tw2GeometryRes} res
+     */
+
+  }, {
+    key: "RebuildCachedData",
+    value: function RebuildCachedData(res) {
+      this.geometryResource = res;
+      res.UnregisterNotification(this);
+
+      if (this._geometryPending) {
+        this._geometryPending.UnregisterNotification(this);
+      }
+
+      this._geometryPending = null;
+    }
+    /**
+     * Checks if the mesh's resource is good
+     * @returns {Boolean}
+     */
+
+  }, {
+    key: "IsGood",
+    value: function IsGood() {
+      return this.geometryResource && this.geometryResource.IsGood();
+    }
+    /**
+     * Gets mesh resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      for (let i = 0; i < this.associatedResources; i++) {
+        if (out[i] && !out.includes(this.associatedResources[i])) {
+          out.push(this.associatedResources[i]);
+        }
+      } //return super.GetResources(out);
+
+
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
+      return out;
+    }
+    /**
+     * Gets render batches
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+
+  }, {
+    key: "GetBatches",
+    value: function GetBatches(mode, accumulator, perObjectData) {
+      if (!this.IsGood() || !this.display) return false;
+      const getBatches = this.constructor.GetAreaBatches;
+
+      switch (mode) {
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
+          if (this.visible.additiveAreas) {
+            getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]:
+          if (this.visible.decalAreas) {
+            getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]:
+          /*
+          if (this.visible.depthAreas)
+          {
+              getBatches(this, this.depthAreas, mode, accumulator, perObjectData);
+          }
+          */
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]:
+          /*
+          if (this.visible.distortionAreas)
+          {
+              getBatches(this, this.distortionAreas, mode, accumulator, perObjectData);
+          }
+          */
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]:
+          if (this.visible.opaqueAreas) {
+            getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]:
+          if (this.visible.pickableAreas) {
+            getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]:
+          if (this.visible.transparentAreas) {
+            getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+      }
+    }
+    /**
+     * Gets render batches from a mesh area array and commits them to an accumulator
+     * @param {Tr2MeshLod} mesh
+     * @param {Array.<Tw2MeshArea>} areas
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+
+  }], [{
+    key: "GetAreaBatches",
+    value: function GetAreaBatches(mesh, areas, mode, accumulator, perObjectData) {
+      for (let i = 0; i < areas.length; ++i) {
+        const area = areas[i];
+
+        if (area.effect && area.display) {
+          const batch = new area.constructor.batchType();
+          batch.renderMode = mode;
+          batch.perObjectData = perObjectData;
+          batch.geometryRes = mesh.geometryResource;
+          batch.meshIx = 0; // Why no mesh index?
+
+          batch.start = area.index;
+          batch.count = area.count;
+          batch.effect = area.effect;
+          accumulator.Commit(batch);
+        }
+      }
+    }
+  }]);
+
+  return Tr2MeshLod;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2MeshLod, Type => {
+  return {
+    isStaging: true,
+    type: "Tr2MeshLod",
+    category: "Mesh",
+    props: {
+      additiveAreas: [["Tw2MeshArea"]],
+      associatedResources: Type.ARRAY,
+      decalAreas: [["Tw2MeshArea"]],
+      depthAreas: [["Tw2MeshArea"]],
+      display: Type.BOOLEAN,
+      geometryRes: ["Tr2LodResource"],
+      opaqueAreas: [["Tw2MeshArea"]],
+      pickableAreas: [["Tw2MeshArea"]],
+      transparentAreas: [["Tw2MeshArea"]],
+      visible: Type.PLAIN
+    },
+    notImplemented: ["depthAreas"]
+  };
+});
 
 /***/ }),
 
@@ -18186,7 +18003,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return Tw2InstancedMesh; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _batch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../batch */ "./core/batch/index.js");
-/* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
+/* harmony import */ var _global_engine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/engine */ "./global/engine/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -18194,10 +18011,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
-
-function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -18214,19 +18027,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2InstancedMesh
+ * TODO: Implement "distortionAreas"
+ * TODO: Implement "depthAreas"
+ * Todo: Handle "reversed" meshAreas
+ * Todo: Handle "useSHLighting" meshAreas
+ * @ccp Tr2InstancedMesh
  *
- * @property instanceGeometryResource
- * @property {String} instanceGeometryResPath
- * @property {Number} instanceMeshIndex
- * @property {vec3} minBounds
- * @property {vec3} maxBounds
- * @class
+ * @property {Array.<Tw2MeshArea>} additiveAreas                                       -
+ * @property {Array.<Tw2MeshArea>} decalAreas                                          -
+ * @property {Array.<Tw2MeshArea>} depthAreas                                          -
+ * @property {Boolean} display-                                                        -
+ * @property {Array.<Tw2MeshArea>} distortionAreas                                     -
+ * @property {Tw2GeometryRes} geometryRes                                              -
+ * @property {String} geometryResPath                                                  -
+ * @property {String} instanceGeometryResPath                                          -
+ * @property {ParticleSystem|Tr2RuntimeInstanceData|Resource} instanceGeometryResource -
+ * @property {Number} instanceMeshIndex                                                -
+ * @property {vec3} maxBounds                                                          -
+ * @property {vec3} minBounds                                                          -
+ * @property {Array.<Tw2MeshArea>} opaqueAreas                                         -
+ * @property {Array.<Tw2MeshArea>} transparentAreas                                    -
+ * @property {*} visible                                                               -
  */
 
 let Tw2InstancedMesh =
 /*#__PURE__*/
-function (_Tw2Mesh) {
-  _inherits(Tw2InstancedMesh, _Tw2Mesh);
+function (_Tw2BaseClass) {
+  _inherits(Tw2InstancedMesh, _Tw2BaseClass);
 
   function Tw2InstancedMesh() {
     var _this;
@@ -18239,15 +18066,45 @@ function (_Tw2Mesh) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2InstancedMesh).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "instanceGeometryResource", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "additiveAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decalAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "depthAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distortionAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResPath", "");
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "instanceGeometryResPath", "");
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "instanceGeometryResource", null);
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "instanceMeshIndex", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "opaqueAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transparentAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResource", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pickableAreas", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "visible", {
+      additiveAreas: true,
+      decalAreas: true,
+      depthAreas: true,
+      distortionAreas: true,
+      opaqueAreas: true,
+      pickableAreas: true,
+      transparentAreas: true
+    });
 
     return _this;
   }
@@ -18259,7 +18116,9 @@ function (_Tw2Mesh) {
      * Initializes the instanced mesh
      */
     value: function Initialize() {
-      _get(_getPrototypeOf(Tw2InstancedMesh.prototype), "Initialize", this).call(this);
+      if (this.geometryResPath !== "") {
+        this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
+      }
 
       if (this.instanceGeometryResPath !== "") {
         this.instanceGeometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.instanceGeometryResPath);
@@ -18274,9 +18133,8 @@ function (_Tw2Mesh) {
     key: "IsGood",
     value: function IsGood() {
       const instanced = this.instanceGeometryResource,
-            isResGood = _get(_getPrototypeOf(Tw2InstancedMesh.prototype), "IsGood", this).call(this),
+            isResGood = this.geometryResource && this.geometryResource.IsGood(),
             isInstancedResGood = !instanced ? false : instanced.IsGood ? instanced.IsGood() : true;
-
       return isResGood && isInstancedResGood;
     }
     /**
@@ -18290,13 +18148,91 @@ function (_Tw2Mesh) {
     value: function GetResources() {
       let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-      _get(_getPrototypeOf(Tw2InstancedMesh.prototype), "GetResources", this).call(this, out);
+      if (this.geometryResource && !out.includes(this.geometryResource)) {
+        out.push(this.geometryResource);
+      }
 
       if (this.instanceGeometryResource && "GetResources" in this.instanceGeometryResource) {
         this.instanceGeometryResource.GetResources(out);
-      }
+      } //return super.GetResources(out);
 
+
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
       return out;
+    }
+    /**
+     * Gets render batches
+     * @param {Number} mode
+     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2PerObjectData} perObjectData
+     */
+
+  }, {
+    key: "GetBatches",
+    value: function GetBatches(mode, accumulator, perObjectData) {
+      if (!this.IsGood() || !this.display) return false;
+      const getBatches = this.constructor.GetAreaBatches;
+
+      switch (mode) {
+        case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_ADDITIVE"]:
+          if (this.visible.additiveAreas) {
+            getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DECAL"]:
+          if (this.visible.decalAreas) {
+            getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DEPTH"]:
+          /*
+          if (this.visible.depthAreas)
+          {
+              getBatches(this, this.depthAreas, mode, accumulator, perObjectData);
+          }
+          */
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DISTORTION"]:
+          /*
+          if (this.visible.distortionAreas)
+          {
+              getBatches(this, this.distortionAreas, mode, accumulator, perObjectData);
+          }
+          */
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_OPAQUE"]:
+          if (this.visible.opaqueAreas) {
+            getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_PICKABLE"]:
+          if (this.visible.pickableAreas) {
+            getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_TRANSPARENT"]:
+          if (this.visible.transparentAreas) {
+            getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+      }
     }
     /**
      * RenderAreas
@@ -18348,7 +18284,31 @@ function (_Tw2Mesh) {
   }]);
 
   return Tw2InstancedMesh;
-}(_Tw2Mesh__WEBPACK_IMPORTED_MODULE_2__["Tw2Mesh"]);
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2InstancedMesh, Type => {
+  return {
+    type: "Tw2InstancedMesh",
+    category: "Mesh",
+    props: {
+      additiveAreas: [["Tw2MeshArea"]],
+      decalAreas: [["Tw2MeshArea"]],
+      depthAreas: [["Tw2MeshArea"]],
+      display: Type.BOOLEAN,
+      distortionAreas: [["Tw2MeshArea"]],
+      geometryResPath: Type.PATH,
+      instanceGeometryResPath: Type.PATH,
+      instanceGeometryResource: ["Tr2ParticleSystem", "Tr2RuntimeInstanceData", "TriGeometryRes"],
+      instanceMeshIndex: Type.NUMBER,
+      maxBounds: Type.VECTOR3,
+      minBounds: Type.VECTOR3,
+      opaqueAreas: [["Tw2MeshArea"]],
+      pickableAreas: [["Tw2MeshArea"]],
+      transparentAreas: [["Tw2MeshArea"]],
+      visible: Type.PLAIN
+    },
+    notImplemented: ["distortionAreas", "pickableAreas"]
+  };
+});
 
 /***/ }),
 
@@ -18363,6 +18323,7 @@ function (_Tw2Mesh) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return Tw2Mesh; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _global_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/engine */ "./global/engine/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -18372,29 +18333,34 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
+
 /**
  * Tw2Mesh
+ * Todo: Implement "deferGeometryLoad"
+ * Todo: Implement "depthNormalAreas"
+ * Todo: Implement "distortionAreas"
+ * Todo: Implement "depthAreas"
+ * Todo: Implement "opaquePrepassAreas"
+ * Todo: Handle "reversed" meshAreas
+ * Todo: Handle "useSHLighting" meshAreas
+ * @ccp Tr2Mesh
  *
- * @property {String} name
- * @property {Boolean} display                      - Enables/ disables all mesh batch accumulations
- * @parameter {{}} visible                          - Batch accumulation options for the mesh's elements
- * @property {Boolean} visible.opaqueAreas          - Enables/ disables opaque area batch accumulation
- * @property {Boolean} visible.transparentAreas     - Enables/ disables transparent area batch accumulation
- * @property {Boolean} visible.additiveAreas        - Enables/ disables additive area batch accumulation
- * @property {Boolean} visible.pickableAreas        - Enables/ disables pickable area batch accumulation
- * @property {Boolean} visible.decalAreas           - Enables/ disables decal area batch accumulation
- * @property {Boolean} visible.depthAreas           - Not supported
- * @property {Array.<Tw2MeshArea>} opaqueAreas
- * @property {Array.<Tw2MeshArea>} transparentAreas
- * @property {Array.<Tw2MeshArea>} additiveAreas
- * @property {Array.<Tw2MeshArea>} pickableAreas
- * @property {Array.<Tw2MeshArea>} decalAreas
- * @property {Array.<Tw2MeshArea>} depthAreas       - Not supported
- * @property {Number} meshIndex
- * @property {String} geometryResPath
- * @property {String} lowDetailGeometryResPath
- * @property {Tw2GeometryRes} geometryResource
- * @class
+ * @property {Array.<Tw2MeshArea>} additiveAreas      -
+ * @property {Array.<Tw2MeshArea>} decalAreas         -
+ * @property {Boolean} deferGeometryLoad              -
+ * @property {Array.<Tw2MeshArea>} depthAreas         -
+ * @property {Array.<Tw2MeshArea>} depthNormalAreas   -
+ * @property {Boolean} display                        -
+ * @property {Array.<Tw2MeshArea>} distortionAreas    -
+ * @property {String} geometryResPath                 -
+ * @property {Number} meshIndex                       -
+ * @property {Array.<Tw2MeshArea>} opaqueAreas        -
+ * @property {Array.<Tw2MeshArea>} opaquePrepassAreas -
+ * @property {Array.<Tw2MeshArea>} pickableAreas      -
+ * @property {Array.<Tw2MeshArea>} transparentAreas   -
+ * @property {Tw2GeometryRes} geometryResource        -
+ * @parameter {*} visible                            -
+
  */
 
 let Tw2Mesh =
@@ -18403,47 +18369,52 @@ function () {
   function Tw2Mesh() {
     _classCallCheck(this, Tw2Mesh);
 
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
-
-    _defineProperty(this, "name", "");
-
-    _defineProperty(this, "display", true);
-
-    _defineProperty(this, "visible", {
-      opaqueAreas: true,
-      transparentAreas: true,
-      additiveAreas: true,
-      pickableAreas: true,
-      decalAreas: true,
-      depthAreas: true
-    });
-
-    _defineProperty(this, "opaqueAreas", []);
-
-    _defineProperty(this, "transparentAreas", []);
-
     _defineProperty(this, "additiveAreas", []);
-
-    _defineProperty(this, "pickableAreas", []);
 
     _defineProperty(this, "decalAreas", []);
 
+    _defineProperty(this, "deferGeometryLoad", false);
+
     _defineProperty(this, "depthAreas", []);
 
-    _defineProperty(this, "meshIndex", 0);
+    _defineProperty(this, "depthNormalAreas", []);
+
+    _defineProperty(this, "distortionAreas", []);
 
     _defineProperty(this, "geometryResPath", "");
 
-    _defineProperty(this, "lowDetailGeometryResPath", "");
+    _defineProperty(this, "meshIndex", 0);
+
+    _defineProperty(this, "opaqueAreas", []);
+
+    _defineProperty(this, "opaquePrepassAreas", []);
+
+    _defineProperty(this, "pickableAreas", []);
+
+    _defineProperty(this, "transparentAreas", []);
+
+    _defineProperty(this, "display", true);
 
     _defineProperty(this, "geometryResource", null);
+
+    _defineProperty(this, "visible", {
+      additiveAreas: true,
+      decalAreas: true,
+      depthAreas: true,
+      depthNormalAreas: true,
+      distortionAreas: true,
+      opaqueAreas: true,
+      opaquePrepassAreas: true,
+      pickableAreas: true,
+      transparentAreas: true
+    });
   }
 
   _createClass(Tw2Mesh, [{
     key: "Initialize",
 
     /**
-     * Initializes the Tw2Mesh
+     * Initializes the mesh
      */
     value: function Initialize() {
       if (this.geometryResPath !== "") {
@@ -18473,14 +18444,16 @@ function () {
 
       if (!out.includes(this.geometryResource)) {
         out.push(this.geometryResource);
-      }
+      } //return super.GetResources(out);
 
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
+
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
       return out;
     }
     /**
@@ -18497,37 +18470,55 @@ function () {
       const getBatches = this.constructor.GetAreaBatches;
 
       switch (mode) {
-        case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_OPAQUE:
-          if (this.visible.opaqueAreas) {
-            getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
+          if (this.visible.additiveAreas) {
+            getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
           }
 
           return;
 
-        case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_DECAL:
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]:
           if (this.visible.decalAreas) {
             getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
           }
 
           return;
 
-        case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_TRANSPARENT:
-          if (this.visible.transparentAreas) {
-            getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]:
+          /*
+          if (this.visible.depthAreas)
+          {
+              getBatches(this, this.depthAreas, mode, accumulator, perObjectData);
+          }
+          */
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]:
+          /*
+          if (this.visible.distortionAreas)
+          {
+              getBatches(this, this.distortionAreas, mode, accumulator, perObjectData);
+          }
+          */
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]:
+          if (this.visible.opaqueAreas) {
+            getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
           }
 
           return;
 
-        case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE:
-          if (this.visible.transparentAreas) {
-            getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
-          }
-
-          return;
-
-        case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_PICKABLE:
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]:
           if (this.visible.pickableAreas) {
             getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
+          }
+
+          return;
+
+        case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]:
+          if (this.visible.transparentAreas) {
+            getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
           }
 
           return;
@@ -18565,6 +18556,30 @@ function () {
 
   return Tw2Mesh;
 }();
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2Mesh, Type => {
+  return {
+    isStaging: true,
+    type: "Tw2Mesh",
+    category: "Mesh",
+    props: {
+      additiveAreas: [["Tr2MeshArea"]],
+      decalAreas: [["Tr2MeshArea"]],
+      deferGeometryLoad: Type.BOOLEAN,
+      depthAreas: [["Tr2MeshArea"]],
+      depthNormalAreas: [["Tr2MeshArea"]],
+      distortionAreas: [["Tr2MeshArea"]],
+      display: Type.BOOLEAN,
+      geometryResPath: Type.PATH,
+      meshIndex: Type.NUMBER,
+      opaqueAreas: [["Tr2MeshArea"]],
+      opaquePrepassAreas: [["Tr2MeshArea"]],
+      pickableAreas: [["Tr2MeshArea"]],
+      transparentAreas: [["Tr2MeshArea"]],
+      visible: Type.PLAIN
+    },
+    notImplemented: ["deferGeometryLoad", "depthAreas", "depthNormalAreas", "distortionAreas", "opaquePrepassAreas"]
+  };
+});
 
 /***/ }),
 
@@ -18582,41 +18597,114 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 /**
  * Tw2MeshArea
+ * TODO: Implement "reversed" - in RenderBatch or Mesh?
+ * TODO: Implement "useSHLighting" - in RenderBatch or Mesh?
+ * @ccp Tr2MeshArea
  *
- * @property {String} name
- * @property {Tw2Effect} effect
- * @property {Number} meshIndex
- * @property {Number} index
- * @property {Number} count
- * @property {Boolean} display
- * @class
+ * @property {Number} count          -
+ * @property {Tr2Effect} effect      -
+ * @property {Number} index          -
+ * @property {Boolean} reversed      -
+ * @property {Boolean} useSHLighting -
  */
 
-let Tw2MeshArea = function Tw2MeshArea() {
-  _classCallCheck(this, Tw2MeshArea);
+let Tw2MeshArea =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tw2MeshArea, _Tw2BaseClass);
 
-  _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_1__["util"].generateID());
+  function Tw2MeshArea() {
+    var _this;
 
-  _defineProperty(this, "name", "");
+    _classCallCheck(this, Tw2MeshArea);
 
-  _defineProperty(this, "effect", null);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-  _defineProperty(this, "meshIndex", 0);
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2MeshArea).call(this, ...args));
 
-  _defineProperty(this, "index", 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "count", 1);
 
-  _defineProperty(this, "count", 1);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "effect", null);
 
-  _defineProperty(this, "display", true);
-};
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "index", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "reversed", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useSHLighting", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
+
+    return _this;
+  }
+
+  _createClass(Tw2MeshArea, [{
+    key: "meshIndex",
+
+    /**
+     * Alias for index
+     * @returns {Number}
+     */
+    get: function get() {
+      return this.index;
+    }
+    /**
+     * Alias for index
+     * @param {Number} val
+     */
+    ,
+    set: function set(val) {
+      this.index = val;
+    }
+    /**
+     * Render Batch Constructor
+     * @type {Tw2RenderBatch}
+     */
+
+  }]);
+
+  return Tw2MeshArea;
+}(_global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"]);
 
 _defineProperty(Tw2MeshArea, "batchType", _batch__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryBatch"]);
+
+_global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"].define(Tw2MeshArea, Type => {
+  return {
+    isStaging: true,
+    type: "Tw2MeshArea",
+    category: "MeshArea",
+    props: {
+      count: Type.NUMBER,
+      display: Type.BOOLEAN,
+      effect: ["Tw2Effect"],
+      index: Type.NUMBER,
+      reversed: Type.BOOLEAN,
+      useSHLighting: Type.BOOLEAN
+    },
+    notImplemented: ["reversed", "useSHLighting"]
+  };
+});
 
 /***/ }),
 
@@ -18650,8 +18738,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2MeshLineArea
- *
- * @class
+ * TODO: Is this deprecated?
+ * @ccp N/A
  */
 
 let Tw2MeshLineArea =
@@ -18670,31 +18758,41 @@ function (_Tw2MeshArea) {
 
 _defineProperty(Tw2MeshLineArea, "batchType", _batch__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryLineBatch"]);
 
+_Tw2MeshArea__WEBPACK_IMPORTED_MODULE_1__["Tw2MeshArea"].define(Tw2MeshLineArea, Type => {
+  return {
+    type: "Tw2MeshLineArea"
+  };
+});
+
 /***/ }),
 
 /***/ "./core/mesh/index.js":
 /*!****************************!*\
   !*** ./core/mesh/index.js ***!
   \****************************/
-/*! exports provided: Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea */
+/*! exports provided: Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2Effect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Effect */ "./core/mesh/Tw2Effect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _Tw2Effect__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"]; });
+/* harmony import */ var _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2MeshLod */ "./core/mesh/Tr2MeshLod.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_0__["Tr2MeshLod"]; });
 
-/* harmony import */ var _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2InstancedMesh */ "./core/mesh/Tw2InstancedMesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_1__["Tw2InstancedMesh"]; });
+/* harmony import */ var _Tw2Effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Effect */ "./core/mesh/Tw2Effect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _Tw2Effect__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]; });
 
-/* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _Tw2Mesh__WEBPACK_IMPORTED_MODULE_2__["Tw2Mesh"]; });
+/* harmony import */ var _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2InstancedMesh */ "./core/mesh/Tw2InstancedMesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_2__["Tw2InstancedMesh"]; });
 
-/* harmony import */ var _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2MeshArea */ "./core/mesh/Tw2MeshArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]; });
+/* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _Tw2Mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]; });
 
-/* harmony import */ var _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2MeshLineArea */ "./core/mesh/Tw2MeshLineArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_4__["Tw2MeshLineArea"]; });
+/* harmony import */ var _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2MeshArea */ "./core/mesh/Tw2MeshArea.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_4__["Tw2MeshArea"]; });
+
+/* harmony import */ var _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2MeshLineArea */ "./core/mesh/Tw2MeshLineArea.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshLineArea"]; });
+
 
 
 
@@ -24544,6 +24642,81 @@ Tw2LoadingObject.prototype.requestResponseType = "arraybuffer";
 
 /***/ }),
 
+/***/ "./core/resource/Tw2LodResource.js":
+/*!*****************************************!*\
+  !*** ./core/resource/Tw2LodResource.js ***!
+  \*****************************************/
+/*! exports provided: Tw2LodResource */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2LodResource", function() { return Tw2LodResource; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tr2LodResource
+ * @ccp Tr2LodResource
+ *
+ * @property {String} highDetailResPath   -
+ * @property {String} lowDetailResPath    -
+ * @property {String} mediumDetailResPath -
+ */
+
+let Tw2LodResource =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(Tw2LodResource, _Tw2BaseClass);
+
+  function Tw2LodResource() {
+    var _this;
+
+    _classCallCheck(this, Tw2LodResource);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Tw2LodResource).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "highDetailResPath", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lowDetailResPath", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mediumDetailResPath", "");
+
+    return _this;
+  }
+
+  return Tw2LodResource;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tw2LodResource, Type => {
+  return {
+    type: "Tw2LodResource",
+    props: {
+      highDetailResPath: Type.PATH,
+      lowDetailResPath: Type.PATH,
+      mediumDetailResPath: Type.PATH
+    }
+  };
+});
+
+/***/ }),
+
 /***/ "./core/resource/Tw2Resource.js":
 /*!**************************************!*\
   !*** ./core/resource/Tw2Resource.js ***!
@@ -26209,7 +26382,7 @@ function (_Tw2Resource) {
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -26226,14 +26399,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LoadingObject", function() { return _Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_3__["Tw2LoadingObject"]; });
 
-/* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _Tw2Resource__WEBPACK_IMPORTED_MODULE_4__["Tw2Resource"]; });
+/* harmony import */ var _Tw2LodResource__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2LodResource */ "./core/resource/Tw2LodResource.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LodResource", function() { return _Tw2LodResource__WEBPACK_IMPORTED_MODULE_4__["Tw2LodResource"]; });
 
-/* harmony import */ var _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__["Tw2TextureRes"]; });
+/* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _Tw2Resource__WEBPACK_IMPORTED_MODULE_5__["Tw2Resource"]; });
 
-/* harmony import */ var _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2VideoRes */ "./core/resource/Tw2VideoRes.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_6__["Tw2VideoRes"]; });
+/* harmony import */ var _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_6__["Tw2TextureRes"]; });
+
+/* harmony import */ var _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2VideoRes */ "./core/resource/Tw2VideoRes.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_7__["Tw2VideoRes"]; });
+
 
 
 
@@ -34959,6 +35136,12 @@ function () {
             this.objects[i].UpdateLod(g.frustum);
           }
         }
+
+        for (let i = 0; i < this.planets.length; ++i) {
+          if (this.planets[i].UpdateLod) {
+            this.planets[i].UpdateLod(g.frustum);
+          }
+        }
       }
 
       if (show.objects) {
@@ -35145,6 +35328,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveChild base class
+ * TODO: Implement LOD
  *
  * @property {number|String} _id
  * @property {String} name
@@ -35195,6 +35379,8 @@ function () {
     _defineProperty(this, "_perObjectData", null);
 
     _defineProperty(this, "isEffectChild", true);
+
+    _defineProperty(this, "lod", 3);
   }
 
   _createClass(EveChild, [{
@@ -35213,11 +35399,16 @@ function () {
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Number} [parentLod]
      */
 
   }, {
     key: "Update",
-    value: function Update(dt, parentTransform) {
+    value: function Update(dt, parentTransform, parentLod) {
+      if (parentLod !== undefined) {
+        this.lod = parentLod;
+      }
+
       if (this.useSRT) {
         _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
@@ -35297,6 +35488,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Mesh attachment to space object and oriented towards the camera
+ * TODO: Implement LOD
  *
  * @property {Tw2Mesh|Tw2InstancedMesh} mesh
  * @property {Tw2PerObjectData} _perObjectData
@@ -35342,12 +35534,13 @@ function (_EveChild) {
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @parma {Number} [parentLod]
      */
 
   }, {
     key: "Update",
-    value: function Update(dt, parentTransform) {
-      _get(_getPrototypeOf(EveChildBillboard.prototype), "Update", this).call(this, dt, parentTransform);
+    value: function Update(dt, parentTransform, parentLod) {
+      _get(_getPrototypeOf(EveChildBillboard.prototype), "Update", this).call(this, dt, parentTransform, parentLod);
 
       const viewInverse = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.mat4_0,
             finalScale = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.vec3_0;
@@ -35374,7 +35567,7 @@ function (_EveChild) {
   }, {
     key: "GetBatches",
     value: function GetBatches(mode, accumulator) {
-      if (this.display && this.mesh) {
+      if (this.display && this.mesh && this.lod >= this.lowestLodVisible) {
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this.worldTransform);
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this.worldTransform);
         this.mesh.GetBatches(mode, accumulator, this._perObjectData);
@@ -35423,6 +35616,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Container for other child effects
+ * TODO: Implement LOD
  *
  * @parameter {Array.<{}>} objects
  * @parameter {Array.<Tw2CurveSet>} curveSets
@@ -35475,19 +35669,20 @@ function (_EveChild) {
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Number} parentLod
      */
 
   }, {
     key: "Update",
-    value: function Update(dt, parentTransform) {
-      _get(_getPrototypeOf(EveChildContainer.prototype), "Update", this).call(this, dt, parentTransform);
+    value: function Update(dt, parentTransform, parentLod) {
+      _get(_getPrototypeOf(EveChildContainer.prototype), "Update", this).call(this, dt, parentTransform, parentLod);
 
       for (let i = 0; i < this.curveSets.length; i++) {
         this.curveSets[i].Update(dt);
       }
 
       for (let i = 0; i < this.objects.length; i++) {
-        this.objects[i].Update(dt, this.worldTransform);
+        this.objects[i].Update(dt, this.worldTransform, this.lod);
       }
     }
     /**
@@ -35500,7 +35695,7 @@ function (_EveChild) {
   }, {
     key: "GetBatches",
     value: function GetBatches(mode, accumulator, perObjectData) {
-      if (this.display) {
+      if (this.display && this.lod >= this.lowestLodVisible) {
         for (let i = 0; i < this.objects.length; i++) {
           this.objects[i].GetBatches(mode, accumulator, perObjectData);
         }
@@ -35549,6 +35744,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Mesh attachment to space object
+ * TODO: Implement LOD
  *
  * @property {Tw2Mesh|Tw2InstancedMesh} mesh
  * @property {Boolean} useSpaceObjectData
@@ -35600,7 +35796,7 @@ function (_EveChild) {
   }, {
     key: "GetBatches",
     value: function GetBatches(mode, accumulator, perObjectData) {
-      if (!this.display || !this.mesh) return;
+      if (!this.display || !this.mesh || this.lod < this.lowestLodVisible) return;
 
       if (this.useSpaceObjectData) {
         if (!this._perObjectData) {
@@ -35679,6 +35875,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Particle system attachment to space object
+ * TODO: Implement LOD
  *
  * @property {Tw2Mesh} mesh
  * @property {Array<Tw2ParticleEmitter>} particleEmitters
@@ -35730,12 +35927,13 @@ function (_EveChild) {
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Number} [parentLod]
      */
 
   }, {
     key: "Update",
-    value: function Update(dt, parentTransform) {
-      _get(_getPrototypeOf(EveChildParticleSystem.prototype), "Update", this).call(this, dt, parentTransform);
+    value: function Update(dt, parentTransform, parentLod) {
+      _get(_getPrototypeOf(EveChildParticleSystem.prototype), "Update", this).call(this, dt, parentTransform, parentLod);
 
       for (let i = 0; i < this.particleEmitters.length; ++i) {
         this.particleEmitters[i].Update(dt);
@@ -35754,7 +35952,7 @@ function (_EveChild) {
   }, {
     key: "GetBatches",
     value: function GetBatches(mode, accumulator) {
-      if (this.display && this.mesh) {
+      if (this.display && this.mesh && this.lod >= this.lowestLodVisible) {
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this.worldTransform);
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this.worldTransform);
         this.mesh.GetBatches(mode, accumulator, this._perObjectData);
@@ -44425,6 +44623,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveEffectRoot root objects for FX, can be put into scene's objects array
+ * TODO: Implement LOD
  *
  * @property {String} name
  * @property {Boolean} display
@@ -45115,6 +45314,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
 /* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveTransform */ "./eve/object/EveTransform.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveObject */ "./eve/object/EveObject.js");
+/* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/EveSpaceObject.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -45137,8 +45337,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 /**
  * EvePlanet
+ * TODO: Implement LOD
  *
  * @property {String} name
  * @property {Boolean} display
@@ -45190,6 +45392,8 @@ function (_EveObject) {
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lockedResources", []);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "watchedResources", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lod", 3);
 
     return _this;
   }
@@ -45256,6 +45460,45 @@ function (_EveObject) {
       });
     }
     /**
+     * Resets the lod
+     */
+
+  }, {
+    key: "ResetLod",
+    value: function ResetLod() {
+      this.lod = 3;
+    }
+    /**
+     * Updates the lod
+     * @param {Tw2Frustum} frustum
+     */
+
+  }, {
+    key: "UpdateLod",
+    value: function UpdateLod(frustum) {
+      const center = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(_EveSpaceObject__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"].global.vec3_0, this.highDetail.worldTransform),
+            radius = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(_EveSpaceObject__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"].global.vec3_1, this.highDetail.worldTransform)[0];
+
+      if (frustum.IsSphereVisible(center, radius)) {
+        const size = frustum.GetPixelSizeAcross(center, radius);
+
+        if (size <= EvePlanet.LOD_THRESHOLD_NONE) {
+          this.lod = 0;
+        } else if (size <= EvePlanet.LOD_THRESHOLD_LOW) {
+          this.lod = 1;
+        } else if (size <= EvePlanet.LOD_THRESHOLD_MEDIUM) {
+          this.lod = 2;
+        } else {
+          this.lod = 3;
+        }
+
+        this._pixels = size;
+      } else {
+        this.lod = 0;
+        this._pixels = 0;
+      }
+    }
+    /**
      * GetPlanetResources
      * Todo: Replace this, using this.GetResources();
      * @param obj
@@ -45307,8 +45550,8 @@ function (_EveObject) {
       this.highDetail.UpdateViewDependentData(parentTransform);
 
       if (this.zOnlyModel) {
-        this.zOnlyModel.translation = this.highDetail.translation;
-        this.zOnlyModel.scaling = this.highDetail.scaling;
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.zOnlyModel.translation, this.highDetail.translation);
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.zOnlyModel.scaling, this.highDetail.scaling);
         this.zOnlyModel.UpdateViewDependentData(parentTransform);
       }
     }
@@ -45469,10 +45712,21 @@ function (_EveObject) {
         }
       }
     }
+    /**
+     * LOD threshold for hiding object
+     * @type {number}
+     */
+
   }]);
 
   return EvePlanet;
 }(_EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"]);
+
+_defineProperty(EvePlanet, "LOD_THRESHOLD_NONE", 0);
+
+_defineProperty(EvePlanet, "LOD_THRESHOLD_LOW", 100);
+
+_defineProperty(EvePlanet, "LOD_THRESHOLD_MEDIUM", 200);
 
 /***/ }),
 
@@ -45901,13 +46155,26 @@ function (_EveObject) {
       const center = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this.transform);
 
       if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
-        if (frustum.GetPixelSizeAcross(center, this.boundingSphereRadius) < 100) {
+        const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
+
+        if (size <= EveSpaceObject.LOD_THRESHOLD_NONE) {
+          this.lod = 0;
+        } else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW) {
           this.lod = 1;
-        } else {
+        } else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM) {
           this.lod = 2;
+        } else {
+          this.lod = 3;
         }
+
+        this._pixels = size;
       } else {
         this.lod = 0;
+        this._pixels = 0;
+      }
+
+      if (this.mesh && "SetQuality" in this.mesh) {
+        this.mesh.SetQuality(3 - this.lod);
       }
     }
     /**
@@ -46149,7 +46416,7 @@ function (_EveObject) {
         }
 
         for (let i = 0; i < this.effectChildren.length; ++i) {
-          this.effectChildren[i].Update(dt, this.transform);
+          this.effectChildren[i].Update(dt, this.transform, this.lod);
         }
 
         for (let i = 0; i < this.curveSets.length; ++i) {
@@ -46213,6 +46480,12 @@ function (_EveObject) {
               this.lineSets[i].GetBatches(mode, accumulator);
             }
           }
+
+          if (show.overlayEffects && this.mesh && this.mesh.IsGood()) {
+            for (let i = 0; i < this.overlayEffects.length; i++) {
+              this.overlayEffects[i].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
+            }
+          }
         }
 
         if (show.children) {
@@ -46223,13 +46496,8 @@ function (_EveObject) {
 
         if (show.effectChildren) {
           for (let i = 0; i < this.effectChildren.length; i++) {
+            this.effectChildren[i]._parentLod = this.lod;
             this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
-          }
-        }
-
-        if (show.overlayEffects && this.mesh && this.mesh.IsGood()) {
-          for (let i = 0; i < this.overlayEffects.length; i++) {
-            this.overlayEffects[i].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
           }
         }
       }
@@ -46245,14 +46513,20 @@ function (_EveObject) {
       this.animation.RenderDebugInfo(debugHelper);
     }
     /**
-     * Per object data
-     * @type {{vs: *[], ps: *[]}}
+     * LOD threshold for hiding object
+     * @type {number}
      */
 
   }]);
 
   return EveSpaceObject;
 }(_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]);
+
+_defineProperty(EveSpaceObject, "LOD_THRESHOLD_NONE", 100);
+
+_defineProperty(EveSpaceObject, "LOD_THRESHOLD_LOW", 200);
+
+_defineProperty(EveSpaceObject, "LOD_THRESHOLD_MEDIUM", 500);
 
 _defineProperty(EveSpaceObject, "perObjectData", {
   vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", 4], ["CustomMaskData1", 4], ["JointMat", 696]],
@@ -46299,6 +46573,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveTransform
+ * TODO: Implement LOD
  *
  * @property {{}} visible                                           - Batch accumulation options for the transforms's elements
  * @property {Boolean} visible.mesh                                 - Enables/ disables mesh batch accumulation
@@ -46840,9 +47115,9 @@ function () {
         eventData.evt = eventData.evt || eventName;
         eventData.ctx = eventData.ctx || this;
 
-        this._events.forEach((listener, options) => {
-          listener.call(options.context, eventData);
-          if (options.once) this._events[eventName].delete(listener);
+        this._events[eventName].forEach((opt, key) => {
+          key.call(opt.context, eventData);
+          if (opt.once) this._events[eventName].delete(key);
         });
       }
 
@@ -46865,7 +47140,7 @@ function () {
       }
 
       if (!this._events[eventName]) {
-        this._events[eventName] = new Map();
+        this._events[eventName] = new Set();
       }
 
       this._events[eventName].add(listener, {
@@ -49843,7 +50118,6 @@ function (_Tw2EventEmitter) {
       switch (renderMode) {
         case _Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RM_OPAQUE"]:
         case _Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RM_PICKABLE"]:
-        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RM_DISTORTION"]:
           this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RS_ZENABLE"], true);
           this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RS_ZWRITEENABLE"], true);
           this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RS_ZFUNC"], _Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["CMP_LEQUAL"]);
@@ -49917,6 +50191,12 @@ function (_Tw2EventEmitter) {
           this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RS_SEPARATEALPHABLENDENABLE"], false);
           this.SetRenderState(_Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RS_COLORWRITEENABLE"], 0xf);
           break;
+
+        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RM_DISTORTION"]: // Same as Fullscreen?
+
+        case _Tw2Constant__WEBPACK_IMPORTED_MODULE_7__["RM_DEPTH"]:
+          // TODO: Implement
+          return;
 
         default:
           return;
@@ -55237,7 +55517,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChild, EveChildBillboard, EveChildContainer, EveChildMesh, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55390,6 +55670,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryTransformTrack", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryTransformTrack"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tr2MeshLod"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2InstancedMesh"]; });
@@ -55451,6 +55733,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2GeometryRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LoadingObject", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2LoadingObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LodResource", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2LodResource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _core__WEBPACK_IMPORTED_MODULE_2__["Tw2Resource"]; });
 

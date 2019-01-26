@@ -4,6 +4,7 @@ import {EveObject} from "./EveObject";
 
 /**
  * EveTransform
+ * TODO: Implement LOD
  *
  * @property {{}} visible                                           - Batch accumulation options for the transforms's elements
  * @property {Boolean} visible.mesh                                 - Enables/ disables mesh batch accumulation

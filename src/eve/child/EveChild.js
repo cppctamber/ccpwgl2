@@ -3,6 +3,7 @@ import {vec3, quat, mat4, util} from "../../global";
 
 /**
  * EveChild base class
+ * TODO: Implement LOD
  *
  * @property {number|String} _id
  * @property {String} name
@@ -36,6 +37,7 @@ export class EveChild
     worldTransformLast = mat4.create();
     _perObjectData = null;
     isEffectChild = true;
+    lod = 3;
 
 
     /**
@@ -52,9 +54,15 @@ export class EveChild
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Number} [parentLod]
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform, parentLod)
     {
+        if (parentLod !== undefined)
+        {
+            this.lod = parentLod;
+        }
+
         if (this.useSRT)
         {
             quat.normalize(this.rotation, this.rotation);

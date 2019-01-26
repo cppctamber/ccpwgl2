@@ -5,6 +5,7 @@ import {EveObject} from "./EveObject";
 
 /**
  * EvePlanet
+ * TODO: Implement LOD
  *
  * @property {String} name
  * @property {Boolean} display

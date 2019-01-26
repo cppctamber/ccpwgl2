@@ -4,6 +4,7 @@ import {EveChild} from "./EveChild";
 
 /**
  * Mesh attachment to space object and oriented towards the camera
+ * TODO: Implement LOD
  *
  * @property {Tw2Mesh|Tw2InstancedMesh} mesh
  * @property {Tw2PerObjectData} _perObjectData
@@ -31,10 +32,11 @@ export class EveChildBillboard extends EveChild
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @parma {Number} [parentLod]
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform, parentLod)
     {
-        super.Update(dt, parentTransform);
+        super.Update(dt, parentTransform, parentLod);
 
         const
             viewInverse = EveChild.global.mat4_0,
@@ -63,7 +65,7 @@ export class EveChildBillboard extends EveChild
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this.mesh)
+        if (this.display && this.mesh && this.lod >= this.lowestLodVisible)
         {
             mat4.transpose(this._perObjectData.ffe.Get("world"), this.worldTransform);
             mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this.worldTransform);

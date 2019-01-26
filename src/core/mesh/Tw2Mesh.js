@@ -1,57 +1,76 @@
-import {util, resMan, device} from "../../global";
+import {util, resMan, device, Tw2BaseClass} from "../../global";
+import {
+    RM_ADDITIVE,
+    RM_DEPTH,
+    RM_DISTORTION,
+    RM_DECAL,
+    RM_OPAQUE,
+    RM_TRANSPARENT,
+    RM_PICKABLE
+} from "../../global/engine";
 
 /**
  * Tw2Mesh
+ * Todo: Implement "deferGeometryLoad"
+ * Todo: Implement "depthNormalAreas"
+ * Todo: Implement "distortionAreas"
+ * Todo: Implement "depthAreas"
+ * Todo: Implement "opaquePrepassAreas"
+ * Todo: Handle "reversed" meshAreas
+ * Todo: Handle "useSHLighting" meshAreas
+ * @ccp Tr2Mesh
  *
- * @property {String} name
- * @property {Boolean} display                      - Enables/ disables all mesh batch accumulations
- * @parameter {{}} visible                          - Batch accumulation options for the mesh's elements
- * @property {Boolean} visible.opaqueAreas          - Enables/ disables opaque area batch accumulation
- * @property {Boolean} visible.transparentAreas     - Enables/ disables transparent area batch accumulation
- * @property {Boolean} visible.additiveAreas        - Enables/ disables additive area batch accumulation
- * @property {Boolean} visible.pickableAreas        - Enables/ disables pickable area batch accumulation
- * @property {Boolean} visible.decalAreas           - Enables/ disables decal area batch accumulation
- * @property {Boolean} visible.depthAreas           - Not supported
- * @property {Array.<Tw2MeshArea>} opaqueAreas
- * @property {Array.<Tw2MeshArea>} transparentAreas
- * @property {Array.<Tw2MeshArea>} additiveAreas
- * @property {Array.<Tw2MeshArea>} pickableAreas
- * @property {Array.<Tw2MeshArea>} decalAreas
- * @property {Array.<Tw2MeshArea>} depthAreas       - Not supported
- * @property {Number} meshIndex
- * @property {String} geometryResPath
- * @property {String} lowDetailGeometryResPath
- * @property {Tw2GeometryRes} geometryResource
- * @class
+ * @property {Array.<Tw2MeshArea>} additiveAreas      -
+ * @property {Array.<Tw2MeshArea>} decalAreas         -
+ * @property {Boolean} deferGeometryLoad              -
+ * @property {Array.<Tw2MeshArea>} depthAreas         -
+ * @property {Array.<Tw2MeshArea>} depthNormalAreas   -
+ * @property {Boolean} display                        -
+ * @property {Array.<Tw2MeshArea>} distortionAreas    -
+ * @property {String} geometryResPath                 -
+ * @property {Number} meshIndex                       -
+ * @property {Array.<Tw2MeshArea>} opaqueAreas        -
+ * @property {Array.<Tw2MeshArea>} opaquePrepassAreas -
+ * @property {Array.<Tw2MeshArea>} pickableAreas      -
+ * @property {Array.<Tw2MeshArea>} transparentAreas   -
+ * @property {Tw2GeometryRes} geometryResource        -
+ * @parameter {*} visible                            -
+
  */
 export class Tw2Mesh
 {
 
-    _id = util.generateID();
-    name = "";
-    display = true;
-    visible = {
-        opaqueAreas: true,
-        transparentAreas: true,
-        additiveAreas: true,
-        pickableAreas: true,
-        decalAreas: true,
-        depthAreas: true
-    };
-    opaqueAreas = [];
-    transparentAreas = [];
+    // ccp
     additiveAreas = [];
-    pickableAreas = [];
     decalAreas = [];
+    deferGeometryLoad = false;
     depthAreas = [];
-    meshIndex = 0;
+    depthNormalAreas = [];
+    distortionAreas = [];
     geometryResPath = "";
-    lowDetailGeometryResPath = "";
+    meshIndex = 0;
+    opaqueAreas = [];
+    opaquePrepassAreas = [];
+    pickableAreas = [];
+    transparentAreas = [];
+    
+    // ccpwgl
+    display = true;
     geometryResource = null;
-
+    visible = {
+        additiveAreas: true,
+        decalAreas: true,
+        depthAreas: true,
+        depthNormalAreas: true,
+        distortionAreas: true,
+        opaqueAreas: true,
+        opaquePrepassAreas: true,
+        pickableAreas: true,
+        transparentAreas: true,
+    };
 
     /**
-     * Initializes the Tw2Mesh
+     * Initializes the mesh
      */
     Initialize()
     {
@@ -82,12 +101,14 @@ export class Tw2Mesh
             out.push(this.geometryResource);
         }
 
-        util.perArrayChild(this.opaqueAreas, "GetResources", out);
-        util.perArrayChild(this.transparentAreas, "GetResources", out);
+        //return super.GetResources(out);
         util.perArrayChild(this.additiveAreas, "GetResources", out);
-        util.perArrayChild(this.pickableAreas, "GetResources", out);
         util.perArrayChild(this.decalAreas, "GetResources", out);
         util.perArrayChild(this.depthAreas, "GetResources", out);
+        util.perArrayChild(this.distortionAreas, "GetResources", out);
+        util.perArrayChild(this.opaqueAreas, "GetResources", out);
+        util.perArrayChild(this.pickableAreas, "GetResources", out);
+        util.perArrayChild(this.transparentAreas, "GetResources", out);
         return out;
     }
 
@@ -104,38 +125,56 @@ export class Tw2Mesh
         const getBatches = this.constructor.GetAreaBatches;
         switch (mode)
         {
-            case device.RM_OPAQUE:
-                if (this.visible.opaqueAreas)
+            case RM_ADDITIVE:
+                if (this.visible.additiveAreas)
                 {
-                    getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
+                    getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
                 }
                 return;
 
-            case device.RM_DECAL:
+            case RM_DECAL:
                 if (this.visible.decalAreas)
                 {
                     getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
                 }
                 return;
 
-            case device.RM_TRANSPARENT:
-                if (this.visible.transparentAreas)
+            case RM_DEPTH:
+                /*
+                if (this.visible.depthAreas)
                 {
-                    getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
+                    getBatches(this, this.depthAreas, mode, accumulator, perObjectData);
+                }
+                */
+                return;
+
+            case RM_DISTORTION:
+                /*
+                if (this.visible.distortionAreas)
+                {
+                    getBatches(this, this.distortionAreas, mode, accumulator, perObjectData);
+                }
+                */
+                return;
+
+            case RM_OPAQUE:
+                if (this.visible.opaqueAreas)
+                {
+                    getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
                 }
                 return;
 
-            case device.RM_ADDITIVE:
-                if (this.visible.transparentAreas)
-                {
-                    getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
-                }
-                return;
-
-            case device.RM_PICKABLE:
+            case RM_PICKABLE:
                 if (this.visible.pickableAreas)
                 {
                     getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
+                }
+                return;
+
+            case RM_TRANSPARENT:
+                if (this.visible.transparentAreas)
+                {
+                    getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
                 }
                 return;
         }
@@ -170,3 +209,36 @@ export class Tw2Mesh
     }
 
 }
+
+Tw2BaseClass.define(Tw2Mesh, Type =>
+{
+    return {
+        isStaging: true,
+        type: "Tw2Mesh",
+        category: "Mesh",
+        props: {
+            additiveAreas: [["Tr2MeshArea"]],
+            decalAreas: [["Tr2MeshArea"]],
+            deferGeometryLoad: Type.BOOLEAN,
+            depthAreas: [["Tr2MeshArea"]],
+            depthNormalAreas: [["Tr2MeshArea"]],
+            distortionAreas: [["Tr2MeshArea"]],
+            display: Type.BOOLEAN,
+            geometryResPath: Type.PATH,
+            meshIndex: Type.NUMBER,
+            opaqueAreas: [["Tr2MeshArea"]],
+            opaquePrepassAreas: [["Tr2MeshArea"]],
+            pickableAreas: [["Tr2MeshArea"]],
+            transparentAreas: [["Tr2MeshArea"]],
+            visible: Type.PLAIN
+        },
+        notImplemented: [
+            "deferGeometryLoad",
+            "depthAreas",
+            "depthNormalAreas",
+            "distortionAreas",
+            "opaquePrepassAreas"
+        ]
+    };
+});
+

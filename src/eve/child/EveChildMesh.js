@@ -4,6 +4,7 @@ import {EveChild} from "./EveChild";
 
 /**
  * Mesh attachment to space object
+ * TODO: Implement LOD
  *
  * @property {Tw2Mesh|Tw2InstancedMesh} mesh
  * @property {Boolean} useSpaceObjectData
@@ -35,7 +36,7 @@ export class EveChildMesh extends EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (!this.display || !this.mesh) return;
+        if (!this.display || !this.mesh || this.lod < this.lowestLodVisible) return;
 
         if (this.useSpaceObjectData)
         {

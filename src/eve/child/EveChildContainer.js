@@ -2,6 +2,7 @@ import {EveChild} from "./EveChild";
 
 /**
  * Container for other child effects
+ * TODO: Implement LOD
  *
  * @parameter {Array.<{}>} objects
  * @parameter {Array.<Tw2CurveSet>} curveSets
@@ -35,10 +36,11 @@ export class EveChildContainer extends EveChild
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Number} parentLod
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform, parentLod)
     {
-        super.Update(dt, parentTransform);
+        super.Update(dt, parentTransform, parentLod);
 
         for (let i = 0; i < this.curveSets.length; i++)
         {
@@ -47,7 +49,7 @@ export class EveChildContainer extends EveChild
 
         for (let i = 0; i < this.objects.length; i++)
         {
-            this.objects[i].Update(dt, this.worldTransform);
+            this.objects[i].Update(dt, this.worldTransform, this.lod);
         }
     }
 
@@ -59,7 +61,7 @@ export class EveChildContainer extends EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-        if (this.display)
+        if (this.display && this.lod >= this.lowestLodVisible)
         {
             for (let i = 0; i < this.objects.length; i++)
             {

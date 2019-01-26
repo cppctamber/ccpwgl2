@@ -4,6 +4,7 @@ import {EveChild} from "./EveChild";
 
 /**
  * Particle system attachment to space object
+ * TODO: Implement LOD
  *
  * @property {Tw2Mesh} mesh
  * @property {Array<Tw2ParticleEmitter>} particleEmitters
@@ -35,10 +36,11 @@ export class EveChildParticleSystem extends EveChild
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
+     * @param {Number} [parentLod]
      */
-    Update(dt, parentTransform)
+    Update(dt, parentTransform, parentLod)
     {
-        super.Update(dt, parentTransform);
+        super.Update(dt, parentTransform, parentLod);
 
         for (let i = 0; i < this.particleEmitters.length; ++i)
         {
@@ -58,7 +60,7 @@ export class EveChildParticleSystem extends EveChild
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this.mesh)
+        if (this.display && this.mesh && this.lod >= this.lowestLodVisible)
         {
             mat4.transpose(this._perObjectData.ffe.Get("world"), this.worldTransform);
             mat4.invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this.worldTransform);

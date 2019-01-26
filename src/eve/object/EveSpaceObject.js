@@ -119,21 +119,39 @@ export class EveSpaceObject extends EveObject
 
         if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
         {
-            if (frustum.GetPixelSizeAcross(center, this.boundingSphereRadius) < 100)
+            const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
+
+            if (size <= EveSpaceObject.LOD_THRESHOLD_NONE)
+            {
+                this.lod = 0;
+            }
+            else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW)
             {
                 this.lod = 1;
             }
-            else
+            else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM)
             {
                 this.lod = 2;
             }
+            else
+            {
+                this.lod = 3;
+            }
+
+            this._pixels = size;
         }
         else
         {
             this.lod = 0;
+            this._pixels = 0;
+        }
+
+        if (this.mesh && "SetQuality" in this.mesh)
+        {
+            this.mesh.SetQuality(3 - this.lod);
         }
     }
-
+    
     /**
      * Adds a custom mask
      * @param {vec3} position
@@ -375,7 +393,7 @@ export class EveSpaceObject extends EveObject
 
             for (let i = 0; i < this.effectChildren.length; ++i)
             {
-                this.effectChildren[i].Update(dt, this.transform);
+                this.effectChildren[i].Update(dt, this.transform, this.lod);
             }
 
             for (let i = 0; i < this.curveSets.length; ++i)
@@ -454,6 +472,14 @@ export class EveSpaceObject extends EveObject
                         this.lineSets[i].GetBatches(mode, accumulator);
                     }
                 }
+
+                if (show.overlayEffects && this.mesh && this.mesh.IsGood())
+                {
+                    for (let i = 0; i < this.overlayEffects.length; i++)
+                    {
+                        this.overlayEffects[i].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
+                    }
+                }
             }
 
             if (show.children)
@@ -468,15 +494,8 @@ export class EveSpaceObject extends EveObject
             {
                 for (let i = 0; i < this.effectChildren.length; i++)
                 {
+                    this.effectChildren[i]._parentLod = this.lod;
                     this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
-                }
-            }
-
-            if (show.overlayEffects && this.mesh && this.mesh.IsGood())
-            {
-                for (let i = 0; i < this.overlayEffects.length; i++)
-                {
-                    this.overlayEffects[i].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
                 }
             }
         }
@@ -490,6 +509,25 @@ export class EveSpaceObject extends EveObject
     {
         this.animation.RenderDebugInfo(debugHelper);
     }
+
+    /**
+     * LOD threshold for hiding object
+     * @type {number}
+     */
+    static LOD_THRESHOLD_NONE = 100;
+
+    /**
+     * LOD threshold for low quality
+     * @type {number}
+     */
+    static LOD_THRESHOLD_LOW = 200;
+
+    /**
+     * LOD threshold for medium quality
+     * @type {number}
+     */
+    static LOD_THRESHOLD_MEDIUM = 500;
+
 
     /**
      * Per object data

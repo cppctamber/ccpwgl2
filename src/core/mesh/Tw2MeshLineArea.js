@@ -3,8 +3,8 @@ import {Tw2MeshArea} from "./Tw2MeshArea";
 
 /**
  * Tw2MeshLineArea
- *
- * @class
+ * TODO: Is this deprecated?
+ * @ccp N/A
  */
 export class Tw2MeshLineArea extends Tw2MeshArea
 {
@@ -17,3 +17,8 @@ export class Tw2MeshLineArea extends Tw2MeshArea
 
 }
 
+Tw2MeshArea.define(Tw2MeshLineArea, Type => {
+    return {
+        type: "Tw2MeshLineArea"
+    };
+});

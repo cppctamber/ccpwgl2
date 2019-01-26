@@ -5,6 +5,7 @@ import {EveSpaceObject} from "./EveSpaceObject";
 
 /**
  * EveEffectRoot root objects for FX, can be put into scene's objects array
+ * TODO: Implement LOD
  *
  * @property {String} name
  * @property {Boolean} display

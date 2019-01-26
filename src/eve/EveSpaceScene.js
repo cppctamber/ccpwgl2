@@ -358,11 +358,20 @@ export class EveSpaceScene
         if (this.lodEnabled)
         {
             g.frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
+
             for (let i = 0; i < this.objects.length; ++i)
             {
                 if (this.objects[i].UpdateLod)
                 {
                     this.objects[i].UpdateLod(g.frustum);
+                }
+            }
+
+            for (let i = 0; i < this.planets.length; ++i)
+            {
+                if (this.planets[i].UpdateLod)
+                {
+                    this.planets[i].UpdateLod(g.frustum);
                 }
             }
         }

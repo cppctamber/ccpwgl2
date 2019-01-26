@@ -944,7 +944,6 @@ export class Tw2Device extends Tw2EventEmitter
         {
             case RM_OPAQUE:
             case RM_PICKABLE:
-            case RM_DISTORTION:
                 this.SetRenderState(RS_ZENABLE, true);
                 this.SetRenderState(RS_ZWRITEENABLE, true);
                 this.SetRenderState(RS_ZFUNC, CMP_LEQUAL);
@@ -1017,6 +1016,11 @@ export class Tw2Device extends Tw2EventEmitter
                 this.SetRenderState(RS_SEPARATEALPHABLENDENABLE, false);
                 this.SetRenderState(RS_COLORWRITEENABLE, 0xf);
                 break;
+
+            case RM_DISTORTION: // Same as Fullscreen?
+            case RM_DEPTH:
+                // TODO: Implement
+                return;
 
             default:
                 return;

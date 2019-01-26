@@ -1,13 +1,14 @@
-import {Tw2BaseClass} from "../../../global";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * Tr2LodResource
+ * @ccp Tr2LodResource
  *
  * @property {String} highDetailResPath   -
  * @property {String} lowDetailResPath    -
  * @property {String} mediumDetailResPath -
  */
-export default class Tr2LodResource extends Tw2BaseClass
+export class Tw2LodResource extends Tw2BaseClass
 {
 
     highDetailResPath = "";
@@ -16,11 +17,10 @@ export default class Tr2LodResource extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(Tr2LodResource, Type =>
+Tw2BaseClass.define(Tw2LodResource, Type =>
 {
     return {
-        isStaging: true,
-        type: "Tr2LodResource",
+        type: "Tw2LodResource",
         props: {
             highDetailResPath: Type.PATH,
             lowDetailResPath: Type.PATH,
