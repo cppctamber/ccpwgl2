@@ -28,7 +28,7 @@ export class Tw2CurveSet extends Tw2BaseClass
 
     // ccpwgl
     _isPlaying = false;
-    
+
 
     /**
      * Initializes the Tw2CurveSet

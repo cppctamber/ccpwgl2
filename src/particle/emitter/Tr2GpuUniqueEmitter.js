@@ -39,7 +39,7 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
  * @property {Number} turbulenceFrequency          -
  * @property {Number} velocityStretchRotation      -
  */
-export  class Tr2GpuUniqueEmitter extends Tw2ParticleEmitter
+export class Tr2GpuUniqueEmitter extends Tw2ParticleEmitter
 {
     // ccp
     angle = 0;

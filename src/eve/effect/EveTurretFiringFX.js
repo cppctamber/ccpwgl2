@@ -13,7 +13,7 @@ import {vec3, mat4, util, Tw2BaseClass} from "../../global";
  */
 export class EvePerMuzzleData extends Tw2BaseClass
 {
-    
+
     //ccpwgl
     constantDelay = 0;
     currentStartDelay = 0;
@@ -22,7 +22,7 @@ export class EvePerMuzzleData extends Tw2BaseClass
     muzzleTransform = mat4.create();
     readyToStart = false;
     started = false;
-    
+
 }
 
 Tw2BaseClass.define(EvePerMuzzleData, Type =>
@@ -109,7 +109,7 @@ export default class EveTurretFiringFX extends Tw2BaseClass
     stopCurveSet = null;
     stretch = [];
     useMuzzleTransform = false;
-    
+
     // ccpwgl
     display = true;
     firingDelay5 = 0;

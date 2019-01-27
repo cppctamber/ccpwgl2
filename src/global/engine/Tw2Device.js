@@ -198,7 +198,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.effectDir = "/effect.gles2/";
         this.canvas = null;
         this.ext = {};
-        
+
         let {gl, version} = Tw2Device.CreateContext(canvas, params, params.webgl2);
         if (!gl) return this.glVersion;
 

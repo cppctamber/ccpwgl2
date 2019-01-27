@@ -53,7 +53,7 @@ export class Tw2Mesh
     opaquePrepassAreas = [];
     pickableAreas = [];
     transparentAreas = [];
-    
+
     // ccpwgl
     display = true;
     geometryResource = null;

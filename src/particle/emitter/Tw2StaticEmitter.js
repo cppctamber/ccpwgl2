@@ -19,7 +19,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     // ccp
     geometryResourcePath = "";
     meshIndex = 0;
-    
+
     // ccpwgl
     geometryResource = null;
     _spawned = false;
@@ -41,7 +41,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     {
         this.meshIndex = val;
     }
-    
+
     /**
      * Initializes the particle emitter
      */
@@ -61,7 +61,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
      * @param {Array} [out=[]]
      * @returns {Array<Tw2Resource>} out
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         if (this.geometryResource && !out.includes(this.geometryResource))
         {

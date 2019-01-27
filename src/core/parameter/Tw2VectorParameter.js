@@ -5,7 +5,7 @@ import {util, Tw2BaseClass} from "../../global";
  * Tw2VectorParameter base class
  * TODO: Remove constructor parameters
  * @ccp N/A
- * 
+ *
  * @property {Float32Array} value
  * @property {?Float32Array} _constantBuffer
  * @property {?Number} _offset
@@ -26,7 +26,7 @@ export class Tw2VectorParameter extends Tw2BaseClass
     {
         return this.constructor.constantBufferSize;
     }
-    
+
     /**
      * Constructor
      * @param {String} [name='']

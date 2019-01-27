@@ -42,7 +42,7 @@ export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(Tw2ParticleAttributeGenerator, Type=>
+Tw2BaseClass.define(Tw2ParticleAttributeGenerator, Type =>
 {
     return {
         type: "Tw2ParticleAttributeGenerator",

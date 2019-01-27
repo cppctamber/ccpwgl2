@@ -6,7 +6,7 @@ import {Tw2Parameter} from "./Tw2Parameter";
  * TODO: Original ccp class looks to only have rotation, reference "/probecursor.black"
  * TODO: If rotationCenter isn't required remove it (I don't recall seeing it used anywhere and not used in new files)
  * @ccp TriTransformParameter
- * 
+ *
  * @parameter {vec3} scaling=[1,1,1]
  * @parameter {quat} rotation=[0,0,0,1]
  * @parameter {vec3} translation=[0,0,0]
@@ -19,13 +19,13 @@ export class Tw2TransformParameter extends Tw2Parameter
 {
     // ccp
     rotation = quat.create();
-    
+
     // ccpwgl
     scaling = vec3.fromValues(1, 1, 1);
     rotationCenter = vec3.create();
     translation = vec3.create();
     transform = mat4.create();
-    
+
     _transformTranspose = mat4.create();
     _constantBuffer = null;
     _offset = null;
@@ -52,7 +52,7 @@ export class Tw2TransformParameter extends Tw2Parameter
     /**
      * Fire on value changes
      * @param {*} [controller]       - An optional argument to track the object that called this function
-     * @param {Boolean} [skipUpdate] - 
+     * @param {Boolean} [skipUpdate] -
      */
     OnValueChanged(controller, skipUpdate)
     {
@@ -96,7 +96,7 @@ export class Tw2TransformParameter extends Tw2Parameter
             constantBuffer.set(this._transformTranspose.subarray(0, size), offset);
         }
     }
-    
+
     /**
      * The parameter's constant buffer size
      * @type {Number}

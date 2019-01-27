@@ -1,5 +1,6 @@
 import {vec3} from "../../global";
 import {Tw2ParticleForce} from "./Tw2ParticleForce";
+
 /**
  * Tw2ParticleDirectForce
  * @ccp Tr2ParticleDirectForce

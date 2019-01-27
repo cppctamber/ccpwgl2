@@ -26,7 +26,7 @@ export class Tw2ParticleConstraint extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(Tw2ParticleConstraint, Type=>
+Tw2BaseClass.define(Tw2ParticleConstraint, Type =>
 {
     return {
         type: "Tw2ParticleConstraint",

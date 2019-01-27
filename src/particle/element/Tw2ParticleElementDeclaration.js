@@ -85,7 +85,7 @@ export class Tw2ParticleElementDeclaration extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(Tw2ParticleElementDeclaration, Type=>
+Tw2BaseClass.define(Tw2ParticleElementDeclaration, Type =>
 {
     return {
         type: "Tw2ParticleElementDeclaration",

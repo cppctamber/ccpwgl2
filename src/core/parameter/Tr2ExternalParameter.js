@@ -23,7 +23,7 @@ export class Tr2ExternalParameter extends Tw2Parameter
     get value()
     {
         return this.destinationAttribute && this.destinationObject &&
-            this.destinationObject[this.destinationAttribute] !== undefined ?
+        this.destinationObject[this.destinationAttribute] !== undefined ?
             this.destinationObject[this.destinationAttribute] : null;
     }
 
@@ -107,7 +107,7 @@ export class Tr2ExternalParameter extends Tw2Parameter
      */
     EqualsValue(value)
     {
-        switch(this.size)
+        switch (this.size)
         {
             case 0:
                 // throw error?

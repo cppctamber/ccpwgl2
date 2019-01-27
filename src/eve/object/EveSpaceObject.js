@@ -151,7 +151,7 @@ export class EveSpaceObject extends EveObject
             this.mesh.SetQuality(3 - this.lod);
         }
     }
-    
+
     /**
      * Adds a custom mask
      * @param {vec3} position

@@ -19,7 +19,7 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
     maxParticles = 0;
     particleSystem = null;
     rate = 0;
-    
+
     // ccpwgl
     _accumulatedRate = 0;
     _isValid = false;

@@ -17717,7 +17717,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * TODO: Original ccp class looks to only have rotation, reference "/probecursor.black"
  * TODO: If rotationCenter isn't required remove it (I don't recall seeing it used anywhere and not used in new files)
  * @ccp TriTransformParameter
- * 
+ *
  * @parameter {vec3} scaling=[1,1,1]
  * @parameter {quat} rotation=[0,0,0,1]
  * @parameter {vec3} translation=[0,0,0]
@@ -17785,7 +17785,7 @@ function (_Tw2Parameter) {
     /**
      * Fire on value changes
      * @param {*} [controller]       - An optional argument to track the object that called this function
-     * @param {Boolean} [skipUpdate] - 
+     * @param {Boolean} [skipUpdate] -
      */
 
   }, {
@@ -18407,7 +18407,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * Tw2VectorParameter base class
  * TODO: Remove constructor parameters
  * @ccp N/A
- * 
+ *
  * @property {Float32Array} value
  * @property {?Float32Array} _constantBuffer
  * @property {?Number} _offset
@@ -35038,8 +35038,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {quat} rotation            -
  * @property {vec3} scaling             -
  * @property {vec3} translation         -
- * @property {mat4} _worldTransform     -
- * @property {mat4} _worldTransformLast -
  */
 
 let EveChildQuad =
@@ -35073,10 +35071,6 @@ function (_EveChild) {
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaling", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translation", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_worldTransform", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_worldTransformLast", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     return _this;
   }

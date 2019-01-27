@@ -286,7 +286,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
     GetDestinationTarget()
     {
         if (!this._copyFunc) return this.destinationAttribute;
-        
+
         return this.constructor.GetAttribute(
             this.destinationObject,
             this.destinationAttribute,
@@ -302,7 +302,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
     GetSourceTarget()
     {
         if (!this._copyFunc) return this.sourceAttribute;
-        
+
         return this.constructor.GetAttribute(
             this.sourceObject,
             this.sourceAttribute,
@@ -320,7 +320,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
      */
     SetSource(obj, attr, element, isRGBA)
     {
-        const { object, attribute } = this.constructor.GetTargets(obj, attr, element, isRGBA);
+        const {object, attribute} = this.constructor.GetTargets(obj, attr, element, isRGBA);
         this.sourceObject = object;
         this.sourceAttribute = attribute;
         this._copyFunc = null;
@@ -336,7 +336,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
      */
     SetDestination(obj, attr, element, isRGBA)
     {
-        const { object, attribute } = this.constructor.GetTargets(obj, attr, element, isRGBA);
+        const {object, attribute} = this.constructor.GetTargets(obj, attr, element, isRGBA);
         this.destinationObject = object;
         this.destinationAttribute = attribute;
         this._copyFunc = null;
@@ -356,7 +356,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
         // Looks to be deprecated
         if (object instanceof Tw2Vector4Parameter && attribute === "value")
         {
-            switch(element)
+            switch (element)
             {
                 case 0:
                     return "v0";
@@ -375,7 +375,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
             }
         }
 
-        switch(element)
+        switch (element)
         {
             case 0:
                 return attribute + isRGBA ? ".r" : ".x";
@@ -413,7 +413,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
         // Looks to be depreciated
         if (object instanceof Tw2Vector4Parameter && attribute === "value")
         {
-            switch(element)
+            switch (element)
             {
                 case 0:
                     attribute = "v0";
@@ -454,7 +454,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
             }
         }
 
-        return { object, attribute };
+        return {object, attribute};
     }
 
     /**

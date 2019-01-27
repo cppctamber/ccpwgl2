@@ -70,7 +70,7 @@ export class Tr2MeshLod extends Tw2BaseClass
      * Sets lod level
      * @param {Number} [level=3]
      */
-    SetQuality(level=3)
+    SetQuality(level = 3)
     {
         level = Math.min(3, Math.max(0, level));
         if (this._geometryQuality === level) return;
@@ -128,7 +128,7 @@ export class Tr2MeshLod extends Tw2BaseClass
             }
         }
 
-        this.EmitEvent("lod_changed", { level });
+        this.EmitEvent("lod_changed", {level});
         this._geometryQuality = level;
     }
 
@@ -163,7 +163,7 @@ export class Tr2MeshLod extends Tw2BaseClass
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         for (let i = 0; i < this.associatedResources; i++)
         {

@@ -306,19 +306,19 @@ export class Tw2TextureParameter extends Tw2Parameter
 
 }
 
-Tw2Parameter.define(Tw2TextureParameter, Type=>
+Tw2Parameter.define(Tw2TextureParameter, Type =>
 {
     return {
         type: "Tw2TextureParameter",
         props: {
             resourcePath: Type.PATH,
-            addressUMode : Type.NUMBER,
-            addressVMode : Type.NUMBER,
-            addressWMode : Type.NUMBER,
-            filterMode : Type.NUMBER,
-            maxAnisotropy : Type.NUMBER,
-            mipFilterMode : Type.NUMBER,
-            useAllOverrides : Type.BOOLEAN,
+            addressUMode: Type.NUMBER,
+            addressVMode: Type.NUMBER,
+            addressWMode: Type.NUMBER,
+            filterMode: Type.NUMBER,
+            maxAnisotropy: Type.NUMBER,
+            mipFilterMode: Type.NUMBER,
+            useAllOverrides: Type.BOOLEAN,
         }
     };
 });

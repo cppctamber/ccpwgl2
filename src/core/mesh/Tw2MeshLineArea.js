@@ -17,7 +17,8 @@ export class Tw2MeshLineArea extends Tw2MeshArea
 
 }
 
-Tw2MeshArea.define(Tw2MeshLineArea, Type => {
+Tw2MeshArea.define(Tw2MeshLineArea, Type =>
+{
     return {
         type: "Tw2MeshLineArea"
     };

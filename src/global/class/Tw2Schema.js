@@ -21,7 +21,7 @@ export default class Tw2Schema
     type = null;
     Constructor = null;
     keys = null;
-    props = { name: Tw2Schema.Type.STRING }; // This should be inherited from Tw2BaseClass
+    props = {name: Tw2Schema.Type.STRING}; // This should be inherited from Tw2BaseClass
     watch = null;
 
     /**
@@ -131,21 +131,21 @@ export default class Tw2Schema
     {
         if (typeof opt === "number")
         {
-            opt = { type: opt };
+            opt = {type: opt};
         }
         else if (Array.isArray(opt))
         {
-            if (!Array.isArray(opt[0])) opt = { type: Type.OBJECT, elements: opt };
-            else opt = { type: Type.ARRAY, elements: opt[0] };
+            if (!Array.isArray(opt[0])) opt = {type: Type.OBJECT, elements: opt};
+            else opt = {type: Type.ARRAY, elements: opt[0]};
         }
         else if (typeof opt !== "object")
         {
-            throw new ErrSchemaTypeInvalid({ name });
+            throw new ErrSchemaTypeInvalid({name});
         }
 
         // Cache key names
         const typeCategory = Tw2Schema.TypeCategory[opt.type];
-        if (typeCategory === undefined) throw new ErrSchemaTypeInvalid({ name });
+        if (typeCategory === undefined) throw new ErrSchemaTypeInvalid({name});
 
         if (!this.keys) this.keys = {};
         if (!this.keys[typeCategory]) this.keys[typeCategory] = [];
@@ -258,7 +258,7 @@ export default class Tw2Schema
     {
         throw new ErrFeatureNotImplemented();
     }
-    
+
     /**
      * Gets a constructor's schema
      * @param {*} Constructor
@@ -314,7 +314,7 @@ export default class Tw2Schema
      * @type {boolean}
      */
     static DEBUG_ENABLED = true;
-    
+
 }
 
 /**

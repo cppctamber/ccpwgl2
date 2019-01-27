@@ -84,9 +84,9 @@ export default class Tw2BaseClass
      * @param [opt={}]
      * @returns {*}
      */
-    static from(values, opt={})
+    static from(values, opt = {})
     {
-        const { skipUpdate, verb="from" } = opt;
+        const {skipUpdate, verb = "from"} = opt;
 
         const item = new this();
 
@@ -150,7 +150,7 @@ export default class Tw2BaseClass
      * @param eventData
      * @returns {*}
      */
-    EmitEvent(eventName, eventData={})
+    EmitEvent(eventName, eventData = {})
     {
         if (this._events && eventName in this._events)
         {
@@ -186,7 +186,7 @@ export default class Tw2BaseClass
             this._events[eventName] = new Set();
         }
 
-        this._events[eventName].add(listener, { context, once });
+        this._events[eventName].add(listener, {context, once});
         return this;
     }
 
