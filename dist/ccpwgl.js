@@ -2,6 +2,7 @@ var ccpwgl = (function(ccpwgl_int)
 {
     var ccpwgl = {};
     var vec3 = ccpwgl_int.math.vec3;
+    var vec4 = ccpwgl_int.math.vec4;
     var mat4 = ccpwgl_int.math.mat4;
 
     // Enables debug mode
@@ -105,14 +106,35 @@ var ccpwgl = (function(ccpwgl_int)
     var scene = null;
     /** Current camera **/
     var camera = null;
-    /** Background clear color **/
-    var clearColor = [0, 0, 0, 1];
     /** If scene updates and update callbacks are to be called **/
     var updateEnabled = true;
     /** If scene is to be rendered **/
     var renderingEnabled = true;
     /** Current resource unload policy @type {ccpwgl.ResourceUnloadPolicy} **/
     var resourceUnloadPolicy = ccpwgl.ResourceUnloadPolicy.USAGE_BASED;
+
+    /** Background clear color **/
+    var clearColor = [0, 0, 0, 1];
+    /** Toggles using a scene's clear colour**/
+    var useSceneClearColor = true;
+
+    /**
+     * Toggles using a scene's background colour or ccpwgl's
+     * @param {Boolean} bool
+     */
+    ccpwgl.useSceneClearColor = function(bool)
+    {
+        useSceneClearColor = bool;
+    }
+
+    /**
+     * Sets the background clear color
+     * @param {vec4} color
+     */
+    ccpwgl.setClearColor = function(color)
+    {
+        vec4.copy(clearColor, color);
+    }
 
     /**
      * Bloom post effect
@@ -169,6 +191,8 @@ var ccpwgl = (function(ccpwgl_int)
      **/
     function render(dt)
     {
+        var clear = scene && scene.wrappedScene && useSceneClearColor ? scene.wrappedScene.clearColor : clearColor;
+
         if (updateEnabled && camera && camera.update)
         {
             camera.update(dt);
@@ -201,7 +225,7 @@ var ccpwgl = (function(ccpwgl_int)
         {
             var d = ccpwgl_int.device;
             d.SetStandardStates(d.RM_OPAQUE);
-            d.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+            d.gl.clearColor(clear[0], clear[1], clear[2], clear[3]);
             d.gl.clearDepth(1.0);
             d.gl.viewport(0, 0, d.viewportWidth, d.viewportHeight);
             d.gl.clear(d.gl.COLOR_BUFFER_BIT | d.gl.DEPTH_BUFFER_BIT);
@@ -1560,6 +1584,53 @@ var ccpwgl = (function(ccpwgl_int)
         this.fog = null;
         /** Current LOD setting @type {ccpwgl.LodSettings} **/
         var lodSetting = ccpwgl.LodSettings.LOD_DISABLED;
+        /** Scene clear color **/
+        var sceneClearColor;
+
+        /**
+         * Sets the background's clear color
+         * @param {vec4} v
+         */
+        this.setClearColor = function(v)
+        {
+            sceneClearColor = v;
+            if (this.wrappedScene)
+            {
+                vec4.copy(this.wrappedScene.clearColor, sceneClearColor);
+            }
+        }
+
+        /** scene environment rendering **/
+        var showEnvironment = true;
+
+        /**
+         * Toggles environment visibility
+         * @param {Boolean} bool
+         */
+        this.showEnvironment = function(bool)
+        {
+            enableEnvironment = bool;
+            if (this.wrappedScene)
+            {
+                this.wrappedScene.visible.environment = bool;
+            }
+        }
+
+        /** scene fog rendering **/
+        var showFog = true;
+
+        /**
+         * Toggles fog visibility
+         * @param {Boolean} bool
+         */
+        this.showFog = function(bool)
+        {
+            showFog = bool;
+            if (this.wrappedScene)
+            {
+                this.wrappedScene.visible.fog = bool;
+            }
+        }
 
         /**
          * Internal helper function that rebuilds a list of object in the wrapped
@@ -1616,6 +1687,14 @@ var ccpwgl = (function(ccpwgl_int)
             {
                 obj.sunDiffuseColor.set(self.sunLightColor);
             }
+            if (sceneClearColor)
+            {
+                vec4.copy(obj.clearColor, sceneClearColor);
+            }
+
+            obj.visible.environment = showEnvironment;
+            obj.visible.fog = showFog;
+
             obj.EnableLod(lodSetting == ccpwgl.LodSettings.LOD_ENABLED);
             if (self.fog)
             {
@@ -2377,11 +2456,13 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.createScene = function(background)
     {
-        if (background && typeof background != 'string')
-        {
-            clearColor = background;
-        }
         scene = new Scene();
+
+        if (background && typeof background !== 'string')
+        {
+            scene.setClearColor(background);
+        }
+
         if (background && typeof background == 'string')
         {
             ccpwgl_int.resMan.GetObject('res:/dx9/scene/starfield/starfieldNebula.red', function(obj)

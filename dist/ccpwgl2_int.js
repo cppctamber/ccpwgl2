@@ -34851,7 +34851,7 @@ function () {
     this.ambientColor = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].fromValues(0.25, 0.25, 0.25, 1);
     this.backgroundEffect = null;
     this.backgroundRenderingEnabled = 1;
-    this.clearColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 0);
+    this.clearColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
     this.lodEnabled = false;
     this.fogStart = 0;
     this.fogEnd = 0;

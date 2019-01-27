@@ -83,7 +83,7 @@ export class EveSpaceScene
         this.ambientColor = quat.fromValues(0.25, 0.25, 0.25, 1);
         this.backgroundEffect = null;
         this.backgroundRenderingEnabled = 1;
-        this.clearColor = vec4.fromValues(0, 0, 0, 0);
+        this.clearColor = vec4.fromValues(0, 0, 0, 1);
         this.lodEnabled = false;
         this.fogStart = 0;
         this.fogEnd = 0;
