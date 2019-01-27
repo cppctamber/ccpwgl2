@@ -105,7 +105,6 @@ EveObjectSet.define(EveSpriteLineSetItem, Type =>
 });
 
 
-
 /**
  * Sprite line set
  * @TODO: Is this actually a class?
@@ -152,7 +151,7 @@ export class EveSpriteLineSet extends EveObjectSet
     {
         // TODO: Render
     }
-    
+
 }
 
 EveObjectSet.define(EveSpriteLineSet, Type =>

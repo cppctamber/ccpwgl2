@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../../global";
  *
  * @property {Number} boneIndex -
  */
-export default class EveChildModifierAttachToBone extends Tw2BaseClass
+export class EveChildModifierAttachToBone extends Tw2BaseClass
 {
 
     boneIndex = 0;

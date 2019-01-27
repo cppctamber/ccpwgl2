@@ -116,7 +116,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
 
 }
 
-EveObjectSetItem.define(EveBoosterSetItem, Type=>
+EveObjectSetItem.define(EveBoosterSetItem, Type =>
 {
     return {
         type: "EveBoosterSetItem",
@@ -361,7 +361,7 @@ export class EveBoosterSet extends EveObjectSet
     {
         this._locatorDirty = true;
     }
-    
+
     /**
      * Per frame update
      * @param {Number} dt - DeltaTime
@@ -500,7 +500,7 @@ export class EveBoosterSet extends EveObjectSet
         }
         return true;
     }
-    
+
     /**
      * The booster set's item constructor
      * @type {EveBoosterSetItem}

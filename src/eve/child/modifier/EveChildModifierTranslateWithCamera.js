@@ -5,7 +5,7 @@ import {Tw2BaseClass} from "../../../global";
  * @implements ChildModifier
  *
  */
-export default class EveChildModifierTranslateWithCamera extends Tw2BaseClass
+export class EveChildModifierTranslateWithCamera extends Tw2BaseClass
 {
 
 

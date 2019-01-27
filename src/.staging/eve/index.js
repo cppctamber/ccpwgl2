@@ -1,5 +1,3 @@
-export * from "./child";
-export * from "./childModifier";
 export * from "./object";
 export * from "./planetaryInteraction";
 export * from "./ui";

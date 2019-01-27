@@ -71,7 +71,7 @@ export class EveTrailsSet extends Tw2BaseClass
      * @param {Array} [out=[]]
      * @returns {Array<Tw2Resource>}
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         if (this.effect)
         {

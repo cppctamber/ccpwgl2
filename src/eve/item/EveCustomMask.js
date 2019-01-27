@@ -50,7 +50,7 @@ export class EveCustomMask extends Tw2BaseClass
     {
         const targets = this.display && visible ? this.targetMaterials : [0, 0, 0, 0];
         perObjectData.vs.Set("CustomMaskMatrix" + this._index, this._maskMatrix);
-        perObjectData.vs.Set("CustomMaskData" + this._index, [ 1, this.isMirrored ? 1 : 0, 0, 0]);
+        perObjectData.vs.Set("CustomMaskData" + this._index, [1, this.isMirrored ? 1 : 0, 0, 0]);
         perObjectData.ps.Set("CustomMaskMaterialID" + this._index, [this.materialIndex, 0, 0, 0]);
         perObjectData.ps.Set("CustomMaskTarget" + this._index, targets);
     }

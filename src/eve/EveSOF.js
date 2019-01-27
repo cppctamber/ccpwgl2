@@ -8,7 +8,7 @@ import {Tw2MeshArea} from "../core";
 import {Tw2InstancedMesh} from "../core";
 import {Tw2CurveSet} from "../core";
 import {Tw2ValueBinding} from "../core";
-import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve";
+import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve/legacy";
 import {EveBoosterSet} from "./item";
 import {EveChildMesh} from "./child";
 import {EveLocator2} from "./item";
@@ -421,9 +421,7 @@ export function EveSOF()
                 }
             }
 
-            var defaultTextures = _get(_get(data["generic"]["decalShaders"], hullDecal.shader,
-                {}), "defaultTextures",
-                {});
+            var defaultTextures = _get(_get(data["generic"]["decalShaders"], hullDecal.shader, {}), "defaultTextures", {});
             for (var texName in defaultTextures)
             {
                 if (defaultTextures.hasOwnProperty(texName))
@@ -779,7 +777,7 @@ export function EveSOF()
         {
             return function (obj)
             {
-                if (obj.isEffectChild)
+                if (obj._isEffectChild)
                 {
                     ship.effectChildren.push(obj);
                 }

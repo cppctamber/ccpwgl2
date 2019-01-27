@@ -1,22 +1,24 @@
-import {mat4, quat, vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../../global";
+import {mat4, quat, vec3, vec4} from "../../global/index";
+import {EveChild} from "./EveChild";
 
 /**
  * EveChildQuad
- * @implements ObjectChild
+ * TODO: Implement
+ * @ccp EveChildQuat
  *
- * @property {Number} brightness    -
- * @property {vec4} color           -
- * @property {Tr2Effect} effect     -
- * @property {mat4} localTransform  -
- * @property {Number} minScreenSize -
- * @property {quat} rotation        -
- * @property {vec3} scaling         -
- * @property {vec3} translation     -
+ * @property {Number} brightness        -
+ * @property {vec4} color               -
+ * @property {Tr2Effect} effect         -
+ * @property {mat4} localTransform      -
+ * @property {Number} minScreenSize     -
+ * @property {quat} rotation            -
+ * @property {vec3} scaling             -
+ * @property {vec3} translation         -
  */
-export default class EveChildQuad extends Tw2BaseClass
+export default class EveChildQuad extends EveChild
 {
 
+    // ccp
     brightness = 0;
     color = vec4.create();
     effect = null;
@@ -28,12 +30,11 @@ export default class EveChildQuad extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveChildQuad, Type =>
+EveChild.define(EveChildQuad, Type =>
 {
     return {
         isStaging: true,
         type: "EveChildQuad",
-        category: "ObjectChild",
         props: {
             brightness: Type.NUMBER,
             color: Type.RGBA_LINEAR,

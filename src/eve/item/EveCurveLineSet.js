@@ -5,13 +5,13 @@ import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 /**
  * Curve line set item
  * @ccp N/A
- * 
+ *
  * @property {Number} animationSpeed     - Line's animation speed
  * @property {Number} animationScale     - Line's animation scale
  * @property {vec4} color1               - Line's start color
  * @property {vec4} color2               - Line's end color
- * @property {vec3} intermediatePosition - Line's intermediate/middle position (not used with straight lines) 
- * @property {vec4} multiColor           - 
+ * @property {vec3} intermediatePosition - Line's intermediate/middle position (not used with straight lines)
+ * @property {vec4} multiColor           -
  * @property {Number} multiColorBorder   -
  * @property {Number} numOfSegments      - The amount of segments for a curved or sphered line
  * @property {vec4} overlayColor         - Line's overlay color
@@ -216,7 +216,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 
 }
 
-EveObjectSetItem.define(EveCurveLineSetItem, Type=>
+EveObjectSetItem.define(EveCurveLineSetItem, Type =>
 {
     return {
         type: "EveCurveLineSetItem",
@@ -231,7 +231,7 @@ EveObjectSetItem.define(EveCurveLineSetItem, Type=>
             overlayColor: Type.RGBA_LINEAR,
             position1: Type.VECTOR3,
             position2: Type.VECTOR3,
-            type: { type: Type.NUMBER, values: EveCurveLineSetItem.Type },
+            type: {type: Type.NUMBER, values: EveCurveLineSetItem.Type},
             width: Type.NUMBER
         }
     };
@@ -245,7 +245,7 @@ EveObjectSetItem.define(EveCurveLineSetItem, Type=>
  * TODO: Replace "parentTransform" usages and cache with "worldTransform" instead?
  * TODO: Is "lineWidthFactor" deprecated, or just for ccpwgl?
  * @ccp EveCurveLineSet
- * 
+ *
  * @property {Tw2Effect} lineEffect            -
  * @property {?Tw2Effect} pickEffect           -
  * @property {Number} lineWidthFactor          -

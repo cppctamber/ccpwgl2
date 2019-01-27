@@ -102,7 +102,6 @@ Tw2BaseClass.define(EveSpotlightSetItem, Type =>
 });
 
 
-
 /**
  * Spotlight set
  * Todo: Implement "intensity"

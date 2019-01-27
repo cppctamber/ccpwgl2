@@ -10,7 +10,7 @@ import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
  */
 export class EveHazeSetBatch extends Tw2RenderBatch
 {
-    
+
     hazeSet = null;
 
     /**
@@ -21,7 +21,7 @@ export class EveHazeSetBatch extends Tw2RenderBatch
     {
         this.hazeSet.Render(technique);
     }
-    
+
 }
 
 
@@ -133,7 +133,7 @@ export class EveHazeSet extends EveObjectSet
     {
         // TODO: Render
     }
-    
+
 }
 
 Tw2BaseClass.define(EveHazeSet, Type =>

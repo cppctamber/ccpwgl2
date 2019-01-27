@@ -1,8 +1,9 @@
-import {Tw2BaseClass} from "../../../global";
+import {EveChild} from "./EveChild";
 
 /**
  * EveChildBulletStorm
- * @implements ObjectChild
+ * Todo: Implement
+ * @ccp EveChildBulletStorm
  *
  * @property {Tr2Effect} effect        -
  * @property {Number} multiplier       -
@@ -10,9 +11,9 @@ import {Tw2BaseClass} from "../../../global";
  * @property {String} sourceLocatorSet -
  * @property {Number} speed            -
  */
-export default class EveChildBulletStorm extends Tw2BaseClass
+export class EveChildBulletStorm extends EveChild
 {
-
+    // ccp
     effect = null;
     multiplier = 0;
     range = 0;
@@ -21,19 +22,19 @@ export default class EveChildBulletStorm extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveChildBulletStorm, Type =>
+EveChild.define(EveChildBulletStorm, Type =>
 {
     return {
         isStaging: true,
         type: "EveChildBulletStorm",
-        category: "ObjectChild",
         props: {
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             multiplier: Type.NUMBER,
             range: Type.NUMBER,
             sourceLocatorSet: Type.STRING,
             speed: Type.NUMBER
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

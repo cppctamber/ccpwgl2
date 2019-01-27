@@ -1,76 +1,32 @@
 /* eslint no-unused-vars:0 */
-import {vec3, quat, mat4, util} from "../../global";
+import {vec3, quat, mat4, util, Tw2BaseClass} from "../../global";
+import {ErrAbstractClassMethod} from "../../core";
 
 /**
  * EveChild base class
  * TODO: Implement LOD
  *
- * @property {number|String} _id
- * @property {String} name
- * @property {Boolean} display
- * @property {Boolean} useSRT
- * @property {number} lowestLodVisible
- * @property {Boolean} staticTransform
- * @property {quat} rotation
- * @property {vec3} translation
- * @property {vec3} scaling
- * @property {mat4} localTransform
- * @property {mat4} worldTransform
- * @property {mat4} worldTransformLast
- * @property {Tw2PerObjectData} _perObjectData
- * @class
+ * @property {Boolean} _isEffectChild
  */
-export class EveChild
+export class EveChild extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-    display = true;
-    useSRT = true;
-    lowestLodVisible = 2;
-    staticTransform = false;
-    rotation = quat.create();
-    translation = vec3.create();
-    scaling = vec3.fromValues(1, 1, 1);
-    localTransform = mat4.create();
-    worldTransform = mat4.create();
-    worldTransformLast = mat4.create();
-    _perObjectData = null;
-    isEffectChild = true;
-    lod = 3;
-
-
     /**
-     * Gets the child's resources
-     * @param {Array} [out=[]]
-     * @returns {Array<Tw2Resource>} out
+     * Identifies that the class is a child effect
+     * @returns {boolean}
      */
-    GetResources(out = [])
+    get _isEffectChild()
     {
-        return out;
+        return true;
     }
 
     /**
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
-     * @param {Number} [parentLod]
      */
-    Update(dt, parentTransform, parentLod)
+    Update(dt, parentTransform)
     {
-        if (parentLod !== undefined)
-        {
-            this.lod = parentLod;
-        }
-
-        if (this.useSRT)
-        {
-            quat.normalize(this.rotation, this.rotation);
-            mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
-        }
-
-        mat4.copy(this.worldTransformLast, this.worldTransform);
-        mat4.multiply(this.worldTransform, parentTransform, this.localTransform);
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -81,7 +37,7 @@ export class EveChild
      */
     GetBatches(mode, accumulator, perObjectData)
     {
-
+        throw new ErrAbstractClassMethod();
     }
 
     /**
@@ -105,4 +61,13 @@ export class EveChild
     };
 
 }
+
+Tw2BaseClass.define(EveChild, Type =>
+{
+    return {
+        type: "EveChild",
+        category: "ObjectChild",
+        isAbstract: true
+    };
+});
 

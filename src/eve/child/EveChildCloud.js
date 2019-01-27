@@ -1,9 +1,11 @@
-import {quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../../global";
+import {mat4, quat, vec3} from "../../global";
+import {EveChild} from "./EveChild";
+
 
 /**
  * EveChildCloud
- * @implements ObjectChild
+ * TODO: Implement
+ * @ccp EveChildCloud
  *
  * @property {Number} cellScreenSize      -
  * @property {Tr2Effect} effect           -
@@ -13,9 +15,9 @@ import {Tw2BaseClass} from "../../../global";
  * @property {Number} sortingModifier     -
  * @property {vec3} translation           -
  */
-export default class EveChildCloud extends Tw2BaseClass
+export class EveChildCloud extends EveChild
 {
-
+    // ccp
     cellScreenSize = 0;
     effect = null;
     preTesselationLevel = 0;
@@ -26,21 +28,21 @@ export default class EveChildCloud extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveChildCloud, Type =>
+EveChild.define(EveChildCloud, Type =>
 {
     return {
         isStaging: true,
         type: "EveChildCloud",
-        category: "ObjectChild",
         props: {
             cellScreenSize: Type.NUMBER,
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             preTesselationLevel: Type.NUMBER,
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,
             sortingModifier: Type.NUMBER,
             translation: Type.TR_TRANSLATION
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

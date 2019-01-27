@@ -1,27 +1,29 @@
-import {mat4, quat, vec3} from "../../../global";
-import {Tw2BaseClass} from "../../../global";
+import {mat4, quat, vec3} from "../../global";
+import {EveChild} from "./EveChild";
 
 /**
  * EveChildExplosion
- * @implements ObjectChild
+ * TODO: Implement
+ * @ccp EveChildExplosion
  *
- * @property {Number} globalDuration                  -
- * @property {EveChildContainer} globalExplosion      -
- * @property {Number} globalExplosionDelay            -
- * @property {vec3} globalScaling                     -
- * @property {Number} localDuration                   -
- * @property {EveChildContainer} localExplosion       -
- * @property {Number} localExplosionInterval          -
- * @property {Number} localExplosionIntervalFactor    -
- * @property {EveChildContainer} localExplosionShared -
- * @property {Array.<ObjectChild>} localExplosions    -
- * @property {mat4} localTransform                    -
- * @property {quat} rotation                          -
- * @property {vec3} scaling                           -
+ * @property {Number} globalDuration                     -
+ * @property {EveChildContainer} globalExplosion         -
+ * @property {Number} globalExplosionDelay               -
+ * @property {vec3} globalScaling                        -
+ * @property {Number} localDuration                      -
+ * @property {EveChildContainer} localExplosion          -
+ * @property {Number} localExplosionInterval             -
+ * @property {Number} localExplosionIntervalFactor       -
+ * @property {EveChildContainer} localExplosionShared    -
+ * @property {Array.<EveChildContainer>} localExplosions -
+ * @property {mat4} localTransform                       -
+ * @property {quat} rotation                             -
+ * @property {vec3} scaling                              -
  */
-export default class EveChildExplosion extends Tw2BaseClass
+export class EveChildExplosion extends EveChild
 {
 
+    // ccp
     globalDuration = 0;
     globalExplosion = null;
     globalExplosionDelay = 0;
@@ -38,12 +40,11 @@ export default class EveChildExplosion extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveChildExplosion, Type =>
+EveChild.define(EveChildExplosion, Type =>
 {
     return {
         isStaging: true,
         type: "EveChildExplosion",
-        category: "ObjectChild",
         props: {
             globalDuration: Type.NUMBER,
             globalExplosion: ["EveChildContainer"],
@@ -58,7 +59,8 @@ Tw2BaseClass.define(EveChildExplosion, Type =>
             localTransform: Type.TR_LOCAL,
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

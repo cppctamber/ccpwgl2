@@ -564,7 +564,7 @@ export class EveTurretSet extends EveObjectSet
     {
         this._locatorDirty = true;
     }
-    
+
     /**
      * Updates view dependent data
      */
@@ -766,7 +766,7 @@ export class EveTurretSet extends EveObjectSet
 
         return !!rendered;
     }
-    
+
     /**
      * Updates per object data
      * @param {Tw2RawData} perObjectData

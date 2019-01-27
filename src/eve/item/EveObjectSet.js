@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
 import {vec3, vec4, mat4, util} from "../../global";
-import { Tw2BaseClass } from "../../global";
+import {Tw2BaseClass} from "../../global";
 import {ErrAbstractClassMethod} from "../../core";
 
 /**
@@ -12,10 +12,10 @@ import {ErrAbstractClassMethod} from "../../core";
  */
 export class EveObjectSetItem extends Tw2BaseClass
 {
-    
+
     display = true;
     _dirty = true;
-    
+
     /**
      * Fire on value changes
      */
@@ -53,7 +53,6 @@ Tw2BaseClass.define(EveObjectSetItem, Type =>
         }
     };
 });
-
 
 
 /**
@@ -96,7 +95,7 @@ export class EveObjectSet extends Tw2BaseClass
      */
     OnChildValueChanged(child)
     {
-        this.EmitEvent("child_modified", { child });
+        this.EmitEvent("child_modified", {child});
         this._dirty = true;
         //this.UpdateValues(child);
     }
@@ -107,7 +106,7 @@ export class EveObjectSet extends Tw2BaseClass
      * @param {*} [opt={}]
      * @returns {*}
      */
-    CreateItem(values={}, opt)
+    CreateItem(values = {}, opt)
     {
         const item = this.constructor.Item.from(values, opt);
         this.AddItem(item, opt ? opt.skipUpdate : false);
@@ -143,7 +142,7 @@ export class EveObjectSet extends Tw2BaseClass
         const index = this.items.indexOf(item);
         if (index !== -1)
         {
-            this.EmitEvent("child_removed", { ctx: item });
+            this.EmitEvent("child_removed", {ctx: item});
             item.UnsetParent(this);
             this.items.splice(index, 1);
             this._dirty = true;
@@ -263,8 +262,8 @@ Tw2BaseClass.define(EveObjectSet, Type =>
         type: "EveObjectSet",
         category: "ObjectSet",
         isAbstract: true,
-        props : {
-            display : Type.BOOLEAN,
+        props: {
+            display: Type.BOOLEAN,
             items: Type.ARRAY
         }
     };

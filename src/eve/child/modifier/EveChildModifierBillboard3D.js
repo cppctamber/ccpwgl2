@@ -5,7 +5,7 @@ import {Tw2BaseClass} from "../../../global";
  * @implements ChildModifier
  *
  */
-export default class EveChildModifierBillboard3D extends Tw2BaseClass
+export class EveChildModifierBillboard3D extends Tw2BaseClass
 {
 
 
