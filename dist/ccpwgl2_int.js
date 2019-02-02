@@ -7756,6 +7756,618 @@ var forEach = function () {
 
 /***/ }),
 
+/***/ "./.staging/EveEffectRoot2.js":
+/*!************************************!*\
+  !*** ./.staging/EveEffectRoot2.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveEffectRoot2; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveEffectRoot2
+ *
+ * @property {vec3} boundingSphereCenter            -
+ * @property {Number} boundingSphereRadius          -
+ * @property {Array.<TriCurveSet>} curveSets        -
+ * @property {Number} duration                      -
+ * @property {Boolean} dynamicLOD                   -
+ * @property {Array.<ObjectChild>} effectChildren   -
+ * @property {Array.<Tr2PointLight>} lights         -
+ * @property {Array} observers                      -
+ * @property {quat} rotation                        -
+ * @property {vec3} scaling                         -
+ * @property {vec4} secondaryLightingEmissiveColor  -
+ * @property {Number} secondaryLightingSphereRadius -
+ * @property {vec3} translation                     -
+ */
+
+let EveEffectRoot2 =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveEffectRoot2, _Tw2BaseClass);
+
+  function EveEffectRoot2() {
+    var _this;
+
+    _classCallCheck(this, EveEffectRoot2);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveEffectRoot2).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "duration", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dynamicLOD", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "effectChildren", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lights", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaling", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "secondaryLightingEmissiveColor", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "secondaryLightingSphereRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translation", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    return _this;
+  }
+
+  return EveEffectRoot2;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveEffectRoot2, Type => {
+  return {
+    isStaging: true,
+    type: "EveEffectRoot2",
+    props: {
+      boundingSphereCenter: Type.VECTOR3,
+      boundingSphereRadius: Type.NUMBER,
+      curveSets: [["TriCurveSet"]],
+      duration: Type.NUMBER,
+      dynamicLOD: Type.BOOLEAN,
+      effectChildren: Type.ARRAY,
+      lights: [["Tr2PointLight"]],
+      observers: Type.ARRAY,
+      rotation: Type.TR_ROTATION,
+      scaling: Type.TR_SCALING,
+      secondaryLightingEmissiveColor: Type.RGBA_LINEAR,
+      secondaryLightingSphereRadius: Type.NUMBER,
+      translation: Type.TR_TRANSLATION
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./.staging/EveMobile.js":
+/*!*******************************!*\
+  !*** ./.staging/EveMobile.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveMobile; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveMobile
+ *
+ * @property {Array.<EveObjectSet>} attachments    -
+ * @property {vec3} boundingSphereCenter           -
+ * @property {Number} boundingSphereRadius         -
+ * @property {Array.<EveObject>} children          -
+ * @property {Array.<StateController>} controllers -
+ * @property {Array.<TriCurveSet>} curveSets       -
+ * @property {Array.<EveObjectSet>} locatorSets    -
+ * @property {Tr2MeshLod} meshLod                  -
+ * @property {Array.<TriObserverLocal>} observers  -
+ * @property {Tr2Effect} shadowEffect              -
+ */
+
+let EveMobile =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveMobile, _Tw2BaseClass);
+
+  function EveMobile() {
+    var _this;
+
+    _classCallCheck(this, EveMobile);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveMobile).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attachments", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "controllers", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locatorSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "meshLod", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowEffect", null);
+
+    return _this;
+  }
+
+  return EveMobile;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveMobile, Type => {
+  return {
+    isStaging: true,
+    type: "EveMobile",
+    props: {
+      attachments: [["EveSpriteSet"]],
+      boundingSphereCenter: Type.VECTOR3,
+      boundingSphereRadius: Type.NUMBER,
+      children: [["EveTransform"]],
+      controllers: [["Tr2ControllerReference"]],
+      curveSets: [["TriCurveSet"]],
+      locatorSets: [["EveLocatorSets"]],
+      meshLod: ["Tr2MeshLod"],
+      observers: [["TriObserverLocal"]],
+      shadowEffect: ["Tr2Effect"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./.staging/EveRootTransform.js":
+/*!**************************************!*\
+  !*** ./.staging/EveRootTransform.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveRootTransform; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveRootTransform
+ *
+ * @property {Number} boundingSphereRadius       -
+ * @property {Array.<EveObject>} children        -
+ * @property {Array.<TriCurveSet>} curveSets     -
+ * @property {Boolean} display                   -
+ * @property {Tr2Mesh} mesh                      -
+ * @property {Number} modifier                   -
+ * @property {Array} observers                   -
+ * @property {quat} rotation                     -
+ * @property {Tr2CurveConstant} rotationCurve    -
+ * @property {vec3} scaling                      -
+ * @property {Number} sortValueMultiplier        -
+ * @property {vec3} translation                  -
+ * @property {Tr2CurveConstant} translationCurve -
+ */
+
+let EveRootTransform =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveRootTransform, _Tw2BaseClass);
+
+  function EveRootTransform() {
+    var _this;
+
+    _classCallCheck(this, EveRootTransform);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveRootTransform).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modifier", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationCurve", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaling", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortValueMultiplier", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translation", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationCurve", null);
+
+    return _this;
+  }
+
+  return EveRootTransform;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveRootTransform, Type => {
+  return {
+    isStaging: true,
+    type: "EveRootTransform",
+    props: {
+      boundingSphereRadius: Type.NUMBER,
+      children: [["EveTransform"]],
+      curveSets: [["TriCurveSet"]],
+      display: Type.BOOLEAN,
+      mesh: ["Tr2Mesh"],
+      modifier: Type.NUMBER,
+      observers: Type.ARRAY,
+      rotation: Type.TR_ROTATION,
+      rotationCurve: ["Tr2CurveConstant"],
+      scaling: Type.TR_SCALING,
+      sortValueMultiplier: Type.NUMBER,
+      translation: Type.TR_TRANSLATION,
+      translationCurve: ["Tr2CurveConstant"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./.staging/EveShip2.js":
+/*!******************************!*\
+  !*** ./.staging/EveShip2.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveShip2; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveShip2
+ * @implements EveObject
+ *
+ * @property {Array.<EveObjectSet>} attachments    -
+ * @property {EveBoosterSet2} boosters             -
+ * @property {vec3} boundingSphereCenter           -
+ * @property {Number} boundingSphereRadius         -
+ * @property {Array.<EveObject>} children          -
+ * @property {Array.<EveCustomMask>} customMasks   -
+ * @property {Array.<EveObjectItem>} decals        -
+ * @property {String} dna                          -
+ * @property {Array.<EveObjectSet>} locatorSets    -
+ * @property {Array.<EveObjectItem>} locators      -
+ * @property {Mesh|Tr2MeshLod} mesh                -
+ * @property {Curve|CurveAdapter} rotationCurve    -
+ * @property {Tr2Effect} shadowEffect              -
+ * @property {vec3} shapeEllipsoidCenter           -
+ * @property {vec3} shapeEllipsoidRadius           -
+ * @property {Curve|CurveAdapter} translationCurve -
+ */
+
+let EveShip2 =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveShip2, _Tw2BaseClass);
+
+  function EveShip2() {
+    var _this;
+
+    _classCallCheck(this, EveShip2);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveShip2).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attachments", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boosters", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customMasks", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decals", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dna", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locatorSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locators", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationCurve", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowEffect", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidRadius", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationCurve", null);
+
+    return _this;
+  }
+
+  return EveShip2;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveShip2, Type => {
+  return {
+    isStaging: true,
+    type: "EveShip2",
+    category: "EveObject",
+    props: {
+      attachments: [["EveSpotlightSet", "EveSpriteSet"]],
+      boosters: ["EveBoosterSet2"],
+      boundingSphereCenter: Type.VECTOR3,
+      boundingSphereRadius: Type.NUMBER,
+      children: [["EveTransform"]],
+      customMasks: [["EveCustomMask"]],
+      decals: [["EveSpaceObjectDecal"]],
+      dna: Type.STRING,
+      locatorSets: [["EveLocatorSets"]],
+      locators: [["EveLocator2"]],
+      mesh: ["Tr2Mesh", "Tr2MeshLod"],
+      rotationCurve: ["Tr2CurveConstant", "Tr2RotationAdapter"],
+      shadowEffect: ["Tr2Effect"],
+      shapeEllipsoidCenter: Type.VECTOR3,
+      shapeEllipsoidRadius: Type.VECTOR3,
+      translationCurve: ["Tr2CurveConstant", "Tr2TranslationAdapter"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./.staging/EveStation2.js":
+/*!*********************************!*\
+  !*** ./.staging/EveStation2.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveStation2; });
+/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveStation2
+ *
+ * @property {Array.<EveObjectSet>} attachments       -
+ * @property {vec3} boundingSphereCenter              -
+ * @property {Number} boundingSphereRadius            -
+ * @property {Array.<EveObject>} children             -
+ * @property {Array.<TriCurveSet>} curveSets          -
+ * @property {Array.<EveObjectItem>} decals           -
+ * @property {Array.<ObjectChild>} effectChildren     -
+ * @property {Array.<Tr2PointLight>} lights           -
+ * @property {Array.<EveObjectSet>} locatorSets       -
+ * @property {Array.<EveObjectItem>} locators         -
+ * @property {Tr2Mesh} mesh                           -
+ * @property {Tr2MeshLod} meshLod                     -
+ * @property {Tr2RotationAdapter} modelRotationCurve  -
+ * @property {Number} modelScale                      -
+ * @property {Array.<TriObserverLocal>} observers     -
+ * @property {Tr2RotationAdapter} rotationCurve       -
+ * @property {Tr2Effect} shadowEffect                 -
+ * @property {Tr2TranslationAdapter} translationCurve -
+ */
+
+let EveStation2 =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveStation2, _Tw2BaseClass);
+
+  function EveStation2() {
+    var _this;
+
+    _classCallCheck(this, EveStation2);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveStation2).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attachments", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decals", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "effectChildren", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lights", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locatorSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locators", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "meshLod", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modelRotationCurve", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modelScale", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationCurve", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowEffect", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationCurve", null);
+
+    return _this;
+  }
+
+  return EveStation2;
+}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveStation2, Type => {
+  return {
+    isStaging: true,
+    type: "EveStation2",
+    props: {
+      attachments: [["EvePlaneSet", "EveSpotlightSet", "EveSpriteSet"]],
+      boundingSphereCenter: Type.VECTOR3,
+      boundingSphereRadius: Type.NUMBER,
+      children: [["EveTransform"]],
+      curveSets: [["TriCurveSet"]],
+      decals: [["EveSpaceObjectDecal"]],
+      effectChildren: [["EveChildContainer", "EveChildMesh"]],
+      lights: [["Tr2PointLight"]],
+      locatorSets: [["EveLocatorSets"]],
+      locators: [["EveLocator2"]],
+      mesh: ["Tr2Mesh"],
+      meshLod: ["Tr2MeshLod"],
+      modelRotationCurve: ["Tr2RotationAdapter"],
+      modelScale: Type.NUMBER,
+      observers: [["TriObserverLocal"]],
+      rotationCurve: ["Tr2RotationAdapter"],
+      shadowEffect: ["Tr2Effect"],
+      translationCurve: ["Tr2TranslationAdapter"]
+    }
+  };
+});
+
+/***/ }),
+
 /***/ "./.staging/Tr2Effect.js":
 /*!*******************************!*\
   !*** ./.staging/Tr2Effect.js ***!
@@ -7845,1971 +8457,11 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Effect, Typ
 
 /***/ }),
 
-/***/ "./.staging/eve/EveCamera.js":
-/*!***********************************!*\
-  !*** ./.staging/eve/EveCamera.js ***!
-  \***********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveCamera; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveCamera
- *
- * @property {Number} fieldOfView             -
- * @property {Number} friction                -
- * @property {Number} frontClip               -
- * @property {Boolean} idleMove               -
- * @property {Number} idleScale               -
- * @property {Number} idleSpeed               -
- * @property {vec3} intr                      -
- * @property {Number} maxSpeed                -
- * @property {Number} noiseScale              -
- * @property {Tr2CurveScalar} noiseScaleCurve -
- * @property {Number} pitch                   -
- * @property {vec3} pos                       -
- * @property {quat} rotationAroundParent      -
- * @property {Number} translationFromParent   -
- * @property {Number} yaw                     -
- * @property {Tr2CurveScalar} zoomCurve       -
- */
-
-let EveCamera =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveCamera, _Tw2BaseClass);
-
-  function EveCamera() {
-    var _this;
-
-    _classCallCheck(this, EveCamera);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveCamera).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fieldOfView", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "friction", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "frontClip", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "idleMove", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "idleScale", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "idleSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "intr", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseScale", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseScaleCurve", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pitch", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pos", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationAroundParent", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationFromParent", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "yaw", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "zoomCurve", null);
-
-    return _this;
-  }
-
-  return EveCamera;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveCamera, Type => {
-  return {
-    isStaging: true,
-    type: "EveCamera",
-    props: {
-      fieldOfView: Type.NUMBER,
-      friction: Type.NUMBER,
-      frontClip: Type.NUMBER,
-      idleMove: Type.BOOLEAN,
-      idleScale: Type.NUMBER,
-      idleSpeed: Type.NUMBER,
-      intr: Type.VECTOR3,
-      maxSpeed: Type.NUMBER,
-      noiseScale: Type.NUMBER,
-      noiseScaleCurve: ["Tr2CurveScalar"],
-      pitch: Type.NUMBER,
-      pos: Type.VECTOR3,
-      rotationAroundParent: Type.TR_ROTATION,
-      translationFromParent: Type.NUMBER,
-      yaw: Type.NUMBER,
-      zoomCurve: ["Tr2CurveScalar"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/EveLineContainer.js":
-/*!******************************************!*\
-  !*** ./.staging/eve/EveLineContainer.js ***!
-  \******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveLineContainer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * EveLineContainer
- * @implements EveObject
- *
- * @property {EveCurveLineSet} lineSet -
- */
-
-let EveLineContainer =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveLineContainer, _Tw2BaseClass);
-
-  function EveLineContainer() {
-    var _this;
-
-    _classCallCheck(this, EveLineContainer);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveLineContainer).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lineSet", null);
-
-    return _this;
-  }
-
-  return EveLineContainer;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveLineContainer, Type => {
-  return {
-    isStaging: true,
-    type: "EveLineContainer",
-    category: "EveObject",
-    props: {
-      lineSet: ["EveCurveLineSet"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/EveSpaceScene.js":
-/*!***************************************!*\
-  !*** ./.staging/eve/EveSpaceScene.js ***!
-  \***************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSpaceScene; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveSpaceScene
- *
- * @property {vec4} ambientColor                                                     -
- * @property {Tr2Effect} backgroundEffect                                            -
- * @property {Array.<EveObject>} backgroundObjects                                   -
- * @property {Boolean} backgroundRenderingEnabled                                    -
- * @property {Array.<TriCurveSet>} curveSets                                         -
- * @property {Boolean} enableShadows                                                 -
- * @property {String} envMap1ResPath                                                 -
- * @property {String} envMap2ResPath                                                 -
- * @property {String} envMapResPath                                                  -
- * @property {quat} envMapRotation                                                   -
- * @property {Array.<Parameter>} externalParameters                                  -
- * @property {vec4} fogColor                                                         -
- * @property {Number} fogEnd                                                         -
- * @property {Number} fogMax                                                         -
- * @property {Number} fogStart                                                       -
- * @property {Number} nebulaIntensity                                                -
- * @property {Array.<EveEffectRoot2|EveRootTransform|EveObject|EveStation2>} objects -
- * @property {String} postProcessPath                                                -
- * @property {Boolean} selfShadowOnly                                                -
- * @property {Tr2ShLightingManager} shLightingManager                                -
- * @property {Number} shadowFadeThreshold                                            -
- * @property {Number} shadowThreshold                                                -
- * @property {EveStarfield} starfield                                                -
- * @property {vec4} sunDiffuseColor                                                  -
- * @property {vec4} sunDiffuseColorWithDynamicLights                                 -
- * @property {vec3} sunDirection                                                     -
- * @property {Boolean} useSunDiffuseColorWithDynamicLights                           -
- */
-
-let EveSpaceScene =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveSpaceScene, _Tw2BaseClass);
-
-  function EveSpaceScene() {
-    var _this;
-
-    _classCallCheck(this, EveSpaceScene);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveSpaceScene).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "ambientColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "backgroundEffect", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "backgroundObjects", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "backgroundRenderingEnabled", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "enableShadows", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMap1ResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMap2ResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMapResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMapRotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "externalParameters", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogEnd", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogMax", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogStart", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "nebulaIntensity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "objects", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "postProcessPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selfShadowOnly", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shLightingManager", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowFadeThreshold", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowThreshold", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "starfield", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sunDiffuseColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sunDiffuseColorWithDynamicLights", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sunDirection", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useSunDiffuseColorWithDynamicLights", false);
-
-    return _this;
-  }
-
-  return EveSpaceScene;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpaceScene, Type => {
-  return {
-    isStaging: true,
-    type: "EveSpaceScene",
-    props: {
-      ambientColor: Type.RGBA_LINEAR,
-      backgroundEffect: ["Tr2Effect"],
-      backgroundObjects: [["EveTransform"]],
-      backgroundRenderingEnabled: Type.BOOLEAN,
-      curveSets: [["TriCurveSet"]],
-      enableShadows: Type.BOOLEAN,
-      envMap1ResPath: Type.PATH,
-      envMap2ResPath: Type.PATH,
-      envMapResPath: Type.PATH,
-      envMapRotation: Type.TR_ROTATION,
-      externalParameters: [["Tr2ExternalParameter"]],
-      fogColor: Type.RGBA_LINEAR,
-      fogEnd: Type.NUMBER,
-      fogMax: Type.NUMBER,
-      fogStart: Type.NUMBER,
-      nebulaIntensity: Type.NUMBER,
-      objects: [["EveEffectRoot2", "EveRootTransform", "EveShip2", "EveStation2", "EveTransform"]],
-      postProcessPath: Type.PATH,
-      selfShadowOnly: Type.BOOLEAN,
-      shLightingManager: ["Tr2ShLightingManager"],
-      shadowFadeThreshold: Type.NUMBER,
-      shadowThreshold: Type.NUMBER,
-      starfield: ["EveStarfield"],
-      sunDiffuseColor: Type.RGBA_LINEAR,
-      sunDiffuseColorWithDynamicLights: Type.RGBA_LINEAR,
-      sunDirection: Type.VECTOR3,
-      useSunDiffuseColorWithDynamicLights: Type.BOOLEAN
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/index.js":
-/*!*******************************!*\
-  !*** ./.staging/eve/index.js ***!
-  \*******************************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./object */ "./.staging/eve/object/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveEffectRoot2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveMissile"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveMissileWarhead"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveMobile"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveRootTransform"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveShip2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveStation2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_0__["EveTransform"]; });
-
-/* harmony import */ var _planetaryInteraction__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./planetaryInteraction */ "./.staging/eve/planetaryInteraction/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _planetaryInteraction__WEBPACK_IMPORTED_MODULE_1__["EveConnector"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _planetaryInteraction__WEBPACK_IMPORTED_MODULE_1__["EveLocalPositionCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _planetaryInteraction__WEBPACK_IMPORTED_MODULE_1__["EveSpherePin"]; });
-
-/* harmony import */ var _ui__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ui */ "./.staging/eve/ui/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTacticalOverlay", function() { return _ui__WEBPACK_IMPORTED_MODULE_2__["EveTacticalOverlay"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveUiObject", function() { return _ui__WEBPACK_IMPORTED_MODULE_2__["EveUiObject"]; });
-
-/* harmony import */ var _EveCamera__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveCamera */ "./.staging/eve/EveCamera.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return _EveCamera__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-/* harmony import */ var _EveLineContainer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveLineContainer */ "./.staging/eve/EveLineContainer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLineContainer", function() { return _EveLineContainer__WEBPACK_IMPORTED_MODULE_4__["default"]; });
-
-/* harmony import */ var _EveSpaceScene__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSpaceScene */ "./.staging/eve/EveSpaceScene.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _EveSpaceScene__WEBPACK_IMPORTED_MODULE_5__["default"]; });
-
-
-
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveEffectRoot2.js":
-/*!***********************************************!*\
-  !*** ./.staging/eve/object/EveEffectRoot2.js ***!
-  \***********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveEffectRoot2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveEffectRoot2
- *
- * @property {vec3} boundingSphereCenter            -
- * @property {Number} boundingSphereRadius          -
- * @property {Array.<TriCurveSet>} curveSets        -
- * @property {Number} duration                      -
- * @property {Boolean} dynamicLOD                   -
- * @property {Array.<ObjectChild>} effectChildren   -
- * @property {Array.<Tr2PointLight>} lights         -
- * @property {Array} observers                      -
- * @property {quat} rotation                        -
- * @property {vec3} scaling                         -
- * @property {vec4} secondaryLightingEmissiveColor  -
- * @property {Number} secondaryLightingSphereRadius -
- * @property {vec3} translation                     -
- */
-
-let EveEffectRoot2 =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveEffectRoot2, _Tw2BaseClass);
-
-  function EveEffectRoot2() {
-    var _this;
-
-    _classCallCheck(this, EveEffectRoot2);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveEffectRoot2).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "duration", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dynamicLOD", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "effectChildren", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lights", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaling", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "secondaryLightingEmissiveColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "secondaryLightingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translation", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    return _this;
-  }
-
-  return EveEffectRoot2;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveEffectRoot2, Type => {
-  return {
-    isStaging: true,
-    type: "EveEffectRoot2",
-    props: {
-      boundingSphereCenter: Type.VECTOR3,
-      boundingSphereRadius: Type.NUMBER,
-      curveSets: [["TriCurveSet"]],
-      duration: Type.NUMBER,
-      dynamicLOD: Type.BOOLEAN,
-      effectChildren: Type.ARRAY,
-      lights: [["Tr2PointLight"]],
-      observers: Type.ARRAY,
-      rotation: Type.TR_ROTATION,
-      scaling: Type.TR_SCALING,
-      secondaryLightingEmissiveColor: Type.RGBA_LINEAR,
-      secondaryLightingSphereRadius: Type.NUMBER,
-      translation: Type.TR_TRANSLATION
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveMissile.js":
-/*!*******************************************!*\
-  !*** ./.staging/eve/object/EveMissile.js ***!
-  \*******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveMissile; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveMissile
- *
- * @property {vec3} boundingSphereCenter                   -
- * @property {Number} boundingSphereRadius                 -
- * @property {Tr2TranslationAdapter} modelTranslationCurve -
- * @property {Array.<EveMissileWarhead>} warheads          -
- */
-
-let EveMissile =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveMissile, _Tw2BaseClass);
-
-  function EveMissile() {
-    var _this;
-
-    _classCallCheck(this, EveMissile);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveMissile).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modelTranslationCurve", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "warheads", []);
-
-    return _this;
-  }
-
-  return EveMissile;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveMissile, Type => {
-  return {
-    isStaging: true,
-    type: "EveMissile",
-    props: {
-      boundingSphereCenter: Type.VECTOR3,
-      boundingSphereRadius: Type.NUMBER,
-      modelTranslationCurve: ["Tr2TranslationAdapter"],
-      warheads: [["EveMissileWarhead"]]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveMissileWarhead.js":
-/*!**************************************************!*\
-  !*** ./.staging/eve/object/EveMissileWarhead.js ***!
-  \**************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveMissileWarhead; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * EveMissileWarhead
- *
- * @property {Number} acceleration                         -
- * @property {Number} durationEjectPhase                   -
- * @property {Number} impactDuration                       -
- * @property {Number} impactSize                           -
- * @property {Number} maxExplosionDistance                 -
- * @property {Tr2Mesh} mesh                                -
- * @property {Array.<ParticleEmitterGPU>} particleEmitters -
- * @property {Number} pathOffsetNoiseScale                 -
- * @property {Number} pathOffsetNoiseSpeed                 -
- * @property {EveSpriteSet} spriteSet                      -
- * @property {Number} startEjectVelocity                   -
- * @property {Number} warheadLength                        -
- * @property {Number} warheadRadius                        -
- */
-
-let EveMissileWarhead =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveMissileWarhead, _Tw2BaseClass);
-
-  function EveMissileWarhead() {
-    var _this;
-
-    _classCallCheck(this, EveMissileWarhead);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveMissileWarhead).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "acceleration", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "durationEjectPhase", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "impactDuration", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "impactSize", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxExplosionDistance", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleEmitters", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pathOffsetNoiseScale", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pathOffsetNoiseSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "spriteSet", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "startEjectVelocity", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "warheadLength", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "warheadRadius", 0);
-
-    return _this;
-  }
-
-  return EveMissileWarhead;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveMissileWarhead, Type => {
-  return {
-    isStaging: true,
-    type: "EveMissileWarhead",
-    props: {
-      acceleration: Type.NUMBER,
-      durationEjectPhase: Type.NUMBER,
-      impactDuration: Type.NUMBER,
-      impactSize: Type.NUMBER,
-      maxExplosionDistance: Type.NUMBER,
-      mesh: ["Tr2Mesh"],
-      particleEmitters: [["Tr2GpuSharedEmitter"]],
-      pathOffsetNoiseScale: Type.NUMBER,
-      pathOffsetNoiseSpeed: Type.NUMBER,
-      spriteSet: ["EveSpriteSet"],
-      startEjectVelocity: Type.NUMBER,
-      warheadLength: Type.NUMBER,
-      warheadRadius: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveMobile.js":
-/*!******************************************!*\
-  !*** ./.staging/eve/object/EveMobile.js ***!
-  \******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveMobile; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveMobile
- *
- * @property {Array.<EveObjectSet>} attachments    -
- * @property {vec3} boundingSphereCenter           -
- * @property {Number} boundingSphereRadius         -
- * @property {Array.<EveObject>} children          -
- * @property {Array.<StateController>} controllers -
- * @property {Array.<TriCurveSet>} curveSets       -
- * @property {Array.<EveObjectSet>} locatorSets    -
- * @property {Tr2MeshLod} meshLod                  -
- * @property {Array.<TriObserverLocal>} observers  -
- * @property {Tr2Effect} shadowEffect              -
- */
-
-let EveMobile =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveMobile, _Tw2BaseClass);
-
-  function EveMobile() {
-    var _this;
-
-    _classCallCheck(this, EveMobile);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveMobile).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attachments", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "controllers", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locatorSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "meshLod", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowEffect", null);
-
-    return _this;
-  }
-
-  return EveMobile;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveMobile, Type => {
-  return {
-    isStaging: true,
-    type: "EveMobile",
-    props: {
-      attachments: [["EveSpriteSet"]],
-      boundingSphereCenter: Type.VECTOR3,
-      boundingSphereRadius: Type.NUMBER,
-      children: [["EveTransform"]],
-      controllers: [["Tr2ControllerReference"]],
-      curveSets: [["TriCurveSet"]],
-      locatorSets: [["EveLocatorSets"]],
-      meshLod: ["Tr2MeshLod"],
-      observers: [["TriObserverLocal"]],
-      shadowEffect: ["Tr2Effect"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveRootTransform.js":
-/*!*************************************************!*\
-  !*** ./.staging/eve/object/EveRootTransform.js ***!
-  \*************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveRootTransform; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveRootTransform
- *
- * @property {Number} boundingSphereRadius       -
- * @property {Array.<EveObject>} children        -
- * @property {Array.<TriCurveSet>} curveSets     -
- * @property {Boolean} display                   -
- * @property {Tr2Mesh} mesh                      -
- * @property {Number} modifier                   -
- * @property {Array} observers                   -
- * @property {quat} rotation                     -
- * @property {Tr2CurveConstant} rotationCurve    -
- * @property {vec3} scaling                      -
- * @property {Number} sortValueMultiplier        -
- * @property {vec3} translation                  -
- * @property {Tr2CurveConstant} translationCurve -
- */
-
-let EveRootTransform =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveRootTransform, _Tw2BaseClass);
-
-  function EveRootTransform() {
-    var _this;
-
-    _classCallCheck(this, EveRootTransform);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveRootTransform).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modifier", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationCurve", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaling", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortValueMultiplier", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translation", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationCurve", null);
-
-    return _this;
-  }
-
-  return EveRootTransform;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveRootTransform, Type => {
-  return {
-    isStaging: true,
-    type: "EveRootTransform",
-    props: {
-      boundingSphereRadius: Type.NUMBER,
-      children: [["EveTransform"]],
-      curveSets: [["TriCurveSet"]],
-      display: Type.BOOLEAN,
-      mesh: ["Tr2Mesh"],
-      modifier: Type.NUMBER,
-      observers: Type.ARRAY,
-      rotation: Type.TR_ROTATION,
-      rotationCurve: ["Tr2CurveConstant"],
-      scaling: Type.TR_SCALING,
-      sortValueMultiplier: Type.NUMBER,
-      translation: Type.TR_TRANSLATION,
-      translationCurve: ["Tr2CurveConstant"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveShip2.js":
-/*!*****************************************!*\
-  !*** ./.staging/eve/object/EveShip2.js ***!
-  \*****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveShip2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveShip2
- * @implements EveObject
- *
- * @property {Array.<EveObjectSet>} attachments    -
- * @property {EveBoosterSet2} boosters             -
- * @property {vec3} boundingSphereCenter           -
- * @property {Number} boundingSphereRadius         -
- * @property {Array.<EveObject>} children          -
- * @property {Array.<EveCustomMask>} customMasks   -
- * @property {Array.<EveObjectItem>} decals        -
- * @property {String} dna                          -
- * @property {Array.<EveObjectSet>} locatorSets    -
- * @property {Array.<EveObjectItem>} locators      -
- * @property {Mesh|Tr2MeshLod} mesh                -
- * @property {Curve|CurveAdapter} rotationCurve    -
- * @property {Tr2Effect} shadowEffect              -
- * @property {vec3} shapeEllipsoidCenter           -
- * @property {vec3} shapeEllipsoidRadius           -
- * @property {Curve|CurveAdapter} translationCurve -
- */
-
-let EveShip2 =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveShip2, _Tw2BaseClass);
-
-  function EveShip2() {
-    var _this;
-
-    _classCallCheck(this, EveShip2);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveShip2).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attachments", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boosters", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "customMasks", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decals", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "dna", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locatorSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locators", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationCurve", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowEffect", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidRadius", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationCurve", null);
-
-    return _this;
-  }
-
-  return EveShip2;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveShip2, Type => {
-  return {
-    isStaging: true,
-    type: "EveShip2",
-    category: "EveObject",
-    props: {
-      attachments: [["EveSpotlightSet", "EveSpriteSet"]],
-      boosters: ["EveBoosterSet2"],
-      boundingSphereCenter: Type.VECTOR3,
-      boundingSphereRadius: Type.NUMBER,
-      children: [["EveTransform"]],
-      customMasks: [["EveCustomMask"]],
-      decals: [["EveSpaceObjectDecal"]],
-      dna: Type.STRING,
-      locatorSets: [["EveLocatorSets"]],
-      locators: [["EveLocator2"]],
-      mesh: ["Tr2Mesh", "Tr2MeshLod"],
-      rotationCurve: ["Tr2CurveConstant", "Tr2RotationAdapter"],
-      shadowEffect: ["Tr2Effect"],
-      shapeEllipsoidCenter: Type.VECTOR3,
-      shapeEllipsoidRadius: Type.VECTOR3,
-      translationCurve: ["Tr2CurveConstant", "Tr2TranslationAdapter"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveStation2.js":
-/*!********************************************!*\
-  !*** ./.staging/eve/object/EveStation2.js ***!
-  \********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveStation2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveStation2
- *
- * @property {Array.<EveObjectSet>} attachments       -
- * @property {vec3} boundingSphereCenter              -
- * @property {Number} boundingSphereRadius            -
- * @property {Array.<EveObject>} children             -
- * @property {Array.<TriCurveSet>} curveSets          -
- * @property {Array.<EveObjectItem>} decals           -
- * @property {Array.<ObjectChild>} effectChildren     -
- * @property {Array.<Tr2PointLight>} lights           -
- * @property {Array.<EveObjectSet>} locatorSets       -
- * @property {Array.<EveObjectItem>} locators         -
- * @property {Tr2Mesh} mesh                           -
- * @property {Tr2MeshLod} meshLod                     -
- * @property {Tr2RotationAdapter} modelRotationCurve  -
- * @property {Number} modelScale                      -
- * @property {Array.<TriObserverLocal>} observers     -
- * @property {Tr2RotationAdapter} rotationCurve       -
- * @property {Tr2Effect} shadowEffect                 -
- * @property {Tr2TranslationAdapter} translationCurve -
- */
-
-let EveStation2 =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveStation2, _Tw2BaseClass);
-
-  function EveStation2() {
-    var _this;
-
-    _classCallCheck(this, EveStation2);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveStation2).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "attachments", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "decals", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "effectChildren", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lights", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locatorSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locators", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "meshLod", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modelRotationCurve", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modelScale", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationCurve", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowEffect", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationCurve", null);
-
-    return _this;
-  }
-
-  return EveStation2;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveStation2, Type => {
-  return {
-    isStaging: true,
-    type: "EveStation2",
-    props: {
-      attachments: [["EvePlaneSet", "EveSpotlightSet", "EveSpriteSet"]],
-      boundingSphereCenter: Type.VECTOR3,
-      boundingSphereRadius: Type.NUMBER,
-      children: [["EveTransform"]],
-      curveSets: [["TriCurveSet"]],
-      decals: [["EveSpaceObjectDecal"]],
-      effectChildren: [["EveChildContainer", "EveChildMesh"]],
-      lights: [["Tr2PointLight"]],
-      locatorSets: [["EveLocatorSets"]],
-      locators: [["EveLocator2"]],
-      mesh: ["Tr2Mesh"],
-      meshLod: ["Tr2MeshLod"],
-      modelRotationCurve: ["Tr2RotationAdapter"],
-      modelScale: Type.NUMBER,
-      observers: [["TriObserverLocal"]],
-      rotationCurve: ["Tr2RotationAdapter"],
-      shadowEffect: ["Tr2Effect"],
-      translationCurve: ["Tr2TranslationAdapter"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/EveTransform.js":
-/*!*********************************************!*\
-  !*** ./.staging/eve/object/EveTransform.js ***!
-  \*********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveTransform; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveTransform
- * @implements EveObject
- *
- * @property {Array.<EveObject>} children                                  -
- * @property {Array.<TriCurveSet>} curveSets                               -
- * @property {Boolean} display                                             -
- * @property {Number} distanceBasedScaleArg1                               -
- * @property {Number} distanceBasedScaleArg2                               -
- * @property {Boolean} hideOnLowQuality                                    -
- * @property {Mesh|Tr2MeshLod} mesh                                        -
- * @property {Number} modifier                                             -
- * @property {Array.<TriObserverLocal>} observers                          -
- * @property {vec3} overrideBoundsMax                                      -
- * @property {vec3} overrideBoundsMin                                      -
- * @property {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
- * @property {Array.<ParticleSystem>} particleSystems                      -
- * @property {quat} rotation                                               -
- * @property {vec3} scaling                                                -
- * @property {Number} sortValueMultiplier                                  -
- * @property {vec3} translation                                            -
- * @property {Boolean} update                                              -
- * @property {Boolean} useDistanceBasedScale                               -
- * @property {Boolean} useLodLevel                                         -
- * @property {Number} visibilityThreshold                                  -
- */
-
-let EveTransform =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveTransform, _Tw2BaseClass);
-
-  function EveTransform() {
-    var _this;
-
-    _classCallCheck(this, EveTransform);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveTransform).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "children", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distanceBasedScaleArg1", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distanceBasedScaleArg2", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideOnLowQuality", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modifier", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "observers", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "overrideBoundsMax", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "overrideBoundsMin", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleEmitters", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "particleSystems", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scaling", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortValueMultiplier", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translation", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "update", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useDistanceBasedScale", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useLodLevel", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "visibilityThreshold", 0);
-
-    return _this;
-  }
-
-  return EveTransform;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTransform, Type => {
-  return {
-    isStaging: true,
-    type: "EveTransform",
-    category: "EveObject",
-    props: {
-      children: [["EveSpherePin", "EveTransform"]],
-      curveSets: [["TriCurveSet"]],
-      display: Type.BOOLEAN,
-      distanceBasedScaleArg1: Type.NUMBER,
-      distanceBasedScaleArg2: Type.NUMBER,
-      hideOnLowQuality: Type.BOOLEAN,
-      mesh: ["Tr2InstancedMesh", "Tr2Mesh", "Tr2MeshLod"],
-      modifier: Type.NUMBER,
-      observers: [["TriObserverLocal"]],
-      overrideBoundsMax: Type.VECTOR3,
-      overrideBoundsMin: Type.VECTOR3,
-      particleEmitters: [["Tr2DynamicEmitter", "Tr2GpuUniqueEmitter", "Tr2StaticEmitter"]],
-      particleSystems: [["Tr2ParticleSystem"]],
-      rotation: Type.TR_ROTATION,
-      scaling: Type.TR_SCALING,
-      sortValueMultiplier: Type.NUMBER,
-      translation: Type.TR_TRANSLATION,
-      update: Type.BOOLEAN,
-      useDistanceBasedScale: Type.BOOLEAN,
-      useLodLevel: Type.BOOLEAN,
-      visibilityThreshold: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/object/index.js":
-/*!**************************************!*\
-  !*** ./.staging/eve/object/index.js ***!
-  \**************************************/
-/*! exports provided: EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _EveEffectRoot2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveEffectRoot2 */ "./.staging/eve/object/EveEffectRoot2.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _EveEffectRoot2__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _EveMissile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveMissile */ "./.staging/eve/object/EveMissile.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _EveMissile__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _EveMissileWarhead__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveMissileWarhead */ "./.staging/eve/object/EveMissileWarhead.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _EveMissileWarhead__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-/* harmony import */ var _EveMobile__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveMobile */ "./.staging/eve/object/EveMobile.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _EveMobile__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-/* harmony import */ var _EveRootTransform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveRootTransform */ "./.staging/eve/object/EveRootTransform.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _EveRootTransform__WEBPACK_IMPORTED_MODULE_4__["default"]; });
-
-/* harmony import */ var _EveShip2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveShip2 */ "./.staging/eve/object/EveShip2.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _EveShip2__WEBPACK_IMPORTED_MODULE_5__["default"]; });
-
-/* harmony import */ var _EveStation2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveStation2 */ "./.staging/eve/object/EveStation2.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _EveStation2__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
-/* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveTransform */ "./.staging/eve/object/EveTransform.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _EveTransform__WEBPACK_IMPORTED_MODULE_7__["default"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/eve/planetaryInteraction/EveConnector.js":
-/*!***********************************************************!*\
-  !*** ./.staging/eve/planetaryInteraction/EveConnector.js ***!
-  \***********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveConnector; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveConnector
- *
- * @property {vec4} animationColor                -
- * @property {Number} animationScale              -
- * @property {Number} animationSpeed              -
- * @property {vec4} color                         -
- * @property {EveLocalPositionCurve} destObject   -
- * @property {vec3} destPosition                  -
- * @property {Boolean} isAnimated                 -
- * @property {Number} lineWidth                   -
- * @property {EveLocalPositionCurve} sourceObject -
- * @property {Number} type                        -
- */
-
-let EveConnector =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveConnector, _Tw2BaseClass);
-
-  function EveConnector() {
-    var _this;
-
-    _classCallCheck(this, EveConnector);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveConnector).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationScale", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationSpeed", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "destObject", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "destPosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isAnimated", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lineWidth", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sourceObject", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "type", 0);
-
-    return _this;
-  }
-
-  return EveConnector;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveConnector, Type => {
-  return {
-    isStaging: true,
-    type: "EveConnector",
-    props: {
-      animationColor: Type.RGBA_LINEAR,
-      animationScale: Type.NUMBER,
-      animationSpeed: Type.NUMBER,
-      color: Type.RGBA_LINEAR,
-      destObject: ["EveLocalPositionCurve"],
-      destPosition: Type.TR_TRANSLATION,
-      isAnimated: Type.BOOLEAN,
-      lineWidth: Type.NUMBER,
-      sourceObject: ["EveLocalPositionCurve"],
-      type: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/planetaryInteraction/EveLocalPositionCurve.js":
-/*!********************************************************************!*\
-  !*** ./.staging/eve/planetaryInteraction/EveLocalPositionCurve.js ***!
-  \********************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveLocalPositionCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveLocalPositionCurve
- *
- * @property {vec3} value -
- */
-
-let EveLocalPositionCurve =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveLocalPositionCurve, _Tw2BaseClass);
-
-  function EveLocalPositionCurve() {
-    var _this;
-
-    _classCallCheck(this, EveLocalPositionCurve);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveLocalPositionCurve).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    return _this;
-  }
-
-  return EveLocalPositionCurve;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveLocalPositionCurve, Type => {
-  return {
-    isStaging: true,
-    type: "EveLocalPositionCurve",
-    props: {
-      value: Type.VECTOR3
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/planetaryInteraction/EveSpherePin.js":
-/*!***********************************************************!*\
-  !*** ./.staging/eve/planetaryInteraction/EveSpherePin.js ***!
-  \***********************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSpherePin; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * EveSpherePin
- * @implements EveObject
- *
- * @property {vec3} centerNormal             -
- * @property {vec4} color                    -
- * @property {Array.<TriCurveSet>} curveSets -
- * @property {Boolean} enablePicking         -
- * @property {String} geometryResPath        -
- * @property {vec4} pinColor                 -
- * @property {Tr2Effect} pinEffect           -
- * @property {Number} pinMaxRadius           -
- * @property {Number} pinRadius              -
- * @property {Number} pinRotation            -
- * @property {Number} sortValueMultiplier    -
- */
-
-let EveSpherePin =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveSpherePin, _Tw2BaseClass);
-
-  function EveSpherePin() {
-    var _this;
-
-    _classCallCheck(this, EveSpherePin);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveSpherePin).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "centerNormal", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "enablePicking", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResPath", "");
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinEffect", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinMaxRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinRotation", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortValueMultiplier", 0);
-
-    return _this;
-  }
-
-  return EveSpherePin;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpherePin, Type => {
-  return {
-    isStaging: true,
-    type: "EveSpherePin",
-    category: "EveObject",
-    props: {
-      centerNormal: Type.VECTOR3,
-      color: Type.RGBA_LINEAR,
-      curveSets: [["TriCurveSet"]],
-      enablePicking: Type.BOOLEAN,
-      geometryResPath: Type.PATH,
-      pinColor: Type.RGBA_LINEAR,
-      pinEffect: ["Tr2Effect"],
-      pinMaxRadius: Type.NUMBER,
-      pinRadius: Type.NUMBER,
-      pinRotation: Type.NUMBER,
-      sortValueMultiplier: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/planetaryInteraction/index.js":
-/*!****************************************************!*\
-  !*** ./.staging/eve/planetaryInteraction/index.js ***!
-  \****************************************************/
-/*! exports provided: EveConnector, EveLocalPositionCurve, EveSpherePin */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _EveConnector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveConnector */ "./.staging/eve/planetaryInteraction/EveConnector.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _EveConnector__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _EveLocalPositionCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveLocalPositionCurve */ "./.staging/eve/planetaryInteraction/EveLocalPositionCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _EveLocalPositionCurve__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-/* harmony import */ var _EveSpherePin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSpherePin */ "./.staging/eve/planetaryInteraction/EveSpherePin.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _EveSpherePin__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./.staging/eve/ui/EveTacticalOverlay.js":
-/*!***********************************************!*\
-  !*** ./.staging/eve/ui/EveTacticalOverlay.js ***!
-  \***********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveTacticalOverlay; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * EveTacticalOverlay
- *
- * @property {Tr2Effect} anchorEffect      -
- * @property {Number} arcSegmentMultiplier -
- * @property {Tr2Effect} connectorEffect   -
- * @property {Number} segmentsHigh         -
- * @property {Number} segmentsLow          -
- * @property {Number} segmentsMedium       -
- * @property {Number} targetMaxSegments    -
- * @property {Tr2Effect} velocityEffect    -
- */
-
-let EveTacticalOverlay =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveTacticalOverlay, _Tw2BaseClass);
-
-  function EveTacticalOverlay() {
-    var _this;
-
-    _classCallCheck(this, EveTacticalOverlay);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveTacticalOverlay).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "anchorEffect", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "arcSegmentMultiplier", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "connectorEffect", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "segmentsHigh", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "segmentsLow", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "segmentsMedium", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "targetMaxSegments", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "velocityEffect", null);
-
-    return _this;
-  }
-
-  return EveTacticalOverlay;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTacticalOverlay, Type => {
-  return {
-    isStaging: true,
-    type: "EveTacticalOverlay",
-    props: {
-      anchorEffect: ["Tr2Effect"],
-      arcSegmentMultiplier: Type.NUMBER,
-      connectorEffect: ["Tr2Effect"],
-      segmentsHigh: Type.NUMBER,
-      segmentsLow: Type.NUMBER,
-      segmentsMedium: Type.NUMBER,
-      targetMaxSegments: Type.NUMBER,
-      velocityEffect: ["Tr2Effect"]
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/ui/EveUiObject.js":
-/*!****************************************!*\
-  !*** ./.staging/eve/ui/EveUiObject.js ***!
-  \****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveUiObject; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * EveUiObject
- *
- * @property {Number} boundingSphereRadius -
- * @property {Tr2Mesh} mesh                -
- * @property {Number} modelScale           -
- */
-
-let EveUiObject =
-/*#__PURE__*/
-function (_Tw2BaseClass) {
-  _inherits(EveUiObject, _Tw2BaseClass);
-
-  function EveUiObject() {
-    var _this;
-
-    _classCallCheck(this, EveUiObject);
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveUiObject).call(this, ...args));
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modelScale", 0);
-
-    return _this;
-  }
-
-  return EveUiObject;
-}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveUiObject, Type => {
-  return {
-    isStaging: true,
-    type: "EveUiObject",
-    props: {
-      boundingSphereRadius: Type.NUMBER,
-      mesh: ["Tr2Mesh"],
-      modelScale: Type.NUMBER
-    }
-  };
-});
-
-/***/ }),
-
-/***/ "./.staging/eve/ui/index.js":
-/*!**********************************!*\
-  !*** ./.staging/eve/ui/index.js ***!
-  \**********************************/
-/*! exports provided: EveTacticalOverlay, EveUiObject */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _EveTacticalOverlay__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveTacticalOverlay */ "./.staging/eve/ui/EveTacticalOverlay.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTacticalOverlay", function() { return _EveTacticalOverlay__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
-/* harmony import */ var _EveUiObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveUiObject */ "./.staging/eve/ui/EveUiObject.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveUiObject", function() { return _EveUiObject__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-
-
-
-
-
-/***/ }),
-
 /***/ "./.staging/index.js":
 /*!***************************!*\
   !*** ./.staging/index.js ***!
   \***************************/
-/*! exports provided: Tr2Effect, EveCamera, EveLineContainer, EveSpaceScene, EveEffectRoot2, EveMissile, EveMissileWarhead, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject */
+/*! exports provided: Tr2Effect, EveEffectRoot2, EveMobile, EveRootTransform, EveShip2, EveStation2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -9817,38 +8469,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2Effect */ "./.staging/Tr2Effect.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _Tr2Effect__WEBPACK_IMPORTED_MODULE_0__["default"]; });
 
-/* harmony import */ var _eve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./eve */ "./.staging/eve/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveCamera"]; });
+/* harmony import */ var _EveEffectRoot2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveEffectRoot2 */ "./.staging/EveEffectRoot2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _EveEffectRoot2__WEBPACK_IMPORTED_MODULE_1__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLineContainer", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveLineContainer"]; });
+/* harmony import */ var _EveMobile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveMobile */ "./.staging/EveMobile.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _EveMobile__WEBPACK_IMPORTED_MODULE_2__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveSpaceScene"]; });
+/* harmony import */ var _EveRootTransform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveRootTransform */ "./.staging/EveRootTransform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _EveRootTransform__WEBPACK_IMPORTED_MODULE_3__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveEffectRoot2"]; });
+/* harmony import */ var _EveShip2__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveShip2 */ "./.staging/EveShip2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _EveShip2__WEBPACK_IMPORTED_MODULE_4__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveMissile"]; });
+/* harmony import */ var _EveStation2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveStation2 */ "./.staging/EveStation2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _EveStation2__WEBPACK_IMPORTED_MODULE_5__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveMissileWarhead"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveMobile"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveRootTransform"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveShip2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveStation2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveTransform"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveConnector"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveLocalPositionCurve"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveSpherePin"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTacticalOverlay", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveTacticalOverlay"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveUiObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_1__["EveUiObject"]; });
 
 
 
@@ -32222,1045 +30865,131 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./eve/EveSOF.js":
-/*!***********************!*\
-  !*** ./eve/EveSOF.js ***!
-  \***********************/
-/*! exports provided: EveSOF */
+/***/ "./eve/EveCamera.js":
+/*!**************************!*\
+  !*** ./eve/EveCamera.js ***!
+  \**************************/
+/*! exports provided: EveCamera */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return EveSOF; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return EveCamera; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
-/* harmony import */ var _curve_legacy__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../curve/legacy */ "./curve/legacy/index.js");
-/* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
-/* harmony import */ var _child__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./child */ "./eve/child/index.js");
-/* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
+/**
+ * EveCamera
+ * @ccp EveCamera
+ *
+ * @property {Number} fieldOfView             -
+ * @property {Number} friction                -
+ * @property {Number} frontClip               -
+ * @property {Boolean} idleMove               -
+ * @property {Number} idleScale               -
+ * @property {Number} idleSpeed               -
+ * @property {vec3} intr                      -
+ * @property {Number} maxSpeed                -
+ * @property {Number} noiseScale              -
+ * @property {Tr2CurveScalar} noiseScaleCurve -
+ * @property {Number} pitch                   -
+ * @property {vec3} pos                       -
+ * @property {quat} rotationAroundParent      -
+ * @property {Number} translationFromParent   -
+ * @property {Number} yaw                     -
+ * @property {Tr2CurveScalar} zoomCurve       -
+ */
 
+let EveCamera =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveCamera, _Tw2BaseClass);
 
+  function EveCamera() {
+    var _this;
 
+    _classCallCheck(this, EveCamera);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-function EveSOF() {
-  var data = null;
-  var spriteEffect = null;
-
-  function _get(obj, property, defaultValue) {
-    if (property in obj) {
-      return obj[property];
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
 
-    return defaultValue;
-  }
-  /**
-   * @return {String}
-   */
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveCamera).call(this, ...args));
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fieldOfView", 0);
 
-  function GetShaderPrefix(isAnimated) {
-    return isAnimated ? _get(data["generic"], "shaderPrefixAnimated", "") : _get(data["generic"], "shaderPrefix", "");
-  }
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "friction", 0);
 
-  function ModifyTextureResPath(path, name, area, faction, commands) {
-    var pathInsert = null;
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "frontClip", 0);
 
-    if (_get(faction, "resPathInsert", "").length) {
-      pathInsert = faction.resPathInsert;
-    }
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "idleMove", false);
 
-    if ("respathinsert" in commands && commands.respathinsert.length === 1) {
-      if (commands.respathinsert[0] === "none") {
-        return path;
-      } else {
-        pathInsert = commands.respathinsert[0];
-      }
-    }
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "idleScale", 0);
 
-    if (name === "MaterialMap" || name === "PaintMaskMap" || name === "PmdgMap") {
-      var index = path.lastIndexOf("/");
-      var pathCopy = path;
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "idleSpeed", 0);
 
-      if (index >= 0) {
-        pathCopy = path.substr(0, index + 1) + pathInsert + "/" + path.substr(index + 1);
-      }
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "intr", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-      index = pathCopy.lastIndexOf("_");
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "maxSpeed", 0);
 
-      if (index >= 0) {
-        pathCopy = pathCopy.substr(0, index) + "_" + pathInsert + pathCopy.substr(index);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseScale", 0);
 
-        var textureOverrides = _get(area, "textureOverrides", {});
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseScaleCurve", null);
 
-        if (name in textureOverrides && faction.name in textureOverrides[name]) {
-          return pathCopy;
-        }
-      }
-    }
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pitch", 0);
 
-    return path;
-  }
-  /**
-   * @return {String}
-   */
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pos", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotationAroundParent", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
 
-  function ModifyShaderPath(shader, isSkinned) {
-    var prefix = GetShaderPrefix(isSkinned);
-    shader = "/" + shader;
-    var index = shader.lastIndexOf("/");
-    return shader.substr(0, index + 1) + prefix + shader.substr(index + 1);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "translationFromParent", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "yaw", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "zoomCurve", null);
+
+    return _this;
   }
 
-  function FindPrefix(prefixes, name) {
-    for (var m = 0; m < prefixes.length; ++m) {
-      if (name.substr(0, prefixes[m].length) === prefixes[m]) {
-        return m;
-      }
-    }
-
-    return null;
-  }
-
-  function GetOverridenParameter(name, area, commands, race) {
-    var prefixes, materialIndex, materialData, shortName;
-
-    if ("mesh" in commands) {
-      prefixes = data.generic.materialPrefixes;
-      materialIndex = FindPrefix(prefixes, name);
-
-      if (materialIndex !== null && materialIndex < commands.mesh.length && (_get(area, "blockedMaterials", 0) & 1 << materialIndex) === 0) {
-        materialData = _get(data.material, commands.mesh[materialIndex], null);
-
-        if (materialData) {
-          shortName = name.substr(prefixes[materialIndex].length);
-          return _get(materialData.parameters, shortName, undefined);
-        }
-      }
-    }
-
-    prefixes = data.generic.patternMaterialPrefixes;
-    materialIndex = FindPrefix(prefixes, name);
-
-    if ("pattern" in commands) {
-      if (materialIndex !== null && 1 + materialIndex < commands.pattern.length) {
-        materialData = _get(data.material, commands.pattern[1 + materialIndex], null);
-
-        if (materialData) {
-          shortName = name.substr(prefixes[materialIndex].length);
-          return _get(materialData.parameters, shortName, undefined);
-        }
-      }
-    }
-
-    if (materialIndex !== null) {
-      materialData = _get(data.material, race.defaultPatternLayer1MaterialName, null);
-
-      if (materialData) {
-        shortName = name.substr(prefixes[materialIndex].length);
-        return _get(materialData.parameters, shortName, undefined);
-      }
-    }
-  }
-
-  function GetAddressMode(projectionType) {
-    switch (projectionType) {
-      case 2:
-        return 4;
-
-      case 1:
-        return 3;
-
-      default:
-        return 1;
-    }
-  }
-
-  function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride) {
-    var hullAreas = _get(hull, areasName, []);
-
-    for (var i = 0; i < hullAreas.length; ++i) {
-      var area = hullAreas[i];
-      var effect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-      effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
-
-      var names = _get(_get(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
-
-      for (var j = 0; j < names.length; ++j) {
-        var name = names[j];
-        var param = GetOverridenParameter(name, area, commands, race);
-        param = param || _get(_get(_get(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
-        param = param || _get(_get(_get(race.hullAreas, area.name, {}), "parameters", {}), name);
-        param = param || _get(_get(_get(faction.areas, area.name, {}), "parameters", {}), name);
-        param = param || _get(_get(area, "parameters", {}), name);
-
-        if (param) {
-          effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"](name, param);
-        }
-      }
-
-      var hullTextures = _get(area, "textures", []);
-
-      for (j in hullTextures) {
-        if (hullTextures.hasOwnProperty(j)) {
-          var path = hullTextures[j];
-          path = ModifyTextureResPath(path, j, area, faction, commands);
-          effect.parameters[j] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](j, path);
-        }
-      }
-
-      for (j = 0; j < pattern.layers.length; ++j) {
-        if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.parameters)) {
-          var patternTex = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](pattern.layers[j].textureName);
-          patternTex.resourcePath = pattern.layers[j].textureResFilePath;
-          patternTex.useAllOverrides = true;
-          patternTex.addressUMode = GetAddressMode(_get(pattern.layers[j], "projectionTypeU", 0));
-          patternTex.addressVMode = GetAddressMode(_get(pattern.layers[j], "projectionTypeV", 0));
-          patternTex.Initialize();
-          effect.parameters[pattern.layers[j].textureName] = patternTex;
-        }
-      }
-
-      var defaultTextures = _get(_get(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
-
-      for (var texName in defaultTextures) {
-        if (defaultTextures.hasOwnProperty(texName)) {
-          if (!(texName in effect.parameters)) {
-            effect.parameters[texName] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](texName, defaultTextures[texName]);
-          }
-        }
-      }
-
-      effect.Initialize();
-      var newArea = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2MeshArea"]();
-      newArea.name = area.name;
-      newArea.effect = effect;
-      newArea.index = _get(area, "index", 0);
-      newArea.count = _get(area, "count", 1);
-      areas.push(newArea);
-    }
-  }
-
-  function SetupMesh(ship, hull, faction, race, commands, pattern) {
-    var mesh = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Mesh"]();
-    mesh.geometryResPath = hull["geometryResFilePath"];
-    ship.boundingSphereCenter[0] = hull.boundingSphere[0];
-    ship.boundingSphereCenter[1] = hull.boundingSphere[1];
-    ship.boundingSphereCenter[2] = hull.boundingSphere[2];
-    ship.boundingSphereRadius = hull.boundingSphere[3];
-    FillMeshAreas(_get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(_get(mesh, "transparentAreas", []), "transparentAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(_get(mesh, "additiveAreas", []), "additiveAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(_get(mesh, "decalAreas", []), "decalAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(_get(mesh, "depthAreas", []), "depthAreas", hull, faction, race, pattern, commands);
-    mesh.Initialize();
-    ship.mesh = mesh;
-
-    if ("shapeEllipsoidCenter" in hull) {
-      ship.shapeEllipsoidCenter = hull.shapeEllipsoidCenter;
-    }
-
-    if ("shapeEllipsoidRadius" in hull) {
-      ship.shapeEllipsoidRadius = hull.shapeEllipsoidRadius;
-    }
-  }
-
-  function SetupPattern(hull, race, commands) {
-    var pattern = {
-      patterns: [],
-      layers: []
-    };
-
-    if ("pattern" in commands) {
-      var p = {};
-
-      for (var k = 0; k < data.pattern.length; ++k) {
-        if (data.pattern[k].name === commands.pattern[0]) {
-          p = data.pattern[k];
-          break;
-        }
-      }
-
-      var layer = _get(p, "layer1", null);
-
-      if (layer) {
-        pattern.layers.push(layer);
-      }
-
-      layer = _get(p, "layer2", null);
-
-      if (layer) {
-        pattern.layers.push(layer);
-      }
-
-      var projections = _get(p, "projections", []);
-
-      for (var i = 0; i < projections.length; ++i) {
-        if (projections[i].name === hull.name) {
-          p = projections[i];
-          layer = _get(p, "transformLayer1", null);
-
-          if (layer) {
-            pattern.patterns.push(layer);
-          }
-
-          layer = _get(p, "transformLayer2", null);
-
-          if (layer) {
-            pattern.patterns.push(layer);
-          }
-        }
-      }
-    } else if (_get(hull, "defaultPattern")) {
-      p = _get(hull, "defaultPattern", {});
-      layer = _get(p, "transformLayer1", null);
-
-      if (layer) {
-        pattern.patterns.push(layer);
-      }
-
-      layer = _get(p, "transformLayer2", null);
-
-      if (layer) {
-        pattern.patterns.push(layer);
-      }
-
-      p = _get(race, "defaultPattern", {});
-      layer = _get(p, "layer1", null);
-
-      if (layer) {
-        pattern.layers.push(layer);
-      }
-
-      layer = _get(p, "layer2", null);
-
-      if (layer) {
-        pattern.layers.push(layer);
-      }
-    }
-
-    return pattern;
-  }
-
-  function SetupCustomMasks(ship, pattern) {
-    for (var i = 0; i < pattern.patterns.length; ++i) {
-      if (pattern.patterns[i] && pattern.layers[i]) {
-        var p = pattern.patterns[i];
-        var l = pattern.layers[i];
-        ship.AddCustomMask(_get(p, "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()), _get(p, "scaling", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1)), _get(p, "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create()), _get(p, "isMirrored", false), _get(l, "materialSource", 0), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(_get(l, "isTargetMtl1", true) ? 1 : 0, _get(l, "isTargetMtl2", true) ? 1 : 0, _get(l, "isTargetMtl3", true) ? 1 : 0, _get(l, "isTargetMtl4", true) ? 1 : 0));
-      }
-    }
-  }
-
-  function SetupDecals(ship, hull, faction) {
-    var hullDecals = _get(hull, "hullDecals", []);
-
-    for (var i = 0; i < hullDecals.length; ++i) {
-      var hullDecal = hullDecals[i];
-      var factionDecal = null;
-
-      var factionIndex = "group" + _get(hullDecal, "groupIndex", -1);
-
-      if (faction.decals && factionIndex in faction.decals) {
-        factionDecal = faction.decals[factionIndex];
-      }
-
-      if (factionDecal && !factionDecal["isVisible"]) {
-        continue;
-      }
-
-      var effect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-
-      if (factionDecal && factionDecal.shader && factionDecal.shader.length) {
-        effect.effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + factionDecal.shader;
-      } else if (hullDecal.shader && hullDecal.shader.length) {
-        effect.effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + hullDecal.shader;
-      } else {
-        continue;
-      }
-
-      var hullParameters = _get(hullDecal, "parameters", {});
-
-      for (var j in hullParameters) {
-        if (hullParameters.hasOwnProperty(j)) {
-          effect.parameters[j] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"](j, hullParameters[j]);
-        }
-      }
-
-      var hullTextures = _get(hullDecal, "textures", {});
-
-      for (j in hullTextures) {
-        if (hullTextures.hasOwnProperty(j)) {
-          effect.parameters[j] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](j, hullTextures[j]);
-        }
-      }
-
-      if (factionDecal) {
-        var factionParameters = _get(factionDecal, "parameters", {});
-
-        for (j in factionParameters) {
-          if (factionParameters.hasOwnProperty(j)) {
-            effect.parameters[j] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"](j, factionParameters[j]);
-          }
-        }
-
-        var factionTextures = _get(factionDecal, "textures", {});
-
-        for (j in factionTextures) {
-          if (factionTextures.hasOwnProperty(j) && !(j in effect.parameters)) {
-            effect.parameters[j] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](j, factionTextures[j]);
-          }
-        }
-      }
-
-      var defaultTextures = _get(_get(data["generic"]["decalShaders"], hullDecal.shader, {}), "defaultTextures", {});
-
-      for (var texName in defaultTextures) {
-        if (defaultTextures.hasOwnProperty(texName)) {
-          if (!(texName in effect.parameters)) {
-            effect.parameters[texName] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](texName, defaultTextures[texName]);
-          }
-        }
-      }
-
-      effect.Initialize();
-      var decal = new _item__WEBPACK_IMPORTED_MODULE_3__["EveSpaceObjectDecal"]();
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(decal.position, _get(hullDecal, "position", [0, 0, 0]));
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(decal.rotation, _get(hullDecal, "rotation", [0, 0, 0, 1]));
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(decal.scaling, _get(hullDecal, "scaling", [1, 1, 1]));
-      decal.parentBoneIndex = _get(hullDecal, "boneIndex", -1);
-      decal.indexBuffer = new Uint16Array(hullDecal.indexBuffer);
-      decal.decalEffect = effect;
-      decal.name = _get(hullDecals[i], "name", "");
-
-      if ("groupIndex" in hullDecals[i]) {
-        decal.groupIndex = hullDecals[i].groupIndex;
-      }
-
-      decal.Initialize();
-      ship.decals.push(decal);
-    }
-  }
-
-  function SetupInstancedMeshes(ship, hull, faction, race, commands, pattern) {
-    var instancedMeshes = _get(hull, "instancedMeshes", []);
-
-    for (var i = 0; i < instancedMeshes.length; ++i) {
-      var him = instancedMeshes[i];
-      var mesh = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2InstancedMesh"]();
-      mesh.instanceGeometryResPath = him.instanceGeometryResPath;
-      mesh.geometryResPath = him.geometryResPath;
-      mesh.Initialize();
-      FillMeshAreas(_get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands, him.shader);
-      var child = new _child__WEBPACK_IMPORTED_MODULE_4__["EveChildMesh"]();
-      child.mesh = mesh;
-      ship.effectChildren.push(child);
-    }
-  }
-
-  function SetupSpriteSets(ship, hull, faction) {
-    var hullSets = _get(hull, "spriteSets", []);
-
-    var factionSets = _get(faction, "spriteSets", {});
-
-    for (var i = 0; i < hullSets.length; ++i) {
-      var spriteSet = new _item__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSet"](true, !!(hull["isSkinned"] && hullSets[i]["skinned"]));
-      spriteSet.name = _get(hullSets[i], "name", "");
-      spriteSet.effect = spriteEffect;
-
-      var hullData = _get(hullSets[i], "items", []);
-
-      for (var j = 0; j < hullData.length; ++j) {
-        if (!("group" + _get(hullData[j], "groupIndex", -1) in factionSets)) continue;
-        var item = new _item__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSetItem"]();
-        item.blinkPhase = _get(hullData[j], "blinkPhase", 0);
-        item.blinkRate = _get(hullData[j], "blinkRate", 0.1);
-        item.boneIndex = _get(hullData[j], "boneIndex", 0);
-        item.falloff = _get(hullData[j], "falloff", 0);
-        item.maxScale = _get(hullData[j], "maxScale", 10);
-        item.minScale = _get(hullData[j], "minScale", 1);
-        item.name = _get(hullData[j], "name", "");
-        item.groupIndex = _get(hullData[j], "groupIndex", -1);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.position, _get(hullData[j], "position", [0, 0, 0]));
-        var factionSet = factionSets["group" + item.groupIndex];
-
-        if (factionSet) {
-          item.groupName = factionSet.name;
-          if ("color" in factionSet) _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, factionSet.color);
-        }
-
-        spriteSet.sprites.push(item);
-      }
-
-      spriteSet.Initialize();
-      ship.spriteSets.push(spriteSet);
-    }
-  }
-
-  function SetupSpotlightSets(ship, hull, faction) {
-    var hullSets = _get(hull, "spotlightSets", []);
-
-    var factionSets = _get(faction, "spotlightSets", {});
-
-    for (var i = 0; i < hullSets.length; ++i) {
-      var spotlightSet = new _item__WEBPACK_IMPORTED_MODULE_3__["EveSpotlightSet"]();
-      spotlightSet.name = _get(hullSets[i], "name", "");
-      spotlightSet.coneEffect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-      spotlightSet.glowEffect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-
-      if (hullSets[i]["skinned"]) {
-        spotlightSet.coneEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
-        spotlightSet.glowEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
-      } else {
-        spotlightSet.coneEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
-        spotlightSet.glowEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
-      }
-
-      spotlightSet.coneEffect.parameters["TextureMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("TextureMap", hullSets[i]["coneTextureResPath"]);
-      spotlightSet.glowEffect.parameters["TextureMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("TextureMap", hullSets[i]["glowTextureResPath"]);
-      spotlightSet.coneEffect.parameters["zOffset"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("zOffset", _get(hullSets[i], "zOffset", 0));
-      spotlightSet.coneEffect.Initialize();
-      spotlightSet.glowEffect.Initialize();
-
-      var hullData = _get(hullSets[i], "items", []);
-
-      for (var j = 0; j < hullData.length; ++j) {
-        var item = new _item__WEBPACK_IMPORTED_MODULE_3__["EveSpotlightSetItem"]();
-        item.name = _get(hullData[j], "name", "");
-        item.groupIndex = _get(hullData[j], "groupIndex", -1);
-        item.boneIndex = _get(hullData[j], "boneIndex", 0);
-        item.boosterGainInfluence = _get(hullData[j], "boosterGainInfluence", 0);
-        item.coneIntensity = _get(hullData[j], "coneIntensity", 0);
-        item.spriteIntensity = _get(hullData[j], "spriteIntensity", 0);
-        item.flareIntensity = _get(hullData[j], "flareIntensity", 0);
-        var factionSet = factionSets["group" + item.groupIndex];
-
-        if (factionSet) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.coneColor, _get(factionSet, "coneColor", [0, 0, 0, 0]));
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.spriteColor, _get(factionSet, "spriteColor", [0, 0, 0, 0]));
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.flareColor, _get(factionSet, "flareColor", [0, 0, 0, 0]));
-        }
-
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.spriteScale, _get(hullData[j], "spriteScale", [1, 1, 1]));
-
-        if ("transform" in hullData[j]) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(item.transform, hullData[j].transform);
-        } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(item.transform);
-        }
-
-        spotlightSet.spotlightItems.push(item);
-      }
-
-      spotlightSet.Initialize();
-      ship.spotlightSets.push(spotlightSet);
-    }
-  }
-
-  function _assignIfExists(dest, src, attr) {
-    if (attr in src) {
-      dest[attr] = src[attr];
-    }
-  }
-
-  function SetupPlaneSets(ship, hull, faction) {
-    var hullSets = _get(hull, "planeSets", []);
-
-    var factionSets = _get(faction, "planeSets", {});
-
-    for (var i = 0; i < hullSets.length; ++i) {
-      var planeSet = new _item__WEBPACK_IMPORTED_MODULE_3__["EvePlaneSet"]();
-      planeSet.name = _get(hullSets[i], "name", "");
-      planeSet.effect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-
-      if (hullSets[i]["skinned"]) {
-        planeSet.effect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
-      } else {
-        planeSet.effect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
-      }
-
-      planeSet.effect.parameters["Layer1Map"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("Layer1Map", hullSets[i]["layer1MapResPath"]);
-      planeSet.effect.parameters["Layer2Map"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("Layer2Map", hullSets[i]["layer2MapResPath"]);
-      planeSet.effect.parameters["MaskMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("MaskMap", hullSets[i]["maskMapResPath"]);
-      planeSet.effect.parameters["PlaneData"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("PlaneData", _get(hullSets[i], "planeData", [1, 0, 0, 0]));
-      planeSet.effect.Initialize();
-
-      var hullData = _get(hullSets[i], "items", []);
-
-      for (var j = 0; j < hullData.length; ++j) {
-        var item = new _item__WEBPACK_IMPORTED_MODULE_3__["EvePlaneSetItem"]();
-
-        _assignIfExists(item, hullData[j], "groupIndex");
-
-        _assignIfExists(item, hullData[j], "name");
-
-        item.boneIndex = _get(hullData[j], "boneIndex", -1);
-        item.maskAtlasID = _get(hullData[j], "maskMapAtlasIndex", 0); // Do not copy reference!
-
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.position, _get(hullData[j], "position", [0, 0, 0]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(item.rotation, _get(hullData[j], "rotation", [0, 0, 0, 1]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.scaling, _get(hullData[j], "scaling", [1, 1, 1]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, _get(hullData[j], "color", [0, 0, 0, 0]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer1Transform, _get(hullData[j], "layer1Transform", [0, 0, 0, 0]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer1Scroll, _get(hullData[j], "layer1Scroll", [0, 0, 0, 0]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer2Transform, _get(hullData[j], "layer2Transform", [0, 0, 0, 0]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer2Scroll, _get(hullData[j], "layer2Scroll", [0, 0, 0, 0]));
-
-        var factionSet = factionSets["group" + _get(hullData[j], "groupIndex", -1)];
-
-        if (factionSet) _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, _get(factionSet, "color", [0, 0, 0, 0]));
-        planeSet.planes.push(item);
-      }
-
-      planeSet.Initialize();
-      ship.planeSets.push(planeSet);
-    }
-  }
-
-  function SetupBoosters(ship, hull, race) {
-    if (!("booster" in hull)) {
-      return;
-    }
-
-    var booster = new _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]();
-    var hullBooster = hull["booster"];
-
-    var raceBooster = _get(race, "booster", {});
-
-    _assignIfExists(booster, raceBooster, "glowScale");
-
-    _assignIfExists(booster, raceBooster, "symHaloScale");
-
-    _assignIfExists(booster, raceBooster, "haloScaleX");
-
-    _assignIfExists(booster, raceBooster, "haloScaleY");
-
-    _assignIfExists(booster, raceBooster, "haloColor");
-
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.glowColor, _get(raceBooster, "glowColor", [0, 0, 0, 0]));
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.warpGlowColor, _get(raceBooster, "warpGlowColor", [0, 0, 0, 0]));
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.warpHaloColor, _get(raceBooster, "warpHalpColor", [0, 0, 0, 0]));
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.trailColor, _get(raceBooster, "trailColor", [0, 0, 0, 0]));
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.trailSize, _get(raceBooster, "trailSize", [0, 0, 0, 0]));
-    booster.effect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-    booster.effect.effectFilePath = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
-    booster.effect.parameters["NoiseFunction0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("NoiseFunction0", _get(raceBooster.shape0, "noiseFunction", 0));
-    booster.effect.parameters["NoiseSpeed0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("NoiseSpeed0", _get(raceBooster.shape0, "noiseSpeed", 0));
-    booster.effect.parameters["NoiseAmplitudeStart0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("NoiseAmplitudeStart0", _get(raceBooster.shape0, "noiseAmplitureStart", [0, 0, 0, 0]));
-    booster.effect.parameters["NoiseAmplitudeEnd0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("NoiseAmplitudeEnd0", _get(raceBooster.shape0, "noiseAmplitureEnd", [0, 0, 0, 0]));
-    booster.effect.parameters["NoiseFrequency0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("NoiseFrequency0", _get(raceBooster.shape0, "noiseFrequency", [0, 0, 0, 0]));
-    booster.effect.parameters["Color0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Color0", _get(raceBooster.shape0, "color", [0, 0, 0, 0]));
-    booster.effect.parameters["NoiseFunction1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("NoiseFunction1", _get(raceBooster.shape1, "noiseFunction", 0));
-    booster.effect.parameters["NoiseSpeed1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("NoiseSpeed1", _get(raceBooster.shape1, "noiseSpeed", 0));
-    booster.effect.parameters["NoiseAmplitudeStart1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("NoiseAmplitudeStart1", _get(raceBooster.shape1, "noiseAmplitureStart", [0, 0, 0, 0]));
-    booster.effect.parameters["NoiseAmplitudeEnd1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("NoiseAmplitudeEnd1", _get(raceBooster.shape1, "noiseAmplitureEnd", [0, 0, 0, 0]));
-    booster.effect.parameters["NoiseFrequency1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("NoiseFrequency1", _get(raceBooster.shape1, "noiseFrequency", [0, 0, 0, 0]));
-    booster.effect.parameters["Color1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Color1", _get(raceBooster.shape1, "color", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpNoiseFunction0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("WarpNoiseFunction0", _get(raceBooster.warpShape0, "noiseFunction", 0));
-    booster.effect.parameters["WarpNoiseSpeed0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("WarpNoiseSpeed0", _get(raceBooster.warpShape0, "noiseSpeed", 0));
-    booster.effect.parameters["WarpNoiseAmplitudeStart0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeStart0", _get(raceBooster.warpShape0, "noiseAmplitureStart", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpNoiseAmplitudeEnd0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeEnd0", _get(raceBooster.warpShape0, "noiseAmplitureEnd", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpNoiseFrequency0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpNoiseFrequency0", _get(raceBooster.warpShape0, "noiseFrequency", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpColor0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpColor0", _get(raceBooster.warpShape0, "color", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpNoiseFunction1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("WarpNoiseFunction1", _get(raceBooster.warpShape1, "noiseFunction", 0));
-    booster.effect.parameters["WarpNoiseSpeed1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("WarpNoiseSpeed1", _get(raceBooster.warpShape1, "noiseSpeed", 0));
-    booster.effect.parameters["WarpNoiseAmplitudeStart1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeStart1", _get(raceBooster.warpShape1, "noiseAmplitureStart", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpNoiseAmplitudeEnd1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeEnd1", _get(raceBooster.warpShape1, "noiseAmplitureEnd", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpNoiseFrequency1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpNoiseFrequency1", _get(raceBooster.warpShape1, "noiseFrequency", [0, 0, 0, 0]));
-    booster.effect.parameters["WarpColor1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("WarpColor1", _get(raceBooster.warpShape1, "color", [0, 0, 0, 0]));
-    booster.effect.parameters["ShapeAtlasSize"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("ShapeAtlasSize", [_get(raceBooster, "shapeAtlasHeight", 0), _get(raceBooster, "shapeAtlasCount", 0), 0, 0]);
-    booster.effect.parameters["BoosterScale"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("BoosterScale", _get(raceBooster, "scale", [1, 1, 1, 1]));
-    booster.effect.parameters["ShapeMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("ShapeMap", raceBooster.shapeAtlasResPath);
-    booster.effect.parameters["GradientMap0"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("GradientMap0", raceBooster.gradient0ResPath);
-    booster.effect.parameters["GradientMap1"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("GradientMap1", raceBooster.gradient1ResPath);
-    booster.effect.parameters["NoiseMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("ShapeMap", "res:/Texture/Global/noise32cube_volume.dds.0.png");
-    booster.effect.Initialize();
-    booster.glows = new _item__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSet"](true);
-    booster.glows.effect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-    booster.glows.effect.effectFilePath = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
-    booster.glows.effect.parameters["DiffuseMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("DiffuseMap", "res:/Texture/Particle/whitesharp.dds.0.png");
-    booster.glows.effect.parameters["NoiseMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NoiseMap", "res:/Texture/global/noise.dds.0.png");
-    booster.glows.effect.Initialize();
-
-    var items = _get(hullBooster, "items", []);
-
-    for (var i = 0; i < items.length; ++i) {
-      var locator = new _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator2"]();
-      locator.name = "locator_booster_" + (i + 1);
-
-      if ("transform" in items[i]) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(locator.transform, items[i].transform);
-      } else {
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(locator.transform);
-      }
-
-      locator.atlasIndex0 = _get(items[i], "atlasIndex0", 0);
-      locator.atlasIndex1 = _get(items[i], "atlasIndex1", 0);
-      ship.locators.push(locator);
-    }
-
-    booster.Initialize();
-    ship.boosters = booster;
-  }
-
-  function SetupLocators(ship, hull) {
-    var hullLocators = _get(hull, "locatorTurrets", []);
-
-    for (var i = 0; i < hullLocators.length; ++i) {
-      var locator = new _item__WEBPACK_IMPORTED_MODULE_3__["EveLocator2"]();
-      locator.name = hullLocators[i].name;
-
-      if ("transform" in hullLocators[i]) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(locator.transform, hullLocators[i].transform);
-      } else {
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(locator.transform);
-      }
-
-      ship.locators.push(locator);
-    }
-  }
-
-  function BindParticleEmitters(obj, curveSet, curve) {
-    if (Array.isArray(obj.particleEmitters)) {
-      for (var i = 0; i < obj.particleEmitters.length; ++i) {
-        if ("rate" in obj.particleEmitters[i]) {
-          var binding = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2ValueBinding"]();
-          binding.sourceObject = curve;
-          binding.sourceAttribute = "currentValue";
-          binding.destinationObject = obj.particleEmitters[i];
-          binding.destinationAttribute = "rate";
-          binding.Initialize();
-          curveSet.bindings.push(binding);
-        }
-      }
-
-      for (i = 0; i < obj.children.length; ++i) {
-        BindParticleEmitters(obj.children[i], curveSet, curve);
-      }
-    } else {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].log({
-        type: "warning",
-        name: "Space object factory",
-        message: `Unable to bind particle emitters: ${obj.constructor.name}`
-      });
-    }
-  }
-
-  function SetupChildren(ship, hull, curveSet, curves) {
-    function onChildLoaded(child) {
-      return function (obj) {
-        if (obj._isEffectChild) {
-          ship.effectChildren.push(obj);
-        } else {
-          ship.children.push(obj);
-        }
-
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.translation, _get(child, "translation", [0, 0, 0]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(obj.rotation, _get(child, "rotation", [0, 0, 0, 1]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.scaling, _get(child, "scaling", [1, 1, 1]));
-
-        var id = _get(child, "id", -1);
-
-        if (id !== -1 && curves[id]) {
-          BindParticleEmitters(obj, curveSet, curves[id]);
-        }
-      };
-    }
-
-    const children = _get(hull, "children", []);
-
-    for (let i = 0; i < children.length; ++i) {
-      const resPath = children[i]["redFilePath"];
-
-      if (resPath) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(resPath, onChildLoaded(children[i]));
-      } else {
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].log({
-          type: "warning",
-          name: "Space object factory",
-          message: `No resource path found for "${hull.name}" child at index ${i}`
-        });
-      }
-    }
-  }
-
-  function SetupAnimations(ship, hull) {
-    var id_curves = [];
-    var curveSet = null;
-
-    var animations = _get(hull, "animations", []);
-
-    for (var i = 0; i < animations.length; ++i) {
-      if (_get(animations[i], "id", -1) !== -1 && _get(animations[i], "startRate", -1) !== -1) {
-        if (!curveSet) {
-          curveSet = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSet"]();
-        }
-
-        var curve = new _curve_legacy__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarCurve2"]();
-        curve.keys.push(new _curve_legacy__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
-        curve.keys.push(new _curve_legacy__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
-        curve.keys[0].value = _get(animations[i], "startRate", -1);
-        curve.keys[1].time = 1;
-        curve.keys[1].value = _get(animations[i], "endRate", -1);
-        curve.Initialize();
-        curveSet.curves.push(curve);
-        ship.curveSets.push(curveSet);
-        id_curves[_get(animations[i], "id", -1)] = curve;
-      }
-    }
-
-    if (curveSet) {
-      curveSet.Initialize();
-    }
-
-    return [curveSet, id_curves];
-  }
-
-  var dataLoading = false;
-  var pendingLoads = [];
-
-  function Build(dna) {
-    var parts = dna.split(":");
-    var commands = {};
-
-    for (var i = 3; i < parts.length; ++i) {
-      var subparts = parts[i].split("?");
-      commands[subparts[0]] = subparts[1].split(";");
-    }
-
-    var hull = data["hull"][parts[0]];
-    var faction = data["faction"][parts[1]];
-    var race = data["race"][parts[2]];
-    var ship = new (_get(hull, "buildClass", 0) === 2 ? _object__WEBPACK_IMPORTED_MODULE_5__["EveSpaceObject"] : _object__WEBPACK_IMPORTED_MODULE_5__["EveShip"])();
-    var pattern = SetupPattern(hull, race, commands);
-    SetupMesh(ship, hull, faction, race, commands, pattern);
-    SetupCustomMasks(ship, pattern);
-    SetupDecals(ship, hull, faction);
-    SetupSpriteSets(ship, hull, faction);
-    SetupSpotlightSets(ship, hull, faction);
-    SetupPlaneSets(ship, hull, faction);
-    SetupBoosters(ship, hull, race);
-    SetupLocators(ship, hull);
-    var curves = SetupAnimations(ship, hull);
-    SetupChildren(ship, hull, curves[0], curves[1]);
-    SetupInstancedMeshes(ship, hull, faction, race, commands, pattern);
-    ship.Initialize();
-    return ship;
-  }
-
-  this.LoadData = function (callback) {
-    if (data === null) {
-      if (callback) {
-        pendingLoads.push(callback);
-      }
-
-      if (!dataLoading) {
-        spriteEffect = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-        spriteEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx";
-        spriteEffect.parameters["MainIntensity"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("MainIntensity", 1);
-        spriteEffect.parameters["GradientMap"] = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("GradientMap", "res:/texture/particle/whitesharp_gradient.dds.0.png");
-        spriteEffect.Initialize();
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject("res:/dx9/model/spaceobjectfactory/data.red", function (obj) {
-          data = obj;
-
-          for (var i = 0; i < pendingLoads.length; ++i) {
-            pendingLoads[i]();
-          }
-
-          pendingLoads = [];
-        });
-        dataLoading = true;
-      }
-    } else {
-      if (callback) {
-        callback();
-      }
+  return EveCamera;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveCamera, Type => {
+  return {
+    isStaging: true,
+    type: "EveCamera",
+    props: {
+      fieldOfView: Type.NUMBER,
+      friction: Type.NUMBER,
+      frontClip: Type.NUMBER,
+      idleMove: Type.BOOLEAN,
+      idleScale: Type.NUMBER,
+      idleSpeed: Type.NUMBER,
+      intr: Type.VECTOR3,
+      maxSpeed: Type.NUMBER,
+      noiseScale: Type.NUMBER,
+      noiseScaleCurve: ["Tr2CurveScalar"],
+      pitch: Type.NUMBER,
+      pos: Type.VECTOR3,
+      rotationAroundParent: Type.TR_ROTATION,
+      translationFromParent: Type.NUMBER,
+      yaw: Type.NUMBER,
+      zoomCurve: ["Tr2CurveScalar"]
     }
   };
-
-  this.BuildFromDNA = function (dna, callback) {
-    if (data === null) {
-      this.LoadData(function () {
-        var result = Build(dna);
-
-        if (callback) {
-          callback(result);
-        }
-      });
-    } else {
-      var result = Build(dna);
-
-      if (callback) {
-        callback(result);
-      }
-    }
-  };
-
-  function GetTurretMaterialParameter(name, parentFaction, areaData) {
-    var materialIdx = -1;
-
-    for (var i = 0; i < data['generic']['materialPrefixes'].length; ++i) {
-      if (name.substr(0, data["generic"]["materialPrefixes"][i].length) === data["generic"]["materialPrefixes"][i]) {
-        materialIdx = i;
-        name = name.substr(data["generic"]["materialPrefixes"][i].length);
-      }
-    }
-
-    if (materialIdx !== -1) {
-      var turretMaterialIndex = _get(parentFaction, "materialUsageMtl" + (materialIdx + 1), materialIdx);
-
-      if (turretMaterialIndex >= 0 && turretMaterialIndex < data["generic"]["materialPrefixes"].length) {
-        name = data["generic"]["materialPrefixes"][turretMaterialIndex] + name;
-
-        if (name in areaData.parameters) {
-          return areaData.parameters[name];
-        }
-      }
-    }
-  }
-
-  var zeroColor = [0, 0, 0, 0];
-
-  function CombineTurretMaterial(name, parentValue, turretValue, overrideMethod) {
-    switch (overrideMethod) {
-      case "overridable":
-        return parentValue ? parentValue : turretValue ? turretValue : zeroColor;
-
-      case "half_overridable":
-        if (name.indexOf("GlowColor") >= 0) {
-          return turretValue ? turretValue : zeroColor;
-        }
-
-        return parentValue ? parentValue : turretValue ? turretValue : zeroColor;
-
-      case "not_overridable":
-      case "half_overridable_2":
-        return turretValue ? turretValue : zeroColor;
-    }
-
-    return zeroColor;
-  }
-
-  function SetupTurretMaterial(turretSet, parentFactionName, turretFactionName) {
-    var parentFaction = data["faction"][parentFactionName];
-    var turretFaction = data["faction"][turretFactionName];
-    var parentArea = null;
-
-    if (parentFaction && parentFaction.areas && "hull" in parentFaction.areas) {
-      parentArea = parentFaction.areas.hull;
-    }
-
-    var turretArea = null;
-
-    if (turretFaction && turretFaction.areas && "hull" in turretFaction.areas) {
-      turretArea = turretFaction.areas.hull;
-    }
-
-    if (!parentArea && !turretArea) {
-      return;
-    }
-
-    if (turretSet.turretEffect) {
-      var params = turretSet.turretEffect.parameters;
-
-      for (var i in params) {
-        if (params.hasOwnProperty(i)) {
-          if (params[i].constructor.prototype !== _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"].prototype) {
-            continue;
-          }
-
-          var parentValue = null;
-          var turretValue = null;
-
-          if (parentArea) {
-            parentValue = GetTurretMaterialParameter(i, parentFaction, parentArea);
-          }
-
-          if (turretArea) {
-            turretValue = GetTurretMaterialParameter(i, parentFaction, parentArea);
-          }
-
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(params[i].value, CombineTurretMaterial(i, parentValue, turretValue, turretSet.turretEffect.name));
-        }
-      }
-
-      turretSet.turretEffect.BindParameters();
-    }
-  }
-
-  this.SetupTurretMaterial = function (turretSet, parentFactionName, turretFactionName, callback) {
-    if (data === null) {
-      this.LoadData(function () {
-        SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
-
-        if (callback) {
-          callback();
-        }
-      });
-    } else {
-      SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
-
-      if (callback) {
-        callback();
-      }
-    }
-  };
-
-  function getDataKeys(name) {
-    if (name !== "all") {
-      var names = {};
-
-      for (var i in data[name]) {
-        if (data[name].hasOwnProperty(i)) {
-          names[i] = data[name][i].description || "";
-        }
-      }
-
-      return names;
-    } else {
-      return data;
-    }
-  }
-
-  this.GetHullNames = function (callback) {
-    this.LoadData(function () {
-      callback(getDataKeys("hull"));
-    });
-  };
-
-  this.GetFactionNames = function (callback) {
-    this.LoadData(function () {
-      callback(getDataKeys("faction"));
-    });
-  };
-
-  this.GetRaceNames = function (callback) {
-    this.LoadData(function () {
-      callback(getDataKeys("race"));
-    });
-  };
-
-  this.GetSofData = function (callback) {
-    this.LoadData(function () {
-      callback(getDataKeys("all"));
-    });
-  };
-}
+});
 
 /***/ }),
 
@@ -33282,117 +31011,230 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 /**
  * EveSpaceScene
+ * TODO: Identify where to set "shadowFadeThreshold" in ps frame data
+ * TODO: Identify where to set "shadowThreshold" in ps frame data
+ * TODO: Identify if/where/how to set "enableShadows" in ps frame data
+ * TODO: Identify if/where/how to set "selfShadowOnly" in ps frame data
+ * TODO: Identify if shadows require their own render mode and render batch accumulation
+ * TODO: Implement "externalParameters"
+ * TODO: Implement "selfShadowOnly"
+ * TODO: Implement "shLightingManager"
+ * TODO: Implement "shadowFadeThreshold"
+ * TODO: Implement "shadowThreshold"
+ * TODO: Implement "starField"
+ * TODO: Implement "sunDiffuseColorWithDynamicLights"
+ * TODO: Implement "postProcess"
+ * @ccp EveSpaceScene
  *
- * @property {number|String} _id
- * @property {String} name
+ * @property {vec4} ambientColor                                                     -
+ * @property {Tr2Effect} backgroundEffect                                            -
+ * @property {Array.<EveObject>} backgroundObjects                                   -
+ * @property {Boolean} backgroundRenderingEnabled                                    -
+ * @property {Array.<Tw2CurveSet>} curveSets                                         -
+ * @property {Boolean} enableShadows                                                 -
+ * @property {String} envMap1ResPath                                                 -
+ * @property {String} envMap2ResPath                                                 -
+ * @property {String} envMapResPath                                                  -
+ * @property {quat} envMapRotation                                                   -
+ * @property {Array.<Tr2ExternalParameter>} externalParameters                       -
+ * @property {vec4} fogColor                                                         -
+ * @property {Number} fogEnd                                                         -
+ * @property {Number} fogMax                                                         -
+ * @property {Number} fogStart                                                       -
+ * @property {Number} nebulaIntensity                                                -
+ * @property {Array.<EveEffectRoot2|EveRootTransform|EveObject|EveStation2>} objects -
+ * @property {String} postProcessPath                                                -
+ * @property {Boolean} selfShadowOnly                                                -
+ * @property {Tr2ShLightingManager} shLightingManager                                -
+ * @property {Number} shadowFadeThreshold                                            -
+ * @property {Number} shadowThreshold                                                -
+ * @property {EveStarfield} starfield                                                -
+ * @property {vec4} sunDiffuseColor                                                  -
+ * @property {vec4} sunDiffuseColorWithDynamicLights                                 -
+ * @property {vec3} sunDirection                                                     -
+ * @property {Boolean} useSunDiffuseColorWithDynamicLights                           -
+ * @property {vec4} clearColor
  * @property {Boolean} display
- * @property {{}} visible
- * @property {Boolean} visible.lensflare
- * @property {Boolean} visible.objects
- * @property {Boolean} visible.planets
- * @property {Boolean} visible.fog
- * @property {Boolean} visible.clearColor
- * @property {Boolean} visible.nebula
- * @property {Array.<EveLensflare>} lensflares - Scene lensflares
- * @property {Array.<*>} objects - Scene objects
- * @property {Array.<EvePlanet>} planets - Scene planets
- * @property {number} nebulaIntensity - controls nebula intensity on scene objects
- * @property {vec4} ambientColor - unused
- * @property {null|Tw2Effect} backgroundEffect
- * @property {number} backgroundRenderingEnabled - Toggles background effect visibility
- * @property {vec3} endMapScaling - controls the scale of the environment maps
- * @property {quat} envMapRotation - controls the rotation of the environment maps
- * @property {Boolean} logEnabled - toggles LOD
- * @property {number} fogStart - fog start distance
- * @property {number} fogEnd - fog end distance
- * @property {number} fogMax - fog maximum opacity
- * @property {number} fogType - fog blend type
- * @property {number} fogBlur - fog blur mode
- * @property {vec4} fogColor - fog color
- * @property {vec3} sunDirection - the direction of the scene sun
- * @property {vec4} sunDiffuseColor - the colour of the light from the sun
- * @property {String} envMapResPath - nebula reflection map path
- * @property {String} envMap1ResPath - nebula diffuse map path
- * @property {String} envMap2ResPath - nebular blur map path
- * @property {String} envMap3ResPath - unused
- * @property {null|Tw2TextureRes} envMapRes
- * @property {null|Tw2TextureRes} envMap1Res
- * @property {null|Tw2TextureRes} envMap2Res
- * @property {null} envMap3Res - unused
- * @property {Tw2BatchAccumulator} _batches - Scene batch accumulator
+ * @property {vec3} envMapScaling
+ * @property {Number} fogBlur
+ * @property {Number} fogType
+ * @property {Array.<EveLensflare>} lensflares
+ * @property {mat4} localTransform
+ * @property {Array.<EvePlanet>} planets
+ * @property {Tr2PostProcess} postProcess
+ * @property {*} visible
+ * @property {*} debugHelper
+ * @property {Tw2BatchAccumulator} _batches
+ * @property {Tw2Frustum} _frustum
+ * @property {Boolean} _lodEnabled
  * @property {Tw2RawData} _perFrameVS
  * @property {Tw2RawData} _perFramePS
- * @property {Boolean} renderDebugInfo
- * @property {*} _debugHelper
- * @class
+ * @property {Tw2TextureRes} _envMapRes
+ * @property {Tw2TextureRes} _envMap1Res
+ * @property {Tw2TextureRes} _envMap1Res
  */
 
 let EveSpaceScene =
 /*#__PURE__*/
-function () {
+function (_Tw2BaseClass) {
+  _inherits(EveSpaceScene, _Tw2BaseClass);
+
+  // ccp
+  //ccpwgl
+  // Should this come from the background effect?
+  //shadowEffect = null;
+
+  /**
+   * Constructor
+   */
   function EveSpaceScene() {
+    var _this;
+
     _classCallCheck(this, EveSpaceScene);
 
-    this._id = _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
-    this.name = "";
-    this.display = true;
-    this.visible = {};
-    this.visible.lensflares = true;
-    this.visible.objects = true;
-    this.visible.planets = true;
-    this.visible.fog = true;
-    this.visible.clearColor = true;
-    this.visible.environmentReflection = true;
-    this.visible.environmentDiffuse = true;
-    this.visible.environmentBlur = true;
-    Object.defineProperty(this.visible, "environment", {
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveSpaceScene).call(this));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "ambientColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.25, 0.25, 0.25, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "backgroundEffect", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "backgroundObjects", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "backgroundRenderingEnabled", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "enableShadows", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMap1ResPath", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMap2ResPath", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMapResPath", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMapRotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "externalParameters", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.25, 0.25, 0.25, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogEnd", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogMax", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogStart", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "nebulaIntensity", 1);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "objects", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "postProcessPath", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selfShadowOnly", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shLightingManager", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowFadeThreshold", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shadowThreshold", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "starfield", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sunDiffuseColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sunDiffuseColorWithDynamicLights", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sunDirection", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, -1, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "useSunDiffuseColorWithDynamicLights", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "clearColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "envMapScaling", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogBlur", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "fogType", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lensflares", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "localTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "planets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "postProcess", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "visible", {
+      backgroundObjects: true,
+      clearColor: true,
+      debug: false,
+      //environment: true,
+      environmentReflection: true,
+      environmentDiffuse: true,
+      environmentBlur: true,
+      fog: true,
+      lensflares: true,
+      objects: true,
+      planets: true,
+      post: true,
+      //shadow: true,
+      starField: true
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_debugHelper", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_batches", new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_frustum", new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Frustum"]());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_lodEnabled", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_perFrameVS", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.vs));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_perFramePS", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.ps));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_envMapRes", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_envMap1Res", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_envMap2Res", null);
+
+    Object.defineProperty(_this.visible, "environment", {
       get: () => {
-        return this.backgroundRenderingEnabled;
+        return _this.backgroundRenderingEnabled;
       },
       set: bool => {
-        this.backgroundRenderingEnabled = bool ? 1 : 0;
+        _this.backgroundRenderingEnabled = bool ? 1 : 0;
       }
     });
-    this.curveSets = [];
-    this.lensflares = [];
-    this.objects = [];
-    this.planets = [];
-    this.nebulaIntensity = 1;
-    this.ambientColor = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].fromValues(0.25, 0.25, 0.25, 1);
-    this.backgroundEffect = null;
-    this.backgroundRenderingEnabled = 1;
-    this.clearColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
-    this.lodEnabled = false;
-    this.fogStart = 0;
-    this.fogEnd = 0;
-    this.fogMax = 0;
-    this.fogType = 0;
-    this.fogBlur = 0;
-    this.fogColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.25, 0.25, 0.25, 1);
-    this.sunDirection = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, -1, 1);
-    this.sunDiffuseColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
-    this.envMapScaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.envMapRotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.envMapResPath = "";
-    this.envMap1ResPath = "";
-    this.envMap2ResPath = "";
-    this.envMap3ResPath = "";
-    this.envMapRes = null;
-    this.envMap1Res = null;
-    this.envMap2Res = null;
-    this.envMap3Res = null;
-    this.renderDebugInfo = false;
-    this._debugHelper = null;
-    this._batches = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
-    this._perFrameVS = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.vs);
-    this._perFramePS = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.ps);
+    Object.defineProperty(_this.visible, "shadow", {
+      get: () => {
+        return _this.enableShadows;
+      },
+      set: bool => {
+        _this.enableShadows = bool ? 1 : 0;
+      }
+    });
     EveSpaceScene.init();
+    return _this;
   }
   /**
    * Initializes the space scene
@@ -33405,7 +31247,10 @@ function () {
       this.SetEnvMapPath(0, this.envMapResPath);
       this.SetEnvMapPath(1, this.envMap1ResPath);
       this.SetEnvMapPath(2, this.envMap2ResPath);
-      this.SetEnvMapPath(3, this.envMap3ResPath);
+
+      if (this.postProcessPath) {
+        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(this.postProcessPath, obj => this.postProcess = obj);
+      }
     }
     /**
      * Sets the environment's reflection map
@@ -33445,7 +31290,9 @@ function () {
 
   }, {
     key: "SetEnvMapPath",
-    value: function SetEnvMapPath(index, path) {
+    value: function SetEnvMapPath(index) {
+      let path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+
       const _setEnvPath = (path, pathTarget, resTarget) => {
         path = path.toLowerCase();
         this[pathTarget] = path;
@@ -33456,19 +31303,15 @@ function () {
       switch (index) {
         case 0:
           // Reflection
-          return _setEnvPath(path, "envMapResPath", "envMapRes");
+          return _setEnvPath(path, "envMapResPath", "_envMapRes");
 
         case 1:
           // Diffuse
-          return _setEnvPath(path, "envMap1ResPath", "envMap1Res");
+          return _setEnvPath(path, "envMap1ResPath", "_envMap1Res");
 
         case 2:
           // Blur
-          return _setEnvPath(path, "envMap2ResPath", "envMap2Res");
-
-        case 3:
-          // Unused
-          return _setEnvPath(path, "envMap3ResPath", "envMap3Res");
+          return _setEnvPath(path, "envMap2ResPath", "_envMap2Res");
       }
 
       return false;
@@ -33481,7 +31324,7 @@ function () {
   }, {
     key: "EnableLod",
     value: function EnableLod(enable) {
-      this.lodEnabled = enable;
+      this._lodEnabled = enable;
 
       if (!enable) {
         for (let i = 0; i < this.objects.length; ++i) {
@@ -33521,14 +31364,12 @@ function () {
         this.lensflares[i].GetResources(out);
       }
 
-      if (this.backgroundEffect) {
-        this.backgroundEffect.GetResources(out);
-      }
-
-      if (this.envMapRes && !out.includes(this.envMapRes)) out.push(this.envMapRes);
-      if (this.envMap1Res && !out.includes(this.envMap1Res)) out.push(this.envMapRes);
-      if (this.envMap2Res && !out.includes(this.envMap2Res)) out.push(this.envMapRes);
-      if (this.envMap3Res && !out.includes(this.envMap3Res)) out.push(this.envMapRes);
+      if (this.backgroundEffect) this.backgroundEffect.GetResources(out);
+      if (this.postEffect) this.postEffect.GetResources(out);
+      if (this.starfield) this.starfield.GetResources(out);
+      if (this._envMapRes && !out.includes(this._envMapRes)) out.push(this._envMapRes);
+      if (this._envMap1Res && !out.includes(this._envMap1Res)) out.push(this._envMapRes);
+      if (this._envMap2Res && !out.includes(this._envMap2Res)) out.push(this._envMapRes);
 
       if (!excludeChildren) {
         for (let i = 0; i < this.planets.length; i++) {
@@ -33538,6 +31379,12 @@ function () {
         for (let i = 0; i < this.objects.length; i++) {
           if ("GetResources" in this.objects[i]) {
             this.objects[i].GetResources(out);
+          }
+        }
+
+        for (let i = 0; i < this.backgroundObjects.length; i++) {
+          if ("GetResources" in this.backgroundObjects[i]) {
+            this.backgroundObjects[i].GetResources(out);
           }
         }
       }
@@ -33567,6 +31414,19 @@ function () {
           this.objects[i].Update(dt);
         }
       }
+
+      for (let i = 0; i < this.backgroundObjects.length; ++i) {
+        if ("Update" in this.backgroundObjects[i]) {
+          this.backgroundObjects[i].Update(dt);
+        }
+      }
+      /*
+      if (this.starField)
+      {
+          this.starField.Update(dt);
+      }
+      */
+
     }
     /**
      * Gets batches for rendering
@@ -33588,15 +31448,16 @@ function () {
     }
     /**
      * Updates children's view dependent data and renders them
+     * @param {Number} dt - deltaTime
      */
 
   }, {
     key: "Render",
-    value: function Render() {
+    value: function Render(dt) {
       this.ApplyPerFrameData();
       const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
             g = EveSpaceScene.global,
-            id = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_ID),
+            id = this.localTransform,
             show = this.visible;
 
       if (show["environment"] && this.backgroundEffect) {
@@ -33616,7 +31477,7 @@ function () {
 
         for (let i = 0; i < this.planets.length; ++i) {
           if (this.planets[i].UpdateViewDependentData) {
-            this.planets[i].UpdateViewDependentData(id);
+            this.planets[i].UpdateViewDependentData(id, dt);
           }
         }
 
@@ -33635,18 +31496,24 @@ function () {
         d.gl.depthRange(0, 0.9);
       }
 
-      if (this.lodEnabled) {
-        g.frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
+      if (this._lodEnabled) {
+        this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
 
         for (let i = 0; i < this.objects.length; ++i) {
           if (this.objects[i].UpdateLod) {
-            this.objects[i].UpdateLod(g.frustum);
+            this.objects[i].UpdateLod(this._frustum);
+          }
+        }
+
+        for (let i = 0; i < this.backgroundObjects.length; i++) {
+          if (this.backgroundObjects[i].UpdateLod) {
+            this.backgroundObjects[i].UpdateLod(this._frustum);
           }
         }
 
         for (let i = 0; i < this.planets.length; ++i) {
           if (this.planets[i].UpdateLod) {
-            this.planets[i].UpdateLod(g.frustum);
+            this.planets[i].UpdateLod(this._frustum);
           }
         }
       }
@@ -33654,7 +31521,15 @@ function () {
       if (show.objects) {
         for (let i = 0; i < this.objects.length; ++i) {
           if (this.objects[i].UpdateViewDependentData) {
-            this.objects[i].UpdateViewDependentData(id);
+            this.objects[i].UpdateViewDependentData(id, dt);
+          }
+        }
+      }
+
+      if (show.backgroundObjects) {
+        for (let i = 0; i < this.backgroundObjects.length; i++) {
+          if (this.backgroundObjects[i].UpdateViewDependentData) {
+            this.backgroundObjects[i].UpdateViewDependentData(id, dt);
           }
         }
       }
@@ -33677,7 +31552,14 @@ function () {
         this.RenderBatches(d.RM_OPAQUE, this.objects);
         this.RenderBatches(d.RM_DECAL, this.objects);
         this.RenderBatches(d.RM_TRANSPARENT, this.objects);
-        this.RenderBatches(d.RM_ADDITIVE, this.objects);
+        this.RenderBatches(d.RM_ADDITIVE, this.objects); //this.RenderBatches(d.RM_DISTORTION, this.objects);
+      }
+
+      if (show.backgroundObjects) {
+        this.RenderBatches(d.RM_OPAQUE, this.backgroundObjects);
+        this.RenderBatches(d.RM_DECAL, this.backgroundObjects);
+        this.RenderBatches(d.RM_TRANSPARENT, this.backgroundObjects);
+        this.RenderBatches(d.RM_ADDITIVE, this.backgroundObjects); //this.RenderBatched(d.RM_DISTORTION, this.baackgroundObjects);
       }
 
       if (show.lensflares) {
@@ -33694,7 +31576,13 @@ function () {
         }
       }
 
-      if (this.renderDebugInfo) {
+      if (this.postProcess) {// TODO: Implement post processing
+      }
+
+      if (this.starfield) {// TODO: Implement starfield
+      }
+
+      if (show.debug) {
         if (EveSpaceScene.DebugRenderer) {
           if (!this._debugHelper) {
             this._debugHelper = new EveSpaceScene.DebugRenderer();
@@ -33721,7 +31609,8 @@ function () {
             g = EveSpaceScene.global,
             envMapTransform = g.mat4_2,
             sunDir = g.vec3_0,
-            show = this.visible;
+            show = this.visible; // Todo: Update from local transform??
+
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(envMapTransform, this.envMapRotation);
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(envMapTransform, envMapTransform, this.envMapScaling);
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(envMapTransform, envMapTransform);
@@ -33762,14 +31651,12 @@ function () {
       ps.Get("ProjectionToView")[0] = -d.projection[14];
       ps.Get("ProjectionToView")[1] = -d.projection[10] - 1;
       d.perFramePSData = ps;
-      const envMap = this.envMapRes && show.environmentReflection ? this.envMapRes : g.emptyTexture,
-            envMap1 = this.envMap1Res && show.environmentDiffuse ? this.envMap1Res : g.emptyTexture,
-            envMap2 = this.envMap2Res && show.environmentBlur ? this.envMap2Res : g.emptyTexture,
-            envMap3 = this.envMap3Res ? this.envMap3Res : g.emptyTexture;
+      const envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : g.emptyTexture,
+            envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : g.emptyTexture,
+            envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : g.emptyTexture;
       _global__WEBPACK_IMPORTED_MODULE_0__["store"].GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
       _global__WEBPACK_IMPORTED_MODULE_0__["store"].GetVariable("EnvMap1").SetTextureRes(envMap1);
       _global__WEBPACK_IMPORTED_MODULE_0__["store"].GetVariable("EnvMap2").SetTextureRes(envMap2);
-      _global__WEBPACK_IMPORTED_MODULE_0__["store"].GetVariable("EnvMap3").SetTextureRes(envMap3);
     }
     /**
      * Initializes class global and scratch variables
@@ -33785,8 +31672,6 @@ function () {
           mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
           mat4_1: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
           mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-          mat4_ID: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-          frustum: new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Frustum"](),
           emptyTexture: _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource("res:/texture/global/black.dds.0.png")
         };
       }
@@ -33799,7 +31684,7 @@ function () {
   }]);
 
   return EveSpaceScene;
-}();
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
 _defineProperty(EveSpaceScene, "perFrameData", {
   ps: [["ViewInverseTransposeMat", 16], ["ViewMat", 16], ["EnvMapRotationMat", 16], ["SunData.DirWorld", 4], ["SunData.DiffuseColor", 4], ["SceneData.AmbientColor", 3], ["SceneData.NebulaIntensity", 1], ["SceneData.FogColor", 4], ["ViewportOffset", 2], ["ViewportSize", 2], ["TargetResolution", 4], ["ShadowMapSettings", 4], ["ShadowCameraRange", 4], ["ProjectionToView", 2], ["FovXY", 2], ["MiscSettings", 4]],
@@ -33809,6 +31694,43 @@ _defineProperty(EveSpaceScene, "perFrameData", {
 _defineProperty(EveSpaceScene, "global", null);
 
 _defineProperty(EveSpaceScene, "DebugRenderer", window["Tw2DebugRenderer"] || null);
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpaceScene, Type => {
+  return {
+    isStaging: true,
+    type: "EveSpaceScene",
+    props: {
+      ambientColor: Type.RGBA_LINEAR,
+      backgroundEffect: ["Tw2Effect"],
+      backgroundObjects: [["EveTransform"]],
+      backgroundRenderingEnabled: Type.BOOLEAN,
+      curveSets: [["Tw2CurveSet"]],
+      enableShadows: Type.BOOLEAN,
+      envMap1ResPath: Type.PATH,
+      envMap2ResPath: Type.PATH,
+      envMapResPath: Type.PATH,
+      envMapRotation: Type.TR_ROTATION,
+      externalParameters: [["Tr2ExternalParameter"]],
+      fogColor: Type.RGBA_LINEAR,
+      fogEnd: Type.NUMBER,
+      fogMax: Type.NUMBER,
+      fogStart: Type.NUMBER,
+      nebulaIntensity: Type.NUMBER,
+      objects: [["EveEffectRoot2", "EveRootTransform", "EveShip2", "EveStation2", "EveTransform"]],
+      postProcessPath: Type.PATH,
+      selfShadowOnly: Type.BOOLEAN,
+      shLightingManager: ["Tr2ShLightingManager"],
+      shadowFadeThreshold: Type.NUMBER,
+      shadowThreshold: Type.NUMBER,
+      starfield: ["EveStarfield"],
+      sunDiffuseColor: Type.RGBA_LINEAR,
+      sunDiffuseColorWithDynamicLights: Type.RGBA_LINEAR,
+      sunDirection: Type.VECTOR3,
+      useSunDiffuseColorWithDynamicLights: Type.BOOLEAN
+    },
+    notImplemented: ["externalParameters", "selfShadowOnly", "shLightingManager", "shadowFadeThreshold", "shadowThreshold", "starField", "sunDiffuseColorWithDynamicLights", "postProcess"]
+  };
+});
 
 /***/ }),
 
@@ -33956,7 +31878,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * Todo: Implement
  * @ccp EveChildBulletStorm
  *
- * @property {Tr2Effect} effect        -
+ * @property {Tw2Effect} effect        -
  * @property {Number} multiplier       -
  * @property {Number} range            -
  * @property {String} sourceLocatorSet -
@@ -34045,7 +31967,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @ccp EveChildCloud
  *
  * @property {Number} cellScreenSize      -
- * @property {Tr2Effect} effect           -
+ * @property {Tw2Effect} effect           -
  * @property {Number} preTesselationLevel -
  * @property {quat} rotation              -
  * @property {vec3} scaling               -
@@ -35032,7 +32954,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *
  * @property {Number} brightness        -
  * @property {vec4} color               -
- * @property {Tr2Effect} effect         -
+ * @property {Tw2Effect} effect         -
  * @property {mat4} localTransform      -
  * @property {Number} minScreenSize     -
  * @property {quat} rotation            -
@@ -35086,7 +33008,7 @@ _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild"].define(EveChildQuad, Type => 
     props: {
       brightness: Type.NUMBER,
       color: Type.RGBA_LINEAR,
-      effect: ["Tr2Effect"],
+      effect: ["Tw2Effect"],
       localTransform: Type.TR_LOCAL,
       minScreenSize: Type.NUMBER,
       rotation: Type.TR_ROTATION,
@@ -36308,12 +34230,12 @@ _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"].define(EveMeshOverlayEffect
   return {
     type: "EveMeshOverlayEffect",
     props: {
-      additiveEffects: [["Tr2Effect"]],
+      additiveEffects: [["Tw2Effect"]],
       curveSet: ["TriCurveSet"],
-      distortionEffects: [["Tr2Effect"]],
+      distortionEffects: [["Tw2Effect"]],
       display: Type.BOOLEAN,
-      opaqueEffects: [["Tr2Effect"]],
-      transparentEffects: [["Tr2Effect"]],
+      opaqueEffects: [["Tw2Effect"]],
+      transparentEffects: [["Tw2Effect"]],
       update: Type.BOOLEAN,
       visible: Type.PLAIN
     },
@@ -36581,7 +34503,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * EveStarfield
  * TODO: Implement
  *
- * @property {Tr2Effect} effect         -
+ * @property {Tw2Effect} effect         -
  * @property {Number} maxDist           -
  * @property {Number} maxFlashRate      -
  * @property {Number} minDist           -
@@ -36635,7 +34557,7 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveStarfield, 
     isStaging: true,
     type: "EveStarfield",
     props: {
-      effect: ["Tr2Effect"],
+      effect: ["Tw2Effect"],
       maxDist: Type.NUMBER,
       maxFlashRate: Type.NUMBER,
       minDist: Type.NUMBER,
@@ -37066,7 +34988,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * EveStretch2
  * TODO: Implement
  *
- * @property {Tr2Effect} effect -
+ * @property {Tw2Effect} effect -
  * @property {TriCurveSet} loop -
  * @property {Number} quadCount -
  */
@@ -37105,7 +35027,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveStretch2, Type =>
     isStaging: true,
     type: "EveStretch2",
     props: {
-      effect: ["Tr2Effect"],
+      effect: ["Tw2Effect"],
       loop: ["TriCurveSet"],
       quadCount: Type.NUMBER
     },
@@ -37671,7 +35593,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37812,11 +35734,25 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
 
-/* harmony import */ var _EveSpaceScene__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSpaceScene */ "./eve/EveSpaceScene.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _EveSpaceScene__WEBPACK_IMPORTED_MODULE_4__["EveSpaceScene"]; });
+/* harmony import */ var _planetaryInteraction__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./planetaryInteraction */ "./eve/planetaryInteraction/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _planetaryInteraction__WEBPACK_IMPORTED_MODULE_4__["EveConnector"]; });
 
-/* harmony import */ var _EveSOF__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSOF */ "./eve/EveSOF.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_5__["EveSOF"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _planetaryInteraction__WEBPACK_IMPORTED_MODULE_4__["EveLocalPositionCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _planetaryInteraction__WEBPACK_IMPORTED_MODULE_4__["EveSpherePin"]; });
+
+/* harmony import */ var _userInterface__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./userInterface */ "./eve/userInterface/index.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _sof_EveSOF__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../sof/EveSOF */ "./sof/EveSOF.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return _sof_EveSOF__WEBPACK_IMPORTED_MODULE_6__["EveSOF"]; });
+
+/* harmony import */ var _EveCamera__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveCamera */ "./eve/EveCamera.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return _EveCamera__WEBPACK_IMPORTED_MODULE_7__["EveCamera"]; });
+
+/* harmony import */ var _EveSpaceScene__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EveSpaceScene */ "./eve/EveSpaceScene.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _EveSpaceScene__WEBPACK_IMPORTED_MODULE_8__["EveSpaceScene"]; });
+
+
+
 
 
 
@@ -38736,7 +36672,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveBooster
  *
  * @property {Boolean} alwaysOn             -
  * @property {Number} alwaysOnIntensity     -
- * @property {Tr2Effect} effect             -
+ * @property {Tw2Effect} effect             -
  * @property {vec4} glowColor               -
  * @property {Number} glowScale             -
  * @property {EveSpriteSet} glows           -
@@ -38821,7 +36757,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveBoosterSet2
     props: {
       alwaysOn: Type.BOOLEAN,
       alwaysOnIntensity: Type.NUMBER,
-      effect: ["Tr2Effect"],
+      effect: ["Tw2Effect"],
       glowColor: Type.RGBA_LINEAR,
       glowScale: Type.NUMBER,
       glows: ["EveSpriteSet"],
@@ -39862,10 +37798,10 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveCurveLineSet, Typ
     props: {
       additive: Type.BOOLEAN,
       depthOffset: Type.NUMBER,
-      lineEffect: ["Tr2Effect"],
+      lineEffect: ["Tw2Effect"],
       lineWidthFactor: Type.NUMBER,
       pickable: Type.BOOLEAN,
-      pickEffect: ["Tr2Effect"],
+      pickEffect: ["Tw2Effect"],
       position: Type.TR_TRANSLATION,
       rotation: Type.TR_ROTATION,
       scaling: Type.TR_SCALING,
@@ -39918,7 +37854,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {quat} rotation        - Mask's rotation
  * @property {vec3} scaling         - Mask's scale
  * @property {vec4} targetMaterials - The target materials this mask is for
- * @property {mat4} transform       - Mask's transform
+ * @property {mat4} localTransform  - Mask's localTransform
  */
 
 let EveCustomMask =
@@ -39951,9 +37887,13 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isMirrored", false);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "localTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_dirty", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_index", -1);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_parentTransformLast", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_maskMatrix", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
@@ -39961,25 +37901,42 @@ function (_Tw2BaseClass) {
   }
 
   _createClass(EveCustomMask, [{
-    key: "OnValueChanged",
+    key: "Initialize",
 
+    /**
+     * Initializes the mask
+     */
+    value: function Initialize() {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
+    }
     /**
      * Fires on value changes
      */
+
+  }, {
+    key: "OnValueChanged",
     value: function OnValueChanged() {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._maskMatrix, this.transform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._maskMatrix, this._maskMatrix);
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
+      this._dirty = true;
     }
     /**
-     * Per frame update
+     * Updates the parent's per object data
+     * @param {mat4} parentTransform
      * @param {Tw2PerObjectData} perObjectData
-     * @param {Number} visible
+     * @param {Boolean} visible
      */
 
   }, {
-    key: "Update",
-    value: function Update(perObjectData, visible) {
+    key: "UpdatePerObjectData",
+    value: function UpdatePerObjectData(parentTransform, perObjectData, visible) {
+      if (this.display && visible && !_global__WEBPACK_IMPORTED_MODULE_0__["mat4"].equals(this._parentTransformLast, parentTransform)) {
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransformLast, parentTransform);
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._maskMatrix, parentTransform, this.localTransform);
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._maskMatrix, this._maskMatrix);
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._maskMatrix, this._maskMatrix);
+        this._dirty = false;
+      }
+
       const targets = this.display && visible ? this.targetMaterials : [0, 0, 0, 0];
       perObjectData.vs.Set("CustomMaskMatrix" + this._index, this._maskMatrix);
       perObjectData.vs.Set("CustomMaskData" + this._index, [1, this.isMirrored ? 1 : 0, 0, 0]);
@@ -40003,7 +37960,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveCustomMask, Type 
       rotation: Type.TR_ROTATION,
       scaling: Type.TR_SCALING,
       targetMaterials: Type.VECTOR4,
-      transform: Type.TR_LOCAL
+      localTransform: Type.TR_LOCAL
     }
   };
 });
@@ -40932,7 +38889,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EvePlaneSe
  * Todo: Implement "pickBufferID" (Assuming we will add picking)
  * @ccp EvePlaneSet
  *
- * @property {Tr2Effect} effect                -
+ * @property {Tw2Effect} effect                -
  * @property {Boolean} hideOnLowQuality        -
  * @property {Number} pickBufferID             -
  * @property {Array.<EveObjectSetItem>} planes -
@@ -41210,7 +39167,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EvePlaneSet, T
     type: "EvePlaneSet",
     category: "EveObjectSet",
     props: {
-      effect: ["Tr2Effect"],
+      effect: ["Tw2Effect"],
       hideOnLowQuality: Type.BOOLEAN,
       pickBufferID: Type.NUMBER,
       items: [["EvePlaneSetItem"]]
@@ -41262,7 +39219,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * we are going to convert this object back into a EveSOF object
  * @ccp EveSpaceObjectDecal
  *
- * @property {Tr2Effect} decalEffect           - Decal effect
+ * @property {Tw2Effect} decalEffect           - Decal effect
  * @property {Boolean} display                 - Toggles decal visibility
  * @property {TypedArray} indexBuffer          - Decal index buffer
  * @property {Number} groupIndex               - Decals SOF group index
@@ -41509,7 +39466,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpaceObjectDecal,
     type: "EveSpaceObjectDecal",
     category: "EveObjectItem",
     props: {
-      decalEffect: ["Tr2Effect"],
+      decalEffect: ["Tw2Effect"],
       display: Type.BOOLEAN,
       indexBuffer: Type.ARRAY,
       groupIndex: Type.NUMBER,
@@ -42031,8 +39988,8 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpotlightSet, Typ
   return {
     type: "EveSpotlightSet",
     props: {
-      coneEffect: ["Tr2Effect"],
-      glowEffect: ["Tr2Effect"],
+      coneEffect: ["Tw2Effect"],
+      glowEffect: ["Tw2Effect"],
       intensity: Type.NUMBER,
       spotlightItems: [["EveSpotlightSetItem"]]
     },
@@ -42481,7 +40438,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveSpriteS
  * Sprite set
  * @ccp EveSpriteSet
  *
- * @property {Tr2Effect} effect                 - The sprite set's effect
+ * @property {Tw2Effect} effect                 - The sprite set's effect
  * @property {Number} intensity                 - The sprite set's intensity
  * @property {Boolean} skinned                  - Use bone transforms (when useQuads is true)
  * @property {?Boolean} useQuads                - Use quad rendering (CPU transform)
@@ -42993,7 +40950,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveSpriteSet, 
   return {
     type: "EveSpriteSet",
     props: {
-      effect: ["Tr2Effect"],
+      effect: ["Tw2Effect"],
       intensity: Type.NUMBER,
       skinned: Type.BOOLEAN,
       sprites: [["EveSpriteSetItem"]],
@@ -43086,7 +41043,7 @@ function (_Tw2RenderBatch) {
  * Todo: Implement
  * @ccp EveTrailSet
  *
- * @property {Tr2Effect} effect           -
+ * @property {Tw2Effect} effect           -
  * @property {String} geometryResPath     -
  * @property {Boolean} display            -
  * @property {Tw2GeometryRes} geometryRes -
@@ -43217,7 +41174,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTrailsSet, Type =
     isStaging: true,
     props: {
       display: Type.BOOLEAN,
-      effect: ["Tr2Effect"],
+      effect: ["Tw2Effect"],
       geometryResPath: Type.PATH
     },
     notImplemented: ["*"]
@@ -43396,7 +41353,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"].define(EveTurretS
  * @property {Number} sysBonePitchMax                   -
  * @property {Number} sysBonePitchMin                   -
  * @property {Number} sysBonePitchOffset                -
- * @property {Tr2Effect} turretEffect                   -
+ * @property {Tw2Effect} turretEffect                   -
  * @property {Boolean} updatePitchPose                  -
  * @property {Boolean} useDynamicBounds                 -
  * @property {Boolean} useRandomFiringDelay             -
@@ -43870,9 +41827,9 @@ function (_EveObjectSet) {
 
   }, {
     key: "UpdateViewDependentData",
-    value: function UpdateViewDependentData() {
+    value: function UpdateViewDependentData(parentTransform, dt) {
       if (this.firingEffect) {
-        this.firingEffect.UpdateViewDependentData();
+        this.firingEffect.UpdateViewDependentData(parentTransform, dt);
       }
     }
     /**
@@ -44238,7 +42195,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveTurretSet, 
       sysBonePitchMax: Type.NUMBER,
       sysBonePitchMin: Type.NUMBER,
       sysBonePitchOffset: Type.NUMBER,
-      turretEffect: ["Tr2Effect"],
+      turretEffect: ["Tw2Effect"],
       updatePitchPose: Type.BOOLEAN,
       useDynamicBounds: Type.BOOLEAN,
       useRandomFiringDelay: Type.BOOLEAN
@@ -46678,6 +44635,497 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+/***/ }),
+
+/***/ "./eve/planetaryInteraction/EveConnector.js":
+/*!**************************************************!*\
+  !*** ./eve/planetaryInteraction/EveConnector.js ***!
+  \**************************************************/
+/*! exports provided: EveConnector */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return EveConnector; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * EveConnector
+ *
+ * @property {vec4} animationColor                -
+ * @property {Number} animationScale              -
+ * @property {Number} animationSpeed              -
+ * @property {vec4} color                         -
+ * @property {EveLocalPositionCurve} destObject   -
+ * @property {vec3} destPosition                  -
+ * @property {Boolean} isAnimated                 -
+ * @property {Number} lineWidth                   -
+ * @property {EveLocalPositionCurve} sourceObject -
+ * @property {Number} type                        -
+ */
+
+let EveConnector =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveConnector, _Tw2BaseClass);
+
+  function EveConnector() {
+    var _this;
+
+    _classCallCheck(this, EveConnector);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveConnector).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationScale", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animationSpeed", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "destObject", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "destPosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "isAnimated", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lineWidth", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sourceObject", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "type", 0);
+
+    return _this;
+  }
+
+  return EveConnector;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveConnector, Type => {
+  return {
+    isStaging: true,
+    type: "EveConnector",
+    props: {
+      animationColor: Type.RGBA_LINEAR,
+      animationScale: Type.NUMBER,
+      animationSpeed: Type.NUMBER,
+      color: Type.RGBA_LINEAR,
+      destObject: ["EveLocalPositionCurve"],
+      destPosition: Type.TR_TRANSLATION,
+      isAnimated: Type.BOOLEAN,
+      lineWidth: Type.NUMBER,
+      sourceObject: ["EveLocalPositionCurve"],
+      type: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./eve/planetaryInteraction/EveLocalPositionCurve.js":
+/*!***********************************************************!*\
+  !*** ./eve/planetaryInteraction/EveLocalPositionCurve.js ***!
+  \***********************************************************/
+/*! exports provided: EveLocalPositionCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return EveLocalPositionCurve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * EveLocalPositionCurve
+ *
+ * @property {vec3} value -
+ */
+
+let EveLocalPositionCurve =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveLocalPositionCurve, _Tw2BaseClass);
+
+  function EveLocalPositionCurve() {
+    var _this;
+
+    _classCallCheck(this, EveLocalPositionCurve);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveLocalPositionCurve).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    return _this;
+  }
+
+  return EveLocalPositionCurve;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveLocalPositionCurve, Type => {
+  return {
+    isStaging: true,
+    type: "EveLocalPositionCurve",
+    props: {
+      value: Type.VECTOR3
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./eve/planetaryInteraction/EveSpherePin.js":
+/*!**************************************************!*\
+  !*** ./eve/planetaryInteraction/EveSpherePin.js ***!
+  \**************************************************/
+/*! exports provided: EveSpherePin */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return EveSpherePin; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * EveSpherePin
+ *
+ * @property {vec3} centerNormal             -
+ * @property {vec4} color                    -
+ * @property {Array.<Tw2CurveSet>} curveSets -
+ * @property {Boolean} enablePicking         -
+ * @property {String} geometryResPath        -
+ * @property {vec4} pinColor                 -
+ * @property {Tw2Effect} pinEffect           -
+ * @property {Number} pinMaxRadius           -
+ * @property {Number} pinRadius              -
+ * @property {Number} pinRotation            -
+ * @property {Number} sortValueMultiplier    -
+ */
+
+let EveSpherePin =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveSpherePin, _Tw2BaseClass);
+
+  function EveSpherePin() {
+    var _this;
+
+    _classCallCheck(this, EveSpherePin);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveSpherePin).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "centerNormal", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "enablePicking", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "geometryResPath", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinEffect", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinMaxRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "pinRotation", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "sortValueMultiplier", 0);
+
+    return _this;
+  }
+
+  return EveSpherePin;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSpherePin, Type => {
+  return {
+    isStaging: true,
+    type: "EveSpherePin",
+    props: {
+      centerNormal: Type.VECTOR3,
+      color: Type.RGBA_LINEAR,
+      curveSets: [["Tw2CurveSet"]],
+      enablePicking: Type.BOOLEAN,
+      geometryResPath: Type.PATH,
+      pinColor: Type.RGBA_LINEAR,
+      pinEffect: ["Tw2Effect"],
+      pinMaxRadius: Type.NUMBER,
+      pinRadius: Type.NUMBER,
+      pinRotation: Type.NUMBER,
+      sortValueMultiplier: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./eve/planetaryInteraction/index.js":
+/*!*******************************************!*\
+  !*** ./eve/planetaryInteraction/index.js ***!
+  \*******************************************/
+/*! exports provided: EveConnector, EveLocalPositionCurve, EveSpherePin */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _EveConnector__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveConnector */ "./eve/planetaryInteraction/EveConnector.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _EveConnector__WEBPACK_IMPORTED_MODULE_0__["EveConnector"]; });
+
+/* harmony import */ var _EveLocalPositionCurve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveLocalPositionCurve */ "./eve/planetaryInteraction/EveLocalPositionCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _EveLocalPositionCurve__WEBPACK_IMPORTED_MODULE_1__["EveLocalPositionCurve"]; });
+
+/* harmony import */ var _EveSpherePin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSpherePin */ "./eve/planetaryInteraction/EveSpherePin.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _EveSpherePin__WEBPACK_IMPORTED_MODULE_2__["EveSpherePin"]; });
+
+
+
+
+
+/***/ }),
+
+/***/ "./eve/userInterface/EveTacticalOverlay.js":
+/*!*************************************************!*\
+  !*** ./eve/userInterface/EveTacticalOverlay.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveTacticalOverlay; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * EveTacticalOverlay
+ *
+ * @property {Tw2Effect} anchorEffect      -
+ * @property {Number} arcSegmentMultiplier -
+ * @property {Tw2Effect} connectorEffect   -
+ * @property {Number} segmentsHigh         -
+ * @property {Number} segmentsLow          -
+ * @property {Number} segmentsMedium       -
+ * @property {Number} targetMaxSegments    -
+ * @property {Tw2Effect} velocityEffect    -
+ */
+
+let EveTacticalOverlay =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveTacticalOverlay, _Tw2BaseClass);
+
+  function EveTacticalOverlay() {
+    var _this;
+
+    _classCallCheck(this, EveTacticalOverlay);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveTacticalOverlay).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "anchorEffect", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "arcSegmentMultiplier", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "connectorEffect", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "segmentsHigh", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "segmentsLow", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "segmentsMedium", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "targetMaxSegments", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "velocityEffect", null);
+
+    return _this;
+  }
+
+  return EveTacticalOverlay;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTacticalOverlay, Type => {
+  return {
+    isStaging: true,
+    type: "EveTacticalOverlay",
+    props: {
+      anchorEffect: ["Tw2Effect"],
+      arcSegmentMultiplier: Type.NUMBER,
+      connectorEffect: ["Tw2Effect"],
+      segmentsHigh: Type.NUMBER,
+      segmentsLow: Type.NUMBER,
+      segmentsMedium: Type.NUMBER,
+      targetMaxSegments: Type.NUMBER,
+      velocityEffect: ["Tw2Effect"]
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./eve/userInterface/EveUiObject.js":
+/*!******************************************!*\
+  !*** ./eve/userInterface/EveUiObject.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveUiObject; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * EveUiObject
+ *
+ * @property {Number} boundingSphereRadius -
+ * @property {Tr2Mesh} mesh                -
+ * @property {Number} modelScale           -
+ */
+
+let EveUiObject =
+/*#__PURE__*/
+function (_Tw2BaseClass) {
+  _inherits(EveUiObject, _Tw2BaseClass);
+
+  function EveUiObject() {
+    var _this;
+
+    _classCallCheck(this, EveUiObject);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveUiObject).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "modelScale", 0);
+
+    return _this;
+  }
+
+  return EveUiObject;
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+
+
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveUiObject, Type => {
+  return {
+    isStaging: true,
+    type: "EveUiObject",
+    props: {
+      boundingSphereRadius: Type.NUMBER,
+      mesh: ["Tr2Mesh"],
+      modelScale: Type.NUMBER
+    }
+  };
+});
+
+/***/ }),
+
+/***/ "./eve/userInterface/index.js":
+/*!************************************!*\
+  !*** ./eve/userInterface/index.js ***!
+  \************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _EveTacticalOverlay__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveTacticalOverlay */ "./eve/userInterface/EveTacticalOverlay.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _EveUiObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveUiObject */ "./eve/userInterface/EveUiObject.js");
+/* empty/unused harmony star reexport */
 
 
 /***/ }),
@@ -52467,7 +50915,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: util, consts, Tw2BaseClass, Tw2EventEmitter, Tw2Schema, device, resMan, store, logger, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve */
+/*! exports provided: Tw2BaseClass, Tw2EventEmitter, Tw2Schema, util, consts, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, device, resMan, store, logger, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55237,7 +53685,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSpaceScene, EveSOF, Tw2ParticleSystem, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: math, util, device, store, resMan, logger, consts, staging, useStaging, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, Tw2ParticleSystem, Tr2Model, EveSOFData, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveObject, EveEffectRoot, EveMissileWarhead, EveMissile, EvePlanet, EveShip, EveSpaceObject, EveStation, EveTransform, EveBanner, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionDecal, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecal, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55606,9 +54054,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePerMuzzleData", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EvePerMuzzleData"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceScene"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSOF"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveCamera"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceScene"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildBulletStorm", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildBulletStorm"]; });
 
@@ -55712,6 +54162,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveTurretSet"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveConnector"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveLocalPositionCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpherePin"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildBillboard", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildBillboard"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierAttachToBone", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildModifierAttachToBone"]; });
@@ -55768,8 +54224,162 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SphereShapeAttributeGenerator", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2SphereShapeAttributeGenerator"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Model", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["Tr2Model"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2IntSkinnedObject", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["Tr2IntSkinnedObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SkinnedModel", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["Tr2SkinnedModel"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorLightSource", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["Tr2InteriorLightSource"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2KelvinColor", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["Tr2KelvinColor"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorPlaceable", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["Tr2InteriorPlaceable"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorScene", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["Tr2InteriorScene"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WodPlaceableRes", function() { return _interior__WEBPACK_IMPORTED_MODULE_5__["WodPlaceableRes"]; });
+
+/* empty/unused harmony star reexport *//* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFData"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFaction", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataFaction"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionChild", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataFactionChild"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataFactionColorSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionDecal", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataFactionDecal"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionPlaneSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataFactionPlaneSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionSpotlightSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataFactionSpotlightSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionVisibilityGroupSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataFactionVisibilityGroupSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGeneric", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGeneric"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDamage", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericDamage"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDecalShader", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericDecalShader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericHullDamage", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericHullDamage"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericShader", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericShader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericString", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericString"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericSwarm", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericSwarm"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericVariant", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericVariant"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHull", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHull"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullAnimation", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullAnimation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullArea", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullArea"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBanner", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullBanner"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBooster", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullBooster"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBoosterItem", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullBoosterItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullChild"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullController", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullController"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecal", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullDecal"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullHazeSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSetItem", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullHazeSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullLocator"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullLocatorSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullPlaneSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullPlaneSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullSpotlightSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullSpotlightSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullSpriteLineSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullSpriteLineSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullSpriteSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullSpriteSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPattern", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPattern"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternLayer", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternLayer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternPerHull", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternPerHull"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternTransform", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataPatternTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRace", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataRace"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRaceDamage", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataRaceDamage"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataArea"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataAreaMaterial", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataAreaMaterial"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBooster", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataBooster"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBoosterShape", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataBoosterShape"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataInstancedMesh", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataInstancedMesh"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataMaterial", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataMaterial"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataParameter", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataParameter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTexture", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataTexture"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTransform", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachine", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2StateMachine"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineState", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2StateMachineState"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineTransition", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2StateMachineTransition"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SyncToAnimation", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2SyncToAnimation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateCurveSet", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionAnimateCurveSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateValue", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionAnimateValue"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionChildEffect", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionChildEffect"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionOverlay", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionOverlay"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayCurveSet", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionPlayCurveSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayMeshAnimation", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionPlayMeshAnimation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionResetClipSphereCenter", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionResetClipSphereCenter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionSetValue", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ActionSetValue"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Controller", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2Controller"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerReference", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ControllerReference"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return _state__WEBPACK_IMPORTED_MODULE_8__["Tr2ControllerFloatVariable"]; });
+
 /* harmony import */ var _staging__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./.staging */ "./.staging/index.js");
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "staging", function() { return _staging__WEBPACK_IMPORTED_MODULE_10__; });
+
+
+
+
 
 
 
@@ -55882,13 +54492,13 @@ function useStaging(name) {
 /*!******************************!*\
   !*** ./interior/Tr2Model.js ***!
   \******************************/
-/*! exports provided: default */
+/*! exports provided: Tr2Model */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2Model; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2Model", function() { return Tr2Model; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -55934,10 +54544,8 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2Model;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Model, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Model, Type => {
   return {
     isStaging: true,
     type: "Tr2Model",
@@ -55953,13 +54561,13 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Model, Type
 /*!***************************************************!*\
   !*** ./interior/character/Tr2IntSkinnedObject.js ***!
   \***************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2IntSkinnedObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2IntSkinnedObject; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2IntSkinnedObject", function() { return Tr2IntSkinnedObject; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -56011,10 +54619,8 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2IntSkinnedObject;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2IntSkinnedObject, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2IntSkinnedObject, Type => {
   return {
     isStaging: true,
     type: "Tr2IntSkinnedObject",
@@ -56033,13 +54639,13 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2IntSkinnedO
 /*!***********************************************!*\
   !*** ./interior/character/Tr2SkinnedModel.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2SkinnedModel */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2SkinnedModel; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2SkinnedModel", function() { return Tr2SkinnedModel; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -56091,10 +54697,8 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2SkinnedModel;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2SkinnedModel, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2SkinnedModel, Type => {
   return {
     isStaging: true,
     type: "Tr2SkinnedModel",
@@ -56119,12 +54723,10 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2SkinnedMode
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2IntSkinnedObject__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2IntSkinnedObject */ "./interior/character/Tr2IntSkinnedObject.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2IntSkinnedObject", function() { return _Tr2IntSkinnedObject__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2IntSkinnedObject", function() { return _Tr2IntSkinnedObject__WEBPACK_IMPORTED_MODULE_0__["Tr2IntSkinnedObject"]; });
 
 /* harmony import */ var _Tr2SkinnedModel__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2SkinnedModel */ "./interior/character/Tr2SkinnedModel.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SkinnedModel", function() { return _Tr2SkinnedModel__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SkinnedModel", function() { return _Tr2SkinnedModel__WEBPACK_IMPORTED_MODULE_1__["Tr2SkinnedModel"]; });
 
 
 
@@ -56158,8 +54760,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WodPlaceableRes", function() { return _scene__WEBPACK_IMPORTED_MODULE_2__["WodPlaceableRes"]; });
 
 /* harmony import */ var _Tr2Model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2Model */ "./interior/Tr2Model.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Model", function() { return _Tr2Model__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Model", function() { return _Tr2Model__WEBPACK_IMPORTED_MODULE_3__["Tr2Model"]; });
 
 
 
@@ -56172,13 +54773,13 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************************************!*\
   !*** ./interior/lighting/Tr2InteriorLightSource.js ***!
   \*****************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2InteriorLightSource */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2InteriorLightSource; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorLightSource", function() { return Tr2InteriorLightSource; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -56229,13 +54830,13 @@ function (_Tw2BaseClass) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Tr2InteriorLightSource).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "coneAlphaInner", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "coneAlphaOuter", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "coneDirection", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "coneDirection", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "falloff", 0);
 
@@ -56245,7 +54846,7 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "kelvinColor", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
 
@@ -56255,10 +54856,8 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2InteriorLightSource;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorLightSource, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorLightSource, Type => {
   return {
     isStaging: true,
     type: "Tr2InteriorLightSource",
@@ -56285,13 +54884,13 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorLig
 /*!*********************************************!*\
   !*** ./interior/lighting/Tr2KelvinColor.js ***!
   \*********************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2KelvinColor */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2KelvinColor; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2KelvinColor", function() { return Tr2KelvinColor; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -56340,10 +54939,8 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2KelvinColor;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2KelvinColor, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2KelvinColor, Type => {
   return {
     isStaging: true,
     type: "Tr2KelvinColor",
@@ -56367,12 +54964,10 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2KelvinColor
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2InteriorLightSource__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2InteriorLightSource */ "./interior/lighting/Tr2InteriorLightSource.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorLightSource", function() { return _Tr2InteriorLightSource__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorLightSource", function() { return _Tr2InteriorLightSource__WEBPACK_IMPORTED_MODULE_0__["Tr2InteriorLightSource"]; });
 
 /* harmony import */ var _Tr2KelvinColor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2KelvinColor */ "./interior/lighting/Tr2KelvinColor.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2KelvinColor", function() { return _Tr2KelvinColor__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2KelvinColor", function() { return _Tr2KelvinColor__WEBPACK_IMPORTED_MODULE_1__["Tr2KelvinColor"]; });
 
 
 
@@ -56383,13 +54978,13 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************************!*\
   !*** ./interior/scene/Tr2InteriorPlaceable.js ***!
   \************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2InteriorPlaceable */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2InteriorPlaceable; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorPlaceable", function() { return Tr2InteriorPlaceable; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -56438,10 +55033,8 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2InteriorPlaceable;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorPlaceable, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorPlaceable, Type => {
   return {
     isStaging: true,
     type: "Tr2InteriorPlaceable",
@@ -56459,13 +55052,13 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorPla
 /*!********************************************!*\
   !*** ./interior/scene/Tr2InteriorScene.js ***!
   \********************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2InteriorScene */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2InteriorScene; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorScene", function() { return Tr2InteriorScene; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -56514,10 +55107,8 @@ function (_Tw2BaseClass) {
   }
 
   return Tr2InteriorScene;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorScene, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorScene, Type => {
   return {
     isStaging: true,
     type: "Tr2InteriorScene",
@@ -56535,13 +55126,13 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2InteriorSce
 /*!*******************************************!*\
   !*** ./interior/scene/WodPlaceableRes.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: WodPlaceableRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return WodPlaceableRes; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WodPlaceableRes", function() { return WodPlaceableRes; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
@@ -56593,10 +55184,8 @@ function (_Tw2BaseClass) {
   }
 
   return WodPlaceableRes;
-}(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
-_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(WodPlaceableRes, Type => {
+}(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
+_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(WodPlaceableRes, Type => {
   return {
     isStaging: true,
     type: "WodPlaceableRes",
@@ -56621,16 +55210,13 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(WodPlaceableRe
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2InteriorPlaceable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2InteriorPlaceable */ "./interior/scene/Tr2InteriorPlaceable.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorPlaceable", function() { return _Tr2InteriorPlaceable__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorPlaceable", function() { return _Tr2InteriorPlaceable__WEBPACK_IMPORTED_MODULE_0__["Tr2InteriorPlaceable"]; });
 
 /* harmony import */ var _Tr2InteriorScene__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2InteriorScene */ "./interior/scene/Tr2InteriorScene.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorScene", function() { return _Tr2InteriorScene__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorScene", function() { return _Tr2InteriorScene__WEBPACK_IMPORTED_MODULE_1__["Tr2InteriorScene"]; });
 
 /* harmony import */ var _WodPlaceableRes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WodPlaceableRes */ "./interior/scene/WodPlaceableRes.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WodPlaceableRes", function() { return _WodPlaceableRes__WEBPACK_IMPORTED_MODULE_2__["default"]; });
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WodPlaceableRes", function() { return _WodPlaceableRes__WEBPACK_IMPORTED_MODULE_2__["WodPlaceableRes"]; });
 
 
 
@@ -60481,16 +59067,1041 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./sof/EveSOFData.js":
-/*!***************************!*\
-  !*** ./sof/EveSOFData.js ***!
-  \***************************/
-/*! exports provided: default */
+/***/ "./sof/EveSOF.js":
+/*!***********************!*\
+  !*** ./sof/EveSOF.js ***!
+  \***********************/
+/*! exports provided: EveSOF */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return EveSOF; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var _curve_legacy__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../curve/legacy */ "./curve/legacy/index.js");
+/* harmony import */ var _core_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../core/index */ "./core/index.js");
+/* harmony import */ var _eve__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../eve */ "./eve/index.js");
+
+
+
+
+function EveSOF() {
+  var data = null;
+  var spriteEffect = null;
+
+  function _get(obj, property, defaultValue) {
+    if (property in obj) {
+      return obj[property];
+    }
+
+    return defaultValue;
+  }
+  /**
+   * @return {String}
+   */
+
+
+  function GetShaderPrefix(isAnimated) {
+    return isAnimated ? _get(data["generic"], "shaderPrefixAnimated", "") : _get(data["generic"], "shaderPrefix", "");
+  }
+
+  function ModifyTextureResPath(path, name, area, faction, commands) {
+    var pathInsert = null;
+
+    if (_get(faction, "resPathInsert", "").length) {
+      pathInsert = faction.resPathInsert;
+    }
+
+    if ("respathinsert" in commands && commands.respathinsert.length === 1) {
+      if (commands.respathinsert[0] === "none") {
+        return path;
+      } else {
+        pathInsert = commands.respathinsert[0];
+      }
+    }
+
+    if (name === "MaterialMap" || name === "PaintMaskMap" || name === "PmdgMap") {
+      var index = path.lastIndexOf("/");
+      var pathCopy = path;
+
+      if (index >= 0) {
+        pathCopy = path.substr(0, index + 1) + pathInsert + "/" + path.substr(index + 1);
+      }
+
+      index = pathCopy.lastIndexOf("_");
+
+      if (index >= 0) {
+        pathCopy = pathCopy.substr(0, index) + "_" + pathInsert + pathCopy.substr(index);
+
+        var textureOverrides = _get(area, "textureOverrides", {});
+
+        if (name in textureOverrides && faction.name in textureOverrides[name]) {
+          return pathCopy;
+        }
+      }
+    }
+
+    return path;
+  }
+  /**
+   * @return {String}
+   */
+
+
+  function ModifyShaderPath(shader, isSkinned) {
+    var prefix = GetShaderPrefix(isSkinned);
+    shader = "/" + shader;
+    var index = shader.lastIndexOf("/");
+    return shader.substr(0, index + 1) + prefix + shader.substr(index + 1);
+  }
+
+  function FindPrefix(prefixes, name) {
+    for (var m = 0; m < prefixes.length; ++m) {
+      if (name.substr(0, prefixes[m].length) === prefixes[m]) {
+        return m;
+      }
+    }
+
+    return null;
+  }
+
+  function GetOverridenParameter(name, area, commands, race) {
+    var prefixes, materialIndex, materialData, shortName;
+
+    if ("mesh" in commands) {
+      prefixes = data.generic.materialPrefixes;
+      materialIndex = FindPrefix(prefixes, name);
+
+      if (materialIndex !== null && materialIndex < commands.mesh.length && (_get(area, "blockedMaterials", 0) & 1 << materialIndex) === 0) {
+        materialData = _get(data.material, commands.mesh[materialIndex], null);
+
+        if (materialData) {
+          shortName = name.substr(prefixes[materialIndex].length);
+          return _get(materialData.parameters, shortName, undefined);
+        }
+      }
+    }
+
+    prefixes = data.generic.patternMaterialPrefixes;
+    materialIndex = FindPrefix(prefixes, name);
+
+    if ("pattern" in commands) {
+      if (materialIndex !== null && 1 + materialIndex < commands.pattern.length) {
+        materialData = _get(data.material, commands.pattern[1 + materialIndex], null);
+
+        if (materialData) {
+          shortName = name.substr(prefixes[materialIndex].length);
+          return _get(materialData.parameters, shortName, undefined);
+        }
+      }
+    }
+
+    if (materialIndex !== null) {
+      materialData = _get(data.material, race.defaultPatternLayer1MaterialName, null);
+
+      if (materialData) {
+        shortName = name.substr(prefixes[materialIndex].length);
+        return _get(materialData.parameters, shortName, undefined);
+      }
+    }
+  }
+
+  function GetAddressMode(projectionType) {
+    switch (projectionType) {
+      case 2:
+        return 4;
+
+      case 1:
+        return 3;
+
+      default:
+        return 1;
+    }
+  }
+
+  function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride) {
+    var hullAreas = _get(hull, areasName, []);
+
+    for (var i = 0; i < hullAreas.length; ++i) {
+      var area = hullAreas[i];
+      var effect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+      effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
+
+      var names = _get(_get(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
+
+      for (var j = 0; j < names.length; ++j) {
+        var name = names[j];
+        var param = GetOverridenParameter(name, area, commands, race);
+        param = param || _get(_get(_get(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
+        param = param || _get(_get(_get(race.hullAreas, area.name, {}), "parameters", {}), name);
+        param = param || _get(_get(_get(faction.areas, area.name, {}), "parameters", {}), name);
+        param = param || _get(_get(area, "parameters", {}), name);
+
+        if (param) {
+          effect.parameters[name] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"](name, param);
+        }
+      }
+
+      var hullTextures = _get(area, "textures", []);
+
+      for (j in hullTextures) {
+        if (hullTextures.hasOwnProperty(j)) {
+          var path = hullTextures[j];
+          path = ModifyTextureResPath(path, j, area, faction, commands);
+          effect.parameters[j] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"](j, path);
+        }
+      }
+
+      for (j = 0; j < pattern.layers.length; ++j) {
+        if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.parameters)) {
+          var patternTex = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"](pattern.layers[j].textureName);
+          patternTex.resourcePath = pattern.layers[j].textureResFilePath;
+          patternTex.useAllOverrides = true;
+          patternTex.addressUMode = GetAddressMode(_get(pattern.layers[j], "projectionTypeU", 0));
+          patternTex.addressVMode = GetAddressMode(_get(pattern.layers[j], "projectionTypeV", 0));
+          patternTex.Initialize();
+          effect.parameters[pattern.layers[j].textureName] = patternTex;
+        }
+      }
+
+      var defaultTextures = _get(_get(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
+
+      for (var texName in defaultTextures) {
+        if (defaultTextures.hasOwnProperty(texName)) {
+          if (!(texName in effect.parameters)) {
+            effect.parameters[texName] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"](texName, defaultTextures[texName]);
+          }
+        }
+      }
+
+      effect.Initialize();
+      var newArea = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2MeshArea"]();
+      newArea.name = area.name;
+      newArea.effect = effect;
+      newArea.index = _get(area, "index", 0);
+      newArea.count = _get(area, "count", 1);
+      areas.push(newArea);
+    }
+  }
+
+  function SetupMesh(ship, hull, faction, race, commands, pattern) {
+    var mesh = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Mesh"]();
+    mesh.geometryResPath = hull["geometryResFilePath"];
+    ship.boundingSphereCenter[0] = hull.boundingSphere[0];
+    ship.boundingSphereCenter[1] = hull.boundingSphere[1];
+    ship.boundingSphereCenter[2] = hull.boundingSphere[2];
+    ship.boundingSphereRadius = hull.boundingSphere[3];
+    FillMeshAreas(_get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands);
+    FillMeshAreas(_get(mesh, "transparentAreas", []), "transparentAreas", hull, faction, race, pattern, commands);
+    FillMeshAreas(_get(mesh, "additiveAreas", []), "additiveAreas", hull, faction, race, pattern, commands);
+    FillMeshAreas(_get(mesh, "decalAreas", []), "decalAreas", hull, faction, race, pattern, commands);
+    FillMeshAreas(_get(mesh, "depthAreas", []), "depthAreas", hull, faction, race, pattern, commands);
+    mesh.Initialize();
+    ship.mesh = mesh;
+
+    if ("shapeEllipsoidCenter" in hull) {
+      ship.shapeEllipsoidCenter = hull.shapeEllipsoidCenter;
+    }
+
+    if ("shapeEllipsoidRadius" in hull) {
+      ship.shapeEllipsoidRadius = hull.shapeEllipsoidRadius;
+    }
+  }
+
+  function SetupPattern(hull, race, commands) {
+    var pattern = {
+      patterns: [],
+      layers: []
+    };
+
+    if ("pattern" in commands) {
+      var p = {};
+
+      for (var k = 0; k < data.pattern.length; ++k) {
+        if (data.pattern[k].name === commands.pattern[0]) {
+          p = data.pattern[k];
+          break;
+        }
+      }
+
+      var layer = _get(p, "layer1", null);
+
+      if (layer) {
+        pattern.layers.push(layer);
+      }
+
+      layer = _get(p, "layer2", null);
+
+      if (layer) {
+        pattern.layers.push(layer);
+      }
+
+      var projections = _get(p, "projections", []);
+
+      for (var i = 0; i < projections.length; ++i) {
+        if (projections[i].name === hull.name) {
+          p = projections[i];
+          layer = _get(p, "transformLayer1", null);
+
+          if (layer) {
+            pattern.patterns.push(layer);
+          }
+
+          layer = _get(p, "transformLayer2", null);
+
+          if (layer) {
+            pattern.patterns.push(layer);
+          }
+        }
+      }
+    } else if (_get(hull, "defaultPattern")) {
+      p = _get(hull, "defaultPattern", {});
+      layer = _get(p, "transformLayer1", null);
+
+      if (layer) {
+        pattern.patterns.push(layer);
+      }
+
+      layer = _get(p, "transformLayer2", null);
+
+      if (layer) {
+        pattern.patterns.push(layer);
+      }
+
+      p = _get(race, "defaultPattern", {});
+      layer = _get(p, "layer1", null);
+
+      if (layer) {
+        pattern.layers.push(layer);
+      }
+
+      layer = _get(p, "layer2", null);
+
+      if (layer) {
+        pattern.layers.push(layer);
+      }
+    }
+
+    return pattern;
+  }
+
+  function SetupCustomMasks(ship, pattern) {
+    for (var i = 0; i < pattern.patterns.length; ++i) {
+      if (pattern.patterns[i] && pattern.layers[i]) {
+        var p = pattern.patterns[i];
+        var l = pattern.layers[i];
+        ship.AddCustomMask(_get(p, "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()), _get(p, "scaling", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1)), _get(p, "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create()), _get(p, "isMirrored", false), _get(l, "materialSource", 0), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(_get(l, "isTargetMtl1", true) ? 1 : 0, _get(l, "isTargetMtl2", true) ? 1 : 0, _get(l, "isTargetMtl3", true) ? 1 : 0, _get(l, "isTargetMtl4", true) ? 1 : 0));
+      }
+    }
+  }
+
+  function SetupDecals(ship, hull, faction) {
+    var hullDecals = _get(hull, "hullDecals", []);
+
+    for (var i = 0; i < hullDecals.length; ++i) {
+      var hullDecal = hullDecals[i];
+      var factionDecal = null;
+
+      var factionIndex = "group" + _get(hullDecal, "groupIndex", -1);
+
+      if (faction.decals && factionIndex in faction.decals) {
+        factionDecal = faction.decals[factionIndex];
+      }
+
+      if (factionDecal && !factionDecal["isVisible"]) {
+        continue;
+      }
+
+      var effect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+
+      if (factionDecal && factionDecal.shader && factionDecal.shader.length) {
+        effect.effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + factionDecal.shader;
+      } else if (hullDecal.shader && hullDecal.shader.length) {
+        effect.effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + hullDecal.shader;
+      } else {
+        continue;
+      }
+
+      var hullParameters = _get(hullDecal, "parameters", {});
+
+      for (var j in hullParameters) {
+        if (hullParameters.hasOwnProperty(j)) {
+          effect.parameters[j] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"](j, hullParameters[j]);
+        }
+      }
+
+      var hullTextures = _get(hullDecal, "textures", {});
+
+      for (j in hullTextures) {
+        if (hullTextures.hasOwnProperty(j)) {
+          effect.parameters[j] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"](j, hullTextures[j]);
+        }
+      }
+
+      if (factionDecal) {
+        var factionParameters = _get(factionDecal, "parameters", {});
+
+        for (j in factionParameters) {
+          if (factionParameters.hasOwnProperty(j)) {
+            effect.parameters[j] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"](j, factionParameters[j]);
+          }
+        }
+
+        var factionTextures = _get(factionDecal, "textures", {});
+
+        for (j in factionTextures) {
+          if (factionTextures.hasOwnProperty(j) && !(j in effect.parameters)) {
+            effect.parameters[j] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"](j, factionTextures[j]);
+          }
+        }
+      }
+
+      var defaultTextures = _get(_get(data["generic"]["decalShaders"], hullDecal.shader, {}), "defaultTextures", {});
+
+      for (var texName in defaultTextures) {
+        if (defaultTextures.hasOwnProperty(texName)) {
+          if (!(texName in effect.parameters)) {
+            effect.parameters[texName] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"](texName, defaultTextures[texName]);
+          }
+        }
+      }
+
+      effect.Initialize();
+      var decal = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveSpaceObjectDecal"]();
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(decal.position, _get(hullDecal, "position", [0, 0, 0]));
+      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(decal.rotation, _get(hullDecal, "rotation", [0, 0, 0, 1]));
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(decal.scaling, _get(hullDecal, "scaling", [1, 1, 1]));
+      decal.parentBoneIndex = _get(hullDecal, "boneIndex", -1);
+      decal.indexBuffer = new Uint16Array(hullDecal.indexBuffer);
+      decal.decalEffect = effect;
+      decal.name = _get(hullDecals[i], "name", "");
+
+      if ("groupIndex" in hullDecals[i]) {
+        decal.groupIndex = hullDecals[i].groupIndex;
+      }
+
+      decal.Initialize();
+      ship.decals.push(decal);
+    }
+  }
+
+  function SetupInstancedMeshes(ship, hull, faction, race, commands, pattern) {
+    var instancedMeshes = _get(hull, "instancedMeshes", []);
+
+    for (var i = 0; i < instancedMeshes.length; ++i) {
+      var him = instancedMeshes[i];
+      var mesh = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2InstancedMesh"]();
+      mesh.instanceGeometryResPath = him.instanceGeometryResPath;
+      mesh.geometryResPath = him.geometryResPath;
+      mesh.Initialize();
+      FillMeshAreas(_get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands, him.shader);
+      var child = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveChildMesh"]();
+      child.mesh = mesh;
+      ship.effectChildren.push(child);
+    }
+  }
+
+  function SetupSpriteSets(ship, hull, faction) {
+    var hullSets = _get(hull, "spriteSets", []);
+
+    var factionSets = _get(faction, "spriteSets", {});
+
+    for (var i = 0; i < hullSets.length; ++i) {
+      var spriteSet = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSet"](true, !!(hull["isSkinned"] && hullSets[i]["skinned"]));
+      spriteSet.name = _get(hullSets[i], "name", "");
+      spriteSet.effect = spriteEffect;
+
+      var hullData = _get(hullSets[i], "items", []);
+
+      for (var j = 0; j < hullData.length; ++j) {
+        if (!("group" + _get(hullData[j], "groupIndex", -1) in factionSets)) continue;
+        var item = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSetItem"]();
+        item.blinkPhase = _get(hullData[j], "blinkPhase", 0);
+        item.blinkRate = _get(hullData[j], "blinkRate", 0.1);
+        item.boneIndex = _get(hullData[j], "boneIndex", 0);
+        item.falloff = _get(hullData[j], "falloff", 0);
+        item.maxScale = _get(hullData[j], "maxScale", 10);
+        item.minScale = _get(hullData[j], "minScale", 1);
+        item.name = _get(hullData[j], "name", "");
+        item.groupIndex = _get(hullData[j], "groupIndex", -1);
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.position, _get(hullData[j], "position", [0, 0, 0]));
+        var factionSet = factionSets["group" + item.groupIndex];
+
+        if (factionSet) {
+          item.groupName = factionSet.name;
+          if ("color" in factionSet) _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, factionSet.color);
+        }
+
+        spriteSet.sprites.push(item);
+      }
+
+      spriteSet.Initialize();
+      ship.spriteSets.push(spriteSet);
+    }
+  }
+
+  function SetupSpotlightSets(ship, hull, faction) {
+    var hullSets = _get(hull, "spotlightSets", []);
+
+    var factionSets = _get(faction, "spotlightSets", {});
+
+    for (var i = 0; i < hullSets.length; ++i) {
+      var spotlightSet = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveSpotlightSet"]();
+      spotlightSet.name = _get(hullSets[i], "name", "");
+      spotlightSet.coneEffect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+      spotlightSet.glowEffect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+
+      if (hullSets[i]["skinned"]) {
+        spotlightSet.coneEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
+        spotlightSet.glowEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
+      } else {
+        spotlightSet.coneEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
+        spotlightSet.glowEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
+      }
+
+      spotlightSet.coneEffect.parameters["TextureMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("TextureMap", hullSets[i]["coneTextureResPath"]);
+      spotlightSet.glowEffect.parameters["TextureMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("TextureMap", hullSets[i]["glowTextureResPath"]);
+      spotlightSet.coneEffect.parameters["zOffset"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("zOffset", _get(hullSets[i], "zOffset", 0));
+      spotlightSet.coneEffect.Initialize();
+      spotlightSet.glowEffect.Initialize();
+
+      var hullData = _get(hullSets[i], "items", []);
+
+      for (var j = 0; j < hullData.length; ++j) {
+        var item = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveSpotlightSetItem"]();
+        item.name = _get(hullData[j], "name", "");
+        item.groupIndex = _get(hullData[j], "groupIndex", -1);
+        item.boneIndex = _get(hullData[j], "boneIndex", 0);
+        item.boosterGainInfluence = _get(hullData[j], "boosterGainInfluence", 0);
+        item.coneIntensity = _get(hullData[j], "coneIntensity", 0);
+        item.spriteIntensity = _get(hullData[j], "spriteIntensity", 0);
+        item.flareIntensity = _get(hullData[j], "flareIntensity", 0);
+        var factionSet = factionSets["group" + item.groupIndex];
+
+        if (factionSet) {
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.coneColor, _get(factionSet, "coneColor", [0, 0, 0, 0]));
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.spriteColor, _get(factionSet, "spriteColor", [0, 0, 0, 0]));
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.flareColor, _get(factionSet, "flareColor", [0, 0, 0, 0]));
+        }
+
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.spriteScale, _get(hullData[j], "spriteScale", [1, 1, 1]));
+
+        if ("transform" in hullData[j]) {
+          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(item.transform, hullData[j].transform);
+        } else {
+          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(item.transform);
+        }
+
+        spotlightSet.spotlightItems.push(item);
+      }
+
+      spotlightSet.Initialize();
+      ship.spotlightSets.push(spotlightSet);
+    }
+  }
+
+  function _assignIfExists(dest, src, attr) {
+    if (attr in src) {
+      dest[attr] = src[attr];
+    }
+  }
+
+  function SetupPlaneSets(ship, hull, faction) {
+    var hullSets = _get(hull, "planeSets", []);
+
+    var factionSets = _get(faction, "planeSets", {});
+
+    for (var i = 0; i < hullSets.length; ++i) {
+      var planeSet = new _eve__WEBPACK_IMPORTED_MODULE_3__["EvePlaneSet"]();
+      planeSet.name = _get(hullSets[i], "name", "");
+      planeSet.effect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+
+      if (hullSets[i]["skinned"]) {
+        planeSet.effect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
+      } else {
+        planeSet.effect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
+      }
+
+      planeSet.effect.parameters["Layer1Map"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("Layer1Map", hullSets[i]["layer1MapResPath"]);
+      planeSet.effect.parameters["Layer2Map"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("Layer2Map", hullSets[i]["layer2MapResPath"]);
+      planeSet.effect.parameters["MaskMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("MaskMap", hullSets[i]["maskMapResPath"]);
+      planeSet.effect.parameters["PlaneData"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("PlaneData", _get(hullSets[i], "planeData", [1, 0, 0, 0]));
+      planeSet.effect.Initialize();
+
+      var hullData = _get(hullSets[i], "items", []);
+
+      for (var j = 0; j < hullData.length; ++j) {
+        var item = new _eve__WEBPACK_IMPORTED_MODULE_3__["EvePlaneSetItem"]();
+
+        _assignIfExists(item, hullData[j], "groupIndex");
+
+        _assignIfExists(item, hullData[j], "name");
+
+        item.boneIndex = _get(hullData[j], "boneIndex", -1);
+        item.maskAtlasID = _get(hullData[j], "maskMapAtlasIndex", 0); // Do not copy reference!
+
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.position, _get(hullData[j], "position", [0, 0, 0]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(item.rotation, _get(hullData[j], "rotation", [0, 0, 0, 1]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(item.scaling, _get(hullData[j], "scaling", [1, 1, 1]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, _get(hullData[j], "color", [0, 0, 0, 0]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer1Transform, _get(hullData[j], "layer1Transform", [0, 0, 0, 0]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer1Scroll, _get(hullData[j], "layer1Scroll", [0, 0, 0, 0]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer2Transform, _get(hullData[j], "layer2Transform", [0, 0, 0, 0]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.layer2Scroll, _get(hullData[j], "layer2Scroll", [0, 0, 0, 0]));
+
+        var factionSet = factionSets["group" + _get(hullData[j], "groupIndex", -1)];
+
+        if (factionSet) _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(item.color, _get(factionSet, "color", [0, 0, 0, 0]));
+        planeSet.planes.push(item);
+      }
+
+      planeSet.Initialize();
+      ship.planeSets.push(planeSet);
+    }
+  }
+
+  function SetupBoosters(ship, hull, race) {
+    if (!("booster" in hull)) {
+      return;
+    }
+
+    var booster = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]();
+    var hullBooster = hull["booster"];
+
+    var raceBooster = _get(race, "booster", {});
+
+    _assignIfExists(booster, raceBooster, "glowScale");
+
+    _assignIfExists(booster, raceBooster, "symHaloScale");
+
+    _assignIfExists(booster, raceBooster, "haloScaleX");
+
+    _assignIfExists(booster, raceBooster, "haloScaleY");
+
+    _assignIfExists(booster, raceBooster, "haloColor");
+
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.glowColor, _get(raceBooster, "glowColor", [0, 0, 0, 0]));
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.warpGlowColor, _get(raceBooster, "warpGlowColor", [0, 0, 0, 0]));
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.warpHaloColor, _get(raceBooster, "warpHalpColor", [0, 0, 0, 0]));
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.trailColor, _get(raceBooster, "trailColor", [0, 0, 0, 0]));
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(booster.trailSize, _get(raceBooster, "trailSize", [0, 0, 0, 0]));
+    booster.effect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+    booster.effect.effectFilePath = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
+    booster.effect.parameters["NoiseFunction0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("NoiseFunction0", _get(raceBooster.shape0, "noiseFunction", 0));
+    booster.effect.parameters["NoiseSpeed0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("NoiseSpeed0", _get(raceBooster.shape0, "noiseSpeed", 0));
+    booster.effect.parameters["NoiseAmplitudeStart0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("NoiseAmplitudeStart0", _get(raceBooster.shape0, "noiseAmplitureStart", [0, 0, 0, 0]));
+    booster.effect.parameters["NoiseAmplitudeEnd0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("NoiseAmplitudeEnd0", _get(raceBooster.shape0, "noiseAmplitureEnd", [0, 0, 0, 0]));
+    booster.effect.parameters["NoiseFrequency0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("NoiseFrequency0", _get(raceBooster.shape0, "noiseFrequency", [0, 0, 0, 0]));
+    booster.effect.parameters["Color0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("Color0", _get(raceBooster.shape0, "color", [0, 0, 0, 0]));
+    booster.effect.parameters["NoiseFunction1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("NoiseFunction1", _get(raceBooster.shape1, "noiseFunction", 0));
+    booster.effect.parameters["NoiseSpeed1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("NoiseSpeed1", _get(raceBooster.shape1, "noiseSpeed", 0));
+    booster.effect.parameters["NoiseAmplitudeStart1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("NoiseAmplitudeStart1", _get(raceBooster.shape1, "noiseAmplitureStart", [0, 0, 0, 0]));
+    booster.effect.parameters["NoiseAmplitudeEnd1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("NoiseAmplitudeEnd1", _get(raceBooster.shape1, "noiseAmplitureEnd", [0, 0, 0, 0]));
+    booster.effect.parameters["NoiseFrequency1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("NoiseFrequency1", _get(raceBooster.shape1, "noiseFrequency", [0, 0, 0, 0]));
+    booster.effect.parameters["Color1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("Color1", _get(raceBooster.shape1, "color", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpNoiseFunction0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("WarpNoiseFunction0", _get(raceBooster.warpShape0, "noiseFunction", 0));
+    booster.effect.parameters["WarpNoiseSpeed0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("WarpNoiseSpeed0", _get(raceBooster.warpShape0, "noiseSpeed", 0));
+    booster.effect.parameters["WarpNoiseAmplitudeStart0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeStart0", _get(raceBooster.warpShape0, "noiseAmplitureStart", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpNoiseAmplitudeEnd0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeEnd0", _get(raceBooster.warpShape0, "noiseAmplitureEnd", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpNoiseFrequency0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpNoiseFrequency0", _get(raceBooster.warpShape0, "noiseFrequency", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpColor0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpColor0", _get(raceBooster.warpShape0, "color", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpNoiseFunction1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("WarpNoiseFunction1", _get(raceBooster.warpShape1, "noiseFunction", 0));
+    booster.effect.parameters["WarpNoiseSpeed1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("WarpNoiseSpeed1", _get(raceBooster.warpShape1, "noiseSpeed", 0));
+    booster.effect.parameters["WarpNoiseAmplitudeStart1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeStart1", _get(raceBooster.warpShape1, "noiseAmplitureStart", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpNoiseAmplitudeEnd1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpNoiseAmplitudeEnd1", _get(raceBooster.warpShape1, "noiseAmplitureEnd", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpNoiseFrequency1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpNoiseFrequency1", _get(raceBooster.warpShape1, "noiseFrequency", [0, 0, 0, 0]));
+    booster.effect.parameters["WarpColor1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("WarpColor1", _get(raceBooster.warpShape1, "color", [0, 0, 0, 0]));
+    booster.effect.parameters["ShapeAtlasSize"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("ShapeAtlasSize", [_get(raceBooster, "shapeAtlasHeight", 0), _get(raceBooster, "shapeAtlasCount", 0), 0, 0]);
+    booster.effect.parameters["BoosterScale"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]("BoosterScale", _get(raceBooster, "scale", [1, 1, 1, 1]));
+    booster.effect.parameters["ShapeMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("ShapeMap", raceBooster.shapeAtlasResPath);
+    booster.effect.parameters["GradientMap0"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("GradientMap0", raceBooster.gradient0ResPath);
+    booster.effect.parameters["GradientMap1"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("GradientMap1", raceBooster.gradient1ResPath);
+    booster.effect.parameters["NoiseMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("ShapeMap", "res:/Texture/Global/noise32cube_volume.dds.0.png");
+    booster.effect.Initialize();
+    booster.glows = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveSpriteSet"](true);
+    booster.glows.effect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+    booster.glows.effect.effectFilePath = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
+    booster.glows.effect.parameters["DiffuseMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("DiffuseMap", "res:/Texture/Particle/whitesharp.dds.0.png");
+    booster.glows.effect.parameters["NoiseMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("NoiseMap", "res:/Texture/global/noise.dds.0.png");
+    booster.glows.effect.Initialize();
+
+    var items = _get(hullBooster, "items", []);
+
+    for (var i = 0; i < items.length; ++i) {
+      var locator = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveLocator2"]();
+      locator.name = "locator_booster_" + (i + 1);
+
+      if ("transform" in items[i]) {
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(locator.transform, items[i].transform);
+      } else {
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(locator.transform);
+      }
+
+      locator.atlasIndex0 = _get(items[i], "atlasIndex0", 0);
+      locator.atlasIndex1 = _get(items[i], "atlasIndex1", 0);
+      ship.locators.push(locator);
+    }
+
+    booster.Initialize();
+    ship.boosters = booster;
+  }
+
+  function SetupLocators(ship, hull) {
+    var hullLocators = _get(hull, "locatorTurrets", []);
+
+    for (var i = 0; i < hullLocators.length; ++i) {
+      var locator = new _eve__WEBPACK_IMPORTED_MODULE_3__["EveLocator2"]();
+      locator.name = hullLocators[i].name;
+
+      if ("transform" in hullLocators[i]) {
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(locator.transform, hullLocators[i].transform);
+      } else {
+        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(locator.transform);
+      }
+
+      ship.locators.push(locator);
+    }
+  }
+
+  function BindParticleEmitters(obj, curveSet, curve) {
+    if (Array.isArray(obj.particleEmitters)) {
+      for (var i = 0; i < obj.particleEmitters.length; ++i) {
+        if ("rate" in obj.particleEmitters[i]) {
+          var binding = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2ValueBinding"]();
+          binding.sourceObject = curve;
+          binding.sourceAttribute = "currentValue";
+          binding.destinationObject = obj.particleEmitters[i];
+          binding.destinationAttribute = "rate";
+          binding.Initialize();
+          curveSet.bindings.push(binding);
+        }
+      }
+
+      for (i = 0; i < obj.children.length; ++i) {
+        BindParticleEmitters(obj.children[i], curveSet, curve);
+      }
+    } else {
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].log({
+        type: "warning",
+        name: "Space object factory",
+        message: `Unable to bind particle emitters: ${obj.constructor.name}`
+      });
+    }
+  }
+
+  function SetupChildren(ship, hull, curveSet, curves) {
+    function onChildLoaded(child) {
+      return function (obj) {
+        if (obj._isEffectChild) {
+          ship.effectChildren.push(obj);
+        } else {
+          ship.children.push(obj);
+        }
+
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.translation, _get(child, "translation", [0, 0, 0]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(obj.rotation, _get(child, "rotation", [0, 0, 0, 1]));
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.scaling, _get(child, "scaling", [1, 1, 1]));
+
+        var id = _get(child, "id", -1);
+
+        if (id !== -1 && curves[id]) {
+          BindParticleEmitters(obj, curveSet, curves[id]);
+        }
+      };
+    }
+
+    const children = _get(hull, "children", []);
+
+    for (let i = 0; i < children.length; ++i) {
+      const resPath = children[i]["redFilePath"];
+
+      if (resPath) {
+        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(resPath, onChildLoaded(children[i]));
+      } else {
+        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].log({
+          type: "warning",
+          name: "Space object factory",
+          message: `No resource path found for "${hull.name}" child at index ${i}`
+        });
+      }
+    }
+  }
+
+  function SetupAnimations(ship, hull) {
+    var id_curves = [];
+    var curveSet = null;
+
+    var animations = _get(hull, "animations", []);
+
+    for (var i = 0; i < animations.length; ++i) {
+      if (_get(animations[i], "id", -1) !== -1 && _get(animations[i], "startRate", -1) !== -1) {
+        if (!curveSet) {
+          curveSet = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2CurveSet"]();
+        }
+
+        var curve = new _curve_legacy__WEBPACK_IMPORTED_MODULE_1__["Tw2ScalarCurve2"]();
+        curve.keys.push(new _curve_legacy__WEBPACK_IMPORTED_MODULE_1__["Tw2ScalarKey2"]());
+        curve.keys.push(new _curve_legacy__WEBPACK_IMPORTED_MODULE_1__["Tw2ScalarKey2"]());
+        curve.keys[0].value = _get(animations[i], "startRate", -1);
+        curve.keys[1].time = 1;
+        curve.keys[1].value = _get(animations[i], "endRate", -1);
+        curve.Initialize();
+        curveSet.curves.push(curve);
+        ship.curveSets.push(curveSet);
+        id_curves[_get(animations[i], "id", -1)] = curve;
+      }
+    }
+
+    if (curveSet) {
+      curveSet.Initialize();
+    }
+
+    return [curveSet, id_curves];
+  }
+
+  var dataLoading = false;
+  var pendingLoads = [];
+
+  function Build(dna) {
+    var parts = dna.split(":");
+    var commands = {};
+
+    for (var i = 3; i < parts.length; ++i) {
+      var subparts = parts[i].split("?");
+      commands[subparts[0]] = subparts[1].split(";");
+    }
+
+    var hull = data["hull"][parts[0]];
+    var faction = data["faction"][parts[1]];
+    var race = data["race"][parts[2]];
+    var ship = new (_get(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_3__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_3__["EveShip"])();
+    var pattern = SetupPattern(hull, race, commands);
+    SetupMesh(ship, hull, faction, race, commands, pattern);
+    SetupCustomMasks(ship, pattern);
+    SetupDecals(ship, hull, faction);
+    SetupSpriteSets(ship, hull, faction);
+    SetupSpotlightSets(ship, hull, faction);
+    SetupPlaneSets(ship, hull, faction);
+    SetupBoosters(ship, hull, race);
+    SetupLocators(ship, hull);
+    var curves = SetupAnimations(ship, hull);
+    SetupChildren(ship, hull, curves[0], curves[1]);
+    SetupInstancedMeshes(ship, hull, faction, race, commands, pattern);
+    ship.Initialize();
+    return ship;
+  }
+
+  this.LoadData = function (callback) {
+    if (data === null) {
+      if (callback) {
+        pendingLoads.push(callback);
+      }
+
+      if (!dataLoading) {
+        spriteEffect = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]();
+        spriteEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx";
+        spriteEffect.parameters["MainIntensity"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2FloatParameter"]("MainIntensity", 1);
+        spriteEffect.parameters["GradientMap"] = new _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2TextureParameter"]("GradientMap", "res:/texture/particle/whitesharp_gradient.dds.0.png");
+        spriteEffect.Initialize();
+        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject("res:/dx9/model/spaceobjectfactory/data.red", function (obj) {
+          data = obj;
+
+          for (var i = 0; i < pendingLoads.length; ++i) {
+            pendingLoads[i]();
+          }
+
+          pendingLoads = [];
+        });
+        dataLoading = true;
+      }
+    } else {
+      if (callback) {
+        callback();
+      }
+    }
+  };
+
+  this.BuildFromDNA = function (dna, callback) {
+    if (data === null) {
+      this.LoadData(function () {
+        var result = Build(dna);
+
+        if (callback) {
+          callback(result);
+        }
+      });
+    } else {
+      var result = Build(dna);
+
+      if (callback) {
+        callback(result);
+      }
+    }
+  };
+
+  function GetTurretMaterialParameter(name, parentFaction, areaData) {
+    var materialIdx = -1;
+
+    for (var i = 0; i < data['generic']['materialPrefixes'].length; ++i) {
+      if (name.substr(0, data["generic"]["materialPrefixes"][i].length) === data["generic"]["materialPrefixes"][i]) {
+        materialIdx = i;
+        name = name.substr(data["generic"]["materialPrefixes"][i].length);
+      }
+    }
+
+    if (materialIdx !== -1) {
+      var turretMaterialIndex = _get(parentFaction, "materialUsageMtl" + (materialIdx + 1), materialIdx);
+
+      if (turretMaterialIndex >= 0 && turretMaterialIndex < data["generic"]["materialPrefixes"].length) {
+        name = data["generic"]["materialPrefixes"][turretMaterialIndex] + name;
+
+        if (name in areaData.parameters) {
+          return areaData.parameters[name];
+        }
+      }
+    }
+  }
+
+  var zeroColor = [0, 0, 0, 0];
+
+  function CombineTurretMaterial(name, parentValue, turretValue, overrideMethod) {
+    switch (overrideMethod) {
+      case "overridable":
+        return parentValue ? parentValue : turretValue ? turretValue : zeroColor;
+
+      case "half_overridable":
+        if (name.indexOf("GlowColor") >= 0) {
+          return turretValue ? turretValue : zeroColor;
+        }
+
+        return parentValue ? parentValue : turretValue ? turretValue : zeroColor;
+
+      case "not_overridable":
+      case "half_overridable_2":
+        return turretValue ? turretValue : zeroColor;
+    }
+
+    return zeroColor;
+  }
+
+  function SetupTurretMaterial(turretSet, parentFactionName, turretFactionName) {
+    var parentFaction = data["faction"][parentFactionName];
+    var turretFaction = data["faction"][turretFactionName];
+    var parentArea = null;
+
+    if (parentFaction && parentFaction.areas && "hull" in parentFaction.areas) {
+      parentArea = parentFaction.areas.hull;
+    }
+
+    var turretArea = null;
+
+    if (turretFaction && turretFaction.areas && "hull" in turretFaction.areas) {
+      turretArea = turretFaction.areas.hull;
+    }
+
+    if (!parentArea && !turretArea) {
+      return;
+    }
+
+    if (turretSet.turretEffect) {
+      var params = turretSet.turretEffect.parameters;
+
+      for (var i in params) {
+        if (params.hasOwnProperty(i)) {
+          if (params[i].constructor.prototype !== _core_index__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"].prototype) {
+            continue;
+          }
+
+          var parentValue = null;
+          var turretValue = null;
+
+          if (parentArea) {
+            parentValue = GetTurretMaterialParameter(i, parentFaction, parentArea);
+          }
+
+          if (turretArea) {
+            turretValue = GetTurretMaterialParameter(i, parentFaction, parentArea);
+          }
+
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(params[i].value, CombineTurretMaterial(i, parentValue, turretValue, turretSet.turretEffect.name));
+        }
+      }
+
+      turretSet.turretEffect.BindParameters();
+    }
+  }
+
+  this.SetupTurretMaterial = function (turretSet, parentFactionName, turretFactionName, callback) {
+    if (data === null) {
+      this.LoadData(function () {
+        SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
+
+        if (callback) {
+          callback();
+        }
+      });
+    } else {
+      SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
+
+      if (callback) {
+        callback();
+      }
+    }
+  };
+
+  function getDataKeys(name) {
+    if (name !== "all") {
+      var names = {};
+
+      for (var i in data[name]) {
+        if (data[name].hasOwnProperty(i)) {
+          names[i] = data[name][i].description || "";
+        }
+      }
+
+      return names;
+    } else {
+      return data;
+    }
+  }
+
+  this.GetHullNames = function (callback) {
+    this.LoadData(function () {
+      callback(getDataKeys("hull"));
+    });
+  };
+
+  this.GetFactionNames = function (callback) {
+    this.LoadData(function () {
+      callback(getDataKeys("faction"));
+    });
+  };
+
+  this.GetRaceNames = function (callback) {
+    this.LoadData(function () {
+      callback(getDataKeys("race"));
+    });
+  };
+
+  this.GetSofData = function (callback) {
+    this.LoadData(function () {
+      callback(getDataKeys("all"));
+    });
+  };
+}
+
+/***/ }),
+
+/***/ "./sof/EveSOFData.js":
+/*!***************************!*\
+  !*** ./sof/EveSOFData.js ***!
+  \***************************/
+/*! exports provided: EveSOFData */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return EveSOFData; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60551,8 +60162,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFData;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFData, Type => {
   return {
     isStaging: true,
@@ -60574,12 +60183,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFData, Type => 
 /*!******************************************!*\
   !*** ./sof/faction/EveSOFDataFaction.js ***!
   \******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataFaction */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataFaction; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFaction", function() { return EveSOFDataFaction; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60667,8 +60276,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataFaction;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFaction, Type => {
   return {
     isStaging: true,
@@ -60699,12 +60306,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFaction, T
 /*!***********************************************!*\
   !*** ./sof/faction/EveSOFDataFactionChild.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataFactionChild */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataFactionChild; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionChild", function() { return EveSOFDataFactionChild; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60753,8 +60360,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataFactionChild;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionChild, Type => {
   return {
     isStaging: true,
@@ -60772,12 +60377,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionChi
 /*!**************************************************!*\
   !*** ./sof/faction/EveSOFDataFactionColorSet.js ***!
   \**************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataFactionColorSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataFactionColorSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return EveSOFDataFactionColorSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60875,8 +60480,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataFactionColorSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionColorSet, Type => {
   return {
     isStaging: true,
@@ -60910,12 +60513,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionCol
 /*!***********************************************!*\
   !*** ./sof/faction/EveSOFDataFactionDecal.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataFactionDecal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataFactionDecal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionDecal", function() { return EveSOFDataFactionDecal; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -60973,8 +60576,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataFactionDecal;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionDecal, Type => {
   return {
     isStaging: true,
@@ -60995,12 +60596,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionDec
 /*!**************************************************!*\
   !*** ./sof/faction/EveSOFDataFactionPlaneSet.js ***!
   \**************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataFactionPlaneSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataFactionPlaneSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionPlaneSet", function() { return EveSOFDataFactionPlaneSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61050,8 +60651,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataFactionPlaneSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionPlaneSet, Type => {
   return {
     isStaging: true,
@@ -61069,12 +60668,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionPla
 /*!******************************************************!*\
   !*** ./sof/faction/EveSOFDataFactionSpotlightSet.js ***!
   \******************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataFactionSpotlightSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataFactionSpotlightSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionSpotlightSet", function() { return EveSOFDataFactionSpotlightSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61130,8 +60729,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataFactionSpotlightSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionSpotlightSet, Type => {
   return {
     isStaging: true,
@@ -61151,12 +60748,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionSpo
 /*!************************************************************!*\
   !*** ./sof/faction/EveSOFDataFactionVisibilityGroupSet.js ***!
   \************************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataFactionVisibilityGroupSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataFactionVisibilityGroupSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionVisibilityGroupSet", function() { return EveSOFDataFactionVisibilityGroupSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61202,8 +60799,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataFactionVisibilityGroupSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionVisibilityGroupSet, Type => {
   return {
     isStaging: true,
@@ -61226,32 +60821,25 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataFactionVis
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataFaction__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSOFDataFaction */ "./sof/faction/EveSOFDataFaction.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFaction", function() { return _EveSOFDataFaction__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFaction", function() { return _EveSOFDataFaction__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataFaction"]; });
 
 /* harmony import */ var _EveSOFDataFactionChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSOFDataFactionChild */ "./sof/faction/EveSOFDataFactionChild.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionChild", function() { return _EveSOFDataFactionChild__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionChild", function() { return _EveSOFDataFactionChild__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataFactionChild"]; });
 
 /* harmony import */ var _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSOFDataFactionColorSet */ "./sof/faction/EveSOFDataFactionColorSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return _EveSOFDataFactionColorSet__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataFactionColorSet"]; });
 
 /* harmony import */ var _EveSOFDataFactionDecal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSOFDataFactionDecal */ "./sof/faction/EveSOFDataFactionDecal.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionDecal", function() { return _EveSOFDataFactionDecal__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionDecal", function() { return _EveSOFDataFactionDecal__WEBPACK_IMPORTED_MODULE_3__["EveSOFDataFactionDecal"]; });
 
 /* harmony import */ var _EveSOFDataFactionPlaneSet__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSOFDataFactionPlaneSet */ "./sof/faction/EveSOFDataFactionPlaneSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionPlaneSet", function() { return _EveSOFDataFactionPlaneSet__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionPlaneSet", function() { return _EveSOFDataFactionPlaneSet__WEBPACK_IMPORTED_MODULE_4__["EveSOFDataFactionPlaneSet"]; });
 
 /* harmony import */ var _EveSOFDataFactionSpotlightSet__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSOFDataFactionSpotlightSet */ "./sof/faction/EveSOFDataFactionSpotlightSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionSpotlightSet", function() { return _EveSOFDataFactionSpotlightSet__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionSpotlightSet", function() { return _EveSOFDataFactionSpotlightSet__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataFactionSpotlightSet"]; });
 
 /* harmony import */ var _EveSOFDataFactionVisibilityGroupSet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFDataFactionVisibilityGroupSet */ "./sof/faction/EveSOFDataFactionVisibilityGroupSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionVisibilityGroupSet", function() { return _EveSOFDataFactionVisibilityGroupSet__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
-
-
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionVisibilityGroupSet", function() { return _EveSOFDataFactionVisibilityGroupSet__WEBPACK_IMPORTED_MODULE_6__["EveSOFDataFactionVisibilityGroupSet"]; });
 
 
 
@@ -61267,12 +60855,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************!*\
   !*** ./sof/generic/EveSOFDataGeneric.js ***!
   \******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGeneric */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGeneric; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGeneric", function() { return EveSOFDataGeneric; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61363,8 +60951,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGeneric;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGeneric, Type => {
   return {
     isStaging: true,
@@ -61396,12 +60982,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGeneric, T
 /*!************************************************!*\
   !*** ./sof/generic/EveSOFDataGenericDamage.js ***!
   \************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGenericDamage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGenericDamage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDamage", function() { return EveSOFDataGenericDamage; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61511,8 +61097,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGenericDamage;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericDamage, Type => {
   return {
     isStaging: true,
@@ -61550,12 +61134,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericDam
 /*!*****************************************************!*\
   !*** ./sof/generic/EveSOFDataGenericDecalShader.js ***!
   \*****************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGenericDecalShader */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGenericDecalShader; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDecalShader", function() { return EveSOFDataGenericDecalShader; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61610,8 +61194,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGenericDecalShader;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericDecalShader, Type => {
   return {
     isStaging: true,
@@ -61631,12 +61213,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericDec
 /*!****************************************************!*\
   !*** ./sof/generic/EveSOFDataGenericHullDamage.js ***!
   \****************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGenericHullDamage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGenericHullDamage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericHullDamage", function() { return EveSOFDataGenericHullDamage; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61719,8 +61301,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGenericHullDamage;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericHullDamage, Type => {
   return {
     isStaging: true,
@@ -61749,12 +61329,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericHul
 /*!************************************************!*\
   !*** ./sof/generic/EveSOFDataGenericShader.js ***!
   \************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGenericShader */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGenericShader; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericShader", function() { return EveSOFDataGenericShader; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61815,8 +61395,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGenericShader;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericShader, Type => {
   return {
     isStaging: true,
@@ -61838,12 +61416,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericSha
 /*!************************************************!*\
   !*** ./sof/generic/EveSOFDataGenericString.js ***!
   \************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGenericString */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGenericString; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericString", function() { return EveSOFDataGenericString; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61889,8 +61467,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGenericString;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericString, Type => {
   return {
     isStaging: true,
@@ -61907,12 +61483,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericStr
 /*!***********************************************!*\
   !*** ./sof/generic/EveSOFDataGenericSwarm.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGenericSwarm */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGenericSwarm; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericSwarm", function() { return EveSOFDataGenericSwarm; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -61994,8 +61570,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGenericSwarm;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericSwarm, Type => {
   return {
     isStaging: true,
@@ -62024,12 +61598,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericSwa
 /*!*************************************************!*\
   !*** ./sof/generic/EveSOFDataGenericVariant.js ***!
   \*************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataGenericVariant */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataGenericVariant; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericVariant", function() { return EveSOFDataGenericVariant; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62078,8 +61652,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataGenericVariant;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericVariant, Type => {
   return {
     isStaging: true,
@@ -62103,36 +61675,28 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataGenericVar
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataGeneric__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSOFDataGeneric */ "./sof/generic/EveSOFDataGeneric.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGeneric", function() { return _EveSOFDataGeneric__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGeneric", function() { return _EveSOFDataGeneric__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataGeneric"]; });
 
 /* harmony import */ var _EveSOFDataGenericDamage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSOFDataGenericDamage */ "./sof/generic/EveSOFDataGenericDamage.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDamage", function() { return _EveSOFDataGenericDamage__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDamage", function() { return _EveSOFDataGenericDamage__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataGenericDamage"]; });
 
 /* harmony import */ var _EveSOFDataGenericDecalShader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSOFDataGenericDecalShader */ "./sof/generic/EveSOFDataGenericDecalShader.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDecalShader", function() { return _EveSOFDataGenericDecalShader__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDecalShader", function() { return _EveSOFDataGenericDecalShader__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataGenericDecalShader"]; });
 
 /* harmony import */ var _EveSOFDataGenericHullDamage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSOFDataGenericHullDamage */ "./sof/generic/EveSOFDataGenericHullDamage.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericHullDamage", function() { return _EveSOFDataGenericHullDamage__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericHullDamage", function() { return _EveSOFDataGenericHullDamage__WEBPACK_IMPORTED_MODULE_3__["EveSOFDataGenericHullDamage"]; });
 
 /* harmony import */ var _EveSOFDataGenericShader__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSOFDataGenericShader */ "./sof/generic/EveSOFDataGenericShader.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericShader", function() { return _EveSOFDataGenericShader__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericShader", function() { return _EveSOFDataGenericShader__WEBPACK_IMPORTED_MODULE_4__["EveSOFDataGenericShader"]; });
 
 /* harmony import */ var _EveSOFDataGenericString__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSOFDataGenericString */ "./sof/generic/EveSOFDataGenericString.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericString", function() { return _EveSOFDataGenericString__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericString", function() { return _EveSOFDataGenericString__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataGenericString"]; });
 
 /* harmony import */ var _EveSOFDataGenericSwarm__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFDataGenericSwarm */ "./sof/generic/EveSOFDataGenericSwarm.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericSwarm", function() { return _EveSOFDataGenericSwarm__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericSwarm", function() { return _EveSOFDataGenericSwarm__WEBPACK_IMPORTED_MODULE_6__["EveSOFDataGenericSwarm"]; });
 
 /* harmony import */ var _EveSOFDataGenericVariant__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOFDataGenericVariant */ "./sof/generic/EveSOFDataGenericVariant.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericVariant", function() { return _EveSOFDataGenericVariant__WEBPACK_IMPORTED_MODULE_7__["default"]; });
-
-
-
-
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericVariant", function() { return _EveSOFDataGenericVariant__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataGenericVariant"]; });
 
 
 
@@ -62149,12 +61713,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************!*\
   !*** ./sof/hull/EveSOFDataHull.js ***!
   \************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHull */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHull; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHull", function() { return EveSOFDataHull; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62297,8 +61861,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHull;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHull, Type => {
   return {
     isStaging: true,
@@ -62347,12 +61909,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHull, Type
 /*!*********************************************!*\
   !*** ./sof/hull/EveSOFDataHullAnimation.js ***!
   \*********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullAnimation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullAnimation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullAnimation", function() { return EveSOFDataHullAnimation; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62417,8 +61979,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullAnimation;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullAnimation, Type => {
   return {
     isStaging: true,
@@ -62441,12 +62001,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullAnimat
 /*!****************************************!*\
   !*** ./sof/hull/EveSOFDataHullArea.js ***!
   \****************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullArea */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullArea; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullArea", function() { return EveSOFDataHullArea; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62510,8 +62070,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullArea;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullArea, Type => {
   return {
     isStaging: true,
@@ -62534,12 +62092,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullArea, 
 /*!******************************************!*\
   !*** ./sof/hull/EveSOFDataHullBanner.js ***!
   \******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullBanner */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullBanner; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBanner", function() { return EveSOFDataHullBanner; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62604,8 +62162,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullBanner;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullBanner, Type => {
   return {
     isStaging: true,
@@ -62628,12 +62184,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullBanner
 /*!*******************************************!*\
   !*** ./sof/hull/EveSOFDataHullBooster.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullBooster */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullBooster; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBooster", function() { return EveSOFDataHullBooster; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62685,8 +62241,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullBooster;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullBooster, Type => {
   return {
     isStaging: true,
@@ -62705,12 +62259,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullBooste
 /*!***********************************************!*\
   !*** ./sof/hull/EveSOFDataHullBoosterItem.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullBoosterItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullBoosterItem; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBoosterItem", function() { return EveSOFDataHullBoosterItem; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62769,8 +62323,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullBoosterItem;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullBoosterItem, Type => {
   return {
     isStaging: true,
@@ -62791,12 +62343,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullBooste
 /*!*****************************************!*\
   !*** ./sof/hull/EveSOFDataHullChild.js ***!
   \*****************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullChild */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullChild; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return EveSOFDataHullChild; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62858,8 +62410,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullChild;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullChild, Type => {
   return {
     isStaging: true,
@@ -62881,12 +62431,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullChild,
 /*!**********************************************!*\
   !*** ./sof/hull/EveSOFDataHullController.js ***!
   \**********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullController */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullController; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullController", function() { return EveSOFDataHullController; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -62932,8 +62482,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullController;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullController, Type => {
   return {
     isStaging: true,
@@ -62950,12 +62498,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullContro
 /*!*****************************************!*\
   !*** ./sof/hull/EveSOFDataHullDecal.js ***!
   \*****************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullDecal */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullDecal; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecal", function() { return EveSOFDataHullDecal; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63035,8 +62583,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullDecal;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullDecal, Type => {
   return {
     isStaging: true,
@@ -63064,12 +62610,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullDecal,
 /*!*******************************************!*\
   !*** ./sof/hull/EveSOFDataHullHazeSet.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullHazeSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullHazeSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSet", function() { return EveSOFDataHullHazeSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63115,8 +62661,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullHazeSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullHazeSet, Type => {
   return {
     isStaging: true,
@@ -63133,12 +62677,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullHazeSe
 /*!***********************************************!*\
   !*** ./sof/hull/EveSOFDataHullHazeSetItem.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullHazeSetItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullHazeSetItem; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSetItem", function() { return EveSOFDataHullHazeSetItem; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63209,8 +62753,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullHazeSetItem;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullHazeSetItem, Type => {
   return {
     isStaging: true,
@@ -63235,12 +62777,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullHazeSe
 /*!*******************************************!*\
   !*** ./sof/hull/EveSOFDataHullLocator.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullLocator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullLocator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return EveSOFDataHullLocator; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63287,8 +62829,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullLocator;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullLocator, Type => {
   return {
     isStaging: true,
@@ -63305,12 +62845,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullLocato
 /*!**********************************************!*\
   !*** ./sof/hull/EveSOFDataHullLocatorSet.js ***!
   \**********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullLocatorSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullLocatorSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return EveSOFDataHullLocatorSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63356,8 +62896,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullLocatorSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullLocatorSet, Type => {
   return {
     isStaging: true,
@@ -63374,12 +62912,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullLocato
 /*!********************************************!*\
   !*** ./sof/hull/EveSOFDataHullPlaneSet.js ***!
   \********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullPlaneSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullPlaneSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return EveSOFDataHullPlaneSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63443,8 +62981,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullPlaneSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullPlaneSet, Type => {
   return {
     isStaging: true,
@@ -63467,12 +63003,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullPlaneS
 /*!************************************************!*\
   !*** ./sof/hull/EveSOFDataHullPlaneSetItem.js ***!
   \************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullPlaneSetItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullPlaneSetItem; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return EveSOFDataHullPlaneSetItem; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63549,8 +63085,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullPlaneSetItem;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullPlaneSetItem, Type => {
   return {
     isStaging: true,
@@ -63577,12 +63111,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullPlaneS
 /*!************************************************!*\
   !*** ./sof/hull/EveSOFDataHullSpotlightSet.js ***!
   \************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullSpotlightSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullSpotlightSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return EveSOFDataHullSpotlightSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63640,8 +63174,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullSpotlightSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpotlightSet, Type => {
   return {
     isStaging: true,
@@ -63662,12 +63194,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpotli
 /*!****************************************************!*\
   !*** ./sof/hull/EveSOFDataHullSpotlightSetItem.js ***!
   \****************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullSpotlightSetItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullSpotlightSetItem; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return EveSOFDataHullSpotlightSetItem; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63735,8 +63267,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullSpotlightSetItem;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpotlightSetItem, Type => {
   return {
     isStaging: true,
@@ -63760,12 +63290,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpotli
 /*!*************************************************!*\
   !*** ./sof/hull/EveSOFDataHullSpriteLineSet.js ***!
   \*************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullSpriteLineSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullSpriteLineSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return EveSOFDataHullSpriteLineSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63817,8 +63347,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullSpriteLineSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpriteLineSet, Type => {
   return {
     isStaging: true,
@@ -63837,12 +63365,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSprite
 /*!*****************************************************!*\
   !*** ./sof/hull/EveSOFDataHullSpriteLineSetItem.js ***!
   \*****************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullSpriteLineSetItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullSpriteLineSetItem; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return EveSOFDataHullSpriteLineSetItem; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -63928,8 +63456,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullSpriteLineSetItem;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpriteLineSetItem, Type => {
   return {
     isStaging: true,
@@ -63959,12 +63485,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSprite
 /*!*********************************************!*\
   !*** ./sof/hull/EveSOFDataHullSpriteSet.js ***!
   \*********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullSpriteSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullSpriteSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return EveSOFDataHullSpriteSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64016,8 +63542,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullSpriteSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpriteSet, Type => {
   return {
     isStaging: true,
@@ -64036,12 +63560,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSprite
 /*!*************************************************!*\
   !*** ./sof/hull/EveSOFDataHullSpriteSetItem.js ***!
   \*************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataHullSpriteSetItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataHullSpriteSetItem; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return EveSOFDataHullSpriteSetItem; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64112,8 +63636,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataHullSpriteSetItem;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSpriteSetItem, Type => {
   return {
     isStaging: true,
@@ -64144,88 +63666,67 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataHullSprite
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataHull__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSOFDataHull */ "./sof/hull/EveSOFDataHull.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHull", function() { return _EveSOFDataHull__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHull", function() { return _EveSOFDataHull__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataHull"]; });
 
 /* harmony import */ var _EveSOFDataHullAnimation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSOFDataHullAnimation */ "./sof/hull/EveSOFDataHullAnimation.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullAnimation", function() { return _EveSOFDataHullAnimation__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullAnimation", function() { return _EveSOFDataHullAnimation__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataHullAnimation"]; });
 
 /* harmony import */ var _EveSOFDataHullArea__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSOFDataHullArea */ "./sof/hull/EveSOFDataHullArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullArea", function() { return _EveSOFDataHullArea__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullArea", function() { return _EveSOFDataHullArea__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullArea"]; });
 
 /* harmony import */ var _EveSOFDataHullBanner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSOFDataHullBanner */ "./sof/hull/EveSOFDataHullBanner.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBanner", function() { return _EveSOFDataHullBanner__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBanner", function() { return _EveSOFDataHullBanner__WEBPACK_IMPORTED_MODULE_3__["EveSOFDataHullBanner"]; });
 
 /* harmony import */ var _EveSOFDataHullBooster__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSOFDataHullBooster */ "./sof/hull/EveSOFDataHullBooster.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBooster", function() { return _EveSOFDataHullBooster__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBooster", function() { return _EveSOFDataHullBooster__WEBPACK_IMPORTED_MODULE_4__["EveSOFDataHullBooster"]; });
 
 /* harmony import */ var _EveSOFDataHullBoosterItem__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSOFDataHullBoosterItem */ "./sof/hull/EveSOFDataHullBoosterItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBoosterItem", function() { return _EveSOFDataHullBoosterItem__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBoosterItem", function() { return _EveSOFDataHullBoosterItem__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataHullBoosterItem"]; });
 
 /* harmony import */ var _EveSOFDataHullChild__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFDataHullChild */ "./sof/hull/EveSOFDataHullChild.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return _EveSOFDataHullChild__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return _EveSOFDataHullChild__WEBPACK_IMPORTED_MODULE_6__["EveSOFDataHullChild"]; });
 
 /* harmony import */ var _EveSOFDataHullController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOFDataHullController */ "./sof/hull/EveSOFDataHullController.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullController", function() { return _EveSOFDataHullController__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullController", function() { return _EveSOFDataHullController__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullController"]; });
 
 /* harmony import */ var _EveSOFDataHullDecal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EveSOFDataHullDecal */ "./sof/hull/EveSOFDataHullDecal.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecal", function() { return _EveSOFDataHullDecal__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecal", function() { return _EveSOFDataHullDecal__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataHullDecal"]; });
 
 /* harmony import */ var _EveSOFDataHullHazeSet__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./EveSOFDataHullHazeSet */ "./sof/hull/EveSOFDataHullHazeSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSet", function() { return _EveSOFDataHullHazeSet__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSet", function() { return _EveSOFDataHullHazeSet__WEBPACK_IMPORTED_MODULE_9__["EveSOFDataHullHazeSet"]; });
 
 /* harmony import */ var _EveSOFDataHullHazeSetItem__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./EveSOFDataHullHazeSetItem */ "./sof/hull/EveSOFDataHullHazeSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSetItem", function() { return _EveSOFDataHullHazeSetItem__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSetItem", function() { return _EveSOFDataHullHazeSetItem__WEBPACK_IMPORTED_MODULE_10__["EveSOFDataHullHazeSetItem"]; });
 
 /* harmony import */ var _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./EveSOFDataHullLocator */ "./sof/hull/EveSOFDataHullLocator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_11__["EveSOFDataHullLocator"]; });
 
 /* harmony import */ var _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./EveSOFDataHullLocatorSet */ "./sof/hull/EveSOFDataHullLocatorSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_12__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_12__["EveSOFDataHullLocatorSet"]; });
 
 /* harmony import */ var _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSet */ "./sof/hull/EveSOFDataHullPlaneSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_13__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_13__["EveSOFDataHullPlaneSet"]; });
 
 /* harmony import */ var _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSetItem */ "./sof/hull/EveSOFDataHullPlaneSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_14__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_14__["EveSOFDataHullPlaneSetItem"]; });
 
 /* harmony import */ var _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSet */ "./sof/hull/EveSOFDataHullSpotlightSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_15__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_15__["EveSOFDataHullSpotlightSet"]; });
 
 /* harmony import */ var _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSetItem */ "./sof/hull/EveSOFDataHullSpotlightSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_16__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_16__["EveSOFDataHullSpotlightSetItem"]; });
 
 /* harmony import */ var _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSet */ "./sof/hull/EveSOFDataHullSpriteLineSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_17__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_17__["EveSOFDataHullSpriteLineSet"]; });
 
 /* harmony import */ var _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSetItem */ "./sof/hull/EveSOFDataHullSpriteLineSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_18__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_18__["EveSOFDataHullSpriteLineSetItem"]; });
 
 /* harmony import */ var _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSet */ "./sof/hull/EveSOFDataHullSpriteSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_19__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_19__["EveSOFDataHullSpriteSet"]; });
 
 /* harmony import */ var _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSetItem */ "./sof/hull/EveSOFDataHullSpriteSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_20__["default"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_20__["EveSOFDataHullSpriteSetItem"]; });
 
 
 
@@ -64369,8 +63870,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTransform", function() { return _shared__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataTransform"]; });
 
 /* harmony import */ var _EveSOFData__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFData */ "./sof/EveSOFData.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["EveSOFData"]; });
 
 
 
@@ -64386,12 +63886,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************!*\
   !*** ./sof/pattern/EveSOFDataPattern.js ***!
   \******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataPattern */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataPattern; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPattern", function() { return EveSOFDataPattern; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64443,8 +63943,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataPattern;
 }(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPattern, Type => {
   return {
     isStaging: true,
@@ -64463,12 +63961,12 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPatt
 /*!***********************************************!*\
   !*** ./sof/pattern/EveSOFDataPatternLayer.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataPatternLayer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataPatternLayer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternLayer", function() { return EveSOFDataPatternLayer; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64538,8 +64036,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataPatternLayer;
 }(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPatternLayer, Type => {
   return {
     isStaging: true,
@@ -64564,12 +64060,12 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPatt
 /*!*************************************************!*\
   !*** ./sof/pattern/EveSOFDataPatternPerHull.js ***!
   \*************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataPatternPerHull */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataPatternPerHull; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternPerHull", function() { return EveSOFDataPatternPerHull; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64618,8 +64114,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataPatternPerHull;
 }(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPatternPerHull, Type => {
   return {
     isStaging: true,
@@ -64637,12 +64131,12 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPatt
 /*!***************************************************!*\
   !*** ./sof/pattern/EveSOFDataPatternTransform.js ***!
   \***************************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataPatternTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataPatternTransform; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternTransform", function() { return EveSOFDataPatternTransform; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64698,8 +64192,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataPatternTransform;
 }(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPatternTransform, Type => {
   return {
     isStaging: true,
@@ -64725,20 +64217,16 @@ _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataPatt
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataPattern__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSOFDataPattern */ "./sof/pattern/EveSOFDataPattern.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPattern", function() { return _EveSOFDataPattern__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPattern", function() { return _EveSOFDataPattern__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataPattern"]; });
 
 /* harmony import */ var _EveSOFDataPatternLayer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSOFDataPatternLayer */ "./sof/pattern/EveSOFDataPatternLayer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternLayer", function() { return _EveSOFDataPatternLayer__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternLayer", function() { return _EveSOFDataPatternLayer__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataPatternLayer"]; });
 
 /* harmony import */ var _EveSOFDataPatternPerHull__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSOFDataPatternPerHull */ "./sof/pattern/EveSOFDataPatternPerHull.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternPerHull", function() { return _EveSOFDataPatternPerHull__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternPerHull", function() { return _EveSOFDataPatternPerHull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataPatternPerHull"]; });
 
 /* harmony import */ var _EveSOFDataPatternTransform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSOFDataPatternTransform */ "./sof/pattern/EveSOFDataPatternTransform.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternTransform", function() { return _EveSOFDataPatternTransform__WEBPACK_IMPORTED_MODULE_3__["default"]; });
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternTransform", function() { return _EveSOFDataPatternTransform__WEBPACK_IMPORTED_MODULE_3__["EveSOFDataPatternTransform"]; });
 
 
 
@@ -64751,12 +64239,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************************!*\
   !*** ./sof/race/EveSOFDataRace.js ***!
   \************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataRace */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataRace; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRace", function() { return EveSOFDataRace; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64805,8 +64293,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataRace;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataRace, Type => {
   return {
     isStaging: true,
@@ -64824,12 +64310,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataRace, Type
 /*!******************************************!*\
   !*** ./sof/race/EveSOFDataRaceDamage.js ***!
   \******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataRaceDamage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataRaceDamage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRaceDamage", function() { return EveSOFDataRaceDamage; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64884,8 +64370,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataRaceDamage;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataRaceDamage, Type => {
   return {
     isStaging: true,
@@ -64911,12 +64395,10 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataRaceDamage
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataRace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSOFDataRace */ "./sof/race/EveSOFDataRace.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRace", function() { return _EveSOFDataRace__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRace", function() { return _EveSOFDataRace__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataRace"]; });
 
 /* harmony import */ var _EveSOFDataRaceDamage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSOFDataRaceDamage */ "./sof/race/EveSOFDataRaceDamage.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRaceDamage", function() { return _EveSOFDataRaceDamage__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataRaceDamage", function() { return _EveSOFDataRaceDamage__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataRaceDamage"]; });
 
 
 
@@ -64927,12 +64409,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!**************************************!*\
   !*** ./sof/shared/EveSOFDataArea.js ***!
   \**************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataArea */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataArea; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return EveSOFDataArea; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64993,8 +64475,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataArea;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataArea, Type => {
   return {
     isStaging: true,
@@ -65016,12 +64496,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataArea, Type
 /*!**********************************************!*\
   !*** ./sof/shared/EveSOFDataAreaMaterial.js ***!
   \**********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataAreaMaterial */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataAreaMaterial; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataAreaMaterial", function() { return EveSOFDataAreaMaterial; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65079,8 +64559,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataAreaMaterial;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataAreaMaterial, Type => {
   return {
     isStaging: true,
@@ -65101,12 +64579,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataAreaMateri
 /*!*****************************************!*\
   !*** ./sof/shared/EveSOFDataBooster.js ***!
   \*****************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataBooster */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataBooster; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBooster", function() { return EveSOFDataBooster; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65225,8 +64703,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataBooster;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataBooster, Type => {
   return {
     isStaging: true,
@@ -65267,12 +64743,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataBooster, T
 /*!**********************************************!*\
   !*** ./sof/shared/EveSOFDataBoosterShape.js ***!
   \**********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataBoosterShape */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataBoosterShape; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBoosterShape", function() { return EveSOFDataBoosterShape; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65334,8 +64810,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataBoosterShape;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataBoosterShape, Type => {
   return {
     isStaging: true,
@@ -65357,12 +64831,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataBoosterSha
 /*!***********************************************!*\
   !*** ./sof/shared/EveSOFDataInstancedMesh.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataInstancedMesh */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataInstancedMesh; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataInstancedMesh", function() { return EveSOFDataInstancedMesh; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65420,8 +64894,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataInstancedMesh;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataInstancedMesh, Type => {
   return {
     isStaging: true,
@@ -65442,12 +64914,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataInstancedM
 /*!******************************************!*\
   !*** ./sof/shared/EveSOFDataMaterial.js ***!
   \******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataMaterial */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataMaterial; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataMaterial", function() { return EveSOFDataMaterial; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65493,8 +64965,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataMaterial;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataMaterial, Type => {
   return {
     isStaging: true,
@@ -65511,12 +64981,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataMaterial, 
 /*!*******************************************!*\
   !*** ./sof/shared/EveSOFDataParameter.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataParameter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataParameter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataParameter", function() { return EveSOFDataParameter; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65563,8 +65033,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataParameter;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataParameter, Type => {
   return {
     isStaging: true,
@@ -65581,12 +65049,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataParameter,
 /*!*****************************************!*\
   !*** ./sof/shared/EveSOFDataTexture.js ***!
   \*****************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataTexture */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataTexture; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTexture", function() { return EveSOFDataTexture; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65632,8 +65100,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataTexture;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataTexture, Type => {
   return {
     isStaging: true,
@@ -65650,12 +65116,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataTexture, T
 /*!*******************************************!*\
   !*** ./sof/shared/EveSOFDataTransform.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: EveSOFDataTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveSOFDataTransform; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTransform", function() { return EveSOFDataTransform; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65708,8 +65174,6 @@ function (_Tw2BaseClass) {
 
   return EveSOFDataTransform;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataTransform, Type => {
   return {
     isStaging: true,
@@ -65734,40 +65198,31 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveSOFDataTransform,
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSOFDataArea */ "./sof/shared/EveSOFDataArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return _EveSOFDataArea__WEBPACK_IMPORTED_MODULE_0__["EveSOFDataArea"]; });
 
 /* harmony import */ var _EveSOFDataAreaMaterial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSOFDataAreaMaterial */ "./sof/shared/EveSOFDataAreaMaterial.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataAreaMaterial", function() { return _EveSOFDataAreaMaterial__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataAreaMaterial", function() { return _EveSOFDataAreaMaterial__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataAreaMaterial"]; });
 
 /* harmony import */ var _EveSOFDataBooster__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveSOFDataBooster */ "./sof/shared/EveSOFDataBooster.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBooster", function() { return _EveSOFDataBooster__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBooster", function() { return _EveSOFDataBooster__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataBooster"]; });
 
 /* harmony import */ var _EveSOFDataBoosterShape__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSOFDataBoosterShape */ "./sof/shared/EveSOFDataBoosterShape.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBoosterShape", function() { return _EveSOFDataBoosterShape__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBoosterShape", function() { return _EveSOFDataBoosterShape__WEBPACK_IMPORTED_MODULE_3__["EveSOFDataBoosterShape"]; });
 
 /* harmony import */ var _EveSOFDataInstancedMesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSOFDataInstancedMesh */ "./sof/shared/EveSOFDataInstancedMesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataInstancedMesh", function() { return _EveSOFDataInstancedMesh__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataInstancedMesh", function() { return _EveSOFDataInstancedMesh__WEBPACK_IMPORTED_MODULE_4__["EveSOFDataInstancedMesh"]; });
 
 /* harmony import */ var _EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSOFDataMaterial */ "./sof/shared/EveSOFDataMaterial.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataMaterial", function() { return _EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataMaterial", function() { return _EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataMaterial"]; });
 
 /* harmony import */ var _EveSOFDataParameter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFDataParameter */ "./sof/shared/EveSOFDataParameter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataParameter", function() { return _EveSOFDataParameter__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataParameter", function() { return _EveSOFDataParameter__WEBPACK_IMPORTED_MODULE_6__["EveSOFDataParameter"]; });
 
 /* harmony import */ var _EveSOFDataTexture__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOFDataTexture */ "./sof/shared/EveSOFDataTexture.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTexture", function() { return _EveSOFDataTexture__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTexture", function() { return _EveSOFDataTexture__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataTexture"]; });
 
 /* harmony import */ var _EveSOFDataTransform__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EveSOFDataTransform */ "./sof/shared/EveSOFDataTransform.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTransform", function() { return _EveSOFDataTransform__WEBPACK_IMPORTED_MODULE_8__["default"]; });
-
-
-
-
-
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTransform", function() { return _EveSOFDataTransform__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataTransform"]; });
 
 
 
@@ -65785,12 +65240,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************************!*\
   !*** ./state/Tr2StateMachine.js ***!
   \**********************************/
-/*! exports provided: default */
+/*! exports provided: Tr2StateMachine */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2StateMachine; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachine", function() { return Tr2StateMachine; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65840,8 +65295,6 @@ function (_Tw2BaseClass) {
 
   return Tr2StateMachine;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StateMachine, Type => {
   return {
     isStaging: true,
@@ -65850,7 +65303,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StateMachine, Typ
       startState: Type.NUMBER,
       states: [["Tr2StateMachineState"]]
     },
-    notImplemented: ["startState", "states"]
+    notImplemented: ["*"]
   };
 });
 
@@ -65860,12 +65313,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StateMachine, Typ
 /*!***************************************!*\
   !*** ./state/Tr2StateMachineState.js ***!
   \***************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2StateMachineState */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2StateMachineState; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineState", function() { return Tr2StateMachineState; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65918,8 +65371,6 @@ function (_Tw2BaseClass) {
 
   return Tr2StateMachineState;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StateMachineState, Type => {
   return {
     isStaging: true,
@@ -65939,12 +65390,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StateMachineState
 /*!********************************************!*\
   !*** ./state/Tr2StateMachineTransition.js ***!
   \********************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2StateMachineTransition */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2StateMachineTransition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineTransition", function() { return Tr2StateMachineTransition; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65991,8 +65442,6 @@ function (_Tw2BaseClass) {
 
   return Tr2StateMachineTransition;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StateMachineTransition, Type => {
   return {
     isStaging: true,
@@ -66010,12 +65459,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2StateMachineTrans
 /*!*************************************!*\
   !*** ./state/Tr2SyncToAnimation.js ***!
   \*************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2SyncToAnimation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2SyncToAnimation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2SyncToAnimation", function() { return Tr2SyncToAnimation; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66048,8 +65497,6 @@ function (_Tw2BaseClass) {
 
   return Tr2SyncToAnimation;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2SyncToAnimation, Type => {
   return {
     isStaging: true,
@@ -66063,12 +65510,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2SyncToAnimation, 
 /*!**************************************************!*\
   !*** ./state/action/Tr2ActionAnimateCurveSet.js ***!
   \**************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionAnimateCurveSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionAnimateCurveSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateCurveSet", function() { return Tr2ActionAnimateCurveSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66119,8 +65566,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionAnimateCurveSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionAnimateCurveSet, Type => {
   return {
     isStaging: true,
@@ -66140,12 +65585,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionAnimateCurv
 /*!***********************************************!*\
   !*** ./state/action/Tr2ActionAnimateValue.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionAnimateValue */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionAnimateValue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateValue", function() { return Tr2ActionAnimateValue; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66202,8 +65647,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionAnimateValue;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionAnimateValue, Type => {
   return {
     isStaging: true,
@@ -66225,12 +65668,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionAnimateValu
 /*!**********************************************!*\
   !*** ./state/action/Tr2ActionChildEffect.js ***!
   \**********************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionChildEffect */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionChildEffect; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionChildEffect", function() { return Tr2ActionChildEffect; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66284,8 +65727,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionChildEffect;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionChildEffect, Type => {
   return {
     isStaging: true,
@@ -66306,12 +65747,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionChildEffect
 /*!******************************************!*\
   !*** ./state/action/Tr2ActionOverlay.js ***!
   \******************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionOverlay */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionOverlay; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionOverlay", function() { return Tr2ActionOverlay; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66359,8 +65800,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionOverlay;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionOverlay, Type => {
   return {
     isStaging: true,
@@ -66379,12 +65818,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionOverlay, Ty
 /*!***********************************************!*\
   !*** ./state/action/Tr2ActionPlayCurveSet.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionPlayCurveSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionPlayCurveSet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayCurveSet", function() { return Tr2ActionPlayCurveSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66438,8 +65877,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionPlayCurveSet;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionPlayCurveSet, Type => {
   return {
     isStaging: true,
@@ -66460,12 +65897,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionPlayCurveSe
 /*!****************************************************!*\
   !*** ./state/action/Tr2ActionPlayMeshAnimation.js ***!
   \****************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionPlayMeshAnimation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionPlayMeshAnimation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayMeshAnimation", function() { return Tr2ActionPlayMeshAnimation; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66519,8 +65956,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionPlayMeshAnimation;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionPlayMeshAnimation, Type => {
   return {
     isStaging: true,
@@ -66541,12 +65976,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionPlayMeshAni
 /*!********************************************************!*\
   !*** ./state/action/Tr2ActionResetClipSphereCenter.js ***!
   \********************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionResetClipSphereCenter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionResetClipSphereCenter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionResetClipSphereCenter", function() { return Tr2ActionResetClipSphereCenter; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66580,8 +66015,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionResetClipSphereCenter;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionResetClipSphereCenter, Type => {
   return {
     isStaging: true,
@@ -66596,12 +66029,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionResetClipSp
 /*!*******************************************!*\
   !*** ./state/action/Tr2ActionSetValue.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ActionSetValue */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ActionSetValue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionSetValue", function() { return Tr2ActionSetValue; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66655,8 +66088,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ActionSetValue;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionSetValue, Type => {
   return {
     isStaging: true,
@@ -66683,36 +66114,28 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ActionSetValue, T
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2ActionAnimateCurveSet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2ActionAnimateCurveSet */ "./state/action/Tr2ActionAnimateCurveSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateCurveSet", function() { return _Tr2ActionAnimateCurveSet__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateCurveSet", function() { return _Tr2ActionAnimateCurveSet__WEBPACK_IMPORTED_MODULE_0__["Tr2ActionAnimateCurveSet"]; });
 
 /* harmony import */ var _Tr2ActionAnimateValue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2ActionAnimateValue */ "./state/action/Tr2ActionAnimateValue.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateValue", function() { return _Tr2ActionAnimateValue__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateValue", function() { return _Tr2ActionAnimateValue__WEBPACK_IMPORTED_MODULE_1__["Tr2ActionAnimateValue"]; });
 
 /* harmony import */ var _Tr2ActionChildEffect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tr2ActionChildEffect */ "./state/action/Tr2ActionChildEffect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionChildEffect", function() { return _Tr2ActionChildEffect__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionChildEffect", function() { return _Tr2ActionChildEffect__WEBPACK_IMPORTED_MODULE_2__["Tr2ActionChildEffect"]; });
 
 /* harmony import */ var _Tr2ActionOverlay__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2ActionOverlay */ "./state/action/Tr2ActionOverlay.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionOverlay", function() { return _Tr2ActionOverlay__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionOverlay", function() { return _Tr2ActionOverlay__WEBPACK_IMPORTED_MODULE_3__["Tr2ActionOverlay"]; });
 
 /* harmony import */ var _Tr2ActionPlayCurveSet__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tr2ActionPlayCurveSet */ "./state/action/Tr2ActionPlayCurveSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayCurveSet", function() { return _Tr2ActionPlayCurveSet__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayCurveSet", function() { return _Tr2ActionPlayCurveSet__WEBPACK_IMPORTED_MODULE_4__["Tr2ActionPlayCurveSet"]; });
 
 /* harmony import */ var _Tr2ActionPlayMeshAnimation__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2ActionPlayMeshAnimation */ "./state/action/Tr2ActionPlayMeshAnimation.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayMeshAnimation", function() { return _Tr2ActionPlayMeshAnimation__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayMeshAnimation", function() { return _Tr2ActionPlayMeshAnimation__WEBPACK_IMPORTED_MODULE_5__["Tr2ActionPlayMeshAnimation"]; });
 
 /* harmony import */ var _Tr2ActionResetClipSphereCenter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tr2ActionResetClipSphereCenter */ "./state/action/Tr2ActionResetClipSphereCenter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionResetClipSphereCenter", function() { return _Tr2ActionResetClipSphereCenter__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionResetClipSphereCenter", function() { return _Tr2ActionResetClipSphereCenter__WEBPACK_IMPORTED_MODULE_6__["Tr2ActionResetClipSphereCenter"]; });
 
 /* harmony import */ var _Tr2ActionSetValue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tr2ActionSetValue */ "./state/action/Tr2ActionSetValue.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionSetValue", function() { return _Tr2ActionSetValue__WEBPACK_IMPORTED_MODULE_7__["default"]; });
-
-
-
-
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionSetValue", function() { return _Tr2ActionSetValue__WEBPACK_IMPORTED_MODULE_7__["Tr2ActionSetValue"]; });
 
 
 
@@ -66729,12 +66152,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************************!*\
   !*** ./state/controller/Tr2Controller.js ***!
   \*******************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2Controller */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2Controller; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2Controller", function() { return Tr2Controller; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66787,8 +66210,6 @@ function (_Tw2BaseClass) {
 
   return Tr2Controller;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Controller, Type => {
   return {
     isStaging: true,
@@ -66809,12 +66230,12 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2Controller, Type 
 /*!****************************************************!*\
   !*** ./state/controller/Tr2ControllerReference.js ***!
   \****************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ControllerReference */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ControllerReference; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerReference", function() { return Tr2ControllerReference; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -66861,8 +66282,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ControllerReference;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ControllerReference, Type => {
   return {
     isStaging: true,
@@ -66887,12 +66306,10 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ControllerReferen
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2Controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2Controller */ "./state/controller/Tr2Controller.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Controller", function() { return _Tr2Controller__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Controller", function() { return _Tr2Controller__WEBPACK_IMPORTED_MODULE_0__["Tr2Controller"]; });
 
 /* harmony import */ var _Tr2ControllerReference__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2ControllerReference */ "./state/controller/Tr2ControllerReference.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerReference", function() { return _Tr2ControllerReference__WEBPACK_IMPORTED_MODULE_1__["default"]; });
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerReference", function() { return _Tr2ControllerReference__WEBPACK_IMPORTED_MODULE_1__["Tr2ControllerReference"]; });
 
 
 
@@ -66934,20 +66351,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return _variable__WEBPACK_IMPORTED_MODULE_2__["Tr2ControllerFloatVariable"]; });
 
 /* harmony import */ var _Tr2StateMachine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tr2StateMachine */ "./state/Tr2StateMachine.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachine", function() { return _Tr2StateMachine__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachine", function() { return _Tr2StateMachine__WEBPACK_IMPORTED_MODULE_3__["Tr2StateMachine"]; });
 
 /* harmony import */ var _Tr2StateMachineState__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tr2StateMachineState */ "./state/Tr2StateMachineState.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineState", function() { return _Tr2StateMachineState__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineState", function() { return _Tr2StateMachineState__WEBPACK_IMPORTED_MODULE_4__["Tr2StateMachineState"]; });
 
 /* harmony import */ var _Tr2StateMachineTransition__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tr2StateMachineTransition */ "./state/Tr2StateMachineTransition.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineTransition", function() { return _Tr2StateMachineTransition__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineTransition", function() { return _Tr2StateMachineTransition__WEBPACK_IMPORTED_MODULE_5__["Tr2StateMachineTransition"]; });
 
 /* harmony import */ var _Tr2SyncToAnimation__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tr2SyncToAnimation */ "./state/Tr2SyncToAnimation.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SyncToAnimation", function() { return _Tr2SyncToAnimation__WEBPACK_IMPORTED_MODULE_6__["default"]; });
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2SyncToAnimation", function() { return _Tr2SyncToAnimation__WEBPACK_IMPORTED_MODULE_6__["Tr2SyncToAnimation"]; });
 
 
 
@@ -66963,12 +66376,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************************************!*\
   !*** ./state/variable/Tr2ControllerFloatVariable.js ***!
   \******************************************************/
-/*! exports provided: default */
+/*! exports provided: Tr2ControllerFloatVariable */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tr2ControllerFloatVariable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return Tr2ControllerFloatVariable; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -67019,8 +66432,6 @@ function (_Tw2BaseClass) {
 
   return Tr2ControllerFloatVariable;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
-
-
 _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ControllerFloatVariable, Type => {
   return {
     isStaging: true,
@@ -67046,8 +66457,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2ControllerFloatVa
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2ControllerFloatVariable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2ControllerFloatVariable */ "./state/variable/Tr2ControllerFloatVariable.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return _Tr2ControllerFloatVariable__WEBPACK_IMPORTED_MODULE_0__["default"]; });
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return _Tr2ControllerFloatVariable__WEBPACK_IMPORTED_MODULE_0__["Tr2ControllerFloatVariable"]; });
 
 
 

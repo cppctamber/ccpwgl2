@@ -1,5 +1,5 @@
-import {vec3, vec4} from "../../global/index";
-import {Tw2BaseClass} from "../../global/index";
+import {vec3, vec4} from "../../global";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2InteriorLightSource
@@ -18,7 +18,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Number} radius              -
  * @property {Boolean} useKelvinColor     -
  */
-export default class Tr2InteriorLightSource extends Tw2BaseClass
+export class Tr2InteriorLightSource extends Tw2BaseClass
 {
 
     color = vec4.create();

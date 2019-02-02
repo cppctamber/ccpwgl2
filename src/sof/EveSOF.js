@@ -1,22 +1,30 @@
 import {vec3, vec4, quat, mat4, resMan} from "../global";
-import {Tw2FloatParameter} from "../core";
-import {Tw2TextureParameter} from "../core";
-import {Tw2Vector4Parameter} from "../core";
-import {Tw2Effect} from "../core";
-import {Tw2Mesh} from "../core";
-import {Tw2MeshArea} from "../core";
-import {Tw2InstancedMesh} from "../core";
-import {Tw2CurveSet} from "../core";
-import {Tw2ValueBinding} from "../core";
 import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve/legacy";
-import {EveBoosterSet} from "./item";
-import {EveChildMesh} from "./child";
-import {EveLocator2} from "./item";
-import {EvePlaneSet, EvePlaneSetItem} from "./item";
-import {EveSpaceObjectDecal} from "./item";
-import {EveSpotlightSet, EveSpotlightSetItem} from "./item";
-import {EveSpriteSet, EveSpriteSetItem} from "./item";
-import {EveSpaceObject, EveShip} from "./object";
+import {
+    Tw2FloatParameter,
+    Tw2TextureParameter,
+    Tw2Vector4Parameter,
+    Tw2Effect,
+    Tw2Mesh,
+    Tw2MeshArea,
+    Tw2InstancedMesh,
+    Tw2CurveSet,
+    Tw2ValueBinding
+} from "../core/index";
+import {
+    EveBoosterSet,
+    EveChildMesh,
+    EveLocator2,
+    EvePlaneSet,
+    EvePlaneSetItem,
+    EveSpaceObjectDecal,
+    EveSpotlightSet,
+    EveSpotlightSetItem,
+    EveSpriteSet,
+    EveSpriteSetItem,
+    EveSpaceObject,
+    EveShip
+} from "../eve";
 
 
 export function EveSOF()

@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} groupIndex -
  * @property {Boolean} isVisible -
  */
-export default class EveSOFDataFactionChild extends Tw2BaseClass
+export class EveSOFDataFactionChild extends Tw2BaseClass
 {
 
     groupIndex = 0;

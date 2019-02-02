@@ -126,7 +126,7 @@ EveObjectSetItem.define(EvePlaneSetItem, Type =>
  * Todo: Implement "pickBufferID" (Assuming we will add picking)
  * @ccp EvePlaneSet
  *
- * @property {Tr2Effect} effect                -
+ * @property {Tw2Effect} effect                -
  * @property {Boolean} hideOnLowQuality        -
  * @property {Number} pickBufferID             -
  * @property {Array.<EveObjectSetItem>} planes -
@@ -377,7 +377,7 @@ EveObjectSet.define(EvePlaneSet, Type =>
         type: "EvePlaneSet",
         category: "EveObjectSet",
         props: {
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             hideOnLowQuality: Type.BOOLEAN,
             pickBufferID: Type.NUMBER,
             items: [["EvePlaneSetItem"]]

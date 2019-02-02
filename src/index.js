@@ -13,6 +13,11 @@ export * from "./core";
 export * from "./curve";
 export * from "./eve";
 export * from "./particle";
+export * from "./interior";
+export * from "./particle";
+export * from "./sof";
+export * from "./state";
+
 export {math, util, device, store, resMan, logger, consts};
 
 const {vec4, mat4} = math;

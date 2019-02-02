@@ -1,8 +1,8 @@
-import {quat, vec3} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {quat, vec3, Tw2BaseClass} from "../global";
 
 /**
  * EveCamera
+ * @ccp EveCamera
  *
  * @property {Number} fieldOfView             -
  * @property {Number} friction                -
@@ -21,7 +21,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} yaw                     -
  * @property {Tr2CurveScalar} zoomCurve       -
  */
-export default class EveCamera extends Tw2BaseClass
+export class EveCamera extends Tw2BaseClass
 {
 
     fieldOfView = 0;

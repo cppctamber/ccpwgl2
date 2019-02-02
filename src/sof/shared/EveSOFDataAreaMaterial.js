@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} material3 -
  * @property {String} material4 -
  */
-export default class EveSOFDataAreaMaterial extends Tw2BaseClass
+export class EveSOFDataAreaMaterial extends Tw2BaseClass
 {
 
     colorType = 0;

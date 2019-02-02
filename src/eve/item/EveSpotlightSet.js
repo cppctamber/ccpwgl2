@@ -420,8 +420,8 @@ Tw2BaseClass.define(EveSpotlightSet, Type =>
     return {
         type: "EveSpotlightSet",
         props: {
-            coneEffect: ["Tr2Effect"],
-            glowEffect: ["Tr2Effect"],
+            coneEffect: ["Tw2Effect"],
+            glowEffect: ["Tw2Effect"],
             intensity: Type.NUMBER,
             spotlightItems: [["EveSpotlightSetItem"]]
         },

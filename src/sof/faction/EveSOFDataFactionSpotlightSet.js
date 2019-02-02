@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} groupIndex -
  * @property {vec4} spriteColor  -
  */
-export default class EveSOFDataFactionSpotlightSet extends Tw2BaseClass
+export class EveSOFDataFactionSpotlightSet extends Tw2BaseClass
 {
 
     coneColor = vec4.create();

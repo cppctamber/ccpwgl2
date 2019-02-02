@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} position    -
  * @property {quat} rotation    -
  */
-export default class EveSOFDataTransform extends Tw2BaseClass
+export class EveSOFDataTransform extends Tw2BaseClass
 {
 
     boneIndex = 0;

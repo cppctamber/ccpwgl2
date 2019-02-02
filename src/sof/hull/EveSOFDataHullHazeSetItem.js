@@ -14,7 +14,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} sourceBrightness      -
  * @property {Number} sourceSize            -
  */
-export default class EveSOFDataHullHazeSetItem extends Tw2BaseClass
+export class EveSOFDataHullHazeSetItem extends Tw2BaseClass
 {
 
     boosterGainInfluence = false;

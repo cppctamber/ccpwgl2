@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2KelvinColor
@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Number} temperature -
  * @property {Number} tint        -
  */
-export default class Tr2KelvinColor extends Tw2BaseClass
+export class Tr2KelvinColor extends Tw2BaseClass
 {
 
     temperature = 0;

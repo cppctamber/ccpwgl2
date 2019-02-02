@@ -4,7 +4,7 @@ import {Tw2BaseClass} from "../../global/index";
  * EveStarfield
  * TODO: Implement
  *
- * @property {Tr2Effect} effect         -
+ * @property {Tw2Effect} effect         -
  * @property {Number} maxDist           -
  * @property {Number} maxFlashRate      -
  * @property {Number} minDist           -
@@ -33,7 +33,7 @@ Tw2BaseClass.define(EveStarfield, Type =>
         isStaging: true,
         type: "EveStarfield",
         props: {
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             maxDist: Type.NUMBER,
             maxFlashRate: Type.NUMBER,
             minDist: Type.NUMBER,

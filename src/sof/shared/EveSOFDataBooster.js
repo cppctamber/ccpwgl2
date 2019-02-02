@@ -30,7 +30,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {EveSOFDataBoosterShape} warpShape0 -
  * @property {EveSOFDataBoosterShape} warpShape1 -
  */
-export default class EveSOFDataBooster extends Tw2BaseClass
+export class EveSOFDataBooster extends Tw2BaseClass
 {
 
     glowColor = vec4.create();

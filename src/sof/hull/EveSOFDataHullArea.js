@@ -11,7 +11,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} shader                          -
  * @property {Array.<EveSOFDataTexture>} textures     -
  */
-export default class EveSOFDataHullArea extends Tw2BaseClass
+export class EveSOFDataHullArea extends Tw2BaseClass
 {
 
     areaType = 0;

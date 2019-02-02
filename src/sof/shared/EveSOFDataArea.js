@@ -10,7 +10,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {EveSOFDataAreaMaterial} Rock     -
  * @property {EveSOFDataAreaMaterial} Sails    -
  */
-export default class EveSOFDataArea extends Tw2BaseClass
+export class EveSOFDataArea extends Tw2BaseClass
 {
 
     Darkhull = null;

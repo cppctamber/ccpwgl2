@@ -1,23 +1,21 @@
-import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../../global";
+import {vec3, vec4, Tw2BaseClass} from "../../global";
 
 /**
  * EveSpherePin
- * @implements EveObject
  *
  * @property {vec3} centerNormal             -
  * @property {vec4} color                    -
- * @property {Array.<TriCurveSet>} curveSets -
+ * @property {Array.<Tw2CurveSet>} curveSets -
  * @property {Boolean} enablePicking         -
  * @property {String} geometryResPath        -
  * @property {vec4} pinColor                 -
- * @property {Tr2Effect} pinEffect           -
+ * @property {Tw2Effect} pinEffect           -
  * @property {Number} pinMaxRadius           -
  * @property {Number} pinRadius              -
  * @property {Number} pinRotation            -
  * @property {Number} sortValueMultiplier    -
  */
-export default class EveSpherePin extends Tw2BaseClass
+export class EveSpherePin extends Tw2BaseClass
 {
 
     centerNormal = vec3.create();
@@ -39,15 +37,14 @@ Tw2BaseClass.define(EveSpherePin, Type =>
     return {
         isStaging: true,
         type: "EveSpherePin",
-        category: "EveObject",
         props: {
             centerNormal: Type.VECTOR3,
             color: Type.RGBA_LINEAR,
-            curveSets: [["TriCurveSet"]],
+            curveSets: [["Tw2CurveSet"]],
             enablePicking: Type.BOOLEAN,
             geometryResPath: Type.PATH,
             pinColor: Type.RGBA_LINEAR,
-            pinEffect: ["Tr2Effect"],
+            pinEffect: ["Tw2Effect"],
             pinMaxRadius: Type.NUMBER,
             pinRadius: Type.NUMBER,
             pinRotation: Type.NUMBER,

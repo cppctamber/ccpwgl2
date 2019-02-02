@@ -1,5 +1,4 @@
-import {vec3, vec4} from "../../../global";
-import {Tw2BaseClass} from "../../../global";
+import {vec3, vec4, Tw2BaseClass} from "../../global";
 
 /**
  * EveConnector
@@ -15,7 +14,7 @@ import {Tw2BaseClass} from "../../../global";
  * @property {EveLocalPositionCurve} sourceObject -
  * @property {Number} type                        -
  */
-export default class EveConnector extends Tw2BaseClass
+export class EveConnector extends Tw2BaseClass
 {
 
     animationColor = vec4.create();

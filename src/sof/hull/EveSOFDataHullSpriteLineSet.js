@@ -7,7 +7,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} skinned                               -
  * @property {String} visibilityGroup                        -
  */
-export default class EveSOFDataHullSpriteLineSet extends Tw2BaseClass
+export class EveSOFDataHullSpriteLineSet extends Tw2BaseClass
 {
 
     items = [];

@@ -49,7 +49,7 @@ EveObjectSetItem.define(EveBoosterSet2Item, Type =>
  *
  * @property {Boolean} alwaysOn             -
  * @property {Number} alwaysOnIntensity     -
- * @property {Tr2Effect} effect             -
+ * @property {Tw2Effect} effect             -
  * @property {vec4} glowColor               -
  * @property {Number} glowScale             -
  * @property {EveSpriteSet} glows           -
@@ -100,7 +100,7 @@ EveObjectSet.define(EveBoosterSet2, Type =>
         props: {
             alwaysOn: Type.BOOLEAN,
             alwaysOnIntensity: Type.NUMBER,
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             glowColor: Type.RGBA_LINEAR,
             glowScale: Type.NUMBER,
             glows: ["EveSpriteSet"],

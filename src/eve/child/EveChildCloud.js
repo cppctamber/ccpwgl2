@@ -8,7 +8,7 @@ import {EveChild} from "./EveChild";
  * @ccp EveChildCloud
  *
  * @property {Number} cellScreenSize      -
- * @property {Tr2Effect} effect           -
+ * @property {Tw2Effect} effect           -
  * @property {Number} preTesselationLevel -
  * @property {quat} rotation              -
  * @property {vec3} scaling               -

@@ -5,7 +5,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {String} str -
  */
-export default class EveSOFDataGenericString extends Tw2BaseClass
+export class EveSOFDataGenericString extends Tw2BaseClass
 {
 
     str = "";

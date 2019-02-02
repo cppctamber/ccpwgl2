@@ -7,7 +7,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec4} color        -
  * @property {Number} groupIndex -
  */
-export default class EveSOFDataFactionPlaneSet extends Tw2BaseClass
+export class EveSOFDataFactionPlaneSet extends Tw2BaseClass
 {
 
     color = vec4.create();

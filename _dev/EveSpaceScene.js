@@ -1,5 +1,7 @@
 import {vec3, vec4, quat, mat4, util, device, resMan, store, Tw2BaseClass} from "../global";
-import {Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess} from "../core";
+import {Tw2BatchAccumulator, Tw2RawData, Tw2Frustum} from "../core";
+import {Tw2Effect} from "../src/core/mesh";
+import Tr2PostProcess from "../src/core/post/Tr2PostProcess";
 
 /**
  * EveSpaceScene
@@ -175,9 +177,25 @@ export class EveSpaceScene extends Tw2BaseClass
         this.SetEnvMapPath(1, this.envMap1ResPath);
         this.SetEnvMapPath(2, this.envMap2ResPath);
 
+        // Temporarily move any scene objects into backgroundObjects until
+        // parent Scene can handle un-registered objects
+        if (this.objects.length)
+        {
+            for (let i = 0; i < this.objects.length; i++)
+            {
+                this.backgroundObjects.push(this.objects[i]);
+                this.objects.splice(i, 1);
+                i--;
+            }
+        }
+
         if (this.postProcessPath)
         {
-            resMan.GetObject(this.postProcessPath, obj => this.postProcess = obj);
+            resMan.GetObject(this.postProcessPath,
+                obj =>
+                {
+                    this.postProcess = obj;
+                });
         }
     }
 
@@ -740,17 +758,7 @@ Tw2BaseClass.define(EveSpaceScene, Type =>
             sunDiffuseColorWithDynamicLights: Type.RGBA_LINEAR,
             sunDirection: Type.VECTOR3,
             useSunDiffuseColorWithDynamicLights: Type.BOOLEAN
-        },
-        notImplemented: [
-            "externalParameters",
-            "selfShadowOnly",
-            "shLightingManager",
-            "shadowFadeThreshold",
-            "shadowThreshold",
-            "starField",
-            "sunDiffuseColorWithDynamicLights",
-            "postProcess"
-        ]
+        }
     };
 });
 

@@ -10,7 +10,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} hasTrail   -
  * @property {mat4} transform     -
  */
-export default class EveSOFDataHullBoosterItem extends Tw2BaseClass
+export class EveSOFDataHullBoosterItem extends Tw2BaseClass
 {
 
     atlasIndex0 = 0;

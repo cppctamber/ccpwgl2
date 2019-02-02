@@ -5,7 +5,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {String} path -
  */
-export default class EveSOFDataHullController extends Tw2BaseClass
+export class EveSOFDataHullController extends Tw2BaseClass
 {
 
     path = "";

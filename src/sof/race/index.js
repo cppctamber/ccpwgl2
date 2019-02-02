@@ -1,3 +1,3 @@
-export EveSOFDataRace from "./EveSOFDataRace";
-export EveSOFDataRaceDamage from "./EveSOFDataRaceDamage";
+export * from "./EveSOFDataRace";
+export * from "./EveSOFDataRaceDamage";
 

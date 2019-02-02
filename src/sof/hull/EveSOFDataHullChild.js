@@ -11,7 +11,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} scaling            -
  * @property {vec3} translation        -
  */
-export default class EveSOFDataHullChild extends Tw2BaseClass
+export class EveSOFDataHullChild extends Tw2BaseClass
 {
 
     groupIndex = 0;

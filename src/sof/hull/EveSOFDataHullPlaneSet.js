@@ -11,7 +11,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} skinned                          -
  * @property {Number} usage                             -
  */
-export default class EveSOFDataHullPlaneSet extends Tw2BaseClass
+export class EveSOFDataHullPlaneSet extends Tw2BaseClass
 {
 
     atlasSize = 0;

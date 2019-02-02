@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {TriCurveSet} curveSet -
  * @property {String} value         -
  */
-export default class Tr2ActionAnimateCurveSet extends Tw2BaseClass
+export class Tr2ActionAnimateCurveSet extends Tw2BaseClass
 {
 
     curveSet = null;

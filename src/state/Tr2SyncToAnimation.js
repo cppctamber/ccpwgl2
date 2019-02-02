@@ -4,7 +4,7 @@ import {Tw2BaseClass} from "../global";
  * Tr2SyncToAnimation
  * Todo: Implement
  */
-export default class Tr2SyncToAnimation extends Tw2BaseClass
+export class Tr2SyncToAnimation extends Tw2BaseClass
 {
 
 

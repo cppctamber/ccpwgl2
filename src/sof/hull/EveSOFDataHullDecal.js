@@ -17,7 +17,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataTexture>} textures     -
  * @property {Number} usage                           -
  */
-export default class EveSOFDataHullDecal extends Tw2BaseClass
+export class EveSOFDataHullDecal extends Tw2BaseClass
 {
 
     boneIndex = 0;

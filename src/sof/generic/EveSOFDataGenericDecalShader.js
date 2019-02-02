@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataGenericString>} parentTextures -
  * @property {String} shader                                  -
  */
-export default class EveSOFDataGenericDecalShader extends Tw2BaseClass
+export class EveSOFDataGenericDecalShader extends Tw2BaseClass
 {
 
     defaultTextures = [];

@@ -5,7 +5,7 @@ import {EveChild} from "./EveChild";
  * Todo: Implement
  * @ccp EveChildBulletStorm
  *
- * @property {Tr2Effect} effect        -
+ * @property {Tw2Effect} effect        -
  * @property {Number} multiplier       -
  * @property {Number} range            -
  * @property {String} sourceLocatorSet -

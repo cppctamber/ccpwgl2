@@ -1,4 +1,4 @@
-var ccpwgl = (function(ccpwgl_int)
+var ccpwgl = (function (ccpwgl_int)
 {
     var ccpwgl = {};
     var vec3 = ccpwgl_int.math.vec3;
@@ -30,8 +30,8 @@ var ccpwgl = (function(ccpwgl_int)
      * Values for textureQuality option that can be passed to ccpwgl.initialize.
      */
     ccpwgl.ShaderQuality = {
-        HIGH: 'hi',
-        LOW: 'lo'
+        HIGH: "hi",
+        LOW: "lo"
     };
 
     /**
@@ -83,10 +83,10 @@ var ccpwgl = (function(ccpwgl_int)
      * Exception class for objects that can be thrown by ccpwgl.initialize function if
      * WebGL context is not available.
      */
-    ccpwgl.NoWebGLError = function()
+    ccpwgl.NoWebGLError = function ()
     {
-        this.name = 'NoWebGLError';
-        this.message = 'WebGL context is not available';
+        this.name = "NoWebGLError";
+        this.message = "WebGL context is not available";
     };
     ccpwgl.NoWebGLError.prototype = Object.create(Error.prototype);
     ccpwgl.NoWebGLError.prototype.constructor = ccpwgl.NoWebGLError;
@@ -94,10 +94,10 @@ var ccpwgl = (function(ccpwgl_int)
     /**
      * Exception that is thrown by some methods when their object .red files is not yet loaded.
      */
-    ccpwgl.IsStillLoadingError = function()
+    ccpwgl.IsStillLoadingError = function ()
     {
-        this.name = 'IsStillLoadingError';
-        this.message = 'Cannot process the request until the object is loaded';
+        this.name = "IsStillLoadingError";
+        this.message = "Cannot process the request until the object is loaded";
     };
     ccpwgl.IsStillLoadingError.prototype = Object.create(Error.prototype);
     ccpwgl.IsStillLoadingError.prototype.constructor = ccpwgl.IsStillLoadingError;
@@ -122,19 +122,19 @@ var ccpwgl = (function(ccpwgl_int)
      * Toggles using a scene's background colour or ccpwgl's
      * @param {Boolean} bool
      */
-    ccpwgl.useSceneClearColor = function(bool)
+    ccpwgl.useSceneClearColor = function (bool)
     {
         useSceneClearColor = bool;
-    }
+    };
 
     /**
      * Sets the background clear color
      * @param {vec4} color
      */
-    ccpwgl.setClearColor = function(color)
+    ccpwgl.setClearColor = function (color)
     {
         vec4.copy(clearColor, color);
-    }
+    };
 
     /**
      * Bloom post effect
@@ -184,6 +184,12 @@ var ccpwgl = (function(ccpwgl_int)
     ccpwgl.onPostRender = null;
 
     var sof = new ccpwgl_int.EveSOF();
+
+    // Store the sof locally for testing
+    sof.GetSofData(function (data)
+    {
+        ccpwgl.sof = data;
+    });
 
     /**
      * Internal render/update function. Is called every frame.
@@ -238,7 +244,7 @@ var ccpwgl = (function(ccpwgl_int)
                 ccpwgl.onPreRender(dt);
             }
 
-            scene.wrappedScene.Render();
+            scene.wrappedScene.Render(dt);
 
             if (ccpwgl.onPostSceneRender)
             {
@@ -288,7 +294,7 @@ var ccpwgl = (function(ccpwgl_int)
      * @returns {number} webgl version (0: none, 1: webgl, 2: webgl2)
      * @throws {NoWebGLError} If WebGL context is not available (IE or older browsers for example).
      */
-    ccpwgl.initialize = function(canvas, params)
+    ccpwgl.initialize = function (canvas, params)
     {
         function getOption(params, name, defaultValue)
         {
@@ -300,12 +306,12 @@ var ccpwgl = (function(ccpwgl_int)
         }
 
         var d = ccpwgl_int.device;
-        d.mipLevelSkipCount = getOption(params, 'textureQuality', 0);
-        d.shaderModel = getOption(params, 'shaderQuality', 'hi');
-        d.enableAnisotropicFiltering = getOption(params, 'anisotropicFilter', true);
+        d.mipLevelSkipCount = getOption(params, "textureQuality", 0);
+        d.shaderModel = getOption(params, "shaderQuality", "hi");
+        d.enableAnisotropicFiltering = getOption(params, "anisotropicFilter", true);
 
-        var glParams = getOption(params, 'glParams', {});
-        glParams.webgl2 = !params || params.webgl2 === undefined ? false : params.webgl2;
+        var glParams = getOption(params, "glParams", {});
+        glParams.webgl2 = !params || params.webgl2 === undefined ? true : params.webgl2;
 
         var webglVersion = d.CreateDevice(canvas, glParams);
 
@@ -313,9 +319,9 @@ var ccpwgl = (function(ccpwgl_int)
 
         d.Schedule(render);
 
-        if ('postprocessing' in params)
+        if ("postprocessing" in params)
         {
-            ccpwgl.enablePostprocessing(params.postprocessing)
+            ccpwgl.enablePostprocessing(params.postprocessing);
         }
 
         function tick()
@@ -344,7 +350,7 @@ var ccpwgl = (function(ccpwgl_int)
      * @param {string} namespace Resource namespace.
      * @param {string} path URL to resource root. Needs to have a trailing slash.
      */
-    ccpwgl.setResourcePath = function(namespace, path)
+    ccpwgl.setResourcePath = function (namespace, path)
     {
         ccpwgl_int.store.RegisterPath(namespace, path);
     };
@@ -356,13 +362,13 @@ var ccpwgl = (function(ccpwgl_int)
      *
      * @param {boolean} enable Enable/disable postprocessing.
      */
-    ccpwgl.enablePostprocessing = function(enable)
+    ccpwgl.enablePostprocessing = function (enable)
     {
         if (enable)
         {
             if (!bloomEffect)
             {
-                const postDirectory = 'res:/Graphics/Effect/Managed/Space/PostProcess/';
+                const postDirectory = "res:/Graphics/Effect/Managed/Space/PostProcess/";
                 bloomEffect = ccpwgl.post.CreateItem({
                     name: "Bloom",
                     display: false,
@@ -423,7 +429,7 @@ var ccpwgl = (function(ccpwgl_int)
      *
      * @param {Object} newCamera Current camera object.
      */
-    ccpwgl.setCamera = function(newCamera)
+    ccpwgl.setCamera = function (newCamera)
     {
         camera = newCamera;
     };
@@ -433,7 +439,7 @@ var ccpwgl = (function(ccpwgl_int)
      * Provides a callback that is called once SOF data has been loaded.
      * @param callback Function that is called when SOF data is ready. Called with a single parameter
      */
-    ccpwgl.getSofData = function(callback)
+    ccpwgl.getSofData = function (callback)
     {
         sof.GetSofData(callback);
     };
@@ -446,7 +452,7 @@ var ccpwgl = (function(ccpwgl_int)
      * @param callback Function that is called when SOF data is ready. Called with a single parameter that is an mapping
      * of all hull names to their descriptions.
      */
-    ccpwgl.getSofHullNames = function(callback)
+    ccpwgl.getSofHullNames = function (callback)
     {
         sof.GetHullNames(callback);
     };
@@ -459,7 +465,7 @@ var ccpwgl = (function(ccpwgl_int)
      * @param callback Function that is called when SOF data is ready. Called with a single parameter that is an mapping
      * of all faction names to their descriptions.
      */
-    ccpwgl.getSofFactionNames = function(callback)
+    ccpwgl.getSofFactionNames = function (callback)
     {
         sof.GetFactionNames(callback);
     };
@@ -472,7 +478,7 @@ var ccpwgl = (function(ccpwgl_int)
      * @param callback Function that is called when SOF data is ready. Called with a single parameter that is an mapping
      * of all race names to their descriptions.
      */
-    ccpwgl.getSofRaceNames = function(callback)
+    ccpwgl.getSofRaceNames = function (callback)
     {
         sof.GetRaceNames(callback);
     };
@@ -484,11 +490,11 @@ var ccpwgl = (function(ccpwgl_int)
      * @param callback Function that is called when SOF data is ready. Called with a single parameter that is a
      * constructor name for the given hull.
      */
-    ccpwgl.getSofHullConstructor = function(hull, callback)
+    ccpwgl.getSofHullConstructor = function (hull, callback)
     {
-        sof.GetSofData(function(data)
+        sof.GetSofData(function (data)
         {
-            var c = hull.indexOf(':');
+            var c = hull.indexOf(":");
             if (c > 0)
             {
                 hull = hull.substr(0, c);
@@ -499,11 +505,11 @@ var ccpwgl = (function(ccpwgl_int)
             {
                 if (h.buildClass == 2)
                 {
-                    constructor = 'loadObject';
+                    constructor = "loadObject";
                 }
                 else
                 {
-                    constructor = 'loadShip';
+                    constructor = "loadShip";
                 }
             }
             callback(constructor);
@@ -535,11 +541,11 @@ var ccpwgl = (function(ccpwgl_int)
         function onObjectLoaded(obj)
         {
             self.wrappedObjects[0] = obj;
-            if ('transform' in self.wrappedObjects[0])
+            if ("transform" in self.wrappedObjects[0])
             {
                 self.wrappedObjects[0].transform.set(self.transform);
             }
-            else if ('translation' in self.wrappedObjects[0])
+            else if ("translation" in self.wrappedObjects[0])
             {
                 self.wrappedObjects[0].translation.set(self.transform.subarray(12, 15));
                 self.wrappedObjects[0].scaling[0] = vec3.length(self.transform);
@@ -560,7 +566,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @returns {boolean} True if object's .red file is loading; false otherwise.
          */
-        this.isLoaded = function()
+        this.isLoaded = function ()
         {
             return this.wrappedObjects[0] != null;
         };
@@ -573,15 +579,15 @@ var ccpwgl = (function(ccpwgl_int)
          * @returns {[vec3, float]} Array with first element being sphere position in local
          * coordinate space and second - sphere radius.
          */
-        this.getBoundingSphere = function()
+        this.getBoundingSphere = function ()
         {
             if (!this.isLoaded())
             {
                 throw new ccpwgl.IsStillLoadingError();
             }
-            if (!('boundingSphereRadius' in this.wrappedObjects[0]))
+            if (!("boundingSphereRadius" in this.wrappedObjects[0]))
             {
-                throw new TypeError('Object does not have bounding sphere information');
+                throw new TypeError("Object does not have bounding sphere information");
             }
             return [this.wrappedObjects[0].boundingSphereCenter, this.wrappedObjects[0].boundingSphereRadius];
         };
@@ -591,17 +597,17 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {mat4} newTransform Transform matrix.
          */
-        this.setTransform = function(newTransform)
+        this.setTransform = function (newTransform)
         {
             this.transform.set(newTransform);
             if (this.wrappedObjects[0])
             {
                 var tr = this.wrappedObjects[0];
-                if ('transform' in tr)
+                if ("transform" in tr)
                 {
                     mat4.copy(tr.transform, this.transform);
                 }
-                else if ('translation' in tr)
+                else if ("translation" in tr)
                 {
                     mat4.getTranslation(tr.translation, this.transform);
                     mat4.getScaling(tr.scaling, this.transform);
@@ -615,7 +621,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @returns {mat4} Transform matrix.
          */
-        this.getTransform = function()
+        this.getTransform = function ()
         {
             return this.transform;
         };
@@ -641,7 +647,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {string} resPath Resource path to overlay effect.
          * @returns {number} Index of overlay effect; can be used in removeOverlay call.
          */
-        this.addOverlay = function(resPath)
+        this.addOverlay = function (resPath)
         {
             var index = this.overlays.length;
             var overlay = {
@@ -649,7 +655,7 @@ var ccpwgl = (function(ccpwgl_int)
                 overlay: null
             };
             this.overlays.push(overlay);
-            ccpwgl_int.resMan.GetObject(resPath, function(obj)
+            ccpwgl_int.resMan.GetObject(resPath, function (obj)
             {
                 overlay.overlay = obj;
                 rebuildOverlays();
@@ -662,7 +668,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {number} index Index of overlay effect as returned by addOverlay.
          */
-        this.removeOverlay = function(index)
+        this.removeOverlay = function (index)
         {
             this.overlays.splice(index, 1);
             rebuildOverlays();
@@ -671,11 +677,11 @@ var ccpwgl = (function(ccpwgl_int)
         /**
          * Removes all overlay effects from the object.
          */
-        this.removeAllOverlays = function()
+        this.removeAllOverlays = function ()
         {
             this.overlays.splice(0, this.overlays.length);
             rebuildOverlays();
-        }
+        };
 
         if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/))
         {
@@ -733,7 +739,7 @@ var ccpwgl = (function(ccpwgl_int)
         var faction = null;
 
         var self = this;
-        if (typeof resPath == 'string')
+        if (typeof resPath == "string")
         {
             resPath = [resPath];
         }
@@ -745,13 +751,13 @@ var ccpwgl = (function(ccpwgl_int)
 
         function OnShipPartLoaded(index)
         {
-            return function(obj)
+            return function (obj)
             {
                 self.wrappedObjects[index] = obj;
                 if (!(obj instanceof ccpwgl_int.EveShip))
                 {
                     self.wrappedObjects[index] = null;
-                    console.error('Object loaded with scene.loadShip is not a ship');
+                    console.error("Object loaded with scene.loadShip is not a ship");
                     return;
                 }
                 self.wrappedObjects[index].transform.set(self.transform);
@@ -765,11 +771,11 @@ var ccpwgl = (function(ccpwgl_int)
                 switch (self.siegeState)
                 {
                     case ccpwgl.ShipSiegeState.SIEGE:
-                        self.wrappedObjects[index].animation.PlayAnimation('SiegeLoop', true);
+                        self.wrappedObjects[index].animation.PlayAnimation("SiegeLoop", true);
                         self.internalSiegeState = ccpwgl.ShipSiegeState.SIEGE;
                         break;
                     default:
-                        self.wrappedObjects[index].animation.PlayAnimation('NormalLoop', true);
+                        self.wrappedObjects[index].animation.PlayAnimation("NormalLoop", true);
                 }
                 if (self.onInitialSeigeState)
                 {
@@ -801,7 +807,7 @@ var ccpwgl = (function(ccpwgl_int)
         {
             if (resPath.length != 5)
             {
-                throw new TypeError('Invalid number of parts passed to Tech3 ship constructor');
+                throw new TypeError("Invalid number of parts passed to Tech3 ship constructor");
             }
         }
 
@@ -829,7 +835,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {string} resPath Resource path to overlay effect.
          * @returns {number} Index of overlay effect; can be used in removeOverlay call.
          */
-        this.addOverlay = function(resPath)
+        this.addOverlay = function (resPath)
         {
             var index = this.overlays.length;
             var overlay = {
@@ -837,7 +843,7 @@ var ccpwgl = (function(ccpwgl_int)
                 overlay: null
             };
             this.overlays.push(overlay);
-            ccpwgl_int.resMan.GetObject(resPath, function(obj)
+            ccpwgl_int.resMan.GetObject(resPath, function (obj)
             {
                 overlay.overlay = obj;
                 rebuildOverlays();
@@ -850,7 +856,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {number} index Index of overlay effect as returned by addOverlay.
          */
-        this.removeOverlay = function(index)
+        this.removeOverlay = function (index)
         {
             this.overlays.splice(index, 1);
             rebuildOverlays();
@@ -859,7 +865,7 @@ var ccpwgl = (function(ccpwgl_int)
         /**
          * Removes all overlay effects from the object.
          */
-        this.removeAllOverlays = function()
+        this.removeAllOverlays = function ()
         {
             this.overlays.splice(0, this.overlays.length);
             rebuildOverlays();
@@ -868,11 +874,11 @@ var ccpwgl = (function(ccpwgl_int)
         function assembleT3Ship()
         {
             var systemNames = [
-                'electronic',
-                'defensive',
-                'engineering',
-                'offensive',
-                'propulsion'
+                "electronic",
+                "defensive",
+                "engineering",
+                "offensive",
+                "propulsion"
             ];
             var systems = [];
             for (var i = 0; i < self.wrappedObjects.length; ++i)
@@ -880,7 +886,7 @@ var ccpwgl = (function(ccpwgl_int)
                 var found = false;
                 for (var j = 1; j < systemNames.length; ++j)
                 {
-                    var loc = self.wrappedObjects[i].FindLocatorTransformByName('locator_attach_' + systemNames[j]);
+                    var loc = self.wrappedObjects[i].FindLocatorTransformByName("locator_attach_" + systemNames[j]);
                     if (loc !== null)
                     {
                         if (systems[j - 1])
@@ -889,7 +895,7 @@ var ccpwgl = (function(ccpwgl_int)
                             {
                                 break;
                             }
-                            throw new TypeError('Invalid parts passed to Tech3 ship constructor');
+                            throw new TypeError("Invalid parts passed to Tech3 ship constructor");
                         }
                         systems[j - 1] = [i, loc.subarray(12, 15)];
                         found = true;
@@ -900,7 +906,7 @@ var ccpwgl = (function(ccpwgl_int)
                 {
                     if (systems[4])
                     {
-                        throw new TypeError('Invalid parts passed to Tech3 ship constructor');
+                        throw new TypeError("Invalid parts passed to Tech3 ship constructor");
                     }
                     systems[4] = [i, vec3.create()];
                 }
@@ -921,7 +927,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @returns {boolean} True if ship's .red file is loading; false otherwise.
          */
-        this.isLoaded = function()
+        this.isLoaded = function ()
         {
             for (var i = 0; i < this.wrappedObjects.length; ++i)
             {
@@ -940,7 +946,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @returns {[vec3, float]} Array with first element being sphere position in local
          * coordinate space and second - sphere radius.
          */
-        this.getBoundingSphere = function()
+        this.getBoundingSphere = function ()
         {
             if (!this.isLoaded())
             {
@@ -954,7 +960,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {mat4} newTransform Transform matrix.
          */
-        this.setTransform = function(newTransform)
+        this.setTransform = function (newTransform)
         {
             this.transform.set(newTransform);
             var i;
@@ -982,7 +988,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @returns {mat4} Transform matrix.
          */
-        this.getTransform = function()
+        this.getTransform = function ()
         {
             return this.transform;
         };
@@ -994,13 +1000,13 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {!function(): void} onload Optional callback function that is called
          *   when boosters .red file is loaded. this will point to Ship instance.
          */
-        this.loadBoosters = function(resPath, onload)
+        this.loadBoosters = function (resPath, onload)
         {
             var self = this;
 
             function loaded(index)
             {
-                return function(obj)
+                return function (obj)
                 {
                     self.boosters[index] = obj;
                     if (self.wrappedObjects[index])
@@ -1019,7 +1025,7 @@ var ccpwgl = (function(ccpwgl_int)
                     {
                         onload.call(self);
                     }
-                }
+                };
             }
 
             for (var i = 0; i < self.wrappedObjects.length; ++i)
@@ -1033,7 +1039,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {number} boosterStrength Boosters strength from 0 to 1.
          */
-        this.setBoosterStrength = function(boosterStrength)
+        this.setBoosterStrength = function (boosterStrength)
         {
             this.boosterStrength = boosterStrength;
             for (var i = 0; i < self.wrappedObjects.length; ++i)
@@ -1050,7 +1056,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {number} kills Number of kills (from 0).
          */
-        this.setKillCount = function(kills)
+        this.setKillCount = function (kills)
         {
             this.killCount = kills;
             for (var i = 0; i < self.wrappedObjects.length; ++i)
@@ -1068,7 +1074,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @throws If the ship's .red file is not yet loaded.
          * @returns {number} Number of turret slots.
          */
-        this.getTurretSlotCount = function()
+        this.getTurretSlotCount = function ()
         {
             if (this.turretCount !== undefined)
             {
@@ -1102,7 +1108,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {number} index Slot index to mount turret in.
          * @param {string} resPath Res path to turret .red file.
          */
-        this.mountTurret = function(index, resPath)
+        this.mountTurret = function (index, resPath)
         {
             this.turrets[index] = {
                 path: resPath,
@@ -1120,12 +1126,12 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {number} index Turret slot to clear.
          */
-        this.removeTurret = function(index)
+        this.removeTurret = function (index)
         {
             this.turrets[index] = null;
             if (this.isLoaded())
             {
-                var name = 'locator_turret_' + index;
+                var name = "locator_turret_" + index;
                 for (var j = 0; j < this.wrappedObjects.length; ++j)
                 {
                     var ship = this.wrappedObjects[j];
@@ -1149,16 +1155,16 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {number} index Turret slot.
          * @param {ccpwgl.TurretState} state Turret animation state.
          */
-        this.setTurretState = function(index, state)
+        this.setTurretState = function (index, state)
         {
             if (!this.turrets[index])
             {
-                throw new ReferenceError('turret at index ' + index + ' is not defined');
+                throw new ReferenceError("turret at index " + index + " is not defined");
             }
             if (this.turrets[index].state != state || state == ccpwgl.TurretState.FIRING)
             {
                 this.turrets[index].state = state;
-                var name = 'locator_turret_' + index;
+                var name = "locator_turret_" + index;
                 for (var j = 0; j < this.wrappedObjects.length; ++j)
                 {
                     if (this.wrappedObjects[j])
@@ -1194,14 +1200,14 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {number} index Turret slot.
          * @param {vec3} target Target position in world space.
          */
-        this.setTurretTargetPosition = function(index, target)
+        this.setTurretTargetPosition = function (index, target)
         {
             if (!this.turrets[index])
             {
-                throw new ReferenceError('turret at index ' + index + ' is not defined');
+                throw new ReferenceError("turret at index " + index + " is not defined");
             }
             vec3.copy(this.turrets[index].target, target);
-            var name = 'locator_turret_' + index;
+            var name = "locator_turret_" + index;
             for (var j = 0; j < this.wrappedObjects.length; ++j)
             {
                 if (this.wrappedObjects[j])
@@ -1218,11 +1224,11 @@ var ccpwgl = (function(ccpwgl_int)
             }
         };
 
-        this.getTurretTargetPosition = function(index)
+        this.getTurretTargetPosition = function (index)
         {
             if (!this.turrets[index])
             {
-                throw new ReferenceError('turret at index ' + index + ' is not defined');
+                throw new ReferenceError("turret at index " + index + " is not defined");
             }
             return this.turrets[index].target;
         };
@@ -1235,7 +1241,7 @@ var ccpwgl = (function(ccpwgl_int)
         /** Internal helper method that mount a turret on a loaded ship **/
         function doMountTurret(slot, resPath, state, targetPosition, objectIndex)
         {
-            var name = 'locator_turret_' + slot;
+            var name = "locator_turret_" + slot;
             if (objectIndex === undefined)
             {
                 objectIndex = null;
@@ -1269,7 +1275,7 @@ var ccpwgl = (function(ccpwgl_int)
                 }
             }
 
-            const onTurretFired = function(turretSet, positions)
+            const onTurretFired = function (turretSet, positions)
             {
                 if (self.turretFireCallback)
                 {
@@ -1281,7 +1287,7 @@ var ccpwgl = (function(ccpwgl_int)
             ship.RebuildTurretPositions();
             ccpwgl_int.resMan.GetObject(
                 resPath,
-                function(object)
+                function (object)
                 {
                     object.locatorName = name;
                     if (faction)
@@ -1319,11 +1325,11 @@ var ccpwgl = (function(ccpwgl_int)
          *   when animation has switched to the new state. This will point to Ship instance. The
          *   state parameter is the new siege state.
          */
-        this.setSiegeState = function(state, onswitch)
+        this.setSiegeState = function (state, onswitch)
         {
             function getOnComplete(index, state, nextAnim)
             {
-                return function()
+                return function ()
                 {
                     self.internalSiegeState = state;
                     self.wrappedObjects[index].animation.StopAllAnimations();
@@ -1354,14 +1360,14 @@ var ccpwgl = (function(ccpwgl_int)
                                     this.internalSiegeState = 100;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
                                     this.wrappedObjects[j].animation.PlayAnimation(
-                                        'StartSiege',
+                                        "StartSiege",
                                         false,
-                                        getOnComplete(j, ccpwgl.ShipSiegeState.SIEGE, 'SiegeLoop'));
+                                        getOnComplete(j, ccpwgl.ShipSiegeState.SIEGE, "SiegeLoop"));
                                     break;
                                 default:
                                     this.internalSiegeState = ccpwgl.ShipSiegeState.SIEGE;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
-                                    this.wrappedObjects[j].animation.PlayAnimation('SiegeLoop', true);
+                                    this.wrappedObjects[j].animation.PlayAnimation("SiegeLoop", true);
                                     if (onswitch)
                                     {
                                         onswitch.call(self, self.internalSiegeState);
@@ -1379,14 +1385,14 @@ var ccpwgl = (function(ccpwgl_int)
                                     this.internalSiegeState = 101;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
                                     this.wrappedObjects[j].animation.PlayAnimation(
-                                        'EndSiege',
+                                        "EndSiege",
                                         false,
-                                        getOnComplete(j, ccpwgl.ShipSiegeState.NORMAL, 'NormalLoop'));
+                                        getOnComplete(j, ccpwgl.ShipSiegeState.NORMAL, "NormalLoop"));
                                     break;
                                 default:
                                     this.internalSiegeState = ccpwgl.ShipSiegeState.NORMAL;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
-                                    this.wrappedObjects[j].animation.PlayAnimation('NormalLoop', true);
+                                    this.wrappedObjects[j].animation.PlayAnimation("NormalLoop", true);
                                     if (onswitch)
                                     {
                                         onswitch.call(self, self.internalSiegeState);
@@ -1417,7 +1423,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @throws If the ship's .red file is not yet loaded.
          * @returns {Array} Array of ship locators.
          */
-        this.GetLocators = function()
+        this.GetLocators = function ()
         {
             if (!this.isLoaded())
             {
@@ -1432,13 +1438,13 @@ var ccpwgl = (function(ccpwgl_int)
         };
 
         var factions = {
-            amarr: 'amarrbase',
-            caldari: 'caldaribase',
-            gallente: 'gallentebase',
-            minmatar: 'minmatarbase'
+            amarr: "amarrbase",
+            caldari: "caldaribase",
+            gallente: "gallentebase",
+            minmatar: "minmatarbase"
         };
 
-        resPath.sort(function(x, y)
+        resPath.sort(function (x, y)
         {
             x = x.toLowerCase();
             y = y.toLowerCase();
@@ -1460,9 +1466,9 @@ var ccpwgl = (function(ccpwgl_int)
                 if (i == 0)
                 {
                     this.dna = resPath[0];
-                    faction = this.dna.split(':')[1];
+                    faction = this.dna.split(":")[1];
                 }
-                sof.BuildFromDNA(resPath[i], OnShipPartLoaded(i))
+                sof.BuildFromDNA(resPath[i], OnShipPartLoaded(i));
             }
             else
             {
@@ -1510,7 +1516,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @returns {boolean} True if planet is loaded; false otherwise.
          */
-        this.isLoaded = function()
+        this.isLoaded = function ()
         {
             return !this.wrappedObjects[0].heightDirty;
         };
@@ -1522,7 +1528,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @returns {[vec3, float]} Array with first element being sphere position in local
          * coordinate space and the second it's radius
          */
-        this.getBoundingSphere = function()
+        this.getBoundingSphere = function ()
         {
             var tr = this.wrappedObjects[0].highDetail;
             return [vec3.clone(tr.translation), Math.max(tr.scaling[0], tr.scaling[1], tr.scaling[2])];
@@ -1533,7 +1539,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {mat4} newTransform Transform matrix.
          */
-        this.setTransform = function(newTransform)
+        this.setTransform = function (newTransform)
         {
             var tr = this.wrappedObjects[0].highDetail;
             mat4.getTranslation(tr.translation, newTransform);
@@ -1547,13 +1553,13 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {mat4} out
          * @returns {mat4} Transform matrix.
          */
-        this.getTransform = function(out)
+        this.getTransform = function (out)
         {
             out = out || mat4.create();
             return mat4.clone(this.wrappedObjects[0].highDetail.localTransform);
         };
 
-        this.wrappedObjects[0].Create(options, function()
+        this.wrappedObjects[0].Create(options, function ()
         {
             if (onLoad) onLoad.call(self);
         });
@@ -1591,14 +1597,14 @@ var ccpwgl = (function(ccpwgl_int)
          * Sets the background's clear color
          * @param {vec4} v
          */
-        this.setClearColor = function(v)
+        this.setClearColor = function (v)
         {
             sceneClearColor = v;
             if (this.wrappedScene)
             {
                 vec4.copy(this.wrappedScene.clearColor, sceneClearColor);
             }
-        }
+        };
 
         /** scene environment rendering **/
         var showEnvironment = true;
@@ -1607,14 +1613,14 @@ var ccpwgl = (function(ccpwgl_int)
          * Toggles environment visibility
          * @param {Boolean} bool
          */
-        this.showEnvironment = function(bool)
+        this.showEnvironment = function (bool)
         {
             enableEnvironment = bool;
             if (this.wrappedScene)
             {
                 this.wrappedScene.visible.environment = bool;
             }
-        }
+        };
 
         /** scene fog rendering **/
         var showFog = true;
@@ -1623,14 +1629,14 @@ var ccpwgl = (function(ccpwgl_int)
          * Toggles fog visibility
          * @param {Boolean} bool
          */
-        this.showFog = function(bool)
+        this.showFog = function (bool)
         {
             showFog = bool;
             if (this.wrappedScene)
             {
                 this.wrappedScene.visible.fog = bool;
             }
-        }
+        };
 
         /**
          * Internal helper function that rebuilds a list of object in the wrapped
@@ -1709,7 +1715,7 @@ var ccpwgl = (function(ccpwgl_int)
         /**
          * Creates a new empty scene.
          */
-        this.create = function()
+        this.create = function ()
         {
             onSceneLoaded(this, new ccpwgl_int.EveSpaceScene());
         };
@@ -1721,12 +1727,12 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {!function(): void} onload Optional callback function that is called
          *   when scene .red file is loaded. this will point to Scene instance.
          */
-        this.load = function(resPath, onload)
+        this.load = function (resPath, onload)
         {
             var self = this;
             ccpwgl_int.resMan.GetObject(
                 resPath,
-                function(obj)
+                function (obj)
                 {
                     // Cache scene objects
                     for (var i = 0; i < obj.objects.length; i++)
@@ -1749,7 +1755,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @returns {boolean} True if scene's .red file is loading; false otherwise.
          */
-        this.isLoaded = function()
+        this.isLoaded = function ()
         {
             return this.wrappedScene != null;
         };
@@ -1762,12 +1768,12 @@ var ccpwgl = (function(ccpwgl_int)
          *   when ship .red file is loaded. this will point to Ship instance.
          * @returns {ccpwgl.Ship} A newly created ship instance.
          */
-        this.loadShip = function(resPath, onload)
+        this.loadShip = function (resPath, onload)
         {
             var self = this;
             var ship = new Ship(
                 resPath,
-                function()
+                function ()
                 {
                     rebuildSceneObjects(self);
                     if (onload)
@@ -1791,12 +1797,12 @@ var ccpwgl = (function(ccpwgl_int)
          *   when object .red file is loaded. this will point to SpaceObject instance.
          * @returns {ccpwgl.SpaceObject} A newly created object instance.
          */
-        this.loadObject = function(resPath, onload)
+        this.loadObject = function (resPath, onload)
         {
             var self = this;
             var object = new SpaceObject(
                 resPath,
-                function()
+                function ()
                 {
                     rebuildSceneObjects(self);
                     if (onload)
@@ -1818,7 +1824,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {ccpwgl.SpaceObject} object Object to add.
          * @returns {ccpwgl.SpaceObject} Object added.
          */
-        this.addObject = function(object)
+        this.addObject = function (object)
         {
             this.objects.push(object);
             if (object.wrappedObjects[0])
@@ -1839,7 +1845,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {function} [onLoad]       - an optioanl callback which is fired when the planet has loaded
          * @returns {ccpwgl.Planet} A newly created planet instance.
          */
-        this.loadPlanet = function(itemID, planetPath, atmospherePath, heightMap1, heightMap2, onLoad)
+        this.loadPlanet = function (itemID, planetPath, atmospherePath, heightMap1, heightMap2, onLoad)
         {
             var object = new Planet({
                 itemID: itemID,
@@ -1852,7 +1858,7 @@ var ccpwgl = (function(ccpwgl_int)
             this.objects.push(object);
             rebuildSceneObjects(this);
             return object;
-        }
+        };
 
         /**
          * Returns object (ship or planet) at a specified index in scene's objects list.
@@ -1861,13 +1867,13 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {number} index Object index.
          * @returns Object at specified index.
          */
-        this.getObject = function(index)
+        this.getObject = function (index)
         {
             if (index >= 0 && index < this.objects.length)
             {
                 return this.objects[index];
             }
-            throw new ReferenceError('object index out of bounds');
+            throw new ReferenceError("object index out of bounds");
         };
 
         /**
@@ -1876,7 +1882,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param object Object to search for.
          * @returns {number} Object index or -1 if the object is not found.
          */
-        this.indexOf = function(object)
+        this.indexOf = function (object)
         {
             for (var i = 0; i < this.objects.length; ++i)
             {
@@ -1894,11 +1900,11 @@ var ccpwgl = (function(ccpwgl_int)
          * @thorws If index is out of bounds.
          * @param {number} index Object index.
          */
-        this.removeObject = function(index)
+        this.removeObject = function (index)
         {
             if (index >= this.objects.length)
             {
-                throw new ReferenceError('object index out of bounds');
+                throw new ReferenceError("object index out of bounds");
             }
             this.objects.splice(index, 1);
             rebuildSceneObjects(this);
@@ -1912,12 +1918,12 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {!function(): void} onload Optional callback function that is called
          *   when sun .red file is loaded. this will point to Scene instance.
          */
-        this.loadSun = function(resPath, onload)
+        this.loadSun = function (resPath, onload)
         {
             var self = this;
             ccpwgl_int.resMan.GetObject(
                 resPath,
-                function(obj)
+                function (obj)
                 {
                     self.sun = obj;
                     if (self.wrappedScene)
@@ -1944,11 +1950,11 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @throws If the scene doesn't have sun.
          */
-        this.removeSun = function()
+        this.removeSun = function ()
         {
             if (!this.sun)
             {
-                throw new ReferenceError('scene does not have a Sun');
+                throw new ReferenceError("scene does not have a Sun");
             }
             this.sun = null;
             if (this.wrappedScene)
@@ -1963,7 +1969,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {vec3} direction Sun direction.
          */
-        this.setSunDirection = function(direction)
+        this.setSunDirection = function (direction)
         {
             this.sunDirection = direction;
             if (this.wrappedScene)
@@ -1981,7 +1987,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {vec3} color Sunlight color as RGB vector.
          */
-        this.setSunLightColor = function(color)
+        this.setSunLightColor = function (color)
         {
             this.sunLightColor = color;
             if (this.wrappedScene)
@@ -1999,7 +2005,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {number} maxOpacity Maximum fog opacity from 0 to 1.
          * @param {vec3} color Fog color as RGB vector.
          */
-        this.setFog = function(startDistance, endDistance, maxOpacity, color)
+        this.setFog = function (startDistance, endDistance, maxOpacity, color)
         {
             this.fog = [startDistance, endDistance, maxOpacity, color];
             if (this.wrappedScene)
@@ -2016,7 +2022,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @returns {ccpwgl.LodSettings} Current LOD setting.
          */
-        this.getLodSetting = function()
+        this.getLodSetting = function ()
         {
             return lodSetting;
         };
@@ -2026,7 +2032,7 @@ var ccpwgl = (function(ccpwgl_int)
          *
          * @param {ccpwgl.LodSettings} setting New LOD setting.
          */
-        this.setLodSetting = function(setting)
+        this.setLodSetting = function (setting)
         {
             lodSetting = setting;
             if (this.wrappedScene)
@@ -2073,10 +2079,22 @@ var ccpwgl = (function(ccpwgl_int)
         this.additionalRotationY = 0;
 
         var self = this;
-        element.addEventListener('mousedown', function(event) { self._DragStart(event); }, false);
-        element.addEventListener('touchstart', function(event) { self._DragStart(event); }, true);
-        window.addEventListener('DOMMouseScroll', function(e) { return self._WheelHandler(e, element); }, false);
-        window.addEventListener('mousewheel', function(e) { return self._WheelHandler(e, element); }, false);
+        element.addEventListener("mousedown", function (event)
+        {
+            self._DragStart(event);
+        }, false);
+        element.addEventListener("touchstart", function (event)
+        {
+            self._DragStart(event);
+        }, true);
+        window.addEventListener("DOMMouseScroll", function (e)
+        {
+            return self._WheelHandler(e, element);
+        }, false);
+        window.addEventListener("mousewheel", function (e)
+        {
+            return self._WheelHandler(e, element);
+        }, false);
 
         /**
          * Sets the cameras poi to an object, and adjusts the distance to suit
@@ -2087,7 +2105,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {boolean} [autoPlane] - Tries to fix near plane based on object's size
          * @returns {boolean}
          */
-        this.focus = function(obj, distanceMultiplier, minDistance, autoPlane)
+        this.focus = function (obj, distanceMultiplier, minDistance, autoPlane)
         {
             try
             {
@@ -2107,7 +2125,7 @@ var ccpwgl = (function(ccpwgl_int)
          * Gets the camera's view matrix
          * @returns {mat4}
          */
-        this.getView = function()
+        this.getView = function ()
         {
             var view = mat4.create();
             mat4.identity(view);
@@ -2124,7 +2142,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param {number} aspect - The canvas's aspect ratio
          * @returns {mat4}
          */
-        this.getProjection = function(aspect)
+        this.getProjection = function (aspect)
         {
             var fH = Math.tan(this.fov / 360 * Math.PI) * this.nearPlane;
             var fW = fH * aspect;
@@ -2135,7 +2153,7 @@ var ccpwgl = (function(ccpwgl_int)
          * Per frame update
          * @param {number} dt - delta time
          */
-        this.update = function(dt)
+        this.update = function (dt)
         {
             this.rotationX += this._rotationSpeedX * dt;
             this._rotationSpeedX *= 0.9;
@@ -2170,7 +2188,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param event
          * @private
          */
-        this._DragStart = function(event)
+        this._DragStart = function (event)
         {
             if (!event.touches && !this.onShift && event.button !== 0)
             {
@@ -2184,13 +2202,19 @@ var ccpwgl = (function(ccpwgl_int)
             var self = this;
             if (this._moveEvent === null)
             {
-                document.addEventListener('mousemove', this._moveEvent = function(event) { self._DragMove(event); }, true);
-                document.addEventListener('touchmove', this._moveEvent, true);
+                document.addEventListener("mousemove", this._moveEvent = function (event)
+                {
+                    self._DragMove(event);
+                }, true);
+                document.addEventListener("touchmove", this._moveEvent, true);
             }
             if (this._upEvent === null)
             {
-                document.addEventListener('mouseup', this._upEvent = function(event) { self._DragStop(event); }, true);
-                document.addEventListener('touchend', this._upEvent, true);
+                document.addEventListener("mouseup", this._upEvent = function (event)
+                {
+                    self._DragStop(event);
+                }, true);
+                document.addEventListener("touchend", this._upEvent, true);
             }
             event.preventDefault();
             if (event.touches)
@@ -2205,19 +2229,25 @@ var ccpwgl = (function(ccpwgl_int)
             this._lastRotationX = this.rotationX;
             this._rotationSpeedY = 0;
             this._lastRotationY = this.rotationY;
-            this._measureRotation = setTimeout(function() { self._MeasureRotation(); }, 500);
+            this._measureRotation = setTimeout(function ()
+            {
+                self._MeasureRotation();
+            }, 500);
         };
 
         /**
          * Measures rotation
          * @private
          */
-        this._MeasureRotation = function()
+        this._MeasureRotation = function ()
         {
             var self = this;
             this._lastRotationX = this.rotationX;
             this._lastRotationY = this.rotationY;
-            this._measureRotation = setTimeout(function() { self._MeasureRotation(); }, 500);
+            this._measureRotation = setTimeout(function ()
+            {
+                self._MeasureRotation();
+            }, 500);
         };
 
         /**
@@ -2225,7 +2255,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @param event
          * @private
          */
-        this._DragMove = function(event)
+        this._DragMove = function (event)
         {
             var device = ccpwgl_int.device;
 
@@ -2280,7 +2310,7 @@ var ccpwgl = (function(ccpwgl_int)
                 event.screenX = event.touches[0].screenX;
                 event.screenY = event.touches[0].screenY;
             }
-            if (typeof (event.screenX) !== 'undefined')
+            if (typeof (event.screenX) !== "undefined")
             {
                 var dRotation = -(this._dragX - event.screenX) * 0.01;
                 this.rotationX += dRotation;
@@ -2304,13 +2334,13 @@ var ccpwgl = (function(ccpwgl_int)
          * @param event
          * @private
          */
-        this._DragStop = function(event)
+        this._DragStop = function (event)
         {
             clearTimeout(this._measureRotation);
-            document.removeEventListener('mousemove', this._moveEvent, true);
-            document.removeEventListener('mouseup', this._upEvent, true);
-            document.removeEventListener('touchmove', this._moveEvent, true);
-            document.removeEventListener('touchend', this._upEvent, true);
+            document.removeEventListener("mousemove", this._moveEvent, true);
+            document.removeEventListener("mouseup", this._upEvent, true);
+            document.removeEventListener("touchmove", this._moveEvent, true);
+            document.removeEventListener("touchend", this._upEvent, true);
             this._moveEvent = null;
             this._upEvent = null;
             var dRotation = this.rotationX - this._lastRotationX;
@@ -2339,7 +2369,7 @@ var ccpwgl = (function(ccpwgl_int)
          * @returns {boolean}
          * @private
          */
-        this._WheelHandler = function(event, element)
+        this._WheelHandler = function (event, element)
         {
             var delta = 0;
             if (!event) /* For IE. */
@@ -2403,7 +2433,7 @@ var ccpwgl = (function(ccpwgl_int)
      *@param {boolean} [setAsCurrent]
      * @returns {Camera}
      */
-    ccpwgl.createCamera = function(canvas, options, setAsCurrent)
+    ccpwgl.createCamera = function (canvas, options, setAsCurrent)
     {
         function get(src, srcAttr, defaultValue)
         {
@@ -2411,17 +2441,17 @@ var ccpwgl = (function(ccpwgl_int)
         }
 
         var camera = new Camera(canvas);
-        camera.fov = get(options, 'fov', 30);
-        camera.distance = get(options, 'distance', 1000);
-        camera.maxDistance = get(options, 'maxDistance', 1000000);
-        camera.minDistance = get(options, 'minDistance', 0.6);
-        camera.rotationX = get(options, 'rotationX', 0);
-        camera.rotationY = get(options, 'rotationY', 0);
-        vec3.copy(camera.poi, get(options, 'poi', [0, 0, 0]));
-        camera.nearPlane = get(options, 'nearPlane', 1);
-        camera.farPlane = get(options, 'farPlane', 1000000);
-        camera.minPitch = get(options, 'minPitch', -0.5);
-        camera.maxPitch = get(options, 'maxPitch', 0.35);
+        camera.fov = get(options, "fov", 30);
+        camera.distance = get(options, "distance", 1000);
+        camera.maxDistance = get(options, "maxDistance", 1000000);
+        camera.minDistance = get(options, "minDistance", 0.6);
+        camera.rotationX = get(options, "rotationX", 0);
+        camera.rotationY = get(options, "rotationY", 0);
+        vec3.copy(camera.poi, get(options, "poi", [0, 0, 0]));
+        camera.nearPlane = get(options, "nearPlane", 1);
+        camera.farPlane = get(options, "farPlane", 1000000);
+        camera.minPitch = get(options, "minPitch", -0.5);
+        camera.maxPitch = get(options, "maxPitch", 0.35);
 
         if (setAsCurrent)
         {
@@ -2440,7 +2470,7 @@ var ccpwgl = (function(ccpwgl_int)
      *   when scene .red file is loaded. this will point to Scene instance.
      * @returns {ccpwgl.Scene} Newly constructed scene.
      */
-    ccpwgl.loadScene = function(resPath, onload)
+    ccpwgl.loadScene = function (resPath, onload)
     {
         scene = new Scene();
         scene.load(resPath, onload);
@@ -2454,24 +2484,24 @@ var ccpwgl = (function(ccpwgl_int)
      * @param {string|float[]} background Scene background color as RGBA vector or background cubemap res path.
      * @returns {ccpwgl.Scene} Newly constructed scene.
      */
-    ccpwgl.createScene = function(background)
+    ccpwgl.createScene = function (background)
     {
         scene = new Scene();
 
-        if (background && typeof background !== 'string')
+        if (background && typeof background !== "string")
         {
             scene.setClearColor(background);
         }
 
-        if (background && typeof background == 'string')
+        if (background && typeof background == "string")
         {
-            ccpwgl_int.resMan.GetObject('res:/dx9/scene/starfield/starfieldNebula.red', function(obj)
+            ccpwgl_int.resMan.GetObject("res:/dx9/scene/starfield/starfieldNebula.red", function (obj)
             {
                 scene.wrappedScene.backgroundEffect = obj;
-                if ('NebulaMap' in obj.parameters)
+                if ("NebulaMap" in obj.parameters)
                 {
-                    obj.parameters['NebulaMap'].resourcePath = background;
-                    obj.parameters['NebulaMap'].Initialize();
+                    obj.parameters["NebulaMap"].resourcePath = background;
+                    obj.parameters["NebulaMap"].Initialize();
                 }
             });
         }
@@ -2484,7 +2514,7 @@ var ccpwgl = (function(ccpwgl_int)
      *
      * @returns {boolean} True if any assets are still loading; false otherwise.
      */
-    ccpwgl.isLoading = function()
+    ccpwgl.isLoading = function ()
     {
         return ccpwgl_int.resMan.IsLoading();
     };
@@ -2494,7 +2524,7 @@ var ccpwgl = (function(ccpwgl_int)
      *
      * @returns {number} Pending resource loads
      */
-    ccpwgl.getPendingLoads = function()
+    ccpwgl.getPendingLoads = function ()
     {
         return ccpwgl_int.resMan._pendingLoads;
     };
@@ -2505,7 +2535,7 @@ var ccpwgl = (function(ccpwgl_int)
      * @param {boolean} enable If true scene update and update callbacks are called
      *   every frame.
      */
-    ccpwgl.enableUpdate = function(enable)
+    ccpwgl.enableUpdate = function (enable)
     {
         updateEnabled = enable;
     };
@@ -2515,7 +2545,7 @@ var ccpwgl = (function(ccpwgl_int)
      *
      * @param {boolean} enable If true scene is rendered into the canvas.
      */
-    ccpwgl.enableRendering = function(enable)
+    ccpwgl.enableRendering = function (enable)
     {
         renderingEnabled = enable;
     };
@@ -2525,7 +2555,7 @@ var ccpwgl = (function(ccpwgl_int)
      *
      * @returns {ccpwgl.ResourceUnloadPolicy} Current resource unload policy.
      */
-    ccpwgl.getResourceUnloadPolicy = function()
+    ccpwgl.getResourceUnloadPolicy = function ()
     {
         return resourceUnloadPolicy;
     };
@@ -2537,7 +2567,7 @@ var ccpwgl = (function(ccpwgl_int)
      * @param {number} timeout Optional timeout value (in seconds) when resource is unloaded
      *   from memomy if the policy is set to ccpwgl.ResourceUnloadPolicy.USAGE_BASED.
      */
-    ccpwgl.setResourceUnloadPolicy = function(policy, timeout)
+    ccpwgl.setResourceUnloadPolicy = function (policy, timeout)
     {
         resourceUnloadPolicy = policy;
         ccpwgl_int.resMan.autoPurgeResources = policy == ccpwgl.ResourceUnloadPolicy.USAGE_BASED;
@@ -2550,7 +2580,7 @@ var ccpwgl = (function(ccpwgl_int)
     /**
      * Manually clears resource cache.
      */
-    ccpwgl.clearCachedResources = function()
+    ccpwgl.clearCachedResources = function ()
     {
         ccpwgl_int.resMan.Clear();
     };

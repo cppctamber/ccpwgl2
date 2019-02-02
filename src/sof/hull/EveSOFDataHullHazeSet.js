@@ -5,7 +5,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {Array.<EveSOFDataHullHazeSetItem>} items -
  */
-export default class EveSOFDataHullHazeSet extends Tw2BaseClass
+export class EveSOFDataHullHazeSet extends Tw2BaseClass
 {
 
     items = [];

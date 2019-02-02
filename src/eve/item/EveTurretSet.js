@@ -122,7 +122,7 @@ EveObjectSetItem.define(EveTurretSetItem, Type =>
  * @property {Number} sysBonePitchMax                   -
  * @property {Number} sysBonePitchMin                   -
  * @property {Number} sysBonePitchOffset                -
- * @property {Tr2Effect} turretEffect                   -
+ * @property {Tw2Effect} turretEffect                   -
  * @property {Boolean} updatePitchPose                  -
  * @property {Boolean} useDynamicBounds                 -
  * @property {Boolean} useRandomFiringDelay             -
@@ -568,11 +568,11 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Updates view dependent data
      */
-    UpdateViewDependentData()
+    UpdateViewDependentData(parentTransform, dt)
     {
         if (this.firingEffect)
         {
-            this.firingEffect.UpdateViewDependentData();
+            this.firingEffect.UpdateViewDependentData(parentTransform, dt);
         }
     }
 
@@ -980,7 +980,7 @@ EveObjectSet.define(EveTurretSet, Type =>
             sysBonePitchMax: Type.NUMBER,
             sysBonePitchMin: Type.NUMBER,
             sysBonePitchOffset: Type.NUMBER,
-            turretEffect: ["Tr2Effect"],
+            turretEffect: ["Tw2Effect"],
             updatePitchPose: Type.BOOLEAN,
             useDynamicBounds: Type.BOOLEAN,
             useRandomFiringDelay: Type.BOOLEAN

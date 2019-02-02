@@ -911,10 +911,10 @@ Tw2BaseClass.define(EveCurveLineSet, Type =>
         props: {
             additive: Type.BOOLEAN,
             depthOffset: Type.NUMBER,
-            lineEffect: ["Tr2Effect"],
+            lineEffect: ["Tw2Effect"],
             lineWidthFactor: Type.NUMBER,
             pickable: Type.BOOLEAN,
-            pickEffect: ["Tr2Effect"],
+            pickEffect: ["Tw2Effect"],
             position: Type.TR_TRANSLATION,
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,

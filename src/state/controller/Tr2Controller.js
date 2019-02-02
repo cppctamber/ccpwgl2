@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<Tr2StateMachine>} stateMachines -
  * @property {Array.<StateVariable>} variables       -
  */
-export default class Tr2Controller extends Tw2BaseClass
+export class Tr2Controller extends Tw2BaseClass
 {
 
     isShared = false;

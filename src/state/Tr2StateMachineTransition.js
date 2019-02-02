@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../global";
  *
  * @property {String} condition -
  */
-export default class Tr2StateMachineTransition extends Tw2BaseClass
+export class Tr2StateMachineTransition extends Tw2BaseClass
 {
 
     condition = "";

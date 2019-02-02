@@ -113,7 +113,7 @@ EveObjectSetItem.define(EveSpriteSetItem, Type =>
  * Sprite set
  * @ccp EveSpriteSet
  *
- * @property {Tr2Effect} effect                 - The sprite set's effect
+ * @property {Tw2Effect} effect                 - The sprite set's effect
  * @property {Number} intensity                 - The sprite set's intensity
  * @property {Boolean} skinned                  - Use bone transforms (when useQuads is true)
  * @property {?Boolean} useQuads                - Use quad rendering (CPU transform)
@@ -581,7 +581,7 @@ EveObjectSet.define(EveSpriteSet, Type =>
     return {
         type: "EveSpriteSet",
         props: {
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             intensity: Type.NUMBER,
             skinned: Type.BOOLEAN,
             sprites: [["EveSpriteSetItem"]],

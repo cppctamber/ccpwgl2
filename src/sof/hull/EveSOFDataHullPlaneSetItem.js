@@ -16,7 +16,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {quat} rotation            -
  * @property {vec3} scaling             -
  */
-export default class EveSOFDataHullPlaneSetItem extends Tw2BaseClass
+export class EveSOFDataHullPlaneSetItem extends Tw2BaseClass
 {
 
     boneIndex = 0;

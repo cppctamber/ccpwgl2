@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} path          -
  * @property {Boolean} removeOnStop -
  */
-export default class Tr2ActionChildEffect extends Tw2BaseClass
+export class Tr2ActionChildEffect extends Tw2BaseClass
 {
 
     childName = "";

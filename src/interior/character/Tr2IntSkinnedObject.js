@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2IntSkinnedObject
@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {TriMatrix} transform           -
  * @property {Tr2SkinnedModel} visualModel   -
  */
-export default class Tr2IntSkinnedObject extends Tw2BaseClass
+export class Tr2IntSkinnedObject extends Tw2BaseClass
 {
 
     curveSets = [];

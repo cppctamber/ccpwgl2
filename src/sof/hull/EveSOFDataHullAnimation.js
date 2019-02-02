@@ -12,7 +12,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} startRotationTime -
  * @property {quat} startRotationValue  -
  */
-export default class EveSOFDataHullAnimation extends Tw2BaseClass
+export class EveSOFDataHullAnimation extends Tw2BaseClass
 {
 
     endRate = 0;

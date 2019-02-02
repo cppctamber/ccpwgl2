@@ -7,7 +7,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} hasTrails                       -
  * @property {Array.<EveSOFDataHullBoosterItem>} items -
  */
-export default class EveSOFDataHullBooster extends Tw2BaseClass
+export class EveSOFDataHullBooster extends Tw2BaseClass
 {
 
     alwaysOn = false;

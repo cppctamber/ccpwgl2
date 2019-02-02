@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../global";
  * @property {Tr2SyncToAnimation} finalizer                  -
  * @property {Array.<Tr2StateMachineTransition>} transitions -
  */
-export default class Tr2StateMachineState extends Tw2BaseClass
+export class Tr2StateMachineState extends Tw2BaseClass
 {
 
     actions = [];

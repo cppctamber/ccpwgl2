@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} skinned                              -
  * @property {Number} zOffset                               -
  */
-export default class EveSOFDataHullSpotlightSet extends Tw2BaseClass
+export class EveSOFDataHullSpotlightSet extends Tw2BaseClass
 {
 
     coneTextureResPath = "";

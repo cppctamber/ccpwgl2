@@ -13,7 +13,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {String} textureName        -
  * @property {String} textureResFilePath -
  */
-export default class EveSOFDataPatternLayer extends Tw2BaseClass
+export class EveSOFDataPatternLayer extends Tw2BaseClass
 {
 
     isTargetMtl1 = false;

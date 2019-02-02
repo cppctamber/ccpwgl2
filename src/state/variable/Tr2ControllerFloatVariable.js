@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} defaultValue -
  * @property {Number} variableType -
  */
-export default class Tr2ControllerFloatVariable extends Tw2BaseClass
+export class Tr2ControllerFloatVariable extends Tw2BaseClass
 {
 
     defaultValue = 0;

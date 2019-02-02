@@ -4,7 +4,7 @@ import {Tw2BaseClass} from "../../global";
  * EveStretch2
  * TODO: Implement
  *
- * @property {Tr2Effect} effect -
+ * @property {Tw2Effect} effect -
  * @property {TriCurveSet} loop -
  * @property {Number} quadCount -
  */
@@ -23,7 +23,7 @@ Tw2BaseClass.define(EveStretch2, Type =>
         isStaging: true,
         type: "EveStretch2",
         props: {
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             loop: ["TriCurveSet"],
             quadCount: Type.NUMBER
         },

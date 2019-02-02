@@ -7,7 +7,7 @@ import {Tw2BaseClass} from "../global";
  * @property {Number} startState                   -
  * @property {Array.<Tr2StateMachineState>} states -
  */
-export default class Tr2StateMachine extends Tw2BaseClass
+export class Tr2StateMachine extends Tw2BaseClass
 {
 
     startState = 0;
@@ -24,10 +24,7 @@ Tw2BaseClass.define(Tr2StateMachine, Type =>
             startState: Type.NUMBER,
             states: [["Tr2StateMachineState"]]
         },
-        notImplemented: [
-            "startState",
-            "states"
-        ]
+        notImplemented: ["*"]
     };
 });
 

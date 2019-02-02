@@ -13,7 +13,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} spriteScale             -
  * @property {mat4} transform               -
  */
-export default class EveSOFDataHullSpotlightSetItem extends Tw2BaseClass
+export class EveSOFDataHullSpotlightSetItem extends Tw2BaseClass
 {
 
     boneIndex = 0;

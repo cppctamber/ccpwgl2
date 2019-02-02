@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {String} path -
  */
-export default class Tr2ControllerReference extends Tw2BaseClass
+export class Tr2ControllerReference extends Tw2BaseClass
 {
 
     path = "";

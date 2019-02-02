@@ -12,7 +12,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} scaling     -
  * @property {Number} usage     -
  */
-export default class EveSOFDataHullBanner extends Tw2BaseClass
+export class EveSOFDataHullBanner extends Tw2BaseClass
 {
 
     angleX = 0;

@@ -11,7 +11,7 @@ import {quat, vec3, vec4, mat4, Tw2BaseClass} from "../../global";
  * @property {quat} rotation        - Mask's rotation
  * @property {vec3} scaling         - Mask's scale
  * @property {vec4} targetMaterials - The target materials this mask is for
- * @property {mat4} transform       - Mask's transform
+ * @property {mat4} localTransform  - Mask's localTransform
  */
 export class EveCustomMask extends Tw2BaseClass
 {
@@ -26,28 +26,47 @@ export class EveCustomMask extends Tw2BaseClass
     //ccpwgl
     display = true;
     isMirrored = false;
-    transform = mat4.create();
+    localTransform = mat4.create();
+
+    _dirty = true;
     _index = -1;
+    _parentTransformLast = mat4.create();
     _maskMatrix = mat4.create();
 
+    /**
+     * Initializes the mask
+     */
+    Initialize()
+    {
+        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
+    }
 
     /**
      * Fires on value changes
      */
     OnValueChanged()
     {
-        mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
-        mat4.invert(this._maskMatrix, this.transform);
-        mat4.transpose(this._maskMatrix, this._maskMatrix);
+        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
+        this._dirty = true;
     }
 
     /**
-     * Per frame update
+     * Updates the parent's per object data
+     * @param {mat4} parentTransform
      * @param {Tw2PerObjectData} perObjectData
-     * @param {Number} visible
+     * @param {Boolean} visible
      */
-    Update(perObjectData, visible)
+    UpdatePerObjectData(parentTransform, perObjectData, visible)
     {
+        if (this.display && visible && !mat4.equals(this._parentTransformLast, parentTransform))
+        {
+            mat4.copy(this._parentTransformLast, parentTransform);
+            mat4.multiply(this._maskMatrix, parentTransform, this.localTransform);
+            mat4.invert(this._maskMatrix, this._maskMatrix);
+            mat4.transpose(this._maskMatrix, this._maskMatrix);
+            this._dirty = false;
+        }
+
         const targets = this.display && visible ? this.targetMaterials : [0, 0, 0, 0];
         perObjectData.vs.Set("CustomMaskMatrix" + this._index, this._maskMatrix);
         perObjectData.vs.Set("CustomMaskData" + this._index, [1, this.isMirrored ? 1 : 0, 0, 0]);
@@ -71,7 +90,7 @@ Tw2BaseClass.define(EveCustomMask, Type =>
             rotation: Type.TR_ROTATION,
             scaling: Type.TR_SCALING,
             targetMaterials: Type.VECTOR4,
-            transform: Type.TR_LOCAL
+            localTransform: Type.TR_LOCAL
         }
     };
 });

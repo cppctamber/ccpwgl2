@@ -10,7 +10,7 @@ import {Tw2BaseClass} from "../global";
  * @property {Array.<EveSOFDataPattern>} pattern   -
  * @property {Array.<EveSOFDataRace>} race         -
  */
-export default class EveSOFData extends Tw2BaseClass
+export class EveSOFData extends Tw2BaseClass
 {
 
     faction = [];

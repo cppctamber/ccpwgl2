@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * WodPlaceableRes
@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Number} nearFadeDistance -
  * @property {Tr2Model} visualModel    -
  */
-export default class WodPlaceableRes extends Tw2BaseClass
+export class WodPlaceableRes extends Tw2BaseClass
 {
 
     farFadeDistance = 0;

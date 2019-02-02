@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {vec4} value -
  */
-export default class EveSOFDataParameter extends Tw2BaseClass
+export class EveSOFDataParameter extends Tw2BaseClass
 {
 
     value = vec4.create();

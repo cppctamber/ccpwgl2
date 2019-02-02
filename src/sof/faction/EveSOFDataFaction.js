@@ -19,7 +19,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataFactionSpotlightSet>} spotlightSets    -
  * @property {EveSOFDataFactionVisibilityGroupSet} visibilityGroupSet -
  */
-export default class EveSOFDataFaction extends Tw2BaseClass
+export class EveSOFDataFaction extends Tw2BaseClass
 {
 
     areaTypes = null;

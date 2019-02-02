@@ -23,7 +23,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec4} White     -
  * @property {vec4} Yellow    -
  */
-export default class EveSOFDataFactionColorSet extends Tw2BaseClass
+export class EveSOFDataFactionColorSet extends Tw2BaseClass
 {
 
     Black = vec4.create();

@@ -38,7 +38,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataHullSpriteSet>} spriteSets         -
  * @property {Array.<EveSOFDataHullArea>} transparentAreas        -
  */
-export default class EveSOFDataHull extends Tw2BaseClass
+export class EveSOFDataHull extends Tw2BaseClass
 {
 
     additiveAreas = [];

@@ -10,7 +10,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} shader                                 -
  * @property {String} transparencyTextureName                -
  */
-export default class EveSOFDataGenericShader extends Tw2BaseClass
+export class EveSOFDataGenericShader extends Tw2BaseClass
 {
 
     defaultParameters = [];

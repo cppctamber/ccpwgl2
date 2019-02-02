@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} loops     -
  * @property {String} mask      -
  */
-export default class Tr2ActionPlayMeshAnimation extends Tw2BaseClass
+export class Tr2ActionPlayMeshAnimation extends Tw2BaseClass
 {
 
     animation = "";

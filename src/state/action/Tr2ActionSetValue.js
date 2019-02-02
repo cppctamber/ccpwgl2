@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} path      -
  * @property {String} value     -
  */
-export default class Tr2ActionSetValue extends Tw2BaseClass
+export class Tr2ActionSetValue extends Tw2BaseClass
 {
 
     attribute = "";

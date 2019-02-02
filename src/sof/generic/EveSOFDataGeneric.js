@@ -20,7 +20,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {EveSOFDataGenericSwarm} swarm                            -
  * @property {Array.<EveSOFDataGenericVariant>} variants               -
  */
-export default class EveSOFDataGeneric extends Tw2BaseClass
+export class EveSOFDataGeneric extends Tw2BaseClass
 {
 
     areaShaderLocation = "";

@@ -1,4 +1,4 @@
-export Tr2InteriorPlaceable from "./Tr2InteriorPlaceable";
-export Tr2InteriorScene from "./Tr2InteriorScene";
-export WodPlaceableRes from "./WodPlaceableRes";
+export * from "./Tr2InteriorPlaceable";
+export * from "./Tr2InteriorScene";
+export * from "./WodPlaceableRes";
 

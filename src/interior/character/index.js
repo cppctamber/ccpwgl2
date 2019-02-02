@@ -1,3 +1,3 @@
-export Tr2IntSkinnedObject from "./Tr2IntSkinnedObject";
-export Tr2SkinnedModel from "./Tr2SkinnedModel";
+export * from "./Tr2IntSkinnedObject";
+export * from "./Tr2SkinnedModel";
 

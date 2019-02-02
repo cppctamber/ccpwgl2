@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {EveSOFDataPatternTransform} transformLayer1 -
  * @property {EveSOFDataPatternTransform} transformLayer2 -
  */
-export default class EveSOFDataPatternPerHull extends Tw2BaseClass
+export class EveSOFDataPatternPerHull extends Tw2BaseClass
 {
 
     transformLayer1 = null;

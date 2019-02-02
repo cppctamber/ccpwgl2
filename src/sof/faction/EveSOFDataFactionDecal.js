@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} shader                          -
  * @property {Array.<EveSOFDataTexture>} textures     -
  */
-export default class EveSOFDataFactionDecal extends Tw2BaseClass
+export class EveSOFDataFactionDecal extends Tw2BaseClass
 {
 
     groupIndex = 0;

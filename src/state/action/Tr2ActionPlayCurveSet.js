@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} rangeName    -
  * @property {Boolean} syncToRange -
  */
-export default class Tr2ActionPlayCurveSet extends Tw2BaseClass
+export class Tr2ActionPlayCurveSet extends Tw2BaseClass
 {
 
     curveSetName = "";

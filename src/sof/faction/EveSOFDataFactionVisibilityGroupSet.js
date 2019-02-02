@@ -5,7 +5,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {Array.<EveSOFDataGenericString>} visibilityGroups -
  */
-export default class EveSOFDataFactionVisibilityGroupSet extends Tw2BaseClass
+export class EveSOFDataFactionVisibilityGroupSet extends Tw2BaseClass
 {
 
     visibilityGroups = [];

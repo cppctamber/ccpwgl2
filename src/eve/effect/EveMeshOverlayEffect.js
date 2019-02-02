@@ -119,12 +119,12 @@ Tw2BaseClass.define(EveMeshOverlayEffect, Type =>
     return {
         type: "EveMeshOverlayEffect",
         props: {
-            additiveEffects: [["Tr2Effect"]],
+            additiveEffects: [["Tw2Effect"]],
             curveSet: ["TriCurveSet"],
-            distortionEffects: [["Tr2Effect"]],
+            distortionEffects: [["Tw2Effect"]],
             display: Type.BOOLEAN,
-            opaqueEffects: [["Tr2Effect"]],
-            transparentEffects: [["Tr2Effect"]],
+            opaqueEffects: [["Tw2Effect"]],
+            transparentEffects: [["Tw2Effect"]],
             update: Type.BOOLEAN,
             visible: Type.PLAIN
         },

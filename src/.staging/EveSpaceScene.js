@@ -1,5 +1,5 @@
-import {quat, vec3, vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {quat, vec3, vec4} from "../global/index";
+import {Tw2BaseClass} from "../global/index";
 
 /**
  * EveSpaceScene

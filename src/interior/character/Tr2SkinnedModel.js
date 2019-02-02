@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2SkinnedModel
@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Array.<Mesh>} meshes    -
  * @property {String} skeletonName    -
  */
-export default class Tr2SkinnedModel extends Tw2BaseClass
+export class Tr2SkinnedModel extends Tw2BaseClass
 {
 
     geometryResPath = "";

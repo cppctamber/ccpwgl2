@@ -18,7 +18,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} hullParticleTurbulenceAmplitude -
  * @property {Number} hullParticleTurbulenceFrequency -
  */
-export default class EveSOFDataGenericHullDamage extends Tw2BaseClass
+export class EveSOFDataGenericHullDamage extends Tw2BaseClass
 {
 
     hullParticleAngle = 0;

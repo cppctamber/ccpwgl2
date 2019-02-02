@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2InteriorPlaceable
@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {String} placeableResPath -
  * @property {TriMatrix} transform     -
  */
-export default class Tr2InteriorPlaceable extends Tw2BaseClass
+export class Tr2InteriorPlaceable extends Tw2BaseClass
 {
 
     placeableResPath = "";

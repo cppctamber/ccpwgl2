@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {quat} rotation      -
  * @property {vec3} scaling       -
  */
-export default class EveSOFDataPatternTransform extends Tw2BaseClass
+export class EveSOFDataPatternTransform extends Tw2BaseClass
 {
 
     isMirrored = false;

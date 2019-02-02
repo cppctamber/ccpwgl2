@@ -27,7 +27,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} shieldShaderEllipsoid                -
  * @property {String} shieldShaderHull                     -
  */
-export default class EveSOFDataGenericDamage extends Tw2BaseClass
+export class EveSOFDataGenericDamage extends Tw2BaseClass
 {
 
     armorParticleAngle = 0;

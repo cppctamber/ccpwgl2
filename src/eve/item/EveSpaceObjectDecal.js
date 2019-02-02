@@ -10,7 +10,7 @@ import {Tw2PerObjectData, Tw2ForwardingRenderBatch} from "../../core/";
  * we are going to convert this object back into a EveSOF object
  * @ccp EveSpaceObjectDecal
  *
- * @property {Tr2Effect} decalEffect           - Decal effect
+ * @property {Tw2Effect} decalEffect           - Decal effect
  * @property {Boolean} display                 - Toggles decal visibility
  * @property {TypedArray} indexBuffer          - Decal index buffer
  * @property {Number} groupIndex               - Decals SOF group index
@@ -238,7 +238,7 @@ Tw2BaseClass.define(EveSpaceObjectDecal, Type =>
         type: "EveSpaceObjectDecal",
         category: "EveObjectItem",
         props: {
-            decalEffect: ["Tr2Effect"],
+            decalEffect: ["Tw2Effect"],
             display: Type.BOOLEAN,
             indexBuffer: Type.ARRAY,
             groupIndex: Type.NUMBER,

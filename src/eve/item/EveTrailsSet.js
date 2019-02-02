@@ -29,7 +29,7 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
  * Todo: Implement
  * @ccp EveTrailSet
  *
- * @property {Tr2Effect} effect           -
+ * @property {Tw2Effect} effect           -
  * @property {String} geometryResPath     -
  * @property {Boolean} display            -
  * @property {Tw2GeometryRes} geometryRes -
@@ -141,7 +141,7 @@ Tw2BaseClass.define(EveTrailsSet, Type =>
         isStaging: true,
         props: {
             display: Type.BOOLEAN,
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             geometryResPath: Type.PATH
         },
         notImplemented: ["*"]

@@ -5,7 +5,7 @@ import {Tw2BaseClass} from "../../global";
  * @implements StateAction
  * Todo: Implement
  */
-export default class Tr2ActionResetClipSphereCenter extends Tw2BaseClass
+export class Tr2ActionResetClipSphereCenter extends Tw2BaseClass
 {
 
 

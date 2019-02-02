@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {mat4} transform -
  */
-export default class EveSOFDataHullLocator extends Tw2BaseClass
+export class EveSOFDataHullLocator extends Tw2BaseClass
 {
 
     transform = mat4.create();

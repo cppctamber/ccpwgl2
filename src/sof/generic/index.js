@@ -1,9 +1,9 @@
-export EveSOFDataGeneric from "./EveSOFDataGeneric";
-export EveSOFDataGenericDamage from "./EveSOFDataGenericDamage";
-export EveSOFDataGenericDecalShader from "./EveSOFDataGenericDecalShader";
-export EveSOFDataGenericHullDamage from "./EveSOFDataGenericHullDamage";
-export EveSOFDataGenericShader from "./EveSOFDataGenericShader";
-export EveSOFDataGenericString from "./EveSOFDataGenericString";
-export EveSOFDataGenericSwarm from "./EveSOFDataGenericSwarm";
-export EveSOFDataGenericVariant from "./EveSOFDataGenericVariant";
+export * from "./EveSOFDataGeneric";
+export * from "./EveSOFDataGenericDamage";
+export * from "./EveSOFDataGenericDecalShader";
+export * from "./EveSOFDataGenericHullDamage";
+export * from "./EveSOFDataGenericShader";
+export * from "./EveSOFDataGenericString";
+export * from "./EveSOFDataGenericSwarm";
+export * from "./EveSOFDataGenericVariant";
 

@@ -19,7 +19,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} scaling           -
  * @property {Number} spacing         -
  */
-export default class EveSOFDataHullSpriteLineSetItem extends Tw2BaseClass
+export class EveSOFDataHullSpriteLineSetItem extends Tw2BaseClass
 {
 
     blinkPhase = 0;

@@ -8,7 +8,7 @@ import {EveChild} from "./EveChild";
  *
  * @property {Number} brightness        -
  * @property {vec4} color               -
- * @property {Tr2Effect} effect         -
+ * @property {Tw2Effect} effect         -
  * @property {mat4} localTransform      -
  * @property {Number} minScreenSize     -
  * @property {quat} rotation            -
@@ -38,7 +38,7 @@ EveChild.define(EveChildQuad, Type =>
         props: {
             brightness: Type.NUMBER,
             color: Type.RGBA_LINEAR,
-            effect: ["Tr2Effect"],
+            effect: ["Tw2Effect"],
             localTransform: Type.TR_LOCAL,
             minScreenSize: Type.NUMBER,
             rotation: Type.TR_ROTATION,

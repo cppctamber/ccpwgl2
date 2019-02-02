@@ -17,7 +17,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} weightFormation    -
  * @property {Number} weightSeparation   -
  */
-export default class EveSOFDataGenericSwarm extends Tw2BaseClass
+export class EveSOFDataGenericSwarm extends Tw2BaseClass
 {
 
     formationDistance = 0;

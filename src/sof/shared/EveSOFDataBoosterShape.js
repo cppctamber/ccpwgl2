@@ -11,7 +11,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} noiseFunction     -
  * @property {Number} noiseSpeed        -
  */
-export default class EveSOFDataBoosterShape extends Tw2BaseClass
+export class EveSOFDataBoosterShape extends Tw2BaseClass
 {
 
     color = vec4.create();
