@@ -57,6 +57,7 @@ import {Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess} 
  * @property {*} visible
  * @property {*} debugHelper
  * @property {Tw2BatchAccumulator} _batches
+ * @property {Tw2TextureRes} _emptyTexture
  * @property {Tw2Frustum} _frustum
  * @property {Boolean} _lodEnabled
  * @property {Tw2RawData} _perFrameVS
@@ -126,6 +127,7 @@ export class EveSpaceScene extends Tw2BaseClass
 
     _debugHelper = null;
     _batches = new Tw2BatchAccumulator();
+    _emptyTexture = null;
     _frustum = new Tw2Frustum();
     _lodEnabled = false;
     _perFrameVS = Tw2RawData.from(EveSpaceScene.perFrameData.vs);
@@ -142,25 +144,13 @@ export class EveSpaceScene extends Tw2BaseClass
         super();
 
         Object.defineProperty(this.visible, "environment", {
-            get: () =>
-            {
-                return this.backgroundRenderingEnabled;
-            },
-            set: bool =>
-            {
-                this.backgroundRenderingEnabled = bool ? 1 : 0;
-            }
+            get: () => this.backgroundRenderingEnabled,
+            set: bool => this.backgroundRenderingEnabled = bool ? 1 : 0
         });
 
         Object.defineProperty(this.visible, "shadow", {
-            get: () =>
-            {
-                return this.enableShadows;
-            },
-            set: bool =>
-            {
-                this.enableShadows = bool ? 1 : 0;
-            }
+            get: () => this.enableShadows,
+            set: bool => this.enableShadows = bool ? 1 : 0
         });
 
         EveSpaceScene.init();
@@ -171,13 +161,27 @@ export class EveSpaceScene extends Tw2BaseClass
      */
     Initialize()
     {
-        this.SetEnvMapPath(0, this.envMapResPath);
-        this.SetEnvMapPath(1, this.envMap1ResPath);
-        this.SetEnvMapPath(2, this.envMap2ResPath);
+        this.SetEnvMapReflection(this.envMapPath);
+        this.SetEnvMapDiffuse(this.envMap1ResPath);
+        this.SetEnvMapBlur(this.envMap2ResPath);
+        this.SetPostProcess(this.postProcessPath);
+    }
 
-        if (this.postProcessPath)
+    /**
+     * Sets the post processing path
+     * @param {String} path
+     */
+    SetPostProcess(path="")
+    {
+        if (!path)
         {
-            resMan.GetObject(this.postProcessPath, obj => this.postProcess = obj);
+            this.postProcessPath = "";
+            this.postProcess = null;
+        }
+        else
+        {
+            this.postProcessPath = path.toLowerCase();
+            resMan.GetObject(path, obj => this.postProcess = obj);
         }
     }
 
@@ -185,57 +189,53 @@ export class EveSpaceScene extends Tw2BaseClass
      * Sets the environment's reflection map
      * @param {String} path
      */
-    SetEnvMapReflection(path)
+    SetEnvMapReflection(path="")
     {
-        this.SetEnvMapPath(0, path);
+        if (!path)
+        {
+            this.envMapPath = "";
+            this._envMapRes = null;
+        }
+        else
+        {
+            this.envMapResPath = path;
+            this._envMapRes = resMan.GetResource(path);
+        }
     }
 
     /**
      * Sets the environment's diffuse map
      * @param {String} path
      */
-    SetEnvMapDiffuse(path)
+    SetEnvMapDiffuse(path="")
     {
-        this.SetEnvMapPath(1, path);
+        if (!path)
+        {
+            this.envMap1ResPath = "";
+            this._envMap1Res = null;
+        }
+        else
+        {
+            this.envMap1ResPath = path.toLowerCase();
+            this._envMap1Res = resMan.GetResource(path);
+        }
     }
 
     /**
      * Sets the environment's blur map (used for fog)
      * @param {String} path
      */
-    SetEnvMapBlur(path)
+    SetEnvMapBlur(path="")
     {
-        this.SetEnvMapPath(2, path);
-    }
-
-    /**
-     * Sets an environment map
-     * @param {number} index
-     * @param {String} path
-     */
-    SetEnvMapPath(index, path = "")
-    {
-        const _setEnvPath = (path, pathTarget, resTarget) =>
+        if (!path)
         {
-            path = path.toLowerCase();
-            this[pathTarget] = path;
-            this[resTarget] = path === "" ? null : resMan.GetResource(path);
-            return true;
-        };
-
-        switch (index)
-        {
-            case 0: // Reflection
-                return _setEnvPath(path, "envMapResPath", "_envMapRes");
-
-            case 1: // Diffuse
-                return _setEnvPath(path, "envMap1ResPath", "_envMap1Res");
-
-            case 2: // Blur
-                return _setEnvPath(path, "envMap2ResPath", "_envMap2Res");
+            this.envMap2ResPath = "";
+            this._envMap1Res = null;
+            return;
         }
 
-        return false;
+        this.envMap2ResPath = path.toLowerCase();
+        this._envMap2Res = resMan.GetResource(path);
     }
 
     /**
@@ -245,17 +245,7 @@ export class EveSpaceScene extends Tw2BaseClass
     EnableLod(enable)
     {
         this._lodEnabled = enable;
-
-        if (!enable)
-        {
-            for (let i = 0; i < this.objects.length; ++i)
-            {
-                if (this.objects[i].ResetLod)
-                {
-                    this.objects[i].ResetLod();
-                }
-            }
-        }
+        if (!enable) this.PerChildObject("ResetLod");
     }
 
     /**
@@ -264,6 +254,8 @@ export class EveSpaceScene extends Tw2BaseClass
     KeepAlive()
     {
         const res = this.GetResources();
+        this.GetChildResources(res);
+
         for (let i = 0; i < res.length; i++)
         {
             res[i].KeepAlive();
@@ -273,10 +265,9 @@ export class EveSpaceScene extends Tw2BaseClass
     /**
      * Gets scene's resources
      * @param {Array} [out=[]] - Optional receiving array
-     * @param {Boolean} [excludeChildren]
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out = [], excludeChildren)
+    GetResources(out = [])
     {
         for (let i = 0; i < this.lensflares.length; i++)
         {
@@ -284,39 +275,73 @@ export class EveSpaceScene extends Tw2BaseClass
         }
 
         if (this.backgroundEffect) this.backgroundEffect.GetResources(out);
-        if (this.postEffect) this.postEffect.GetResources(out);
+        if (this.postProcess) this.postProcess.GetResources(out);
         if (this.starfield) this.starfield.GetResources(out);
 
         if (this._envMapRes && !out.includes(this._envMapRes)) out.push(this._envMapRes);
         if (this._envMap1Res && !out.includes(this._envMap1Res)) out.push(this._envMapRes);
         if (this._envMap2Res && !out.includes(this._envMap2Res)) out.push(this._envMapRes);
 
-        if (!excludeChildren)
+        return out;
+    }
+
+    /**
+     * Gets children's resources
+     * @param {Array} [out=[]]
+     * @returns {Array<Tw2Resource>}
+     */
+    GetChildResources(out=[])
+    {
+        this.PerChildObject("GetResources", out);
+        return out;
+    }
+
+    /**
+     * Calls a function on each planet, object and background object if it exists
+     * @param {String} funcName
+     * @param {*} [argument]
+     */
+    PerChildObject(funcName, argument)
+    {
+        for (let i = 0; i < this.planets.length; i++)
         {
-            for (let i = 0; i < this.planets.length; i++)
+            if (funcName in this.planets[i])
             {
-                this.planets[i].GetResources(out);
-            }
-
-            for (let i = 0; i < this.objects.length; i++)
-            {
-                if ("GetResources" in this.objects[i])
-                {
-                    this.objects[i].GetResources(out);
-                }
-            }
-
-            for (let i = 0; i < this.backgroundObjects.length; i++)
-            {
-                if ("GetResources" in this.backgroundObjects[i])
-                {
-                    this.backgroundObjects[i].GetResources(out);
-                }
+                this.planets[i][funcName](argument);
             }
         }
 
-        return out;
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            if (funcName in this.objects[i])
+            {
+                this.objects[i][funcName](argument);
+            }
+        }
+
+        for (let i = 0; i < this.backgroundObjects.length; i++)
+        {
+            if (funcName in this.backgroundObjects[i])
+            {
+                this.backgroundObjects[i][funcName](argument);
+            }
+        }
     }
+
+    /**
+     * Gets an empty texture
+     * @returns {Tw2TextureRes}
+     */
+    GetEmptyTexture()
+    {
+        if (!this._emptyTexture)
+        {
+            this._emptyTexture = resMan.GetResource("res:/texture/global/black.dds.0.png");
+        }
+
+        return this._emptyTexture;
+    }
+
 
     /**
      * Per frame update that is called per frame
@@ -328,30 +353,8 @@ export class EveSpaceScene extends Tw2BaseClass
         {
             this.curveSets[i].Update(dt);
         }
-
-        for (let i = 0; i < this.planets.length; ++i)
-        {
-            if ("Update" in this.planets[i])
-            {
-                this.planets[i].Update(dt);
-            }
-        }
-
-        for (let i = 0; i < this.objects.length; ++i)
-        {
-            if ("Update" in this.objects[i])
-            {
-                this.objects[i].Update(dt);
-            }
-        }
-
-        for (let i = 0; i < this.backgroundObjects.length; ++i)
-        {
-            if ("Update" in this.backgroundObjects[i])
-            {
-                this.backgroundObjects[i].Update(dt);
-            }
-        }
+        
+        this.PerChildObject("Update", dt);
 
         /*
         if (this.starField)
@@ -365,7 +368,7 @@ export class EveSpaceScene extends Tw2BaseClass
      * Gets batches for rendering
      * @param {number} mode
      * @param {Array.<EveObject>} objectArray
-     * @param {Tw2BatchAccumulator} accumulator
+     * @param {Tw2BatchAccumulator} [accumulator=this._batches]
      */
     RenderBatches(mode, objectArray, accumulator = this._batches)
     {
@@ -389,7 +392,7 @@ export class EveSpaceScene extends Tw2BaseClass
         const
             d = device,
             g = EveSpaceScene.global,
-            id = this.localTransform,
+            tr = this.localTransform,
             show = this.visible;
 
         if (show["environment"] && this.backgroundEffect)
@@ -415,7 +418,7 @@ export class EveSpaceScene extends Tw2BaseClass
             {
                 if (this.planets[i].UpdateViewDependentData)
                 {
-                    this.planets[i].UpdateViewDependentData(id, dt);
+                    this.planets[i].UpdateViewDependentData(tr, dt);
                 }
             }
 
@@ -434,30 +437,7 @@ export class EveSpaceScene extends Tw2BaseClass
         if (this._lodEnabled)
         {
             this._frustum.Initialize(d.view, d.projection, d.viewportWidth, d.viewInverse, d.viewProjection);
-
-            for (let i = 0; i < this.objects.length; ++i)
-            {
-                if (this.objects[i].UpdateLod)
-                {
-                    this.objects[i].UpdateLod(this._frustum);
-                }
-            }
-
-            for (let i = 0; i < this.backgroundObjects.length; i++)
-            {
-                if (this.backgroundObjects[i].UpdateLod)
-                {
-                    this.backgroundObjects[i].UpdateLod(this._frustum);
-                }
-            }
-
-            for (let i = 0; i < this.planets.length; ++i)
-            {
-                if (this.planets[i].UpdateLod)
-                {
-                    this.planets[i].UpdateLod(this._frustum);
-                }
-            }
+            this.PerChildObject("UpdateLod", this._frustum);
         }
 
         if (show.objects)
@@ -466,7 +446,7 @@ export class EveSpaceScene extends Tw2BaseClass
             {
                 if (this.objects[i].UpdateViewDependentData)
                 {
-                    this.objects[i].UpdateViewDependentData(id, dt);
+                    this.objects[i].UpdateViewDependentData(tr, dt);
                 }
             }
         }
@@ -477,7 +457,7 @@ export class EveSpaceScene extends Tw2BaseClass
             {
                 if (this.backgroundObjects[i].UpdateViewDependentData)
                 {
-                    this.backgroundObjects[i].UpdateViewDependentData(id, dt);
+                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt);
                 }
             }
         }
@@ -515,7 +495,7 @@ export class EveSpaceScene extends Tw2BaseClass
             this.RenderBatches(d.RM_DECAL, this.backgroundObjects);
             this.RenderBatches(d.RM_TRANSPARENT, this.backgroundObjects);
             this.RenderBatches(d.RM_ADDITIVE, this.backgroundObjects);
-            //this.RenderBatched(d.RM_DISTORTION, this.baackgroundObjects);
+            //this.RenderBatched(d.RM_DISTORTION, this.backgroundObjects);
         }
 
         if (show.lensflares)
@@ -535,15 +515,15 @@ export class EveSpaceScene extends Tw2BaseClass
                 this.lensflares[i].UpdateOccluders();
             }
         }
+        
+        if (this.starfield)
+        {
+            // TODO: Implement starfield
+        }
 
         if (this.postProcess)
         {
             // TODO: Implement post processing
-        }
-
-        if (this.starfield)
-        {
-            // TODO: Implement starfield
         }
 
         if (show.debug)
@@ -554,15 +534,8 @@ export class EveSpaceScene extends Tw2BaseClass
                 {
                     this._debugHelper = new EveSpaceScene.DebugRenderer();
                 }
-
-                for (let i = 0; i < this.objects.length; ++i)
-                {
-                    if (this.objects[i].RenderDebugInfo)
-                    {
-                        this.objects[i].RenderDebugInfo(this._debugHelper);
-                    }
-                }
-
+                
+                this.PerChildObject("RenderDebugInfo", this._debugHelper);
                 this._debugHelper.Render();
             }
         }
@@ -626,9 +599,9 @@ export class EveSpaceScene extends Tw2BaseClass
         d.perFramePSData = ps;
 
         const
-            envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : g.emptyTexture,
-            envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : g.emptyTexture,
-            envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : g.emptyTexture;
+            envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
+            envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
+            envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
 
         store.GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
         store.GetVariable("EnvMap1").SetTextureRes(envMap1);
@@ -648,7 +621,6 @@ export class EveSpaceScene extends Tw2BaseClass
                 mat4_0: mat4.create(),
                 mat4_1: mat4.create(),
                 mat4_2: mat4.create(),
-                emptyTexture: resMan.GetResource("res:/texture/global/black.dds.0.png")
             };
         }
     }
