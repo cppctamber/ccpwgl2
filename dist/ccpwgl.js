@@ -137,6 +137,20 @@ var ccpwgl = (function (ccpwgl_int)
     };
 
     /**
+     * Creates a render target
+     * @param {number} width
+     * @param {number} height
+     * @param {boolean} depth
+     * @returns {ccpwgl_int.Tw2RenderTarget}
+     */
+    ccpwgl.createRenderTarget = function(width, height, depth)
+    {
+        var renderTarget = new ccpwgl_int.Tw2RenderTarget();
+        renderTarget.Create(width, height, depth);
+        return renderTarget;
+    };
+
+    /**
      * Bloom post effect
      * @type {?Tw2PostEffect}
      **/
@@ -433,6 +447,15 @@ var ccpwgl = (function (ccpwgl_int)
     {
         camera = newCamera;
     };
+
+    /**
+     * Gets the current active camera
+     * @returns {Camera}
+     */
+    ccpwgl.getCamera = function()
+    {
+        return camera;
+    }
 
     /**
      * Returns the whole Space Object Factory file.
@@ -2460,6 +2483,24 @@ var ccpwgl = (function (ccpwgl_int)
 
         return camera;
     };
+
+    /**
+     * Sets the active scene from a previously loaded scene
+     * @param {Scene} newScene
+     */
+    ccpwgl.setScene = function(newScene)
+    {
+        scene = newScene;
+    }
+
+    /**
+     * Gets the active scene
+     * @returns {Scene}
+     */
+    ccpwgl.getScene = function()
+    {
+        return scene;
+    }
 
     /**
      * Loads a new scene from .red file and makes it the current scene (the one that
