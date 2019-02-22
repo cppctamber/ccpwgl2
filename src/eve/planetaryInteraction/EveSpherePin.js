@@ -2,6 +2,8 @@ import {vec3, vec4, Tw2BaseClass} from "../../global";
 
 /**
  * EveSpherePin
+ * @ccp EveSpherePin
+ * TODO: Implement
  *
  * @property {vec3} centerNormal             -
  * @property {vec4} color                    -
@@ -49,7 +51,8 @@ Tw2BaseClass.define(EveSpherePin, Type =>
             pinRadius: Type.NUMBER,
             pinRotation: Type.NUMBER,
             sortValueMultiplier: Type.NUMBER
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

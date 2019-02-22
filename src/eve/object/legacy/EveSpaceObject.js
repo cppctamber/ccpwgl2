@@ -1,5 +1,5 @@
-import {vec3, vec4, mat4, util} from "../../global";
-import {Tw2AnimationController, Tw2PerObjectData} from "../../core";
+import {vec3, vec4, mat4, util} from "../../../global/index";
+import {Tw2AnimationController, Tw2PerObjectData} from "../../../core/index";
 import {EveObject} from "./EveObject";
 
 /**

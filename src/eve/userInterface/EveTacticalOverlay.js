@@ -2,6 +2,8 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * EveTacticalOverlay
+ * @ccp EveTacticalOverlay
+ * TODO: Implement
  *
  * @property {Tw2Effect} anchorEffect      -
  * @property {Number} arcSegmentMultiplier -
@@ -40,7 +42,8 @@ Tw2BaseClass.define(EveTacticalOverlay, Type =>
             segmentsMedium: Type.NUMBER,
             targetMaxSegments: Type.NUMBER,
             velocityEffect: ["Tw2Effect"]
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

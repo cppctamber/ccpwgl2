@@ -171,7 +171,7 @@ export class EveSpaceScene extends Tw2BaseClass
      * Sets the post processing path
      * @param {String} path
      */
-    SetPostProcess(path="")
+    SetPostProcess(path = "")
     {
         if (!path)
         {
@@ -189,7 +189,7 @@ export class EveSpaceScene extends Tw2BaseClass
      * Sets the environment's reflection map
      * @param {String} path
      */
-    SetEnvMapReflection(path="")
+    SetEnvMapReflection(path = "")
     {
         if (!path)
         {
@@ -207,7 +207,7 @@ export class EveSpaceScene extends Tw2BaseClass
      * Sets the environment's diffuse map
      * @param {String} path
      */
-    SetEnvMapDiffuse(path="")
+    SetEnvMapDiffuse(path = "")
     {
         if (!path)
         {
@@ -225,7 +225,7 @@ export class EveSpaceScene extends Tw2BaseClass
      * Sets the environment's blur map (used for fog)
      * @param {String} path
      */
-    SetEnvMapBlur(path="")
+    SetEnvMapBlur(path = "")
     {
         if (!path)
         {
@@ -290,7 +290,7 @@ export class EveSpaceScene extends Tw2BaseClass
      * @param {Array} [out=[]]
      * @returns {Array<Tw2Resource>}
      */
-    GetChildResources(out=[])
+    GetChildResources(out = [])
     {
         this.PerChildObject("GetResources", out);
         return out;
@@ -353,7 +353,7 @@ export class EveSpaceScene extends Tw2BaseClass
         {
             this.curveSets[i].Update(dt);
         }
-        
+
         this.PerChildObject("Update", dt);
 
         /*
@@ -515,7 +515,7 @@ export class EveSpaceScene extends Tw2BaseClass
                 this.lensflares[i].UpdateOccluders();
             }
         }
-        
+
         if (this.starfield)
         {
             // TODO: Implement starfield
@@ -534,7 +534,7 @@ export class EveSpaceScene extends Tw2BaseClass
                 {
                     this._debugHelper = new EveSpaceScene.DebugRenderer();
                 }
-                
+
                 this.PerChildObject("RenderDebugInfo", this._debugHelper);
                 this._debugHelper.Render();
             }

@@ -1,8 +1,10 @@
-import {quat, vec3, vec4} from "../global/index";
-import {Tw2BaseClass} from "../global/index";
+import {quat, vec3, vec4} from "../../global/index";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * EveEffectRoot2
+ * TODO: Implement
+ * @ccp EveEffectRoot2
  *
  * @property {vec3} boundingSphereCenter            -
  * @property {Number} boundingSphereRadius          -
@@ -56,7 +58,8 @@ Tw2BaseClass.define(EveEffectRoot2, Type =>
             secondaryLightingEmissiveColor: Type.RGBA_LINEAR,
             secondaryLightingSphereRadius: Type.NUMBER,
             translation: Type.TR_TRANSLATION
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

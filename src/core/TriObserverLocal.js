@@ -22,9 +22,7 @@ Tw2BaseClass.define(TriObserverLocal, Type =>
         props: {
             front: Type.VECTOR3
         },
-        notImplemented: [
-            "front"
-        ]
+        notImplemented: ["*"]
     };
 });
 

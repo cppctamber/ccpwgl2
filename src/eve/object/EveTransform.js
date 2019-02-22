@@ -1,58 +1,79 @@
-import {vec3, quat, mat4, device} from "../../global";
+import {vec3, quat, mat4, device, Tw2BaseClass} from "../../global";
 import {Tw2PerObjectData} from "../../core";
-import {EveObject} from "./EveObject";
+import {EveObject} from "./legacy/EveObject";
 
 /**
  * EveTransform
- * TODO: Implement LOD
+ * TODO: Implement "distanceBasedScaleArg1"
+ * TODO: Implement "distanceBasedScaleArg2"
+ * TODO: Implement "overrideBoundsMax"
+ * TODO: Implement "overrideBoundsMin"
+ * TODO: Implement "sortValueMultiplier"
+ * TODO: Implement "useDistanceBasedScale"
+ * TODO: Implement "useLodLevel"
+ * TODO: Implement "visibilityThreshold"
+ * @ccp EveTransform
  *
- * @property {{}} visible                                           - Batch accumulation options for the transforms's elements
- * @property {Boolean} visible.mesh                                 - Enables/ disables mesh batch accumulation
- * @property {Boolean} visible.children                             - Enables/ disables child batch accumulation
- * @property {Tw2Mesh} mesh
- * @property {Array.<Tw2CurveSet>} curveSets
- * @property {Array} children
- * @property {Array.<Tw2ParticleSystem>} particleSystems
- * @property {Array.<Tw2StaticEmitter|Tw2DynamicEmitter>} particleEmitters
- * @property {Number} Modifier
- * @property {Number} sortValueMultiplier
- * @property {Number} distanceBasedScaleArg1
- * @property {Number} distanceBasedScaleArg2
- * @property {Boolean} useDistanceBasedScale
- * @property {vec3} scaling
- * @property {vec3} translation
- * @property {quat} rotation
- * @property {mat4} localTransform
- * @property {mat4} worldTransform
- * @property {Array.<mat4>} _mat4Cache
- * @property {Array.<vec3>} _vec3Cache
- * @property {Tw2PerObjectData} _perObjectData
- * @class
+ * @property {Array.<EveObject>} children                                  -
+ * @property {Array.<TriCurveSet>} curveSets                               -
+ * @property {Boolean} display                                             -
+ * @property {Number} distanceBasedScaleArg1                               -
+ * @property {Number} distanceBasedScaleArg2                               -
+ * @property {Boolean} hideOnLowQuality                                    -
+ * @property {Mesh|Tr2MeshLod} mesh                                        -
+ * @property {Number} modifier                                             -
+ * @property {Array.<TriObserverLocal>} observers                          -
+ * @property {vec3} overrideBoundsMax                                      -
+ * @property {vec3} overrideBoundsMin                                      -
+ * @property {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
+ * @property {Array.<ParticleSystem>} particleSystems                      -
+ * @property {quat} rotation                                               -
+ * @property {vec3} scaling                                                -
+ * @property {Number} sortValueMultiplier                                  -
+ * @property {vec3} translation                                            -
+ * @property {Boolean} update                                              -
+ * @property {Boolean} useDistanceBasedScale                               -
+ * @property {Boolean} useLodLevel                                         -
+ * @property {Number} visibilityThreshold                                  -
+ * @property {Object} visible                                              -
+ * @property {mat4} localTransform                                         -
+ * @property {mat4} worldTransform                                         -
+ * @property {Tw2PerObjectData} _perObjectData                             -
  */
 export class EveTransform extends EveObject
 {
+    // ccp
+    children = [];
+    curveSets = [];
+    display = false;
+    distanceBasedScaleArg1 = 0.2;
+    distanceBasedScaleArg2 = 0.63;
+    hideOnLowQuality = false;
+    mesh = null;
+    modifier = EveTransform.Modifier.NONE;
+    observers = [];
+    overrideBoundsMax = vec3.create();
+    overrideBoundsMin = vec3.create();
+    particleEmitters = [];
+    particleSystems = [];
+    rotation = quat.create();
+    scaling = vec3.fromValues(1, 1, 1);
+    sortValueMultiplier = 1.0;
+    translation = vec3.create();
+    update = false;
+    useDistanceBasedScale = false;
+    useLodLevel = false;
+    visibilityThreshold = 0;
 
+    //ccpwgl
     visible = {
         mesh: true,
         children: true
     };
-    mesh = null;
-    curveSets = [];
-    children = [];
-    particleSystems = [];
-    particleEmitters = [];
-    modifier = EveTransform.Modifier.NONE;
-    sortValueMultiplier = 1.0;
-    distanceBasedScaleArg1 = 0.2;
-    distanceBasedScaleArg2 = 0.63;
-    useDistanceBasedScale = false;
-    scaling = vec3.fromValues(1, 1, 1);
-    translation = vec3.create();
-    rotation = quat.create();
+
     localTransform = mat4.create();
     worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveTransform.perObjectData);
-
 
     /**
      * Initializes the EveTransform
@@ -91,7 +112,7 @@ export class EveTransform extends EveObject
     {
         const
             d = device,
-            g = EveTransform.global,
+            g = EveObject.global,
             finalScale = g.vec3_0,
             parentScale = g.vec3_1,
             dir = g.vec3_2,
@@ -334,3 +355,45 @@ export class EveTransform extends EveObject
     };
 
 }
+
+Tw2BaseClass.define(EveTransform, Type =>
+{
+    return {
+        isStaging: true,
+        type: "EveTransform",
+        category: "EveObject",
+        props: {
+            children: [["EveSpherePin", "EveTransform"]],
+            curveSets: [["TriCurveSet"]],
+            display: Type.BOOLEAN,
+            distanceBasedScaleArg1: Type.NUMBER,
+            distanceBasedScaleArg2: Type.NUMBER,
+            hideOnLowQuality: Type.BOOLEAN,
+            mesh: ["Tr2InstancedMesh", "Tr2Mesh", "Tr2MeshLod"],
+            modifier: Type.NUMBER,
+            observers: [["TriObserverLocal"]],
+            overrideBoundsMax: Type.VECTOR3,
+            overrideBoundsMin: Type.VECTOR3,
+            particleEmitters: [["Tr2DynamicEmitter", "Tr2GpuUniqueEmitter", "Tr2StaticEmitter"]],
+            particleSystems: [["Tr2ParticleSystem"]],
+            rotation: Type.TR_ROTATION,
+            scaling: Type.TR_SCALING,
+            sortValueMultiplier: Type.NUMBER,
+            translation: Type.TR_TRANSLATION,
+            update: Type.BOOLEAN,
+            useDistanceBasedScale: Type.BOOLEAN,
+            useLodLevel: Type.BOOLEAN,
+            visibilityThreshold: Type.NUMBER
+        },
+        notImplemented: [
+            "distanceBasedScaleArg1",
+            "distanceBasedScaleArg2",
+            "overrideBoundsMax",
+            "overrideBoundsMin",
+            "sortValueMultiplier",
+            "useDistanceBasedScale",
+            "useLodLevel",
+            "visibilityThreshold"
+        ]
+    };
+});

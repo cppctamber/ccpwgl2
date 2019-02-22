@@ -2,6 +2,8 @@ import {vec3, vec4, Tw2BaseClass} from "../../global";
 
 /**
  * EveConnector
+ * @ccp EveConnector
+ * Todo: Implement
  *
  * @property {vec4} animationColor                -
  * @property {Number} animationScale              -
@@ -46,7 +48,8 @@ Tw2BaseClass.define(EveConnector, Type =>
             lineWidth: Type.NUMBER,
             sourceObject: ["EveLocalPositionCurve"],
             type: Type.NUMBER
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

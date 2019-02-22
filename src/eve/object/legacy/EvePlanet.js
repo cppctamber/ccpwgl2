@@ -1,6 +1,6 @@
-import {util, device, resMan} from "../../global";
-import {Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter} from "../../core";
-import {EveTransform} from "./EveTransform";
+import {util, device, resMan} from "../../../global/index";
+import {Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter} from "../../../core/index";
+import {EveTransform} from "../EveTransform";
 import {EveObject} from "./EveObject";
 
 /**

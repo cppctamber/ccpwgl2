@@ -1,8 +1,10 @@
-import {vec3} from "../global/index";
-import {Tw2BaseClass} from "../global/index";
+import {vec3} from "../../global/index";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * EveMobile
+ * TODO: Implement
+ * @ccp EveMobile
  *
  * @property {Array.<EveObjectSet>} attachments    -
  * @property {vec3} boundingSphereCenter           -
@@ -47,7 +49,8 @@ Tw2BaseClass.define(EveMobile, Type =>
             meshLod: ["Tr2MeshLod"],
             observers: [["TriObserverLocal"]],
             shadowEffect: ["Tr2Effect"]
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

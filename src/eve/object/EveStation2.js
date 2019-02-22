@@ -1,8 +1,10 @@
-import {vec3} from "../global/index";
-import {Tw2BaseClass} from "../global/index";
+import {vec3} from "../../global/index";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * EveStation2
+ * TODO: Implement
+ * @ccp EveStation2
  *
  * @property {Array.<EveObjectSet>} attachments       -
  * @property {vec3} boundingSphereCenter              -
@@ -71,7 +73,8 @@ Tw2BaseClass.define(EveStation2, Type =>
             rotationCurve: ["Tr2RotationAdapter"],
             shadowEffect: ["Tr2Effect"],
             translationCurve: ["Tr2TranslationAdapter"]
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

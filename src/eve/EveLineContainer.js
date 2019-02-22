@@ -3,6 +3,7 @@ import {Tw2BaseClass} from "../global";
 /**
  * EveLineContainer
  * @ccp EveLineContainer
+ * TODO: Implement
  *
  * @property {EveCurveLineSet} lineSet -
  */
@@ -21,7 +22,8 @@ Tw2BaseClass.define(EveLineContainer, Type =>
         category: "EveObject",
         props: {
             lineSet: ["EveCurveLineSet"]
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

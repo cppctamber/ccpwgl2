@@ -2,6 +2,8 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * EveUiObject
+ * @ccp EveUiObject
+ * TODO: Implement
  *
  * @property {Number} boundingSphereRadius -
  * @property {Tr2Mesh} mesh                -
@@ -25,7 +27,8 @@ Tw2BaseClass.define(EveUiObject, Type =>
             boundingSphereRadius: Type.NUMBER,
             mesh: ["Tr2Mesh"],
             modelScale: Type.NUMBER
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

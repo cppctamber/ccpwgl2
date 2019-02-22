@@ -1,8 +1,10 @@
-import {quat, vec3} from "../global/index";
-import {Tw2BaseClass} from "../global/index";
+import {quat, vec3} from "../../global/index";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * EveRootTransform
+ * TODO: Implement
+ * @ccp EveRootTransform
  *
  * @property {Number} boundingSphereRadius       -
  * @property {Array.<EveObject>} children        -
@@ -56,7 +58,8 @@ Tw2BaseClass.define(EveRootTransform, Type =>
             sortValueMultiplier: Type.NUMBER,
             translation: Type.TR_TRANSLATION,
             translationCurve: ["Tr2CurveConstant"]
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

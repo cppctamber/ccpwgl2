@@ -1,9 +1,10 @@
-import {vec3} from "../global/index";
-import {Tw2BaseClass} from "../global/index";
+import {vec3} from "../../global/index";
+import {Tw2BaseClass} from "../../global/index";
 
 /**
  * EveShip2
- * @implements EveObject
+ * TODO: Implement
+ * @ccp EveShip2
  *
  * @property {Array.<EveObjectSet>} attachments    -
  * @property {EveBoosterSet2} boosters             -
@@ -67,7 +68,8 @@ Tw2BaseClass.define(EveShip2, Type =>
             shapeEllipsoidCenter: Type.VECTOR3,
             shapeEllipsoidRadius: Type.VECTOR3,
             translationCurve: ["Tr2CurveConstant", "Tr2TranslationAdapter"]
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

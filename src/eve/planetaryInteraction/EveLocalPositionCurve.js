@@ -2,6 +2,8 @@ import {vec3, Tw2BaseClass} from "../../global";
 
 /**
  * EveLocalPositionCurve
+ * @ccp EveLocalPositionCurve
+ * TODO: Implement
  *
  * @property {vec3} value -
  */
@@ -19,7 +21,8 @@ Tw2BaseClass.define(EveLocalPositionCurve, Type =>
         type: "EveLocalPositionCurve",
         props: {
             value: Type.VECTOR3
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

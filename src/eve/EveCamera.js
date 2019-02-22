@@ -3,6 +3,7 @@ import {quat, vec3, Tw2BaseClass} from "../global";
 /**
  * EveCamera
  * @ccp EveCamera
+ * TODO: Implement
  *
  * @property {Number} fieldOfView             -
  * @property {Number} friction                -
@@ -65,7 +66,8 @@ Tw2BaseClass.define(EveCamera, Type =>
             translationFromParent: Type.NUMBER,
             yaw: Type.NUMBER,
             zoomCurve: ["Tr2CurveScalar"]
-        }
+        },
+        notImplemented: ["*"]
     };
 });
 

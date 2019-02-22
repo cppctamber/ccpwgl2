@@ -1,45 +1,61 @@
-import {vec3, mat4, util} from "../../global";
+import {vec3, mat4, util, Tw2BaseClass} from "../../global";
 import {Tw2PerObjectData} from "../../core";
-import {EveObject} from "./EveObject";
+import {EveObject} from "./legacy/EveObject";
 
 /**
  * EveMissileWarhead
+ * @ccp EveMissileWarhead
+ * todo: Implement "acceleration"
+ * todo: Implement "impactDuration"
+ * todo: Implement "pathOffsetNoiseScale"
+ * todo: Implement "pathOffsetNoiseSpeed"
+ * todo: Implement "warheadLength"
+ * todo: Implement "warheadRadius"
  *
- * @property {String} name
- * @property {Boolean} display
- * @property {Tw2Mesh} mesh
- * @property {EveSpriteSet} spriteSet
- * @property {Number} state
- * @property {Number} time
- * @property {Number} durationEjectPhase
- * @property {Number} startEjectVelocity
- * @property {Number} acceleration
- * @property {Number} maxExplosionDistance
- * @property {Number} impactSize
- * @property {Number} impactDuration
- * @property {vec3} pathOffset
- * @property {mat4} transform
- * @property {vec3} velocity
- * @property {Tw2PerObjectData} _perObjectData
- * @class
+ * @property {Number} acceleration                         -
+ * @property {Number} durationEjectPhase                   -
+ * @property {Number} impactDuration                       -
+ * @property {Number} impactSize                           -
+ * @property {Number} maxExplosionDistance                 -
+ * @property {Tw2Mesh} mesh                                -
+ * @property {Array.<ParticleEmitterGPU>} particleEmitters -
+ * @property {Number} pathOffsetNoiseScale                 -
+ * @property {Number} pathOffsetNoiseSpeed                 -
+ * @property {EveSpriteSet} spriteSet                      -
+ * @property {Number} startEjectVelocity                   -
+ * @property {Number} warheadLength                        -
+ * @property {Number} warheadRadius                        -
+ * @property {Boolean} display                             -
+ * @property {Tw2PerObjectData} _perObjectData             -
+ * @property {Number} _state                               -
+ * @property {Number} _time                                -
+ * @property {mat4} _transform                             -
+ * @property {vec3} _velocity                              -
  */
-export class EveMissileWarhead extends EveObject
+export class EveMissileWarhead extends Tw2BaseClass
 {
-
-    mesh = null;
-    spriteSet = null;
-    state = EveMissileWarhead.State.READY;
-    time = 0;
-    durationEjectPhase = 0;
-    startEjectVelocity = 0;
+    //ccp
     acceleration = 1;
-    maxExplosionDistance = 40;
-    impactSize = 0;
+    durationEjectPhase = 0;
     impactDuration = 0.6;
-    pathOffset = vec3.create();
-    transform = mat4.create();
-    velocity = vec3.create();
+    impactSize = 0;
+    maxExplosionDistance = 40;
+    mesh = null;
+    particleEmitters = [];
+    pathOffsetNoiseScale = 0;
+    pathOffsetNoiseSpeed = 0;
+    spriteSet = null;
+    startEjectVelocity = 0;
+    warheadLength = 0;
+    warheadRadius = 0;
+
+    //ccpwgl
+    display = true;
     _perObjectData = Tw2PerObjectData.from(EveMissileWarhead.perObjectData);
+    _state = EveMissileWarhead.State.READY;
+    _time = 0;
+    _transform = mat4.create();
+    _velocity = vec3.create();
 
 
     /**
@@ -56,24 +72,12 @@ export class EveMissileWarhead extends EveObject
      */
     Launch(transform)
     {
-        mat4.copy(this.transform, transform);
-        this.velocity[0] = transform[8] * this.startEjectVelocity;
-        this.velocity[1] = transform[9] * this.startEjectVelocity;
-        this.velocity[2] = transform[10] * this.startEjectVelocity;
-        this.time = 0;
-        this.state = EveMissileWarhead.State.IN_FLIGHT;
-    }
-
-    /**
-     * Creates a clone of the warhead
-     * @returns {EveMissileWarhead}
-     */
-    Clone()
-    {
-        const warhead = new EveMissileWarhead();
-        warhead.mesh = this.mesh;
-        warhead.spriteSet = this.spriteSet;
-        return warhead;
+        mat4.copy(this._transform, transform);
+        this._velocity[0] = transform[8] * this.startEjectVelocity;
+        this._velocity[1] = transform[9] * this.startEjectVelocity;
+        this._velocity[2] = transform[10] * this.startEjectVelocity;
+        this._time = 0;
+        this._state = EveMissileWarhead.State.IN_FLIGHT;
     }
 
     /**
@@ -92,9 +96,9 @@ export class EveMissileWarhead extends EveObject
      */
     UpdateViewDependentData()
     {
-        if (!this.display || this.state === EveMissileWarhead.State.DEAD) return;
-        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this.transform);
-        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this.transform);
+        if (!this.display || this._state === EveMissileWarhead.State.DEAD) return;
+        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._transform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._transform);
     }
 
     /**
@@ -105,37 +109,37 @@ export class EveMissileWarhead extends EveObject
      */
     Update(dt, missilePosition, missileTarget)
     {
-        if (this.state === EveMissileWarhead.State.IN_FLIGHT)
+        if (this._state === EveMissileWarhead.State.IN_FLIGHT)
         {
             const
-                g = EveMissileWarhead.global,
-                position = mat4.getTranslation(g.vec3_0, this.transform),
+                g = EveObject.global,
+                position = mat4.getTranslation(g.vec3_0, this._transform),
                 tmp = g.vec3_1,
                 x = g.vec3_2,
                 y = g.vec3_3;
 
-            this.time += dt;
-            if (this.time > this.durationEjectPhase)
+            this._time += dt;
+            if (this._time > this.durationEjectPhase)
             {
-                vec3.subtract(position, this.velocity, missilePosition);
+                vec3.subtract(position, this._velocity, missilePosition);
                 vec3.lerp(position, position, missilePosition, 1 - Math.exp(-dt * 0.9999));
-                mat4.setTranslation(this.transform, position);
+                mat4.setTranslation(this._transform, position);
                 vec3.subtract(tmp, missileTarget, position);
                 if (vec3.length(tmp) < this.maxExplosionDistance)
                 {
                     console.log(position, tmp);
-                    this.state = EveMissileWarhead.State.DEAD;
+                    this._state = EveMissileWarhead.State.DEAD;
                 }
             }
             else
             {
-                vec3.scale(tmp, this.velocity, dt);
-                this.transform[12] += tmp[0];
-                this.transform[13] += tmp[1];
-                this.transform[14] += tmp[2];
+                vec3.scale(tmp, this._velocity, dt);
+                this._transform[12] += tmp[0];
+                this._transform[13] += tmp[1];
+                this._transform[14] += tmp[2];
             }
 
-            const z = vec3.normalize(tmp, this.velocity);
+            const z = vec3.normalize(tmp, this._velocity);
 
             if (Math.abs(z[0]) < 0.99)
             {
@@ -148,15 +152,15 @@ export class EveMissileWarhead extends EveObject
 
             vec3.normalize(x, x);
             vec3.cross(y, x, z);
-            this.transform[0] = x[0];
-            this.transform[1] = x[1];
-            this.transform[2] = x[2];
-            this.transform[4] = y[0];
-            this.transform[5] = y[1];
-            this.transform[6] = y[2];
-            this.transform[8] = z[0];
-            this.transform[9] = z[1];
-            this.transform[10] = z[2];
+            this._transform[0] = x[0];
+            this._transform[1] = x[1];
+            this._transform[2] = x[2];
+            this._transform[4] = y[0];
+            this._transform[5] = y[1];
+            this._transform[6] = y[2];
+            this._transform[8] = z[0];
+            this._transform[9] = z[1];
+            this._transform[10] = z[2];
         }
 
         if (this.spriteSet)
@@ -172,7 +176,7 @@ export class EveMissileWarhead extends EveObject
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this.mesh && this.state !== EveMissileWarhead.State.DEAD)
+        if (this.display && this.mesh && this._state !== EveMissileWarhead.State.DEAD)
         {
             if (this.mesh)
             {
@@ -181,7 +185,7 @@ export class EveMissileWarhead extends EveObject
 
             if (this.spriteSet)
             {
-                this.spriteSet.GetBatches(mode, accumulator, this._perObjectData, this.transform);
+                this.spriteSet.GetBatches(mode, accumulator, this._perObjectData, this._transform);
             }
         }
     }
@@ -217,51 +221,101 @@ export class EveMissileWarhead extends EveObject
 
 }
 
+Tw2BaseClass.define(EveMissileWarhead, Type =>
+{
+    return {
+        isStaging: true,
+        type: "EveMissileWarhead",
+        props: {
+            acceleration: Type.NUMBER,
+            durationEjectPhase: Type.NUMBER,
+            impactDuration: Type.NUMBER,
+            impactSize: Type.NUMBER,
+            maxExplosionDistance: Type.NUMBER,
+            mesh: ["Tr2Mesh"],
+            particleEmitters: [["Tr2GpuSharedEmitter"]],
+            pathOffsetNoiseScale: Type.NUMBER,
+            pathOffsetNoiseSpeed: Type.NUMBER,
+            spriteSet: ["EveSpriteSet"],
+            startEjectVelocity: Type.NUMBER,
+            warheadLength: Type.NUMBER,
+            warheadRadius: Type.NUMBER
+        },
+        notImplemented: [
+            "acceleration",
+            "impactDuration",
+            "pathOffsetNoiseScale",
+            "pathOffsetNoiseSpeed",
+            "warheadLength",
+            "warheadRadius"
+        ]
+    };
+});
+
 
 /**
  * EveMissile
+ * @ccp EveMissile
+ * Todo: Implement "boundingSphereRadius"
+ * Todo: Implement "modelTranslationCurve"
  *
- * @property {number|String} _id
- * @property {String} name
  * @property {Boolean} display
  * @property {Array} warheads
  * @property {Array} curveSets
  * @property {vec3} boundingSphereCenter
  * @property {Number} boundingSphereRadius
- * @property {vec3} position
- * @property {vec3} target
+ * @property {Tr2TranslationAdapter} modelTranslationCurve
+ * @property {vec3} _position
+ * @property {vec3} _target
  * @property {Number} speed
- * @property {?function(EveMissileWarhead): void} warheadExplosionCallback
- * @property {?function(EveMissile): void} missileFinishedCallback
- * @class
+ * @property {?function(EveMissileWarhead): void} _warheadExplosionCallback
+ * @property {?function(EveMissile): void} _missileFinishedCallback
  */
-export class EveMissile
+export class EveMissile extends Tw2BaseClass
 {
-
-    _id = util.generateID();
-    name = "";
-    display = true;
-    warheads = [];
-    curveSets = [];
-    speed = 1;
-    position = vec3.create();
-    target = vec3.create();
+    // ccp
     boundingSphereCenter = vec3.create();
     boundingSphereRadius = 0;
-    warheadExplosionCallback = null;
-    missileFinishedCallback = null;
+    modelTranslationCurve = null;
+    warheads = [];
 
+    // ccpwgl
+    display = true;
+    curveSets = [];
+    speed = 1;
+    _position = vec3.create();
+    _target = vec3.create();
+    _warheadExplosionCallback = null;
+    _missileFinishedCallback = null;
+
+    /**
+     * Sets a callback which is fired when a warhead explodes
+     * @param {Function} callback
+     */
+    OnWarheadExplosion(callback)
+    {
+        this._warheadExplosionCallback = callback;
+    }
+
+    /**
+     * Sets a callback which is fired when a missile has finished
+     * @param {Function} callback
+     */
+    OnMissileFinished(callback)
+    {
+        this._missileFinishedCallback = callback;
+    }
 
     /**
      * Prepares missile for rendering
-     * @param {vec3} position - Missile starting position
+     * @param {vec3} position - Missile starting _position
      * @param {Array} turretTransforms - Turret muzzle local to world transforms
      * @param {vec3} target - Target position
      */
     Launch(position, turretTransforms, target)
     {
-        vec3.copy(this.position, position);
-        vec3.copy(this.target, target);
+        vec3.copy(this._position, position);
+        vec3.copy(this._target, target);
 
         if (this.warheads.length > turretTransforms.length)
         {
@@ -271,7 +325,7 @@ export class EveMissile
         {
             while (this.warheads.length < turretTransforms.length)
             {
-                this.warheads.push(this.warheads[0].Clone());
+                this.warheads.push(this.CloneWarhead(this.warheads[0]));
             }
         }
 
@@ -279,6 +333,19 @@ export class EveMissile
         {
             this.warheads[0].Launch(turretTransforms[i]);
         }
+    }
+
+    /**
+     * Clones a warhead
+     * @param {EveMissileWarhead} sourceWarhead
+     * @returns {EveMissileWarhead}
+     */
+    CloneWarhead(sourceWarhead)
+    {
+        const warhead = new EveMissileWarhead();
+        warhead.mesh = sourceWarhead.mesh;
+        warhead.spriteSet = sourceWarhead.spriteSet;
+        return warhead;
     }
 
     /**
@@ -312,14 +379,14 @@ export class EveMissile
     Update(dt)
     {
         const
-            tmp = vec3.subtract(EveMissileWarhead.global.vec3_0, this.target, this.position),
+            tmp = vec3.subtract(EveObject.global.vec3_0, this._target, this._position),
             distance = vec3.length(tmp);
 
         if (distance > 0.1)
         {
             vec3.normalize(tmp, tmp);
             vec3.scale(tmp, tmp, Math.min(dt * this.speed, distance));
-            vec3.add(this.position, this.position, tmp);
+            vec3.add(this._position, this._position, tmp);
         }
 
         for (let i = 0; i < this.curveSets.length; ++i)
@@ -330,29 +397,29 @@ export class EveMissile
         let checkDead = false;
         for (let i = 0; i < this.warheads.length; ++i)
         {
-            const state = this.warheads[i].state;
-            this.warheads[i].Update(dt, this.position, this.target);
+            const _state = this.warheads[i]._state;
+            this.warheads[i].Update(dt, this._position, this._target);
 
-            if (state !== EveMissileWarhead.State.DEAD && this.warheads[i].state === EveMissileWarhead.State.DEAD)
+            if (_state !== EveMissileWarhead.State.DEAD && this.warheads[i]._state === EveMissileWarhead.State.DEAD)
             {
-                if (this.warheadExplosionCallback)
+                if (this._warheadExplosionCallback)
                 {
-                    this.warheadExplosionCallback(this.warheads[i]);
+                    this._warheadExplosionCallback(this.warheads[i]);
                 }
                 checkDead = true;
             }
         }
 
-        if (checkDead && this.missileFinishedCallback)
+        if (checkDead && this._missileFinishedCallback)
         {
             for (let i = 0; i < this.warheads.length; ++i)
             {
-                if (this.warheads[i].state !== EveMissileWarhead.State.DEAD)
+                if (this.warheads[i]._state !== EveMissileWarhead.State.DEAD)
                 {
                     return;
                 }
             }
-            this.missileFinishedCallback(this);
+            this._missileFinishedCallback(this);
         }
     }
 
@@ -372,3 +439,21 @@ export class EveMissile
     }
 
 }
+
+Tw2BaseClass.define(EveMissile, Type =>
+{
+    return {
+        isStaging: true,
+        type: "EveMissile",
+        props: {
+            boundingSphereCenter: Type.VECTOR3,
+            boundingSphereRadius: Type.NUMBER,
+            modelTranslationCurve: ["Tr2TranslationAdapter"],
+            warheads: [["EveMissileWarhead"]]
+        },
+        notImplemented: [
+            "boundingSphereRadius",
+            "modelTranslationCurve"
+        ]
+    };
+});
