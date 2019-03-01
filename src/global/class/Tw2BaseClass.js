@@ -287,9 +287,9 @@ export default class Tw2BaseClass
     {
         this.OnValueChanged();
 
-        if (this._parent && this._parent.OnChildValueChanged)
+        if (this._parent && "OnChildUpdated" in this._parent)
         {
-            this._parent.OnChildValueChanged(this, controller, skipEvents);
+            this._parent["OnChildUpdated"](this, controller, skipEvents);
         }
 
         if (!skipEvents)

@@ -1,5 +1,5 @@
-import {generateID} from "../../global/util";
 import {Tw2PostEffect} from "./Tw2PostEffect";
+import Tw2BaseClass from "../../global/class/Tw2BaseClass";
 
 /**
  * Tw2PostEffectManager
@@ -7,78 +7,25 @@ import {Tw2PostEffect} from "./Tw2PostEffect";
  * @property {Number|String} _id
  * @property {String} name
  * @property {Boolean} display
- * @property {Array<Tw2PostEffect>} effects
+ * @property {Array<Tw2PostEffect>} items
  */
-export class Tw2PostEffectManager
+export class Tw2PostEffectManager extends Tw2BaseClass
 {
 
-    _id = generateID();
     name = "Post manager";
     display = true;
-    items = [];
+    effects = [];
 
-
+    _dirty = true;
+    _onChildValueChanged = item => this.UpdateValues(item);
+    _visibleEffects = [];
+    
     /**
-     * Alias for items
-     * @returns {Array}
+     * Fires on value changes
      */
-    get effects()
+    OnValueChanged()
     {
-        return this.items;
-    }
-
-    /**
-     * Creates an item from an object
-     * @param {*} [opt={}]
-     * @returns {Tw2PostEffect}
-     */
-    CreateItem(opt = {})
-    {
-        const postEffect = Tw2PostEffect.create(opt);
-        this.AddItem(postEffect);
-        return postEffect;
-    }
-
-    /**
-     * Adds a post effect
-     * @param {Tw2PostEffect} postEffect
-     */
-    AddItem(postEffect)
-    {
-        if (!this.items.includes(postEffect))
-        {
-            if (postEffect.index === -1)
-            {
-                postEffect.index = this.items.length;
-            }
-
-            this.items.push(postEffect);
-        }
-    }
-
-    /**
-     * Removes a post effect
-     * @param {Tw2PostEffect} postEffect
-     */
-    RemoveItem(postEffect)
-    {
-        const index = this.items.indexOf(postEffect);
-        if (index !== -1)
-        {
-            this.items.splice(index, 1);
-        }
-    }
-
-    /**
-     * Clears all post effects
-     */
-    ClearItems()
-    {
-        for (let i = 0; i < this.items.length; i++)
-        {
-            this.items[i].ClearItems();
-        }
-        this.items = [];
+        this._dirty = true;
     }
 
     /**
@@ -88,14 +35,14 @@ export class Tw2PostEffectManager
     IsGood()
     {
         let isGood = 0;
-        for (let i = 0; i < this.items.length; i++)
+        for (let i = 0; i < this.effects.length; i++)
         {
-            if (this.items[i].IsGood())
+            if (this.effects[i].IsGood())
             {
                 isGood++;
             }
         }
-        return isGood === this.items.length;
+        return isGood === this.effects.length;
     }
 
     /**
@@ -103,9 +50,9 @@ export class Tw2PostEffectManager
      */
     KeepAlive()
     {
-        for (let i = 0; i < this.items.length; i++)
+        for (let i = 0; i < this.effects.length; i++)
         {
-            this.items[i].KeepAlive();
+            this.effects[i].KeepAlive();
         }
     }
 
@@ -116,11 +63,71 @@ export class Tw2PostEffectManager
      */
     GetResources(out = [])
     {
-        for (let i = 0; i < this.items.length; i++)
+        for (let i = 0; i < this.effects.length; i++)
         {
-            this.items[i].GetResources(out);
+            this.effects[i].GetResources(out);
         }
         return out;
+    }
+
+    /**
+     * Creates an item from an object
+     * @param {*} [opt={}]
+     * @returns {Tw2PostEffect}
+     */
+    CreateItem(opt = {})
+    {
+        const item = Tw2PostEffect.from(opt);
+        this.AddItem(item);
+        return item;
+    }
+
+    /**
+     * Adds a post effect
+     * @param {Tw2PostEffect} item
+     */
+    AddItem(item)
+    {
+        if (!this.effects.includes(item))
+        {
+            if (item.index === -1)
+            {
+                item.index = this.effects.length;
+            }
+
+            item._onModified = this._onChildValueChanged;
+            this.effects.push(item);
+            this.UpdateValues(item);
+        }
+    }
+
+    /**
+     * Removes a post effect
+     * @param {Tw2PostEffect} item
+     */
+    RemoveItem(item)
+    {
+        const index = this.effects.indexOf(item);
+        if (index !== -1)
+        {
+            item._onModified = null;
+            this.effects.splice(index, 1);
+            this.UpdateValues(item);
+        }
+    }
+
+    /**
+     * Clears all post effects
+     */
+    ClearItems()
+    {
+        for (let i = 0; i < this.effects.length; i++)
+        {
+            this.effects[i]._onModified = null;
+            this.effects[i].ClearItems();
+        }
+        this.effects = [];
+        this.UpdateValues();
     }
 
     /**
@@ -129,9 +136,28 @@ export class Tw2PostEffectManager
      */
     Update(dt)
     {
-        for (let i = 0; i < this.items.length; i++)
+        if (this._dirty)
         {
-            this.items[i].Update(dt);
+            this._visibleEffects = [];
+            for (let i = 0; i < this.effects.length; i++)
+            {
+                if (this.effects[i].display)
+                {
+                    this._visibleEffects.push(this.effects[i]);
+                }
+            }
+
+            this._visibleEffects.sort((a, b)=>
+            {
+                return a.index - b.index;
+            });
+
+            this._dirty = false;
+        }
+
+        for (let i = 0; i < this.effects.length; i++)
+        {
+            this.effects[i].Update(dt);
         }
     }
 
@@ -148,9 +174,9 @@ export class Tw2PostEffectManager
         }
 
         let rendered = 0;
-        for (let i = 0; i < this.items.length; i++)
+        for (let i = 0; i < this._visibleEffects.length; i++)
         {
-            if (this.items[i].Render())
+            if (this._visibleEffects[i].Render())
             {
                 rendered++;
             }
@@ -165,3 +191,14 @@ export class Tw2PostEffectManager
     static Item = Tw2PostEffect;
 
 }
+
+Tw2BaseClass.define(Tw2PostEffectManager, Type=>
+{
+    return {
+        type: "Tw2PostEffectManager",
+        props: {
+            display: Type.BOOLEAN,
+            effects: [["Tw2PostEffect"]]
+        }
+    };
+});

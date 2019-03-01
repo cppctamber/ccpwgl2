@@ -1,61 +1,53 @@
-import {device} from "../../global";
-import {assignIfExists, generateID} from "../../global/util";
+import {device, Tw2BaseClass} from "../../global";
 import {Tw2RenderTarget} from "../Tw2RenderTarget";
 import {Tw2TextureRes} from "../resource/Tw2TextureRes";
 import {Tw2TextureParameter, Tw2Vector4Parameter} from "../parameter";
 import {Tw2PostEffectStep} from "./Tw2PostEffectStep";
+import {assignIfExists} from "../../global/util";
 
 /**
  * Tw2PostEffect
  *
- * @property {String|Number} _id                      - A unique id
- * @property {String} name                            - the post effect's name
  * @property {Boolean} display                        - toggles rendering
  * @property {Number} [index=-1]                      - the post effect's render order (defaults to the order the effect is added)
- * @property {Number} width                           - the post effect's width
- * @property {Number} height                          - the post effect's height
- * @property {Tw2TextureRes} texture                  - the output texture
+ * @property {Number} _width                          - the post effect's width
+ * @property {Number} _height                         - the post effect's height
+ * @property {Tw2TextureRes} _texture                 - the output texture
  * @property {?Tw2CurveSet} curveSet                  - optional curve set
- * @property {{string:Tw2RenderTarget}} targets       - render targets
  * @property {Array<Tw2PostEffectStep>} steps         - post effect steps
- * @property {Array<Tw2PostEffectStep>} _visibleItems - visible and ordered post effect steps
- * @property {Boolean} _rebuildPending                - identifies if the post is pending a rebuild
+ * @property {Array<Tw2PostEffectStep>} _visibleSteps - visible and ordered post effect steps
+ * @property {Boolean} _dirty                         - identifies if the post is pending a rebuild
  * @property {Function} _onChildModified              - a function called when a child step is modified
  * @property {?Function} _onModified                  - a function which is called when the post effect is modified
  */
-export class Tw2PostEffect
+export class Tw2PostEffect extends Tw2BaseClass
 {
 
-    _id = generateID();
-    name = "";
     display = true;
     index = -1;
-    width = 0;
-    height = 0;
-    texture = null;
     curveSet = null;
-    targets = {};
-    items = [];
-    _visibleItems = [];
-    _rebuildPending = true;
-    _onChildModified = item => this.OnValueChanged(item);
+    steps = [];
 
+    _width = 0;
+    _height = 0;
+    _targets = {};
+    _texture = null;
+    _visibleSteps = [];
+    _dirty = true;
+    _onChildModified = item => this.UpdateValues(item);
+    _onModified = null;
 
-    /**
-     * Alias for items
-     * @returns {Array}
-     */
-    get steps()
-    {
-        return this.items;
-    }
 
     /**
      * Fires on value changes
      */
     OnValueChanged()
     {
-        this._rebuildPending = true;
+        this._dirty = true;
+        if (this._onModified)
+        {
+            this._onModified(this);
+        }
     }
 
     /**
@@ -65,14 +57,14 @@ export class Tw2PostEffect
     IsGood()
     {
         let isGood = 0;
-        for (let i = 0; i < this.items.length; i++)
+        for (let i = 0; i < this.steps.length; i++)
         {
-            if (this.items[i].IsGood())
+            if (this.steps[i].IsGood())
             {
                 isGood++;
             }
         }
-        return isGood === this.items.length;
+        return isGood === this.steps.length;
     }
 
     /**
@@ -80,7 +72,10 @@ export class Tw2PostEffect
      */
     KeepAlive()
     {
-        this.items.forEach(item => item.KeepAlive());
+        for (let i = 0; i < this.steps.length; i++)
+        {
+            this.steps[i].KeepAlive();
+        }
     }
 
     /**
@@ -90,9 +85,9 @@ export class Tw2PostEffect
      */
     GetResources(out = [])
     {
-        for (let i = 0; i < this.items.length; i++)
+        for (let i = 0; i < this.steps.length; i++)
         {
-            this.items[i].GetResources(out);
+            this.steps[i].GetResources(out);
         }
         return out;
     }
@@ -104,7 +99,7 @@ export class Tw2PostEffect
      */
     CreateItem(opt = {})
     {
-        const item = Tw2PostEffectStep.create(opt);
+        const item = Tw2PostEffectStep.from(opt);
         this.AddItem(item);
         return item;
     }
@@ -115,17 +110,16 @@ export class Tw2PostEffect
      */
     AddItem(item)
     {
-        if (!this.items.includes(item))
+        if (!this.steps.includes(item))
         {
-            item._onModified = this._onChildModified;
-
             if (item.index === -1)
             {
-                item.index = this.items.length;
+                item.index = this.steps.length;
             }
 
-            this.items.push(item);
-            this.OnValueChanged();
+            item._onModified = this._onChildModified;
+            this.steps.push(item);
+            this.UpdateValues(item);
         }
     }
 
@@ -135,12 +129,12 @@ export class Tw2PostEffect
      */
     RemoveItem(item)
     {
-        const index = this.items.indexOf(item);
+        const index = this.steps.indexOf(item);
         if (index !== -1)
         {
             item._onModified = null;
-            this.items.splice(index, 1);
-            this.OnValueChanged();
+            this.steps.splice(index, 1);
+            this.UpdateValues(item);
         }
     }
 
@@ -149,12 +143,12 @@ export class Tw2PostEffect
      */
     ClearItems()
     {
-        for (let i = 0; i < this.items.length; i++)
+        for (let i = 0; i < this.steps.length; i++)
         {
-            this.items[i]._onModified = null;
+            this.steps[i]._onModified = null;
         }
-        this.items = [];
-        this.OnValueChanged();
+        this.steps = [];
+        this.UpdateValues();
     }
 
     /**
@@ -164,7 +158,7 @@ export class Tw2PostEffect
      */
     GetTarget(name)
     {
-        return name && name in this.targets ? this.targets[name] : null;
+        return name && name in this._targets ? this._targets[name] : null;
     }
 
     /**
@@ -175,7 +169,7 @@ export class Tw2PostEffect
      */
     HasTarget(name)
     {
-        return !!(name && this.targets[name]);
+        return !!(name && this._targets[name]);
     }
 
     /**
@@ -188,14 +182,14 @@ export class Tw2PostEffect
      */
     CreateTarget(name, width = device.viewportWidth, height = device.viewportHeight)
     {
-        if (!this.targets[name])
+        if (!this._targets[name])
         {
-            this.targets[name] = new Tw2RenderTarget();
-            this.targets[name].name = name;
+            this._targets[name] = new Tw2RenderTarget();
+            this._targets[name].name = name;
         }
 
-        this.targets[name].Create(width, height, false);
-        return this.targets[name];
+        this._targets[name].Create(width, height, false);
+        return this._targets[name];
     }
 
     /**
@@ -227,49 +221,40 @@ export class Tw2PostEffect
             return false;
         }
 
-        if (width !== this.width || height !== this.height || this._rebuildPending || !this.texture)
+        if (width !== this._width || height !== this._height || this._dirty || !this._texture)
         {
-            if (!this.texture)
+            if (!this._texture)
             {
-                this.texture = new Tw2TextureRes();
-                this.texture.Attach(gl.createTexture());
+                this._texture = new Tw2TextureRes();
+                this._texture.Attach(gl.createTexture());
             }
 
-            gl.bindTexture(gl.TEXTURE_2D, this.texture.texture);
+            gl.bindTexture(gl.TEXTURE_2D, this._texture.texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
             gl.bindTexture(gl.TEXTURE_2D, null);
 
-            this.width = width;
-            this.height = height;
-
-            // Update targets (Defined on the effect)
-            for (const name in this.targets)
-            {
-                if (this.targets.hasOwnProperty(name))
-                {
-                    this.CreateTarget(name, width, height);
-                }
-            }
+            this._width = width;
+            this._height = height;
 
             // Rebuild items
-            this._visibleItems = [];
-            for (let i = 0; i < this.items.length; ++i)
+            this._visibleSteps = [];
+            for (let i = 0; i < this.steps.length; ++i)
             {
                 const
-                    item = this.items[i],
+                    item = this.steps[i],
                     inputs = item.inputs,
                     effect = item.effect,
                     shader = effect.shader,
                     parameters = effect.parameters;
 
                 // Auto create current blit
-                if (shader.HasTexture("BlitCurrent" && !parameters.BlitCurrent))
+                if (shader.HasTexture("BlitCurrent") && !parameters.BlitCurrent)
                 {
                     parameters["BlitCurrent"] = new Tw2TextureParameter("BlitCurrent", "rgba:/0,0,0,255");
                 }
 
                 // Auto create original blit
-                if (shader.HasTexture("BlitOriginal" && !parameters.BlitOriginal))
+                if (shader.HasTexture("BlitOriginal") && !parameters.BlitOriginal)
                 {
                     parameters["BlitOriginal"] = new Tw2TextureParameter("BlitOriginal", "rgba:/0,0,0,255");
                 }
@@ -277,13 +262,7 @@ export class Tw2PostEffect
                 // Setup step render target
                 if (item.target)
                 {
-                    // Auto create target (Defined on the step)
-                    if (!this.HasTarget(item.target))
-                    {
-                        this.CreateTarget(item.target, width, height);
-                    }
-
-                    item._renderTarget = this.GetTarget(item.target);
+                    item._renderTarget = this.CreateTarget(item.target, width, height);
                 }
                 else
                 {
@@ -315,17 +294,11 @@ export class Tw2PostEffect
 
                             if (target)
                             {
-                                // Auto create target
-                                if (!this.HasTarget(target))
-                                {
-                                    this.CreateTarget(target, width, height);
-                                }
-
-                                parameter.SetTextureRes(this.GetTarget(target).texture);
+                                parameter.SetTextureRes(this.CreateTarget(target, width, height).texture);
                             }
                             else
                             {
-                                parameter.SetTextureRes(this.texture);
+                                parameter.SetTextureRes(this._texture);
                             }
                         }
                     }
@@ -355,35 +328,35 @@ export class Tw2PostEffect
                         size.value[1] = 1.0 / width;
                     }
 
-                    size.OnValueChanged();
+                    size.UpdateValues(this);
                 }
 
                 if (item.display)
                 {
-                    this._visibleItems.push(item);
+                    this._visibleSteps.push(item);
                 }
 
-                item._rebuildPending = false;
+                item._dirty = false;
             }
 
             // Update item sort order
-            this._visibleItems.sort((a, b) =>
+            this._visibleSteps.sort((a, b) =>
             {
                 return a.index - b.index;
             });
 
-            this.rebuildPending = false;
+            this._dirty = false;
         }
 
-        gl.bindTexture(gl.TEXTURE_2D, this.texture.texture);
+        gl.bindTexture(gl.TEXTURE_2D, this._texture.texture);
         gl.copyTexImage2D(gl.TEXTURE_2D, 0, d.alphaBlendBackBuffer ? gl.RGBA : gl.RGB, 0, 0, width, height, 0);
         gl.bindTexture(gl.TEXTURE_2D, null);
         d.SetStandardStates(device.RM_OPAQUE);
 
         let didPost = 0;
-        for (let i = 0; i < this._visibleItems.length; ++i)
+        for (let i = 0; i < this._visibleSteps.length; ++i)
         {
-            const item = this._visibleItems[i];
+            const item = this._visibleSteps[i];
             if (item.display)
             {
                 if (item._renderTarget)
@@ -408,19 +381,11 @@ export class Tw2PostEffect
      * @param {*} [opt={}]
      * @returns {Tw2PostEffect}
      */
-    static create(opt = {})
+    static from(opt = {})
     {
         const postEffect = new this();
 
         assignIfExists(postEffect, opt, ["name", "display", "index"]);
-
-        if (opt.targets)
-        {
-            for (let i = 0; i < opt.targets.length; i++)
-            {
-                postEffect.targets[opt.targets[i]] = null;
-            }
-        }
 
         if (opt.steps)
         {
@@ -440,3 +405,16 @@ export class Tw2PostEffect
     static Item = Tw2PostEffectStep;
 
 }
+
+Tw2BaseClass.define(Tw2PostEffect, Type =>
+{
+    return {
+        type: "Tw2PostEffect",
+        props: {
+            display: Type.BOOLEAN,
+            index: Type.NUMBER,
+            curveSet: ["Tw2CurveSet"],
+            steps: [["Tw2PostEffectStep"]]
+        }
+    };
+});

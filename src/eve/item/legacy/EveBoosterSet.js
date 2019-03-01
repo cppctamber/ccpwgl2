@@ -1,6 +1,6 @@
-import {vec3, vec4, mat4, util, device} from "../../global";
-import {Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch} from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
+import {vec3, vec4, mat4, util, device} from "../../../global";
+import {Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch} from "../../../core";
+import {EveObjectSet, EveObjectSetItem} from "./../EveObjectSet";
 
 /**
  * Booster render batch

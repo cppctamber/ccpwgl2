@@ -1,5 +1,6 @@
-import {assignIfExists, generateID} from "../../global/util";
+import {assignIfExists} from "../../global/util";
 import {Tw2Effect} from "../mesh/Tw2Effect";
+import Tw2BaseClass from "../../global/class/Tw2BaseClass";
 
 /**
  * Post effect step
@@ -12,30 +13,28 @@ import {Tw2Effect} from "../mesh/Tw2Effect";
  * @property {?String} [target]                 - the step's render target name
  * @property {{string:string}} inputs           - the step's input render targets
  * @property {?Tw2RenderTarget} [_renderTarget] - the step's render target (if none is defined the current target is used)
- * @property {Boolean} _rebuildPending          - identifies if the post is pending a rebuild
+ * @property {Boolean} _dirty                   - identifies if the post is pending a rebuild
  * @property {?Function} _onModified            - a function which is called when the step is modified
  */
-export class Tw2PostEffectStep
+export class Tw2PostEffectStep extends Tw2BaseClass
 {
 
-    _id = generateID();
-    name = "";
     index = -1;
     display = true;
     effect = null;
     target = null;
     inputs = {};
-    _renderTarget = null;
-    _rebuildPending = true;
-    _onModified = null;
 
+    _renderTarget = null;
+    _dirty = true;
+    _onModified = null;
 
     /**
      * Fires on value changes
      */
     OnValueChanged()
     {
-        this._rebuildPending = true;
+        this._dirty = true;
         if (this._onModified)
         {
             this._onModified(this);
@@ -81,7 +80,7 @@ export class Tw2PostEffectStep
      * @param {*} [opt={}]
      * @returns {Tw2PostEffectStep}
      */
-    static create(opt = {})
+    static from(opt = {})
     {
         const item = new this();
         assignIfExists(item, opt, ["name", "display", "target", "index"]);
@@ -104,3 +103,17 @@ export class Tw2PostEffectStep
     }
 
 }
+
+Tw2BaseClass.define(Tw2PostEffectStep, Type=>
+{
+    return {
+        type: "Tw2PostEffectStep",
+        props: {
+            display: Type.BOOLEAN,
+            target: Type.STRING,
+            index: Type.NUMBER,
+            effect: [["Tw2Effect"]],
+            inputs: Type.PLAIN
+        }
+    };
+});
