@@ -610,9 +610,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 this.meshes[i].indexes = null;
             }
         }
-
-        this._isPurged = true;
-        this._isGood = false;
+        this.OnUnloaded();
         return true;
     }
 

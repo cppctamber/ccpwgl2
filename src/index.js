@@ -43,7 +43,7 @@ store.Register({
             "error": true,
             "warning": true,
             "log": true,
-            "info": false,
+            "info": true,
             "debug": true
         }
     },
@@ -62,7 +62,8 @@ store.Register({
         "mp4": core.Tw2VideoRes,
         "ogg": core.Tw2VideoRes,
         "webm": core.Tw2VideoRes,
-        "black": core.Tw2BlackRes
+        "black": core.Tw2BlackRes,
+        "red": core.Tw2LoadingObject
     },
 
     classes: [

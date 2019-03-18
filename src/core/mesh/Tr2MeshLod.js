@@ -66,12 +66,11 @@ export class Tr2MeshLod extends Tw2BaseClass
 
     /**
      * Rebuilds cached data
-     * @param res
+     * @param {Tw2GeometryRes} res
      */
-    RebuildCachedData(res)
+    OnResPrepared(res)
     {
         this.geometryResource = res;
-        res.UnregisterNotification(this);
     }
 
     /**

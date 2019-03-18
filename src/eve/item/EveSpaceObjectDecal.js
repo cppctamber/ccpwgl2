@@ -5,9 +5,7 @@ import {Tw2PerObjectData, Tw2ForwardingRenderBatch} from "../../core/";
  * Decal
  * TODO: Make "PickEffect" shared
  * TODO: Identify if "groupIndex" is deprecated
- * TODO: Identify if "parentBoneIndex" is deprecated
- * If "groupIndex" and "parentBoneIndex" are just used by the EveSOF, we may need to record this information if
- * we are going to convert this object back into a EveSOF object
+ * TODO: Identify if "parentBoneIndex" is deprecated - Doesn't seem to be on the new SOF anywhere and is required
  * @ccp EveSpaceObjectDecal
  *
  * @property {Tw2Effect} decalEffect           - Decal effect
@@ -133,10 +131,12 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             this.Rebuild();
         }
 
-        if
-        (
-            this.display && effect && effect.IsGood() && this._indexBuffer && this.parentGeometry && this.parentGeometry.IsGood()
-        )
+        if (!this.display || !this.effect || !this.parentGeometry || !this._indexBuffer)
+        {
+            return;
+        }
+
+        if (effect.IsGood() && this.parentGeometry.IsGood())
         {
             const batch = new Tw2ForwardingRenderBatch();
             this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));

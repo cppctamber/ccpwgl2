@@ -34,15 +34,15 @@ export class Tw2PostEffectManager extends Tw2BaseClass
      */
     IsGood()
     {
-        let isGood = 0;
+        let IsGood = 0;
         for (let i = 0; i < this.effects.length; i++)
         {
             if (this.effects[i].IsGood())
             {
-                isGood++;
+                IsGood++;
             }
         }
-        return isGood === this.effects.length;
+        return IsGood === this.effects.length;
     }
 
     /**

@@ -220,6 +220,7 @@ export class Tw2VideoRes extends Tw2Resource
         this._playable = false;
         this.playOnLoad = true;
         this.video = null;
+        this.OnUnloaded();
         return true;
     }
 

@@ -439,7 +439,7 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Rebuilds the turret sets cached data
      */
-    RebuildCachedData()
+    OnResPrepared()
     {
         const
             instancedElement = Tw2VertexElement.from({
@@ -482,6 +482,7 @@ export class EveTurretSet extends EveObjectSet
                 this.EnterStateDeactive();
                 break;
         }
+        //return true;
     }
 
     /**

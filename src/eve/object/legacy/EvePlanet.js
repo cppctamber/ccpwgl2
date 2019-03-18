@@ -35,6 +35,9 @@ export class EvePlanet extends EveObject
     lockedResources = [];
     watchedResources = [];
 
+    _atmosphere = null;
+    _planet = null;
+
 
     /**
      * Creates the planet from an options object
@@ -76,6 +79,7 @@ export class EvePlanet extends EveObject
         {
             resMan.GetObject(planetPath, obj =>
             {
+                this._planet = obj;
                 EvePlanet.MeshLoaded(this, obj);
                 onPartLoaded();
             });
@@ -85,6 +89,7 @@ export class EvePlanet extends EveObject
         {
             resMan.GetObject(atmospherePath, obj =>
             {
+                this._atmosphere = obj;
                 this.highDetail.children.push(obj);
                 onPartLoaded();
             });

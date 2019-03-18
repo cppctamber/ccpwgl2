@@ -28,7 +28,7 @@ import {EveChild} from "./EveChild";
 export class EveChildParticleSystem extends EveChild
 {
     // ccp
-    display = false;
+    display = true;
     localTransform = mat4.create();
     lodSphereRadius = 0;
     mesh = null;

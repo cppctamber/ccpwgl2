@@ -61,9 +61,9 @@ export class EveTrailsSet extends Tw2BaseClass
      * Rebuilds cached data
      * @param {Tw2GeometryRes} res
      */
-    RebuildCachedData(res)
+    OnResPrepared(res)
     {
-        //TODO: RebuildCachedData
+        //TODO: OnResPrepared
     }
 
     /**

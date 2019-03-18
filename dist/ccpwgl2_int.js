@@ -11993,14 +11993,13 @@ function (_Tw2BaseClass) {
 
     /**
      * Rebuilds cached data
-     * @param res
+     * @param {Tw2GeometryRes} res
      */
 
   }, {
-    key: "RebuildCachedData",
-    value: function RebuildCachedData(res) {
+    key: "OnResPrepared",
+    value: function OnResPrepared(res) {
       this.geometryResource = res;
-      res.UnregisterNotification(this);
     }
     /**
      * Checks if the mesh's resource is good
@@ -12293,14 +12292,15 @@ function () {
     }
     /**
      * Rebuilds Cached Data
-     * @param resource
+     * @param {Tw2EffectRes} res
      */
 
   }, {
-    key: "RebuildCachedData",
-    value: function RebuildCachedData(resource) {
-      this.shader = resource.GetShader(this.options);
+    key: "OnResPrepared",
+    value: function OnResPrepared(res) {
+      this.shader = res.GetShader(this.options);
       this.BindParameters();
+      return true;
     }
     /**
      * Unbinds parameters
@@ -13283,7 +13283,7 @@ function () {
     value: function GetResources() {
       let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
-      if (!out.includes(this.geometryResource)) {
+      if (this.geometryResource && !out.includes(this.geometryResource)) {
         out.push(this.geometryResource);
       } //return super.GetResources(out);
 
@@ -14236,20 +14236,13 @@ function () {
     }
     /**
      * Rebuilds the cached data for a resource (unless it doesn't exist or is already good)
-     * @param {Tw2GeometryRes} resource
+     * @param {Tw2GeometryRes} res
      */
 
   }, {
-    key: "RebuildCachedData",
-    value: function RebuildCachedData(resource) {
-      let found = false;
-
-      for (let i = 0; i < this.geometryResources.length; ++i) {
-        if (this.geometryResources[i] === resource) {
-          found = true;
-          break;
-        }
-      }
+    key: "OnResPrepared",
+    value: function OnResPrepared(res) {
+      let found = this.geometryResources.includes(res); // Unknown resource
 
       if (!found) {
         return;
@@ -14448,7 +14441,7 @@ function () {
     }
     /**
      * DoRebuildCachedData
-     * @param {Tw2AnimationController) animationController
+     * @param {Tw2AnimationController} animationController
      * @param {Tw2GeometryRes} resource
      */
 
@@ -14542,7 +14535,10 @@ function () {
         }
 
         animationController.pendingCommands = [];
-        if (animationController.onPendingCleared) animationController.onPendingCleared(animationController);
+
+        if (animationController.onPendingCleared) {
+          animationController.onPendingCleared(animationController);
+        }
       }
     }
     /**
@@ -16793,15 +16789,15 @@ function (_Tw2BaseClass) {
   }, {
     key: "IsGood",
     value: function IsGood() {
-      let isGood = 0;
+      let IsGood = 0;
 
       for (let i = 0; i < this.steps.length; i++) {
         if (this.steps[i].IsGood()) {
-          isGood++;
+          IsGood++;
         }
       }
 
-      return isGood === this.steps.length;
+      return IsGood === this.steps.length;
     }
     /**
      * Keeps the post effect alive
@@ -17228,15 +17224,15 @@ function (_Tw2BaseClass) {
   }, {
     key: "IsGood",
     value: function IsGood() {
-      let isGood = 0;
+      let IsGood = 0;
 
       for (let i = 0; i < this.effects.length; i++) {
         if (this.effects[i].IsGood()) {
-          isGood++;
+          IsGood++;
         }
       }
 
-      return isGood === this.effects.length;
+      return IsGood === this.effects.length;
     }
     /**
      * Keeps the post effects alive
@@ -17397,7 +17393,7 @@ _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_1__["default"].define(Tw2Pos
     type: "Tw2PostEffectManager",
     props: {
       display: Type.BOOLEAN,
-      items: [["Tw2PostEffect"]]
+      effects: [["Tw2PostEffect"]]
     }
   };
 });
@@ -19160,8 +19156,7 @@ function (_Tw2Resource) {
         }
       }
 
-      this._isPurged = true;
-      this._isGood = false;
+      this.OnUnloaded();
       return true;
     }
     /**
@@ -19481,7 +19476,7 @@ function (_Tw2Resource) {
     value: function AddObject(onResolved, onRejected) {
       if (this.HasErrors()) {
         if (onRejected) {
-          onRejected(this.GetErrors()[0]);
+          onRejected(this.GetLastError());
         }
       } else {
         this._objects.push({
@@ -19801,15 +19796,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * Tw2Resource base class
  *
- * @param {String} [path='']
  * @property {String} path
- * @property {Boolean} _isLoading
- * @property {Boolean} _isGood
- * @property {Boolean} _isPurged
- * @property {Array} _notifications
  * @property {Number} activeFrame
  * @property {Number} doNotPurge
- * @class
+ * @property {Number} _state
+ * @property {Array} _notifications
  */
 
 let Tw2Resource =
@@ -19820,40 +19811,66 @@ function () {
 
     _defineProperty(this, "path", "");
 
-    _defineProperty(this, "_isLoading", false);
-
-    _defineProperty(this, "_isGood", false);
-
-    _defineProperty(this, "_isPurged", false);
-
-    _defineProperty(this, "_notifications", []);
-
     _defineProperty(this, "activeFrame", 0);
 
     _defineProperty(this, "doNotPurge", 0);
+
+    _defineProperty(this, "_state", Tw2Resource.State.NO_INIT);
+
+    _defineProperty(this, "_notifications", []);
   }
 
   _createClass(Tw2Resource, [{
-    key: "IsLoading",
+    key: "IsGood",
 
+    /**
+     * Checks if the resource is good and keeps it alive
+     * TODO: Replace with explicit calls to "IsPrepared"
+     * @returns {boolean}
+     */
+    value: function IsGood() {
+      this.KeepAlive();
+      return this.IsPrepared() || this.IsLoaded();
+    }
     /**
      * Checks to see if the resource is loading
      * @returns {Boolean}
      */
-    value: function IsLoading() {
-      this.KeepAlive();
-      return this._isLoading;
+
+  }, {
+    key: "IsRequested",
+    value: function IsRequested() {
+      return this._state === Tw2Resource.State.REQUESTED;
     }
     /**
-     * Checks to see if the resource is good
-     * @returns {Boolean}
+     * Checks if the resource has been loaded
+     * @returns {boolean}
      */
 
   }, {
-    key: "IsGood",
-    value: function IsGood() {
-      this.KeepAlive();
-      return this._isGood;
+    key: "IsLoaded",
+    value: function IsLoaded() {
+      return this._state === Tw2Resource.State.LOADED;
+    }
+    /**
+     * Checks if the resource has been prepared
+     * @returns {boolean}
+     */
+
+  }, {
+    key: "IsPrepared",
+    value: function IsPrepared() {
+      return this._state === Tw2Resource.State.PREPARED;
+    }
+    /**
+     * Checks if the resource has been unloaded
+     * @returns {boolean}
+     */
+
+  }, {
+    key: "IsUnloaded",
+    value: function IsUnloaded() {
+      return this._state === Tw2Resource.State.UNLOADED;
     }
     /**
      * Checks to see if the resource has been purged
@@ -19863,15 +19880,38 @@ function () {
   }, {
     key: "IsPurged",
     value: function IsPurged() {
-      return this._isPurged;
+      return this._state === Tw2Resource.State.PURGED;
+    }
+    /**
+     * Checks if the resource has errors
+     * @returns {Boolean}
+     */
+
+  }, {
+    key: "HasErrors",
+    value: function HasErrors() {
+      return this._state === Tw2Resource.State.ERROR;
+    }
+    /**
+     * Checks if the resource has completed all processing
+     * @returns {Boolean}
+     */
+
+  }, {
+    key: "HasCompleted",
+    value: function HasCompleted() {
+      return this._state === Tw2Resource.State.ERROR || this._state === Tw2Resource.State.PURGED || this._state === Tw2Resource.State.PREPARED;
     }
     /**
      * Unloads the resource
+     * @returns {Boolean}
      */
 
   }, {
     key: "Unload",
-    value: function Unload() {}
+    value: function Unload() {
+      return false;
+    }
     /**
      * Reloads the resource
      */
@@ -19891,7 +19931,7 @@ function () {
     value: function KeepAlive() {
       this.activeFrame = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].activeFrame;
 
-      if (this.IsPurged()) {
+      if (this.IsPurged() && !this.HasErrors()) {
         this.Reload();
       }
     }
@@ -19906,33 +19946,14 @@ function () {
       return _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.GetErrors(this.path);
     }
     /**
-     * Checks if the resource has errors
-     * @returns {Boolean}
+     * Gets the resource's last error
+     * @returns {Tw2Error|Error}
      */
 
   }, {
-    key: "HasErrors",
-    value: function HasErrors() {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.HasErrors(this.path);
-    }
-    /**
-     * Fires on errors
-     * @param {Error} err
-     * @returns {Error}
-     */
-
-  }, {
-    key: "OnError",
-    value: function OnError() {
-      let err = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"]();
-      this._isGood = false;
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("error", this.path, {
-        type: "error",
-        message: err.message,
-        err
-      });
-      this.UpdateNotifications("OnResError");
-      return err;
+    key: "GetLastError",
+    value: function GetLastError() {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.GetLastError(this.path);
     }
     /**
      * Fires on warnings
@@ -19955,6 +19976,23 @@ function () {
       _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("debug", this.path, eventLog);
     }
     /**
+     * Fires on errors
+     * @param {Error} err
+     * @returns {Error}
+     */
+
+  }, {
+    key: "OnError",
+    value: function OnError() {
+      let err = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"]();
+      const doUnload = !this.IsUnloaded();
+      this._state = Tw2Resource.State.ERROR;
+      if (doUnload) this.Unload();
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("error", this.path, err);
+      this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
+      return err;
+    }
+    /**
      * LoadStarted
      * @param {*} [eventLog]
      */
@@ -19962,10 +20000,11 @@ function () {
   }, {
     key: "OnRequested",
     value: function OnRequested(eventLog) {
-      this._isLoading = true;
-      this._isPurged = false;
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(this.IsPurged() ? "reloading" : "requested", this.path, eventLog);
-      this.UpdateNotifications("ReleaseCachedData");
+      if (this.HasErrors()) return;
+      const reloading = this.IsPurged() || this.IsUnloaded();
+      this._state = Tw2Resource.State.REQUESTED;
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(reloading ? "reloading" : "requested", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.REQUESTED);
     }
     /**
      * LoadFinished
@@ -19975,11 +20014,10 @@ function () {
   }, {
     key: "OnLoaded",
     value: function OnLoaded(eventLog) {
-      this._isLoading = false;
-
-      if (!this.HasErrors()) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("loaded", this.path, eventLog);
-      }
+      if (this.HasErrors()) return;
+      this._state = Tw2Resource.State.LOADED;
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("loaded", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.LOADED);
     }
     /**
      * PrepareFinished
@@ -19989,13 +20027,10 @@ function () {
   }, {
     key: "OnPrepared",
     value: function OnPrepared(eventLog) {
-      this._isLoading = false;
-
-      if (!this.HasErrors()) {
-        this._isGood = true;
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("prepared", this.path, eventLog);
-        this.UpdateNotifications("RebuildCachedData");
-      }
+      if (this.HasErrors()) return;
+      this._state = Tw2Resource.State.PREPARED;
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("prepared", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
     }
     /**
      * Fires when the resource has been unloads
@@ -20005,7 +20040,58 @@ function () {
   }, {
     key: "OnUnloaded",
     value: function OnUnloaded(eventLog) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(this.IsPurged() ? "purged" : "unloaded", this.path, eventLog);
+      if (this.HasErrors()) return;
+      this._state = Tw2Resource.State.UNLOADED;
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("unloaded", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
+    }
+    /**
+     * Fires when the resource is purged
+     * @param eventLog
+     */
+
+  }, {
+    key: "OnPurged",
+    value: function OnPurged(eventLog) {
+      if (!this.HasErrors()) this._state = Tw2Resource.State.PURGED;
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("purged", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.PURGED);
+    }
+    /**
+     * Wraps callbacks as a notification
+     * - The notification is removed as soon as the resource is prepared or errored
+     * @param {Function} [onResolved]
+     * @param {Function} [onRejected]
+     */
+
+  }, {
+    key: "RegisterCallbacks",
+    value: function RegisterCallbacks(onResolved, onRejected) {
+      const notification = {
+        /**
+         * Fires on res error
+         * @param {Tw2Resource} res
+         * @param {Tw2Error|Error} err
+         * @returns {boolean}
+         */
+        OnResError(res, err) {
+          if (onRejected) onRejected(err);
+          return true;
+        },
+
+        /**
+         * Fires on res prepared
+         * @param {Tw2Resource} res
+         * @returns {boolean}
+         */
+        OnResPrepared(res) {
+          if (onResolved) onResolved(res);
+          return true;
+        }
+
+      };
+      this.RegisterNotification(notification);
+      return notification;
     }
     /**
      * Registers a notification
@@ -20016,15 +20102,41 @@ function () {
     key: "RegisterNotification",
     value: function RegisterNotification(notification) {
       if (!this._notifications.includes(notification)) {
-        this._notifications.push(notification);
+        let funcName, argument;
 
-        if (this.HasErrors()) {
-          if ("OnResError" in notification) {
-            notification["OnResError"](this);
-          }
-        } else if (this.IsGood() && "RebuildCachedData" in notification) {
-          notification.RebuildCachedData(this);
+        switch (this._state) {
+          case Tw2Resource.State.ERROR:
+            funcName = Tw2Resource.Callback.ERROR;
+            argument = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetLastError(this.path);
+            break;
+
+          case Tw2Resource.State.REQUESTED:
+            funcName = Tw2Resource.Callback.REQUESTED;
+            break;
+
+          case Tw2Resource.State.LOADED:
+            funcName = Tw2Resource.Callback.LOADED;
+            break;
+
+          case Tw2Resource.State.PREPARED:
+            funcName = Tw2Resource.Callback.PREPARED;
+            break;
+
+          case Tw2Resource.State.UNLOADED:
+            funcName = Tw2Resource.Callback.UNLOADED;
+            break;
+
+          case Tw2Resource.State.PURGED:
+            funcName = Tw2Resource.Callback.PURGED;
+            break;
+        } // Don't add notification if it returns true
+
+
+        if (funcName && notification[funcName] && notification[funcName](this, argument)) {
+          return;
         }
+
+        this._notifications.push(notification);
       }
     }
     /**
@@ -20040,14 +20152,18 @@ function () {
     /**
      * Updates a notification
      * @param {String} funcName - The function name to call
+     * @param {*} [argument]    - An optional argument
      */
 
   }, {
     key: "UpdateNotifications",
-    value: function UpdateNotifications(funcName) {
+    value: function UpdateNotifications(funcName, argument) {
       for (let i = 0; i < this._notifications.length; i++) {
-        if (funcName in this._notifications[i]) {
-          this._notifications[i][funcName](this);
+        // Notifications are removed if they return true
+        if (funcName && funcName in this._notifications[i] && this._notifications[i][funcName](this, argument)) {
+          this._notifications.splice(i, 1);
+
+          i--;
         }
       }
     }
@@ -20069,6 +20185,27 @@ function () {
  */
 
 _defineProperty(Tw2Resource, "__isResource", true);
+
+_defineProperty(Tw2Resource, "State", {
+  ERROR: -3,
+  PURGED: -2,
+  UNLOADED: -1,
+  NO_INIT: 0,
+  REQUESTED: 1,
+  LOADED: 2,
+  PREPARED: 3
+});
+
+_defineProperty(Tw2Resource, "Callback", {
+  ERROR: "OnResError",
+  PURGED: "OnResPurged",
+  UNLOADED: "OnResUnloaded",
+  REQUESTED: "OnResRequested",
+  LOADED: "OnResLoaded",
+  PREPARED: "OnResPrepared",
+  DEBUG: "OnResDebug",
+  WARNING: "OnResWarning"
+});
 
 Tw2Resource.prototype.DoCustomLoad = null;
 /**
@@ -20976,11 +21113,10 @@ function (_Tw2Resource) {
         this.texture = null;
       }
 
-      this._isPurged = true;
-      this._isGood = false;
       this._isAttached = false;
       this._extension = null;
       this.requestResponseType = null;
+      this.OnUnloaded();
       return true;
     }
     /**
@@ -20993,7 +21129,6 @@ function (_Tw2Resource) {
     value: function Attach(texture) {
       this.path = "";
       this.texture = texture;
-      this._isPurged = false;
       this._isAttached = true;
       this._extension = null;
       this.requestResponseType = null;
@@ -21398,6 +21533,7 @@ function (_Tw2Resource) {
       this._playable = false;
       this.playOnLoad = true;
       this.video = null;
+      this.OnUnloaded();
       return true;
     }
     /**
@@ -29877,7 +30013,6 @@ function Tw2WbgTrack() {
   }
   /**
    * Initialize
-   * @method
    */
 
 
@@ -29885,18 +30020,16 @@ function Tw2WbgTrack() {
     if (this.geometryResPath) {
       this.geometryRes = _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
       const self = this;
-      let notification = {
+      this.geometryRes.RegisterNotification({
         OnResPrepared: function OnResPrepared() {
           SetCurves(self);
         }
-      };
-      this.geometryRes.RegisterNotification(notification);
+      });
     }
   };
   /**
    * Updates a value at a specific time
    * @param {number} time
-   * @prototype
    */
 
 
@@ -31596,7 +31729,7 @@ function (_EveChild) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideOnLowQuality", false);
 
@@ -32309,7 +32442,7 @@ function (_EveChild) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(EveChildParticleSystem).call(this, ...args));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "localTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
@@ -35082,7 +35215,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -35136,12 +35269,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePerMuzzleData", function() { return _effect__WEBPACK_IMPORTED_MODULE_1__["EvePerMuzzleData"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissileWarhead"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissile"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveTransform"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveEffectRoot"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EvePlanet"]; });
@@ -35151,6 +35278,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveSpaceObject"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveStation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissileWarhead"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissile"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveTransform"]; });
 
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBanner"]; });
@@ -38019,9 +38152,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * Decal
  * TODO: Make "PickEffect" shared
  * TODO: Identify if "groupIndex" is deprecated
- * TODO: Identify if "parentBoneIndex" is deprecated
- * If "groupIndex" and "parentBoneIndex" are just used by the EveSOF, we may need to record this information if
- * we are going to convert this object back into a EveSOF object
+ * TODO: Identify if "parentBoneIndex" is deprecated - Doesn't seem to be on the new SOF anywhere and is required
  * @ccp EveSpaceObjectDecal
  *
  * @property {Tw2Effect} decalEffect           - Decal effect
@@ -38180,7 +38311,11 @@ function (_Tw2BaseClass) {
         this.Rebuild();
       }
 
-      if (this.display && effect && effect.IsGood() && this._indexBuffer && this.parentGeometry && this.parentGeometry.IsGood()) {
+      if (!this.display || !this.effect || !this.parentGeometry || !this._indexBuffer) {
+        return;
+      }
+
+      if (effect.IsGood() && this.parentGeometry.IsGood()) {
         const batch = new _core___WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
 
         this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
@@ -39899,8 +40034,8 @@ function (_Tw2BaseClass) {
      */
 
   }, {
-    key: "RebuildCachedData",
-    value: function RebuildCachedData(res) {} //TODO: RebuildCachedData
+    key: "OnResPrepared",
+    value: function OnResPrepared(res) {} //TODO: OnResPrepared
 
     /**
      * Gets resources
@@ -40506,8 +40641,8 @@ function (_EveObjectSet) {
      */
 
   }, {
-    key: "RebuildCachedData",
-    value: function RebuildCachedData() {
+    key: "OnResPrepared",
+    value: function OnResPrepared() {
       const instancedElement = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
         usage: "TEXCOORD",
         usageIndex: 1,
@@ -40545,7 +40680,8 @@ function (_EveObjectSet) {
         case EveTurretSet.State.UNPACKING:
           this.EnterStateDeactive();
           break;
-      }
+      } //return true;
+
     }
     /**
      * Finds a turret item by name
@@ -43061,7 +43197,7 @@ function (_EveObject) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "curveSets", []);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", false);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "distanceBasedScaleArg1", 0.2);
 
@@ -43134,10 +43270,13 @@ function (_EveObject) {
     value: function GetResources() {
       let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       let excludeChildren = arguments.length > 1 ? arguments[1] : undefined;
-      if (this.mesh) this.mesh.GetResources(out);
+
+      if (this.mesh) {
+        this.mesh.GetResources(out);
+      }
 
       if (!excludeChildren) {
-        for (let i = 0; i < this.children; i++) {
+        for (let i = 0; i < this.children.length; i++) {
           this.children[i].GetResources(out);
         }
       }
@@ -43412,7 +43551,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTransform, Type =
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveMissileWarhead, EveMissile, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
+/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -43826,6 +43965,10 @@ function (_EveObject) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "watchedResources", []);
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_atmosphere", null);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_planet", null);
+
     return _this;
   }
 
@@ -43873,6 +44016,7 @@ function (_EveObject) {
 
       if (planetPath) {
         _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(planetPath, obj => {
+          this._planet = obj;
           EvePlanet.MeshLoaded(this, obj);
           onPartLoaded();
         });
@@ -43880,6 +44024,7 @@ function (_EveObject) {
 
       if (atmospherePath) {
         _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(atmospherePath, obj => {
+          this._atmosphere = obj;
           this.highDetail.children.push(obj);
           onPartLoaded();
         });
@@ -49075,7 +49220,18 @@ function () {
   }, {
     key: "GetErrors",
     value: function GetErrors(path) {
-      return path && path in this._errors ? Object.assign([], this._errors[path]) : null;
+      return path && path in this._errors ? Object.assign([], this._errors[path]) : [];
+    }
+    /**
+     * Gets the last error for a path
+     * @param path
+     * @returns {Tw2Error|Error|undefined}
+     */
+
+  }, {
+    key: "GetLastError",
+    value: function GetLastError(path) {
+      return path && path in this._errors ? this._errors[path].slice(-1)[0] : undefined;
     }
     /**
      * Checks if a path has any errors
@@ -49166,19 +49322,30 @@ function () {
       for (const path in this._loadedObjects) {
         if (this._loadedObjects.hasOwnProperty(path)) {
           const res = this._loadedObjects[path];
+          if (res.doNotPurge) continue; // Already purged
 
-          if (!res.doNotPurge) {
-            if (res.IsPurged()) {
-              res.OnUnloaded();
-              this.Remove(path);
-            }
+          if (res.IsPurged()) {
+            this.Remove(path);
+            continue;
+          }
 
-            if (res._isGood && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
-              if (res.Unload()) {
-                res.OnUnloaded();
-                this.Remove(path);
+          let reason; // Has errors
+
+          if (res.HasErrors()) {
+            reason = "error";
+          } // Waiting for purge
+          else if (res.IsUnloaded()) {
+              reason = "unloaded";
+            } // inactive
+            else if (res.IsGood() && (curFrame - res.activeFrame) % frameLimit >= frameDistance && res.Unload()) {
+                reason = "inactivity";
               }
-            }
+
+          if (reason) {
+            res.OnPurged({
+              message: `Purged (${reason})`
+            });
+            this.Remove(path);
           }
         }
       }
@@ -49326,11 +49493,7 @@ function (_Tw2EventEmitter) {
       if (res) {
         res.OnError(err);
       } else {
-        this.OnResEvent("error", path, {
-          type: "error",
-          message: err.message,
-          err
-        });
+        this.OnResEvent("error", path, err);
       }
 
       return err;
@@ -49349,20 +49512,23 @@ function (_Tw2EventEmitter) {
       const defaultLog = Tw2ResMan.DefaultLog[eventName.toUpperCase()];
 
       if (defaultLog) {
-        log = Object.assign({}, defaultLog, log);
         const eventData = {
           res: this.motherLode.Find(path),
-          path,
-          log
+          path
         };
-        const err = log.err;
 
-        if (err) {
+        if (Object(_util__WEBPACK_IMPORTED_MODULE_5__["isError"])(log)) {
+          const err = eventData.err = log;
           this.motherLode.AddError(path, err);
-          eventData.err = err;
-          Object.assign(eventData, err.data);
+          log = Object.assign({}, defaultLog, {
+            message: err.message,
+            err
+          });
+        } else {
+          log = Object.assign({}, defaultLog, log);
         }
 
+        eventData.log = log;
         log.message = log.message.includes(path) ? log.message : log.message += ` "${path}"`;
         this.emit(eventName.toLowerCase(), eventData);
       }
@@ -49466,6 +49632,12 @@ function (_Tw2EventEmitter) {
       if (res) {
         if (res.IsPurged()) res.Reload();
         return res;
+      } // Check if errored
+
+
+      if (this.motherLode.HasErrors(path)) {
+        this.OnResError(path, this.motherLode.GetLastError(path));
+        return null;
       }
 
       if (path.indexOf("dynamic:/") === 0) {
@@ -49513,12 +49685,20 @@ function (_Tw2EventEmitter) {
   }, {
     key: "GetObject",
     value: function GetObject(path, onResolved, onRejected) {
-      path = Tw2ResMan.NormalizePath(path); // Check if already loaded
+      path = Tw2ResMan.NormalizePath(path); // Check if already exists
 
       let res = this.motherLode.Find(path);
 
       if (res) {
         res.AddObject(onResolved, onRejected);
+        return;
+      } // Check if already failed
+
+
+      if (this.motherLode.HasErrors(path)) {
+        const lastError = this.motherLode.GetLastError(path);
+        this.OnResError(path, lastError);
+        if (onRejected) onRejected(lastError);
         return;
       }
 
@@ -49532,6 +49712,28 @@ function (_Tw2EventEmitter) {
       }
     }
     /**
+     * Wraps get object with a promise
+     * @param {String} path
+     * @returns {Promise<any>}
+     */
+
+  }, {
+    key: "GetAsync",
+    value: function GetAsync(path) {
+      return regeneratorRuntime.async(function GetAsync$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            return _context.abrupt("return", new Promise((resolve, reject) => {
+              this.GetObject(path, resolve, reject);
+            }));
+
+          case 1:
+          case "end":
+            return _context.stop();
+        }
+      }, null, this);
+    }
+    /**
      * Reloads a resource
      * @param {Tw2Resource} resource
      * @returns {Tw2Resource} resource
@@ -49540,20 +49742,21 @@ function (_Tw2EventEmitter) {
   }, {
     key: "ReloadResource",
     value: function ReloadResource(resource) {
-      const path = resource.path; // Check if already loaded and good
+      const path = resource.path; // Check if it hasn't been purged
 
       const res = this.motherLode.Find(path);
 
-      if (res && !res.IsPurged()) {
+      if (res && (!res.IsPurged() || res.HasErrors())) {
         return res;
       }
 
       try {
-        return Tw2ResMan.LoadResource(this, resource);
+        Tw2ResMan.LoadResource(this, resource);
       } catch (err) {
-        this.OnResError(path, err);
-        return resource;
+        resource.OnError(err);
       }
+
+      return resource;
     }
     /**
      * Builds a url from a resource path
@@ -54009,7 +54212,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, Tw2ParticleSystem, Tr2Model, EveSOFData, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionDecal, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecal, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: math, util, device, store, resMan, logger, consts, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, Tw2ParticleSystem, Tr2Model, EveSOFData, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionDecal, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecal, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54399,6 +54602,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSystem", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildParticleSystem"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveMissile"]; });
@@ -54486,16 +54699,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildModifierSRT"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildModifierTranslateWithCamera"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterBatch"]; });
 
@@ -54736,7 +54939,7 @@ _global__WEBPACK_IMPORTED_MODULE_9__["store"].Register({
       "error": true,
       "warning": true,
       "log": true,
-      "info": false,
+      "info": true,
       "debug": true
     }
   },
@@ -54753,7 +54956,8 @@ _global__WEBPACK_IMPORTED_MODULE_9__["store"].Register({
     "mp4": _core__WEBPACK_IMPORTED_MODULE_2__["Tw2VideoRes"],
     "ogg": _core__WEBPACK_IMPORTED_MODULE_2__["Tw2VideoRes"],
     "webm": _core__WEBPACK_IMPORTED_MODULE_2__["Tw2VideoRes"],
-    "black": _core__WEBPACK_IMPORTED_MODULE_2__["Tw2BlackRes"]
+    "black": _core__WEBPACK_IMPORTED_MODULE_2__["Tw2BlackRes"],
+    "red": _core__WEBPACK_IMPORTED_MODULE_2__["Tw2LoadingObject"]
   },
   classes: [_global_class__WEBPACK_IMPORTED_MODULE_1__, _core__WEBPACK_IMPORTED_MODULE_2__, _curve__WEBPACK_IMPORTED_MODULE_3__, _eve__WEBPACK_IMPORTED_MODULE_4__, _interior__WEBPACK_IMPORTED_MODULE_5__, _particle__WEBPACK_IMPORTED_MODULE_6__, _sof__WEBPACK_IMPORTED_MODULE_7__, _state__WEBPACK_IMPORTED_MODULE_8__],
   types: {
@@ -57467,8 +57671,8 @@ function (_Tw2ParticleEmitter) {
      */
 
   }, {
-    key: "RebuildCachedData",
-    value: function RebuildCachedData() {
+    key: "OnResPrepared",
+    value: function OnResPrepared() {
       if (this.geometryResource && this.geometryResource.meshes.length) {
         if (!this.geometryResource.meshes[0].bufferData) {
           this.geometryResource.systemMirror = true;
@@ -57485,7 +57689,8 @@ function (_Tw2ParticleEmitter) {
     value: function Update() {
       const res = this.geometryResource;
 
-      if (!this._spawned && this.particleSystem && res && res.IsGood() && res.meshes.length > this.meshIndex && res.meshes[this.meshIndex].bufferData) {
+      if (!this._spawned && this.particleSystem && res && res.IsGood() && // TODO: Why does this need an isPrepared && isLoaded check??
+      res.meshes.length > this.meshIndex && res.meshes[this.meshIndex].bufferData) {
         this._spawned = true;
         const mesh = res.meshes[this.meshIndex],
               elts = this.particleSystem.elements,

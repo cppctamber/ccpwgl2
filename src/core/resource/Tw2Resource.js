@@ -4,46 +4,67 @@ import {Tw2Error} from "../Tw2Error";
 /**
  * Tw2Resource base class
  *
- * @param {String} [path='']
  * @property {String} path
- * @property {Boolean} _isLoading
- * @property {Boolean} _isGood
- * @property {Boolean} _isPurged
- * @property {Array} _notifications
  * @property {Number} activeFrame
  * @property {Number} doNotPurge
- * @class
+ * @property {Number} _state
+ * @property {Array} _notifications
  */
 export class Tw2Resource
 {
 
     path = "";
-    _isLoading = false;
-    _isGood = false;
-    _isPurged = false;
-    _notifications = [];
     activeFrame = 0;
     doNotPurge = 0;
 
+    _state = Tw2Resource.State.NO_INIT;
+    _notifications = [];
+
+    /**
+     * Checks if the resource is good and keeps it alive
+     * TODO: Replace with explicit calls to "IsPrepared"
+     * @returns {boolean}
+     */
+    IsGood()
+    {
+        this.KeepAlive();
+        return this.IsPrepared() || this.IsLoaded();
+    }
 
     /**
      * Checks to see if the resource is loading
      * @returns {Boolean}
      */
-    IsLoading()
+    IsRequested()
     {
-        this.KeepAlive();
-        return this._isLoading;
+        return this._state === Tw2Resource.State.REQUESTED;
     }
 
     /**
-     * Checks to see if the resource is good
-     * @returns {Boolean}
+     * Checks if the resource has been loaded
+     * @returns {boolean}
      */
-    IsGood()
+    IsLoaded()
     {
-        this.KeepAlive();
-        return this._isGood;
+        return this._state === Tw2Resource.State.LOADED;
+    }
+
+    /**
+     * Checks if the resource has been prepared
+     * @returns {boolean}
+     */
+    IsPrepared()
+    {
+        return this._state === Tw2Resource.State.PREPARED;
+    }
+
+    /**
+     * Checks if the resource has been unloaded
+     * @returns {boolean}
+     */
+    IsUnloaded()
+    {
+        return this._state === Tw2Resource.State.UNLOADED;
     }
 
     /**
@@ -52,15 +73,36 @@ export class Tw2Resource
      */
     IsPurged()
     {
-        return this._isPurged;
+        return this._state === Tw2Resource.State.PURGED;
+    }
+
+    /**
+     * Checks if the resource has errors
+     * @returns {Boolean}
+     */
+    HasErrors()
+    {
+        return this._state === Tw2Resource.State.ERROR;
+    }
+
+    /**
+     * Checks if the resource has completed all processing
+     * @returns {Boolean}
+     */
+    HasCompleted()
+    {
+        return this._state === Tw2Resource.State.ERROR ||
+            this._state === Tw2Resource.State.PURGED ||
+            this._state === Tw2Resource.State.PREPARED;
     }
 
     /**
      * Unloads the resource
+     * @returns {Boolean}
      */
     Unload()
     {
-
+        return false;
     }
 
     /**
@@ -78,7 +120,7 @@ export class Tw2Resource
     KeepAlive()
     {
         this.activeFrame = resMan.activeFrame;
-        if (this.IsPurged())
+        if (this.IsPurged() && !this.HasErrors())
         {
             this.Reload();
         }
@@ -94,25 +136,12 @@ export class Tw2Resource
     }
 
     /**
-     * Checks if the resource has errors
-     * @returns {Boolean}
+     * Gets the resource's last error
+     * @returns {Tw2Error|Error}
      */
-    HasErrors()
+    GetLastError()
     {
-        return resMan.motherLode.HasErrors(this.path);
-    }
-
-    /**
-     * Fires on errors
-     * @param {Error} err
-     * @returns {Error}
-     */
-    OnError(err = new Tw2Error())
-    {
-        this._isGood = false;
-        resMan.OnResEvent("error", this.path, {type: "error", message: err.message, err});
-        this.UpdateNotifications("OnResError");
-        return err;
+        return resMan.motherLode.GetLastError(this.path);
     }
 
     /**
@@ -134,15 +163,31 @@ export class Tw2Resource
     }
 
     /**
+     * Fires on errors
+     * @param {Error} err
+     * @returns {Error}
+     */
+    OnError(err = new Tw2Error())
+    {
+        const doUnload = !this.IsUnloaded();
+        this._state = Tw2Resource.State.ERROR;
+        if (doUnload) this.Unload();
+        resMan.OnResEvent("error", this.path, err);
+        this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
+        return err;
+    }
+
+    /**
      * LoadStarted
      * @param {*} [eventLog]
      */
     OnRequested(eventLog)
     {
-        this._isLoading = true;
-        this._isPurged = false;
-        resMan.OnResEvent(this.IsPurged() ? "reloading" : "requested", this.path, eventLog);
-        this.UpdateNotifications("ReleaseCachedData");
+        if (this.HasErrors()) return;
+        const reloading = this.IsPurged() || this.IsUnloaded();
+        this._state = Tw2Resource.State.REQUESTED;
+        resMan.OnResEvent(reloading ? "reloading" : "requested", this.path, eventLog);
+        this.UpdateNotifications(Tw2Resource.Callback.REQUESTED);
     }
 
     /**
@@ -151,11 +196,10 @@ export class Tw2Resource
      */
     OnLoaded(eventLog)
     {
-        this._isLoading = false;
-        if (!this.HasErrors())
-        {
-            resMan.OnResEvent("loaded", this.path, eventLog);
-        }
+        if (this.HasErrors()) return;
+        this._state = Tw2Resource.State.LOADED;
+        resMan.OnResEvent("loaded", this.path, eventLog);
+        this.UpdateNotifications(Tw2Resource.Callback.LOADED);
     }
 
     /**
@@ -164,13 +208,10 @@ export class Tw2Resource
      */
     OnPrepared(eventLog)
     {
-        this._isLoading = false;
-        if (!this.HasErrors())
-        {
-            this._isGood = true;
-            resMan.OnResEvent("prepared", this.path, eventLog);
-            this.UpdateNotifications("RebuildCachedData");
-        }
+        if (this.HasErrors()) return;
+        this._state = Tw2Resource.State.PREPARED;
+        resMan.OnResEvent("prepared", this.path, eventLog);
+        this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
     }
 
     /**
@@ -179,7 +220,60 @@ export class Tw2Resource
      */
     OnUnloaded(eventLog)
     {
-        resMan.OnResEvent(this.IsPurged() ? "purged" : "unloaded", this.path, eventLog);
+        if (this.HasErrors()) return;
+        this._state = Tw2Resource.State.UNLOADED;
+        resMan.OnResEvent("unloaded", this.path, eventLog);
+        this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
+    }
+
+    /**
+     * Fires when the resource is purged
+     * @param eventLog
+     */
+    OnPurged(eventLog)
+    {
+        if (!this.HasErrors()) this._state = Tw2Resource.State.PURGED;
+        resMan.OnResEvent("purged", this.path, eventLog);
+        this.UpdateNotifications(Tw2Resource.Callback.PURGED);
+    }
+
+    /**
+     * Wraps callbacks as a notification
+     * - The notification is removed as soon as the resource is prepared or errored
+     * @param {Function} [onResolved]
+     * @param {Function} [onRejected]
+     */
+    RegisterCallbacks(onResolved, onRejected)
+    {
+        const notification = {
+
+            /**
+             * Fires on res error
+             * @param {Tw2Resource} res
+             * @param {Tw2Error|Error} err
+             * @returns {boolean}
+             */
+            OnResError(res, err)
+            {
+                if (onRejected) onRejected(err);
+                return true;
+            },
+
+            /**
+             * Fires on res prepared
+             * @param {Tw2Resource} res
+             * @returns {boolean}
+             */
+            OnResPrepared(res)
+            {
+                if (onResolved) onResolved(res);
+                return true;
+            }
+
+        };
+
+        this.RegisterNotification(notification);
+        return notification;
     }
 
     /**
@@ -190,18 +284,43 @@ export class Tw2Resource
     {
         if (!this._notifications.includes(notification))
         {
+            let funcName, argument;
+
+            switch (this._state)
+            {
+                case Tw2Resource.State.ERROR:
+                    funcName = Tw2Resource.Callback.ERROR;
+                    argument = resMan.GetLastError(this.path);
+                    break;
+
+                case Tw2Resource.State.REQUESTED:
+                    funcName = Tw2Resource.Callback.REQUESTED;
+                    break;
+
+                case Tw2Resource.State.LOADED:
+                    funcName = Tw2Resource.Callback.LOADED;
+                    break;
+
+                case Tw2Resource.State.PREPARED:
+                    funcName = Tw2Resource.Callback.PREPARED;
+                    break;
+
+                case Tw2Resource.State.UNLOADED:
+                    funcName = Tw2Resource.Callback.UNLOADED;
+                    break;
+
+                case Tw2Resource.State.PURGED:
+                    funcName = Tw2Resource.Callback.PURGED;
+                    break;
+            }
+
+            // Don't add notification if it returns true
+            if (funcName && notification[funcName] && notification[funcName](this, argument))
+            {
+                return;
+            }
+
             this._notifications.push(notification);
-            if (this.HasErrors())
-            {
-                if ("OnResError" in notification)
-                {
-                    notification["OnResError"](this);
-                }
-            }
-            else if (this.IsGood() && "RebuildCachedData" in notification)
-            {
-                notification.RebuildCachedData(this);
-            }
         }
     }
 
@@ -217,14 +336,17 @@ export class Tw2Resource
     /**
      * Updates a notification
      * @param {String} funcName - The function name to call
+     * @param {*} [argument]    - An optional argument
      */
-    UpdateNotifications(funcName)
+    UpdateNotifications(funcName, argument)
     {
         for (let i = 0; i < this._notifications.length; i++)
         {
-            if (funcName in this._notifications[i])
+            // Notifications are removed if they return true
+            if (funcName && funcName in this._notifications[i] && this._notifications[i][funcName](this, argument))
             {
-                this._notifications[i][funcName](this);
+                this._notifications.splice(i, 1);
+                i--;
             }
         }
     }
@@ -235,6 +357,35 @@ export class Tw2Resource
      * @private
      */
     static __isResource = true;
+
+    /**
+     * Resource states
+     * @type {*}
+     */
+    static State = {
+        ERROR: -3,
+        PURGED: -2,
+        UNLOADED: -1,
+        NO_INIT: 0,
+        REQUESTED: 1,
+        LOADED: 2,
+        PREPARED: 3
+    };
+
+    /**
+     * Notification callback names
+     * @type {*}
+     */
+    static Callback = {
+        ERROR: "OnResError",
+        PURGED: "OnResPurged",
+        UNLOADED: "OnResUnloaded",
+        REQUESTED: "OnResRequested",
+        LOADED: "OnResLoaded",
+        PREPARED: "OnResPrepared",
+        DEBUG: "OnResDebug",
+        WARNING: "OnResWarning"
+    };
 
 }
 

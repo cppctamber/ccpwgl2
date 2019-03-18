@@ -515,20 +515,13 @@ export class Tw2AnimationController
 
     /**
      * Rebuilds the cached data for a resource (unless it doesn't exist or is already good)
-     * @param {Tw2GeometryRes} resource
+     * @param {Tw2GeometryRes} res
      */
-    RebuildCachedData(resource)
+    OnResPrepared(res)
     {
-        let found = false;
-        for (let i = 0; i < this.geometryResources.length; ++i)
-        {
-            if (this.geometryResources[i] === resource)
-            {
-                found = true;
-                break;
-            }
-        }
+        let found = this.geometryResources.includes(res);
 
+        // Unknown resource
         if (!found)
         {
             return;
@@ -758,7 +751,7 @@ export class Tw2AnimationController
 
     /**
      * DoRebuildCachedData
-     * @param {Tw2AnimationController) animationController
+     * @param {Tw2AnimationController} animationController
      * @param {Tw2GeometryRes} resource
      */
     static DoRebuildCachedData(animationController, resource)
@@ -866,7 +859,10 @@ export class Tw2AnimationController
                 }
             }
             animationController.pendingCommands = [];
-            if (animationController.onPendingCleared) animationController.onPendingCleared(animationController);
+            if (animationController.onPendingCleared)
+            {
+                animationController.onPendingCleared(animationController);
+            }
         }
     }
 

@@ -45,7 +45,7 @@ export class EveTransform extends EveObject
     // ccp
     children = [];
     curveSets = [];
-    display = false;
+    display = true;
     distanceBasedScaleArg1 = 0.2;
     distanceBasedScaleArg2 = 0.63;
     hideOnLowQuality = false;
@@ -91,11 +91,14 @@ export class EveTransform extends EveObject
      */
     GetResources(out = [], excludeChildren)
     {
-        if (this.mesh) this.mesh.GetResources(out);
+        if (this.mesh)
+        {
+            this.mesh.GetResources(out);
+        }
 
         if (!excludeChildren)
         {
-            for (let i = 0; i < this.children; i++)
+            for (let i = 0; i < this.children.length; i++)
             {
                 this.children[i].GetResources(out);
             }

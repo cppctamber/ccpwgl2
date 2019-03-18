@@ -48,7 +48,6 @@ export function Tw2WbgTrack()
 
     /**
      * Initialize
-     * @method
      */
     this.Initialize = function ()
     {
@@ -56,20 +55,18 @@ export function Tw2WbgTrack()
         {
             this.geometryRes = resMan.GetResource(this.geometryResPath);
             const self = this;
-            let notification = {
+            this.geometryRes.RegisterNotification({
                 OnResPrepared: function ()
                 {
                     SetCurves(self);
                 }
-            };
-            this.geometryRes.RegisterNotification(notification);
+            });
         }
     };
 
     /**
      * Updates a value at a specific time
      * @param {number} time
-     * @prototype
      */
     this.UpdateValue = function (time)
     {

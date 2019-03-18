@@ -32,7 +32,7 @@ export class EveChildContainer extends EveChild
     // ccp
     controllers = [];
     curveSets = [];
-    display = false;
+    display = true;
     hideOnLowQuality = false;
     lights = [];
     localTransform = mat4.create();

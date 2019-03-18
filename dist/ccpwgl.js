@@ -560,9 +560,30 @@ var ccpwgl = (function (ccpwgl_int)
         this.dna = null;
         /** Array of object overlay effects **/
         this.overlays = [];
+        /** Parameter for holding visibility status **/
+        var display = true;
+
+        Object.defineProperty(this, "display", {
+            get: function()
+            {
+                return display;
+            },
+            set: function(bool)
+            {
+                display = bool;
+                for (let i = 0; i < this.wrappedObjects.length; i++)
+                {
+                    if (this.wrappedObjects[i])
+                    {
+                        this.wrappedObjects[i].display = display;
+                    }
+                }
+            }
+        })
 
         function onObjectLoaded(obj)
         {
+            obj.display = display;
             self.wrappedObjects[0] = obj;
             if ("transform" in self.wrappedObjects[0])
             {
@@ -583,6 +604,24 @@ var ccpwgl = (function (ccpwgl_int)
         }
 
         var self = this;
+
+        /**
+         * Gets the object's resources
+         * @param {Array<Tw2Resource>} [out=[]]
+         * @returns {Array<Tw2Resouce>} out
+         */
+        this.getResources = function(out)
+        {
+            if (!out) out = [];
+            for (let i = 0; i < this.wrappedObjects.length; i++)
+            {
+                if (this.wrappedObjects[i] && "GetResources" in this.wrappedObjects[i])
+                {
+                    this.wrappedObjects[i].GetResources(out);
+                }
+            }
+            return out;
+        }
 
         /**
          * Check if object .red file is still loading.
@@ -758,6 +797,26 @@ var ccpwgl = (function (ccpwgl_int)
         this.killCount = 0;
         /** Function to call when turret fires  @type {!function(ship, muzzlePositions): void} **/
         this.turretFireCallback = null;
+        /** Parameter for holding visibility status **/
+        var display = true;
+
+        Object.defineProperty(this, "display", {
+            get: function()
+            {
+                return display;
+            },
+            set: function(bool)
+            {
+                display = bool;
+                for (let i = 0; i < this.wrappedObjects.length; i++)
+                {
+                    if (this.wrappedObjects[i])
+                    {
+                        this.wrappedObjects[i].display = display;
+                    }
+                }
+            }
+        })
 
         var faction = null;
 
@@ -776,6 +835,7 @@ var ccpwgl = (function (ccpwgl_int)
         {
             return function (obj)
             {
+                obj.display = display;
                 self.wrappedObjects[index] = obj;
                 if (!(obj instanceof ccpwgl_int.EveShip))
                 {
@@ -850,6 +910,24 @@ var ccpwgl = (function (ccpwgl_int)
                     }
                 }
             }
+        }
+
+        /**
+         * Gets the object's resources
+         * @param {Array<Tw2Resource>} [out=[]]
+         * @returns {Array<Tw2Resouce>} out
+         */
+        this.getResources = function(out)
+        {
+            if (!out) out = [];
+            for (let i = 0; i < this.wrappedObjects.length; i++)
+            {
+                if (this.wrappedObjects[i] && "GetResources" in this.wrappedObjects[i])
+                {
+                    this.wrappedObjects[i].GetResources(out);
+                }
+            }
+            return out;
         }
 
         /**
@@ -1533,6 +1611,37 @@ var ccpwgl = (function (ccpwgl_int)
 
         /** Per-frame on update callback @type {!function(dt): void} **/
         this.onUpdate = null;
+
+        var display = true;
+        Object.defineProperty(this, "display", {
+            get: function()
+            {
+                return display;
+            },
+            set: function(bool)
+            {
+                display = bool;
+                this.wrappedObjects[0].display = display;
+            }
+        })
+
+        /**
+         * Gets the object's resources
+         * @param {Array<Tw2Resource>} [out=[]]
+         * @returns {Array<Tw2Resouce>} out
+         */
+        this.getResources = function(out)
+        {
+            if (!out) out = [];
+            for (let i = 0; i < this.wrappedObjects.length; i++)
+            {
+                if (this.wrappedObjects[i] && "GetResources" in this.wrappedObjects[i])
+                {
+                    this.wrappedObjects[i].GetResources(out);
+                }
+            }
+            return out;
+        }
 
         /**
          * Check if planet's resources are loaded and the resulting height map is generated.

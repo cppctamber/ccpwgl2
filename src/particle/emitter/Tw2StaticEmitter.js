@@ -73,7 +73,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     /**
      * Rebuilds cached data
      */
-    RebuildCachedData()
+    OnResPrepared()
     {
         if (this.geometryResource && this.geometryResource.meshes.length)
         {
@@ -95,7 +95,7 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
         if (!this._spawned &&
             this.particleSystem &&
             res &&
-            res.IsGood() &&
+            res.IsGood() && // TODO: Why does this need an isPrepared && isLoaded check??
             res.meshes.length > this.meshIndex &&
             res.meshes[this.meshIndex].bufferData)
         {

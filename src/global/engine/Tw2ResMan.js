@@ -14,7 +14,7 @@ import {
     ErrResourcePrefixUndefined,
     ErrResourcePrefixUnregistered
 } from "../../core";
-import {assignIfExists} from "../util";
+import {assignIfExists, isError, isString} from "../util";
 
 
 /**
@@ -81,7 +81,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         }
         else
         {
-            this.OnResEvent("error", path, {type: "error", message: err.message, err});
+            this.OnResEvent("error", path, err);
         }
         return err;
     }
@@ -97,17 +97,20 @@ export class Tw2ResMan extends Tw2EventEmitter
         const defaultLog = Tw2ResMan.DefaultLog[eventName.toUpperCase()];
         if (defaultLog)
         {
-            log = Object.assign({}, defaultLog, log);
-            const eventData = {res: this.motherLode.Find(path), path, log};
+            const eventData = {res: this.motherLode.Find(path), path};
 
-            const err = log.err;
-            if (err)
+            if (isError(log))
             {
+                const err = eventData.err = log;
                 this.motherLode.AddError(path, err);
-                eventData.err = err;
-                Object.assign(eventData, err.data);
+                log = Object.assign({}, defaultLog, { message: err.message, err });
+            }
+            else
+            {
+                log = Object.assign({}, defaultLog, log);
             }
 
+            eventData.log = log;
             log.message = log.message.includes(path) ? log.message : log.message += ` "${path}"`;
             this.emit(eventName.toLowerCase(), eventData);
         }
@@ -221,6 +224,13 @@ export class Tw2ResMan extends Tw2EventEmitter
             return res;
         }
 
+        // Check if errored
+        if (this.motherLode.HasErrors(path))
+        {
+            this.OnResError(path, this.motherLode.GetLastError(path));
+            return null;
+        }
+
         if (path.indexOf("dynamic:/") === 0)
         {
             this.OnResError(path, new ErrFeatureNotImplemented({feature: "Dynamic resources"}));
@@ -264,11 +274,20 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         path = Tw2ResMan.NormalizePath(path);
 
-        // Check if already loaded
+        // Check if already exists
         let res = this.motherLode.Find(path);
         if (res)
         {
             res.AddObject(onResolved, onRejected);
+            return;
+        }
+
+        // Check if already failed
+        if (this.motherLode.HasErrors(path))
+        {
+            const lastError = this.motherLode.GetLastError(path);
+            this.OnResError(path, lastError);
+            if (onRejected) onRejected(lastError);
             return;
         }
 
@@ -286,6 +305,19 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Wraps get object with a promise
+     * @param {String} path
+     * @returns {Promise<any>}
+     */
+    async GetAsync(path)
+    {
+        return new Promise((resolve, reject)=>
+        {
+            this.GetObject(path, resolve, reject);
+        });
+    }
+
+    /**
      * Reloads a resource
      * @param {Tw2Resource} resource
      * @returns {Tw2Resource} resource
@@ -294,22 +326,23 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         const path = resource.path;
 
-        // Check if already loaded and good
+        // Check if it hasn't been purged
         const res = this.motherLode.Find(path);
-        if (res && !res.IsPurged())
+        if (res && (!res.IsPurged() || res.HasErrors()))
         {
             return res;
         }
 
         try
         {
-            return Tw2ResMan.LoadResource(this, resource);
+            Tw2ResMan.LoadResource(this, resource);
         }
         catch (err)
         {
-            this.OnResError(path, err);
-            return resource;
+            resource.OnError(err);
         }
+
+        return resource;
     }
 
     /**

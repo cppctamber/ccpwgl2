@@ -96,7 +96,7 @@ export class Tw2Mesh
      */
     GetResources(out = [])
     {
-        if (!out.includes(this.geometryResource))
+        if (this.geometryResource && !out.includes(this.geometryResource))
         {
             out.push(this.geometryResource);
         }

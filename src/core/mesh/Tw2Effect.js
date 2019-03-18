@@ -95,12 +95,13 @@ export class Tw2Effect
 
     /**
      * Rebuilds Cached Data
-     * @param resource
+     * @param {Tw2EffectRes} res
      */
-    RebuildCachedData(resource)
+    OnResPrepared(res)
     {
-        this.shader = resource.GetShader(this.options);
+        this.shader = res.GetShader(this.options);
         this.BindParameters();
+        return true;
     }
 
     /**

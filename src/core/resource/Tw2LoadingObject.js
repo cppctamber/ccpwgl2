@@ -34,7 +34,7 @@ export class Tw2LoadingObject extends Tw2Resource
         {
             if (onRejected)
             {
-                onRejected(this.GetErrors()[0]);
+                onRejected(this.GetLastError());
             }
         }
         else

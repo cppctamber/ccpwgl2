@@ -272,11 +272,10 @@ export class Tw2TextureRes extends Tw2Resource
             device.gl.deleteTexture(this.texture);
             this.texture = null;
         }
-        this._isPurged = true;
-        this._isGood = false;
         this._isAttached = false;
         this._extension = null;
         this.requestResponseType = null;
+        this.OnUnloaded();
         return true;
     }
 
@@ -288,7 +287,6 @@ export class Tw2TextureRes extends Tw2Resource
     {
         this.path = "";
         this.texture = texture;
-        this._isPurged = false;
         this._isAttached = true;
         this._extension = null;
         this.requestResponseType = null;

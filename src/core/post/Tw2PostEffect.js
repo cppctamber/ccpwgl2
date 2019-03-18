@@ -56,15 +56,15 @@ export class Tw2PostEffect extends Tw2BaseClass
      */
     IsGood()
     {
-        let isGood = 0;
+        let IsGood = 0;
         for (let i = 0; i < this.steps.length; i++)
         {
             if (this.steps[i].IsGood())
             {
-                isGood++;
+                IsGood++;
             }
         }
-        return isGood === this.steps.length;
+        return IsGood === this.steps.length;
     }
 
     /**
