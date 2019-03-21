@@ -1,5 +1,11 @@
 export const num = {};
 
+num.EPSILON = 0.000001;
+num.RAD2DEG = 180 / Math.PI;
+num.DEG2RAD = Math.PI / 180;
+num.TWO_PI = Math.PI * 2;
+num.PI = Math.PI;
+
 /**
  * biCumulative
  *
@@ -25,6 +31,58 @@ num.biCumulative = function (t, order)
 };
 
 /**
+ * @alias Math.ceil
+ */
+num.ceil = Math.ceil;
+
+/**
+ * Clamps a number
+ *
+ * @param {number} a
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+num.clamp = function (a, min, max)
+{
+    return Math.max(min, Math.min(max, a));
+};
+
+/**
+ * Returns how many decimal places a number has
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.decimalPlaces = function (a)
+{
+    let match = ("" + a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    return match ? Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0)) : 0;
+};
+
+/**
+ * Converts from radians to degrees
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.degrees = function (a)
+{
+    return a * num.RAD2DEG;
+};
+
+/**
+ * Converts from radians to unwrapped degrees
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.degreesUnwrapped = function (a)
+{
+    return num.unwrapDegrees(a * num.RAD2DEG);
+};
+
+/**
  * Converts a Dword to Float
  * @param value
  * @return {Number}
@@ -45,6 +103,31 @@ num.dwordToFloat = function (value)
 };
 
 /**
+ * Checks if a number equals another
+ *
+ * @param a
+ * @param b
+ * @returns {boolean}
+ */
+num.equals = function (a, b)
+{
+    return Math.abs(a - b) <= num.EPSILON * Math.max(1.0, Math.abs(a), Math.abs(b));
+};
+
+/**
+ * Checks if a number exactly equals another
+ * - included for library consistency
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {boolean}
+ */
+num.exactEquals = function (a, b)
+{
+    return a === b;
+};
+
+/**
  * Exponential decay
  *
  * @param {number} omega0
@@ -57,6 +140,17 @@ num.dwordToFloat = function (value)
 num.exponentialDecay = function (omega0, torque, I, d, time)
 {
     return torque * time / d + I * (omega0 * d - torque) / (d * d) * (1.0 - Math.pow(Math.E, -d * time / I));
+};
+
+/**
+ * Gets the fractional components of a number
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.fract = function (a)
+{
+    return a - Math.floor(a);
 };
 
 /**
@@ -85,6 +179,11 @@ num.fromHalfFloat = function (a)
 };
 
 /**
+ * @alias Math.floor
+ */
+num.floor = Math.floor;
+
+/**
  * Gets long word order
  * @author Babylon
  * @param {number} a
@@ -96,6 +195,147 @@ num.getLongWordOrder = function (a)
 };
 
 /**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+num.greaterThan = function (a, b)
+{
+    return a > b ? 1 : 0;
+};
+
+/**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+num.greaterThanEqual = function (a, b)
+{
+    return num.isEqual(a, b) || a > b ? 1 : 0;
+};
+
+/**
+ *
+ * - included for library consistency
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+num.greaterThanExactEqual = function (a, b)
+{
+    return a >= b ? 1 : 0;
+};
+
+
+/**
+ * Checks if a number is even
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+num.isEven = function (a)
+{
+    return Math.abs(a) % 2 === 0;
+};
+
+/**
+ * Checks if a number is a float
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+num.isFloat = function (a)
+{
+    return a % 1 !== 0;
+};
+
+/**
+ * @alias Number.isFinite
+ */
+num.isFinite = Number.isFinite;
+// return (typeof v === "number" && !isNaN(v) && v !== Infinity && v !== -Infinity);
+
+/**
+ * Checks if a number is an integer
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+num.isInt = function (a)
+{
+    return a % 1 === 0;
+};
+
+/**
+ * @alias Number.isNaN
+ */
+num.isNaN = Number.isNaN;
+
+/**
+ * Checks if a number is odd
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+num.isOdd = function (a)
+{
+    return Math.abs(a) % 2 === 1;
+};
+
+/**
+ * Checks if a number is to the power of two
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+num.isPowerOfTwo = function (a)
+{
+    return (a & (a - 1)) === 0 && a !== 0;
+};
+
+/**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+num.lessThan = function (a, b)
+{
+    return a < b ? 1 : 0;
+};
+
+/**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+num.lessThanEqual = function (a, b)
+{
+    return num.isEqual(a, b) || a < b ? 1 : 0;
+};
+
+/**
+ *
+ * - included for library consistency
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+num.lessThanExactEqual = function (a, b)
+{
+    return a <= b ? 1 : 0;
+};
+
+/**
  * Gets the log2 of a number
  * @param {number} a
  * @returns {number}
@@ -103,6 +343,160 @@ num.getLongWordOrder = function (a)
 num.log2 = function (a)
 {
     return Math.log(a) * Math.LOG2E;
+};
+
+/**
+ * @alias Math.max
+ */
+num.max = Math.max;
+
+/**
+ * @alias Math.min
+ */
+num.min = Math.min;
+
+
+/**
+ * Gets the nearest power of two value to a number
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.nearestPowerOfTwo = function (a)
+{
+    return Math.pow(2, Math.round(Math.log(a) / Math.LN2));
+};
+
+/**
+ *
+ *
+ * @param {number} value
+ * @param {number} start
+ * @param {number} end
+ * @param {number} precision
+ * @returns {number}
+ */
+num.normalizeInt = function (value, start, end, precision)
+{
+    let width = end - start;
+    let offsetValue = value - start;
+    let result = (offsetValue - ((offsetValue / width) * width)) + start;
+    return precision === undefined ? result : Number(result.toFixed(precision));
+};
+
+/**
+ *
+ *
+ * @param {number} value
+ * @param {number} start
+ * @param {number} end
+ * @param {number} precision
+ * @returns {number}
+ */
+num.normalizeFloat = function (value, start, end, precision)
+{
+    let width = end - start;
+    let offsetValue = value - start;
+    let result = (offsetValue - (Math.floor(offsetValue / width) * width)) + start;
+    return precision === undefined ? result : Number(result.toFixed(precision));
+};
+
+
+/**
+ * Converts from degrees to radians
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.radians = function (a)
+{
+    return a * num.DEG2RAD;
+};
+
+/**
+ * Converts from degrees to unwrapped radians
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.radiansUnwrapped = function (a)
+{
+    return num.unwrapRadians(a *= num.DEG2RAD);
+};
+
+/**
+ * Creates a random integer
+ *
+ * @param {number} low
+ * @param {number} high
+ * @returns {number}
+ */
+num.randomInt = function (low, high)
+{
+    return low + Math.floor(Math.random() * (high - low + 1));
+};
+
+/**
+ * Creates a random float
+ *
+ * @param {number} low
+ * @param {number} high
+ * @returns {number}
+ */
+num.randomFloat = function (low, high)
+{
+    return low + Math.random() * (high - low);
+};
+
+/**
+ * @alias for Math.round
+ */
+num.round = Math.round;
+
+/**
+ * Rounds a number to the closest zero
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+num.roundToZero = function (a)
+{
+    return a < 0 ? Math.ceil(a) : Math.floor(a);
+};
+
+/**
+ * @alias for num.greaterThan
+ */
+num.step = num.greaterThan;
+
+/**
+ *
+ * @param a
+ * @param min
+ * @param max
+ * @returns {number}
+ */
+num.smoothStep = function (a, min, max)
+{
+    if (a <= min) return 0;
+    if (a >= max) return 1;
+    a = (a - min) / (max - min);
+    return a * a * (3 - 2 * a);
+};
+
+/**
+ *
+ * @param a
+ * @param min
+ * @param max
+ * @returns {number}
+ */
+num.smootherStep = function (a, min, max)
+{
+    if (a <= min) return 0;
+    if (a >= max) return 1;
+    a = (a - min) / (max - min);
+    return a * a * a * (a * (a * 6 - 15) + 10);
 };
 
 /**
@@ -165,3 +559,31 @@ num.toHalfFloat = (function ()
     };
 
 }());
+
+/**
+ * Unwraps degrees
+ *
+ * @param {number} d
+ * @returns {number}
+ */
+num.unwrapDegrees = function (d)
+{
+    d = d % 360;
+    if (d > 180) d -= 360;
+    if (d < -180) d += 360;
+    return d;
+};
+
+/**
+ * Unwraps radians
+ *
+ * @param {number} r
+ * @returns {number}
+ */
+num.unwrapRadians = function (r)
+{
+    r = r % num.TWO_PI;
+    if (r > num.PI) r -= num.TWO_PI;
+    if (r < -num.PI) r += num.TWO_PI;
+    return r;
+};

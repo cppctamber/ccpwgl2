@@ -35215,7 +35215,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -35269,6 +35269,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePerMuzzleData", function() { return _effect__WEBPACK_IMPORTED_MODULE_1__["EvePerMuzzleData"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissileWarhead"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissile"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveTransform"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveEffectRoot"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EvePlanet"]; });
@@ -35278,12 +35284,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveSpaceObject"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveStation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissileWarhead"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveMissile"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveTransform"]; });
 
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBanner"]; });
@@ -43551,7 +43551,7 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(EveTransform, Type =
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform */
+/*! exports provided: EveMissileWarhead, EveMissile, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51442,7 +51442,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: util, consts, Tw2BaseClass, Tw2EventEmitter, Tw2Schema, device, resMan, store, logger, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve */
+/*! exports provided: util, consts, Tw2BaseClass, Tw2EventEmitter, Tw2Schema, device, resMan, store, logger, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, lne3, pln, ray3, sph3, tri3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51472,6 +51472,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "noise", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["noise"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "curve", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "box3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["box3"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "lne3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["lne3"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "pln", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["pln"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ray3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["ray3"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sph3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["sph3"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tri3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["tri3"]; });
 
 /* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./engine */ "./global/engine/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _engine__WEBPACK_IMPORTED_MODULE_2__["device"]; });
@@ -52207,6 +52219,973 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./global/math/box3.js":
+/*!*****************************!*\
+  !*** ./global/math/box3.js ***!
+  \*****************************/
+/*! exports provided: box3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "box3", function() { return box3; });
+/* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./num */ "./global/math/num.js");
+/* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vec3 */ "./global/math/vec3.js");
+/* harmony import */ var _tri3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tri3 */ "./global/math/tri3.js");
+
+
+
+/**
+ * 3D Box
+ * @typedef {Float32Array} box3
+ */
+
+const box3 = {};
+box3.bounds = {};
+/**
+ * Adds a point to a box3
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - source box3
+ * @param {vec3} p     - point to add
+ * @returns {box3} out - receiving box3
+ */
+
+box3.addPoint = function (out, a, p) {
+  out[0] = Math.min(a[0], p[0]);
+  out[1] = Math.min(a[1], p[1]);
+  out[2] = Math.min(a[2], p[2]);
+  out[3] = Math.max(a[3], p[0]);
+  out[4] = Math.max(a[4], p[1]);
+  out[5] = Math.max(a[5], p[2]);
+  return out;
+};
+/**
+ * Sets a box3 from a box3 with added points
+ *
+ * @param {box3} out              - receiving box3
+ * @param {box3} a                - source box3
+ * @param {Array.<number>} points - points to add
+ * @returns {box3} out            - receiving box3
+ */
+
+
+box3.addPoints = function (out, a, points) {
+  let minX = a[0],
+      minY = a[1],
+      minZ = a[2],
+      maxX = a[3],
+      maxY = a[4],
+      maxZ = a[5];
+
+  for (let i = 0; i < points.length; i++) {
+    minX = Math.min(minX, points[i][0]);
+    minY = Math.min(minY, points[i][1]);
+    minZ = Math.min(minZ, points[i][2]);
+    maxX = Math.max(maxX, points[i][0]);
+    maxY = Math.max(maxY, points[i][1]);
+    maxZ = Math.max(maxZ, points[i][2]);
+  }
+
+  out[0] = minX;
+  out[1] = minY;
+  out[2] = minZ;
+  out[3] = maxX;
+  out[4] = maxY;
+  out[5] = maxZ;
+  return out;
+};
+/**
+ * Clones a box3
+ *
+ * @param {box3} a - source box3
+ * @returns {box3} - a new box3
+ */
+
+
+box3.clone = function (a) {
+  let out = new Float32Array(6);
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  out[6] = a[6];
+  return out;
+};
+/**
+ * Checks if a box3 contains another box3
+ *
+ * @param {box3} a    - source box3
+ * @param {box3} b    - box3 to compare
+ * @returns {boolean} - true if the source box3 contains the second
+ */
+
+
+box3.contains = function (a, b) {
+  return a[0] <= b[0] && b[3] <= a[3] && a[1] <= b[1] && b[4] <= a[4] && a[2] <= b[2] && b[5] <= a[5];
+};
+/**
+ * Checks if the box3 contains min and max bounds
+ *
+ * @param {box3} a    - source box3
+ * @param {vec3} min  - min bounds
+ * @param {vec3} max  - max bounds
+ * @returns {boolean} - true if the source box3 contains the bounds
+ */
+
+
+box3.containsBounds = function (a, min, max) {
+  return a[0] <= min[0] && max[0] <= a[3] && a[1] <= min[1] && max[1] <= a[4] && a[2] <= min[2] && max[2] <= a[5];
+};
+/**
+ * Checks if a box3 contains a point
+ *
+ * @param {box3} a    - source box3
+ * @param {vec3} p    - point to compare
+ * @returns {boolean} - true if the source box contains the point
+ */
+
+
+box3.containsPoint = function (a, p) {
+  return !(p[0] < a[0] || p[0] > a[3] || p[1] < a[1] || p[1] > a[4] || p[2] < a[2] || p[2] > a[5]);
+};
+/**
+ * Checks if a box3 contains a point's values
+ *
+ * @param {box3} a    - source box3
+ * @param {Number} px - point X
+ * @param {Number} py - point Y
+ * @param {Number} pz - point Z
+ * @returns {boolean} - true if the source box3 contains the point
+ */
+
+
+box3.containsValue = function (a, px, py, pz) {
+  return !(px < a[0] || px > a[3] || py < a[1] || py > a[4] || pz < a[2] || pz > a[5]);
+};
+/**
+ * Copies the values from one box3 into another
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - source box3
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.copy = function (out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  out[6] = a[6];
+  return out;
+};
+/**
+ * Creates a box3
+ *
+ * @returns {box3} - The new box3
+ */
+
+
+box3.create = function () {
+  let out = new Float32Array(6);
+  out[0] = -Infinity;
+  out[1] = -Infinity;
+  out[2] = -Infinity;
+  out[3] = Infinity;
+  out[4] = Infinity;
+  out[5] = Infinity;
+  return out;
+};
+/**
+ * Gets the distance from a box3 to a point
+ *
+ * @param {box3} a   - source box3
+ * @param {vec3} p   - point
+ * @returns {number} - distance between the source box3 and point
+ */
+
+
+box3.distanceToPoint = function (a, p) {
+  let x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
+      y = Math.max(a[1], Math.min(a[4], p[1])) - p[1],
+      z = Math.max(a[2], Math.min(a[5], p[2])) - p[2];
+  return Math.sqrt(x * x + y * y + z * z);
+};
+/**
+ * Gets the distance from a box3 to a point's values
+ *
+ * @param {box3} a    - source box3
+ * @param {Number} px - point x
+ * @param {Number} py - point y
+ * @param {Number} pz - point z
+ * @returns {number}  - distance between the source box3 and point
+ */
+
+
+box3.distanceToValues = function (a, px, py, pz) {
+  let x = Math.max(a[0], Math.min(a[3], px)) - px,
+      y = Math.max(a[1], Math.min(a[4], py)) - py,
+      z = Math.max(a[2], Math.min(a[5], pz)) - pz;
+  return Math.sqrt(x * x + y * y + z * z);
+};
+/**
+ * Empties a box3
+ *
+ * @param {box3} a - box3 to empty
+ * @returns {box3} - the empty box3
+ */
+
+
+box3.empty = function (a) {
+  a[0] = +Infinity;
+  a[1] = +Infinity;
+  a[2] = +Infinity;
+  a[3] = -Infinity;
+  a[4] = -Infinity;
+  a[5] = -Infinity;
+  return a;
+};
+/**
+ * Empties bounds
+ *
+ * @param {vec3} min - min bounds
+ * @param {vec3} max - max bounds
+ */
+
+
+box3.bounds.empty = function (min, max) {
+  min[0] = +Infinity;
+  min[1] = +Infinity;
+  min[2] = +Infinity;
+  max[0] = -Infinity;
+  min[1] = -Infinity;
+  min[2] = -Infinity;
+};
+/**
+ * Checks two box3's for equality
+ *
+ * @param {box3} a    - box3 to compare
+ * @param {box3} b    - box3 to compare
+ * @returns {boolean} - true if box3s are equal
+ */
+
+
+box3.equals = function (a, b) {
+  let a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
+  let b0 = b[0],
+      b1 = b[1],
+      b2 = b[2],
+      b3 = b[3],
+      b4 = b[4],
+      b5 = b[5];
+  return Math.abs(a0 - b0) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5));
+};
+/**
+ * Checks a box3 and box3 components for equality
+ *
+ * @param {box3} a    - box3 to compare
+ * @param {vec3} min  - min bounds to compare
+ * @param {vec3} max  - max bounds to compare
+ * @returns {boolean} - true if the box3 and bounds are equal
+ */
+
+
+box3.equalsBounds = function (a, min, max) {
+  let a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      a4 = a[4],
+      a5 = a[5];
+  let b0 = min[0],
+      b1 = min[1],
+      b2 = min[2],
+      b3 = max[0],
+      b4 = max[1],
+      b5 = max[2];
+  return Math.abs(a0 - b0) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5));
+};
+/**
+ * Checks for vec6 exact equality
+ *
+ * @param {box3} a    - box3 to compare
+ * @param {box3} b    - box3 to compare
+ * @returns {boolean} - true if both box3s are exactly equal
+ */
+
+
+box3.exactEquals = function (a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5];
+};
+/**
+ * Checks for exact equality between a box3 and components
+ *
+ * @param {box3} a    - box3 to compare
+ * @param {vec3} min  - min bounds to compare
+ * @param {vec3} max  - max bounds to compare
+ * @returns {boolean} - true if the box3 and bounds are exactly equal
+ */
+
+
+box3.exactEqualsBounds = function (a, min, max) {
+  return a[0] === min[0] && a[1] === min[1] && a[2] === min[2] && a[3] === max[0] && a[4] === max[1] && a[5] === max[2];
+};
+/**
+ * Sets a box3 from the expansion of a box3 and a given scalar
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - source box3
+ * @param {number} s   - scalar to expand by
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.expandScalar = function (out, a, s) {
+  out[0] = a[0] - s;
+  out[1] = a[1] - s;
+  out[2] = a[2] - s;
+  out[3] = a[3] + s;
+  out[4] = a[4] + s;
+  out[5] = a[5] + s;
+  return out;
+};
+/**
+ * Sets a box3 from the expansion of a box3 and a vector's values
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - source box3
+ * @param {number} vx  - vector x
+ * @param {number} vy  - vector y
+ * @param {number} vz  - vector z
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.expandValues = function (out, a, vx, vy, vz) {
+  out[0] = a[0] - vx;
+  out[1] = a[1] - vy;
+  out[2] = a[2] - vz;
+  out[3] = a[3] + vx;
+  out[4] = a[4] + vy;
+  out[5] = a[5] + vz;
+  return out;
+};
+/**
+ * Expands a box3 by a vec3
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - source box3
+ * @param {vec3} v     - vector to expand by
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.expandVec3 = function (out, a, v) {
+  out[0] = a[0] - v[0];
+  out[1] = a[1] - v[1];
+  out[2] = a[2] - v[2];
+  out[3] = a[3] + v[0];
+  out[4] = a[4] + v[1];
+  out[5] = a[5] + v[2];
+  return out;
+};
+/**
+ * Extracts a box3's components to two receiving vec3s
+ *
+ * @param {vec3} outMin - receiving vector for min bounds
+ * @param {vec3} outMax - receiving vector for max bounds
+ * @param {box3} a      - source box3
+ */
+
+
+box3.bounds.from = function (outMin, outMax, a) {
+  outMin[0] = a[0];
+  outMin[1] = a[1];
+  outMin[2] = a[2];
+  outMax[0] = a[3];
+  outMax[1] = a[4];
+  outMax[2] = a[5];
+};
+/**
+ * Sets a box3 from bounds
+ *
+ * @param {box3} out   - receiving box3
+ * @param {vec3} min   - source min bounds
+ * @param {vec3} max   - source max bounds
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.from = function (out, min, max) {
+  out[0] = min[0];
+  out[1] = min[1];
+  out[2] = min[2];
+  out[0] = max[0];
+  out[1] = max[1];
+  out[2] = max[2];
+  return out;
+};
+/**
+ * Sets a box3 from an array at an optional offset
+ *
+ * @param {box3} out         - receiving box3
+ * @param {Array} arr        - source array
+ * @param {number} [index=0] - optional array index
+ * @returns {box3}           - receiving box3
+ */
+
+
+box3.fromArray = function (out, arr) {
+  let index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  out[0] = arr[index];
+  out[1] = arr[index + 1];
+  out[2] = arr[index + 2];
+  out[3] = arr[index + 3];
+  out[4] = arr[index + 4];
+  out[5] = arr[index + 5];
+  return out;
+};
+/**
+ * Sets a box3 from position and size
+ *
+ * @param {box3} out      - receiving box3
+ * @param {vec3} position - source position
+ * @param {vec3} size     - source size
+ * @returns {box3} out    - receiving box3
+ */
+
+
+box3.fromPositionSize = function (out, position, size) {
+  out[0] = position[0] - size[0] * 0.5;
+  out[1] = position[1] - size[1] * 0.5;
+  out[2] = position[2] - size[2] * 0.5;
+  out[3] = position[0] + size[0] * 0.5;
+  out[4] = position[1] + size[1] * 0.5;
+  out[5] = position[2] + size[2] * 0.5;
+  return out;
+};
+/**
+ * Sets a box3 from a sphere's components
+ *
+ * @param {box3} out      - receiving box3
+ * @param {vec3} position - position
+ * @param {number} radius - radius
+ * @returns {box3}        - receiving box3
+ */
+
+
+box3.fromPositionRadius = function (out, position, radius) {
+  out[0] = position[0] - radius;
+  out[1] = position[1] - radius;
+  out[2] = position[2] - radius;
+  out[3] = position[0] + radius;
+  out[4] = position[1] + radius;
+  out[5] = position[2] + radius;
+  return out;
+};
+/**
+ * Sets a box3 from a Float32Array(4) sphere
+ *
+ * @param {box3} out   - receiving box3
+ * @param {sph3} sphere - source sphere
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.fromSph3 = function (out, sphere) {
+  out[0] = sphere[0] - sphere[3];
+  out[1] = sphere[1] - sphere[3];
+  out[2] = sphere[2] - sphere[3];
+  out[3] = sphere[0] + sphere[3];
+  out[4] = sphere[1] + sphere[3];
+  out[5] = sphere[2] + sphere[3];
+  return out;
+};
+/**
+ * Sets a vec3 from a point clamped to a box3
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {box3} a       - source box
+ * @param {vec3} p       - the point to clamp
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+box3.getClampedPoint = function (out, a, p) {
+  out[0] = Math.max(a[0], Math.min(a[3], p[0]));
+  out[1] = Math.max(a[1], Math.min(a[4], p[1]));
+  out[2] = Math.max(a[2], Math.min(a[5], p[2]));
+  return out;
+};
+/**
+ * Sets a vec3 with the box3's max bounds
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {box3} a          - source box
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+box3.getMax = function (out, a) {
+  out[0] = a[3];
+  out[1] = a[4];
+  out[2] = a[5];
+  return out;
+};
+/**
+ * Sets a vec3 with the box3's min bounds
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {box3} a          - source box
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+box3.getMin = function (out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  return out;
+};
+/**
+ * Sets a vec3 with a box3's size
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {box3} a          - source box
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+box3.getSize = function (out, a) {
+  out[0] = a[3] - a[0];
+  out[1] = a[4] - a[1];
+  out[2] = a[5] - a[2];
+  return out;
+};
+/**
+ * Sets a vec3 with the box3's position
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {box3} a          - source box
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+box3.getPosition = function (out, a) {
+  out[0] = (a[0] + a[3]) * 0.5;
+  out[1] = (a[1] + a[4]) * 0.5;
+  out[2] = (a[2] + a[5]) * 0.5;
+  return out;
+};
+/**
+ * Sets a box3 from the intersect of two box3s
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - first box3
+ * @param {box3} b     - second box3
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.intersect = function (out, a, b) {
+  out[0] = Math.max(a[0], b[0]);
+  out[1] = Math.max(a[1], b[1]);
+  out[2] = Math.max(a[2], b[2]);
+  out[3] = Math.min(a[3], b[3]);
+  out[4] = Math.min(a[4], b[4]);
+  out[5] = Math.min(a[5], b[5]);
+  return out;
+};
+/**
+ * Sets a box3 from the intersect of a box3 and min and max bounds
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - box3
+ * @param {vec3} min   - min bounds
+ * @param {vec3} max   - max bounds
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.intersectBounds = function (out, a, min, max) {
+  out[0] = Math.max(a[0], min[0]);
+  out[1] = Math.max(a[1], min[1]);
+  out[2] = Math.max(a[2], min[2]);
+  out[3] = Math.min(a[3], max[0]);
+  out[4] = Math.min(a[4], max[1]);
+  out[5] = Math.min(a[5], max[2]);
+  return out;
+};
+/**
+ * Checks for box3 intersection with another box3
+ *
+ * @param a           - first box3 to compare
+ * @param b           - second box3 to compare
+ * @returns {boolean} - true if intersection occurred
+ */
+
+
+box3.intersects = function (a, b) {
+  return !(b[3] < a[0] || b[0] > a[3] || b[4] < a[1] || b[1] > a[4] || b[5] < a[2] || b[2] > a[5]);
+};
+/**
+ * Checks for box3 intersection with min and max bounds
+ *
+ * @param {box3} a    - box3 to compare
+ * @param {vec3} min  - min bounds to compare
+ * @param {vec3} max  - max bounds to compare
+ * @returns {boolean} - true if intersection occurred
+ */
+
+
+box3.intersectsBounds = function (a, min, max) {
+  return !(max[0] < a[0] || min[0] > a[3] || max[1] < a[1] || min[1] > a[4] || max[2] < a[2] || min[2] > a[5]);
+};
+/**
+ * Checks for box3 intersection with a plane normal and constant
+ *
+ * @param {box3} a          - source box3
+ * @param {vec3} normal     - plane normal vec3
+ * @param {number} constant - plane constant
+ * @returns {boolean}       - true if intersection occurs
+ */
+
+
+box3.intersectsNormalConstant = function (a, normal, constant) {
+  let tMin, tMax;
+
+  if (normal[0] > 0) {
+    tMin = normal[0] * a[0];
+    tMax = normal[0] * a[3];
+  } else {
+    tMin = normal[0] * a[3];
+    tMax = normal[0] * a[0];
+  }
+
+  if (normal[1] > 0) {
+    tMin = normal[1] * a[1];
+    tMax = normal[1] * a[4];
+  } else {
+    tMin = normal[1] * a[4];
+    tMax = normal[1] * a[1];
+  }
+
+  if (normal[2] > 0) {
+    tMin += normal[2] * a[2];
+    tMax += normal[2] * a[5];
+  } else {
+    tMin += normal[2] * a[5];
+    tMax += normal[2] * a[2];
+  }
+
+  return tMin <= constant && tMax >= constant;
+};
+/**
+ * Checks for box3 intersection with a Float32Array(4) plane
+ *
+ * @param {box3} a                   - box3 to compare
+ * @param {(pln|Float32Array)} p     - plane to compare
+ * @returns {boolean}                - true if intersection occurs
+ */
+
+
+box3.intersectsPln = function (a, p) {
+  // const x = p.subarray(0, 3);
+  return box3.intersectsNormalConstant(a, p, p[3]);
+};
+/**
+ * Checks for box3 intersection with a point
+ *
+ * @param {box3} a    - box3 to compare
+ * @param {vec3} p    - point to compare
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+box3.intersectsPoint = function (a, p) {
+  return p[0] >= a[0] && p[0] <= a[3] && p[1] >= a[1] && p[1] <= a[4] && p[2] >= a[2] && p[2] <= a[5];
+};
+/**
+ * Checks for box3 intersection with a point's values
+ *
+ * @param {box3} a    - box3 to compare
+ * @param {Number} px - point x to compare
+ * @param {Number} py - point y to compare
+ * @param {Number} pz - point z to compare
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+box3.intersectsValues = function (a, px, py, pz) {
+  return px >= a[0] && px <= a[3] && py >= a[1] && py <= a[4] && pz >= a[2] && pz <= a[5];
+};
+/**
+ * Checks for box3 intersection with a sphere's components
+ *
+ * @param {box3} a        - box3 to compare
+ * @param {vec3} position - sphere position to compare
+ * @param {number} radius - sphere radius to compare
+ * @returns {boolean}     - true if intersection occurs
+ */
+
+
+box3.intersectsPositionRadius = function (a, position, radius) {
+  let x = Math.max(a[0], Math.min(a[3], position[0])) - position[0],
+      y = Math.max(a[1], Math.min(a[4], position[1])) - position[1],
+      z = Math.max(a[2], Math.min(a[5], position[2])) - position[2];
+  return x * x + y * y + z * z <= radius * radius;
+};
+/**
+ * Checks for box3 intersection with a Float32Array(4) sphere
+ *
+ * @param {box3} a      - box3 to compare
+ * @param {sph3} sphere - sph3 to compare
+ * @returns {boolean}   - true if intersection occurs
+ */
+
+
+box3.intersectsSph3 = function (a, sphere) {
+  let x = Math.max(a[0], Math.min(a[3], sphere[0])) - sphere[0],
+      y = Math.max(a[1], Math.min(a[4], sphere[1])) - sphere[1],
+      z = Math.max(a[2], Math.min(a[5], sphere[2])) - sphere[2];
+  return x * x + y * y + z * z <= sphere[3] * sphere[3];
+};
+/**
+ * Checks if a box3 is empty
+ *
+ * @param {box3} a    - source box3
+ * @returns {boolean} - true if empty
+ */
+
+
+box3.isEmpty = function (a) {
+  return a[3] < a[0] || a[4] < a[1] || a[5] < a[2];
+};
+/**
+ * Checks if bounds are empty
+ *
+ * @param {vec3} min
+ * @param {vec3} max
+ * @returns {boolean}
+ */
+
+
+box3.bounds.isEmpty = function (min, max) {
+  return max[0] < min[0] || max[1] < min[1] || max[2] < min[2];
+};
+/**
+ * Min bounds methods
+ */
+
+
+box3.min = _tri3__WEBPACK_IMPORTED_MODULE_2__["tri3"].v1;
+/**
+ * Max bounds methods
+ */
+
+box3.max = _tri3__WEBPACK_IMPORTED_MODULE_2__["tri3"].v2;
+/**
+ * Sets a box3 from values
+ *
+ * @param {box3} out  - receiving box3
+ * @param {Number} aX
+ * @param {Number} aY
+ * @param {Number} aZ
+ * @param {Number} bX
+ * @param {Number} bY
+ * @param {Number} bZ
+ * @returns {box3}
+ */
+
+box3.set = function (out, aX, aY, aZ, bX, bY, bZ) {
+  out[0] = aX;
+  out[1] = aY;
+  out[2] = aZ;
+  out[3] = bX;
+  out[4] = bY;
+  out[5] = bZ;
+  return out;
+};
+/**
+ * Sets a box3 from an array of points
+ *
+ * @param {box3} out            - receiving box3
+ * @param {Array.<vec3>} points - array of points
+ * @returns {box3} out          - receiving box3
+ */
+
+
+box3.setPoints = function (out, points) {
+  out[0] = +Infinity;
+  out[1] = +Infinity;
+  out[2] = +Infinity;
+  out[3] = -Infinity;
+  out[4] = -Infinity;
+  out[5] = -Infinity;
+
+  for (let i = 0; i < points.length; i++) {
+    out[0] = Math.min(out[0], points[i][0]);
+    out[1] = Math.min(out[1], points[i][1]);
+    out[2] = Math.min(out[2], points[i][2]);
+    out[3] = Math.max(out[3], points[i][0]);
+    out[4] = Math.max(out[4], points[i][1]);
+    out[5] = Math.max(out[5], points[i][2]);
+  }
+
+  return out;
+};
+/**
+ * Gets the distance from a box3 to a point
+ *
+ * @param {box3} a   - source box3
+ * @param {vec3} p   - point
+ * @returns {number} - distance
+ */
+
+
+box3.squaredDistanceToPoint = function (a, p) {
+  let x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
+      y = Math.max(a[1], Math.min(a[4], p[1])) - p[1],
+      z = Math.max(a[2], Math.min(a[5], p[2])) - p[2];
+  return x * x + y * y + z * z;
+};
+/**
+ * Gets the surface area of a box3
+ *
+ * @param {box3} a   - source box3
+ * @returns {number} - surface area
+ */
+
+
+box3.surfaceArea = function (a) {
+  let aa = a[3] - a[0],
+      h = a[4] - a[1],
+      d = a[5] - a[2];
+  return 2 * (aa * (h + d) + h * d);
+};
+/**
+ * Converts the box3 into an array
+ *
+ * @param {box3} a            - receiving box3
+ * @param {Array} arr         - source array
+ * @param {number} [offset=0] - optional offset
+ * @returns {box3} a          - receiving box3
+ */
+
+
+box3.toArray = function (a, arr) {
+  let offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  arr[offset] = a[0];
+  arr[offset + 1] = a[1];
+  arr[offset + 2] = a[2];
+  arr[offset + 3] = a[3];
+  arr[offset + 4] = a[4];
+  arr[offset + 5] = a[5];
+  return a;
+};
+/**
+ * Sets a receiving box3 from the translation of a box3 and a vec3
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - source box3
+ * @param {vec3} v     - vec3 to translate by
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.translate = function (out, a, v) {
+  out[0] = a[0] + v[0];
+  out[1] = a[1] + v[1];
+  out[2] = a[2] + v[2];
+  out[3] = a[3] + v[0];
+  out[4] = a[4] + v[1];
+  out[5] = a[5] + v[2];
+  return out;
+};
+/**
+ * Sets a receiving box3 from the transformation of a box3 with a mat4
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - source box3
+ * @param {mat4} m     - mat4 to transform with
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.transformMat4 = function () {
+  let points;
+  return function (out, a, m) {
+    if (!points) {
+      points = [_vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create()];
+    }
+
+    if (box3.isEmpty(a)) {
+      return box3.empty(out);
+    }
+
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[0], [a[0], a[1], a[2]], m);
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[1], [a[0], a[1], a[5]], m);
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[2], [a[0], a[4], a[2]], m);
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[3], [a[0], a[4], a[5]], m);
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[4], [a[3], a[1], a[2]], m);
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[5], [a[3], a[1], a[5]], m);
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[6], [a[3], a[4], a[2]], m);
+    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[7], [a[3], a[4], a[5]], m);
+    return box3.setPoints(out, points);
+  };
+};
+/**
+ * Sets a box3 from the union of two box3s
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - first box3
+ * @param {box3} b     - second box3
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.union = function (out, a, b) {
+  out[0] = Math.min(a[0], b[0]);
+  out[1] = Math.min(a[1], b[1]);
+  out[2] = Math.min(a[2], b[2]);
+  out[3] = Math.max(a[3], b[3]);
+  out[4] = Math.max(a[4], b[4]);
+  out[5] = Math.max(a[5], b[5]);
+  return out;
+};
+/**
+ * Sets a box3 from the union of a box3 and min and max bounds
+ *
+ * @param {box3} out   - receiving box3
+ * @param {box3} a     - box3
+ * @param {vec3} min   - min bounds
+ * @param {vec3} max   - max bounds
+ * @returns {box3} out - receiving box3
+ */
+
+
+box3.unionBounds = function (out, a, min, max) {
+  out[0] = Math.min(a[0], min[0]);
+  out[1] = Math.min(a[1], min[1]);
+  out[2] = Math.min(a[2], min[2]);
+  out[3] = Math.max(a[3], max[0]);
+  out[4] = Math.max(a[4], max[1]);
+  out[5] = Math.max(a[5], max[2]);
+  return out;
+};
+
+/***/ }),
+
 /***/ "./global/math/curve.js":
 /*!******************************!*\
   !*** ./global/math/curve.js ***!
@@ -52575,7 +53554,7 @@ curve.polyZeroes = function (Poly, deg, a, a_closed, b, b_closed, Roots) {
 /*!******************************!*\
   !*** ./global/math/index.js ***!
   \******************************/
-/*! exports provided: num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve */
+/*! exports provided: num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, lne3, pln, ray3, sph3, tri3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52607,6 +53586,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./curve */ "./global/math/curve.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "curve", function() { return _curve__WEBPACK_IMPORTED_MODULE_8__["curve"]; });
 
+/* harmony import */ var _box3__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./box3 */ "./global/math/box3.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "box3", function() { return _box3__WEBPACK_IMPORTED_MODULE_9__["box3"]; });
+
+/* harmony import */ var _lne3__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./lne3 */ "./global/math/lne3.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "lne3", function() { return _lne3__WEBPACK_IMPORTED_MODULE_10__["lne3"]; });
+
+/* harmony import */ var _pln__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./pln */ "./global/math/pln.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "pln", function() { return _pln__WEBPACK_IMPORTED_MODULE_11__["pln"]; });
+
+/* harmony import */ var _ray3__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./ray3 */ "./global/math/ray3.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ray3", function() { return _ray3__WEBPACK_IMPORTED_MODULE_12__["ray3"]; });
+
+/* harmony import */ var _sph3__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./sph3 */ "./global/math/sph3.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sph3", function() { return _sph3__WEBPACK_IMPORTED_MODULE_13__["sph3"]; });
+
+/* harmony import */ var _tri3__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./tri3 */ "./global/math/tri3.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tri3", function() { return _tri3__WEBPACK_IMPORTED_MODULE_14__["tri3"]; });
+
+
+
+
+
+
+
 
 
 
@@ -52620,6 +53623,356 @@ __webpack_require__.r(__webpack_exports__);
  * TypedArray
  * @typedef {Float64Array|Float32Array|Uint32Array|Uint16Array|Uint8Array|Uint8ClampedArray|Int32Array|Int16Array|Int8Array} TypedArray
  */
+
+/***/ }),
+
+/***/ "./global/math/lne3.js":
+/*!*****************************!*\
+  !*** ./global/math/lne3.js ***!
+  \*****************************/
+/*! exports provided: lne3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lne3", function() { return lne3; });
+/* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./vec3 */ "./global/math/vec3.js");
+/* harmony import */ var _box3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./box3 */ "./global/math/box3.js");
+
+
+/**
+ * 3D Line
+ * @typedef {Float32Array} lne3
+ */
+
+const lne3 = {};
+/**
+ * Clones a lne3
+ *
+ * @param {lne3} a
+ * @returns {lne3}
+ */
+
+lne3.clone = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].clone;
+/**
+ * Returns a point parameter based on the closest point as projected on the line segment.
+ * If clamp to line is true, then the returned value will be between 0 and 1
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} a              - source lne3
+ * @param {vec3} point          - point to compare
+ * @param {boolean} clampToLine - optional setting to clamp the result to the lne3
+ * @returns {number}            - closest point parameter
+ */
+
+lne3.closestPointToPointParameter = function () {
+  let vec3_0, vec3_1;
+  return function (a, point, clampToLine) {
+    if (!vec3_0) {
+      vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    }
+
+    let startP = vec3_0;
+    let startEnd = vec3_1;
+    startP[0] = point[0] - a[0];
+    startP[1] = point[1] - a[1];
+    startP[2] = point[2] - a[2];
+    startEnd[0] = a[3] - a[0];
+    startEnd[1] = a[4] - a[1];
+    startEnd[2] = a[5] - a[2];
+    let startEnd2 = startEnd[0] * startEnd[0] + startEnd[1] * startEnd[1] + startEnd[2] * startEnd[2];
+    let startEnd_startP = startEnd[0] * startP[0] + startEnd[1] * startP[1] + startEnd[2] * startP[2];
+    let t = startEnd_startP / startEnd2;
+    if (clampToLine) t = Math.max(0, Math.min(1, t));
+    return t;
+  };
+};
+/**
+ * Copies the values from one lne3 into another
+ *
+ * @param {lne3} out
+ * @param {lne3} a
+ * @returns {lne3} out
+ */
+
+
+lne3.copy = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].copy;
+/**
+ * Creates a lne3
+ *
+ * @returns {lne3}
+ */
+
+lne3.create = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].create;
+/**
+ * Line3 End methods
+ */
+
+lne3.end = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].max;
+/**
+ * Checks two lne3's for equality
+ *
+ * @param {lne3} a
+ * @param {lne3} b
+ * @returns {boolean}
+ */
+
+lne3.equals = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].equals;
+/**
+ * Checks a lne3 against it's components for equality
+ *
+ * @param {lne3} a
+ * @param {vec3} min
+ * @param {vec3} max
+ * @returns {boolean}
+ */
+
+lne3.equalsStartEnd = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].equalsBounds;
+/**
+ * Checks for box3 exact equality
+ *
+ * @param {lne3} a
+ * @param {lne3} b
+ * @returns {boolean}
+ */
+
+lne3.exactEquals = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].equals;
+/**
+ * Checks for exact equality between a lne3 and components
+ *
+ * @param {lne3} a
+ * @param {vec3} min
+ * @param {vec3} max
+ * @returns {boolean}
+ */
+
+lne3.exactEqualsStartEnd = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].exactEqualsBounds;
+/**
+ * Sets a line from start and end components
+ *
+ * @param {lne3} out
+ * @param {vec3} start
+ * @param {vec3} end
+ * @returns {lne3} out
+ */
+
+lne3.from = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].from;
+/**
+ * Sets a lne3 from an array at an optional offset
+ *
+ * @param {lne3} out
+ * @param {Array} arr
+ * @param {number} [index=0]
+ * @returns {lne3}
+ */
+
+lne3.fromArray = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].fromArray;
+/**
+ * Returns a vector at a certain position along a lne3
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} out     - receiving vec3
+ * @param {lne3} a       - source lne3
+ * @param {number} t     - Float representing the start (0) and end (1) of the line
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+lne3.get = function (out, a, t) {
+  if (t < 0 || t > 1) {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    throw new Error("Normalization error");
+  } else {
+    out[0] = (a[3] - a[0]) * t + a[0];
+    out[1] = (a[4] - a[1]) * t + a[1];
+    out[2] = (a[5] - a[2]) * t + a[2];
+  }
+
+  return out;
+};
+/**
+ * Sets a vec3 from the lne3's center
+ *
+ * @param {vec3} out   - receiving vec3
+ * @param {lne3} a     - source lne3
+ * @returns {vec3} out - receiving vec3
+ */
+
+
+lne3.getCenter = function (out, a) {
+  out[0] = (a[0] + a[3]) * 0.5;
+  out[1] = (a[1] + a[4]) * 0.5;
+  out[2] = (a[2] + a[5]) * 0.5;
+  return out;
+};
+/**
+ * Returns the closets point on a lne3 to a given point.
+ * - If clamp to line is true, then the returned value will be clamped to the line segment.
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} out            - receiving vec3
+ * @param {lne3} a              - source lne3
+ * @param {vec3} point          - point to compare
+ * @param {boolean} clampToLine - optional setting to clamp the result to a line segment
+ * @returns {vec3} out          - receiving vec3
+ */
+
+
+lne3.getClosestPointToPoint = function (out, a, point, clampToLine) {
+  // const x = a.subarray(0, 3);
+  return lne3.get(out, a, lne3.closestPointToPointParameter(a, point, clampToLine));
+};
+/**
+ * Gets the end component of a lne3
+ *
+ * @param {vec3} out
+ * @param {lne3} a
+ * @returns {vec3} out
+ */
+
+
+lne3.getEnd = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].getMax;
+/**
+ * Gets a lne3's delta
+ *
+ * @param {vec3} out   - receiving vec3
+ * @param {lne3} a       - source lne3
+ * @returns {vec3} out - receiving vec3
+ */
+
+lne3.getDelta = function (out, a) {
+  out[0] = a[3] - a[0];
+  out[1] = a[4] - a[1];
+  out[2] = a[5] - a[2];
+  return out;
+};
+/**
+ * Gets the start component of a lne3
+ *
+ * @param {vec3} out
+ * @param {lne3} a
+ * @returns {vec3} out
+ */
+
+
+lne3.getStart = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].getMin;
+/**
+ * Checks for intersection with a plane's components
+ *
+ * @param {lne3} a    - receiving lne3
+ * @param {vec3} n    - plane normal
+ * @param {number} c  - plane constant
+ * @returns {boolean}
+ */
+
+lne3.intersectsNormalConstant = function (a, n, c) {
+  let startSign = n[0] * a[0] + n[1] * a[1] + n[2] * a[2] + c;
+  let endSign = n[0] * a[3] + n[1] * a[4] + n[2] * a[5] + c;
+  return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
+};
+/**
+ * Gets the length of the line
+ *
+ * @param {lne3} a  - source lne3
+ * @returns {number} - distance
+ */
+
+
+lne3.length = function (a) {
+  let x = a[0] - a[3],
+      y = a[1] - a[4],
+      z = a[2] - a[5];
+  return Math.sqrt(x * x + y * y + z * z);
+};
+/**
+ * Sets a lne3 from values
+ *
+ * @param out - Receiving lne3
+ * @param sX
+ * @param sY
+ * @param sZ
+ * @param eX
+ * @param eY
+ * @param eZ
+ * @returns {lne3}
+ */
+
+
+lne3.set = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].set;
+/**
+ * Line3 start helper methods
+ */
+
+lne3.start = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].min;
+/**
+ * Gets the squared length of the lne3
+ *
+ * @param {lne3} a  - source line
+ * @returns {number} - squared distance
+ */
+
+lne3.squaredLength = function (a) {
+  let x = a[0] - a[3],
+      y = a[1] - a[4],
+      z = a[2] - a[5];
+  return x * x + y * y + z * z;
+};
+/**
+ * Sets an array from the lne3
+ *
+ * @param {lne3} a
+ * @param {Array} arr
+ * @param {number} [index]
+ * @returns {lne3} a
+ */
+
+
+lne3.toArray = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].toArray;
+/**
+ * Transforms a lne3 by a mat4
+ *
+ * @param {lne3} out
+ * @param {lne3} a
+ * @param {mat4} m
+ * @returns {lne3} out
+ */
+
+lne3.transformMat4 = function (out, a, m) {
+  let ax = a[0],
+      ay = a[1],
+      az = a[2],
+      bx = a[3],
+      by = a[4],
+      bz = a[5];
+  out[0] = m[0] * ax + m[4] * ay + m[8] * az + m[12];
+  out[1] = m[1] * ax + m[5] * ay + m[9] * az + m[13];
+  out[2] = m[2] * ax + m[6] * ay + m[10] * az + m[14];
+  out[3] = m[0] * bx + m[4] * by + m[8] * bz + m[12];
+  out[4] = m[1] * bx + m[5] * by + m[9] * bz + m[13];
+  out[5] = m[2] * bx + m[6] * by + m[10] * bz + m[14];
+  return out;
+};
+/**
+ * Translates a lne3
+ *
+ * @param {lne3} out
+ * @param {lne3} a
+ * @param {vec3} v
+ * @returns {lne3} out
+ */
+
+
+lne3.translate = function (out, a, v) {
+  out[0] = a[0] + v[0];
+  out[1] = a[1] + v[1];
+  out[2] = a[2] + v[2];
+  out[3] = a[3] + v[0];
+  out[4] = a[4] + v[1];
+  out[5] = a[5] + v[2];
+  return out;
+};
 
 /***/ }),
 
@@ -52637,6 +53990,74 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * Sets a mat3 from an array at an option offset
+ *
+ * @param {mat3} out
+ * @param {Array} arr
+ * @param {number} [offset=0]
+ * @returns {mat3} out
+ */
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat3"].fromArray = function (out, arr) {
+  let offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  out[0] = arr[offset];
+  out[1] = arr[offset + 1];
+  out[2] = arr[offset + 2];
+  out[3] = arr[offset + 3];
+  out[4] = arr[offset + 4];
+  out[5] = arr[offset + 5];
+  out[6] = arr[offset + 6];
+  out[7] = arr[offset + 7];
+  out[8] = arr[offset + 8];
+  return out;
+};
+/**
+ * Sets a mat3 from an array at an option offset
+ *
+ * @param {mat3} out
+ * @param {Array} arr
+ * @param {number} [index=0]
+ * @returns {mat3} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat3"].setArray = function (out, arr) {
+  let index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  out[0] = arr[index];
+  out[1] = arr[index + 1];
+  out[2] = arr[index + 2];
+  out[3] = arr[index + 3];
+  out[4] = arr[index + 4];
+  out[5] = arr[index + 5];
+  out[6] = arr[index + 6];
+  out[7] = arr[index + 7];
+  out[8] = arr[index + 8];
+  return out;
+};
+/**
+ * Sets an array at an optional offset
+ *
+ * @param {mat3} a
+ * @param {Array} arr
+ * @param {number} [index=0]
+ * @returns {mat3} a
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat3"].toArray = function (a, arr) {
+  let index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  arr[index] = a[0];
+  arr[index + 1] = a[1];
+  arr[index + 2] = a[2];
+  arr[index + 3] = a[3];
+  arr[index + 4] = a[4];
+  arr[index + 5] = a[5];
+  arr[index + 6] = a[6];
+  arr[index + 7] = a[7];
+  arr[index + 8] = a[8];
+  return a;
+};
 
 /***/ }),
 
@@ -52775,6 +54196,29 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAtGL = function () {
     return out;
   };
 }();
+/**
+ * Gets a mat4's maximum column axis scale
+ *
+ * @param {mat4} a   - source mat4
+ * @returns {number} - maximum axis scale
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis = function (a) {
+  let m11 = a[0];
+  let m12 = a[4];
+  let m13 = a[8];
+  let m21 = a[1];
+  let m22 = a[5];
+  let m23 = a[9];
+  let m31 = a[2];
+  let m32 = a[6];
+  let m33 = a[10];
+  let x = m11 * m11 + m12 * m12 + m13 * m13,
+      y = m21 * m21 + m22 * m22 + m23 * m23,
+      z = m31 * m31 + m32 * m32 + m33 * m33;
+  return Math.sqrt(Math.max(x, y, z));
+};
 /**
  * Sets a left handed co-ordinate system perspective from a right handed co-ordinate system
  * @param {mat4} out        - receiving mat4
@@ -53034,6 +54478,11 @@ noise.perlin1D = function (x, alpha, beta, n) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "num", function() { return num; });
 const num = {};
+num.EPSILON = 0.000001;
+num.RAD2DEG = 180 / Math.PI;
+num.DEG2RAD = Math.PI / 180;
+num.TWO_PI = Math.PI * 2;
+num.PI = Math.PI;
 /**
  * biCumulative
  *
@@ -53051,6 +54500,58 @@ num.biCumulative = function (t, order) {
   } else {
     return t * t * t;
   }
+};
+/**
+ * @alias Math.ceil
+ */
+
+
+num.ceil = Math.ceil;
+/**
+ * Clamps a number
+ *
+ * @param {number} a
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+
+num.clamp = function (a, min, max) {
+  return Math.max(min, Math.min(max, a));
+};
+/**
+ * Returns how many decimal places a number has
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+
+num.decimalPlaces = function (a) {
+  let match = ("" + a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+  return match ? Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0)) : 0;
+};
+/**
+ * Converts from radians to degrees
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+
+num.degrees = function (a) {
+  return a * num.RAD2DEG;
+};
+/**
+ * Converts from radians to unwrapped degrees
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+
+num.degreesUnwrapped = function (a) {
+  return num.unwrapDegrees(a * num.RAD2DEG);
 };
 /**
  * Converts a Dword to Float
@@ -53074,6 +54575,31 @@ num.dwordToFloat = function (value) {
   return sign * (1 + sig * Math.pow(2, -23)) * Math.pow(2, exp);
 };
 /**
+ * Checks if a number equals another
+ *
+ * @param a
+ * @param b
+ * @returns {boolean}
+ */
+
+
+num.equals = function (a, b) {
+  return Math.abs(a - b) <= num.EPSILON * Math.max(1.0, Math.abs(a), Math.abs(b));
+};
+/**
+ * Checks if a number exactly equals another
+ * - included for library consistency
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {boolean}
+ */
+
+
+num.exactEquals = function (a, b) {
+  return a === b;
+};
+/**
  * Exponential decay
  *
  * @param {number} omega0
@@ -53087,6 +54613,17 @@ num.dwordToFloat = function (value) {
 
 num.exponentialDecay = function (omega0, torque, I, d, time) {
   return torque * time / d + I * (omega0 * d - torque) / (d * d) * (1.0 - Math.pow(Math.E, -d * time / I));
+};
+/**
+ * Gets the fractional components of a number
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+
+num.fract = function (a) {
+  return a - Math.floor(a);
 };
 /**
  * Gets a value from a half float
@@ -53110,15 +54647,160 @@ num.fromHalfFloat = function (a) {
   return (s ? -1 : 1) * Math.pow(2, e - 15) * (1 + f / Math.pow(2, 10));
 };
 /**
+ * @alias Math.floor
+ */
+
+
+num.floor = Math.floor;
+/**
  * Gets long word order
  * @author Babylon
  * @param {number} a
  * @returns {number}
  */
 
-
 num.getLongWordOrder = function (a) {
   return a === 0 || a === 255 || a === -16777216 ? 0 : 1 + num.getLongWordOrder(a >> 8);
+};
+/**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+
+num.greaterThan = function (a, b) {
+  return a > b ? 1 : 0;
+};
+/**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+
+num.greaterThanEqual = function (a, b) {
+  return num.isEqual(a, b) || a > b ? 1 : 0;
+};
+/**
+ *
+ * - included for library consistency
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+
+num.greaterThanExactEqual = function (a, b) {
+  return a >= b ? 1 : 0;
+};
+/**
+ * Checks if a number is even
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+
+
+num.isEven = function (a) {
+  return Math.abs(a) % 2 === 0;
+};
+/**
+ * Checks if a number is a float
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+
+
+num.isFloat = function (a) {
+  return a % 1 !== 0;
+};
+/**
+ * @alias Number.isFinite
+ */
+
+
+num.isFinite = Number.isFinite; // return (typeof v === "number" && !isNaN(v) && v !== Infinity && v !== -Infinity);
+
+/**
+ * Checks if a number is an integer
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+
+num.isInt = function (a) {
+  return a % 1 === 0;
+};
+/**
+ * @alias Number.isNaN
+ */
+
+
+num.isNaN = Number.isNaN;
+/**
+ * Checks if a number is odd
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+
+num.isOdd = function (a) {
+  return Math.abs(a) % 2 === 1;
+};
+/**
+ * Checks if a number is to the power of two
+ *
+ * @param {number} a
+ * @returns {boolean}
+ */
+
+
+num.isPowerOfTwo = function (a) {
+  return (a & a - 1) === 0 && a !== 0;
+};
+/**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+
+num.lessThan = function (a, b) {
+  return a < b ? 1 : 0;
+};
+/**
+ *
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+
+num.lessThanEqual = function (a, b) {
+  return num.isEqual(a, b) || a < b ? 1 : 0;
+};
+/**
+ *
+ * - included for library consistency
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+
+
+num.lessThanExactEqual = function (a, b) {
+  return a <= b ? 1 : 0;
 };
 /**
  * Gets the log2 of a number
@@ -53129,6 +54811,158 @@ num.getLongWordOrder = function (a) {
 
 num.log2 = function (a) {
   return Math.log(a) * Math.LOG2E;
+};
+/**
+ * @alias Math.max
+ */
+
+
+num.max = Math.max;
+/**
+ * @alias Math.min
+ */
+
+num.min = Math.min;
+/**
+ * Gets the nearest power of two value to a number
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+num.nearestPowerOfTwo = function (a) {
+  return Math.pow(2, Math.round(Math.log(a) / Math.LN2));
+};
+/**
+ *
+ *
+ * @param {number} value
+ * @param {number} start
+ * @param {number} end
+ * @param {number} precision
+ * @returns {number}
+ */
+
+
+num.normalizeInt = function (value, start, end, precision) {
+  let width = end - start;
+  let offsetValue = value - start;
+  let result = offsetValue - offsetValue / width * width + start;
+  return precision === undefined ? result : Number(result.toFixed(precision));
+};
+/**
+ *
+ *
+ * @param {number} value
+ * @param {number} start
+ * @param {number} end
+ * @param {number} precision
+ * @returns {number}
+ */
+
+
+num.normalizeFloat = function (value, start, end, precision) {
+  let width = end - start;
+  let offsetValue = value - start;
+  let result = offsetValue - Math.floor(offsetValue / width) * width + start;
+  return precision === undefined ? result : Number(result.toFixed(precision));
+};
+/**
+ * Converts from degrees to radians
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+
+num.radians = function (a) {
+  return a * num.DEG2RAD;
+};
+/**
+ * Converts from degrees to unwrapped radians
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+
+num.radiansUnwrapped = function (a) {
+  return num.unwrapRadians(a *= num.DEG2RAD);
+};
+/**
+ * Creates a random integer
+ *
+ * @param {number} low
+ * @param {number} high
+ * @returns {number}
+ */
+
+
+num.randomInt = function (low, high) {
+  return low + Math.floor(Math.random() * (high - low + 1));
+};
+/**
+ * Creates a random float
+ *
+ * @param {number} low
+ * @param {number} high
+ * @returns {number}
+ */
+
+
+num.randomFloat = function (low, high) {
+  return low + Math.random() * (high - low);
+};
+/**
+ * @alias for Math.round
+ */
+
+
+num.round = Math.round;
+/**
+ * Rounds a number to the closest zero
+ *
+ * @param {number} a
+ * @returns {number}
+ */
+
+num.roundToZero = function (a) {
+  return a < 0 ? Math.ceil(a) : Math.floor(a);
+};
+/**
+ * @alias for num.greaterThan
+ */
+
+
+num.step = num.greaterThan;
+/**
+ *
+ * @param a
+ * @param min
+ * @param max
+ * @returns {number}
+ */
+
+num.smoothStep = function (a, min, max) {
+  if (a <= min) return 0;
+  if (a >= max) return 1;
+  a = (a - min) / (max - min);
+  return a * a * (3 - 2 * a);
+};
+/**
+ *
+ * @param a
+ * @param min
+ * @param max
+ * @returns {number}
+ */
+
+
+num.smootherStep = function (a, min, max) {
+  if (a <= min) return 0;
+  if (a >= max) return 1;
+  a = (a - min) / (max - min);
+  return a * a * a * (a * (a * 6 - 15) + 10);
 };
 /**
  * Converts a number to a half float
@@ -53191,6 +55025,698 @@ num.toHalfFloat = function () {
     return bits;
   };
 }();
+/**
+ * Unwraps degrees
+ *
+ * @param {number} d
+ * @returns {number}
+ */
+
+
+num.unwrapDegrees = function (d) {
+  d = d % 360;
+  if (d > 180) d -= 360;
+  if (d < -180) d += 360;
+  return d;
+};
+/**
+ * Unwraps radians
+ *
+ * @param {number} r
+ * @returns {number}
+ */
+
+
+num.unwrapRadians = function (r) {
+  r = r % num.TWO_PI;
+  if (r > num.PI) r -= num.TWO_PI;
+  if (r < -num.PI) r += num.TWO_PI;
+  return r;
+};
+
+/***/ }),
+
+/***/ "./global/math/pln.js":
+/*!****************************!*\
+  !*** ./global/math/pln.js ***!
+  \****************************/
+/*! exports provided: pln */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pln", function() { return pln; });
+/* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./num */ "./global/math/num.js");
+/* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vec3 */ "./global/math/vec3.js");
+/* harmony import */ var _vec4__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./vec4 */ "./global/math/vec4.js");
+/* harmony import */ var _mat3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./mat3 */ "./global/math/mat3.js");
+/* harmony import */ var _box3__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./box3 */ "./global/math/box3.js");
+
+
+
+
+
+/**
+ * Plane
+ *
+ * @typedef {Float32Array} pln
+ */
+
+const pln = {};
+/**
+ * Clones a pln
+ *
+ * @param {pln} a - Source plane
+ * @returns {pln} - Cloned plane
+ */
+
+pln.clone = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].clone;
+/**
+ * Returns the constant component of the pln
+ *
+ * @param {pln} a    - Source plane
+ * @returns {number} - plane's constant
+ */
+
+pln.constant = function (a) {
+  return a[3];
+};
+/**
+ * Copies a pln
+ *
+ * @param {pln} a - Target plane
+ * @param {pln} b - Source plane
+ * @returns {pln} - Target plane
+ */
+
+
+pln.copy = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].copy;
+/**
+ * Creates a plane
+ *
+ * @returns {pln}
+ */
+
+pln.create = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].create;
+/**
+ * Gets the distance from a plane to a point
+ *
+ * @param {pln} a    - plane to compare
+ * @param {vec3} p   - Point to compare
+ * @returns {number} - The distance between them
+ */
+
+pln.distanceToPoint = function (a, p) {
+  return a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + a[3];
+};
+/**
+ * Gets the distance from a plane to the components of a sphere
+ *
+ * @param {pln} a         - plane to compare
+ * @param {vec3} position - sphere position to compare
+ * @param {number} radius - sphere radius to compare
+ * @returns {number}      - The distance between them
+ */
+
+
+pln.distanceToPositionRadius = function (a, position, radius) {
+  return a[0] * position[0] + a[1] * position[1] + a[2] * position[2] - radius;
+};
+/**
+ * Gets the distance from a plane to a Float32Array(4) sphere
+ *
+ * @param {pln} a       - plane to compare
+ * @param {sph3} sphere - sphere to compare
+ * @returns {number}    - The distance between them
+ */
+
+
+pln.distanceToSph3 = function (a, sphere) {
+  return a[0] * sphere[0] + a[1] * sphere[1] + a[2] * sphere[2] - sphere[3];
+};
+/**
+ * Gets the distance from a plane to a point's values
+ *
+ * @param {pln} a     - plane to compare
+ * @param {Number} px - Point x to compare
+ * @param {Number} py - Point y to compare
+ * @param {Number} pz - Point z to compare
+ * @returns {number}  - The distance between them
+ */
+
+
+pln.distanceToValues = function (a, px, py, pz) {
+  return a[0] * px + a[1] * py + a[2] * pz + a[3];
+};
+/**
+ * Compares two plns for equality
+ *
+ * @param {pln} a     - plane to compare
+ * @param {pln} b     - plane to compare
+ * @returns {boolean} - true if equal
+ */
+
+
+pln.equals = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].equals;
+/**
+ * Compares a pln to plane components
+ *
+ * @param {pln} a           - plane to compare
+ * @param {vec3} normal     - plane normal to compare
+ * @param {number} constant - plane constant to compare
+ * @returns {boolean}       - true if equal
+ */
+
+pln.equalsNormalConstant = function (a, normal, constant) {
+  let a0 = a[0],
+      a1 = a[1],
+      a2 = a[2],
+      a3 = a[3],
+      b0 = normal[0],
+      b1 = normal[1],
+      b2 = normal[2],
+      b3 = constant;
+  return Math.abs(a0 - b0) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3));
+};
+/**
+ * Compares two plns for exact equality
+ *
+ * @param {pln} a     - plane to compare
+ * @param {pln} b     - plane to compare
+ * @returns {boolean}
+ */
+
+
+pln.exactEquals = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].exactEquals;
+/**
+ * Compares a pln to plane components for exact equality
+ *
+ * @param {pln} a           - plane to compare
+ * @param {vec3} normal     - plane normal to compare
+ * @param {number} constant - plane constant to compare
+ * @returns {boolean}
+ */
+
+pln.exactEqualsNormalConstant = function (a, normal, constant) {
+  return a[0] === normal[0] && a[1] === normal[1] && a[2] === normal[2] && a[3] === constant;
+};
+/**
+ * Extracts a pln's components
+ *
+ * @param {pln} a          - Source plane
+ * @param {vec3} outNormal - Receiving vec3
+ * @returns {number}       - plane constant
+ */
+
+
+pln.extract = function (a, outNormal) {
+  outNormal[0] = a[0];
+  outNormal[1] = a[1];
+  outNormal[2] = a[2];
+  return a[3];
+};
+/**
+ * Sets a pln from plane components
+ *
+ * @param {pln} out   - Receiving plane
+ * @param {vec3} n    - plane normal to set
+ * @param {number} c  - plane constant to set
+ * @returns {pln} out - receiving plane
+ */
+
+
+pln.from = function (out, n, c) {
+  out[0] = n[0];
+  out[1] = n[1];
+  out[2] = n[2];
+  out[3] = c;
+  return out;
+};
+/**
+ * Sets from coplanar points
+ *
+ * @author three.js (conversion)
+ * @param {pln} out   - Receiving plane
+ * @param {vec3} a    - Coplanar point a
+ * @param {vec3} b    - Coplanar point b
+ * @param {vec3} c    - Coplanar point c
+ * @returns {pln} out - Receiving pln
+ */
+
+
+pln.fromCoplanarPoints = function (out, a, b, c) {
+  let ax = c[0] - b[0],
+      ay = c[1] - b[1],
+      az = c[2] - b[2],
+      bx = a[0] - b[0],
+      by = a[1] - b[1],
+      bz = a[2] - b[2],
+      // get cross product
+  x = ay * bz - az * by,
+      y = az * bx - ax * bz,
+      z = ax * by - ay * bx; // normalize
+
+  let len = x * x + y * y + z * z;
+
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[0] = x * len;
+    out[1] = y * len;
+    out[2] = z * len;
+  } else {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    throw new Error("Normalization error");
+  } // set coplanar point
+
+
+  out[3] = -(a[0] * out[0] + a[1] * out[1] + a[2] * out[2]);
+  return out;
+};
+/**
+ * Sets a pln from normal and a coplanar point
+ *
+ * @param {pln} out     - receiving plane
+ * @param {vec3} normal - normal
+ * @param {vec3} point  - coplanar point
+ * @returns {pln} out   - receiving plane
+ */
+
+
+pln.fromNormalAndCoplanarPoint = function (out, normal, point) {
+  out[0] = normal[0];
+  out[1] = normal[1];
+  out[2] = normal[2];
+  out[3] = -(point[0] * normal[0] + point[1] * normal[1] + point[2] * normal[2]);
+  return out;
+};
+/**
+ * Creates a pln from values
+ *
+ * @param {pln} out         - receiving plane
+ * @param {number} nX       - plane normal x to set
+ * @param {number} nY       - plane normal y to set
+ * @param {number} nZ       - plane normal z to set
+ * @param {number} constant - plane constant to set
+ * @returns {pln} out;      - receiving plane
+ */
+
+
+pln.fromValues = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].fromValues;
+/**
+ * Gets a pln's coplanar point
+ *
+ * @param {vec3} out   - receiving vec3
+ * @param {pln} a      - the source plane
+ * @returns {vec3} out - receiving vec3
+ */
+
+pln.getCoplanarPoint = function (out, a) {
+  out[0] = a[0] * -a[3];
+  out[1] = a[1] * -a[3];
+  out[2] = a[2] * -a[3];
+  return out;
+};
+/**
+ * Sets a vec3 with the intersection point of a plane and a Float32Array(6) line
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @author Three.js (conversion)
+ * @param {vec3} out                 - receiving vec3
+ * @param {pln} a                    - plane
+ * @param {(lne3|Float32Array)} l    - line
+ * @returns {(null|vec3)} null|out   - null or receiving vec3
+ */
+
+
+pln.getIntersectLne3 = function (out, a, l) {
+  let lsx = l[0],
+      lsy = l[1],
+      lsz = l[2],
+      lex = l[3],
+      ley = l[4],
+      lez = l[5]; // Clear the out in case of fails?
+
+  out[0] = 0;
+  out[1] = 0;
+  out[2] = 0; // Get line delta
+
+  let dirX = lex - lsx,
+      dirY = ley - lsy,
+      dirZ = lez - lsz; // Get dot of the plane normal and line delta
+
+  let den = a[0] * dirX + a[1] * dirY + a[2] * dirZ;
+
+  if (den === 0) {
+    // Check if distance to the line start is 0
+    if (a[0] * lsx + a[1] * lsy + a[2] * lsz + a[3] === 0) {
+      out[0] = lsx;
+      out[1] = lsy;
+      out[2] = lsz;
+      return out;
+    }
+
+    throw new Error("Denominator error");
+  }
+
+  let t = (lsx * a[0] + lsy * a[1] + lsz * a[2] + a[3]) / den;
+
+  if (t < 0 || t > 1) {
+    throw new Error("Normalization error");
+  }
+
+  out[0] = dirX * t + lsx;
+  out[1] = dirY * t + lsy;
+  out[2] = dirZ * t + lsz;
+  return out;
+};
+/**
+ * Sets a vec3 with the intersection point of a plane and a 3d line's components
+ * Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @param {vec3} out
+ * @param {pln} a
+ * @param {vec3} lineStart
+ * @param {vec3} lineEnd
+ * @returns {vec3}
+ */
+
+
+pln.getIntersectStartEnd = function () {
+  let vec6_0;
+  return function (out, a, lineStart, lineEnd) {
+    if (!vec6_0) {
+      vec6_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
+    }
+
+    _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].from(vec6_0, lineStart, lineEnd);
+    return pln.getIntersectLne3(out, a, vec6_0);
+  };
+};
+/**
+ * Sets a vec3 with the normal component of the pln
+ *
+ * @param {vec3} out   - receiving vec3
+ * @param {pln} a      - source plane
+ * @returns {vec3} out - receiving vec3
+ */
+
+
+pln.getNormal = function (out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  return out;
+};
+/**
+ * Gets an orthographic point
+ *
+ * @param {vec3} out    - receiving vec3
+ * @param {pln} a       - the plane to project from
+ * @param {vec3} p      - the point to project
+ * @returns {vec3} out  - receiving vec3
+ */
+
+
+pln.getOrthoPoint = function (out, a, p) {
+  let pMag = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + a[3];
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].multiplyScalar(out, a, pMag);
+  return out;
+};
+/**
+ * Gets a projected point
+ *
+ * @param {vec3} out   - receiving vec3
+ * @param {pln} a      - the plane to project from
+ * @param {vec3} p     - the point to project
+ * @returns {vec3} out - receiving vec3
+ */
+
+
+pln.getProjectedPoint = function (out, a, p) {
+  pln.getOrthoPoint(out, a, p);
+  out[0] = -(out[0] - p[0]);
+  out[1] = -(out[1] - p[1]);
+  out[2] = -(out[2] - p[2]);
+  return out;
+};
+/**
+ * Checks if a plane intersects min and max bounds
+ *
+ * @param {pln} a     - plane to compare
+ * @param {vec3} min  - box min bounds to compare
+ * @param {vec3} max  - box max bounds to compare
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+pln.intersectsBounds = function () {
+  let vec6_0;
+  return function (a, min, max) {
+    if (!vec6_0) {
+      vec6_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
+    }
+
+    _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].from(vec6_0, min, max);
+    return _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].intersectsPln(vec6_0, a);
+  };
+};
+/**
+ * Checks if a plane intersects a Float32Array(6) bounding box
+ *
+ * @param {pln} a                 - plane to compare
+ * @param {(box3|Float32Array)} b - box to compare
+ * @returns {boolean}             - true if intersection occurs
+ */
+
+
+pln.intersectsBox3 = function (a, b) {
+  return _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].intersectsPln(b, a);
+};
+/**
+ * Checks if a plane intersects a Float32Array(6) lne3
+ *
+ * @author three.js (conversion)
+ * @param {pln} a                  - plane to compare
+ * @param {lne3|Float32Array} l    - line to compare
+ * @returns {boolean}              - true if intersection occurs
+ */
+
+
+pln.intersectsLne3 = function (a, l) {
+  let startSign = a[0] * l[0] + a[1] * l[1] + a[2] * l[2] + a[3];
+  let endSign = a[0] * l[3] + a[1] * l[4] + a[2] * l[5] + a[3];
+  return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
+};
+/**
+ * Checks if a plane intersects spherical bounds
+ *
+ * @param {pln} a         - plane to compare
+ * @param {vec3} position - sphere position to compare
+ * @param {number} radius - sphere radius compare
+ * @returns {boolean}     - true if intersection occurs
+ */
+
+
+pln.intersectsPositionRadius = function (a, position, radius) {
+  let dot = position[0] * a[0] + position[1] * a[1] + position[2] * a[2];
+  return Math.abs(dot - a[3]) <= radius;
+};
+/**
+ * Checks if a plane intersects a sph3
+ *
+ * @param {pln} a     - plane to compare
+ * @param {sph3} s    - sphere to compare
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+pln.intersectsSph3 = function (a, s) {
+  let dot = s[0] * a[0] + s[1] * a[1] + s[2] * a[2];
+  return Math.abs(dot - a[3]) <= s[3];
+};
+/**
+ * Checks if a plane intersects a lne3's components
+ *
+ * @param {pln} a      - plane to compare
+ * @param {vec3} start - line start to compare
+ * @param {vec3} end   - line end to compare
+ * @returns {boolean}  - true if intersection occurs
+ */
+
+
+pln.intersectsStartEnd = function (a, start, end) {
+  let startSign = a[0] * start[0] + a[1] * start[1] + a[2] * start[2] + a[3];
+  let endSign = a[0] * end[0] + a[1] * end[1] + a[2] * end[2] + a[3];
+  return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
+};
+/**
+ * Negates a plane
+ *
+ * @param {pln} out   - receiving plane
+ * @param {pln} a     - the plane to negate
+ * @returns {pln} out - receiving plane
+ */
+
+
+pln.negate = function (out, a) {
+  out[0] = -a[0];
+  out[1] = -a[1];
+  out[2] = -a[2];
+  out[3] = a[3] * -1;
+  return out;
+};
+/**
+ * Returns a subarray of a plane, containing it's normal component
+ *
+ * @param {pln} a - source plane
+ * @returns {*}   - plane normal reference
+ */
+
+
+pln.normal = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].min;
+/**
+ * Normalizes a plane
+ *
+ * @param {pln} out   - receiving plane
+ * @param {pln} a     - the plane to normalize
+ * @returns {pln} out - receiving plane
+ */
+
+pln.normalize = function (out, a) {
+  let x = a[0],
+      y = a[1],
+      z = a[2];
+  let len = x * x + y * y + z * z;
+
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[0] = a[0] * len;
+    out[1] = a[1] * len;
+    out[2] = a[2] * len;
+    out[3] = a[3] * len;
+  } else {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    throw new Error("Normalization error");
+  }
+
+  return out;
+};
+/**
+ * Sets a sphere from values
+ *
+ * @param {pln} out
+ * @param {number} nX
+ * @param {number} nY
+ * @param {number} nZ
+ * @param {number} c
+ * @returns {pln} out
+ */
+
+
+pln.set = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].set;
+/**
+ * Sets a pln from an array at an optional offset
+ *
+ * @param {pln} out
+ * @param {Array} arr
+ * @param {number} [index=0]
+ * @returns {pln} out
+ */
+
+pln.setArray = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].setArray;
+/**
+ * Sets an array at an optional offset, with the values of a pln
+ *
+ * @param {pln} a
+ * @param {Array} arr
+ * @param {number} [offset = 0]
+ * @returns {pln} a
+ */
+
+pln.toArray = function (a, arr) {
+  let offset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  arr[offset] = a[0];
+  arr[offset + 1] = a[1];
+  arr[offset + 2] = a[2];
+  arr[offset + 3] = a[3];
+  return a;
+};
+/**
+ * Transforms a plane by a mat4
+ *
+ * @author three.js (conversion)
+ * @param {pln} out        - the receiving plane
+ * @param {pln} a          - the plane to transform
+ * @param {mat4} m         - the affine matrix to transform with
+ * @param {mat3} [nMatrix] - optional normal matrix
+ * @returns {pln} out      - the receiving plane
+ */
+
+
+pln.transformMat4 = function () {
+  let mat4_0;
+  return function (out, a, m, nMatrix) {
+    if (!nMatrix && !mat4_0) {
+      mat4_0 = _mat3__WEBPACK_IMPORTED_MODULE_3__["mat3"].create();
+    }
+
+    nMatrix = nMatrix || _mat3__WEBPACK_IMPORTED_MODULE_3__["mat3"].normalFromMat4(mat4_0, m); // Coplanar Point
+
+    let cpX = a[0] * -a[3],
+        cpY = a[1] * -a[3],
+        cpZ = a[2] * -a[3]; // Create reference point from Coplanar Point transformed by the affine mat4
+
+    let rX = m[0] * cpX + m[4] * cpY + m[8] * cpZ + m[12],
+        rY = m[1] * cpX + m[5] * cpY + m[9] * cpZ + m[13],
+        rZ = m[2] * cpX + m[6] * cpY + m[10] * cpZ + m[14]; // Transform plane normal by normal matrix
+
+    let nX = a[0],
+        nY = a[1],
+        nZ = a[2];
+    let pX = nX * nMatrix[0] + nY * nMatrix[3] + nZ * nMatrix[6],
+        pY = nX * nMatrix[1] + nY * nMatrix[4] + nZ * nMatrix[7],
+        pZ = nX * nMatrix[2] + nY * nMatrix[5] + nZ * nMatrix[8]; // Normalize plane normal
+
+    let len = pX * pX + pY * pY + pZ * pZ;
+
+    if (len > 0) {
+      len = 1 / Math.sqrt(len);
+      out[0] = pX * len;
+      out[1] = pY * len;
+      out[2] = pZ * len;
+    } else {
+      out[0] = 0;
+      out[1] = 0;
+      out[2] = 0;
+      throw new Error("Normalization error");
+    } // recalculate constant from negative dot of reference point and the resulting plane normal
+
+
+    out[3] = -(rX * out[0] + rY * out[1] + rZ * out[2]);
+    return out;
+  };
+};
+/**
+ * Translates a plane with the given vector
+ *
+ * @param {pln} out   - the receiving plane
+ * @param {pln} a     - the plane to translate
+ * @param {vec3} v    - the vector to translate with
+ * @returns {pln} out - the receiving plane
+ */
+
+
+pln.translate = function (out, a, v) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  out[3] = a[3] - (v[0] * a[0] + v[1] * a[1] + v[2] * a[2]);
+  return out;
+};
 
 /***/ }),
 
@@ -53295,6 +55821,2129 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].pow = function (out, inq, exponen
 
 /***/ }),
 
+/***/ "./global/math/ray3.js":
+/*!*****************************!*\
+  !*** ./global/math/ray3.js ***!
+  \*****************************/
+/*! exports provided: ray3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ray3", function() { return ray3; });
+/* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./vec3 */ "./global/math/vec3.js");
+/* harmony import */ var _mat4__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mat4 */ "./global/math/mat4.js");
+/* harmony import */ var _pln__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pln */ "./global/math/pln.js");
+/* harmony import */ var _sph3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sph3 */ "./global/math/sph3.js");
+/* harmony import */ var _box3__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./box3 */ "./global/math/box3.js");
+/* harmony import */ var _tri3__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./tri3 */ "./global/math/tri3.js");
+
+
+
+
+
+
+/**
+ * 3D Ray
+ * @typedef {Float32Array} ray3
+ */
+
+const ray3 = {};
+/**
+ * Clones a ray3
+ *
+ * @param {ray3} a
+ * @returns {ray3}
+ */
+
+ray3.clone = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].clone;
+/**
+ * Copies the values from one ray3 into another
+ *
+ * @param {ray3} out
+ * @param {ray3} a
+ * @returns {ray3} out
+ */
+
+ray3.copy = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].copy;
+/**
+ * Creates a ray3
+ *
+ * @returns {ray3}
+ */
+
+ray3.create = function () {
+  let out = new Float32Array(6);
+  out[0] = 0;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = 0;
+  return out;
+};
+/**
+ * Direction helper methods
+ */
+
+
+ray3.direction = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].max;
+/**
+ * Gets the distance from a ray3 to a point
+ *
+ * @param {ray3} a    - source ray3
+ * @param {vec3} p   - point to measure distance to
+ * @returns {number} - distance
+ */
+
+ray3.distance = function (a, p) {
+  return Math.sqrt(ray3.squaredDistance(a, p));
+};
+/**
+ * Gets the distance from a ray3"s origin to a plane"s components
+ *
+ * @author three.js authors (converted)
+ * @param {ray3} a        - source ray3
+ * @param {vec3} n        - plane normal
+ * @param {number} c      - plane constant
+ * @returns {null|number} - distance
+ */
+
+
+ray3.distanceNormalConstant = function (a, n, c) {
+  let den = n[0] * a[3] + n[1] * a[4] + n[2] * a[5];
+  let dist = a[0] * n[0] + a[1] * n[1] + a[2] * n[2] + c;
+
+  if (den === 0) {
+    if (dist === 0) return 0;
+    throw new Error("Determinant error"); //return null;
+  }
+
+  let t = -dist / den;
+  return t >= 0 ? t : null;
+};
+/**
+ * Gets the distance from a ray3"s origin to a Float32Array(4) plane
+ *
+ * @author three.js authors (converted)
+ * @param {ray3} a        - source ray3
+ * @param {pln} p         - plane to measure distance to
+ * @returns {null|Number} - distance
+ */
+
+
+ray3.distancePln = function (a, p) {
+  let den = p[0] * a[3] + p[1] * a[4] + p[2] * a[5];
+  let dist = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + p[3];
+
+  if (den === 0) {
+    if (dist === 0) return 0;
+    throw new Error("Determinant error"); //return null;
+  }
+
+  let t = -dist / den;
+  return t >= 0 ? t : null;
+};
+/**
+ * Checks two ray3"s for equality
+ *
+ * @param {ray3} a
+ * @param {ray3} b
+ * @returns {boolean}
+ */
+
+
+ray3.equals = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].equals;
+/**
+ * Checks a ray3 against it"s components for equality
+ *
+ * @param {ray3} a
+ * @param {vec3} min
+ * @param {vec3} max
+ * @returns {boolean}
+ */
+
+ray3.equalsOriginDestination = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].equalsBounds;
+/**
+ * Checks for box3 exact equality
+ *
+ * @param {ray3} a
+ * @param {ray3} b
+ * @returns {boolean}
+ */
+
+ray3.exactEquals = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].exactEquals;
+/**
+ * Checks for exact equality between a ray3 and ray3 components
+ *
+ * @param {ray3} a
+ * @param {vec3} min
+ * @param {vec3} max
+ * @returns {boolean}
+ */
+
+ray3.exactEqualsOriginDestination = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].exactEqualsBounds;
+/**
+ * Sets a ray3 from origin and destination
+ *
+ * @param {ray3} out
+ * @param {vec3} o
+ * @param {vec3} d
+ * @returns {ray3} out
+ */
+
+ray3.from = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].from;
+/**
+ * Sets a ray3 from an array at an optional offset
+ *
+ * @param {ray3} out
+ * @param {Array} arr
+ * @param {number} [index=0]
+ * @returns {ray3}
+ */
+
+ray3.fromArray = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].fromArray;
+/**
+ * Sets a ray3 from a screen coordinates and an inverse view projection matrix
+ *
+ * @param {vec3} out              - receiving ray3
+ * @param {vec2} coords           - canvas coordinates (not client)
+ * @param {mat4} m         -      - inverse view projection matrix
+ * @param {mat4} viewport         - viewport settings (x, y, width, height)
+ */
+
+ray3.fromPerspective = function (out, coords, m, viewport) {
+  // Convert view port co-ordinates
+  let x = (coords[0] - viewport[0]) * 2.0 / viewport[2] - 1.0,
+      y = (coords[1] - viewport[1]) * 2.0 / viewport[3] - 1.0; // Calculate w
+
+  let oW = m[3] * x + m[7] * y + m[11] * -1 + m[15],
+      dW = m[3] * x + m[7] * y + m[11] * 1 + m[15]; // Check for perspective divide error
+
+  if (oW === 0.0 || dW === 0.0) {
+    throw new Error("Perspective Divide Error");
+  } // Transform origin
+
+
+  out[0] = (m[0] * x + m[4] * y + m[8] * -1 + m[12]) / oW;
+  out[1] = (m[1] * x + m[5] * y + m[9] * -1 + m[13]) / oW;
+  out[2] = (m[2] * x + m[6] * y + m[10] * -1 + m[14]) / oW; // Transform direction
+
+  out[3] = (m[0] * x + m[4] * y + m[8] * 1 + m[12]) / dW - out[0];
+  out[4] = (m[1] * x + m[5] * y + m[9] * 1 + m[13]) / dW - out[1];
+  out[5] = (m[2] * x + m[6] * y + m[10] * 1 + m[14]) / dW - out[2]; // Normalize direction
+
+  return ray3.normalize(out, out);
+};
+/**
+ * Sets a vec3 with the position on a ray3 at a given distance from it"s origin
+ *
+ * @param {vec3} out   - receiving vec3
+ * @param {ray3} a     - source ray3
+ * @param {number} t   - distance along the ray3
+ * @returns {vec3} out - receiving vec3
+ */
+
+
+ray3.get = function (out, a, t) {
+  out[0] = a[0] + a[3] * t;
+  out[1] = a[1] + a[4] * t;
+  out[2] = a[2] + a[5] * t;
+  return out;
+};
+/**
+ * Sets a vec3 with the ray3's direction
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {ray3} a       - source ray
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+ray3.getDirection = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMax;
+/**
+ * Sets a vec3 with the closest point on a ray3 to a given point
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} out   - receiving vec3
+ * @param {ray3} a     - source ray3
+ * @param {vec3} p     - point to compare
+ * @returns {vec3} out - receiving vec3
+ */
+
+ray3.getClosestPointToPoint = function (out, a, p) {
+  let x = p[0] - a[0],
+      y = p[1] - a[1],
+      z = p[2] - a[2];
+  let dirDist = x * a[3] + y * a[4] + z * a[5];
+
+  if (dirDist < 0) {
+    out[0] = a[0];
+    out[1] = a[1];
+    out[2] = a[2];
+  } else {
+    ray3.get(out, a, dirDist);
+  }
+
+  return out;
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and boxes" components
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} out            - receiving vec3
+ * @param {ray3} a              - source ray3
+ * @param {vec3} min            - box min bounds
+ * @param {vec3} max            - box max bounds
+ * @returns {(null|vec3)} [out] - null or receiving vec3
+ */
+
+
+ray3.getIntersectBounds = function (out, a, min, max) {
+  let tMin, tMax, tyMin, tyMax, tzMin, tzMax;
+  let invDirX = 1 / a[3],
+      invDirY = 1 / a[4],
+      invDirZ = 1 / a[5];
+
+  if (invDirX >= 0) {
+    tMin = (min[0] - a[0]) * invDirX;
+    tMax = (max[0] - a[0]) * invDirX;
+  } else {
+    tMin = (max[0] - a[0]) * invDirX;
+    tMax = (min[0] - a[0]) * invDirX;
+  }
+
+  if (invDirY >= 0) {
+    tyMin = (min[1] - a[1]) * invDirY;
+    tyMax = (max[1] - a[1]) * invDirY;
+  } else {
+    tyMin = (max[1] - a[1]) * invDirY;
+    tyMax = (min[1] - a[1]) * invDirY;
+  }
+
+  if (tMin > tyMax || tyMin > tMax) return null;
+  if (tyMin > tMin || tMin !== tMin) tMin = tyMin;
+  if (tyMax < tMax || tMax !== tMax) tMax = tyMax;
+
+  if (invDirZ >= 0) {
+    tzMin = (min[2] - a[2]) * invDirZ;
+    tzMax = (max[2] - a[2]) * invDirZ;
+  } else {
+    tzMin = (max[2] - a[2]) * invDirZ;
+    tzMax = (min[2] - a[2]) * invDirZ;
+  }
+
+  if (tMin > tzMax || tzMin > tMax) return null;
+  if (tzMin > tMin || tMin !== tMin) tMin = tzMin;
+  if (tzMax < tMax || tMax !== tMax) tMax = tzMax;
+  if (tMax < 0) return null;
+  return ray3.get(out, a, tMin >= 0 ? tMin : tMax);
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and boxes" components
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ * TODO: Flip internals of getIntersectBounds with this as it will be called more often
+ *
+ * @param {vec3} out
+ * @param {ray3} a
+ * @param {box3|Float32Array} b
+ * @returns {null|vec3}
+ */
+
+
+ray3.getIntersectBox3 = function () {
+  let vec3_0, vec3_1;
+  return function (out, a, b) {
+    if (!vec3_0) {
+      vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    }
+
+    _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMin(vec3_0, b);
+    _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMax(vec3_1, b);
+    return _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getIntersectBounds(out, a, vec3_0, vec3_1);
+  };
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and a triangle"s components
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ * @TODO: Flip internals with getIntersectVertices as this will be called more often
+ *
+ * @param {vec3} out            - receiving vec3
+ * @param {ray3} a              - source ray3
+ * @param {tri3} f              - The tri3 to intersect
+ * @param {boolean} bfc         - enables/ disables back face culling
+ * @returns {(null|vec3)} [out] - null or receiving vec3
+ */
+
+
+ray3.getIntersectTri3 = function () {
+  let vec3_0, vec3_1, vec3_2;
+  return function (out, a, f, bfc) {
+    if (!vec3_0) {
+      vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_2 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    }
+
+    _tri3__WEBPACK_IMPORTED_MODULE_5__["tri3"].getV1(vec3_0, f);
+    _tri3__WEBPACK_IMPORTED_MODULE_5__["tri3"].getV2(vec3_1, f);
+    _tri3__WEBPACK_IMPORTED_MODULE_5__["tri3"].getV3(vec3_2, f);
+    return ray3.getIntersectVertices(out, a, vec3_0, vec3_1, vec3_2, bfc);
+  };
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and a triangle"s components
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} out            - receiving vec3
+ * @param {ray3} a              - source ray3
+ * @param {vec3} vertA          - first triangle vertex position
+ * @param {vec3} vertB          - second triangle vertex position
+ * @param {vec3} vertC          - third triangle vertex position
+ * @param {boolean} bfc         - enables/ disables back face culling
+ * @returns {(null|vec3)} [out] - null or receiving vec3
+ */
+
+
+ray3.getIntersectVertices = function () {
+  let vec3_0, vec3_1, vec3_2, vec3_3, vec3_4, vec3_5;
+  return function (out, a, vertA, vertB, vertC, bfc) {
+    if (!vec3_0) {
+      vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_2 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_3 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_4 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_5 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    }
+
+    let o = ray3.getOrigin(vec3_4, a);
+    let d = ray3.getDirection(vec3_5, a);
+    let diff = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_0, o, vertA);
+    let e1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_1, vertB, vertA);
+    let e2 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_2, vertC, vertA);
+    let n = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(vec3_3, e1, e2);
+    let DdN = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, n);
+    let sign;
+
+    if (DdN > 0) {
+      if (bfc) return null;
+      sign = 1;
+    } else if (DdN < 0) {
+      sign = -1;
+      DdN = -DdN;
+    } else return null;
+
+    _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(e2, diff, e2);
+    let b1 = sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, e2);
+    if (b1 < 0) return null;
+    _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(e1, e1, diff);
+    let b2 = sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, e1);
+    if (b2 < 0) return null;
+    if (b1 + b2 > DdN) return null;
+    let QdN = -sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(diff, n);
+    if (QdN < 0) return null;
+    return ray3.get(out, a, QdN / DdN);
+  };
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and a plane"s components
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @param {vec3} out             - receiving vec3
+ * @param {ray3} a               - source ray3
+ * @param {vec3} n               - plane normal
+ * @param {number} c             - plane constant
+ * @returns {(null|vec3)} vecOut - null or receiving vec3
+ */
+
+
+ray3.getIntersectNormalConstant = function (out, a, n, c) {
+  let t = ray3.distanceNormalConstant(a, n, c);
+  return t !== null ? ray3.get(out, a, t) : null;
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and a Float32Array(4) Plane
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @param {vec3} out              - receiving vec3
+ * @param {ray3} a                    - source ray3
+ * @param {(pln|Float32Array)} p      - plane to intersect
+ * @returns {(null|vec3)} [out]    - null or receiving vec3
+ */
+
+
+ray3.getIntersectPln = function (out, a, p) {
+  let t = ray3.distancePln(a, p);
+  return t !== null ? ray3.get(out, a, t) : null;
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and a sphere"s components
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} out            - receiving vec3
+ * @param {ray3} a              - source ray3
+ * @param {vec3} p              - sphere position
+ * @param {number} r            - sphere radius
+ * @returns {(null|vec3)} [out] - null or receiving vec3
+ */
+
+
+ray3.getIntersectPositionRadius = function () {
+  let sph3_0;
+  return function (out, a, p, r) {
+    if (!sph3_0) sph3_0 = _sph3__WEBPACK_IMPORTED_MODULE_3__["sph3"].create();
+    _sph3__WEBPACK_IMPORTED_MODULE_3__["sph3"].from(sph3_0, p, r);
+    return ray3.getIntersectSph3(out, a, sph3_0);
+  };
+};
+/**
+ * Sets a vec3 with the intersection point of a ray3 and a Float32Array(4) sphere
+ * - Returns null if there was no intersection, or the receiving vec3 if there was
+ *
+ * @author three.js authors (converted)
+ * @param {vec3} out            - receiving vec3
+ * @param {ray3} a              - source ray3
+ * @param {sph3} s              - sphere
+ * @returns {(null|vec3)} [out] - null or receiving vec3
+ */
+
+
+ray3.getIntersectSph3 = function (out, a, s) {
+  let x = s[0] - a[0],
+      y = s[1] - a[1],
+      z = s[2] - a[2],
+      r2 = s[3] * s[3];
+  let tca = x * a[3] + y * a[4] + z * a[5];
+  let d2 = x * x + y * y + z * z - tca * tca;
+  if (d2 > r2) return null;
+  let thc = Math.sqrt(r2 - d2);
+  let t0 = tca - thc;
+  let t1 = tca + thc;
+  if (t0 < 0 && t1 < 0) return null;
+  if (t0 < 0) return ray3.get(out, a, t1);
+  return ray3.get(out, a, t0);
+};
+/**
+ * Gets the origin component of a ray3
+ *
+ * @param {vec3} out
+ * @param {ray3} a
+ * @returns {vec3} out
+ */
+
+
+ray3.getOrigin = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMin;
+/**
+ * Checks for ray3 intersection with a Float32Array(6) box
+ * TODO: Replace internals with intersectsBounds as this will get called more often
+ * @param {ray3} a                - ray3
+ * @param {(box3|Float32Array)} b - box
+ * @returns {boolean}             - true if intersection occurs
+ */
+
+ray3.intersectsBox3 = function () {
+  let vec3_0;
+  return function (a, b) {
+    if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    return ray3.vec3_0 = ray3.getIntersectBox3(vec3_0, a, b) !== null;
+  };
+};
+/**
+ * Checks for ray3 intersection with bounds
+ *
+ * @param {ray3} a     - ray3
+ * @param {vec3} min  - box min bounds
+ * @param {vec3} max  - box max bounds
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+ray3.intersectsBounds = function () {
+  let vec3_0;
+  return function intersectsBounds(a, min, max) {
+    if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    return ray3.getIntersectBounds(vec3_0, a, min, max) !== null;
+  };
+};
+/**
+ * Checks for ray3 intersection with a plane"s components
+ *
+ * @param {ray3} a    - source ray3
+ * @param {vec3} n    - plane normal
+ * @param {number} c  - plane constant
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+ray3.intersectsNormalConstant = function (a, n, c) {
+  let dist = a[0] * n[0] + a[1] * n[1] + a[2] * n[2] + c;
+  return dist === 0 ? true : (n[0] * a[3] + n[1] * a[4] + n[2] * a[5]) * dist < 0;
+};
+/**
+ * Checks for ray3 intersection with a Float32Array(4) plane
+ *
+ * @param {ray3} a    - source ray3
+ * @param {pln} p     - plane
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+ray3.intersectsPln = function (a, p) {
+  let dist = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + p[3];
+  return dist === 0 ? true : (p[0] * a[3] + p[1] * a[4] + p[2] * a[5]) * dist < 0;
+};
+/**
+ * Checks for ray3 intersection with a sphere"s components
+ *
+ * @param {ray3} a     - source ray3
+ * @param {vec3} p    - sphere position
+ * @param {number} r  - sphere radius
+ * @returns {boolean} - true if intersection occurs
+ */
+
+
+ray3.intersectsPositionRadius = function (a, p, r) {
+  return ray3.distance(a, p) <= r;
+};
+/**
+ * Checks for ray3 intersection with a Float32Array(4) Sphere
+ *
+ * @param {ray3} a              - source ray3
+ * @param {sph3|Float32Array} s - sphere
+ * @returns {boolean}           - true if intersection occurs
+ */
+
+
+ray3.intersectsSph3 = function (a, s) {
+  return ray3.distance(a, s) <= s[3];
+};
+/**
+ * Sets the direction of a ray3 to be looking at a specific point
+ *
+ * @param {ray3} out   - receiving ray3
+ * @param {vec3} a     - source ray3
+ * @param {vec3} p     - point to look at
+ * @returns {ray3} out - receiving ray3
+ */
+
+
+ray3.lookAt = function (out, a, p) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  let x = p[0] - a[0],
+      y = p[1] - a[1],
+      z = p[2] - a[2]; // Normalize the direction
+
+  let len = x * x + y * y + z * z;
+
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[3] = a[0] * len;
+    out[4] = a[1] * len;
+    out[5] = a[2] * len;
+  } else {
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = 0;
+    throw new Error("Normalization error");
+  }
+
+  return out;
+};
+/**
+ * Sets a ray3 from the results of normalizing another
+ *
+ * @param {ray3} out   - receiving ray3
+ * @param {ray3} a     - source ray3
+ * @returns {ray3} out - receiving ray3
+ */
+
+
+ray3.normalize = function (out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  let x = a[3],
+      y = a[4],
+      z = a[5]; // Normalize the direction
+
+  let len = x * x + y * y + z * z;
+
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[3] = x * len;
+    out[4] = y * len;
+    out[5] = z * len;
+  } else {
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    throw new Error("Normalization error");
+  }
+
+  return out;
+};
+/**
+ * Origin helper methods
+ */
+
+
+ray3.origin = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].min;
+/**
+ * Shifts the origin of a ray3 to be further down it"s direction
+ *
+ * @param {ray3} out  - receiving ray3
+ * @param {ray3} a    - source ray3
+ * @param {number} t - distance along the ray3
+ * @returns {ray3}    - receiving ray3
+ */
+
+ray3.recast = function (out, a, t) {
+  out[0] = a[0] + a[3] * t;
+  out[1] = a[1] + a[4] * t;
+  out[2] = a[2] + a[5] * t;
+  out[3] = a[3];
+  out[4] = a[4];
+  out[5] = a[5];
+  return out;
+};
+/**
+ * Sets a ray3 from values
+ *
+ * @param {ray3} out
+ * @param {vec3} startProp
+ * @param {vec3} endProp
+ * @returns {ray3} out
+ */
+
+
+ray3.set = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].set;
+/**
+ * Ray3 generic sorting
+ *
+ * @param {{}} a
+ * @param {number} a.distance
+ * @param {{}} b
+ * @param {number} b.distance
+ * @returns {number}
+ */
+
+ray3.SORT = function (a, b) {
+  return a.distance - b.distance;
+};
+/**
+ * Gets the squared distance from a ray3 to a point
+ *
+ * @author three.js authors (converted)
+ * @param {ray3} a   - source ray3
+ * @param {vec3} p   - point to measure distance to
+ * @returns {number} - squared distance
+ */
+
+
+ray3.squaredDistance = function () {
+  let vec3_0, vec3_1;
+  return function distanceSquared(a, p) {
+    if (!vec3_0) {
+      vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    }
+
+    vec3_0[0] = p[0] - a[0];
+    vec3_0[1] = p[1] - a[1];
+    vec3_0[2] = p[2] - a[2];
+    let dirDist = vec3_0[0] * a[3] + vec3_0[1] * a[4] + vec3_0[2] * a[5];
+
+    if (dirDist < 0) {
+      ray3.getOrigin(vec3_1, a);
+      return _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(vec3_1, p); // could just pass in the ray3
+    }
+
+    ray3.get(vec3_0, a, dirDist);
+    return _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(vec3_0, p);
+  };
+};
+/**
+ * Sets an array at at optional offset from a ray3
+ *
+ * @param {ray3} a
+ * @param {Array} arr
+ * @param {number} [index]
+ * @returns {ray3} a
+ */
+
+
+ray3.toArray = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].toArray;
+/**
+ * Transforms a ray3 by a mat4
+ *
+ * @param {ray3} out   - receiving ray3
+ * @param {vec3} a     - ray3 to transform
+ * @param {mat4} m     - matrix to transform by
+ */
+
+ray3.transformMat4 = function (out, a, m) {
+  let oX = a[0],
+      oY = a[1],
+      oZ = a[2],
+      dX = a[3] + a[0],
+      dY = a[4] + a[1],
+      dZ = a[5] + a[2]; // Calculate w
+
+  let oW = m[3] * oX + m[7] * oY + m[11] * oZ + m[15] || 1.0,
+      dW = m[3] * dX + m[7] * dY + m[11] * dZ + m[15] || 1.0; // Transform origin
+
+  out[0] = (m[0] * oX + m[4] * oY + m[8] * oZ + m[12]) / oW;
+  out[1] = (m[1] * oX + m[5] * oY + m[9] * oZ + m[13]) / oW;
+  out[2] = (m[2] * oX + m[6] * oY + m[10] * oZ + m[14]) / oW; // Transform direction
+
+  out[3] = (m[0] * dX + m[4] * dY + m[8] * dZ + m[12]) / dW - out[0];
+  out[4] = (m[1] * dX + m[5] * dY + m[9] * dZ + m[13]) / dW - out[1];
+  out[5] = (m[2] * dX + m[6] * dY + m[10] * dZ + m[14]) / dW - out[2]; // Normalize direction
+
+  return ray3.normalize(out, out);
+};
+/**
+ * Translates a ray3
+ *
+ * @param {ray3} out
+ * @param {ray3} a
+ * @param {vec3} v
+ * @returns {ray3} out
+ */
+
+
+ray3.translate = function (out, a, v) {
+  out[0] = a[0] + v[0];
+  out[1] = a[1] + v[1];
+  out[2] = a[2] + v[2];
+  return out;
+};
+
+/***/ }),
+
+/***/ "./global/math/sph3.js":
+/*!*****************************!*\
+  !*** ./global/math/sph3.js ***!
+  \*****************************/
+/*! exports provided: sph3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sph3", function() { return sph3; });
+/* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./vec3 */ "./global/math/vec3.js");
+/* harmony import */ var _vec4__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vec4 */ "./global/math/vec4.js");
+/* harmony import */ var _mat4__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mat4 */ "./global/math/mat4.js");
+/* harmony import */ var _pln__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./pln */ "./global/math/pln.js");
+/* harmony import */ var _box3__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./box3 */ "./global/math/box3.js");
+
+
+
+
+
+/**
+ * 3D Sphere
+ * @typedef {Float32Array} sph3
+ */
+
+const sph3 = {};
+/**
+ * Clones a sphere
+ *
+ * @param {sph3} a
+ * @returns {sph3}
+ */
+
+sph3.clone = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].clone;
+/**
+ * Checks if a sphere contains a point
+ *
+ * @param {sph3} a
+ * @param {vec3} p
+ * @returns {boolean}
+ */
+
+sph3.containsPoint = function (a, p) {
+  let x = p[0] - a[0],
+      y = p[1] - a[1],
+      z = p[2] - a[2];
+  return x * x + y * y + z * z <= a[3] * a[3];
+};
+/**
+ * Copies a sphere
+ *
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {sph3}
+ */
+
+
+sph3.copy = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].copy;
+/**
+ * Creates a sphere
+ *
+ * @returns {sph3}
+ */
+
+sph3.create = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].create;
+/**
+ * Returns the distance between two spheres
+ *
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {number}
+ */
+
+sph3.distance = function (a, b) {
+  let x = b[0] - a[0],
+      y = b[1] - a[1],
+      z = b[2] - a[2],
+      rii = b[3] + a[3];
+  return Math.sqrt(x * x + y * y + z * z) - rii;
+};
+/**
+ * Returns the distance from a sphere to a given point
+ *
+ * @param {sph3} a
+ * @param {vec3} p
+ * @returns {number}
+ */
+
+
+sph3.distanceToPoint = function (a, p) {
+  let x = p[0] - a[0],
+      y = p[1] - a[1],
+      z = p[2] - a[2];
+  return Math.sqrt(x * x + y * y + z * z) - a[3];
+};
+/**
+ * Compares two sphere's for equality
+ *
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {boolean}
+ */
+
+
+sph3.equals = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].equals;
+/**
+ * Compares a sphere to spherical components for equality
+ *
+ * @param {sph3} a
+ * @param {vec3} position
+ * @param {number} radius
+ * @returns {boolean}
+ */
+
+sph3.equalsPositionRadius = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].equalsNormalConstant;
+/**
+ * Compares two sphere for exact equality
+ *
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {boolean}
+ */
+
+sph3.exactEquals = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].exactEquals;
+/**
+ * Compares a sphere to spherical components for exact equality
+ *
+ * @param {sph3} a
+ * @param {vec3} position
+ * @param {number} radius
+ * @returns {boolean}
+ */
+
+sph3.exactEqualsPositionRadius = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].exactEqualsNormalConstant;
+/**
+ * Extracts a spheres's components
+ *
+ * @param {sph3} a
+ * @param {vec3} outPosition
+ * @returns {number}
+ */
+
+sph3.extract = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].extract;
+/**
+ * Sets a sphere from position and radius
+ *
+ * @param {sph3} out
+ * @param {vec3} p
+ * @param {number} r
+ * @returns {sph3} out
+ */
+
+sph3.from = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].from;
+/**
+ * Sets a sphere from a box3
+ *
+ * @param {sph3} out
+ * @param {box3} b
+ * @return {sph3} out
+ */
+
+sph3.fromBox3 = function (out, b) {
+  let sX = b[3] - b[0],
+      sY = b[4] - b[1],
+      sZ = b[5] - b[2];
+  out[0] = (b[0] + b[3]) * 0.5;
+  out[1] = (b[1] + b[4]) * 0.5;
+  out[2] = (b[2] + b[5]) * 0.5;
+  out[3] = Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+  return out;
+};
+/**
+ * Sets a sphere from a box's bounds
+ *
+ * @param {sph3} out
+ * @param {vec3} min
+ * @param {vec3} max
+ * @returns {sph3}
+ */
+
+
+sph3.fromBounds = function (out, min, max) {
+  let sX = max[0] - min[0],
+      sY = max[1] - min[1],
+      sZ = max[2] - min[2];
+  out[0] = (min[0] + max[0]) * 0.5;
+  out[1] = (min[1] + max[1]) * 0.5;
+  out[2] = (min[2] + max[2]) * 0.5;
+  out[3] = Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+  return out;
+};
+/**
+ * Sets a sphere from a mat4's translation and a given radius
+ *
+ * @param {sph3} out
+ * @param {(mat4|vec3)} a
+ * @param {number} radius
+ * @returns {sph3} out
+ */
+
+
+sph3.fromTranslationRadius = function (out, a, radius) {
+  out[0] = a[12];
+  out[1] = a[13];
+  out[2] = a[14];
+  out[3] = radius;
+  return out;
+};
+/**
+ * Gets a sphere from a mat4's translation and max axis scale
+ *
+ * @param {sph3} out
+ * @param {mat4} m
+ * @returns {sph3} out
+ */
+
+
+sph3.fromMat4 = function (out, m) {
+  out[0] = m[12];
+  out[1] = m[13];
+  out[2] = m[14];
+  out[4] = _mat4__WEBPACK_IMPORTED_MODULE_2__["mat4"].maxScaleOnAxis(m);
+  return out;
+};
+/**
+ * Creates a sphere from values
+ *
+ * @param {sph3} out
+ * @param {number} nX
+ * @param {number} nY
+ * @param {number} nZ
+ * @param {number} constant
+ * @returns {sph3} out;
+ */
+
+
+sph3.fromValues = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues;
+/**
+ * Gets a point clamped to the sphere
+ *
+ * @author three.js authors (conversion)
+ * @param {vec3} out
+ * @param {sph3} a
+ * @param {vec3} p
+ * @returns {vec3} out
+ */
+
+sph3.getClampedPoint = function (out, a, p) {
+  out[0] = p[0];
+  out[1] = p[1];
+  out[2] = p[2];
+  let x = a[0] - p[0],
+      y = a[1] - p[1],
+      z = a[2] - p[2];
+
+  if (x * x + y * y + z * z > a[3] * a[3]) {
+    out[0] = out[0] - a[0];
+    out[1] = out[1] - a[1];
+    out[2] = out[2] - a[2];
+    _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(out, out);
+    out[0] = out[0] * a[3] + a[0];
+    out[1] = out[1] * a[3] + a[1];
+    out[2] = out[2] * a[3] + a[2];
+  }
+
+  return out;
+};
+/**
+ * Gets the position of a point on a sphere from longitude and latitude
+ *
+ * @param {vec3} out
+ * @param {sph3} a
+ * @param {number} longitude
+ * @param {number} latitude
+ * @returns {vec3} out
+ */
+
+
+sph3.getPointFromLongLat = function (out, a, longitude, latitude) {
+  out[0] = a[0] + a[3] * Math.sin(latitude) * Math.cos(longitude);
+  out[1] = a[1] + a[3] * Math.sin(latitude) * Math.sin(longitude);
+  out[2] = a[2] + a[3] * Math.cos(latitude);
+  return out;
+};
+/**
+ * Gets the position component of a sph3
+ *
+ * @param {vec3} out
+ * @param {sph3} a
+ * @returns {vec3} out
+ */
+
+
+sph3.getPosition = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].getNormal;
+/**
+ * Checks for intersection between two sph3s
+ *
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {boolean}
+ */
+
+sph3.intersectsSph3 = function (a, b) {
+  let x = b[0] - a[0],
+      y = b[1] - a[1],
+      z = b[2] - a[2];
+  let radii = a[3] + b[3];
+  return x * x + y * y + z * z <= radii * radii;
+};
+/**
+ * Checks for intersection with a box3
+ *
+ * @param {sph3} a
+ * @param {box3} b
+ * @returns {boolean}
+ */
+
+
+sph3.intersectsBox3 = function (a, b) {
+  return _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].intersectsSph3(b, a);
+};
+/**
+ * Checks sph for intersection with a boxes' bounds
+ *
+ * @param {sph3} a
+ * @param {vec3} min
+ * @param {vec3} max
+ * @returns {boolean}
+ */
+
+
+sph3.intersectsBounds = function (a, min, max) {
+  let x = Math.max(min[0], Math.min(max[0], a[0])) - a[0],
+      y = Math.max(min[1], Math.min(max[1], a[1])) - a[1],
+      z = Math.max(min[2], Math.min(max[2], a[2])) - a[2];
+  return x * x + y * y + z * z <= a[3] * a[3];
+};
+/**
+ * Checks sph for intersection with a sphere's components
+ *
+ * @param {sph3} a
+ * @param {vec3} p
+ * @param {number} r
+ * @returns {boolean}
+ */
+
+
+sph3.intersectsPositionRadius = function (a, p, r) {
+  let x = p[0] - a[0],
+      y = p[1] - a[1],
+      z = p[2] - a[2];
+  let radii = a[3] + r;
+  return x * x + y * y + z * z <= radii * radii;
+};
+/**
+ * Checks for intersection with a Float32Array(4) plane
+ *
+ * @param {sph3} a
+ * @param {pln} p
+ * @returns {boolean}
+ */
+
+
+sph3.intersectsPln = function (a, p) {
+  return _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].intersectsSph3(p, a);
+};
+/**
+ * Checks for intersection with a plane's components
+ *
+ * @param {sph3} a   - sphere to intersect
+ * @param {vec3} n   - plane normal
+ * @param {number} c - plane constant
+ * @returns {boolean}
+ */
+
+
+sph3.intersectsNormalConstant = function (a, n, c) {
+  let dot = a[0] * n[0] + a[1] * n[1] + a[2] * n[2];
+  return Math.abs(dot - c) <= a[3];
+};
+/**
+ * Checks if a sph3 is empty
+ *
+ * @param {sph3} a
+ * @returns {boolean}
+ */
+
+
+sph3.isEmpty = function (a) {
+  return a[3] <= 0;
+};
+/**
+ * Returns a subarray containing the position component of the sph3
+ * - Why does webpack fail to resolve this if referencing pln.normal?
+ *
+ * @param {sph3} a
+ * @returns {sph3}
+ */
+
+
+sph3.position = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].normal;
+/**
+ * Returns the radius component of the sph3
+ *
+ * @param {sph3} a
+ * @returns {number}
+ */
+
+sph3.radius = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].constant;
+/**
+ * Sets a sph3 from values
+ *
+ * @param {sph3} out
+ * @param {number} px
+ * @param {number} py
+ * @param {number} pz
+ * @param {number} r
+ * @returns {sph3}
+ */
+
+sph3.set = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].set;
+/**
+ * Sets a sph3 from an array at an optional offset
+ *
+ * @param {sph3} out
+ * @param {Array} arr
+ * @param {number} [index=0]
+ * @returns {sph3} out
+ */
+
+sph3.setArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].setArray;
+let box3_0;
+/**
+ * Sets a sphere from points, at an optional position vector
+ *
+ * @param {sph3} out        - the receiving sphere
+ * @param {Array} points    - The points to create the sphere from
+ * @param {vec3} [position] - An optional center position
+ * @returns {sph3} out      - the receiving sphere
+ */
+
+sph3.setPoints = function (out, points, position) {
+  if (!box3_0) box3_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
+
+  if (position) {
+    out[0] = position[0];
+    out[1] = position[1];
+    out[2] = position[2];
+  } else {
+    _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].setPoints(box3_0, points);
+    out[0] = (box3_0[0] + box3_0[3]) * 0.5;
+    out[1] = (box3_0[1] + box3_0[4]) * 0.5;
+    out[2] = (box3_0[2] + box3_0[5]) * 0.5;
+  }
+
+  let maxSquaredRadius = 0;
+
+  for (let i = 0; i < points.length; i++) {
+    let x = out[0] - points[i][0],
+        y = out[1] - points[i][1],
+        z = out[2] - points[i][2];
+    maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
+  }
+
+  out[3] = Math.sqrt(maxSquaredRadius);
+  return out;
+};
+/**
+ * Returns the squared distance between two sph3s
+ *
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {number}
+ */
+
+
+sph3.squaredDistance = function (a, b) {
+  let x = b[0] - a[0],
+      y = b[1] - a[1],
+      z = b[2] - a[2],
+      r = b[3] + a[3];
+  return x * x + y * y + z * z - r * r;
+};
+/**
+ * Returns the square distance from a sphere to a given point
+ *
+ * @param {sph3} a
+ * @param {vec3} p
+ * @returns {number}
+ */
+
+
+sph3.squaredDistanceToPoint = function (a, p) {
+  let x = p[0] - a[0],
+      y = p[1] - a[1],
+      z = p[2] - a[2];
+  return x * x + y * y + z * z - a[3];
+};
+/**
+ * Sets an array at an optional offset, with the values of a sph3
+ *
+ * @param {sph3} a
+ * @param {Array} arr
+ * @param {number} [offset = 0]
+ * @returns {sph3} a
+ */
+
+
+sph3.toArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].toArray;
+/**
+ * Transforms a sphere with a mat4
+ *
+ * @author three.js authors (conversion)
+ * @param {sph3} out - the receiving sphere
+ * @param {sph3} a   - the sphere to transform
+ * @param {mat4} m   - the matrix to transform by
+ * @returns {sph3}
+ */
+
+sph3.transformMat4 = function (out, a, m) {
+  let x = a[0],
+      y = a[1],
+      z = a[2];
+  let sX = m[0] * m[0] + m[1] * m[1] + m[2] * m[2],
+      sY = m[4] * m[4] + m[5] * m[5] + m[6] * m[6],
+      sZ = m[8] * m[8] + m[9] * m[9] + m[10] * m[10];
+  out[0] = m[0] * x + m[4] * y + m[8] * z + m[12];
+  out[1] = m[1] * x + m[5] * y + m[9] * z + m[13];
+  out[2] = m[2] * x + m[6] * y + m[10] * z + m[14];
+  out[3] = a[3] * Math.sqrt(Math.max(sX, sY, sZ));
+  return out;
+};
+/**
+ * Returns the result of a sphere translated by a given vector
+ *
+ * @param {sph3} out - the receiving sphere
+ * @param {sph3} a   - the sphere to translate
+ * @param {vec3} v   - the vector to translate with
+ * @returns {sph3}
+ */
+
+
+sph3.translate = function (out, a, v) {
+  out[0] = a[0] + v[0];
+  out[1] = a[1] + v[1];
+  out[2] = a[2] + v[2];
+  return out;
+};
+
+/***/ }),
+
+/***/ "./global/math/tri3.js":
+/*!*****************************!*\
+  !*** ./global/math/tri3.js ***!
+  \*****************************/
+/*! exports provided: tri3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tri3", function() { return tri3; });
+/* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./num */ "./global/math/num.js");
+/* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vec3 */ "./global/math/vec3.js");
+/* harmony import */ var _mat3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mat3 */ "./global/math/mat3.js");
+/* harmony import */ var _pln__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./pln */ "./global/math/pln.js");
+/* harmony import */ var _lne3__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./lne3 */ "./global/math/lne3.js");
+
+
+
+
+
+/**
+ * 3d Triangle
+ *
+ * @typedef {Float32Array} tri3
+ */
+
+const tri3 = {};
+/**
+ * Gets the area of a triangle
+ *
+ * @param {tri3} a
+ * @returns {number}
+ */
+
+tri3.area = function (a) {
+  let ax = a[7] - a[3],
+      ay = a[8] - a[4],
+      az = a[9] - a[5],
+      bx = a[0] - a[3],
+      by = a[1] - a[4],
+      bz = a[2] - a[5]; // Cross product
+
+  let x = ax * bz - az * by,
+      y = az * bx - ax * bz,
+      z = ax * by - ay * bx; // Return half length
+
+  return Math.sqrt(x * x + y * y + z * z) * 0.5;
+};
+/**
+ * Creates a tri3
+ *
+ * @returns {tri3}
+ */
+
+
+tri3.create = function () {
+  let out = new Float32Array(9);
+  out[0] = 0;
+  out[1] = 0;
+  out[2] = 0;
+  out[3] = 0;
+  out[4] = 0;
+  out[5] = 0;
+  out[6] = 0;
+  out[7] = 0;
+  out[8] = 0;
+  return out;
+};
+/**
+ * Clones a tri3
+ *
+ * @param {tri3} a
+ * @returns {tri3}
+ */
+
+
+tri3.clone = _mat3__WEBPACK_IMPORTED_MODULE_2__["mat3"].clone;
+/**
+ * Checks if a tri3 contains a point
+ *
+ * @param {tri3} a
+ * @param {vec3} point
+ * @returns {boolean}
+ */
+
+tri3.contains = function () {
+  let vec3_0;
+  return function (a, point) {
+    if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+    tri3.getBaryCentricCoordinates(vec3_0, a, point);
+    return vec3_0[0] >= 0 && vec3_0[1] >= 0 && vec3_0[0] + vec3_0[1] <= 1;
+  };
+};
+/**
+ * Copies a tri3
+ *
+ * @param {tri3} a
+ * @param {tri3} b
+ * @returns {tri3} a
+ */
+
+
+tri3.copy = _mat3__WEBPACK_IMPORTED_MODULE_2__["mat3"].copy;
+/**
+ * Extracts the vertices of a tri3
+ *
+ * @param {tri3} a
+ * @param {vec3} v1
+ * @param {vec3} v2
+ * @param {vec3} v3
+ */
+
+tri3.extract = function (a, v1, v2, v3) {
+  v1[0] = a[0];
+  v1[1] = a[1];
+  v1[2] = a[2];
+  v2[0] = a[0];
+  v2[1] = a[1];
+  v2[2] = a[2];
+  v3[0] = a[0];
+  v3[1] = a[1];
+  v3[2] = a[2];
+};
+/**
+ * Sets a tri3 from vertices
+ *
+ * @param {tri3} out
+ * @param {vec3} v1
+ * @param {vec3} v2
+ * @param {vec3} v3
+ * @returns {tri3} out
+ */
+
+
+tri3.from = function (out, v1, v2, v3) {
+  out[0] = v1[0];
+  out[1] = v1[1];
+  out[2] = v1[2];
+  out[3] = v2[0];
+  out[4] = v2[1];
+  out[5] = v2[2];
+  out[6] = v3[0];
+  out[7] = v3[1];
+  out[8] = v3[2];
+  return out;
+};
+/**
+ * Sets a tri3 from an array at an option offset
+ *
+ * @param {tri3} out
+ * @param {Array} arr
+ * @param {number} [offset=0]
+ * @returns {tri3} out
+ */
+
+
+tri3.fromArray = _mat3__WEBPACK_IMPORTED_MODULE_2__["mat3"].fromArray;
+/**
+ * Gets bary centric coordinates
+ *
+ * @author three.js (converted)
+ * @param {tri3} out
+ * @param {tri3} a
+ * @param {vec3} point
+ * @returns {tri3} out
+ */
+
+tri3.getBaryCentricCoordinates = function (out, a, point) {
+  let ax = a[7] - a[0],
+      ay = a[8] - a[1],
+      az = a[9] - a[2],
+      bx = a[3] - a[0],
+      by = a[4] - a[1],
+      bz = a[5] - a[2],
+      cx = point[0] - a[0],
+      cy = point[1] - a[1],
+      cz = point[2] - a[2];
+  let dot00 = ax[0] * ax[0] + ay[1] * ay[1] + az[2] * az[2],
+      dot01 = ax[0] * bx[0] + ay[1] * by[1] + az[2] * bz[2],
+      dot02 = ax[0] * cx[0] + ay[1] * cy[1] + az[2] * cz[2],
+      dot11 = bx[0] * bx[0] + by[1] * by[1] + bz[2] * bz[2],
+      dot12 = bx[0] * cx[0] + by[1] * cy[1] + bz[2] * cz[2];
+  let denom = dot00 * dot11 - dot01 * dot01;
+
+  if (denom === 0) {
+    out[0] = -2;
+    out[1] = -1;
+    out[2] = -1;
+    throw new Error("Denominator error");
+  } else {
+    let invDenom = 1 / denom;
+    let u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    let v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+    out[0] = 1 - u - v;
+    out[1] = v;
+    out[2] = u;
+  }
+
+  return out;
+};
+/**
+ *
+ * @author three.js (converted)
+ * @param {lne3} out
+ * @param {tri3} a
+ * @param {vec3} point
+ * @returns {*}
+ */
+
+
+tri3.getClosestEdgeToPoint = function () {
+  let v0, v1, edgeList;
+  return function getClosestEdgeToPoint(out, a, point) {
+    if (!v0) {
+      v0 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      v1 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      edgeList = [_lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].create(), _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].create(), _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].create()];
+    } // Get the closest point on the triangle to the supplied point
+
+
+    let closestPointOnTriangle = tri3.getClosestPointToPoint(v0, a, point); // Convert the triangle's vertices to edges
+
+    _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].set(edgeList[0], a[0], a[1], a[2], a[3], a[4], a[5]); // vert a - vert b
+
+    _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].set(edgeList[1], a[3], a[4], a[5], a[6], a[7], a[8]); // vert b - vert c
+
+    _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].set(edgeList[2], a[6], a[7], a[8], a[0], a[1], a[2]); // vert c - vert a
+
+    let minDistance = Infinity;
+
+    for (let i = 0; i < edgeList.length; i++) {
+      // Get the closest point on the triangles edge to the closest point on the triangle to the supplied point
+      let closestPointOnLine = _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].getClosestPointToPoint(v1, edgeList[i], closestPointOnTriangle, true);
+      let distance = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].squaredDistance(closestPointOnLine, closestPointOnTriangle);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        out[0] = edgeList[i][0];
+        out[1] = edgeList[i][1];
+        out[2] = edgeList[i][2];
+        out[3] = edgeList[i][3];
+        out[4] = edgeList[i][4];
+        out[5] = edgeList[i][5];
+      }
+    }
+
+    return out;
+  };
+};
+/**
+ * Gets the closest point on a triangle to another point
+ *
+ * @author three.js (converted)
+ * @param {vec3} out      - receiving vec3
+ * @param {vec3} a        - tri3 to operate on
+ * @param {vec3} point    - the point
+ * @returns {vec3} vecOut - receiving vec3
+ */
+
+
+tri3.getClosestPointToPoint = function () {
+  let plane, edgeList, projectedPoint, closestPoint, vec3_0, vec3_1, vec3_2;
+  return function getClosestPointToPoint(out, a, point) {
+    if (!plane) {
+      plane = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].create();
+      edgeList = [_lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].create(), _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].create(), _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].create()];
+      projectedPoint = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      closestPoint = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      vec3_2 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+    } // Replace with subarray tri3.v1 .v2 .v3 ?
+
+
+    tri3.getV1(vec3_0, a);
+    tri3.getV2(vec3_1, a);
+    tri3.getV3(vec3_2, a); // project the point onto the plane of the triangle
+
+    _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].fromCoplanarPoints(plane, vec3_0, vec3_1, vec3_2);
+    _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].getProjectedPoint(projectedPoint, plane, point); // check if the projection lies within the triangle
+
+    if (tri3.contains(a, projectedPoint) === true) {
+      out[0] = projectedPoint[0];
+      out[1] = projectedPoint[1];
+      out[2] = projectedPoint[2];
+    } // if not, the point falls outside the triangle.
+    // the result is the closest point to the triangle's edges or vertices
+    else {
+        _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].set(edgeList[0], a[0], a[1], a[2], a[3], a[4], a[5]);
+        _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].set(edgeList[1], a[3], a[4], a[5], a[6], a[7], a[8]);
+        _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].set(edgeList[2], a[6], a[7], a[8], a[0], a[1], a[2]);
+        let minDistance = Infinity;
+
+        for (let i = 0; i < edgeList.length; i++) {
+          _lne3__WEBPACK_IMPORTED_MODULE_4__["lne3"].getClosestPointToPoint(closestPoint, edgeList[i], projectedPoint, true);
+          let distance = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].squaredDistance(projectedPoint, closestPoint);
+
+          if (distance < minDistance) {
+            minDistance = distance;
+            out[0] = closestPoint[0];
+            out[1] = closestPoint[1];
+            out[2] = closestPoint[2];
+          }
+        }
+      }
+
+    return out;
+  };
+};
+/**
+ * Gets the closest vertex to a given point
+ *
+ * @param {vec3} out
+ * @param {tri3} a
+ * @param {vec3} point
+ * @returns {vec3} out
+ */
+
+
+tri3.getClosestVertexToPoint = function () {
+  let vec3_0, vec3_1, vec3_2;
+  return function (out, a, point) {
+    if (!vec3_0) {
+      vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+      vec3_2 = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+    } // Get the closest point on the triangle to the supplied point
+
+
+    tri3.getClosestPointToPoint(out, a, point);
+    let minDistance = Infinity,
+        distance,
+        x,
+        y,
+        z,
+        vertices = [tri3.getV1(vec3_0, a), tri3.getV2(vec3_1, a), tri3.getV3(vec3_2, a)]; // Find the closest triangle vertex
+
+    for (let i = 0; i < vertices.length; i++) {
+      distance = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].squaredDistance(vertices[i], out);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        x = vertices[i][0];
+        y = vertices[i][1];
+        z = vertices[i][2];
+      }
+    }
+
+    out[0] = x;
+    out[1] = y;
+    out[2] = z;
+    return out;
+  };
+};
+/**
+ * Sets a vec3 as the midpoint of a triangle
+ *
+ * @param {vec3} out    - receiving vec3
+ * @param {tri3} a      - tri3 to get the midpoint of         -
+ * @returns {vec3} out  - receiving vec3
+ */
+
+
+tri3.getMidpoint = function (out, a) {
+  let s = 1 / 3;
+  out[0] = (a[0] + a[3] + a[6]) * s;
+  out[1] = (a[1] + a[4] + a[7]) * s;
+  out[2] = (a[2] + a[5] + a[8]) * s;
+  return out;
+};
+/**
+ * Gets a triangle's normal
+ *
+ * @param {vec3} out
+ * @param {tri3} a
+ * @returns {vec3} out
+ */
+
+
+tri3.getNormal = function (out, a) {
+  let ax = a[7] - a[3],
+      ay = a[8] - a[4],
+      az = a[9] - a[5],
+      bx = a[0] - a[3],
+      by = a[1] - a[4],
+      bz = a[2] - a[5]; // Get cross product
+
+  let x = ay * bz - az * by,
+      y = az * bx - ax * bz,
+      z = ax * by - ay * bx; // Normalize
+
+  let len = x * x + y * y + z * z;
+
+  if (len > 0) {
+    len = 1 / Math.sqrt(len);
+    out[0] = x * len;
+    out[1] = y * len;
+    out[2] = z * len;
+  } else {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    throw new Error("Normalization error");
+  }
+
+  return out;
+};
+/**
+ * Sets a vec3 with the tri3's first vert
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {tri3} a       - source tri3
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+tri3.getV1 = function (out, a) {
+  out[0] = a[0];
+  out[1] = a[1];
+  out[2] = a[2];
+  return out;
+};
+/**
+ * Sets a vec3 with the tri3's second vert
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {tri3} a       - source tri3
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+tri3.getV2 = function (out, a) {
+  out[0] = a[3];
+  out[1] = a[4];
+  out[2] = a[5];
+  return out;
+};
+/**
+ * Sets a vec3 with the tri3's third vert
+ *
+ * @param {vec3} out     - receiving vec3
+ * @param {tri3} v       - source tri3
+ * @returns {vec3} [out] - receiving vec3
+ */
+
+
+tri3.getV3 = function (out, v) {
+  out[0] = v[6];
+  out[1] = v[7];
+  out[2] = v[8];
+  return out;
+};
+/**
+ * Sets an array at an optional offset
+ *
+ * @param {mat3} a
+ * @param {Array} arr
+ * @param {number} [index=0]
+ * @returns {mat3} a
+ */
+
+
+tri3.toArray = _mat3__WEBPACK_IMPORTED_MODULE_2__["mat3"].toArray;
+/*-------------------------------------------------------------------------------
+
+                         Helper classes for sub arrays
+
+ ------------------------------------------------------------------------------*/
+
+/**
+ * Handles getting valid subarrays
+ * @param a
+ * @param start
+ * @param end
+ * @returns {Int32Array | Uint8Array | Int8Array | Int16Array | Uint16Array | Uint32Array | Float32Array | Uint8ClampedArray | Float64Array}
+ * @throws when passed an array
+ * @throws when passed a typed array of the incorrect length (which would return an invalid result)
+ */
+
+function getSubarray(a, start, end) {
+  if (a.length < end) {
+    throw new Error("Invalid length");
+  }
+
+  if (!a.subarray) {
+    throw new Error("Invalid subarray");
+  }
+
+  return a.subarray(start, end);
+}
+/**
+ * Gets a subarray of a tri3's first vertex
+ *
+ * @param {tri3} a
+ * @returns {vec3}
+ */
+
+
+tri3.v1 = function (a) {
+  return getSubarray(a, 0, 3);
+};
+/**
+ * Clones the first component of a tri3
+ *
+ * @param {tri3} v
+ * @returns {vec3}
+ */
+
+
+tri3.v1.clone = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].clone;
+/**
+ * Copies a vec3 into the first component of a tri3
+ *
+ * @param {tri3} v
+ * @param {vec3} b
+ * @returns {tri3} v
+ */
+
+tri3.v1.copy = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy;
+/**
+ * Checks if the first component of a tri3 is equal to a vec3
+ *
+ * @param {tri3} v
+ * @param {vec3} b
+ * @returns {boolean}
+ */
+
+tri3.v1.equals = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals;
+/**
+ * Checks if the first component of a tri3 is exactly equal to a vec3
+ *
+ * @param {tri3} v
+ * @param {vec3} b
+ * @returns {boolean}
+ */
+
+tri3.v1.exactEquals = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].exactEquals;
+/**
+ * Gets the first vec3 from a tri3 and copies it into a vec3
+ *
+ * @param {vec3} out
+ * @param {tri3} v
+ * @returns {vec3} out
+ */
+
+tri3.v1.get = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy;
+/**
+ * Sets the first component of a tri3 from values
+ *
+ * @param {tri3} v
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @returns {tri3} v
+ */
+
+tri3.v1.set = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].set;
+/**
+ * Gets a subarray of a tri3's second vertex
+ *
+ * @param {tri3} a
+ * @returns {vec3}
+ */
+
+tri3.v2 = function (a) {
+  return getSubarray(a, 3, 6);
+};
+/**
+ * Clones the second component of a tri3
+ *
+ * @param {tri3} v
+ * @returns {vec3}
+ */
+
+
+tri3.v2.clone = function (v) {
+  let out = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  out[0] = v[3];
+  out[1] = v[4];
+  out[2] = v[5];
+  return out;
+};
+/**
+ * Copies a vec3 into the third vert of a face
+ *
+ * @param {tri3} v
+ * @param {vec3} a
+ * @returns {tri3} v
+ */
+
+
+tri3.v2.copy = function (v, a) {
+  v[3] = a[0];
+  v[4] = a[1];
+  v[5] = a[2];
+  return v;
+};
+/**
+ * Checks if the second component of a tri3 is equal to v vec3
+ *
+ * @param {tri3} v
+ * @param {vec3} b
+ * @returns {boolean}
+ */
+
+
+tri3.v2.equals = function (v, b) {
+  let a0 = v[3],
+      a1 = v[4],
+      a2 = v[5],
+      b0 = b[0],
+      b1 = b[1],
+      b2 = b[2];
+  return Math.abs(a0 - b0) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2));
+};
+/**
+ * Checks if the second component of a tri3 is exactly equal to a vec3
+ *
+ * @param {tri3} v
+ * @param {vec3} b
+ * @returns {boolean}
+ */
+
+
+tri3.v2.exactEquals = function (v, b) {
+  return v[3] === b[0] && v[4] === b[1] && v[5] === b[2];
+};
+/**
+ * Gets the second component and copies it into a vec3
+ *
+ * @param {vec3} out
+ * @param {tri3} v
+ * @returns {vec3} out
+ */
+
+
+tri3.v2.get = function (out, v) {
+  out[0] = v[3];
+  out[1] = v[4];
+  out[2] = v[5];
+  return out;
+};
+/**
+ * Sets the second component of a tri3 from values
+ *
+ * @param {tri3} v
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @returns {tri3} v
+ */
+
+
+tri3.v2.set = function (v, x, y, z) {
+  v[3] = x;
+  v[4] = y;
+  v[5] = z;
+  return v;
+};
+/**
+ * Gets a subarray of a tri3's third vertex
+ *
+ * @param {tri3} a
+ * @returns {vec3}
+ */
+
+
+tri3.v3 = function (a) {
+  return getSubarray(a, 6, 9);
+};
+/**
+ * Clones the second component of a tri3
+ *
+ * @param {tri3} v
+ * @returns {vec3}
+ */
+
+
+tri3.v3.clone = function (v) {
+  let out = _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+  out[0] = v[6];
+  out[1] = v[7];
+  out[2] = v[8];
+  return out;
+};
+/**
+ * Copies a vec3 into the third vert of a tri3
+ *
+ * @param {tri3} v
+ * @param {vec3} a
+ * @returns {tri3} v
+ */
+
+
+tri3.v3.copy = function (v, a) {
+  v[6] = a[0];
+  v[7] = a[1];
+  v[8] = a[2];
+  return v;
+};
+/**
+ * Checks if the second component of a tri3 is equal to a vec3
+ *
+ * @param {tri3} v
+ * @param {vec3} b
+ * @returns {boolean}
+ */
+
+
+tri3.v3.equals = function (v, b) {
+  let a0 = v[6],
+      a1 = v[7],
+      a2 = v[8],
+      b0 = b[0],
+      b1 = b[1],
+      b2 = b[2];
+  return Math.abs(a0 - b0) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= _num__WEBPACK_IMPORTED_MODULE_0__["num"].EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2));
+};
+/**
+ * Checks if the second component of a tri3 is exactly equal to tri3 vec3
+ *
+ * @param {tri3} v
+ * @param {vec3} b
+ * @returns {boolean}
+ */
+
+
+tri3.v3.exactEquals = function (v, b) {
+  return v[6] === b[0] && v[7] === b[1] && v[8] === b[2];
+};
+/**
+ * Gets the third vertex from a triangle and sets it to a vec3
+ *
+ * @param {vec3} out
+ * @param {tri3} t
+ * @returns {vec3}
+ */
+
+
+tri3.v3.get = function (out, t) {
+  out[0] = t[6];
+  out[1] = t[7];
+  out[2] = t[8];
+  return out;
+};
+/**
+ * Sets the second component of a tri3 from values
+ *
+ * @param {tri3} v
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @returns {tri3} out
+ */
+
+
+tri3.v3.set = function (v, x, y, z) {
+  v[3] = x;
+  v[4] = y;
+  v[5] = z;
+  return v;
+};
+
+/***/ }),
+
 /***/ "./global/math/vec2.js":
 /*!*****************************!*\
   !*** ./global/math/vec2.js ***!
@@ -53329,12 +57978,48 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /**
+ * Vector3
+ *
+ * @typedef {Float32Array} vec3
+ */
+
+/**
+ * Converts radians to degrees
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].degrees = function (out, a) {
+  out[0] = a[0] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].RAD2DEG;
+  out[1] = a[1] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].RAD2DEG;
+  out[2] = a[2] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].RAD2DEG;
+  return out;
+};
+/**
+ * Converts radians to unwrapped degrees
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].degreesUnwrapped = function (out, a) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapDegrees(a[0] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].RAD2DEG);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapDegrees(a[1] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].RAD2DEG);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapDegrees(a[2] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].RAD2DEG);
+  return out;
+};
+/**
  * Sets a vec3 with cartesian coordinates from spherical coordinates and an optional center point
  * @param {vec3} out       - receiving vec3
  * @param {vec3} spherical - source vec3 with spherical coordinates (phi, theta, radius)
  * @param {vec3} [center]  - Optional center
  * @returns {vec3} out     - receiving vec3
  */
+
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical = function (out, spherical, center) {
   const phi = spherical[0],
@@ -53419,6 +58104,36 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].project = function (out, a, m, vi
   return out;
 };
 /**
+ * Converts degrees to radians
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].radians = function (out, a) {
+  out[0] = a[0] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].DEG2RAD;
+  out[1] = a[1] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].DEG2RAD;
+  out[2] = a[2] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].DEG2RAD;
+  return out;
+};
+/**
+ * Converts degrees to unwrapped radians
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].radiansUnwrapped = function (out, a) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(a[0] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].DEG2RAD);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(a[1] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].DEG2RAD);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(a[2] * _num__WEBPACK_IMPORTED_MODULE_1__["num"].DEG2RAD);
+  return out;
+};
+/**
  * Unprojects a vec3 with canvas coordinates to world space
  * @param {vec3} out            - receiving vec3
  * @param {vec3} a              - vec3 to unproject
@@ -53432,7 +58147,10 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].project = function (out, a, m, vi
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject = function () {
   let vec4_0;
   return function unProject(out, a, invViewProj, viewport) {
-    if (!vec4_0) vec4_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    if (!vec4_0) {
+      vec4_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    }
+
     let x = a[0],
         y = a[1],
         z = a[2];
@@ -53454,7 +58172,37 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject = function () {
     out[2] = vec4_0[2] / vec4_0[3];
     return out;
   };
-}();
+};
+/**
+ * Unwraps degrees
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3}
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unwrapDegrees = function (out, a) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapDegrees(a[0]);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapDegrees(a[1]);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapDegrees(a[2]);
+  return out;
+};
+/**
+ * Unwraps radians
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3}
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unwrapRadians = function (out, a) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(a[0]);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(a[1]);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(a[2]);
+  return out;
+};
 
 /***/ }),
 
@@ -54212,7 +58960,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, Tw2ParticleSystem, Tr2Model, EveSOFData, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionDecal, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecal, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: math, util, device, store, resMan, logger, consts, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, Tw2ParticleSystem, Tr2Model, EveSOFData, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2BlackRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionDecal, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecal, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54602,16 +59350,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSystem", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildParticleSystem"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveMissile"]; });
@@ -54699,6 +59437,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildModifierSRT"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildModifierTranslateWithCamera"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterBatch"]; });
 

@@ -123,7 +123,7 @@ noise.turbulence = (function ()
         out[2] += r[2] * power;
         return out;
     };
-})();
+});
 
 /**
  * Perlin_noise1
@@ -190,7 +190,7 @@ noise.perlin1 = (function ()
 
         return u + sx * (v - u);
     };
-})();
+});
 
 /**
  * PerlinNoise1D

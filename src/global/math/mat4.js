@@ -142,6 +142,31 @@ mat4.lookAtGL = (function ()
 })();
 
 /**
+ * Gets a mat4's maximum column axis scale
+ *
+ * @param {mat4} a   - source mat4
+ * @returns {number} - maximum axis scale
+ */
+mat4.maxScaleOnAxis = function (a)
+{
+    let m11 = a[0];
+    let m12 = a[4];
+    let m13 = a[8];
+    let m21 = a[1];
+    let m22 = a[5];
+    let m23 = a[9];
+    let m31 = a[2];
+    let m32 = a[6];
+    let m33 = a[10];
+
+    let x = m11 * m11 + m12 * m12 + m13 * m13,
+        y = m21 * m21 + m22 * m22 + m23 * m23,
+        z = m31 * m31 + m32 * m32 + m33 * m33;
+
+    return Math.sqrt(Math.max(x, y, z));
+};
+
+/**
  * Sets a left handed co-ordinate system perspective from a right handed co-ordinate system
  * @param {mat4} out        - receiving mat4
  * @param {number} fovY     - Vertical field of view in radians

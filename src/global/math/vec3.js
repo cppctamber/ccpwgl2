@@ -4,6 +4,41 @@ import {num} from "./num";
 export {vec3};
 
 /**
+ * Vector 3
+ * @typedef {Float32Array} vec3
+ */
+
+/**
+ * Converts radians to degrees
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+vec3.degrees = function (out, a)
+{
+    out[0] = a[0] * num.RAD2DEG;
+    out[1] = a[1] * num.RAD2DEG;
+    out[2] = a[2] * num.RAD2DEG;
+    return out;
+};
+
+/**
+ * Converts radians to unwrapped degrees
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+vec3.degreesUnwrapped = function (out, a)
+{
+    out[0] = num.unwrapDegrees(a[0] * num.RAD2DEG);
+    out[1] = num.unwrapDegrees(a[1] * num.RAD2DEG);
+    out[2] = num.unwrapDegrees(a[2] * num.RAD2DEG);
+    return out;
+};
+
+/**
  * Sets a vec3 with cartesian coordinates from spherical coordinates and an optional center point
  * @param {vec3} out       - receiving vec3
  * @param {vec3} spherical - source vec3 with spherical coordinates (phi, theta, radius)
@@ -102,6 +137,37 @@ vec3.project = function (out, a, m, viewport)
 };
 
 /**
+ * Converts degrees to radians
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+vec3.radians = function (out, a)
+{
+    out[0] = a[0] * num.DEG2RAD;
+    out[1] = a[1] * num.DEG2RAD;
+    out[2] = a[2] * num.DEG2RAD;
+    return out;
+};
+
+/**
+ * Converts degrees to unwrapped radians
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3} out
+ */
+vec3.radiansUnwrapped = function (out, a)
+{
+    out[0] = num.unwrapRadians(a[0] * num.DEG2RAD);
+    out[1] = num.unwrapRadians(a[1] * num.DEG2RAD);
+    out[2] = num.unwrapRadians(a[2] * num.DEG2RAD);
+    return out;
+};
+
+
+/**
  * Unprojects a vec3 with canvas coordinates to world space
  * @param {vec3} out            - receiving vec3
  * @param {vec3} a              - vec3 to unproject
@@ -116,7 +182,10 @@ vec3.unproject = (function ()
 
     return function unProject(out, a, invViewProj, viewport)
     {
-        if (!vec4_0) vec4_0 = vec4.create();
+        if (!vec4_0)
+        {
+            vec4_0 = vec4.create();
+        }
 
         let x = a[0],
             y = a[1],
@@ -142,4 +211,34 @@ vec3.unproject = (function ()
         out[2] = vec4_0[2] / vec4_0[3];
         return out;
     };
-})();
+});
+
+/**
+ * Unwraps degrees
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3}
+ */
+vec3.unwrapDegrees = function (out, a)
+{
+    out[0] = num.unwrapDegrees(a[0]);
+    out[1] = num.unwrapDegrees(a[1]);
+    out[2] = num.unwrapDegrees(a[2]);
+    return out;
+};
+
+/**
+ * Unwraps radians
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @returns {vec3}
+ */
+vec3.unwrapRadians = function (out, a)
+{
+    out[0] = num.unwrapRadians(a[0]);
+    out[1] = num.unwrapRadians(a[1]);
+    out[2] = num.unwrapRadians(a[2]);
+    return out;
+};
