@@ -1,3 +1,10 @@
+import {TextDecoder} from "text-encoding";
+if (!window["TextDecoder"])
+{
+    window["TextDecoder"] = TextDecoder;
+}
+
+
 import * as math from "./global/math";
 import * as clazz from "./global/class";
 import * as core from "./core";
