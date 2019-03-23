@@ -21,21 +21,12 @@
     "@babel/preset-env": "^7.2.3",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
-    "babel-plugin-lodash": "^3.3.4",
     "eslint": "^5.11.1",
     "eslint-loader": "^2.1.1",
     "gl-matrix": "^2.8.1",
-    "lodash": "^4.17.11",
-    "lodash-webpack-plugin": "^0.11.5",
     "progress-bar-webpack-plugin": "^1.11.0",
     "terser-webpack-plugin": "^1.2.1",
-    "text-encoding": "^0.7.0",
     "webpack": "^4.28.2",
     "webpack-cli": "^3.1.2"
-  },
-  "dependencies": {
-    "express": "^4.16.4",
-    "express-generator": "^4.16.0",
-    "g": "^2.0.1"
   }
 }
