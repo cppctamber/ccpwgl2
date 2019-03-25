@@ -3,8 +3,7 @@
 const
     path = require("path"),
     TerserPlugin = require("terser-webpack-plugin"),
-    ProgressBarPlugin = require("progress-bar-webpack-plugin"),
-    LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
+    ProgressBarPlugin = require("progress-bar-webpack-plugin");
 
 module.exports = {
 
@@ -36,7 +35,6 @@ module.exports = {
     },
 
     plugins: [
-        new LodashModuleReplacementPlugin(),
         new ProgressBarPlugin(),
         new TerserPlugin({
             include: /\.min\.js$/,

@@ -1,4 +1,3 @@
-export * from "./Tw2BlackRes";
 export * from "./Tw2EffectRes";
 export * from "./Tw2GeometryRes";
 export * from "./Tw2LoadingObject";

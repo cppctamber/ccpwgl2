@@ -1,11 +1,13 @@
 import {resMan} from "../../global";
 import {Tw2Resource} from "./Tw2Resource";
 import {Tw2ObjectReader} from "../reader/Tw2ObjectReader";
+import {Tw2BlackReader} from "../reader/Tw2BlackReader";
+import {ErrResourceExtensionUnregistered} from "../Tw2Error";
 
 /**
  * Tw2LoadingObject
  *
- * @property {?String} _redContents         - object's .red file xml contents
+ * @property {?String} _view                - object's .red file xml contents
  * @property {Number} _inPrepare            - the amount of child objects to prepare
  * @property {Array.<Object>} _objects      - the child objects to prepare
  * @property {Tw2ObjectReader} _constructor - A function for constructing child objects
@@ -16,7 +18,7 @@ export class Tw2LoadingObject extends Tw2Resource
 {
 
     path = "";
-    _redContents = null;
+    _view = null;
     _inPrepare = null;
     _objects = [];
     _constructor = null;
@@ -45,16 +47,34 @@ export class Tw2LoadingObject extends Tw2Resource
 
     /**
      * Prepare
-     * @param text
+     * @param response
      */
-    Prepare(text)
+    Prepare(response)
     {
+        const dot = this.path.lastIndexOf(".");
+        if (dot === -1) return null;
+        const ext = this.path.substr(dot + 1);
+
         if (this._inPrepare === null)
         {
-            this._redContents = text;
-            this._constructor = new Tw2ObjectReader(this._redContents);
+            this._view = response;
+
+            switch(ext)
+            {
+                case "red":
+                    this._constructor = new Tw2ObjectReader(response);
+                    break;
+
+                case "black":
+                    this._constructor = new Tw2BlackReader(response);
+                    break;
+
+                default:
+                    throw new ErrResourceExtensionUnregistered({ extension: ext });
+            }
+
             this._inPrepare = 0;
-            // Test construction once for errors
+            // Test construction once for errors??
             this._constructor.Construct();
         }
 

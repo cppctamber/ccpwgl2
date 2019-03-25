@@ -14,7 +14,7 @@ export default class Tw2BaseClass
 
     name = "";
     _id = generateID();
-    _parent = null;
+    //_parent = null;
 
     /**
      * Constructor

@@ -7,13 +7,10 @@ var ccpwgl = (function (ccpwgl_int)
 
     // Enables debug mode
     Object.defineProperty(ccpwgl, "debug", {
-        get: function ()
-        {
-            return ccpwgl_int.Tw2ObjectReader.DEBUG_ENABLED;
-        },
         set: function (a)
         {
             ccpwgl_int.Tw2ObjectReader.DEBUG_ENABLED = !!a;
+            ccpwgl_int.Tw2BlackReader.DEBUG_ENABLED = !!a;
         }
     });
 

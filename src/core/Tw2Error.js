@@ -161,6 +161,39 @@ export class ErrXMLObjectTypeUndefined extends Tw2Error
     }
 }
 
+/**
+ * Throws when xml is not a valid format
+ */
+export class ErrBinaryFormat extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid binary format: %formatError=undefined%");
+    }
+}
+
+/**
+ * Throws on binary reader read errors
+ */
+export class ErrBinaryReaderReadError extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Error reading binary: %readError=undefined%");
+    }
+}
+
+/**
+ * Throws when an xml object type is undefined
+ */
+export class ErrBinaryObjectTypeNotDefined extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Binary object type \"%type%\" is not defined");
+    }
+}
+
 
 /**
  * Throws when a geometry mesh lacks an element required for a particle system
