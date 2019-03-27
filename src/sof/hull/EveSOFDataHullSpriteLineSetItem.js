@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullSpriteLineSetItem
@@ -19,13 +19,13 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} scaling           -
  * @property {Number} spacing         -
  */
-export class EveSOFDataHullSpriteLineSetItem extends Tw2BaseClass
+export class EveSOFDataHullSpriteLineSetItem extends EveSOFBaseClass
 {
 
     blinkPhase = 0;
     blinkPhaseShift = 0;
     blinkRate = 0;
-    boneIndex = 0;
+    boneIndex = -1;
     colorType = 0;
     falloff = 0;
     intensity = 0;
@@ -39,27 +39,26 @@ export class EveSOFDataHullSpriteLineSetItem extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullSpriteLineSetItem, Type =>
+EveSOFDataHullSpriteLineSetItem.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullSpriteLineSetItem",
-        props: {
-            blinkPhase: Type.NUMBER,
-            blinkPhaseShift: Type.NUMBER,
-            blinkRate: Type.NUMBER,
-            boneIndex: Type.NUMBER,
-            colorType: Type.NUMBER,
-            falloff: Type.NUMBER,
-            intensity: Type.NUMBER,
-            isCircle: Type.BOOLEAN,
-            maxScale: Type.NUMBER,
-            minScale: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            spacing: Type.NUMBER
-        }
+        black: [
+            ["blinkRate", r.float],
+            ["blinkPhase", r.float],
+            ["blinkPhaseShift", r.float],
+            ["boneIndex", r.uint],
+            ["colorType", r.uint],
+            ["falloff", r.float],
+            ["groupIndex", r.uint],
+            ["intensity", r.float],
+            ["isCircle", r.boolean],
+            ["maxScale", r.float],
+            ["minScale", r.float],
+            ["position", r.vector3],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["spacing", r.float]
+        ]
     };
 });
-

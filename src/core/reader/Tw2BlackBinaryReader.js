@@ -127,12 +127,16 @@ export class Tw2BlackBinaryReader
     {
         if (n < 0)
         {
-            throw new ErrBinaryReaderReadError({readError: `Argument should be positive: got "${n}"`});
+            throw new ErrBinaryReaderReadError({
+                readError: `Argument should be positive: got "${n}"`
+            });
         }
 
         if (this.length < n)
         {
-            throw new ErrBinaryReaderReadError({readError: `Argument is too big: remaining ${this.length}, got "${n}"`});
+            throw new ErrBinaryReaderReadError({
+                readError: `Argument is too big: remaining ${this.length}, got "${n}"`
+            });
         }
 
         const
@@ -174,7 +178,9 @@ export class Tw2BlackBinaryReader
         let value = this.ReadU16();
         if (value > this.stringTable.length)
         {
-            throw new ErrBinaryReaderReadError({readError: `Reading string "${value}" but only ${this.stringTable.length} exist`});
+            throw new ErrBinaryReaderReadError({
+                readError: `Reading string "${value}" but only ${this.stringTable.length} exist`
+            });
         }
         return this.stringTable[value];
     }
@@ -210,7 +216,9 @@ export class Tw2BlackBinaryReader
     {
         if (n < 0)
         {
-            throw new ErrBinaryReaderReadError({readError: `Argument should be positive but got "${n}"`});
+            throw new ErrBinaryReaderReadError({
+                readError: `Argument should be positive but got "${n}"`
+            });
         }
 
         let value = new Uint16Array(n);
@@ -241,7 +249,9 @@ export class Tw2BlackBinaryReader
     {
         if (n < 0)
         {
-            throw new ErrBinaryReaderReadError({readError: `Argument should be positive: got ${n}`});
+            throw new ErrBinaryReaderReadError({
+                readError: `Argument should be positive: got ${n}`
+            });
         }
 
         let value = new Uint32Array(n);
@@ -260,7 +270,9 @@ export class Tw2BlackBinaryReader
     {
         if (this.length !== 0)
         {
-            throw new ErrBinaryReaderReadError({readError: `${message}: expected 0 bytes remaining, got ${this.length}`});
+            throw new ErrBinaryReaderReadError({
+                readError: `${message}: expected 0 bytes remaining, got ${this.length}`
+            });
         }
     }
 
@@ -304,7 +316,9 @@ export class Tw2BlackBinaryReader
     {
         if (actual !== expected)
         {
-            throw new ErrBinaryReaderReadError(`${message}: expected ${expected}, got ${actual}`);
+            throw new ErrBinaryReaderReadError({
+                readError: `${message}: expected ${expected}, got ${actual}`
+            });
         }
     }
 

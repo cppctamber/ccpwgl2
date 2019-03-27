@@ -1,26 +1,27 @@
 import {mat4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullLocator
  *
+ * @property {String} name    -
  * @property {mat4} transform -
  */
-export class EveSOFDataHullLocator extends Tw2BaseClass
+export class EveSOFDataHullLocator extends EveSOFBaseClass
 {
 
+    name = "";
     transform = mat4.create();
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullLocator, Type =>
+EveSOFDataHullLocator.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullLocator",
-        props: {
-            transform: Type.MATRIX4
-        }
+        black: [
+            ["name", r.string],
+            ["transform", r.matrix]
+        ]
     };
 });
-

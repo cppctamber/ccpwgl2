@@ -1,31 +1,32 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullSpriteSet
  *
+ * @property {String} name                               -
  * @property {Array.<EveSOFDataHullSpriteSetItem>} items -
  * @property {Boolean} skinned                           -
  * @property {String} visibilityGroup                    -
  */
-export class EveSOFDataHullSpriteSet extends Tw2BaseClass
+export class EveSOFDataHullSpriteSet extends EveSOFBaseClass
 {
 
+    name = "";
     items = [];
     skinned = false;
     visibilityGroup = "";
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullSpriteSet, Type =>
+EveSOFDataHullSpriteSet.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullSpriteSet",
-        props: {
-            items: [["EveSOFDataHullSpriteSetItem"]],
-            skinned: Type.BOOLEAN,
-            visibilityGroup: Type.STRING
-        }
+        black: [
+            ["name", r.string],
+            ["items", r.array],
+            ["skinned", r.boolean],
+            ["visibilityGroup", r.string]
+        ]
     };
 });
-

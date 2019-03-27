@@ -1,14 +1,15 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataGenericDecalShader
  *
+ * @property {Array.<EveSOFDataParameter>} defaultParameters  -
  * @property {Array.<EveSOFDataTexture>} defaultTextures      -
  * @property {Array.<EveSOFDataGenericString>} parameters     -
  * @property {Array.<EveSOFDataGenericString>} parentTextures -
  * @property {String} shader                                  -
  */
-export class EveSOFDataGenericDecalShader extends Tw2BaseClass
+export class EveSOFDataGenericDecalShader extends EveSOFBaseClass
 {
 
     defaultTextures = [];
@@ -18,17 +19,15 @@ export class EveSOFDataGenericDecalShader extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataGenericDecalShader, Type =>
+EveSOFDataGenericDecalShader.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataGenericDecalShader",
-        props: {
-            defaultTextures: [["EveSOFDataTexture"]],
-            parameters: [["EveSOFDataGenericString"]],
-            parentTextures: [["EveSOFDataGenericString"]],
-            shader: Type.STRING
-        }
+        black: [
+            ["defaultTextures", r.array],
+            ["parameters", r.array],
+            ["parentTextures", r.array],
+            ["shader", r.string],
+        ]
     };
 });
-

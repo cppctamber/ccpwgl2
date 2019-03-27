@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullBooster
@@ -7,7 +7,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} hasTrails                       -
  * @property {Array.<EveSOFDataHullBoosterItem>} items -
  */
-export class EveSOFDataHullBooster extends Tw2BaseClass
+export class EveSOFDataHullBooster extends EveSOFBaseClass
 {
 
     alwaysOn = false;
@@ -16,16 +16,14 @@ export class EveSOFDataHullBooster extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullBooster, Type =>
+EveSOFDataHullBooster.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullBooster",
-        props: {
-            alwaysOn: Type.BOOLEAN,
-            hasTrails: Type.BOOLEAN,
-            items: [["EveSOFDataHullBoosterItem"]]
-        }
+        black: [
+            ["alwaysOn", r.boolean],
+            ["hasTrails", r.boolean],
+            ["items", r.array]
+        ]
     };
 });
-

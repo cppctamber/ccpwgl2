@@ -1,4 +1,4 @@
-import * as r from "../Tw2BlackClassReaders";
+import * as r from "../Tw2BlackPropertyReaders";
 
 export function tri(map)
 {

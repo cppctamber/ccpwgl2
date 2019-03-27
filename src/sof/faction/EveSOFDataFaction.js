@@ -1,8 +1,9 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataFaction
  *
+ * @property {String} name                                            -
  * @property {EveSOFDataArea} areaTypes                               -
  * @property {Array.<EveSOFDataFactionChild>} children                -
  * @property {EveSOFDataFactionColorSet} colorSet                     -
@@ -10,6 +11,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {EveSOFDataPatternLayer} defaultPattern                  -
  * @property {String} defaultPatternLayer1MaterialName                -
  * @property {String} description                                     -
+ * @property {EveSOFDataLogoSet} logoSet                              -
  * @property {Number} materialUsageMtl1                               -
  * @property {Number} materialUsageMtl2                               -
  * @property {Number} materialUsageMtl3                               -
@@ -19,16 +21,17 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataFactionSpotlightSet>} spotlightSets    -
  * @property {EveSOFDataFactionVisibilityGroupSet} visibilityGroupSet -
  */
-export class EveSOFDataFaction extends Tw2BaseClass
+export class EveSOFDataFaction extends EveSOFBaseClass
 {
 
+    name = "";
     areaTypes = null;
     children = [];
     colorSet = null;
-    decals = [];
     defaultPattern = null;
     defaultPatternLayer1MaterialName = "";
     description = "";
+    logoSet = null;
     materialUsageMtl1 = 0;
     materialUsageMtl2 = 0;
     materialUsageMtl3 = 0;
@@ -40,28 +43,30 @@ export class EveSOFDataFaction extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataFaction, Type =>
+EveSOFDataFaction.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataFaction",
-        props: {
-            areaTypes: ["EveSOFDataArea"],
-            children: [["EveSOFDataFactionChild"]],
-            colorSet: ["EveSOFDataFactionColorSet"],
-            decals: [["EveSOFDataFactionDecal"]],
-            defaultPattern: ["EveSOFDataPatternLayer"],
-            defaultPatternLayer1MaterialName: Type.STRING,
-            description: Type.STRING,
-            materialUsageMtl1: Type.NUMBER,
-            materialUsageMtl2: Type.NUMBER,
-            materialUsageMtl3: Type.NUMBER,
-            materialUsageMtl4: Type.NUMBER,
-            planeSets: [["EveSOFDataFactionPlaneSet"]],
-            resPathInsert: Type.PATH,
-            spotlightSets: [["EveSOFDataFactionSpotlightSet"]],
-            visibilityGroupSet: ["EveSOFDataFactionVisibilityGroupSet"]
-        }
+        black: [
+            ["areas", r.array],
+            ["areaTypes", r.object],
+            ["colorSet", r.object],
+            ["children", r.array],
+            ["defaultPattern", r.object],
+            ["defaultPatternLayer1MaterialName", r.string],
+            ["description", r.string],
+            ["logoSet", r.object],
+            ["materialUsageMtl1", r.uint],
+            ["materialUsageMtl2", r.uint],
+            ["materialUsageMtl3", r.uint],
+            ["materialUsageMtl4", r.uint],
+            ["name", r.string],
+            ["planeSets", r.array],
+            ["resPathInsert", r.string],
+            ["spotlightSets", r.array],
+            ["spriteSets", r.array],
+            ["visibilityGroupSet", r.object],
+        ]
     };
 });
 

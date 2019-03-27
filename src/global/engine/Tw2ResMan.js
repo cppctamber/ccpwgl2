@@ -272,6 +272,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     GetObject(path, onResolved, onRejected)
     {
+
         path = Tw2ResMan.NormalizePath(path);
 
         // Check if already exists

@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataGenericSwarm
@@ -17,7 +17,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} weightFormation    -
  * @property {Number} weightSeparation   -
  */
-export class EveSOFDataGenericSwarm extends Tw2BaseClass
+export class EveSOFDataGenericSwarm extends EveSOFBaseClass
 {
 
     formationDistance = 0;
@@ -36,26 +36,24 @@ export class EveSOFDataGenericSwarm extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataGenericSwarm, Type =>
+EveSOFDataGenericSwarm.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataGenericSwarm",
-        props: {
-            formationDistance: Type.NUMBER,
-            maxDeceleration: Type.NUMBER,
-            maxDistance0: Type.NUMBER,
-            separationDistance: Type.NUMBER,
-            wanderDistance: Type.NUMBER,
-            wanderFluctuation: Type.NUMBER,
-            wanderRadius: Type.NUMBER,
-            weightAlign: Type.NUMBER,
-            weightAnchor: Type.NUMBER,
-            weightCohesion: Type.NUMBER,
-            weightDeceleration: Type.NUMBER,
-            weightFormation: Type.NUMBER,
-            weightSeparation: Type.NUMBER
-        }
+        black: [
+            ["formationDistance", r.float],
+            ["maxDistance0", r.float],
+            ["maxDeceleration", r.float],
+            ["separationDistance", r.float],
+            ["wanderDistance", r.float],
+            ["wanderFluctuation", r.float],
+            ["wanderRadius", r.float],
+            ["weightAlign", r.float],
+            ["weightAnchor", r.float],
+            ["weightCohesion", r.float],
+            ["weightDeceleration", r.float],
+            ["weightFormation", r.float],
+            ["weightSeparation", r.float],
+        ]
     };
 });
-

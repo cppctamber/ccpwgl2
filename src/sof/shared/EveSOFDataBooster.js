@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataBooster
@@ -30,7 +30,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {EveSOFDataBoosterShape} warpShape0 -
  * @property {EveSOFDataBoosterShape} warpShape1 -
  */
-export class EveSOFDataBooster extends Tw2BaseClass
+export class EveSOFDataBooster extends EveSOFBaseClass
 {
 
     glowColor = vec4.create();
@@ -61,38 +61,40 @@ export class EveSOFDataBooster extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataBooster, Type =>
+EveSOFDataBooster.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataBooster",
-        props: {
-            glowColor: Type.RGBA_LINEAR,
-            glowScale: Type.NUMBER,
-            gradient0ResPath: Type.PATH,
-            gradient1ResPath: Type.PATH,
-            haloColor: Type.RGBA_LINEAR,
-            haloScaleX: Type.NUMBER,
-            haloScaleY: Type.NUMBER,
-            lightColor: Type.RGBA_LINEAR,
-            lightFlickerAmplitude: Type.NUMBER,
-            lightFlickerFrequency: Type.NUMBER,
-            lightRadius: Type.NUMBER,
-            lightWarpColor: Type.RGBA_LINEAR,
-            lightWarpRadius: Type.NUMBER,
-            shape0: ["EveSOFDataBoosterShape"],
-            shape1: ["EveSOFDataBoosterShape"],
-            shapeAtlasCount: Type.NUMBER,
-            shapeAtlasHeight: Type.NUMBER,
-            shapeAtlasResPath: Type.PATH,
-            symHaloScale: Type.NUMBER,
-            trailColor: Type.RGBA_LINEAR,
-            trailSize: Type.VECTOR4,
-            warpGlowColor: Type.RGBA_LINEAR,
-            warpHalpColor: Type.RGBA_LINEAR,
-            warpShape0: ["EveSOFDataBoosterShape"],
-            warpShape1: ["EveSOFDataBoosterShape"]
-        }
+        black: [
+            ["glowColor", r.vector4],
+            ["glowScale", r.float],
+            ["gradient0ResPath", r.path],
+            ["gradient1ResPath", r.path],
+            ["haloColor", r.vector4],
+            ["haloScaleX", r.float],
+            ["haloScaleY", r.float],
+            ["lightFlickerAmplitude", r.float],
+            ["lightFlickerColor", r.vector4],
+            ["lightFlickerFrequency", r.float],
+            ["lightFlickerRadius", r.float],
+            ["lightColor", r.vector4],
+            ["lightRadius", r.float],
+            ["lightWarpColor", r.vector4],
+            ["lightWarpRadius", r.float],
+            ["shape0", r.object],
+            ["shape1", r.object],
+            ["shapeAtlasCount", r.uint],
+            ["shapeAtlasHeight", r.uint],
+            ["shapeAtlasResPath", r.string],
+            ["shapeAtlasWidth", r.uint],
+            ["symHaloScale", r.float],
+            ["trailColor", r.vector4],
+            ["trailSize", r.vector4],
+            ["volumetric", r.boolean],
+            ["warpGlowColor", r.vector4],
+            ["warpHalpColor", r.vector4],
+            ["warpShape0", r.object],
+            ["warpShape1", r.object]
+        ]
     };
 });
-

@@ -1,28 +1,29 @@
-import {Tw2BaseClass} from "../../global/index";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataPatternPerHull
  *
+ * @property {String} name                                -
  * @property {EveSOFDataPatternTransform} transformLayer1 -
  * @property {EveSOFDataPatternTransform} transformLayer2 -
  */
-export class EveSOFDataPatternPerHull extends Tw2BaseClass
+export class EveSOFDataPatternPerHull extends EveSOFBaseClass
 {
 
+    name = "";
     transformLayer1 = null;
     transformLayer2 = null;
 
 }
 
-Tw2BaseClass.define(EveSOFDataPatternPerHull, Type =>
+EveSOFDataPatternPerHull.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataPatternPerHull",
-        props: {
-            transformLayer1: ["EveSOFDataPatternTransform"],
-            transformLayer2: ["EveSOFDataPatternTransform"]
-        }
+        black: [
+            ["name", r.string],
+            ["transformLayer1", r.object],
+            ["transformLayer2", r.object]
+        ]
     };
 });
-

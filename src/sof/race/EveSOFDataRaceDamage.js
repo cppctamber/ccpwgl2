@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataRaceDamage
@@ -8,7 +8,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataParameter>} shieldImpactParameters -
  * @property {Array.<EveSOFDataTexture>} shieldImpactTextures     -
  */
-export class EveSOFDataRaceDamage extends Tw2BaseClass
+export class EveSOFDataRaceDamage extends EveSOFBaseClass
 {
 
     armorImpactParameters = [];
@@ -18,17 +18,15 @@ export class EveSOFDataRaceDamage extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataRaceDamage, Type =>
+EveSOFDataRaceDamage.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataRaceDamage",
-        props: {
-            armorImpactParameters: [["EveSOFDataParameter"]],
-            armorImpactTextures: [["EveSOFDataTexture"]],
-            shieldImpactParameters: [["EveSOFDataParameter"]],
-            shieldImpactTextures: [["EveSOFDataTexture"]]
-        }
+        black: [
+            ["armorImpactParameters", r.array],
+            ["armorImpactTextures", r.array],
+            ["shieldImpactParameters", r.array],
+            ["shieldImpactTextures", r.array]
+        ]
     };
 });
-

@@ -1,5 +1,5 @@
 import {vec2, vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataGenericDamage
@@ -27,7 +27,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} shieldShaderEllipsoid                -
  * @property {String} shieldShaderHull                     -
  */
-export class EveSOFDataGenericDamage extends Tw2BaseClass
+export class EveSOFDataGenericDamage extends EveSOFBaseClass
 {
 
     armorParticleAngle = 0;
@@ -55,35 +55,33 @@ export class EveSOFDataGenericDamage extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataGenericDamage, Type =>
+EveSOFDataGenericDamage.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataGenericDamage",
-        props: {
-            armorParticleAngle: Type.NUMBER,
-            armorParticleColor0: Type.RGBA_LINEAR,
-            armorParticleColor1: Type.RGBA_LINEAR,
-            armorParticleColor2: Type.RGBA_LINEAR,
-            armorParticleColor3: Type.RGBA_LINEAR,
-            armorParticleDrag: Type.NUMBER,
-            armorParticleMinMaxLifeTime: Type.VECTOR2,
-            armorParticleMinMaxSpeed: Type.VECTOR2,
-            armorParticleRate: Type.NUMBER,
-            armorParticleSizes: Type.VECTOR4,
-            armorParticleTextureIndex: Type.NUMBER,
-            armorParticleTurbulenceAmplitude: Type.NUMBER,
-            armorParticleTurbulenceFrequency: Type.NUMBER,
-            armorParticleVelocityStretchRotation: Type.NUMBER,
-            armorShader: Type.STRING,
-            flickerPerlinAlpha: Type.NUMBER,
-            flickerPerlinBeta: Type.NUMBER,
-            flickerPerlinN: Type.NUMBER,
-            flickerPerlinSpeed: Type.NUMBER,
-            shieldGeometryResFilePath: Type.PATH,
-            shieldShaderEllipsoid: Type.STRING,
-            shieldShaderHull: Type.STRING
-        }
+        black: [
+            ["armorParticleAngle", r.float],
+            ["armorParticleColor0", r.vector4],
+            ["armorParticleColor1", r.vector4],
+            ["armorParticleColor2", r.vector4],
+            ["armorParticleColor3", r.vector4],
+            ["armorParticleDrag", r.float],
+            ["armorParticleMinMaxLifeTime", r.vector2],
+            ["armorParticleMinMaxSpeed", r.vector2],
+            ["armorParticleRate", r.float],
+            ["armorParticleSizes", r.vector4],
+            ["armorParticleTurbulenceAmplitude", r.float],
+            ["armorParticleTurbulenceFrequency", r.float],
+            ["armorParticleVelocityStretchRotation", r.float],
+            ["armorParticleTextureIndex", r.uint],
+            ["armorShader", r.string],
+            ["flickerPerlinAlpha", r.float],
+            ["flickerPerlinBeta", r.float],
+            ["flickerPerlinSpeed", r.float],
+            ["flickerPerlinN", r.uint],
+            ["shieldGeometryResFilePath", r.path],
+            ["shieldShaderEllipsoid", r.string],
+            ["shieldShaderHull", r.string],
+        ]
     };
 });
-

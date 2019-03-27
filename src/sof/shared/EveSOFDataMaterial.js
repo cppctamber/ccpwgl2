@@ -1,25 +1,26 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataMaterial
  *
+ * @property {String} name                            -
  * @property {Array.<EveSOFDataParameter>} parameters -
  */
-export class EveSOFDataMaterial extends Tw2BaseClass
+export class EveSOFDataMaterial extends EveSOFBaseClass
 {
 
+    name = "";
     parameters = [];
 
 }
 
-Tw2BaseClass.define(EveSOFDataMaterial, Type =>
+EveSOFDataMaterial.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataMaterial",
-        props: {
-            parameters: [["EveSOFDataParameter"]]
-        }
+        black: [
+            ["name", r.string],
+            ["parameters", r.array]
+        ]
     };
 });
-

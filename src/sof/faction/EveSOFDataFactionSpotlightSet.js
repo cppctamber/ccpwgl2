@@ -1,35 +1,36 @@
 import {vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataFactionSpotlightSet
  *
+ * @property {String} name       -
  * @property {vec4} coneColor    -
  * @property {vec4} flareColor   -
  * @property {Number} groupIndex -
  * @property {vec4} spriteColor  -
  */
-export class EveSOFDataFactionSpotlightSet extends Tw2BaseClass
+export class EveSOFDataFactionSpotlightSet extends EveSOFBaseClass
 {
 
+    name = "";
     coneColor = vec4.create();
     flareColor = vec4.create();
-    groupIndex = 0;
+    groupIndex = -1;
     spriteColor = vec4.create();
 
 }
 
-Tw2BaseClass.define(EveSOFDataFactionSpotlightSet, Type =>
+EveSOFDataFactionSpotlightSet.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataFactionSpotlightSet",
-        props: {
-            coneColor: Type.RGBA_LINEAR,
-            flareColor: Type.RGBA_LINEAR,
-            groupIndex: Type.NUMBER,
-            spriteColor: Type.RGBA_LINEAR
-        }
+        black: [
+            ["coneColor", r.vector4],
+            ["flareColor", r.vector4],
+            ["groupIndex", r.uint],
+            ["name", r.string],
+            ["spriteColor", r.vector4],
+        ]
     };
 });
-

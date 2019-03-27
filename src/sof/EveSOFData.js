@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../global";
+import {EveSOFBaseClass} from "./EveSOFBaseClass";
 
 /**
  * EveSOFData
@@ -10,7 +10,7 @@ import {Tw2BaseClass} from "../global";
  * @property {Array.<EveSOFDataPattern>} pattern   -
  * @property {Array.<EveSOFDataRace>} race         -
  */
-export class EveSOFData extends Tw2BaseClass
+export class EveSOFData extends EveSOFBaseClass
 {
 
     faction = [];
@@ -22,19 +22,17 @@ export class EveSOFData extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFData, Type =>
+EveSOFData.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFData",
-        props: {
-            faction: [["EveSOFDataFaction"]],
-            generic: ["EveSOFDataGeneric"],
-            hull: [["EveSOFDataHull"]],
-            material: [["EveSOFDataMaterial"]],
-            pattern: [["EveSOFDataPattern"]],
-            race: [["EveSOFDataRace"]]
-        }
+        black: [
+            ["faction", r.array],
+            ["generic", r.object],
+            ["hull", r.array],
+            ["material", r.array],
+            ["pattern", r.array],
+            ["race", r.array]
+        ]
     };
 });
-

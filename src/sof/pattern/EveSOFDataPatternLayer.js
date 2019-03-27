@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataPatternLayer
@@ -13,7 +13,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {String} textureName        -
  * @property {String} textureResFilePath -
  */
-export class EveSOFDataPatternLayer extends Tw2BaseClass
+export class EveSOFDataPatternLayer extends EveSOFBaseClass
 {
 
     isTargetMtl1 = false;
@@ -28,22 +28,20 @@ export class EveSOFDataPatternLayer extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataPatternLayer, Type =>
+EveSOFDataPatternLayer.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataPatternLayer",
-        props: {
-            isTargetMtl1: Type.BOOLEAN,
-            isTargetMtl2: Type.BOOLEAN,
-            isTargetMtl3: Type.BOOLEAN,
-            isTargetMtl4: Type.BOOLEAN,
-            materialSource: Type.NUMBER,
-            projectionTypeU: Type.NUMBER,
-            projectionTypeV: Type.NUMBER,
-            textureName: Type.STRING,
-            textureResFilePath: Type.PATH
-        }
+        black: [
+            ["isTargetMtl1", r.boolean],
+            ["isTargetMtl2", r.boolean],
+            ["isTargetMtl3", r.boolean],
+            ["isTargetMtl4", r.boolean],
+            ["materialSource", r.uint],
+            ["projectionTypeU", r.uint],
+            ["projectionTypeV", r.uint],
+            ["textureName", r.string],
+            ["textureResFilePath", r.path]
+        ]
     };
 });
-

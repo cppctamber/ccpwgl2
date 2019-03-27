@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataGeneric
@@ -20,7 +20,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {EveSOFDataGenericSwarm} swarm                            -
  * @property {Array.<EveSOFDataGenericVariant>} variants               -
  */
-export class EveSOFDataGeneric extends Tw2BaseClass
+export class EveSOFDataGeneric extends EveSOFBaseClass
 {
 
     areaShaderLocation = "";
@@ -42,29 +42,28 @@ export class EveSOFDataGeneric extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataGeneric, Type =>
+EveSOFDataGeneric.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataGeneric",
-        props: {
-            areaShaderLocation: Type.STRING,
-            areaShaders: [["EveSOFDataGenericShader"]],
-            bannerShader: ["EveSOFDataGenericShader"],
-            damage: ["EveSOFDataGenericDamage"],
-            decalShaderLocation: Type.STRING,
-            decalShaders: [["EveSOFDataGenericDecalShader"]],
-            genericWreckMaterial: ["EveSOFDataAreaMaterial"],
-            hullDamage: ["EveSOFDataGenericHullDamage"],
-            materialPrefixes: [["EveSOFDataGenericString"]],
-            patternMaterialPrefixes: [["EveSOFDataGenericString"]],
-            resPathDefaultAlliance: Type.PATH,
-            resPathDefaultCeo: Type.PATH,
-            resPathDefaultCorp: Type.PATH,
-            shaderPrefixAnimated: Type.STRING,
-            swarm: ["EveSOFDataGenericSwarm"],
-            variants: [["EveSOFDataGenericVariant"]]
-        }
+        black: [
+            ["areaShaderLocation", r.string],
+            ["areaShaders", r.array],
+            ["bannerShader", r.plain],
+            ["decalShaderLocation", r.string],
+            ["decalShaders", r.array],
+            ["damage", r.object],
+            ["genericWreckMaterial", r.object],
+            ["hullAreas", r.array],
+            ["hullDamage", r.object],
+            ["materialPrefixes", r.array],
+            ["patternMaterialPrefixes", r.array],
+            ["resPathDefaultAlliance", r.path],
+            ["resPathDefaultCeo", r.path],
+            ["resPathDefaultCorp", r.path],
+            ["shaderPrefixAnimated", r.string],
+            ["swarm", r.object],
+            ["variants", r.array],
+        ]
     };
 });
-

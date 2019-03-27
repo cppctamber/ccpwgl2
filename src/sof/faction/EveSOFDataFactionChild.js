@@ -1,28 +1,29 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataFactionChild
  *
+ * @property {String} name
  * @property {Number} groupIndex -
  * @property {Boolean} isVisible -
  */
-export class EveSOFDataFactionChild extends Tw2BaseClass
+export class EveSOFDataFactionChild extends EveSOFBaseClass
 {
 
-    groupIndex = 0;
+    name = "";
+    groupIndex = -1;
     isVisible = false;
 
 }
 
-Tw2BaseClass.define(EveSOFDataFactionChild, Type =>
+EveSOFDataFactionChild.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataFactionChild",
-        props: {
-            groupIndex: Type.NUMBER,
-            isVisible: Type.BOOLEAN
-        }
+        black: [
+            ["groupIndex", r.uint],
+            ["name", r.string],
+            ["isVisible", r.boolean]
+        ]
     };
 });
-

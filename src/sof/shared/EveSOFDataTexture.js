@@ -1,25 +1,26 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataTexture
  *
+ * @property {String} name        -
  * @property {String} resFilePath -
  */
-export class EveSOFDataTexture extends Tw2BaseClass
+export class EveSOFDataTexture extends EveSOFBaseClass
 {
 
+    name = "";
     resFilePath = "";
 
 }
 
-Tw2BaseClass.define(EveSOFDataTexture, Type =>
+EveSOFDataTexture.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataTexture",
-        props: {
-            resFilePath: Type.PATH
-        }
+        black: [
+            ["name", r.string],
+            ["resFilePath", r.path]
+        ]
     };
 });
-

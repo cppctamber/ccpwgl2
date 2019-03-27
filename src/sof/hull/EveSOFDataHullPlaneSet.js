@@ -1,8 +1,9 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullPlaneSet
  *
+ * @property {String} name                              -
  * @property {Number} atlasSize                         -
  * @property {Array.<EveSOFDataHullPlaneSetItem>} items -
  * @property {String} layer1MapResPath                  -
@@ -11,9 +12,10 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} skinned                          -
  * @property {Number} usage                             -
  */
-export class EveSOFDataHullPlaneSet extends Tw2BaseClass
+export class EveSOFDataHullPlaneSet extends EveSOFBaseClass
 {
 
+    name = "";
     atlasSize = 0;
     items = [];
     layer1MapResPath = "";
@@ -24,20 +26,20 @@ export class EveSOFDataHullPlaneSet extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullPlaneSet, Type =>
+EveSOFDataHullPlaneSet.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullPlaneSet",
-        props: {
-            atlasSize: Type.NUMBER,
-            items: [["EveSOFDataHullPlaneSetItem"]],
-            layer1MapResPath: Type.PATH,
-            layer2MapResPath: Type.PATH,
-            maskMapResPath: Type.PATH,
-            skinned: Type.BOOLEAN,
-            usage: Type.NUMBER
-        }
+        black: [
+            ["atlasSize", r.uint],
+            ["items", r.array],
+            ["layer1MapResPath", r.path],
+            ["layer2MapResPath", r.path],
+            ["maskMapResPath", r.path],
+            ["name", r.string],
+            ["planeData", r.vector4],
+            ["skinned", r.boolean],
+            ["usage", r.uint]
+        ]
     };
 });
-

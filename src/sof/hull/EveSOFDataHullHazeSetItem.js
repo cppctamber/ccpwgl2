@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullHazeSetItem
@@ -14,7 +14,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} sourceBrightness      -
  * @property {Number} sourceSize            -
  */
-export class EveSOFDataHullHazeSetItem extends Tw2BaseClass
+export class EveSOFDataHullHazeSetItem extends EveSOFBaseClass
 {
 
     boosterGainInfluence = false;
@@ -29,22 +29,20 @@ export class EveSOFDataHullHazeSetItem extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullHazeSetItem, Type =>
+EveSOFDataHullHazeSetItem.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullHazeSetItem",
-        props: {
-            boosterGainInfluence: Type.BOOLEAN,
-            colorType: Type.NUMBER,
-            hazeBrightness: Type.NUMBER,
-            hazeFalloff: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            sourceBrightness: Type.NUMBER,
-            sourceSize: Type.NUMBER
-        }
+        black: [
+            ["boosterGainInfluence", r.boolean],
+            ["colorType", r.uint],
+            ["hazeBrightness", r.float],
+            ["hazeFalloff", r.float],
+            ["position", r.vector3],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["sourceBrightness", r.float],
+            ["sourceSize", r.float],
+        ]
     };
 });
-

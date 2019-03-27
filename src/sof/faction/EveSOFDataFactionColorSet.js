@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataFactionColorSet
@@ -23,7 +23,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec4} White     -
  * @property {vec4} Yellow    -
  */
-export class EveSOFDataFactionColorSet extends Tw2BaseClass
+export class EveSOFDataFactionColorSet extends EveSOFBaseClass
 {
 
     Black = vec4.create();
@@ -45,33 +45,42 @@ export class EveSOFDataFactionColorSet extends Tw2BaseClass
     White = vec4.create();
     Yellow = vec4.create();
 
+    /**
+     * Gets a faction color set by name
+     * @param {String} name
+     * @returns {vec4|null}
+     */
+    Get(name)
+    {
+        name = name.charAt(0).toUpperCase() + name.substring(1).toLowerCase();
+        return name in this ? this[name] : null;
+    }
+
 }
 
-Tw2BaseClass.define(EveSOFDataFactionColorSet, Type =>
+EveSOFDataFactionColorSet.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataFactionColorSet",
-        props: {
-            Black: Type.VECTOR4,
-            Blue: Type.VECTOR4,
-            Booster: Type.VECTOR4,
-            Cyan: Type.VECTOR4,
-            Darkhull: Type.VECTOR4,
-            Fire: Type.VECTOR4,
-            Glass: Type.VECTOR4,
-            Green: Type.VECTOR4,
-            Hull: Type.VECTOR4,
-            Killmark: Type.VECTOR4,
-            Orange: Type.VECTOR4,
-            Primary: Type.VECTOR4,
-            Reactor: Type.VECTOR4,
-            Red: Type.VECTOR4,
-            Secondary: Type.VECTOR4,
-            Tertiary: Type.VECTOR4,
-            White: Type.VECTOR4,
-            Yellow: Type.VECTOR4
-        }
+        black: [
+            ["Black", r.vector4],
+            ["Blue", r.vector4],
+            ["Booster", r.vector4],
+            ["Cyan", r.vector4],
+            ["Darkhull", r.vector4],
+            ["Fire", r.vector4],
+            ["Glass", r.vector4],
+            ["Green", r.vector4],
+            ["Hull", r.vector4],
+            ["Killmark", r.vector4],
+            ["Orange", r.vector4],
+            ["Primary", r.vector4],
+            ["Reactor", r.vector4],
+            ["Red", r.vector4],
+            ["Secondary", r.vector4],
+            ["Tertiary", r.vector4],
+            ["White", r.vector4],
+            ["Yellow", r.vector4],
+        ]
     };
 });
-

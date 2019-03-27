@@ -1,28 +1,29 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataGenericVariant
  *
+ * @property {String} name                 -
  * @property {EveSOFDataHullArea} hullArea -
  * @property {Boolean} isTransparent       -
  */
-export class EveSOFDataGenericVariant extends Tw2BaseClass
+export class EveSOFDataGenericVariant extends EveSOFBaseClass
 {
 
+    name = "";
     hullArea = null;
     isTransparent = false;
 
 }
 
-Tw2BaseClass.define(EveSOFDataGenericVariant, Type =>
+EveSOFDataGenericVariant.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataGenericVariant",
-        props: {
-            hullArea: ["EveSOFDataHullArea"],
-            isTransparent: Type.BOOLEAN
-        }
+        black: [
+            ["hullArea", r.object],
+            ["isTransparent", r.boolean],
+            ["name", r.string],
+        ]
     };
 });
-

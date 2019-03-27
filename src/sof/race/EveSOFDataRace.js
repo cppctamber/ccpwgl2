@@ -1,28 +1,29 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataRace
  *
+ * @property {String} name                 -
  * @property {EveSOFDataBooster} booster   -
  * @property {EveSOFDataRaceDamage} damage -
  */
-export class EveSOFDataRace extends Tw2BaseClass
+export class EveSOFDataRace extends EveSOFBaseClass
 {
 
+    name = "";
     booster = null;
     damage = null;
 
 }
 
-Tw2BaseClass.define(EveSOFDataRace, Type =>
+EveSOFDataRace.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataRace",
-        props: {
-            booster: ["EveSOFDataBooster"],
-            damage: ["EveSOFDataRaceDamage"]
-        }
+        black: [
+            ["booster", r.object],
+            ["damage", r.object],
+            ["name", r.string],
+        ]
     };
 });
-

@@ -1,5 +1,5 @@
 import {vec3} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullSpriteSetItem
@@ -14,12 +14,12 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} minScale   -
  * @property {vec3} position     -
  */
-export class EveSOFDataHullSpriteSetItem extends Tw2BaseClass
+export class EveSOFDataHullSpriteSetItem extends EveSOFBaseClass
 {
 
     blinkPhase = 0;
     blinkRate = 0;
-    boneIndex = 0;
+    boneIndex = -1;
     colorType = 0;
     falloff = 0;
     intensity = 0;
@@ -29,22 +29,21 @@ export class EveSOFDataHullSpriteSetItem extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullSpriteSetItem, Type =>
+EveSOFDataHullSpriteSetItem.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullSpriteSetItem",
-        props: {
-            blinkPhase: Type.NUMBER,
-            blinkRate: Type.NUMBER,
-            boneIndex: Type.NUMBER,
-            colorType: Type.NUMBER,
-            falloff: Type.NUMBER,
-            intensity: Type.NUMBER,
-            maxScale: Type.NUMBER,
-            minScale: Type.NUMBER,
-            position: Type.TR_TRANSLATION
-        }
+        black: [
+            ["blinkRate", r.float],
+            ["blinkPhase", r.float],
+            ["boneIndex", r.uint],
+            ["colorType", r.uint],
+            ["falloff", r.float],
+            ["groupIndex", r.uint],
+            ["intensity", r.float],
+            ["maxScale", r.float],
+            ["minScale", r.float],
+            ["position", r.vector3]
+        ]
     };
 });
-

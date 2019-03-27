@@ -1,6 +1,6 @@
 import {store} from "../../global";
 import {Tw2BinaryReader} from "./Tw2BinaryReader";
-import {ErrFeatureNotImplemented, ErrXMLBinaryFormat, ErrXMLObjectTypeUndefined} from "../Tw2Error";
+import {ErrFeatureNotImplemented, ErrBinaryFormat, ErrBinaryObjectTypeNotFound} from "../Tw2Error";
 
 /**
  * Tw2ObjectReader
@@ -46,7 +46,7 @@ export class Tw2ObjectReader
     {
         if (!Tw2ObjectReader.IsValidXML(this.xmlNode))
         {
-            throw new ErrXMLBinaryFormat({message: "Invalid binary, expected binred"});
+            throw new ErrBinaryFormat({formatError: "Invalid binary, expected binred"});
         }
 
         this._reader = new Tw2BinaryReader(new Uint8Array(this.xmlNode));
@@ -105,7 +105,7 @@ export class Tw2ObjectReader
             }
             else
             {
-                throw new ErrXMLObjectTypeUndefined({type: data.type});
+                throw new ErrBinaryObjectTypeNotFound({type: data.type});
             }
         }
 

@@ -1,26 +1,27 @@
 import {vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataParameter
  *
- * @property {vec4} value -
+ * @property {String} name -
+ * @property {vec4} value  -
  */
-export class EveSOFDataParameter extends Tw2BaseClass
+export class EveSOFDataParameter extends EveSOFBaseClass
 {
 
+    name = "";
     value = vec4.create();
 
 }
 
-Tw2BaseClass.define(EveSOFDataParameter, Type =>
+EveSOFDataParameter.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataParameter",
-        props: {
-            value: Type.VECTOR4
-        }
+        black: [
+            ["name", r.string],
+            ["value", r.vector4]
+        ]
     };
 });
-

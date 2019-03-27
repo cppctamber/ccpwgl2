@@ -1,9 +1,10 @@
 import {quat, vec3} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullBanner
  *
+ * @property {String} name      -
  * @property {Number} angleX    -
  * @property {Number} angleY    -
  * @property {Number} boneIndex -
@@ -12,12 +13,13 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} scaling     -
  * @property {Number} usage     -
  */
-export class EveSOFDataHullBanner extends Tw2BaseClass
+export class EveSOFDataHullBanner extends EveSOFBaseClass
 {
 
+    name = "";
     angleX = 0;
     angleY = 0;
-    boneIndex = 0;
+    boneIndex = -1;
     position = vec3.create();
     rotation = quat.create();
     scaling = vec3.fromValues(1, 1, 1);
@@ -25,20 +27,20 @@ export class EveSOFDataHullBanner extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullBanner, Type =>
+EveSOFDataHullBanner.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullBanner",
-        props: {
-            angleX: Type.NUMBER,
-            angleY: Type.NUMBER,
-            boneIndex: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            usage: Type.NUMBER
-        }
+        black: [
+            ["angleX", r.float],
+            ["angleY", r.float],
+            ["angleZ", r.float],
+            ["boneIndex", r.uint],
+            ["name", r.string],
+            ["position", r.vector3],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["usage", r.uint]
+        ]
     };
 });
-

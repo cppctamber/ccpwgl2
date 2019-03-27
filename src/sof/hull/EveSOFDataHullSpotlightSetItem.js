@@ -1,5 +1,5 @@
 import {mat4, vec3} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullSpotlightSetItem
@@ -13,35 +13,33 @@ import {Tw2BaseClass} from "../../global";
  * @property {vec3} spriteScale             -
  * @property {mat4} transform               -
  */
-export class EveSOFDataHullSpotlightSetItem extends Tw2BaseClass
+export class EveSOFDataHullSpotlightSetItem extends EveSOFBaseClass
 {
 
-    boneIndex = 0;
+    boneIndex = -1;
     boosterGainInfluence = false;
     coneIntensity = 0;
     flareIntensity = 0;
-    groupIndex = 0;
+    groupIndex = -1;
     spriteIntensity = 0;
     spriteScale = vec3.fromValues(1, 1, 1);
     transform = mat4.create();
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullSpotlightSetItem, Type =>
+EveSOFDataHullSpotlightSetItem.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullSpotlightSetItem",
-        props: {
-            boneIndex: Type.NUMBER,
-            boosterGainInfluence: Type.BOOLEAN,
-            coneIntensity: Type.NUMBER,
-            flareIntensity: Type.NUMBER,
-            groupIndex: Type.NUMBER,
-            spriteIntensity: Type.NUMBER,
-            spriteScale: Type.TR_SCALING,
-            transform: Type.MATRIX4
-        }
+        black: [
+            ["boneIndex", r.uint],
+            ["boosterGainInfluence", r.boolean],
+            ["coneIntensity", r.float],
+            ["flareIntensity", r.float],
+            ["groupIndex", r.uint],
+            ["spriteScale", r.vector3],
+            ["spriteIntensity", r.float],
+            ["transform", r.matrix]
+        ]
     };
 });
-

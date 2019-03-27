@@ -1,7 +1,7 @@
 import {store} from "../../global";
-import {object} from "./Tw2BlackClassReaders";
 import {Tw2BlackBinaryReader} from "./Tw2BlackBinaryReader";
-import {ErrBinaryFormat, ErrBinaryObjectTypeNotDefined} from "../Tw2Error";
+import {ErrBinaryFormat, ErrBinaryObjectTypeNotFound,} from "../Tw2Error";
+import {object} from "./Tw2BlackPropertyReaders";
 
 /**
  * Tw2BlackReader
@@ -101,9 +101,9 @@ export class Tw2BlackReader
      */
     ConstructType(type)
     {
-        if (store.HasClass(type))
+        const Constructor = store.GetClass(type);
+        if (Constructor)
         {
-            const Constructor = store.GetClass(type, true);
             return new Constructor();
         }
         else if (Tw2BlackReader.DEBUG_ENABLED)
@@ -112,7 +112,7 @@ export class Tw2BlackReader
         }
         else
         {
-            throw new ErrBinaryObjectTypeNotDefined({type});
+            throw new ErrBinaryObjectTypeNotFound({type});
         }
     }
 
@@ -121,4 +121,5 @@ export class Tw2BlackReader
      * @type {boolean}
      */
     static DEBUG_ENABLED = true;
+
 }

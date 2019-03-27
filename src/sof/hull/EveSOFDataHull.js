@@ -1,9 +1,11 @@
 import {vec3, vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
+import * as r from "../../core/reader/Tw2BlackPropertyReaders";
 
 /**
  * EveSOFDataHull
  *
+ * @property {String} name                                        -
  * @property {Array.<EveSOFDataHullArea>} additiveAreas           -
  * @property {Array.<EveSOFDataHullAnimation>} animations         -
  * @property {vec3} audioPosition                                 -
@@ -16,6 +18,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataHullChild>} children               -
  * @property {Array.<EveSOFDataHullController>} controllers       -
  * @property {Array.<EveSOFDataHullArea>} decalAreas              -
+ * @property {Array.<EveSOFDataHullDecalSet>} decalSets           -
  * @property {EveSOFDataPatternPerHull} defaultPattern            -
  * @property {String} description                                 -
  * @property {Array.<EveSOFDataHullArea>} distortionAreas         -
@@ -26,6 +29,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} impactEffectType                            -
  * @property {Array.<EveSOFDataInstancedMesh>} instancedMeshes    -
  * @property {Boolean} isSkinned                                  -
+ * @property {Array.<EveSOFDataHullLightSet>} lightSets           -
  * @property {Array.<EveSOFDataHullLocatorSet>} locatorSets       -
  * @property {Array.<EveSOFDataHullLocator>} locatorTurrets       -
  * @property {String} modelRotationCurvePath                      -
@@ -33,14 +37,15 @@ import {Tw2BaseClass} from "../../global";
  * @property {Array.<EveSOFDataHullPlaneSet>} planeSets           -
  * @property {vec3} shapeEllipsoidCenter                          -
  * @property {vec3} shapeEllipsoidRadius                          -
+ * @property {Array.<EveSOFDataHullSoundEmitter>} soundEmitters   -
  * @property {Array.<EveSOFDataHullSpotlightSet>} spotlightSets   -
  * @property {Array.<EveSOFDataHullSpriteLineSet>} spriteLineSets -
  * @property {Array.<EveSOFDataHullSpriteSet>} spriteSets         -
  * @property {Array.<EveSOFDataHullArea>} transparentAreas        -
  */
-export class EveSOFDataHull extends Tw2BaseClass
+export class EveSOFDataHull extends EveSOFBaseClass
 {
-
+    name = "";
     additiveAreas = [];
     animations = [];
     audioPosition = vec3.create();
@@ -53,6 +58,7 @@ export class EveSOFDataHull extends Tw2BaseClass
     children = [];
     controllers = [];
     decalAreas = [];
+    decalSets = [];
     defaultPattern = null;
     description = "";
     distortionAreas = [];
@@ -63,6 +69,7 @@ export class EveSOFDataHull extends Tw2BaseClass
     impactEffectType = 0;
     instancedMeshes = [];
     isSkinned = false;
+    lightSets = [];
     locatorSets = [];
     locatorTurrets = [];
     modelRotationCurvePath = "";
@@ -70,6 +77,7 @@ export class EveSOFDataHull extends Tw2BaseClass
     planeSets = [];
     shapeEllipsoidCenter = vec3.create();
     shapeEllipsoidRadius = vec3.create();
+    soundEmitters = [];
     spotlightSets = [];
     spriteLineSets = [];
     spriteSets = [];
@@ -77,46 +85,49 @@ export class EveSOFDataHull extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHull, Type =>
+EveSOFDataHull.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHull",
-        props: {
-            additiveAreas: [["EveSOFDataHullArea"]],
-            animations: [["EveSOFDataHullAnimation"]],
-            audioPosition: Type.TR_TRANSLATION,
-            banners: [["EveSOFDataHullBanner"]],
-            booster: ["EveSOFDataHullBooster"],
-            boundingSphere: Type.VECTOR4,
-            buildClass: Type.NUMBER,
-            castShadow: Type.BOOLEAN,
-            category: Type.STRING,
-            children: [["EveSOFDataHullChild"]],
-            controllers: [["EveSOFDataHullController"]],
-            decalAreas: [["EveSOFDataHullArea"]],
-            defaultPattern: ["EveSOFDataPatternPerHull"],
-            description: Type.STRING,
-            distortionAreas: [["EveSOFDataHullArea"]],
-            enableDynamicBoundingSphere: Type.BOOLEAN,
-            geometryResFilePath: Type.PATH,
-            hazeSets: [["EveSOFDataHullHazeSet"]],
-            hullDecals: [["EveSOFDataHullDecal"]],
-            impactEffectType: Type.NUMBER,
-            instancedMeshes: [["EveSOFDataInstancedMesh"]],
-            isSkinned: Type.BOOLEAN,
-            locatorSets: [["EveSOFDataHullLocatorSet"]],
-            locatorTurrets: [["EveSOFDataHullLocator"]],
-            modelRotationCurvePath: Type.PATH,
-            opaqueAreas: [["EveSOFDataHullArea"]],
-            planeSets: [["EveSOFDataHullPlaneSet"]],
-            shapeEllipsoidCenter: Type.VECTOR3,
-            shapeEllipsoidRadius: Type.VECTOR3,
-            spotlightSets: [["EveSOFDataHullSpotlightSet"]],
-            spriteLineSets: [["EveSOFDataHullSpriteLineSet"]],
-            spriteSets: [["EveSOFDataHullSpriteSet"]],
-            transparentAreas: [["EveSOFDataHullArea"]]
-        }
+        black: [
+            ["additiveAreas", r.array],
+            ["animations", r.array],
+            ["audioPosition", r.vector3],
+            ["banners", r.array],
+            ["booster", r.object],
+            ["boundingSphere", r.vector4],
+            ["buildClass", r.uint],
+            ["castShadow", r.boolean],
+            ["category", r.string],
+            ["children", r.array],
+            ["controllers", r.array],
+            ["decalAreas", r.array],
+            ["decalSets", r.array],
+            ["defaultPattern", r.object],
+            ["depthAreas", r.array],
+            ["description", r.string],
+            ["distortionAreas", r.array],
+            ["enableDynamicBoundingSphere", r.boolean],
+            ["geometryResFilePath", r.path],
+            ["hazeSets", r.array],
+            ["hullDecals", r.array],
+            ["impactEffectType", r.uint],
+            ["instancedMeshes", r.array],
+            ["isSkinned", r.boolean],
+            ["lightSets", r.array],
+            ["locatorSets", r.array],
+            ["locatorTurrets", r.array],
+            ["name", r.string],
+            ["opaqueAreas", r.array],
+            ["planeSets", r.array],
+            ["modelRotationCurvePath", r.string],
+            ["shapeEllipsoidCenter", r.vector3],
+            ["shapeEllipsoidRadius", r.vector3],
+            ["soundEmitters", r.array],
+            ["spotlightSets", r.array],
+            ["spriteLineSets", r.array],
+            ["spriteSets", r.array],
+            ["transparentAreas", r.array],
+        ]
     };
 });
-

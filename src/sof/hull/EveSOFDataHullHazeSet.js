@@ -1,25 +1,29 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullHazeSet
  *
+ * @property {String} name                             -
  * @property {Array.<EveSOFDataHullHazeSetItem>} items -
+ * @property {Number} visibilityGroup                  -
  */
-export class EveSOFDataHullHazeSet extends Tw2BaseClass
+export class EveSOFDataHullHazeSet extends EveSOFBaseClass
 {
 
+    name = "";
     items = [];
+    visibilityGroup = 0;
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullHazeSet, Type =>
+EveSOFDataHullHazeSet.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullHazeSet",
-        props: {
-            items: [["EveSOFDataHullHazeSetItem"]]
-        }
+        black: [
+            ["items", r.array],
+            ["name", r.string],
+            ["visibilityGroup", r.string]
+        ]
     };
 });
-

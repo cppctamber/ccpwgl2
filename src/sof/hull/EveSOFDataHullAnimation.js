@@ -1,9 +1,10 @@
 import {quat} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataHullAnimation
  *
+ * @property {String} name              -
  * @property {Number} endRate           -
  * @property {Number} endRotationTime   -
  * @property {quat} endRotationValue    -
@@ -12,9 +13,10 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} startRotationTime -
  * @property {quat} startRotationValue  -
  */
-export class EveSOFDataHullAnimation extends Tw2BaseClass
+export class EveSOFDataHullAnimation extends EveSOFBaseClass
 {
 
+    name = "";
     endRate = 0;
     endRotationTime = 0;
     endRotationValue = quat.create();
@@ -25,20 +27,19 @@ export class EveSOFDataHullAnimation extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataHullAnimation, Type =>
+EveSOFDataHullAnimation.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataHullAnimation",
-        props: {
-            endRate: Type.NUMBER,
-            endRotationTime: Type.NUMBER,
-            endRotationValue: Type.TR_ROTATION,
-            id: Type.NUMBER,
-            startRate: Type.NUMBER,
-            startRotationTime: Type.NUMBER,
-            startRotationValue: Type.TR_ROTATION
-        }
+        black: [
+            ["endRate", r.float],
+            ["endRotationTime", r.float],
+            ["endRotationValue", r.vector4],
+            ["id", r.uint],
+            ["name", r.string],
+            ["startRate", r.float],
+            ["startRotationTime", r.float],
+            ["startRotationValue", r.vector4]
+        ]
     };
 });
-

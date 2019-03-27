@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataAreaMaterial
@@ -9,7 +9,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {String} material3 -
  * @property {String} material4 -
  */
-export class EveSOFDataAreaMaterial extends Tw2BaseClass
+export class EveSOFDataAreaMaterial extends EveSOFBaseClass
 {
 
     colorType = 0;
@@ -20,18 +20,16 @@ export class EveSOFDataAreaMaterial extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataAreaMaterial, Type =>
+EveSOFDataAreaMaterial.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataAreaMaterial",
-        props: {
-            colorType: Type.NUMBER,
-            material1: Type.STRING,
-            material2: Type.STRING,
-            material3: Type.STRING,
-            material4: Type.STRING
-        }
+        black: [
+            ["colorType", r.uint],
+            ["material1", r.string],
+            ["material2", r.string],
+            ["material3", r.string],
+            ["material4", r.string]
+        ]
     };
 });
-

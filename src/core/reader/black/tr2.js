@@ -1,4 +1,4 @@
-import * as r from "../Tw2BlackClassReaders";
+import * as r from "../Tw2BlackPropertyReaders";
 
 class ConstantParameter
 {
@@ -188,10 +188,10 @@ export function tr2(map)
 
     map.set("Tr2CurveColor", new Map([
         ["name", r.string],
-        ["r", r.rawObject],
-        ["g", r.rawObject],
-        ["b", r.rawObject],
-        ["a", r.rawObject]
+        ["r", r.plain],
+        ["g", r.plain],
+        ["b", r.plain],
+        ["a", r.plain]
     ]));
 
     map.set("Tr2CurveConstant", new Map([
@@ -201,9 +201,9 @@ export function tr2(map)
 
     map.set("Tr2CurveEulerRotation", new Map([
         ["name", r.string],
-        ["pitch", r.rawObject],
-        ["roll", r.rawObject],
-        ["yaw", r.rawObject]
+        ["pitch", r.plain],
+        ["roll", r.plain],
+        ["yaw", r.plain]
     ]));
 
     map.set("Tr2CurveScalar", new Map([
@@ -217,9 +217,9 @@ export function tr2(map)
 
     map.set("Tr2CurveVector3", new Map([
         ["name", r.string],
-        ["x", r.rawObject],
-        ["y", r.rawObject],
-        ["z", r.rawObject]
+        ["x", r.plain],
+        ["y", r.plain],
+        ["z", r.plain]
     ]));
 
     map.set("Tr2CurveEulerRotationExpression", new Map([
@@ -403,7 +403,7 @@ export function tr2(map)
 
     map.set("Tr2InteriorPlaceable", new Map([
         ["placeableResPath", r.string],
-        ["transform", r.rawObject]
+        ["transform", r.plain]
     ]));
 
     map.set("Tr2InteriorScene", new Map([
@@ -428,7 +428,7 @@ export function tr2(map)
 
     map.set("Tr2IntSkinnedObject", new Map([
         ["curveSets", r.array],
-        ["transform", r.rawObject],
+        ["transform", r.plain],
         ["visualModel", r.object],
     ]));
 

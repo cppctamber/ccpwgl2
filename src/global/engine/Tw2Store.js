@@ -185,10 +185,9 @@ class Tw2Store extends Tw2EventEmitter
     /**
      * Gets a library constructor by name
      * @param {String} name
-     * @param {Boolean} [repressWarning]
      * @returns {?Function}
      */
-    GetClass(name, repressWarning)
+    GetClass(name)
     {
         let Constructor = Tw2Store.GetStoreItem(this, "class", name);
 
@@ -213,7 +212,7 @@ class Tw2Store extends Tw2EventEmitter
         }
 
         // Create a warning when a staging class is called
-        if (Constructor && Constructor.__isStaging && !repressWarning)
+        if (Constructor && Constructor.__isStaging)
         {
             this.emit("staging", {
                 type: "class",

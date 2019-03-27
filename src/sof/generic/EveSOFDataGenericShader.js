@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {EveSOFBaseClass} from "../EveSOFBaseClass";
 
 /**
  * EveSOFDataGenericShader
@@ -8,9 +8,10 @@ import {Tw2BaseClass} from "../../global";
  * @property {Boolean} doGenerateDepthArea                   -
  * @property {Array.<EveSOFDataGenericString>} parameters    -
  * @property {String} shader                                 -
+ * @property {Array.<EveSOFData
  * @property {String} transparencyTextureName                -
  */
-export class EveSOFDataGenericShader extends Tw2BaseClass
+export class EveSOFDataGenericShader extends EveSOFBaseClass
 {
 
     defaultParameters = [];
@@ -22,19 +23,17 @@ export class EveSOFDataGenericShader extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveSOFDataGenericShader, Type =>
+EveSOFDataGenericShader.define(r =>
 {
     return {
-        isStaging: true,
         type: "EveSOFDataGenericShader",
-        props: {
-            defaultParameters: [["EveSOFDataParameter"]],
-            defaultTextures: [["EveSOFDataTexture"]],
-            doGenerateDepthArea: Type.BOOLEAN,
-            parameters: [["EveSOFDataGenericString"]],
-            shader: Type.STRING,
-            transparencyTextureName: Type.STRING
-        }
+        black: [
+            ["defaultParameters", r.array],
+            ["defaultTextures", r.array],
+            ["doGenerateDepthArea", r.boolean],
+            ["parameters", r.array],
+            ["shader", r.string],
+            ["transparencyTextureName", r.string],
+        ]
     };
 });
-

@@ -137,30 +137,6 @@ export class ErrHTTPReadyState extends Tw2Error
     }
 }
 
-
-/**
- * Throws when xml is not a valid format
- */
-export class ErrXMLBinaryFormat extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Invalid binary format");
-    }
-}
-
-
-/**
- * Throws when an xml object type is undefined
- */
-export class ErrXMLObjectTypeUndefined extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "XML Object type \"%type%\" undefined type");
-    }
-}
-
 /**
  * Throws when xml is not a valid format
  */
@@ -186,11 +162,11 @@ export class ErrBinaryReaderReadError extends Tw2Error
 /**
  * Throws when an xml object type is undefined
  */
-export class ErrBinaryObjectTypeNotDefined extends Tw2Error
+export class ErrBinaryObjectTypeNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Binary object type \"%type%\" is not defined");
+        super(data, "Binary object type \"%type%\" not found");
     }
 }
 
