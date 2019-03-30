@@ -17,6 +17,7 @@ export default class Tr2PointLight extends Tw2BaseClass
 
     brightness = 0;
     color = vec4.create();
+    innerRadius = 0;
     noiseAmplitude = 0;
     noiseFrequency = 0;
     noiseOctaves = 0;
@@ -33,21 +34,14 @@ Tw2BaseClass.define(Tr2PointLight, Type =>
         props: {
             brightness: Type.NUMBER,
             color: Type.RGBA_LINEAR,
+            innerRadius: Type.NUMBER,
             noiseAmplitude: Type.NUMBER,
             noiseFrequency: Type.NUMBER,
             noiseOctaves: Type.NUMBER,
             position: Type.TR_TRANSLATION,
             radius: Type.NUMBER
         },
-        notImplemented: [
-            "brightness",
-            "color",
-            "noiseAmplitude",
-            "noiseFrequency",
-            "noiseOctaves",
-            "position",
-            "radius"
-        ]
+        notImplemented: ["*"]
     };
 });
 

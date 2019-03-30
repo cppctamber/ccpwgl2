@@ -445,6 +445,7 @@ export function tr2(map)
         ["name", r.string],
         ["brightness", r.float],
         ["color", r.vector4],
+        ["innerRadius", r.float],
         ["noiseAmplitude", r.float],
         ["noiseFrequency", r.float],
         ["noiseOctaves", r.float],

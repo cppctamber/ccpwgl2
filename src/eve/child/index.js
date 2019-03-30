@@ -2,6 +2,7 @@ export * from "./EveChildBulletStorm";
 export * from "./EveChildCloud";
 export * from "./EveChildContainer";
 export * from "./EveChildExplosion";
+export * from "./EveChildInheritProperties";
 export * from "./EveChildLink";
 export * from "./EveChildMesh";
 export * from "./EveChildParticleSphere";

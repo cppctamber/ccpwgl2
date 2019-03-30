@@ -86,6 +86,7 @@ export function eve(map)
         ["name", r.string],
         ["curveSets", r.array],
         ["hideOnLowQuality", r.boolean],
+        ["inheritProperties", r.object],
         ["lights", r.array],
         ["observers", r.array],
         ["objects", r.array],
@@ -113,6 +114,8 @@ export function eve(map)
         ["rotation", r.vector4],
         ["scaling", r.vector3]
     ]));
+
+    map.set("EveChildInheritProperties", new Map());
 
     map.set("EveChildLink", new Map([
         ["linkStrengthBindings", r.array],

@@ -11676,6 +11676,8 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "color", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "innerRadius", 0);
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseAmplitude", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseFrequency", 0);
@@ -11700,13 +11702,14 @@ _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].define(Tr2PointLight, Type 
     props: {
       brightness: Type.NUMBER,
       color: Type.RGBA_LINEAR,
+      innerRadius: Type.NUMBER,
       noiseAmplitude: Type.NUMBER,
       noiseFrequency: Type.NUMBER,
       noiseOctaves: Type.NUMBER,
       position: Type.TR_TRANSLATION,
       radius: Type.NUMBER
     },
-    notImplemented: ["brightness", "color", "noiseAmplitude", "noiseFrequency", "noiseOctaves", "position", "radius"]
+    notImplemented: ["*"]
   };
 });
 
@@ -19108,8 +19111,9 @@ function eve(map) {
   map.set("EveCamera", new Map([["fieldOfView", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["friction", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["frontClip", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["idleMove", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["idleScale", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["idleSpeed", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["intr", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["pitch", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["pos", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["maxSpeed", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["noiseScale", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["noiseScaleCurve", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["rotationAroundParent", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["translationFromParent", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["yaw", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["zoomCurve", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]]]));
   map.set("EveChildCloud", new Map([["cellScreenSize", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["sortingModifier", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["effect", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["preTesselationLevel", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["rotation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["scaling", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["translation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]]]));
   map.set("EveChildBulletStorm", new Map([["effect", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["multiplier", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["range", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["speed", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["sourceLocatorSet", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]]]));
-  map.set("EveChildContainer", new Map([["boneIndex", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["controllers", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["display", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["localTransform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["matrix"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["curveSets", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["hideOnLowQuality", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["lights", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["observers", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["objects", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["rotation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["scaling", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["staticTransform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["transformModifiers", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["translation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]]]));
+  map.set("EveChildContainer", new Map([["boneIndex", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["controllers", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["display", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["localTransform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["matrix"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["curveSets", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["hideOnLowQuality", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["inheritProperties", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["lights", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["observers", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["objects", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["rotation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["scaling", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["staticTransform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["transformModifiers", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["translation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]]]));
   map.set("EveChildExplosion", new Map([["globalDuration", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["globalExplosion", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["globalExplosionDelay", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["globalExplosions", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["globalScaling", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["localDuration", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["localExplosion", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["localExplosions", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["localExplosionInterval", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["localExplosionIntervalFactor", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["localExplosionShared", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["localTransform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["matrix"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["rotation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["scaling", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]]]));
+  map.set("EveChildInheritProperties", new Map());
   map.set("EveChildLink", new Map([["linkStrengthBindings", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["linkStrengthCurves", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["mesh", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["rotation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]]]));
   map.set("EveChildMesh", new Map([["display", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["localTransform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["matrix"]], ["lowestLodVisible", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["mesh", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["minScreenSize", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["rotation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["scaling", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["sortValueOffset", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["staticTransform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["transformModifiers", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["translation", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["useSpaceObjectData", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["useSRT", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]]]));
   map.set("EveChildParticleSphere", new Map([["generators", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["maxSpeed", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["mesh", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["movementScale", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["particleSystem", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["positionShiftDecreaseSpeed", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["positionShiftIncreaseSpeed", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["positionShiftMax", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["positionShiftMin", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["radius", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["useSpaceObjectData", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]]]));
@@ -19337,7 +19341,7 @@ function tr2(map) {
   map.set("Tr2IntSkinnedObject", new Map([["curveSets", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["transform", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["plain"]], ["visualModel", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]]]));
   map.set("Tr2KelvinColor", new Map([["temperature", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["tint", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]]]));
   map.set("Tr2Model", new Map([["meshes", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]]]));
-  map.set("Tr2PointLight", new Map([["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["brightness", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["color", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["noiseAmplitude", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["noiseFrequency", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["noiseOctaves", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["position", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["radius", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]]]));
+  map.set("Tr2PointLight", new Map([["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["brightness", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["color", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"]], ["innerRadius", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["noiseAmplitude", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["noiseFrequency", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["noiseOctaves", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]], ["position", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"]], ["radius", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"]]]));
   map.set("Tr2LodResource", new Map([["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["highDetailResPath", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["lowDetailResPath", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["mediumDetailResPath", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]]]));
   map.set("Tr2Mesh", new Map([["additiveAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["decalAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["deferGeometryLoad", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["depthAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["depthNormalAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["distortionAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["geometryResPath", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["meshIndex", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["opaqueAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["opaquePrepassAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["pickableAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]], ["transparentAreas", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]]]));
   map.set("Tr2MeshArea", new Map([["count", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["effect", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]], ["index", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"]], ["name", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"]], ["reversed", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]], ["useSHLighting", _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"]]]));
@@ -32845,21 +32849,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * TODO: Implement "staticTransform"
  * TODO: Implement "transformModifiers"
  *
- * @property {Array.<StateController>} controllers      -
- * @property {Array.<Tw2CurveSet>} curveSets            -
- * @property {Boolean} display                          -
- * @property {Boolean} hideOnLowQuality                 -
- * @property {Array.<Tr2PointLight>} lights             -
- * @property {mat4} localTransform                      -
- * @property {Array.<EveChild>} objects                 -
- * @property {Array.<TriObserverLocal>} observers       -
- * @property {quat} rotation                            -
- * @property {vec3} scaling                             -
- * @property {Boolean} staticTransform                  -
- * @property {Array.<ChildModifier>} transformModifiers -
- * @property {vec3} translation                         -
- * @property {mat4} _worldTransform                     -
- * @property {mat4} _worldTransformLast                 -
+ * @property {Array.<StateController>} controllers         -
+ * @property {Array.<Tw2CurveSet>} curveSets               -
+ * @property {Boolean} display                             -
+ * @property {Boolean} hideOnLowQuality                    -
+ * @property {EveChildInheritProperties} inheritProperties -
+ * @property {Array.<Tr2PointLight>} lights                -
+ * @property {mat4} localTransform                         -
+ * @property {Array.<EveChild>} objects                    -
+ * @property {Array.<TriObserverLocal>} observers          -
+ * @property {quat} rotation                               -
+ * @property {vec3} scaling                                -
+ * @property {Boolean} staticTransform                     -
+ * @property {Array.<ChildModifier>} transformModifiers    -
+ * @property {vec3} translation                            -
+ * @property {mat4} _worldTransform                        -
+ * @property {mat4} _worldTransformLast                    -
  */
 
 let EveChildContainer =
@@ -32885,6 +32890,8 @@ function (_EveChild) {
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "display", true);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hideOnLowQuality", false);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "inheritProperties", null);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lights", []);
 
@@ -33119,6 +33126,24 @@ _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild"].define(EveChildExplosion, Typ
     notImplemented: ["*"]
   };
 });
+
+/***/ }),
+
+/***/ "./eve/child/EveChildInheritProperties.js":
+/*!************************************************!*\
+  !*** ./eve/child/EveChildInheritProperties.js ***!
+  \************************************************/
+/*! exports provided: EveChildInheritProperties */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildInheritProperties", function() { return EveChildInheritProperties; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+let EveChildInheritProperties = function EveChildInheritProperties() {
+  _classCallCheck(this, EveChildInheritProperties);
+};
 
 /***/ }),
 
@@ -33799,7 +33824,7 @@ _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild"].define(EveChildQuad, Type => 
 /*!****************************!*\
   !*** ./eve/child/index.js ***!
   \****************************/
-/*! exports provided: EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -33816,34 +33841,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveChildExplosion__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveChildExplosion */ "./eve/child/EveChildExplosion.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildExplosion", function() { return _EveChildExplosion__WEBPACK_IMPORTED_MODULE_3__["EveChildExplosion"]; });
 
-/* harmony import */ var _EveChildLink__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveChildLink */ "./eve/child/EveChildLink.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildLink", function() { return _EveChildLink__WEBPACK_IMPORTED_MODULE_4__["EveChildLink"]; });
+/* harmony import */ var _EveChildInheritProperties__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveChildInheritProperties */ "./eve/child/EveChildInheritProperties.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildInheritProperties", function() { return _EveChildInheritProperties__WEBPACK_IMPORTED_MODULE_4__["EveChildInheritProperties"]; });
 
-/* harmony import */ var _EveChildMesh__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveChildMesh */ "./eve/child/EveChildMesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildMesh", function() { return _EveChildMesh__WEBPACK_IMPORTED_MODULE_5__["EveChildMesh"]; });
+/* harmony import */ var _EveChildLink__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveChildLink */ "./eve/child/EveChildLink.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildLink", function() { return _EveChildLink__WEBPACK_IMPORTED_MODULE_5__["EveChildLink"]; });
 
-/* harmony import */ var _EveChildParticleSphere__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveChildParticleSphere */ "./eve/child/EveChildParticleSphere.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSphere", function() { return _EveChildParticleSphere__WEBPACK_IMPORTED_MODULE_6__["EveChildParticleSphere"]; });
+/* harmony import */ var _EveChildMesh__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveChildMesh */ "./eve/child/EveChildMesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildMesh", function() { return _EveChildMesh__WEBPACK_IMPORTED_MODULE_6__["EveChildMesh"]; });
 
-/* harmony import */ var _EveChildParticleSystem__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveChildParticleSystem */ "./eve/child/EveChildParticleSystem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSystem", function() { return _EveChildParticleSystem__WEBPACK_IMPORTED_MODULE_7__["EveChildParticleSystem"]; });
+/* harmony import */ var _EveChildParticleSphere__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveChildParticleSphere */ "./eve/child/EveChildParticleSphere.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSphere", function() { return _EveChildParticleSphere__WEBPACK_IMPORTED_MODULE_7__["EveChildParticleSphere"]; });
 
-/* harmony import */ var _EveChildQuad__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EveChildQuad */ "./eve/child/EveChildQuad.js");
-/* empty/unused harmony star reexport *//* harmony import */ var _legacy__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./legacy */ "./eve/child/legacy/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildBillboard", function() { return _legacy__WEBPACK_IMPORTED_MODULE_9__["EveChildBillboard"]; });
+/* harmony import */ var _EveChildParticleSystem__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EveChildParticleSystem */ "./eve/child/EveChildParticleSystem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSystem", function() { return _EveChildParticleSystem__WEBPACK_IMPORTED_MODULE_8__["EveChildParticleSystem"]; });
 
-/* harmony import */ var _modifier__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modifier */ "./eve/child/modifier/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierAttachToBone", function() { return _modifier__WEBPACK_IMPORTED_MODULE_10__["EveChildModifierAttachToBone"]; });
+/* harmony import */ var _EveChildQuad__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./EveChildQuad */ "./eve/child/EveChildQuad.js");
+/* empty/unused harmony star reexport *//* harmony import */ var _legacy__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./legacy */ "./eve/child/legacy/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildBillboard", function() { return _legacy__WEBPACK_IMPORTED_MODULE_10__["EveChildBillboard"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard2D", function() { return _modifier__WEBPACK_IMPORTED_MODULE_10__["EveChildModifierBillboard2D"]; });
+/* harmony import */ var _modifier__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./modifier */ "./eve/child/modifier/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierAttachToBone", function() { return _modifier__WEBPACK_IMPORTED_MODULE_11__["EveChildModifierAttachToBone"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard3D", function() { return _modifier__WEBPACK_IMPORTED_MODULE_10__["EveChildModifierBillboard3D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard2D", function() { return _modifier__WEBPACK_IMPORTED_MODULE_11__["EveChildModifierBillboard2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierCameraOrientedRotationConstrained", function() { return _modifier__WEBPACK_IMPORTED_MODULE_10__["EveChildModifierCameraOrientedRotationConstrained"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard3D", function() { return _modifier__WEBPACK_IMPORTED_MODULE_11__["EveChildModifierBillboard3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return _modifier__WEBPACK_IMPORTED_MODULE_10__["EveChildModifierSRT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierCameraOrientedRotationConstrained", function() { return _modifier__WEBPACK_IMPORTED_MODULE_11__["EveChildModifierCameraOrientedRotationConstrained"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return _modifier__WEBPACK_IMPORTED_MODULE_10__["EveChildModifierTranslateWithCamera"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return _modifier__WEBPACK_IMPORTED_MODULE_11__["EveChildModifierSRT"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return _modifier__WEBPACK_IMPORTED_MODULE_11__["EveChildModifierTranslateWithCamera"]; });
+
 
 
 
@@ -36368,7 +36397,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -36381,6 +36410,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildContainer", function() { return _child__WEBPACK_IMPORTED_MODULE_0__["EveChildContainer"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildExplosion", function() { return _child__WEBPACK_IMPORTED_MODULE_0__["EveChildExplosion"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildInheritProperties", function() { return _child__WEBPACK_IMPORTED_MODULE_0__["EveChildInheritProperties"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildLink", function() { return _child__WEBPACK_IMPORTED_MODULE_0__["EveChildLink"]; });
 
@@ -36439,6 +36470,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_2__["EveTransform"]; });
 
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBanner"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2Batch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet2Batch"]; });
@@ -36500,12 +36537,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSetItem"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
 
 /* harmony import */ var _planetaryInteraction__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./planetaryInteraction */ "./eve/planetaryInteraction/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return _planetaryInteraction__WEBPACK_IMPORTED_MODULE_4__["EveConnector"]; });
@@ -42304,7 +42335,7 @@ _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].define(EveTurretSet, 
 /*!***************************!*\
   !*** ./eve/item/index.js ***!
   \***************************/
-/*! exports provided: EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55978,7 +56009,7 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: math, util, device, store, resMan, logger, consts, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, Tw2ParticleSystem, Tr2Model, EveSOFData, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: math, util, device, store, resMan, logger, consts, Tr2RuntimeInstanceData, TriObserverLocal, Tr2PointLight, Tr2ShLightingManager, Tr2PostProcess, Tw2Float, TriMatrix, Tw2Error, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tr2RotationAdapter, Tr2TranslationAdapter, AudEventCurve, AudEventKey, Tr2BoneMatrixCurve, Tr2CurveConstant, Tr2CurveScalar, Tw2CurveScalarKey, TriEventCurve, TriEventKey, TriPerlinCurve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, TriColorSequencer, Tr2CurveColor, Tr2CurveEulerRotation, Tr2CurveVector3, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveSOF, EveCamera, EveSpaceScene, Tw2ParticleSystem, Tr2Model, EveSOFData, Tr2StateMachine, Tr2StateMachineState, Tr2StateMachineTransition, Tr2SyncToAnimation, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2VertexDeclaration, Tw2VertexElement, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveMissileWarhead, EveMissile, EveTransform, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveConnector, EveLocalPositionCurve, EveSpherePin, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, EveParticleDirectForce, EveParticleDragForce, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator, Tr2IntSkinnedObject, Tr2SkinnedModel, Tr2InteriorLightSource, Tr2KelvinColor, Tr2InteriorPlaceable, Tr2InteriorScene, WodPlaceableRes, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform, Tr2ActionAnimateCurveSet, Tr2ActionAnimateValue, Tr2ActionChildEffect, Tr2ActionOverlay, Tr2ActionPlayCurveSet, Tr2ActionPlayMeshAnimation, Tr2ActionResetClipSphereCenter, Tr2ActionSetValue, Tr2Controller, Tr2ControllerReference, Tr2ControllerFloatVariable, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56360,6 +56391,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildExplosion", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildExplosion"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildInheritProperties", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildInheritProperties"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildLink", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildLink"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildMesh", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildMesh"]; });
@@ -56383,6 +56416,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveMissile"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterBatch"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterSet"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBanner"]; });
 
@@ -56465,12 +56504,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildModifierSRT"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildModifierTranslateWithCamera"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterBatch"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterSetItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _eve__WEBPACK_IMPORTED_MODULE_4__["EveBoosterSet"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSystem", function() { return _particle__WEBPACK_IMPORTED_MODULE_6__["Tw2ParticleSystem"]; });
 
@@ -56587,6 +56620,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSet", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullLightSet"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullLightSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullLightSetSpotLight"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetTexturedPointLight", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullLightSetTexturedPointLight"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _sof__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullLocator"]; });
 
@@ -65056,6 +65093,10 @@ function (_EveSOFBaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lightColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseAmplitude", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "noiseFrequency", 0);
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
@@ -65068,7 +65109,173 @@ function (_EveSOFBaseClass) {
 EveSOFDataHullLightSetItem.define(r => {
   return {
     type: "EveSOFDataHullLightSetItem",
-    black: [["name", r.string], ["brightness", r.float], ["innerRadius", r.float], ["lightColor", r.vector4], ["position", r.vector3], ["radius", r.float]]
+    black: [["name", r.string], ["brightness", r.float], ["innerRadius", r.float], ["lightColor", r.vector4], ["noiseAmplitude", r.float], ["noiseFrequency", r.float], ["position", r.vector3], ["radius", r.float]]
+  };
+});
+
+/***/ }),
+
+/***/ "./sof/hull/EveSOFDataHullLightSetSpotLight.js":
+/*!*****************************************************!*\
+  !*** ./sof/hull/EveSOFDataHullLightSetSpotLight.js ***!
+  \*****************************************************/
+/*! exports provided: EveSOFDataHullLightSetSpotLight */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return EveSOFDataHullLightSetSpotLight; });
+/* harmony import */ var _EveSOFBaseClass__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../EveSOFBaseClass */ "./sof/EveSOFBaseClass.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveSOFDataHullLightSetSpotLight
+ * @ccp EveSOFDataHullLightSetSpotLight
+ *
+ * @property {String} name
+ * @property {Number} brightness
+ * @property {Number} innerAngle
+ * @property {vec4} lightColor
+ * @property {Number} outerAngle
+ * @property {vec3} position
+ * @property {quat} rotation
+ */
+
+let EveSOFDataHullLightSetSpotLight =
+/*#__PURE__*/
+function (_EveSOFBaseClass) {
+  _inherits(EveSOFDataHullLightSetSpotLight, _EveSOFBaseClass);
+
+  function EveSOFDataHullLightSetSpotLight() {
+    var _this;
+
+    _classCallCheck(this, EveSOFDataHullLightSetSpotLight);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveSOFDataHullLightSetSpotLight).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "name", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "brightness", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "innerAngle", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "lightColor", _global__WEBPACK_IMPORTED_MODULE_1__["vec4"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "outerAngle", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "rotation", _global__WEBPACK_IMPORTED_MODULE_1__["quat"].create());
+
+    return _this;
+  }
+
+  return EveSOFDataHullLightSetSpotLight;
+}(_EveSOFBaseClass__WEBPACK_IMPORTED_MODULE_0__["EveSOFBaseClass"]);
+EveSOFDataHullLightSetSpotLight.define(r => {
+  return {
+    type: "EveSOFDataHullLightSetSpotLight",
+    black: [["name", r.string], ["brightness", r.float], ["innerAngle", r.float], ["lightColor", r.color], ["outerAngle", r.float], ["position", r.vector3], ["rotation", r.vector4]]
+  };
+});
+
+/***/ }),
+
+/***/ "./sof/hull/EveSOFDataHullLightSetTexturedPointLight.js":
+/*!**************************************************************!*\
+  !*** ./sof/hull/EveSOFDataHullLightSetTexturedPointLight.js ***!
+  \**************************************************************/
+/*! exports provided: EveSOFDataHullLightSetTexturedPointLight */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetTexturedPointLight", function() { return EveSOFDataHullLightSetTexturedPointLight; });
+/* harmony import */ var _EveSOFBaseClass__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../EveSOFBaseClass */ "./sof/EveSOFBaseClass.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (call && (typeof call === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * EveSOFDataHullLightSetTexturedPointLight
+ * @ccp EveSOFDataHullLightSetTexturedPointLight
+ *
+ * @property {String} name
+ * @property {Number} brightness
+ * @property {vec3} position
+ * @property {Number} radius
+ * @property {String} texturePath
+ */
+
+let EveSOFDataHullLightSetTexturedPointLight =
+/*#__PURE__*/
+function (_EveSOFBaseClass) {
+  _inherits(EveSOFDataHullLightSetTexturedPointLight, _EveSOFBaseClass);
+
+  function EveSOFDataHullLightSetTexturedPointLight() {
+    var _this;
+
+    _classCallCheck(this, EveSOFDataHullLightSetTexturedPointLight);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(EveSOFDataHullLightSetTexturedPointLight).call(this, ...args));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "name", "");
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "brightness", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "innerRadius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "position", _global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create());
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "radius", 0);
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "texturePath", "");
+
+    return _this;
+  }
+
+  return EveSOFDataHullLightSetTexturedPointLight;
+}(_EveSOFBaseClass__WEBPACK_IMPORTED_MODULE_0__["EveSOFBaseClass"]);
+EveSOFDataHullLightSetTexturedPointLight.define(r => {
+  return {
+    type: "EveSOFDataHullLightSetTexturedPointLight",
+    black: [["name", r.string], ["brightness", r.float], ["innerRadius", r.float], ["position", r.vector3], ["radius", r.float], ["texturePath", r.path]]
   };
 });
 
@@ -65969,7 +66176,7 @@ EveSOFDataHullSpriteSetItem.define(r => {
 /*!***************************!*\
   !*** ./sof/hull/index.js ***!
   \***************************/
-/*! exports provided: EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem */
+/*! exports provided: EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66016,38 +66223,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataHullLightSetItem__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./EveSOFDataHullLightSetItem */ "./sof/hull/EveSOFDataHullLightSetItem.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return _EveSOFDataHullLightSetItem__WEBPACK_IMPORTED_MODULE_13__["EveSOFDataHullLightSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./EveSOFDataHullLocator */ "./sof/hull/EveSOFDataHullLocator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_14__["EveSOFDataHullLocator"]; });
+/* harmony import */ var _EveSOFDataHullLightSetSpotLight__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./EveSOFDataHullLightSetSpotLight */ "./sof/hull/EveSOFDataHullLightSetSpotLight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return _EveSOFDataHullLightSetSpotLight__WEBPACK_IMPORTED_MODULE_14__["EveSOFDataHullLightSetSpotLight"]; });
 
-/* harmony import */ var _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./EveSOFDataHullLocatorSet */ "./sof/hull/EveSOFDataHullLocatorSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_15__["EveSOFDataHullLocatorSet"]; });
+/* harmony import */ var _EveSOFDataHullLightSetTexturedPointLight__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./EveSOFDataHullLightSetTexturedPointLight */ "./sof/hull/EveSOFDataHullLightSetTexturedPointLight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetTexturedPointLight", function() { return _EveSOFDataHullLightSetTexturedPointLight__WEBPACK_IMPORTED_MODULE_15__["EveSOFDataHullLightSetTexturedPointLight"]; });
 
-/* harmony import */ var _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSet */ "./sof/hull/EveSOFDataHullPlaneSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_16__["EveSOFDataHullPlaneSet"]; });
+/* harmony import */ var _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./EveSOFDataHullLocator */ "./sof/hull/EveSOFDataHullLocator.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_16__["EveSOFDataHullLocator"]; });
 
-/* harmony import */ var _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSetItem */ "./sof/hull/EveSOFDataHullPlaneSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_17__["EveSOFDataHullPlaneSetItem"]; });
+/* harmony import */ var _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./EveSOFDataHullLocatorSet */ "./sof/hull/EveSOFDataHullLocatorSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_17__["EveSOFDataHullLocatorSet"]; });
 
-/* harmony import */ var _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./EveSOFDataHullSoundEmitter */ "./sof/hull/EveSOFDataHullSoundEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSoundEmitter", function() { return _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_18__["EveSOFDataHullSoundEmitter"]; });
+/* harmony import */ var _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSet */ "./sof/hull/EveSOFDataHullPlaneSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_18__["EveSOFDataHullPlaneSet"]; });
 
-/* harmony import */ var _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSet */ "./sof/hull/EveSOFDataHullSpotlightSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_19__["EveSOFDataHullSpotlightSet"]; });
+/* harmony import */ var _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSetItem */ "./sof/hull/EveSOFDataHullPlaneSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_19__["EveSOFDataHullPlaneSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSetItem */ "./sof/hull/EveSOFDataHullSpotlightSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_20__["EveSOFDataHullSpotlightSetItem"]; });
+/* harmony import */ var _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./EveSOFDataHullSoundEmitter */ "./sof/hull/EveSOFDataHullSoundEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSoundEmitter", function() { return _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_20__["EveSOFDataHullSoundEmitter"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSet */ "./sof/hull/EveSOFDataHullSpriteLineSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_21__["EveSOFDataHullSpriteLineSet"]; });
+/* harmony import */ var _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSet */ "./sof/hull/EveSOFDataHullSpotlightSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_21__["EveSOFDataHullSpotlightSet"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSetItem */ "./sof/hull/EveSOFDataHullSpriteLineSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_22__["EveSOFDataHullSpriteLineSetItem"]; });
+/* harmony import */ var _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSetItem */ "./sof/hull/EveSOFDataHullSpotlightSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_22__["EveSOFDataHullSpotlightSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSet */ "./sof/hull/EveSOFDataHullSpriteSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_23__["EveSOFDataHullSpriteSet"]; });
+/* harmony import */ var _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSet */ "./sof/hull/EveSOFDataHullSpriteLineSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_23__["EveSOFDataHullSpriteLineSet"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSetItem */ "./sof/hull/EveSOFDataHullSpriteSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_24__["EveSOFDataHullSpriteSetItem"]; });
+/* harmony import */ var _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSetItem */ "./sof/hull/EveSOFDataHullSpriteLineSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_24__["EveSOFDataHullSpriteLineSetItem"]; });
+
+/* harmony import */ var _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSet */ "./sof/hull/EveSOFDataHullSpriteSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_25__["EveSOFDataHullSpriteSet"]; });
+
+/* harmony import */ var _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSetItem */ "./sof/hull/EveSOFDataHullSpriteSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_26__["EveSOFDataHullSpriteSetItem"]; });
+
+
 
 
 
@@ -66081,7 +66296,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./sof/index.js ***!
   \**********************/
-/*! exports provided: EveSOFData, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
+/*! exports provided: EveSOFData, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66144,6 +66359,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSet", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullLightSet"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullLightSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullLightSetSpotLight"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetTexturedPointLight", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullLightSetTexturedPointLight"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullLocator"]; });
 

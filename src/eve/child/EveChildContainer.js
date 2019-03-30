@@ -10,21 +10,22 @@ import {mat4, quat, vec3} from "../../global";
  * TODO: Implement "staticTransform"
  * TODO: Implement "transformModifiers"
  *
- * @property {Array.<StateController>} controllers      -
- * @property {Array.<Tw2CurveSet>} curveSets            -
- * @property {Boolean} display                          -
- * @property {Boolean} hideOnLowQuality                 -
- * @property {Array.<Tr2PointLight>} lights             -
- * @property {mat4} localTransform                      -
- * @property {Array.<EveChild>} objects                 -
- * @property {Array.<TriObserverLocal>} observers       -
- * @property {quat} rotation                            -
- * @property {vec3} scaling                             -
- * @property {Boolean} staticTransform                  -
- * @property {Array.<ChildModifier>} transformModifiers -
- * @property {vec3} translation                         -
- * @property {mat4} _worldTransform                     -
- * @property {mat4} _worldTransformLast                 -
+ * @property {Array.<StateController>} controllers         -
+ * @property {Array.<Tw2CurveSet>} curveSets               -
+ * @property {Boolean} display                             -
+ * @property {Boolean} hideOnLowQuality                    -
+ * @property {EveChildInheritProperties} inheritProperties -
+ * @property {Array.<Tr2PointLight>} lights                -
+ * @property {mat4} localTransform                         -
+ * @property {Array.<EveChild>} objects                    -
+ * @property {Array.<TriObserverLocal>} observers          -
+ * @property {quat} rotation                               -
+ * @property {vec3} scaling                                -
+ * @property {Boolean} staticTransform                     -
+ * @property {Array.<ChildModifier>} transformModifiers    -
+ * @property {vec3} translation                            -
+ * @property {mat4} _worldTransform                        -
+ * @property {mat4} _worldTransformLast                    -
  */
 export class EveChildContainer extends EveChild
 {
@@ -34,6 +35,7 @@ export class EveChildContainer extends EveChild
     curveSets = [];
     display = true;
     hideOnLowQuality = false;
+    inheritProperties = null;
     lights = [];
     localTransform = mat4.create();
     objects = [];
