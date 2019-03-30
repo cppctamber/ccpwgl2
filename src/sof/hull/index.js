@@ -12,6 +12,8 @@ export * from "./EveSOFDataHullHazeSet";
 export * from "./EveSOFDataHullHazeSetItem";
 export * from "./EveSOFDataHullLightSet";
 export * from "./EveSOFDataHullLightSetItem";
+export * from "./EveSOFDataHullLightSetSpotLight";
+export * from "./EveSOFDataHullLightSetTexturedPointLight";
 export * from "./EveSOFDataHullLocator";
 export * from "./EveSOFDataHullLocatorSet";
 export * from "./EveSOFDataHullPlaneSet";

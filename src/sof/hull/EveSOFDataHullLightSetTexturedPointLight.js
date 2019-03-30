@@ -1,44 +1,39 @@
-import {vec3, vec4} from "../../global";
 import {EveSOFBaseClass} from "../EveSOFBaseClass";
+import {vec3} from "../../global";
 
 /**
- * EveSOFDataHullLightSetItem
- * @ccp EveSOFDataHullLightSetItem
+ * EveSOFDataHullLightSetTexturedPointLight
+ * @ccp EveSOFDataHullLightSetTexturedPointLight
  *
  * @property {String} name
  * @property {Number} brightness
- * @property {Number} innerRadius
- * @property {vec4} lightColor
  * @property {vec3} position
  * @property {Number} radius
+ * @property {String} texturePath
  */
-export class EveSOFDataHullLightSetItem extends EveSOFBaseClass
+export class EveSOFDataHullLightSetTexturedPointLight extends EveSOFBaseClass
 {
 
     name = "";
     brightness = 0;
     innerRadius = 0;
-    lightColor = vec4.create();
-    noiseAmplitude = 0;
-    noiseFrequency = 0;
     position = vec3.create();
     radius = 0;
+    texturePath = "";
 
 }
 
-EveSOFDataHullLightSetItem.define(r =>
+EveSOFDataHullLightSetTexturedPointLight.define(r =>
 {
     return {
-        type: "EveSOFDataHullLightSetItem",
+        type: "EveSOFDataHullLightSetTexturedPointLight",
         black: [
             ["name", r.string],
             ["brightness", r.float],
             ["innerRadius", r.float],
-            ["lightColor", r.vector4],
-            ["noiseAmplitude", r.float],
-            ["noiseFrequency", r.float],
             ["position", r.vector3],
             ["radius", r.float],
+            ["texturePath", r.path]
         ]
     };
 });
