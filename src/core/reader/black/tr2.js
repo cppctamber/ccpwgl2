@@ -113,13 +113,20 @@ export function tr2(map)
         ["mask", r.string],
     ]));
 
-    map.set("Tr2ActionResetClipSphereCenter", new Map());
+    map.set("Tr2ActionPlaySound", new Map([
+        ["emitter", r.string],
+        ["event", r.string]
+    ]));
+
+    map.set("Tr2ActionResetClipSphereCenter", new Map([]));
 
     map.set("Tr2ActionSetValue", new Map([
         ["attribute", r.string],
         ["path", r.string],
         ["value", r.string],
     ]));
+
+    map.set("Tr2ActionSpawnParticles", new Map([]));
 
     map.set("Tr2TranslationAdapter", new Map([
         ["curve", r.object],
@@ -179,6 +186,7 @@ export function tr2(map)
     map.set("Tr2ControllerFloatVariable", new Map([
         ["name", r.string],
         ["defaultValue", r.float],
+        ["enumValues", r.string],
         ["variableType", r.uint],
     ]));
 

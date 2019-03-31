@@ -57,7 +57,7 @@ export function object(reader, out, id)
 
     if (!classes.has(type))
     {
-        throw new ErrBinaryObjectTypeNotFound({ type });
+        throw new ErrBinaryObjectTypeNotFound({type});
     }
 
     let properties = classes.get(type);
@@ -74,7 +74,14 @@ export function object(reader, out, id)
                 console.log(`${type} missing property ${propertyName}`);
             }
 
-            out[propertyName] = properties.get(propertyName)(objectReader, out[propertyName]);
+            try
+            {
+                out[propertyName] = properties.get(propertyName)(objectReader, out[propertyName]);
+            }
+            catch (err)
+            {
+                throw new ErrBinaryReaderReadError(`${propertyName} > ` + err.message);
+            }
         }
         else
         {
@@ -85,6 +92,12 @@ export function object(reader, out, id)
     }
 
     objectReader.ExpectEnd("object did not read to end");
+
+    if ("Initialize" in out)
+    {
+        out.Initialize();
+    }
+
     return out;
 }
 
@@ -94,7 +107,7 @@ export function object(reader, out, id)
  * @param {Object} [out={}]
  * @returns {Object} out
  */
-export function plain(reader, out={})
+export function plain(reader, out = {})
 {
     return object(reader, out, null);
 }

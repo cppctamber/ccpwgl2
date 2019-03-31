@@ -8,14 +8,84 @@ class Locator
         this.direction = direction;
     }
 
-    static ReadStruct(reader)
+    static readStruct(reader)
     {
         return new Locator(r.vector4(reader), r.vector4(reader));
     }
 }
 
+// TODO: Figure out property names and values
+class Transition
+{
+    /**
+     * Reads a struct
+     * @param {Tw2BlackBinaryReader} reader
+     * @returns {Transition}
+     */
+    static readStruct(reader)
+    {
+        let result = new Transition();
+
+        // Not sure of property name
+        result.state = reader.ReadStringU16();
+
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+
+        // Not sure of property name
+        result.transition = reader.ReadStringU16();
+
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+        reader.ExpectU8(0, "unknown content");
+
+
+        return result;
+    }
+}
+
+
 export function eve(map)
 {
+
+    map.set("EveAnimation", new Map([
+        ["name", r.string],
+        ["loops", r.uint],
+    ]));
+
+    map.set("EveAnimationCommand", new Map([
+        ["command", r.uint],
+    ]));
+
+    map.set("EveAnimationCurve", new Map([
+        ["name", r.string],
+    ]));
+
+    map.set("EveAnimationState", new Map([
+        ["name", r.string],
+        ["animation", r.object],
+        ["curves", r.array],
+        ["commands", r.array],
+        ["initCommands", r.array],
+        ["transitions", r.structList(Transition)],
+    ]));
+
+    map.set("EveAnimationStateMachine", new Map([
+        ["name", r.string],
+        ["autoPlayDefault", r.boolean],
+        ["states", r.array],
+        ["transitions", r.array],
+        ["trackMask", r.string],
+        ["defaultAnimation", r.string]
+    ]));
+
     map.set("EveBoosterSet2", new Map([
         ["alwaysOn", r.boolean],
         ["alwaysOnIntensity", r.float],
