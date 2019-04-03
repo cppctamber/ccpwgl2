@@ -1,23 +1,22 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataFactionVisibilityGroupSet
  *
  * @property {Array.<EveSOFDataGenericString>} visibilityGroups -
  */
-export class EveSOFDataFactionVisibilityGroupSet extends EveSOFBaseClass
+export class EveSOFDataFactionVisibilityGroupSet
 {
 
     visibilityGroups = [];
 
-}
-
-EveSOFDataFactionVisibilityGroupSet.define(r =>
-{
-    return {
-        type: "EveSOFDataFactionVisibilityGroupSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["visibilityGroups", r.array],
-        ]
-    };
-});
+        ];
+    }
+}

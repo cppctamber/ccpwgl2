@@ -1,26 +1,25 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataMaterial
  *
  * @property {String} name                            -
  * @property {Array.<EveSOFDataParameter>} parameters -
  */
-export class EveSOFDataMaterial extends EveSOFBaseClass
+export class EveSOFDataMaterial
 {
 
     name = "";
     parameters = [];
 
-}
-
-EveSOFDataMaterial.define(r =>
-{
-    return {
-        type: "EveSOFDataMaterial",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["parameters", r.array]
-        ]
-    };
-});
+        ];
+    }
+}

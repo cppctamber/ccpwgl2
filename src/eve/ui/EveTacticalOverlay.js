@@ -26,24 +26,29 @@ export default class EveTacticalOverlay extends Tw2BaseClass
     targetMaxSegments = 0;
     velocityEffect = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["anchorEffect", r.object],
+            ["arcSegmentMultiplier", r.float],
+            ["connectorEffect", r.object],
+            ["segmentsLow", r.float],
+            ["segmentsMedium", r.float],
+            ["segmentsHigh", r.float],
+            ["targetMaxSegments", r.float],
+            ["velocityEffect", r.object]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveTacticalOverlay, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveTacticalOverlay",
-        props: {
-            anchorEffect: ["Tw2Effect"],
-            arcSegmentMultiplier: Type.NUMBER,
-            connectorEffect: ["Tw2Effect"],
-            segmentsHigh: Type.NUMBER,
-            segmentsLow: Type.NUMBER,
-            segmentsMedium: Type.NUMBER,
-            targetMaxSegments: Type.NUMBER,
-            velocityEffect: ["Tw2Effect"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

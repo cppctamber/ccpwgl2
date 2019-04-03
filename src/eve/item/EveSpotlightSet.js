@@ -29,6 +29,7 @@ export class EveSpotlightSetBatch extends Tw2RenderBatch
  * TODO: Identify if "boosterGainInfluence" is deprecated
  * @ccp EveSpotlightSetItem
  *
+ * @property {String} name                  - The spotlight's name
  * @property {mat4} transform               - The spotlight's transform
  * @property {vec4} coneColor               - Colour of the spotlight's cone
  * @property {vec4} spriteColor             - Colour of the spotlight's sprite texture
@@ -44,6 +45,7 @@ export class EveSpotlightSetBatch extends Tw2RenderBatch
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
     // ccp
+    name = "";
     coneColor = vec4.create();
     flareColor = vec4.create();
     spriteColor = vec4.create();
@@ -76,30 +78,24 @@ export class EveSpotlightSetItem extends EveObjectSetItem
         return item;
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["coneColor", r.color],
+            ["flareColor", r.color],
+            ["name", r.string],
+            ["spriteColor", r.color],
+            ["spriteScale", r.vector3],
+            ["transform", r.matrix]
+        ];
+    }
 
-Tw2BaseClass.define(EveSpotlightSetItem, Type =>
-{
-    return {
-        type: "EveSpotlightSetItem",
-        props: {
-            boosterGainInfluence: Type.NUMBER,
-            boneIndex: Type.NUMBER,
-            coneColor: Type.RGBA_LINEAR,
-            coneIntensity: Type.NUMBER,
-            flareColor: Type.RGBA_LINEAR,
-            flareIntensity: Type.NUMBER,
-            groupIndex: Type.NUMBER,
-            spriteColor: Type.RGBA_LINEAR,
-            spriteIntensity: Type.NUMBER,
-            spriteScale: Type.TR_SCALING,
-            transform: Type.MATRIX4
-        },
-        watch: [
-            "boosterGainInfluence"
-        ]
-    };
-});
+}
 
 
 /**
@@ -107,6 +103,7 @@ Tw2BaseClass.define(EveSpotlightSetItem, Type =>
  * Todo: Implement "intensity"
  * @ccp EveSpotlightSet
  *
+ * @property {String} name                               - The spotlight set's name
  * @property {Tw2Effect} coneEffect                      - The spotlight set's cone effect
  * @property {Tw2Effect} glowEffect                      - The spotlight set's glow effect
  * @property {Number} intensity                          - The spotlight set's intensity
@@ -119,7 +116,7 @@ Tw2BaseClass.define(EveSpotlightSetItem, Type =>
 export class EveSpotlightSet extends EveObjectSet
 {
 
-    // ccp
+    name = "";
     coneEffect = null;
     glowEffect = null;
     intensity = 0;
@@ -412,25 +409,23 @@ export class EveSpotlightSet extends EveObjectSet
         {usage: "TEXCOORD", usageIndex: 4, elements: 3}
     ];
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["coneEffect", r.object],
+            ["glowEffect", r.object],
+            ["intensity", r.float],
+            ["name", r.string],
+            ["spotlightItems", r.array]
+        ];
+    }
+
 }
-
-
-Tw2BaseClass.define(EveSpotlightSet, Type =>
-{
-    return {
-        type: "EveSpotlightSet",
-        props: {
-            coneEffect: ["Tw2Effect"],
-            glowEffect: ["Tw2Effect"],
-            intensity: Type.NUMBER,
-            spotlightItems: [["EveSpotlightSetItem"]]
-        },
-        notImplemented: [
-            "intensity"
-        ]
-    };
-});
-
 
 
 

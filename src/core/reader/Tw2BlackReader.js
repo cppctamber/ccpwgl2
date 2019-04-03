@@ -101,7 +101,7 @@ export class Tw2BlackReader
      */
     ConstructType(type)
     {
-        const Constructor = store.GetClass(type);
+        const Constructor = store.classes.Get(type);
         if (Constructor)
         {
             return new Constructor();

@@ -47,34 +47,40 @@ export default class EveStation2 extends Tw2BaseClass
     shadowEffect = null;
     translationCurve = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["attachments", r.array],
+            ["boundingSphereCenter", r.vector3],
+            ["boundingSphereRadius", r.float],
+            ["children", r.array],
+            ["curveSets", r.array],
+            ["decals", r.array],
+            ["effectChildren", r.array],
+            ["lights", r.array],
+            ["locatorSets", r.array],
+            ["locators", r.array],
+            ["name", r.string],
+            ["mesh", r.object],
+            ["meshLod", r.object],
+            ["modelScale", r.float],
+            ["observers", r.array],
+            ["rotationCurve", r.object],
+            ["modelRotationCurve", r.object],
+            ["shadowEffect", r.object],
+            ["translationCurve", r.object]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveStation2, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveStation2",
-        props: {
-            attachments: [["EvePlaneSet", "EveSpotlightSet", "EveSpriteSet"]],
-            boundingSphereCenter: Type.VECTOR3,
-            boundingSphereRadius: Type.NUMBER,
-            children: [["EveTransform"]],
-            curveSets: [["TriCurveSet"]],
-            decals: [["EveSpaceObjectDecal"]],
-            effectChildren: [["EveChildContainer", "EveChildMesh"]],
-            lights: [["Tr2PointLight"]],
-            locatorSets: [["EveLocatorSets"]],
-            locators: [["EveLocator2"]],
-            mesh: ["Tr2Mesh"],
-            meshLod: ["Tr2MeshLod"],
-            modelRotationCurve: ["Tr2RotationAdapter"],
-            modelScale: Type.NUMBER,
-            observers: [["TriObserverLocal"]],
-            rotationCurve: ["Tr2RotationAdapter"],
-            shadowEffect: ["Tr2Effect"],
-            translationCurve: ["Tr2TranslationAdapter"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

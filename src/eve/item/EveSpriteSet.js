@@ -45,6 +45,7 @@ export class EveSpriteSetBatch extends Tw2RenderBatch
  * Sprite
  * @ccp EveSpriteSetItem
  *
+ * @property {String} name       -
  * @property {Number} blinkPhase -
  * @property {Number} blinkRate  -
  * @property {Number} boneIndex  -
@@ -57,7 +58,8 @@ export class EveSpriteSetBatch extends Tw2RenderBatch
  */
 export class EveSpriteSetItem extends EveObjectSetItem
 {
-    // ccp
+
+    name = "";
     blinkPhase = 0;
     blinkRate = 0;
     boneIndex = 0;
@@ -87,32 +89,35 @@ export class EveSpriteSetItem extends EveObjectSetItem
         return item;
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["blinkPhase", r.float],
+            ["blinkRate", r.float],
+            ["boneIndex", r.uint],
+            ["color", r.color],
+            ["falloff", r.float],
+            ["maxScale", r.float],
+            ["minScale", r.float],
+            ["name", r.string],
+            ["position", r.vector3],
+            ["warpColor", r.color]
+        ];
+    }
 
-EveObjectSetItem.define(EveSpriteSetItem, Type =>
-{
-    return {
-        type: "EveSpriteSetItem",
-        props: {
-            blinkPhase: Type.NUMBER,
-            blinkRate: Type.NUMBER,
-            boneIndex: Type.NUMBER,
-            color: Type.RGBA_LINEAR,
-            falloff: Type.NUMBER,
-            groupIndex: Type.NUMBER,
-            maxScale: Type.NUMBER,
-            minScale: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            warpColor: Type.RGBA_LINEAR
-        }
-    };
-});
+}
 
 
 /**
  * Sprite set
  * @ccp EveSpriteSet
  *
+ * @property {String} name                      - The sprite set's name
  * @property {Tw2Effect} effect                 - The sprite set's effect
  * @property {Number} intensity                 - The sprite set's intensity
  * @property {Boolean} skinned                  - Use bone transforms (when useQuads is true)
@@ -125,7 +130,8 @@ EveObjectSetItem.define(EveSpriteSetItem, Type =>
  */
 export class EveSpriteSet extends EveObjectSet
 {
-    // ccp
+
+    name = "";
     effect = null;
     intensity = 0;
     skinned = false;
@@ -573,25 +579,20 @@ export class EveSpriteSet extends EveObjectSet
         {usage: "COLOR", usageIndex: 1, elements: 4}
     ];
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["effect", r.object],
+            ["name", r.string],
+            ["intensity", r.float],
+            ["skinned", r.boolean],
+            ["sprites", r.array]
+        ];
+    }
+
 }
-
-
-EveObjectSet.define(EveSpriteSet, Type =>
-{
-    return {
-        type: "EveSpriteSet",
-        props: {
-            effect: ["Tw2Effect"],
-            intensity: Type.NUMBER,
-            skinned: Type.BOOLEAN,
-            sprites: [["EveSpriteSetItem"]],
-            useQuads: Type.BOOLEAN
-        },
-        notImplemented: [
-            "intensity"
-        ]
-    };
-});
-
-
-

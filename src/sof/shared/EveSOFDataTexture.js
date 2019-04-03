@@ -1,26 +1,25 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataTexture
  *
  * @property {String} name        -
  * @property {String} resFilePath -
  */
-export class EveSOFDataTexture extends EveSOFBaseClass
+export class EveSOFDataTexture
 {
 
     name = "";
     resFilePath = "";
 
-}
-
-EveSOFDataTexture.define(r =>
-{
-    return {
-        type: "EveSOFDataTexture",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["resFilePath", r.path]
-        ]
-    };
-});
+        ];
+    }
+}

@@ -1,26 +1,25 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullLocatorSet
  *
  * @property {String} name                          -
  * @property {Array.<EveSOFDataTransform>} locators -
  */
-export class EveSOFDataHullLocatorSet extends EveSOFBaseClass
+export class EveSOFDataHullLocatorSet
 {
 
     name = "";
     locators = [];
 
-}
-
-EveSOFDataHullLocatorSet.define(r =>
-{
-    return {
-        type: "EveSOFDataHullLocatorSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["locators", r.array]
-        ]
-    };
-});
+        ];
+    }
+}

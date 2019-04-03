@@ -11,6 +11,9 @@ import EveOccluder from "./EveOccluder";
  * TODO: Identify if "flares" array is deprecated, newer files don't look to have child flares
  * TODO: Identify if "_backBuffer" is deprecated, it never gets used
  * TODO: Identify if "backgroundOccluders" should be implemented
+ * TODO: Occluder doesn't work for center most flares, which can be seen through ships
+ *
+ * @property {String} name                              -
  * @property {Boolean} display                          -
  * @property {Boolean} update                           -
  * @property {Boolean} doOcclusionQueries               -
@@ -26,6 +29,7 @@ import EveOccluder from "./EveOccluder";
  * @property {Array} radialAngleCurves                  -
  * @property {Array} xDistanceToCenter                  -
  * @property {Array} yDistanceToCenter                  -
+ * @property {Array} zDistanceToCenter                  -
  * @property {Array} bindings                           -
  * @property {Array.<Tw2CurveSet>} curveSets            -
  * @property {?Tw2Mesh} mesh                            -
@@ -36,6 +40,7 @@ import EveOccluder from "./EveOccluder";
 export default class EveLensflare extends Tw2BaseClass
 {
     // ccp
+    name = "";
     backgroundOccluders = [];
     bindings = [];
     distanceToCenterCurves = [];
@@ -46,6 +51,7 @@ export default class EveLensflare extends Tw2BaseClass
     radialAngleCurves = [];
     xDistanceToCenter = [];
     yDistanceToCenter = [];
+    zDistanceToCenter = [];
 
     // ccpwgl
     display = true;
@@ -165,7 +171,7 @@ export default class EveLensflare extends Tw2BaseClass
 
         this.backgroundOcclusionIntensity = this.occlusionIntensity;
 
-        store.SetVariableValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
+        store.variables.SetValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
         g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
     }
 
@@ -237,7 +243,7 @@ export default class EveLensflare extends Tw2BaseClass
 
         const dir = this._direction;
 
-        store.SetVariableValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
+        store.variables.SetValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
 
         vec4.set(dist, dir[0], dir[1], dir[2], 0);
         vec4.transformMat4(dist, dist, device.view);
@@ -322,42 +328,33 @@ export default class EveLensflare extends Tw2BaseClass
      */
     static global = null;
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["backgroundOccluders", r.array],
+            ["bindings", r.array],
+            ["distanceToCenterCurves", r.array],
+            ["distanceToEdgeCurves", r.array],
+            ["mesh", r.object],
+            ["name", r.string],
+            ["occluders", r.array],
+            ["position", r.vector3],
+            ["radialAngleCurves", r.array],
+            ["xDistanceToCenter", r.array],
+            ["yDistanceToCenter", r.array],
+            ["zDistanceToCenter", r.array],
+        ];
+    }
 
-Tw2BaseClass.define(EveLensflare, Type =>
-{
-    return {
-        type: "EveLensflare",
-        props: {
-            backgroundOccluders: [["EveOccluder"]],
-            backgroundOcclusionIntensity: Type.NUMBER,
-            bindings: [["TriValueBinding"]],
-            cameraFactor: Type.NUMBER,
-            curveSets: [["Tw2CurveSet"]],
-            display: Type.BOOLEAN,
-            distanceToCenterCurves: [["Tr2CurveScalar"]],
-            distanceToEdgeCurves: [["Tr2CurveScalar"]],
-            doOcclusionQueries: Type.BOOLEAN,
-            flares: ["EveLensflare"],
-            mesh: ["Tr2Mesh"],
-            occluders: [["EveOccluder"]],
-            occlusionIntensity: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            radialAngleCurves: [["Tr2CurveScalar"]],
-            update: Type.BOOLEAN,
-            xDistanceToCenter: [["Tr2CurveScalar"]],
-            yDistanceToCenter: Type.ARRAY
-        },
-        bugs: [
-            "Occluder doesn't work for center most flares, which can be seen through ships"
-        ],
-        watch: [
-            "curveSets",
-            "flares",
-            "_backBuffer",
-        ],
-        notImplemented: [
-            "backgroundOccluders"
-        ]
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
+}

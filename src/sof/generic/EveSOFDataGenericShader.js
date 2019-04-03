@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataGenericShader
  *
@@ -11,7 +9,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Array.<EveSOFData
  * @property {String} transparencyTextureName                -
  */
-export class EveSOFDataGenericShader extends EveSOFBaseClass
+export class EveSOFDataGenericShader
 {
 
     defaultParameters = [];
@@ -21,19 +19,20 @@ export class EveSOFDataGenericShader extends EveSOFBaseClass
     shader = "";
     transparencyTextureName = "";
 
-}
-
-EveSOFDataGenericShader.define(r =>
-{
-    return {
-        type: "EveSOFDataGenericShader",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["defaultParameters", r.array],
             ["defaultTextures", r.array],
             ["doGenerateDepthArea", r.boolean],
             ["parameters", r.array],
             ["shader", r.string],
             ["transparencyTextureName", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

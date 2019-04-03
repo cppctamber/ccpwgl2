@@ -9,12 +9,12 @@ import {EveChild} from "./EveChild";
  * TODO: Implement "sortValueOffset"
  * TODO: Implement "staticTransform"
  * TODO: Implement "transformModifiers"
- * @ccp EveChildMesh
  *
+ * @property {String} name                              -
  * @property {Boolean} display                          -
  * @property {mat4} localTransform                      -
  * @property {Number} lowestLodVisible                  -
- * @property {Tw2Mesh|Tw2InstancedMesh} mesh                                -
+ * @property {Tw2Mesh|Tw2InstancedMesh} mesh            -
  * @property {Number} minScreenSize                     -
  * @property {quat} rotation                            -
  * @property {vec3} scaling                             -
@@ -45,7 +45,7 @@ export class EveChildMesh extends EveChild
     useSRT = true;
     useSpaceObjectData = true;
 
-    // ccp
+    // ccpwgl
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = null;
@@ -121,32 +121,35 @@ export class EveChildMesh extends EveChild
         this.mesh.GetBatches(mode, accumulator, this._perObjectData);
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["display", r.boolean],
+            ["localTransform", r.matrix],
+            ["lowestLodVisible", r.uint],
+            ["mesh", r.object],
+            ["minScreenSize", r.float],
+            ["name", r.string],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["sortValueOffset", r.float],
+            ["staticTransform", r.boolean],
+            ["transformModifiers", r.array],
+            ["translation", r.vector3],
+            ["useSpaceObjectData", r.boolean],
+            ["useSRT", r.boolean]
+        ];
+    }
 
-Tw2BaseClass.define(EveChildMesh, Type =>
-{
-    return {
-        type: "EveChildMesh",
-        props: {
-            display: Type.BOOLEAN,
-            localTransform: Type.TR_LOCAL,
-            lowestLodVisible: Type.NUMBER,
-            mesh: ["Tr2InstancedMesh", "Tr2Mesh"],
-            minScreenSize: Type.NUMBER,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            sortValueOffset: Type.NUMBER,
-            staticTransform: Type.BOOLEAN,
-            transformModifiers: [["EveChildModifierBillboard2D", "EveChildModifierBillboard3D", "EveChildModifierCameraOrientedRotationConstrained", "EveChildModifierSRT", "EveChildModifierTranslateWithCamera"]],
-            translation: Type.TR_TRANSLATION,
-            useSRT: Type.BOOLEAN,
-            useSpaceObjectData: Type.BOOLEAN
-        },
-        notImplemented: [
-            "lowestLodVisible",
-            "minScreenSize",
-            "sortValueOffset",
-            "staticTransform"
-        ]
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
+}

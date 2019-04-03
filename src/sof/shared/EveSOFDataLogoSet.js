@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataLogoSet
  *
@@ -9,7 +7,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataLogo} Secondary
  * @property {EveSOFDataLogo} Tertiary
  */
-export class EveSOFDataLogoSet extends EveSOFBaseClass
+export class EveSOFDataLogoSet
 {
 
     Marking_01 = null;
@@ -18,18 +16,19 @@ export class EveSOFDataLogoSet extends EveSOFBaseClass
     Secondary = null;
     Tertiary = null;
 
-}
-
-EveSOFDataLogoSet.define(r =>
-{
-    return {
-        type: "EveSOFDataLogoSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["Marking_01", r.object],
             ["Marking_02", r.object],
             ["Primary", r.object],
             ["Secondary", r.object],
             ["Tertiary", r.object]
-        ]
-    };
-});
+        ];
+    }
+}

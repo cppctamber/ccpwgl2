@@ -1,5 +1,5 @@
 import {mat4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullLocator
@@ -7,21 +7,22 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {String} name    -
  * @property {mat4} transform -
  */
-export class EveSOFDataHullLocator extends EveSOFBaseClass
+export class EveSOFDataHullLocator
 {
 
     name = "";
     transform = mat4.create();
 
-}
-
-EveSOFDataHullLocator.define(r =>
-{
-    return {
-        type: "EveSOFDataHullLocator",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["transform", r.matrix]
-        ]
-    };
-});
+        ];
+    }
+}

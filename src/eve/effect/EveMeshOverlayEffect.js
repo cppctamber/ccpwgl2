@@ -7,6 +7,7 @@ import {util, Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM
  * TODO: Implement "distortionEffects"
  * TODO: Identify if "decalEffects" is deprecated
  *
+ * @property {String} name                          - The overlay effect's name
  * @property {Array.<Tw2Effect>} additiveEffects    - Additive overlay effects
  * @property {Tw2CurveSet} curveSet                 - Animation curve set
  * @property {Boolean} display                      - Enables/ disables all batch accumulations
@@ -25,6 +26,7 @@ import {util, Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM
 export default class EveMeshOverlayEffect extends Tw2BaseClass
 {
     // ccp
+    name = "";
     additiveEffects = [];
     curveSet = null;
     distortionEffects = [];
@@ -112,28 +114,27 @@ export default class EveMeshOverlayEffect extends Tw2BaseClass
         return [];
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["additiveEffects", r.array],
+            ["curveSet", r.object],
+            ["distortionEffects", r.array],
+            ["name", r.string],
+            ["opaqueEffects", r.array],
+            ["transparentEffects", r.array],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-Tw2BaseClass.define(EveMeshOverlayEffect, Type =>
-{
-    return {
-        type: "EveMeshOverlayEffect",
-        props: {
-            additiveEffects: [["Tw2Effect"]],
-            curveSet: ["TriCurveSet"],
-            distortionEffects: [["Tw2Effect"]],
-            display: Type.BOOLEAN,
-            opaqueEffects: [["Tw2Effect"]],
-            transparentEffects: [["Tw2Effect"]],
-            update: Type.BOOLEAN,
-            visible: Type.PLAIN
-        },
-        watch: [
-            "decalEffects"
-        ],
-        notImplemented: [
-            "distortionEffects"
-        ]
-    };
-});
-

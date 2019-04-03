@@ -1,5 +1,4 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-import { vec3, vec4, quat } from "../../global";
+import {vec3, vec4, quat} from "../../global";
 
 /**
  * EveSOFDataHullLightSetSpotLight
@@ -13,7 +12,7 @@ import { vec3, vec4, quat } from "../../global";
  * @property {vec3} position
  * @property {quat} rotation
  */
-export class EveSOFDataHullLightSetSpotLight extends EveSOFBaseClass
+export class EveSOFDataHullLightSetSpotLight
 {
 
     name = "";
@@ -24,13 +23,14 @@ export class EveSOFDataHullLightSetSpotLight extends EveSOFBaseClass
     position = vec3.create();
     rotation = quat.create();
 
-}
-
-EveSOFDataHullLightSetSpotLight.define(r =>
-{
-    return {
-        type: "EveSOFDataHullLightSetSpotLight",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["brightness", r.float],
             ["innerAngle", r.float],
@@ -38,6 +38,6 @@ EveSOFDataHullLightSetSpotLight.define(r =>
             ["outerAngle", r.float],
             ["position", r.vector3],
             ["rotation", r.vector4],
-        ]
-    };
-});
+        ];
+    }
+}

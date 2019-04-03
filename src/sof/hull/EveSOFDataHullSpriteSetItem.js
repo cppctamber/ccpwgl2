@@ -1,5 +1,5 @@
 import {vec3} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullSpriteSetItem
@@ -14,7 +14,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Number} minScale   -
  * @property {vec3} position     -
  */
-export class EveSOFDataHullSpriteSetItem extends EveSOFBaseClass
+export class EveSOFDataHullSpriteSetItem
 {
 
     blinkPhase = 0;
@@ -27,13 +27,14 @@ export class EveSOFDataHullSpriteSetItem extends EveSOFBaseClass
     minScale = 0;
     position = vec3.create();
 
-}
-
-EveSOFDataHullSpriteSetItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullSpriteSetItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["blinkRate", r.float],
             ["blinkPhase", r.float],
             ["boneIndex", r.uint],
@@ -44,6 +45,6 @@ EveSOFDataHullSpriteSetItem.define(r =>
             ["maxScale", r.float],
             ["minScale", r.float],
             ["position", r.vector3]
-        ]
-    };
-});
+        ];
+    }
+}

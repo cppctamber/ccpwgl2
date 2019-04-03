@@ -12,26 +12,26 @@ import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
  * EveTurretSetItem
  * @ccp N/A
  *
- * @property {?Tw2Bone} bone                - The bone the turret is on
  * @property {Boolean} isJoint              - Identifies if the turret is on a joint
  * @property {?String} locatorName          - The item's locator name
  * @property {Boolean} updateFromLocator    - Allows the turret to be updated from a locator's transforms
  * @property {Boolean} canFireWhenHidden    - Enables firing effects when hidden
  * @property {vec3} position                - The turret's position
  * @property {quat} rotation                - The turret's rotation
+ * @property {?Tw2Bone} _bone               - The bone the turret is on
  * @property {mat4} _localTransform         - The turret's local transform
  * @property {quat} _localRotation          - the turret's local rotation
  */
 export class EveTurretSetItem extends EveObjectSetItem
 {
-
     // ccpwgl
-    bone = null;
     locatorName = null;
     updateFromLocator = false;
     canFireWhenHidden = false;
     position = vec3.create();
     rotation = quat.create();
+
+    _bone = null;
     _localTransform = mat4.create();
     _localRotation = quat.create();
 
@@ -55,9 +55,9 @@ export class EveTurretSetItem extends EveObjectSetItem
     {
         mat4.fromRotationTranslation(this._localTransform, this.rotation, this.position);
 
-        if (this.bone)
+        if (this._bone)
         {
-            mat4.multiply(this._localTransform, this.bone.offsetTransform, this._localTransform);
+            mat4.multiply(this._localTransform, this._bone.offsetTransform, this._localTransform);
             mat4.getRotation(this._localRotation, this._localTransform);
         }
         else
@@ -75,7 +75,7 @@ export class EveTurretSetItem extends EveObjectSetItem
     {
         const item = new this();
         util.assignIfExists(item, opt, [
-            "name", "display", "locatorName", "updateFromLocator", "position", "rotation", "bone", "canFireWhenHidden"
+            "name", "display", "locatorName", "updateFromLocator", "position", "rotation", "canFireWhenHidden"
         ]);
         item.UpdateValues();
         return item;
@@ -83,26 +83,26 @@ export class EveTurretSetItem extends EveObjectSetItem
 
 }
 
-EveObjectSetItem.define(EveTurretSetItem, Type =>
-{
-    return {
-        type: "EveTurretSetItem",
-        props: {
-            bone: Type.REF,
-            locatorName: Type.STRING,
-            updateFromLocator: Type.BOOLEAN,
-            canFireWhenHidden: Type.BOOLEAN,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION
-        }
-    };
-});
-
-
 /**
  * EveTurretSet
- * Todo: Implement
  * @ccp EveTurretSet
+ * TODO: Implement property "bottomClipHeight",
+ * TODO: Implement property "chooseRandomLocator",
+ * TODO: Implement property "cyclingFireGroupCount",
+ * TODO: Implement property "impactSize",
+ * TODO: Implement property "laserMissBehaviour",
+ * TODO: Implement property "maxCyclingFirePos",
+ * TODO: Implement property "projectileMissBehaviour",
+ * TODO: Implement property "sysBoneHeight",
+ * TODO: Implement property "sysBonePitch01Factor",
+ * TODO: Implement property "sysBonePitch02Factor",
+ * TODO: Implement property "sysBonePitchFactor",
+ * TODO: Implement property "sysBonePitchMax",
+ * TODO: Implement property "sysBonePitchMin",
+ * TODO: Implement property "sysBonePitchOffset",
+ * TODO: Implement property "updatePitchPose",
+ * TODO: Implement property "useDynamicBounds",
+ * TODO: Implement property "useRandomFiringDelay"
  *
  * @property {Number} bottomClipHeight                  -
  * @property {vec4} boundingSphere                      -
@@ -516,7 +516,7 @@ export class EveTurretSet extends EveObjectSet
 
         for (let i = 0; i < locators.length; i++)
         {
-            const {name, transform, bone = null} = locators[i];
+            const {name, transform, _bone = null} = locators[i];
 
             let item = this.FindItemByLocatorName(name);
             if (!item)
@@ -534,7 +534,7 @@ export class EveTurretSet extends EveObjectSet
 
             if (item.updateFromLocator)
             {
-                item.bone = bone;
+                item._bone = _bone;
                 mat4.copy(norm, transform);
                 vec3.normalize(norm.subarray(0, 3), norm.subarray(0, 3));
                 vec3.normalize(norm.subarray(4, 7), norm.subarray(4, 7));
@@ -799,7 +799,7 @@ export class EveTurretSet extends EveObjectSet
                 EveTurretSet.mat3x4toquat(transforms, j, pose, (i * transformCount + j) * 2 + 1);
             }
 
-            if (item.bone && !skipBoneCalculations)
+            if (item._bone && !skipBoneCalculations)
             {
                 item.UpdateTransforms();
             }
@@ -954,57 +954,44 @@ export class EveTurretSet extends EveObjectSet
         };
     })();
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["bottomClipHeight", r.float],
+            ["boundingSphere", r.vector4],
+            ["chooseRandomLocator", r.boolean],
+            ["cyclingFireGroupCount", r.uint],
+            ["firingEffectResPath", r.string],
+            ["geometryResPath", r.string],
+            ["impactSize", r.float],
+            ["laserMissBehaviour", r.boolean],
+            ["locatorName", r.string],
+            ["maxCyclingFirePos", r.uint],
+            ["projectileMissBehaviour", r.boolean],
+            ["sysBoneHeight", r.float],
+            ["sysBonePitchMax", r.float],
+            ["sysBonePitchMin", r.float],
+            ["sysBonePitchFactor", r.float],
+            ["sysBonePitch01Factor", r.float],
+            ["sysBonePitch02Factor", r.float],
+            ["sysBonePitchOffset", r.float],
+            ["turretEffect", r.object],
+            ["updatePitchPose", r.boolean],
+            ["useDynamicBounds", r.boolean],
+            ["useRandomFiringDelay", r.boolean]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-EveObjectSet.define(EveTurretSet, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveTurretSet",
-        props: {
-            bottomClipHeight: Type.NUMBER,
-            boundingSphere: Type.VECTOR4,
-            chooseRandomLocator: Type.BOOLEAN,
-            cyclingFireGroupCount: Type.NUMBER,
-            firingEffectResPath: Type.PATH,
-            geometryResPath: Type.PATH,
-            geometryResource: ["Tw2GeometryRes"],
-            impactSize: Type.NUMBER,
-            laserMissBehaviour: Type.BOOLEAN,
-            locatorName: Type.STRING,
-            maxCyclingFirePos: Type.NUMBER,
-            projectileMissBehaviour: Type.BOOLEAN,
-            sysBoneHeight: Type.NUMBER,
-            sysBonePitch01Factor: Type.NUMBER,
-            sysBonePitch02Factor: Type.NUMBER,
-            sysBonePitchFactor: Type.NUMBER,
-            sysBonePitchMax: Type.NUMBER,
-            sysBonePitchMin: Type.NUMBER,
-            sysBonePitchOffset: Type.NUMBER,
-            turretEffect: ["Tw2Effect"],
-            updatePitchPose: Type.BOOLEAN,
-            useDynamicBounds: Type.BOOLEAN,
-            useRandomFiringDelay: Type.BOOLEAN
-        },
-        notImplemented: [
-            "bottomClipHeight",
-            "chooseRandomLocator",
-            "cyclingFireGroupCount",
-            "impactSize",
-            "laserMissBehaviour",
-            "maxCyclingFirePos",
-            "projectileMissBehaviour",
-            "sysBoneHeight",
-            "sysBonePitch01Factor",
-            "sysBonePitch02Factor",
-            "sysBonePitchFactor",
-            "sysBonePitchMax",
-            "sysBonePitchMin",
-            "sysBonePitchOffset",
-            "updatePitchPose",
-            "useDynamicBounds",
-            "useRandomFiringDelay"
-        ]
-    };
-});
-

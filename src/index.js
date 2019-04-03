@@ -49,7 +49,8 @@ store.Register({
     },
 
     paths: {
-        "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/"
+        "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
+        "cdn": "http://localhost:63342/ccpwgl2/.dev/"
     },
 
     extensions: {

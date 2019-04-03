@@ -30,7 +30,6 @@ import {mat4, quat, vec3} from "../../global";
 export class EveChildContainer extends EveChild
 {
 
-    // ccp
     controllers = [];
     curveSets = [];
     display = true;
@@ -116,36 +115,38 @@ export class EveChildContainer extends EveChild
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["boneIndex", r.uint],
+            ["controllers", r.array],
+            ["display", r.boolean],
+            ["localTransform", r.matrix],
+            ["name", r.string],
+            ["curveSets", r.array],
+            ["hideOnLowQuality", r.boolean],
+            ["inheritProperties", r.object],
+            ["lights", r.array],
+            ["observers", r.array],
+            ["objects", r.array],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["staticTransform", r.boolean],
+            ["transformModifiers", r.array],
+            ["translation", r.vector3]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     * @private
+     */
+    static __isStaging = 2;
+
 }
-
-EveChild.define(EveChildContainer, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveChildContainer",
-        props: {
-            controllers: [["Tr2Controller"]],
-            curveSets: [["TriCurveSet"]],
-            display: Type.BOOLEAN,
-            hideOnLowQuality: Type.BOOLEAN,
-            lights: [["Tr2PointLight"]],
-            localTransform: Type.TR_LOCAL,
-            objects: [["EveChildContainer", "EveChildMesh", "EveChildParticleSphere", "EveChildParticleSystem", "EveChildQuad"]],
-            observers: [["TriObserverLocal"]],
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            staticTransform: Type.BOOLEAN,
-            transformModifiers: [["EveChildModifierAttachToBone", "EveChildModifierBillboard2D", "EveChildModifierBillboard3D", "EveChildModifierSRT", "EveChildModifierTranslateWithCamera"]],
-            translation: Type.TR_TRANSLATION
-        },
-        notImplemented: [
-            "controllers",
-            "hideOnLowQuality",
-            "lights",
-            "observers",
-            "staticTransform",
-            "transformModifiers"
-        ]
-    };
-});
-

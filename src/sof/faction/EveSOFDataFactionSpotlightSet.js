@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataFactionSpotlightSet
@@ -10,7 +10,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Number} groupIndex -
  * @property {vec4} spriteColor  -
  */
-export class EveSOFDataFactionSpotlightSet extends EveSOFBaseClass
+export class EveSOFDataFactionSpotlightSet
 {
 
     name = "";
@@ -19,18 +19,19 @@ export class EveSOFDataFactionSpotlightSet extends EveSOFBaseClass
     groupIndex = -1;
     spriteColor = vec4.create();
 
-}
-
-EveSOFDataFactionSpotlightSet.define(r =>
-{
-    return {
-        type: "EveSOFDataFactionSpotlightSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["coneColor", r.vector4],
             ["flareColor", r.vector4],
             ["groupIndex", r.uint],
             ["name", r.string],
             ["spriteColor", r.vector4],
-        ]
-    };
-});
+        ];
+    }
+}

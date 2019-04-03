@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataArea
  *
@@ -25,7 +23,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataAreaMaterial} White     -
  * @property {EveSOFDataAreaMaterial} Yellow    -
  */
-export class EveSOFDataArea extends EveSOFBaseClass
+export class EveSOFDataArea
 {
 
     Black = null;
@@ -62,13 +60,14 @@ export class EveSOFDataArea extends EveSOFBaseClass
         return name in this ? this[name] : null;
     }
 
-}
-
-EveSOFDataArea.define(r =>
-{
-    return {
-        type: "EveSOFDataArea",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["Black", r.object],
             ["Blue", r.object],
             ["Booster", r.object],
@@ -90,6 +89,6 @@ EveSOFDataArea.define(r =>
             ["Tertiary", r.object],
             ["White", r.object],
             ["Yellow", r.object]
-        ]
-    };
-});
+        ];
+    }
+}

@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullChild
@@ -13,7 +13,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {vec3} scaling            -
  * @property {vec3} translation        -
  */
-export class EveSOFDataHullChild extends EveSOFBaseClass
+export class EveSOFDataHullChild
 {
 
     name = "";
@@ -25,13 +25,14 @@ export class EveSOFDataHullChild extends EveSOFBaseClass
     scaling = vec3.fromValues(1, 1, 1);
     translation = vec3.create();
 
-}
-
-EveSOFDataHullChild.define(r =>
-{
-    return {
-        type: "EveSOFDataHullChild",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["groupIndex", r.uint],
             ["id", r.uint],
             ["lowestLodVisible", r.uint],
@@ -40,6 +41,6 @@ EveSOFDataHullChild.define(r =>
             ["rotation", r.vector4],
             ["scaling", r.vector3],
             ["translation", r.vector3]
-        ]
-    };
-});
+        ];
+    }
+}

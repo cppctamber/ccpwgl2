@@ -1,5 +1,5 @@
 import {quat, vec3, vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullPlaneSetItem
@@ -16,7 +16,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {quat} rotation            -
  * @property {vec3} scaling             -
  */
-export class EveSOFDataHullPlaneSetItem extends EveSOFBaseClass
+export class EveSOFDataHullPlaneSetItem
 {
 
     boneIndex = -1;
@@ -31,13 +31,14 @@ export class EveSOFDataHullPlaneSetItem extends EveSOFBaseClass
     rotation = quat.create();
     scaling = vec3.fromValues(1, 1, 1);
 
-}
-
-EveSOFDataHullPlaneSetItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullPlaneSetItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["boneIndex", r.uint],
             ["color", r.vector4],
             ["groupIndex", r.uint],
@@ -49,6 +50,6 @@ EveSOFDataHullPlaneSetItem.define(r =>
             ["position", r.vector3],
             ["rotation", r.vector4],
             ["scaling", r.vector3]
-        ]
-    };
-});
+        ];
+    }
+}

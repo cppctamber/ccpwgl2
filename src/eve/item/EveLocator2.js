@@ -3,21 +3,36 @@ import {mat4, Tw2BaseClass} from "../../global";
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
  * TODO: Make bone private and update all uses
+ * TODO: Properties "atlasIndex0" and "atlasIndex1" may be for internal use only
  * @ccp EveLocator2
  *
  * @property {?number} atlasIndex0          - A booster locator's atlasIndex0
  * @property {?number} atlasIndex1          - A booster locator's atlasIndex1
- * @property {?Tw2Bone} bone                - A turret locator's bone
  * @property {mat4} transform               - The locator's transform
+ * @property {?Tw2Bone} _bone               - A turret locator's bone
  */
 export class EveLocator2 extends Tw2BaseClass
 {
 
-    atlasIndex0 = null;
-    atlasIndex1 = null;
-    bone = null;
+    name = "";
     transform = mat4.create();
 
+    // EveLocator only?
+    atlasIndex0 = null;
+    atlasIndex1 = null;
+
+    // ccpwgl
+    _bone = null;
+
+    /**
+     * Gets the locators bone
+     * @returns {null|Tw2Bone}
+     */
+    get bone()
+    {
+        console.log("property 'bone' has migrated to '_bone'");
+        return this._bone;
+    }
 
     /**
      * Gets the locator's bone from an animation controller
@@ -26,7 +41,7 @@ export class EveLocator2 extends Tw2BaseClass
      */
     FindBone(animationController)
     {
-        this.bone = null;
+        this._bone = null;
         const model = animationController.FindModelForMesh(0);
         if (model)
         {
@@ -34,7 +49,7 @@ export class EveLocator2 extends Tw2BaseClass
             {
                 if (model.bones[i].boneRes.name === this.name)
                 {
-                    this.bone = model.bones[i];
+                    this._bone = model.bones[i];
                     break;
                 }
             }
@@ -54,20 +69,25 @@ export class EveLocator2 extends Tw2BaseClass
         XL_TURRET: "locator_xl"
     };
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["transform", r.matrix]
+        ];
+    }
 
-Tw2BaseClass.define(EveLocator2, Type =>
-{
-    return {
-        type: "EveLocator2",
-        category: "Locator",
-        props: {
-            atlasIndex0: Type.NUMBER,
-            atlasIndex1: Type.NUMBER,
-            bone: Type.REF,
-            transform: Type.TR_LOCAL
-        }
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
+}
 
 export {EveLocator2 as EveLocator};

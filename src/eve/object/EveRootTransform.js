@@ -6,6 +6,7 @@ import {Tw2BaseClass} from "../../global/index";
  * TODO: Implement
  * @ccp EveRootTransform
  *
+ * @property {String} name                       -
  * @property {Number} boundingSphereRadius       -
  * @property {Array.<EveObject>} children        -
  * @property {Array.<TriCurveSet>} curveSets     -
@@ -23,6 +24,7 @@ import {Tw2BaseClass} from "../../global/index";
 export default class EveRootTransform extends Tw2BaseClass
 {
 
+    name = "";
     boundingSphereRadius = 0;
     children = [];
     curveSets = [];
@@ -37,29 +39,38 @@ export default class EveRootTransform extends Tw2BaseClass
     translation = vec3.create();
     translationCurve = null;
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["boundingSphereRadius", r.float],
+            ["children", r.array],
+            ["curveSets", r.array],
+            ["display", r.boolean],
+            ["mesh", r.object],
+            ["modifier", r.uint],
+            ["name", r.string],
+            ["observers", r.array],
+            ["position", r.vector3],
+            ["rotation", r.vector4],
+            ["rotationCurve", r.object],
+            ["scaling", r.vector3],
+            ["sortValueMultiplier", r.float],
+            ["translation", r.vector3],
+            ["translationCurve", r.object],
+            ["useDistanceBasedScale", r.boolean],
+        ];
+    }
 
-Tw2BaseClass.define(EveRootTransform, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveRootTransform",
-        props: {
-            boundingSphereRadius: Type.NUMBER,
-            children: [["EveTransform"]],
-            curveSets: [["TriCurveSet"]],
-            display: Type.BOOLEAN,
-            mesh: ["Tr2Mesh"],
-            modifier: Type.NUMBER,
-            observers: Type.ARRAY,
-            rotation: Type.TR_ROTATION,
-            rotationCurve: ["Tr2CurveConstant"],
-            scaling: Type.TR_SCALING,
-            sortValueMultiplier: Type.NUMBER,
-            translation: Type.TR_TRANSLATION,
-            translationCurve: ["Tr2CurveConstant"]
-        },
-        notImplemented: ["*"]
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
+}
 

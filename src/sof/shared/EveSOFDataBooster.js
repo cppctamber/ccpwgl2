@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataBooster
@@ -30,7 +30,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataBoosterShape} warpShape0 -
  * @property {EveSOFDataBoosterShape} warpShape1 -
  */
-export class EveSOFDataBooster extends EveSOFBaseClass
+export class EveSOFDataBooster
 {
 
     glowColor = vec4.create();
@@ -59,13 +59,14 @@ export class EveSOFDataBooster extends EveSOFBaseClass
     warpShape0 = null;
     warpShape1 = null;
 
-}
-
-EveSOFDataBooster.define(r =>
-{
-    return {
-        type: "EveSOFDataBooster",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["glowColor", r.vector4],
             ["glowScale", r.float],
             ["gradient0ResPath", r.path],
@@ -95,6 +96,6 @@ EveSOFDataBooster.define(r =>
             ["warpHalpColor", r.vector4],
             ["warpShape0", r.object],
             ["warpShape1", r.object]
-        ]
-    };
-});
+        ];
+    }
+}

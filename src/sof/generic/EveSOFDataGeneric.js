@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataGeneric
  *
@@ -20,7 +18,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataGenericSwarm} swarm                            -
  * @property {Array.<EveSOFDataGenericVariant>} variants               -
  */
-export class EveSOFDataGeneric extends EveSOFBaseClass
+export class EveSOFDataGeneric
 {
 
     areaShaderLocation = "";
@@ -40,13 +38,14 @@ export class EveSOFDataGeneric extends EveSOFBaseClass
     swarm = null;
     variants = [];
 
-}
-
-EveSOFDataGeneric.define(r =>
-{
-    return {
-        type: "EveSOFDataGeneric",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["areaShaderLocation", r.string],
             ["areaShaders", r.array],
             ["bannerShader", r.plain],
@@ -64,6 +63,6 @@ EveSOFDataGeneric.define(r =>
             ["shaderPrefixAnimated", r.string],
             ["swarm", r.object],
             ["variants", r.array],
-        ]
-    };
-});
+        ];
+    }
+}

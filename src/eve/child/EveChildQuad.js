@@ -4,8 +4,8 @@ import {EveChild} from "./EveChild";
 /**
  * EveChildQuad
  * TODO: Implement
- * @ccp EveChildQuat
  *
+ * @property {String} name              -
  * @property {Number} brightness        -
  * @property {vec4} color               -
  * @property {Tw2Effect} effect         -
@@ -15,10 +15,10 @@ import {EveChild} from "./EveChild";
  * @property {vec3} scaling             -
  * @property {vec3} translation         -
  */
-export default class EveChildQuad extends EveChild
+export class EveChildQuad extends EveChild
 {
 
-    // ccp
+    name = "";
     brightness = 0;
     color = vec4.create();
     effect = null;
@@ -28,23 +28,30 @@ export default class EveChildQuad extends EveChild
     scaling = vec3.fromValues(1, 1, 1);
     translation = vec3.create();
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["brightness", r.float],
+            ["color", r.color],
+            ["effect", r.object],
+            ["localTransform", r.matrix],
+            ["minScreenSize", r.float],
+            ["name", r.string],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["translation", r.vector3],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-EveChild.define(EveChildQuad, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveChildQuad",
-        props: {
-            brightness: Type.NUMBER,
-            color: Type.RGBA_LINEAR,
-            effect: ["Tw2Effect"],
-            localTransform: Type.TR_LOCAL,
-            minScreenSize: Type.NUMBER,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            translation: Type.TR_TRANSLATION
-        }
-    };
-});
-

@@ -29,10 +29,12 @@ export class EvePlaneSetBatch extends Tw2RenderBatch
  * Plane set item
  * TODO: Identify if "boneIndex" is deprecated
  * TODO: Identify if "groupIndex" is deprecated
+ * TODO: Replace "transform" with "localTransform" ?
  * If "boneIndex" and "groupIndex" are just used by the EveSOF, we may need to record this information if
  * we are going to convert this object back into a EveSOF object
  * @ccp EvePlaneSetItem
  *
+ * @property {String} name          -
  * @property {vec4} color           -
  * @property {vec4} layer1Scroll    -
  * @property {vec4} layer1Transform -
@@ -49,8 +51,8 @@ export class EvePlaneSetBatch extends Tw2RenderBatch
  */
 export class EvePlaneSetItem extends EveObjectSetItem
 {
-
     // ccp
+    name = "";
     color = vec4.create();
     layer1Scroll = vec4.create();
     layer1Transform = vec4.create();
@@ -92,33 +94,29 @@ export class EvePlaneSetItem extends EveObjectSetItem
         return item;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["color", r.color],
+            ["layer1Scroll", r.vector4],
+            ["layer1Transform", r.vector4],
+            ["layer2Scroll", r.vector4],
+            ["layer2Transform", r.vector4],
+            ["maskAtlasID", r.uint],
+            ["name", r.string],
+            ["position", r.vector3],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+        ];
+    }
+
 }
 
-EveObjectSetItem.define(EvePlaneSetItem, Type =>
-{
-    return {
-        type: "EvePlaneSetItem",
-        category: "EveObjectSetItem",
-        props: {
-            boneIndex: Type.NUMBER,
-            color: Type.RGBA_LINEAR,
-            groupIndex: Type.NUMBER,
-            layer1Scroll: Type.VECTOR4,
-            layer1Transform: Type.VECTOR4,
-            layer2Scroll: Type.VECTOR4,
-            layer2Transform: Type.VECTOR4,
-            maskAtlasID: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            transform: Type.TR_LOCAL
-        },
-        watch: [
-            "boneIndex",
-            "groupIndex"
-        ]
-    };
-});
 
 /**
  * Plane set
@@ -126,6 +124,7 @@ EveObjectSetItem.define(EvePlaneSetItem, Type =>
  * Todo: Implement "pickBufferID" (Assuming we will add picking)
  * @ccp EvePlaneSet
  *
+ * @property {String} name                     -
  * @property {Tw2Effect} effect                -
  * @property {Boolean} hideOnLowQuality        -
  * @property {Number} pickBufferID             -
@@ -139,6 +138,7 @@ EveObjectSetItem.define(EvePlaneSetItem, Type =>
 export class EvePlaneSet extends EveObjectSet
 {
     // ccp
+    name = "";
     effect = null;
     hideOnLowQuality = false;
     pickBufferID = 0;
@@ -361,7 +361,7 @@ export class EvePlaneSet extends EveObjectSet
         {usage: "TEXCOORD", usageIndex: 0, elements: 4},
         {usage: "TEXCOORD", usageIndex: 1, elements: 4},
         {usage: "TEXCOORD", usageIndex: 2, elements: 4},
-        {usage: "COLOR", usageIndex: 0, elements: 4},
+        {usage: "COLOR",    usageIndex: 0, elements: 4},
         {usage: "TEXCOORD", usageIndex: 3, elements: 4},
         {usage: "TEXCOORD", usageIndex: 4, elements: 4},
         {usage: "TEXCOORD", usageIndex: 5, elements: 4},
@@ -369,22 +369,20 @@ export class EvePlaneSet extends EveObjectSet
         {usage: "TEXCOORD", usageIndex: 7, elements: 3}
     ];
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["effect", r.object],
+            ["hideOnLowQuality", r.boolean],
+            ["name", r.string],
+            ["pickBufferID", r.byte],
+            ["planes", r.array]
+        ];
+    }
 
-EveObjectSet.define(EvePlaneSet, Type =>
-{
-    return {
-        type: "EvePlaneSet",
-        category: "EveObjectSet",
-        props: {
-            effect: ["Tw2Effect"],
-            hideOnLowQuality: Type.BOOLEAN,
-            pickBufferID: Type.NUMBER,
-            items: [["EvePlaneSetItem"]]
-        },
-        notImplemented: [
-            "hideOnLowQuality",
-            "pickBufferID"
-        ]
-    };
-});
+}

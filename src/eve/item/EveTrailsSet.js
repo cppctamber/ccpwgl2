@@ -37,7 +37,6 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
 export class EveTrailsSet extends Tw2BaseClass
 {
 
-    // ccp
     effect = null;
     geometryResPath = "";
 
@@ -131,20 +130,23 @@ export class EveTrailsSet extends Tw2BaseClass
         // TODO: Render
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["effect", r.object],
+            ["geometryResPath", r.string]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveTrailsSet, Type =>
-{
-    return {
-        type: "EveTrailsSet",
-        category: "EveObjectSet",
-        isStaging: true,
-        props: {
-            display: Type.BOOLEAN,
-            effect: ["Tw2Effect"],
-            geometryResPath: Type.PATH
-        },
-        notImplemented: ["*"]
-    };
-});
-

@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullLightSet
  * @ccp EveSOFDataHullLightSet
@@ -7,21 +5,22 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {String} name
  * @property {Array<EveSOFDataHullLightSetItem>} items
  */
-export class EveSOFDataHullLightSet extends EveSOFBaseClass
+export class EveSOFDataHullLightSet
 {
 
     name = "";
     items = [];
 
-}
-
-EveSOFDataHullLightSet.define(r =>
-{
-    return {
-        type: "EveSOFDataHullLightSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["items", r.array],
-        ]
-    };
-});
+        ];
+    }
+}

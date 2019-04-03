@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullSpriteSet
  *
@@ -8,7 +6,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Boolean} skinned                           -
  * @property {String} visibilityGroup                    -
  */
-export class EveSOFDataHullSpriteSet extends EveSOFBaseClass
+export class EveSOFDataHullSpriteSet
 {
 
     name = "";
@@ -16,17 +14,18 @@ export class EveSOFDataHullSpriteSet extends EveSOFBaseClass
     skinned = false;
     visibilityGroup = "";
 
-}
-
-EveSOFDataHullSpriteSet.define(r =>
-{
-    return {
-        type: "EveSOFDataHullSpriteSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["items", r.array],
             ["skinned", r.boolean],
             ["visibilityGroup", r.string]
-        ]
-    };
-});
+        ];
+    }
+}

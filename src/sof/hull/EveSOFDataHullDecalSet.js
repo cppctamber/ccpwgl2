@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullDecalSet
  * @ccp EveSOFDataHullDecalSet
@@ -8,23 +6,24 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Array<EveSOFDataHullDecalSetItem>} items
  * @property {String} visibilityGroup
  */
-export class EveSOFDataHullDecalSet extends EveSOFBaseClass
+export class EveSOFDataHullDecalSet
 {
 
     name = "";
     items = [];
     visibilityGroup = "";
 
-}
-
-EveSOFDataHullDecalSet.define(r =>
-{
-    return {
-        type: "EveSOFDataHullDecalSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["items", r.array],
             ["visibilityGroup", r.string]
-        ]
-    };
-});
+        ];
+    }
+}

@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataBoosterShape
@@ -11,7 +11,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Number} noiseFunction     -
  * @property {Number} noiseSpeed        -
  */
-export class EveSOFDataBoosterShape extends EveSOFBaseClass
+export class EveSOFDataBoosterShape
 {
 
     color = vec4.create();
@@ -21,19 +21,20 @@ export class EveSOFDataBoosterShape extends EveSOFBaseClass
     noiseFunction = 0;
     noiseSpeed = 0;
 
-}
-
-EveSOFDataBoosterShape.define(r =>
-{
-    return {
-        type: "EveSOFDataBoosterShape",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["color", r.vector4],
             ["noiseFunction", r.float],
             ["noiseSpeed", r.float],
             ["noiseAmplitureStart", r.vector4],
             ["noiseAmplitureEnd", r.vector4],
             ["noiseFrequency", r.vector4]
-        ]
-    };
-});
+        ];
+    }
+}

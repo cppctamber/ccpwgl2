@@ -1,4 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
 import {vec3} from "../../global";
 
 /**
@@ -11,7 +10,7 @@ import {vec3} from "../../global";
  * @property {Number} radius
  * @property {String} texturePath
  */
-export class EveSOFDataHullLightSetTexturedPointLight extends EveSOFBaseClass
+export class EveSOFDataHullLightSetTexturedPointLight
 {
 
     name = "";
@@ -21,19 +20,20 @@ export class EveSOFDataHullLightSetTexturedPointLight extends EveSOFBaseClass
     radius = 0;
     texturePath = "";
 
-}
-
-EveSOFDataHullLightSetTexturedPointLight.define(r =>
-{
-    return {
-        type: "EveSOFDataHullLightSetTexturedPointLight",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["brightness", r.float],
             ["innerRadius", r.float],
             ["position", r.vector3],
             ["radius", r.float],
             ["texturePath", r.path]
-        ]
-    };
-});
+        ];
+    }
+}

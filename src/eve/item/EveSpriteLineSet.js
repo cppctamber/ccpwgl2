@@ -77,33 +77,6 @@ export class EveSpriteLineSetItem extends EveObjectSetItem
 
 }
 
-EveObjectSet.define(EveSpriteLineSetItem, Type =>
-{
-    return {
-        type: "EveSpriteLineSetItem",
-        isStaging: true,
-        props: {
-            blinkPhase: Type.NUMBER,
-            blinkPhaseShift: Type.NUMBER,
-            blinkRate: Type.NUMBER,
-            boneIndex: Type.NUMBER,
-            colorType: Type.NUMBER,
-            display: Type.BOOLEAN,
-            falloff: Type.NUMBER,
-            intensity: Type.NUMBER,
-            isCircle: Type.BOOLEAN,
-            maxScale: Type.NUMBER,
-            minScale: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            spacing: Type.NUMBER,
-            transform: Type.TR_LOCAL
-        },
-        notImplemented: ["*"]
-    };
-});
-
 
 /**
  * Sprite line set
@@ -153,16 +126,3 @@ export class EveSpriteLineSet extends EveObjectSet
     }
 
 }
-
-EveObjectSet.define(EveSpriteLineSet, Type =>
-{
-    return {
-        type: "EveSpriteLineSet",
-        isStaging: true,
-        props: {
-            items: [["EveSpriteLineSetItem"]]
-        },
-        notImplemented: ["*"]
-    };
-});
-

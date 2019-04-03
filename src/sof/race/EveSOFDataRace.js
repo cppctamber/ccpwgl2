@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataRace
  *
@@ -7,23 +5,24 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataBooster} booster   -
  * @property {EveSOFDataRaceDamage} damage -
  */
-export class EveSOFDataRace extends EveSOFBaseClass
+export class EveSOFDataRace
 {
 
     name = "";
     booster = null;
     damage = null;
 
-}
-
-EveSOFDataRace.define(r =>
-{
-    return {
-        type: "EveSOFDataRace",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["booster", r.object],
             ["damage", r.object],
             ["name", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

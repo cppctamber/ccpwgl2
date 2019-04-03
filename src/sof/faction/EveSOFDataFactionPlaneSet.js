@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataFactionPlaneSet
@@ -8,23 +8,24 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {vec4} color        -
  * @property {Number} groupIndex -
  */
-export class EveSOFDataFactionPlaneSet extends EveSOFBaseClass
+export class EveSOFDataFactionPlaneSet
 {
 
     name = "";
     color = vec4.create();
     groupIndex = -1;
 
-}
-
-EveSOFDataFactionPlaneSet.define(r =>
-{
-    return {
-        type: "EveSOFDataFactionPlaneSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["color", r.vector4],
             ["groupIndex", r.uint],
             ["name", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

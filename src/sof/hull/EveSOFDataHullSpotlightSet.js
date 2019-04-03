@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullSpotlightSet
  *
@@ -10,7 +8,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Boolean} skinned                              -
  * @property {Number} zOffset                               -
  */
-export class EveSOFDataHullSpotlightSet extends EveSOFBaseClass
+export class EveSOFDataHullSpotlightSet
 {
 
     name = "";
@@ -20,19 +18,20 @@ export class EveSOFDataHullSpotlightSet extends EveSOFBaseClass
     skinned = false;
     zOffset = 0;
 
-}
-
-EveSOFDataHullSpotlightSet.define(r =>
-{
-    return {
-        type: "EveSOFDataHullSpotlightSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["coneTextureResPath", r.path],
             ["glowTextureResPath", r.path],
             ["items", r.array],
             ["name", r.string],
             ["skinned", r.boolean],
             ["zOffset", r.float]
-        ]
-    };
-});
+        ];
+    }
+}

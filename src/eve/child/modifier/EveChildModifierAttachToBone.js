@@ -2,26 +2,31 @@ import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildModifierAttachToBone
- * @implements ChildModifier
+ * TODO: Do we just implement this as an EveChild modifier mode?
  *
  * @property {Number} boneIndex -
  */
 export class EveChildModifierAttachToBone extends Tw2BaseClass
 {
 
-    boneIndex = 0;
+    boneIndex = -1;
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["boneIndex", r.uint]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
 
 }
-
-Tw2BaseClass.define(EveChildModifierAttachToBone, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveChildModifierAttachToBone",
-        category: "ChildModifier",
-        props: {
-            boneIndex: Type.NUMBER
-        }
-    };
-});
-

@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataFaction
  *
@@ -21,7 +19,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Array.<EveSOFDataFactionSpotlightSet>} spotlightSets    -
  * @property {EveSOFDataFactionVisibilityGroupSet} visibilityGroupSet -
  */
-export class EveSOFDataFaction extends EveSOFBaseClass
+export class EveSOFDataFaction
 {
 
     name = "";
@@ -41,13 +39,14 @@ export class EveSOFDataFaction extends EveSOFBaseClass
     spotlightSets = [];
     visibilityGroupSet = null;
 
-}
-
-EveSOFDataFaction.define(r =>
-{
-    return {
-        type: "EveSOFDataFaction",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["areas", r.array],
             ["areaTypes", r.object],
             ["colorSet", r.object],
@@ -66,7 +65,8 @@ EveSOFDataFaction.define(r =>
             ["spotlightSets", r.array],
             ["spriteSets", r.array],
             ["visibilityGroupSet", r.object],
-        ]
-    };
-});
+        ];
+    }
+
+}
 

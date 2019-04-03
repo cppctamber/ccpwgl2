@@ -96,7 +96,7 @@ export class Tw2ObjectReader
             return data;
         }
 
-        let Constructor = store.GetClass(data.type);
+        let Constructor = store.classes.Get(data.type);
         if (!Constructor)
         {
             if (Tw2ObjectReader.DEBUG_ENABLED)

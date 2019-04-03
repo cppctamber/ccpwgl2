@@ -1,5 +1,5 @@
 import {mat4, vec3} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullSpotlightSetItem
@@ -13,7 +13,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {vec3} spriteScale             -
  * @property {mat4} transform               -
  */
-export class EveSOFDataHullSpotlightSetItem extends EveSOFBaseClass
+export class EveSOFDataHullSpotlightSetItem
 {
 
     boneIndex = -1;
@@ -25,13 +25,14 @@ export class EveSOFDataHullSpotlightSetItem extends EveSOFBaseClass
     spriteScale = vec3.fromValues(1, 1, 1);
     transform = mat4.create();
 
-}
-
-EveSOFDataHullSpotlightSetItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullSpotlightSetItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["boneIndex", r.uint],
             ["boosterGainInfluence", r.boolean],
             ["coneIntensity", r.float],
@@ -40,6 +41,6 @@ EveSOFDataHullSpotlightSetItem.define(r =>
             ["spriteScale", r.vector3],
             ["spriteIntensity", r.float],
             ["transform", r.matrix]
-        ]
-    };
-});
+        ];
+    }
+}

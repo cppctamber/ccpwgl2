@@ -1,5 +1,5 @@
 import {mat4, vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullBoosterItem
@@ -10,7 +10,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Boolean} hasTrail   -
  * @property {mat4} transform     -
  */
-export class EveSOFDataHullBoosterItem extends EveSOFBaseClass
+export class EveSOFDataHullBoosterItem
 {
 
     atlasIndex0 = 0;
@@ -19,18 +19,19 @@ export class EveSOFDataHullBoosterItem extends EveSOFBaseClass
     hasTrail = false;
     transform = mat4.create();
 
-}
-
-EveSOFDataHullBoosterItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullBoosterItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["atlasIndex0", r.uint],
             ["atlasIndex1", r.uint],
             ["functionality", r.vector4],
             ["hasTrail", r.boolean],
             ["transform", r.matrix],
-        ]
-    };
-});
+        ];
+    }
+}

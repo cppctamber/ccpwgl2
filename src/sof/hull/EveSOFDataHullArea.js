@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullArea
  *
@@ -12,7 +10,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {String} shader                          -
  * @property {Array.<EveSOFDataTexture>} textures     -
  */
-export class EveSOFDataHullArea extends EveSOFBaseClass
+export class EveSOFDataHullArea
 {
 
     name = "";
@@ -24,13 +22,14 @@ export class EveSOFDataHullArea extends EveSOFBaseClass
     shader = "";
     textures = [];
 
-}
-
-EveSOFDataHullArea.define(r =>
-{
-    return {
-        type: "EveSOFDataHullArea",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["areaType", r.uint],
             ["blockedMaterials", r.uint],
             ["count", r.uint],
@@ -39,6 +38,6 @@ EveSOFDataHullArea.define(r =>
             ["parameters", r.array],
             ["shader", r.string],
             ["textures", r.array]
-        ]
-    };
-});
+        ];
+    }
+}

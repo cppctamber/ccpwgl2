@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataAreaMaterial
  *
@@ -9,7 +7,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {String} material3 -
  * @property {String} material4 -
  */
-export class EveSOFDataAreaMaterial extends EveSOFBaseClass
+export class EveSOFDataAreaMaterial
 {
 
     colorType = 0;
@@ -18,18 +16,19 @@ export class EveSOFDataAreaMaterial extends EveSOFBaseClass
     material3 = "";
     material4 = "";
 
-}
-
-EveSOFDataAreaMaterial.define(r =>
-{
-    return {
-        type: "EveSOFDataAreaMaterial",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["colorType", r.uint],
             ["material1", r.string],
             ["material2", r.string],
             ["material3", r.string],
             ["material4", r.string]
-        ]
-    };
-});
+        ];
+    }
+}

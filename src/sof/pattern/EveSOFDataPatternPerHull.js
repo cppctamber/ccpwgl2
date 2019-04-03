@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataPatternPerHull
  *
@@ -7,23 +5,24 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataPatternTransform} transformLayer1 -
  * @property {EveSOFDataPatternTransform} transformLayer2 -
  */
-export class EveSOFDataPatternPerHull extends EveSOFBaseClass
+export class EveSOFDataPatternPerHull
 {
 
     name = "";
     transformLayer1 = null;
     transformLayer2 = null;
 
-}
-
-EveSOFDataPatternPerHull.define(r =>
-{
-    return {
-        type: "EveSOFDataPatternPerHull",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["transformLayer1", r.object],
             ["transformLayer2", r.object]
-        ]
-    };
-});
+        ];
+    }
+}

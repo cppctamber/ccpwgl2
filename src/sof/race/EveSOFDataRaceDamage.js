@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataRaceDamage
  *
@@ -8,7 +6,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Array.<EveSOFDataParameter>} shieldImpactParameters -
  * @property {Array.<EveSOFDataTexture>} shieldImpactTextures     -
  */
-export class EveSOFDataRaceDamage extends EveSOFBaseClass
+export class EveSOFDataRaceDamage
 {
 
     armorImpactParameters = [];
@@ -16,17 +14,18 @@ export class EveSOFDataRaceDamage extends EveSOFBaseClass
     shieldImpactParameters = [];
     shieldImpactTextures = [];
 
-}
-
-EveSOFDataRaceDamage.define(r =>
-{
-    return {
-        type: "EveSOFDataRaceDamage",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["armorImpactParameters", r.array],
             ["armorImpactTextures", r.array],
             ["shieldImpactParameters", r.array],
             ["shieldImpactTextures", r.array]
-        ]
-    };
-});
+        ];
+    }
+}

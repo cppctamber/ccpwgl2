@@ -1,6 +1,4 @@
 import {vec3, vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-import * as r from "../../core/reader/Tw2BlackPropertyReaders";
 
 /**
  * EveSOFDataHull
@@ -43,7 +41,7 @@ import * as r from "../../core/reader/Tw2BlackPropertyReaders";
  * @property {Array.<EveSOFDataHullSpriteSet>} spriteSets         -
  * @property {Array.<EveSOFDataHullArea>} transparentAreas        -
  */
-export class EveSOFDataHull extends EveSOFBaseClass
+export class EveSOFDataHull
 {
     name = "";
     additiveAreas = [];
@@ -83,13 +81,14 @@ export class EveSOFDataHull extends EveSOFBaseClass
     spriteSets = [];
     transparentAreas = [];
 
-}
-
-EveSOFDataHull.define(r =>
-{
-    return {
-        type: "EveSOFDataHull",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["additiveAreas", r.array],
             ["animations", r.array],
             ["audioPosition", r.vector3],
@@ -128,6 +127,6 @@ EveSOFDataHull.define(r =>
             ["spriteLineSets", r.array],
             ["spriteSets", r.array],
             ["transparentAreas", r.array],
-        ]
-    };
-});
+        ];
+    }
+}

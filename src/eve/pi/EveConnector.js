@@ -30,26 +30,32 @@ export class EveConnector extends Tw2BaseClass
     sourceObject = null;
     type = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["animationColor", r.color],
+            ["animationScale", r.float],
+            ["animationSpeed", r.float],
+            ["color", r.color],
+            ["destObject", r.object],
+            ["destPosition", r.vector3],
+            ["isAnimated", r.boolean],
+            ["lineWidth", r.float],
+            ["sourceObject", r.object],
+            ["sourcePosition", r.vector3],
+            ["type", r.uint],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveConnector, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveConnector",
-        props: {
-            animationColor: Type.RGBA_LINEAR,
-            animationScale: Type.NUMBER,
-            animationSpeed: Type.NUMBER,
-            color: Type.RGBA_LINEAR,
-            destObject: ["EveLocalPositionCurve"],
-            destPosition: Type.TR_TRANSLATION,
-            isAnimated: Type.BOOLEAN,
-            lineWidth: Type.NUMBER,
-            sourceObject: ["EveLocalPositionCurve"],
-            type: Type.NUMBER
-        },
-        notImplemented: ["*"]
-    };
-});
-

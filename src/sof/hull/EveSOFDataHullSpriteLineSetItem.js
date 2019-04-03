@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullSpriteLineSetItem
@@ -19,7 +19,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {vec3} scaling           -
  * @property {Number} spacing         -
  */
-export class EveSOFDataHullSpriteLineSetItem extends EveSOFBaseClass
+export class EveSOFDataHullSpriteLineSetItem
 {
 
     blinkPhase = 0;
@@ -37,13 +37,14 @@ export class EveSOFDataHullSpriteLineSetItem extends EveSOFBaseClass
     scaling = vec3.fromValues(1, 1, 1);
     spacing = 0;
 
-}
-
-EveSOFDataHullSpriteLineSetItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullSpriteLineSetItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["blinkRate", r.float],
             ["blinkPhase", r.float],
             ["blinkPhaseShift", r.float],
@@ -59,6 +60,6 @@ EveSOFDataHullSpriteLineSetItem.define(r =>
             ["rotation", r.vector4],
             ["scaling", r.vector3],
             ["spacing", r.float]
-        ]
-    };
-});
+        ];
+    }
+}

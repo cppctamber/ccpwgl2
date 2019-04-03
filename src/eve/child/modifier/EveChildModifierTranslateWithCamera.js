@@ -2,22 +2,23 @@ import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildModifierTranslateWithCamera
- * @implements ChildModifier
+ * TODO: Do we just implement this as an EveChild modifier mode?
  *
  */
 export class EveChildModifierTranslateWithCamera extends Tw2BaseClass
 {
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black = null;
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
 
 }
-
-Tw2BaseClass.define(EveChildModifierTranslateWithCamera, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveChildModifierTranslateWithCamera",
-        category: "ChildModifier",
-        props: {}
-    };
-});
-

@@ -578,36 +578,3 @@ export class EveBoosterSet extends EveObjectSet
     ];
 
 }
-
-EveObjectSet.define(EveBoosterSet, Type =>
-{
-    return {
-        type: "EveBoosterSet",
-        props: {
-            alwaysOn: Type.BOOLEAN,
-            effect: ["Tw2Effect"],
-            glowColor: Type.RGBA_LINEAR,
-            glowDistance: Type.NUMBER,
-            glows: ["Tw2Effect"],
-            glowScale: Type.NUMBER,
-            haloColor: Type.RGBA_LINEAR,
-            haloDistance: Type.NUMBER,
-            haloScaleX: Type.NUMBER,
-            haloScaleY: Type.NUMBER,
-            maxVecl: Type.NUMBER,
-            symHaloDistance: Type.NUMBER,
-            symHaloScale: Type.NUMBER,
-            trailColor: Type.RGBA_LINEAR,
-            trailSize: Type.VECTOR4,
-            visible: Type.PLAIN,
-            warpGlowColor: Type.RGBA_LINEAR,
-            warpHaloColor: Type.RGBA_LINEAR
-        },
-        notImplemented: [
-            "alwaysOn",
-            "maxVel",
-            "trailColor",
-            "trailSize"
-        ]
-    };
-});

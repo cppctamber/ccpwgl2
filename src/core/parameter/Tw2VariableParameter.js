@@ -30,7 +30,7 @@ export class Tw2VariableParameter extends Tw2Parameter
      */
     get variable()
     {
-        return store.GetVariable(this.variableName);
+        return store.variables.Get(this.variableName);
     }
 
     /**
@@ -49,7 +49,7 @@ export class Tw2VariableParameter extends Tw2Parameter
      */
     GetValue(serialize)
     {
-        return store.GetVariableValue(this.variableName, serialize);
+        return store.variables.Get(this.variableName, serialize);
     }
 
     /**

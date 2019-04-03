@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataGenericSwarm
  *
@@ -17,7 +15,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Number} weightFormation    -
  * @property {Number} weightSeparation   -
  */
-export class EveSOFDataGenericSwarm extends EveSOFBaseClass
+export class EveSOFDataGenericSwarm
 {
 
     formationDistance = 0;
@@ -34,13 +32,14 @@ export class EveSOFDataGenericSwarm extends EveSOFBaseClass
     weightFormation = 0;
     weightSeparation = 0;
 
-}
-
-EveSOFDataGenericSwarm.define(r =>
-{
-    return {
-        type: "EveSOFDataGenericSwarm",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["formationDistance", r.float],
             ["maxDistance0", r.float],
             ["maxDeceleration", r.float],
@@ -54,6 +53,6 @@ EveSOFDataGenericSwarm.define(r =>
             ["weightDeceleration", r.float],
             ["weightFormation", r.float],
             ["weightSeparation", r.float],
-        ]
-    };
-});
+        ];
+    }
+}

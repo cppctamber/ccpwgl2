@@ -42,7 +42,7 @@ export function EveSOF()
     }
 
     /**
-     * @return {String}
+     * @String}
      */
     function GetShaderPrefix(isAnimated)
     {
@@ -91,7 +91,7 @@ export function EveSOF()
     }
 
     /**
-     * @return {String}
+     * @String}
      */
     function ModifyShaderPath(shader, isSkinned)
     {
@@ -785,7 +785,7 @@ export function EveSOF()
         {
             return function (obj)
             {
-                if (obj._isEffectChild)
+                if (obj.constructor.__isEffectChild)
                 {
                     ship.effectChildren.push(obj);
                 }

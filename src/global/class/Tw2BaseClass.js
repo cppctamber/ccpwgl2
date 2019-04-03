@@ -536,6 +536,12 @@ export default class Tw2BaseClass
      */
     static __isLeaf = false;
 
+    /**
+     * Identifies the ccp name
+     * @type {null|String}
+     * @private
+     */
+    static __ccp = null;
 
     /* ----------------------------------------------------------------------------------------------------------------
 
@@ -552,5 +558,11 @@ export default class Tw2BaseClass
     {
         return Tw2Schema.create(Constructor, func, this !== Tw2BaseClass ? this : undefined);
     }
+
+    /**
+     * Black definition
+     * @type {null}
+     */
+    static black = null;
 
 }

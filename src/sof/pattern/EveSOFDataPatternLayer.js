@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataPatternLayer
  *
@@ -13,7 +11,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {String} textureName        -
  * @property {String} textureResFilePath -
  */
-export class EveSOFDataPatternLayer extends EveSOFBaseClass
+export class EveSOFDataPatternLayer
 {
 
     isTargetMtl1 = false;
@@ -26,13 +24,14 @@ export class EveSOFDataPatternLayer extends EveSOFBaseClass
     textureName = "";
     textureResFilePath = "";
 
-}
-
-EveSOFDataPatternLayer.define(r =>
-{
-    return {
-        type: "EveSOFDataPatternLayer",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["isTargetMtl1", r.boolean],
             ["isTargetMtl2", r.boolean],
             ["isTargetMtl3", r.boolean],
@@ -42,6 +41,6 @@ EveSOFDataPatternLayer.define(r =>
             ["projectionTypeV", r.uint],
             ["textureName", r.string],
             ["textureResFilePath", r.path]
-        ]
-    };
-});
+        ];
+    }
+}

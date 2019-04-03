@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataGenericVariant
  *
@@ -7,23 +5,24 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataHullArea} hullArea -
  * @property {Boolean} isTransparent       -
  */
-export class EveSOFDataGenericVariant extends EveSOFBaseClass
+export class EveSOFDataGenericVariant
 {
 
     name = "";
     hullArea = null;
     isTransparent = false;
 
-}
-
-EveSOFDataGenericVariant.define(r =>
-{
-    return {
-        type: "EveSOFDataGenericVariant",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["hullArea", r.object],
             ["isTransparent", r.boolean],
             ["name", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

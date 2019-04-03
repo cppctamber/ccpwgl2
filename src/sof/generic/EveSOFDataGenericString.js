@@ -1,23 +1,22 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataGenericString
  *
  * @property {String} str -
  */
-export class EveSOFDataGenericString extends EveSOFBaseClass
+export class EveSOFDataGenericString
 {
 
     str = "";
 
-}
-
-EveSOFDataGenericString.define(r =>
-{
-    return {
-        type: "EveSOFDataGenericString",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["str", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

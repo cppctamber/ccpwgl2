@@ -3,7 +3,6 @@ import {EveChild} from "./EveChild";
 /**
  * EveChildBulletStorm
  * Todo: Implement
- * @ccp EveChildBulletStorm
  *
  * @property {Tw2Effect} effect        -
  * @property {Number} multiplier       -
@@ -13,28 +12,33 @@ import {EveChild} from "./EveChild";
  */
 export class EveChildBulletStorm extends EveChild
 {
-    // ccp
+
     effect = null;
     multiplier = 0;
     range = 0;
     sourceLocatorSet = "";
     speed = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["effect", r.object],
+            ["multiplier", r.uint],
+            ["range", r.float],
+            ["speed", r.float],
+            ["sourceLocatorSet", r.string]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-EveChild.define(EveChildBulletStorm, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveChildBulletStorm",
-        props: {
-            effect: ["Tw2Effect"],
-            multiplier: Type.NUMBER,
-            range: Type.NUMBER,
-            sourceLocatorSet: Type.STRING,
-            speed: Type.NUMBER
-        },
-        notImplemented: ["*"]
-    };
-});
-

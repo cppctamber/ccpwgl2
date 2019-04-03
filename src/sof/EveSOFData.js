@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "./EveSOFBaseClass";
-
 /**
  * EveSOFData
  *
@@ -10,7 +8,7 @@ import {EveSOFBaseClass} from "./EveSOFBaseClass";
  * @property {Array.<EveSOFDataPattern>} pattern   -
  * @property {Array.<EveSOFDataRace>} race         -
  */
-export class EveSOFData extends EveSOFBaseClass
+export class EveSOFData
 {
 
     faction = [];
@@ -20,19 +18,20 @@ export class EveSOFData extends EveSOFBaseClass
     pattern = [];
     race = [];
 
-}
-
-EveSOFData.define(r =>
-{
-    return {
-        type: "EveSOFData",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["faction", r.array],
             ["generic", r.object],
             ["hull", r.array],
             ["material", r.array],
             ["pattern", r.array],
             ["race", r.array]
-        ]
-    };
-});
+        ];
+    }
+}

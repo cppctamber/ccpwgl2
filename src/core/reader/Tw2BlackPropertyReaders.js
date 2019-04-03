@@ -289,6 +289,10 @@ export function struct(struct)
 {
     return function (reader)
     {
+        if (struct.blackStruct)
+        {
+            return struct.blackStruct(reader);
+        }
         return struct.ReadStruct(reader);
     };
 }
@@ -309,7 +313,16 @@ export function structList(struct)
         for (let i = 0; i < count; i++)
         {
             let structReader = reader.ReadBinaryReader(byteSize);
-            result[i] = struct.ReadStruct(structReader);
+
+            if (struct.blackReader)
+            {
+                result[i] = struct.blackStruct(structReader);
+            }
+            else
+            {
+                result[i] = struct.ReadStruct(structReader);
+            }
+
             structReader.ExpectEnd("struct read to end");
         }
 

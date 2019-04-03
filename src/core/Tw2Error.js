@@ -77,6 +77,57 @@ export class Tw2Error extends Error
 
 }
 
+/**
+ * Throws when trying to register a reserved store key
+ */
+export class ErrStoreKeyReserved extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "%store% key is reserved: %key%");
+    }
+}
+
+/**
+ * Throws when trying to register an invalid store value
+ */
+export class ErrStoreValueInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "%store% value is invalid for key: %key%");
+    }
+}
+
+/**
+ * Throws when trying to retrieve a store value that doesn't exist
+ */
+export class ErrStoreValueMissing extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "%store% value is missing for key: %key%");
+    }
+}
+
+/**
+ * Throws when trying to create a store variable with an invalid type
+ */
+export class ErrStoreTypeInvalid extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid variable type for %store%: %type%");
+    }
+}
+
+export class ErrStoreKeyProtected extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "%store% cannot be overwritten: %key%");
+    }
+}
 
 /**
  * Throws on http request errors

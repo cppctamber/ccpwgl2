@@ -1,23 +1,22 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullController
  *
  * @property {String} path -
  */
-export class EveSOFDataHullController extends EveSOFBaseClass
+export class EveSOFDataHullController
 {
 
     path = "";
 
-}
-
-EveSOFDataHullController.define(r =>
-{
-    return {
-        type: "EveSOFDataHullController",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["path", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

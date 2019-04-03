@@ -6,12 +6,13 @@ import {Tw2BaseClass} from "../../global/index";
  * TODO: Implement
  * @ccp EveMobile
  *
+ * @property {String} name                         -
  * @property {Array.<EveObjectSet>} attachments    -
  * @property {vec3} boundingSphereCenter           -
  * @property {Number} boundingSphereRadius         -
  * @property {Array.<EveObject>} children          -
  * @property {Array.<StateController>} controllers -
- * @property {Array.<TriCurveSet>} curveSets       -
+ * @property {Array.<Tw2CurveSet>} curveSets       -
  * @property {Array.<EveObjectSet>} locatorSets    -
  * @property {Tr2MeshLod} meshLod                  -
  * @property {Array.<TriObserverLocal>} observers  -
@@ -20,6 +21,7 @@ import {Tw2BaseClass} from "../../global/index";
 export default class EveMobile extends Tw2BaseClass
 {
 
+    name = "";
     attachments = [];
     boundingSphereCenter = vec3.create();
     boundingSphereRadius = 0;
@@ -31,26 +33,32 @@ export default class EveMobile extends Tw2BaseClass
     observers = [];
     shadowEffect = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["attachments", r.array],
+            ["boundingSphereCenter", r.vector3],
+            ["boundingSphereRadius", r.float],
+            ["children", r.array],
+            ["controllers", r.array],
+            ["curveSets", r.array],
+            ["locatorSets", r.array],
+            ["name", r.string],
+            ["meshLod", r.object],
+            ["observers", r.array],
+            ["shadowEffect", r.object],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveMobile, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveMobile",
-        props: {
-            attachments: [["EveSpriteSet"]],
-            boundingSphereCenter: Type.VECTOR3,
-            boundingSphereRadius: Type.NUMBER,
-            children: [["EveTransform"]],
-            controllers: [["Tr2ControllerReference"]],
-            curveSets: [["TriCurveSet"]],
-            locatorSets: [["EveLocatorSets"]],
-            meshLod: ["Tr2MeshLod"],
-            observers: [["TriObserverLocal"]],
-            shadowEffect: ["Tr2Effect"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

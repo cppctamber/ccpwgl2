@@ -5,6 +5,7 @@ import {vec3, vec4, Tw2BaseClass} from "../../global";
  * @ccp EveSpherePin
  * TODO: Implement
  *
+ * @property {String} name                   -
  * @property {vec3} centerNormal             -
  * @property {vec4} color                    -
  * @property {Array.<Tw2CurveSet>} curveSets -
@@ -20,6 +21,7 @@ import {vec3, vec4, Tw2BaseClass} from "../../global";
 export class EveSpherePin extends Tw2BaseClass
 {
 
+    name = "";
     centerNormal = vec3.create();
     color = vec4.create();
     curveSets = [];
@@ -32,27 +34,33 @@ export class EveSpherePin extends Tw2BaseClass
     pinRotation = 0;
     sortValueMultiplier = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["centerNormal", r.vector3],
+            ["color", r.color],
+            ["curveSets", r.array],
+            ["enablePicking", r.boolean],
+            ["geometryResPath", r.string],
+            ["name", r.string],
+            ["pinColor", r.color],
+            ["pinEffect", r.object],
+            ["pinMaxRadius", r.float],
+            ["pinRadius", r.float],
+            ["pinRotation", r.float],
+            ["sortValueMultiplier", r.float]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveSpherePin, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveSpherePin",
-        props: {
-            centerNormal: Type.VECTOR3,
-            color: Type.RGBA_LINEAR,
-            curveSets: [["Tw2CurveSet"]],
-            enablePicking: Type.BOOLEAN,
-            geometryResPath: Type.PATH,
-            pinColor: Type.RGBA_LINEAR,
-            pinEffect: ["Tw2Effect"],
-            pinMaxRadius: Type.NUMBER,
-            pinRadius: Type.NUMBER,
-            pinRotation: Type.NUMBER,
-            sortValueMultiplier: Type.NUMBER
-        },
-        notImplemented: ["*"]
-    };
-});
-

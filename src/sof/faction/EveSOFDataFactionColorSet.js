@@ -1,5 +1,5 @@
 import {vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataFactionColorSet
@@ -23,7 +23,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {vec4} White     -
  * @property {vec4} Yellow    -
  */
-export class EveSOFDataFactionColorSet extends EveSOFBaseClass
+export class EveSOFDataFactionColorSet
 {
 
     Black = vec4.create();
@@ -56,13 +56,14 @@ export class EveSOFDataFactionColorSet extends EveSOFBaseClass
         return name in this ? this[name] : null;
     }
 
-}
-
-EveSOFDataFactionColorSet.define(r =>
-{
-    return {
-        type: "EveSOFDataFactionColorSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["Black", r.vector4],
             ["Blue", r.vector4],
             ["Booster", r.vector4],
@@ -81,6 +82,6 @@ EveSOFDataFactionColorSet.define(r =>
             ["Tertiary", r.vector4],
             ["White", r.vector4],
             ["Yellow", r.vector4],
-        ]
-    };
-});
+        ];
+    }
+}

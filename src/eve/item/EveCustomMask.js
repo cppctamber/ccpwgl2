@@ -58,7 +58,8 @@ export class EveCustomMask extends Tw2BaseClass
      */
     UpdatePerObjectData(parentTransform, perObjectData, visible)
     {
-        if (this.display && visible && !mat4.equals(this._parentTransformLast, parentTransform))
+        // TODO: Find a better way to tell if the parent has been updated
+        if (this._dirty || !mat4.equals(this._parentTransformLast, parentTransform))
         {
             mat4.copy(this._parentTransformLast, parentTransform);
             mat4.multiply(this._maskMatrix, parentTransform, this.localTransform);
@@ -74,24 +75,26 @@ export class EveCustomMask extends Tw2BaseClass
         perObjectData.ps.Set("CustomMaskTarget" + this._index, targets);
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["materialIndex", r.byte],
+            ["position", r.vector3],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["targetMaterials", r.vector4],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-Tw2BaseClass.define(EveCustomMask, Type =>
-{
-    return {
-        type: "EveCustomMask",
-        category: "EveObjectItem",
-        isStaging: true,
-        props: {
-            display: Type.BOOLEAN,
-            isMirrored: Type.BOOLEAN,
-            materialIndex: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            targetMaterials: Type.VECTOR4,
-            localTransform: Type.TR_LOCAL
-        }
-    };
-});
-

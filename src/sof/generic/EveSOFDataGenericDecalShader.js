@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataGenericDecalShader
  *
@@ -9,7 +7,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Array.<EveSOFDataGenericString>} parentTextures -
  * @property {String} shader                                  -
  */
-export class EveSOFDataGenericDecalShader extends EveSOFBaseClass
+export class EveSOFDataGenericDecalShader
 {
 
     defaultTextures = [];
@@ -17,17 +15,18 @@ export class EveSOFDataGenericDecalShader extends EveSOFBaseClass
     parentTextures = [];
     shader = "";
 
-}
-
-EveSOFDataGenericDecalShader.define(r =>
-{
-    return {
-        type: "EveSOFDataGenericDecalShader",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["defaultTextures", r.array],
             ["parameters", r.array],
             ["parentTextures", r.array],
             ["shader", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

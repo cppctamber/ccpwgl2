@@ -12,18 +12,23 @@ export class EveLineContainer extends Tw2BaseClass
 
     lineSet = null;
 
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["lineSet", r.object]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveLineContainer, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveLineContainer",
-        category: "EveObject",
-        props: {
-            lineSet: ["EveCurveLineSet"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

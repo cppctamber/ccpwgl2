@@ -1,5 +1,4 @@
 export * from "./action";
-export * from "./animation";
 export * from "./controller";
 export * from "./variable";
 export * from "./Tr2StateMachine";

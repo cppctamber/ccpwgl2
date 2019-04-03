@@ -603,9 +603,9 @@ export class EveSpaceScene extends Tw2BaseClass
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
 
-        store.GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
-        store.GetVariable("EnvMap1").SetTextureRes(envMap1);
-        store.GetVariable("EnvMap2").SetTextureRes(envMap2);
+        store.variables.Get("EveSpaceSceneEnvMap").SetTextureRes(envMap);
+        store.variables.Get("EnvMap1").SetTextureRes(envMap1);
+        store.variables.Get("EnvMap2").SetTextureRes(envMap2);
     }
 
     /**
@@ -677,53 +677,48 @@ export class EveSpaceScene extends Tw2BaseClass
      */
     static DebugRenderer = window["Tw2DebugRenderer"] || null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["ambientColor", r.color],
+            ["backgroundEffect", r.object],
+            ["backgroundObjects", r.array],
+            ["backgroundRenderingEnabled", r.boolean],
+            ["curveSets", r.array],
+            ["enableShadows", r.boolean],
+            ["envMapResPath", r.string],
+            ["envMap1ResPath", r.string],
+            ["envMap2ResPath", r.string],
+            ["envMapRotation", r.vector4],
+            ["externalParameters", r.array],
+            ["fogColor", r.color],
+            ["fogStart", r.float],
+            ["fogEnd", r.float],
+            ["fogMax", r.float],
+            ["nebulaIntensity", r.float],
+            ["objects", r.array],
+            ["postProcessPath", r.string],
+            ["selfShadowOnly", r.boolean],
+            ["starfield", r.object],
+            ["shadowFadeThreshold", r.float],
+            ["shadowThreshold", r.float],
+            ["shLightingManager", r.object],
+            ["sunDiffuseColor", r.color],
+            ["sunDiffuseColorWithDynamicLights", r.vector4],
+            ["sunDirection", r.vector3],
+            ["useSunDiffuseColorWithDynamicLights", r.boolean]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 2;
+
 }
-
-Tw2BaseClass.define(EveSpaceScene, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveSpaceScene",
-        props: {
-            ambientColor: Type.RGBA_LINEAR,
-            backgroundEffect: ["Tw2Effect"],
-            backgroundObjects: [["EveTransform"]],
-            backgroundRenderingEnabled: Type.BOOLEAN,
-            curveSets: [["Tw2CurveSet"]],
-            enableShadows: Type.BOOLEAN,
-            envMap1ResPath: Type.PATH,
-            envMap2ResPath: Type.PATH,
-            envMapResPath: Type.PATH,
-            envMapRotation: Type.TR_ROTATION,
-            externalParameters: [["Tr2ExternalParameter"]],
-            fogColor: Type.RGBA_LINEAR,
-            fogEnd: Type.NUMBER,
-            fogMax: Type.NUMBER,
-            fogStart: Type.NUMBER,
-            nebulaIntensity: Type.NUMBER,
-            objects: [["EveEffectRoot2", "EveRootTransform", "EveShip2", "EveStation2", "EveTransform"]],
-            postProcessPath: Type.PATH,
-            selfShadowOnly: Type.BOOLEAN,
-            shLightingManager: ["Tr2ShLightingManager"],
-            shadowFadeThreshold: Type.NUMBER,
-            shadowThreshold: Type.NUMBER,
-            starfield: ["EveStarfield"],
-            sunDiffuseColor: Type.RGBA_LINEAR,
-            sunDiffuseColorWithDynamicLights: Type.RGBA_LINEAR,
-            sunDirection: Type.VECTOR3,
-            useSunDiffuseColorWithDynamicLights: Type.BOOLEAN
-        },
-        notImplemented: [
-            "externalParameters",
-            "selfShadowOnly",
-            "shLightingManager",
-            "shadowFadeThreshold",
-            "shadowThreshold",
-            "starField",
-            "sunDiffuseColorWithDynamicLights",
-            "postProcess"
-        ]
-    };
-});
-
-

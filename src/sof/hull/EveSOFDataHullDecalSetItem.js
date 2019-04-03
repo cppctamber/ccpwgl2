@@ -1,5 +1,5 @@
 import {vec3, quat} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullDecalSetItem
@@ -18,7 +18,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Array<EveSOFDataTexture>} texture
  * @property {String} visibilityGroup
  */
-export class EveSOFDataHullDecalSetItem extends EveSOFBaseClass
+export class EveSOFDataHullDecalSetItem
 {
 
     name = "";
@@ -35,13 +35,14 @@ export class EveSOFDataHullDecalSetItem extends EveSOFBaseClass
     usage = 0;
     visibilityGroup = "";
 
-}
-
-EveSOFDataHullDecalSetItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullDecalSetItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["boneIndex", r.uint],
             ["indexBuffer", r.indexBuffer],
@@ -55,6 +56,6 @@ EveSOFDataHullDecalSetItem.define(r =>
             ["textures", r.array],
             ["usage", r.uint],
             ["visibilityGroup", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

@@ -126,7 +126,7 @@ export class EveShip extends EveSpaceObject
 
         if (this.boosters)
         {
-            if (this.boosters._locatorRebuildPending)
+            if (this.boosters._locatorDirty)
             {
                 this.RebuildBoosterSet();
             }
@@ -136,7 +136,7 @@ export class EveShip extends EveSpaceObject
 
         for (let i = 0; i < this.turretSets.length; ++i)
         {
-            if (this.turretSets[i]._locatorRebuildPending)
+            if (this.turretSets[i]._locatorDirty)
             {
                 this.RebuildTurretSet(i);
             }

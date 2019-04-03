@@ -3,8 +3,8 @@ import {EveChild} from "./EveChild";
 /**
  * EveChildParticleSphere
  * TODO: Implement
- * @ccp EveChildParticleSphere
  *
+ * @property {String} name                                      -
  * @property {Array.<Tw2ParticleAttributeGenerator>} generators -
  * @property {Number} maxSpeed                                  -
  * @property {Tw2InstancedMesh} mesh                            -
@@ -20,6 +20,7 @@ import {EveChild} from "./EveChild";
 export class EveChildParticleSphere extends EveChild
 {
 
+    name = "";
     generators = [];
     maxSpeed = 0;
     mesh = null;
@@ -32,27 +33,33 @@ export class EveChildParticleSphere extends EveChild
     radius = 0;
     useSpaceObjectData = false;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["generators", r.array],
+            ["maxSpeed", r.float],
+            ["mesh", r.object],
+            ["movementScale", r.float],
+            ["name", r.string],
+            ["particleSystem", r.object],
+            ["positionShiftDecreaseSpeed", r.float],
+            ["positionShiftIncreaseSpeed", r.float],
+            ["positionShiftMax", r.float],
+            ["positionShiftMin", r.float],
+            ["radius", r.float],
+            ["useSpaceObjectData", r.boolean]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-EveChild.define(EveChildParticleSphere, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveChildParticleSphere",
-        props: {
-            generators: [["Tw2RandomIntegerAttributeGenerator", "Tw2RandomUniformAttributeGenerator"]],
-            maxSpeed: Type.NUMBER,
-            mesh: ["Tw2InstancedMesh"],
-            movementScale: Type.NUMBER,
-            particleSystem: ["Tw2ParticleSystem"],
-            positionShiftDecreaseSpeed: Type.NUMBER,
-            positionShiftIncreaseSpeed: Type.NUMBER,
-            positionShiftMax: Type.NUMBER,
-            positionShiftMin: Type.NUMBER,
-            radius: Type.NUMBER,
-            useSpaceObjectData: Type.BOOLEAN
-        },
-        notImplemented: ["*"]
-    };
-});
-

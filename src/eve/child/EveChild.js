@@ -10,14 +10,6 @@ import {ErrAbstractClassMethod} from "../../core";
  */
 export class EveChild extends Tw2BaseClass
 {
-    /**
-     * Identifies that the class is a child effect
-     * @returns {boolean}
-     */
-    get _isEffectChild()
-    {
-        return true;
-    }
 
     /**
      * Per frame update
@@ -59,6 +51,12 @@ export class EveChild extends Tw2BaseClass
             ["worldInverseTranspose", 16]
         ]
     };
+
+    /**
+     * Identifies that the class is a child effect
+     * @returns {boolean}
+     */
+    static __isEffectChild = true;
 
 }
 

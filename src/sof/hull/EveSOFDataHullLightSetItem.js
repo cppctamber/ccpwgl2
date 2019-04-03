@@ -1,5 +1,5 @@
 import {vec3, vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullLightSetItem
@@ -12,7 +12,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {vec3} position
  * @property {Number} radius
  */
-export class EveSOFDataHullLightSetItem extends EveSOFBaseClass
+export class EveSOFDataHullLightSetItem
 {
 
     name = "";
@@ -24,13 +24,14 @@ export class EveSOFDataHullLightSetItem extends EveSOFBaseClass
     position = vec3.create();
     radius = 0;
 
-}
-
-EveSOFDataHullLightSetItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullLightSetItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["brightness", r.float],
             ["innerRadius", r.float],
@@ -39,6 +40,6 @@ EveSOFDataHullLightSetItem.define(r =>
             ["noiseFrequency", r.float],
             ["position", r.vector3],
             ["radius", r.float],
-        ]
-    };
-});
+        ];
+    }
+}

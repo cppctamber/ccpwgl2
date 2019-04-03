@@ -57,7 +57,6 @@ export class EveMissileWarhead extends Tw2BaseClass
     _transform = mat4.create();
     _velocity = vec3.create();
 
-
     /**
      * Initializes the warhead
      */
@@ -219,38 +218,37 @@ export class EveMissileWarhead extends Tw2BaseClass
         DEAD: 2
     };
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["acceleration", r.float],
+            ["durationEjectPhase", r.float],
+            ["impactDuration", r.float],
+            ["impactSize", r.float],
+            ["maxExplosionDistance", r.float],
+            ["mesh", r.object],
+            ["particleEmitters", r.array],
+            ["pathOffsetNoiseScale", r.float],
+            ["pathOffsetNoiseSpeed", r.float],
+            ["spriteSet", r.object],
+            ["startEjectVelocity", r.float],
+            ["warheadLength", r.float],
+            ["warheadRadius", r.float],
+        ];
+    }
 
-Tw2BaseClass.define(EveMissileWarhead, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveMissileWarhead",
-        props: {
-            acceleration: Type.NUMBER,
-            durationEjectPhase: Type.NUMBER,
-            impactDuration: Type.NUMBER,
-            impactSize: Type.NUMBER,
-            maxExplosionDistance: Type.NUMBER,
-            mesh: ["Tr2Mesh"],
-            particleEmitters: [["Tr2GpuSharedEmitter"]],
-            pathOffsetNoiseScale: Type.NUMBER,
-            pathOffsetNoiseSpeed: Type.NUMBER,
-            spriteSet: ["EveSpriteSet"],
-            startEjectVelocity: Type.NUMBER,
-            warheadLength: Type.NUMBER,
-            warheadRadius: Type.NUMBER
-        },
-        notImplemented: [
-            "acceleration",
-            "impactDuration",
-            "pathOffsetNoiseScale",
-            "pathOffsetNoiseSpeed",
-            "warheadLength",
-            "warheadRadius"
-        ]
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 2;
+
+}
 
 
 /**
@@ -258,22 +256,25 @@ Tw2BaseClass.define(EveMissileWarhead, Type =>
  * @ccp EveMissile
  * Todo: Implement "boundingSphereRadius"
  * Todo: Implement "modelTranslationCurve"
+ * Todo: Are "curveSets" deprecated?
  *
- * @property {Boolean} display
- * @property {Array} warheads
- * @property {Array} curveSets
- * @property {vec3} boundingSphereCenter
- * @property {Number} boundingSphereRadius
- * @property {Tr2TranslationAdapter} modelTranslationCurve
- * @property {vec3} _position
- * @property {vec3} _target
- * @property {Number} speed
- * @property {?function(EveMissileWarhead): void} _warheadExplosionCallback
- * @property {?function(EveMissile): void} _missileFinishedCallback
+ * @property {String} name                                                  -
+ * @property {Boolean} display                                              -
+ * @property {Array} warheads                                               -
+ * @property {Array} curveSets                                              -
+ * @property {vec3} boundingSphereCenter                                    -
+ * @property {Number} boundingSphereRadius                                  -
+ * @property {Tr2TranslationAdapter} modelTranslationCurve                  -
+ * @property {Number} speed                                                 -
+ * @property {vec3} _position                                               -
+ * @property {vec3} _target                                                 -
+ * @property {?function(EveMissileWarhead): void} _warheadExplosionCallback -
+ * @property {?function(EveMissile): void} _missileFinishedCallback         -
  */
 export class EveMissile extends Tw2BaseClass
 {
     // ccp
+    name = "";
     boundingSphereCenter = vec3.create();
     boundingSphereRadius = 0;
     modelTranslationCurve = null;
@@ -438,22 +439,26 @@ export class EveMissile extends Tw2BaseClass
         }
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["boundingSphereCenter", r.vector3],
+            ["boundingSphereRadius", r.float],
+            ["modelTranslationCurve", r.object],
+            ["name", r.string],
+            ["warheads", r.array]
+        ];
+    }
 
-Tw2BaseClass.define(EveMissile, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveMissile",
-        props: {
-            boundingSphereCenter: Type.VECTOR3,
-            boundingSphereRadius: Type.NUMBER,
-            modelTranslationCurve: ["Tr2TranslationAdapter"],
-            warheads: [["EveMissileWarhead"]]
-        },
-        notImplemented: [
-            "boundingSphereRadius",
-            "modelTranslationCurve"
-        ]
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 2;
+
+}

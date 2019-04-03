@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullBanner
@@ -13,7 +13,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {vec3} scaling     -
  * @property {Number} usage     -
  */
-export class EveSOFDataHullBanner extends EveSOFBaseClass
+export class EveSOFDataHullBanner
 {
 
     name = "";
@@ -25,13 +25,14 @@ export class EveSOFDataHullBanner extends EveSOFBaseClass
     scaling = vec3.fromValues(1, 1, 1);
     usage = 0;
 
-}
-
-EveSOFDataHullBanner.define(r =>
-{
-    return {
-        type: "EveSOFDataHullBanner",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["angleX", r.float],
             ["angleY", r.float],
             ["angleZ", r.float],
@@ -41,6 +42,6 @@ EveSOFDataHullBanner.define(r =>
             ["rotation", r.vector4],
             ["scaling", r.vector3],
             ["usage", r.uint]
-        ]
-    };
-});
+        ];
+    }
+}

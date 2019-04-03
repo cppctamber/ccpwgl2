@@ -6,22 +6,22 @@ import {Tw2BaseClass} from "../../global/index";
  * TODO: Implement
  * @ccp EveShip2
  *
- * @property {Array.<EveObjectSet>} attachments    -
- * @property {EveBoosterSet2} boosters             -
- * @property {vec3} boundingSphereCenter           -
- * @property {Number} boundingSphereRadius         -
- * @property {Array.<EveObject>} children          -
- * @property {Array.<EveCustomMask>} customMasks   -
- * @property {Array.<EveObjectItem>} decals        -
- * @property {String} dna                          -
- * @property {Array.<EveObjectSet>} locatorSets    -
- * @property {Array.<EveObjectItem>} locators      -
- * @property {Mesh|Tr2MeshLod} mesh                -
- * @property {Curve|CurveAdapter} rotationCurve    -
- * @property {Tr2Effect} shadowEffect              -
- * @property {vec3} shapeEllipsoidCenter           -
- * @property {vec3} shapeEllipsoidRadius           -
- * @property {Curve|CurveAdapter} translationCurve -
+ * @property {Array.<EveObjectSet>} attachments        -
+ * @property {EveBoosterSet2} boosters                 -
+ * @property {vec3} boundingSphereCenter               -
+ * @property {Number} boundingSphereRadius             -
+ * @property {Array.<EveObject>} children              -
+ * @property {Array.<EveCustomMask>} customMasks       -
+ * @property {Array.<EveSpaceObjectDecal>} decals      -
+ * @property {String} dna                              -
+ * @property {Array.<EveLocatorSets>} locatorSets      -
+ * @property {Array.<EveLocator2>} locators            -
+ * @property {Tw2Mesh|Tw2InstanceMesh|Tr2MeshLod} mesh -
+ * @property {Curve|CurveAdapter} rotationCurve        -
+ * @property {Tr2Effect} shadowEffect                  -
+ * @property {vec3} shapeEllipsoidCenter               -
+ * @property {vec3} shapeEllipsoidRadius               -
+ * @property {Curve|CurveAdapter} translationCurve     -
  */
 export default class EveShip2 extends Tw2BaseClass
 {
@@ -43,33 +43,39 @@ export default class EveShip2 extends Tw2BaseClass
     shapeEllipsoidRadius = vec3.create();
     translationCurve = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["attachments", r.array],
+            ["boosters", r.object],
+            ["boundingSphereCenter", r.vector3],
+            ["boundingSphereRadius", r.float],
+            ["children", r.array],
+            ["customMasks", r.array],
+            ["decals", r.array],
+            ["dna", r.string],
+            ["locatorSets", r.array],
+            ["locators", r.array],
+            ["mesh", r.object],
+            ["name", r.string],
+            ["meshLod", r.object],
+            ["rotationCurve", r.object],
+            ["shadowEffect", r.object],
+            ["shapeEllipsoidCenter", r.vector3],
+            ["shapeEllipsoidRadius", r.vector3],
+            ["translationCurve", r.object],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveShip2, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveShip2",
-        category: "EveObject",
-        props: {
-            attachments: [["EveSpotlightSet", "EveSpriteSet"]],
-            boosters: ["EveBoosterSet2"],
-            boundingSphereCenter: Type.VECTOR3,
-            boundingSphereRadius: Type.NUMBER,
-            children: [["EveTransform"]],
-            customMasks: [["EveCustomMask"]],
-            decals: [["EveSpaceObjectDecal"]],
-            dna: Type.STRING,
-            locatorSets: [["EveLocatorSets"]],
-            locators: [["EveLocator2"]],
-            mesh: ["Tr2Mesh", "Tr2MeshLod"],
-            rotationCurve: ["Tr2CurveConstant", "Tr2RotationAdapter"],
-            shadowEffect: ["Tr2Effect"],
-            shapeEllipsoidCenter: Type.VECTOR3,
-            shapeEllipsoidRadius: Type.VECTOR3,
-            translationCurve: ["Tr2CurveConstant", "Tr2TranslationAdapter"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

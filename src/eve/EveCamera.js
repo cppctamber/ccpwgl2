@@ -2,8 +2,8 @@ import {quat, vec3, Tw2BaseClass} from "../global";
 
 /**
  * EveCamera
- * @ccp EveCamera
  * TODO: Implement
+ * @ccp EveCamera
  *
  * @property {Number} fieldOfView             -
  * @property {Number} friction                -
@@ -42,32 +42,33 @@ export class EveCamera extends Tw2BaseClass
     yaw = 0;
     zoomCurve = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["fieldOfView", r.float],
+            ["friction", r.float],
+            ["frontClip", r.float],
+            ["idleMove", r.boolean],
+            ["idleScale", r.float],
+            ["idleSpeed", r.float],
+            ["intr", r.vector3],
+            ["pitch", r.float],
+            ["pos", r.vector3],
+            ["maxSpeed", r.float],
+            ["noiseScale", r.float],
+            ["noiseScaleCurve", r.object],
+            ["rotationAroundParent", r.vector4],
+            ["translationFromParent", r.float],
+            ["yaw", r.float],
+            ["zoomCurve", r.object]
+        ];
+    }
+
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveCamera, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveCamera",
-        props: {
-            fieldOfView: Type.NUMBER,
-            friction: Type.NUMBER,
-            frontClip: Type.NUMBER,
-            idleMove: Type.BOOLEAN,
-            idleScale: Type.NUMBER,
-            idleSpeed: Type.NUMBER,
-            intr: Type.VECTOR3,
-            maxSpeed: Type.NUMBER,
-            noiseScale: Type.NUMBER,
-            noiseScaleCurve: ["Tr2CurveScalar"],
-            pitch: Type.NUMBER,
-            pos: Type.VECTOR3,
-            rotationAroundParent: Type.TR_ROTATION,
-            translationFromParent: Type.NUMBER,
-            yaw: Type.NUMBER,
-            zoomCurve: ["Tr2CurveScalar"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

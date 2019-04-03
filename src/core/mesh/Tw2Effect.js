@@ -191,10 +191,10 @@ export class Tw2Effect
                                     });
                                 }
                             }
-                            else if (store.HasVariable(name))
+                            else if (store.variables.Has(name))
                             {
                                 stage.parameters.push({
-                                    parameter: store.GetVariable(name),
+                                    parameter: store.variables.Get(name),
                                     constantBuffer: stage.constantBuffer,
                                     offset: constant.offset,
                                     size: constant.size
@@ -202,7 +202,7 @@ export class Tw2Effect
                             }
                             else if (constant.isAutoregister && Type)
                             {
-                                const variable = store.RegisterVariable(name, undefined, Type);
+                                const variable = store.variables.Create(name, undefined, Type);
                                 if (variable)
                                 {
                                     stage.parameters.push({
@@ -225,7 +225,7 @@ export class Tw2Effect
                                     value = value[0];
                                 }
 
-                                const param = store.CreateType(name, value, Type);
+                                const param = store.variables.Create(name, value, Type);
                                 if (param)
                                 {
                                     this.parameters[name] = param;
@@ -254,13 +254,13 @@ export class Tw2Effect
                             {
                                 param = this.parameters[name];
                             }
-                            else if (store.HasVariable(name))
+                            else if (store.variables.Has(name))
                             {
-                                param = store.GetVariable(name);
+                                param = store.variables.Get(name);
                             }
                             else if (stageRes.textures[k].isAutoregister)
                             {
-                                param = store.RegisterVariable(name, undefined, Tw2TextureParameter);
+                                param = store.variables.Create(name, undefined, Tw2TextureParameter);
                             }
                             else if (this.autoParameter)
                             {
@@ -520,7 +520,7 @@ export class Tw2Effect
                 }
                 else
                 {
-                    const parameter = store.CreateType(key, value);
+                    const parameter = store.variables.Create(key, value);
                     if (parameter)
                     {
                         this.parameters[key] = parameter;

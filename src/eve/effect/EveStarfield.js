@@ -25,24 +25,29 @@ export default class EveStarfield extends Tw2BaseClass
     numStars = 0;
     seed = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["effect", r.object],
+            ["maxDist", r.float],
+            ["maxFlashRate", r.float],
+            ["minDist", r.float],
+            ["minFlashIntensity", r.float],
+            ["minFlashRate", r.float],
+            ["numStars", r.uint],
+            ["seed", r.uint]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(EveStarfield, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveStarfield",
-        props: {
-            effect: ["Tw2Effect"],
-            maxDist: Type.NUMBER,
-            maxFlashRate: Type.NUMBER,
-            minDist: Type.NUMBER,
-            minFlashIntensity: Type.NUMBER,
-            minFlashRate: Type.NUMBER,
-            numStars: Type.NUMBER,
-            seed: Type.NUMBER
-        },
-        notImplemented: ["*"]
-    };
-});
-

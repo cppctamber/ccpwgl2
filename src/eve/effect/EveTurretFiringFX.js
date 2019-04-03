@@ -13,7 +13,6 @@ import {vec3, mat4, util, Tw2BaseClass} from "../../global";
  */
 export class EvePerMuzzleData extends Tw2BaseClass
 {
-
     //ccpwgl
     constantDelay = 0;
     currentStartDelay = 0;
@@ -24,23 +23,6 @@ export class EvePerMuzzleData extends Tw2BaseClass
     started = false;
 
 }
-
-Tw2BaseClass.define(EvePerMuzzleData, Type =>
-{
-    return {
-        type: "EvePerMuzzleData",
-        props: {
-            constantDelay: Type.NUMBER,
-            currentStartDelay: Type.NUMBER,
-            elapsedTime: Type.NUMBER,
-            muzzlePositionBone: Type.REF,
-            muzzleTransform: Type.MATRIX4,
-            readyToStart: Type.BOOLEAN,
-            started: Type.BOOLEAN
-        }
-    };
-});
-
 
 /**
  * EveTurretFiringFX
@@ -54,7 +36,9 @@ Tw2BaseClass.define(EvePerMuzzleData, Type =>
  * TODO: Implement "sourceObserver",
  * TODO: Implement "startCurveSet",
  * TODO: Implement "stopCurveSet"
+ * TODO: Are the firing delays 5,6,7 and 8 deprecated
  *
+ * @property {String} name                             -
  * @property {String} boneName                         -
  * @property {TriObserverLocal} destinationObserver    -
  * @property {Number} firingDelay1                     -
@@ -70,8 +54,8 @@ Tw2BaseClass.define(EvePerMuzzleData, Type =>
  * @property {Number} minScale                         -
  * @property {Boolean} scaleEffectTarget               -
  * @property {TriObserverLocal} sourceObserver         -
- * @property {TriCurveSet} startCurveSet               -
- * @property {TriCurveSet} stopCurveSet                -
+ * @property {Tw2CurveSet} startCurveSet               -
+ * @property {Tw2CurveSet} stopCurveSet                -
  * @property {Array.<EveStretch|EveStretch2>} stretch  -
  * @property {Boolean} useMuzzleTransform              -
  * @property {Boolean} display                         -
@@ -89,7 +73,7 @@ Tw2BaseClass.define(EvePerMuzzleData, Type =>
 export default class EveTurretFiringFX extends Tw2BaseClass
 {
 
-    // ccp
+    name = "";
     boneName = "";
     destinationObserver = null;
     firingDelay1 = 0;
@@ -370,56 +354,41 @@ export default class EveTurretFiringFX extends Tw2BaseClass
         }
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["boneName", r.string],
+            ["destinationObserver", r.object],
+            ["firingDelay1", r.float],
+            ["firingDelay2", r.float],
+            ["firingDelay3", r.float],
+            ["firingDelay4", r.float],
+            ["firingDurationOverride", r.float],
+            ["firingPeakTime", r.float],
+            ["isLoopFiring", r.boolean],
+            ["maxRadius", r.float],
+            ["maxScale", r.float],
+            ["minRadius", r.float],
+            ["minScale", r.float],
+            ["name", r.string],
+            ["scaleEffectTarget", r.boolean],
+            ["sourceObserver", r.object],
+            ["startCurveSet", r.object],
+            ["stopCurveSet", r.object],
+            ["stretch", r.array],
+            ["useMuzzleTransform", r.boolean]
+        ];
+    }
 
-Tw2BaseClass.define(EveTurretFiringFX, Type =>
-{
-    return {
-        type: "EveTurretFiringFX",
-        isStaging: true,
-        props: {
-            boneName: Type.STRING,
-            destinationObserver: ["TriObserverLocal"],
-            display: Type.BOOLEAN,
-            firingDelay1: Type.NUMBER,
-            firingDelay2: Type.NUMBER,
-            firingDelay3: Type.NUMBER,
-            firingDelay4: Type.NUMBER,
-            firingDelay5: Type.NUMBER,
-            firingDelay6: Type.NUMBER,
-            firingDelay7: Type.NUMBER,
-            firingDelay8: Type.NUMBER,
-            firingDurationOverride: Type.NUMBER,
-            firingPeakTime: Type.NUMBER,
-            isLoopFiring: Type.BOOLEAN,
-            maxRadius: Type.NUMBER,
-            maxScale: Type.NUMBER,
-            minRadius: Type.NUMBER,
-            minScale: Type.NUMBER,
-            scaleEffectTarget: Type.BOOLEAN,
-            sourceObserver: ["TriObserverLocal"],
-            startCurveSet: ["TriCurveSet"],
-            stopCurveSet: ["TriCurveSet"],
-            stretch: [["EveStretch", "EveStretch2"]],
-            useMuzzleTransform: Type.BOOLEAN
-        },
-        watch: [
-            "firingDelay5",
-            "firingDelay6",
-            "firingDelay7",
-            "firingDelay8",
-        ],
-        notImplemented: [
-            "boneName",
-            "destinationObserver",
-            "firingDurationOverride",
-            "firingPeakTime",
-            "maxRadius",
-            "minRadius",
-            "scaleEffectTarget",
-            "sourceObserver",
-            "startCurveSet",
-            "stopCurveSet"
-        ]
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
+}

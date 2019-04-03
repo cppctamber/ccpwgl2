@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataPattern
  *
@@ -8,7 +6,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {EveSOFDataPatternLayer} layer2                -
  * @property {Array.<EveSOFDataPatternPerHull>} projections -
  */
-export class EveSOFDataPattern extends EveSOFBaseClass
+export class EveSOFDataPattern
 {
 
     name = "";
@@ -16,17 +14,18 @@ export class EveSOFDataPattern extends EveSOFBaseClass
     layer2 = null;
     projections = [];
 
-}
-
-EveSOFDataPattern.define(r =>
-{
-    return {
-        type: "EveSOFDataPattern",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["layer1", r.object],
             ["layer2", r.object],
             ["projections", r.array]
-        ]
-    };
-});
+        ];
+    }
+}

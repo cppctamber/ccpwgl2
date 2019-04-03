@@ -1,5 +1,5 @@
 import {vec2, vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataGenericDamage
@@ -27,7 +27,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {String} shieldShaderEllipsoid                -
  * @property {String} shieldShaderHull                     -
  */
-export class EveSOFDataGenericDamage extends EveSOFBaseClass
+export class EveSOFDataGenericDamage
 {
 
     armorParticleAngle = 0;
@@ -53,13 +53,14 @@ export class EveSOFDataGenericDamage extends EveSOFBaseClass
     shieldShaderEllipsoid = "";
     shieldShaderHull = "";
 
-}
-
-EveSOFDataGenericDamage.define(r =>
-{
-    return {
-        type: "EveSOFDataGenericDamage",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["armorParticleAngle", r.float],
             ["armorParticleColor0", r.vector4],
             ["armorParticleColor1", r.vector4],
@@ -82,6 +83,6 @@ EveSOFDataGenericDamage.define(r =>
             ["shieldGeometryResFilePath", r.path],
             ["shieldShaderEllipsoid", r.string],
             ["shieldShaderHull", r.string],
-        ]
-    };
-});
+        ];
+    }
+}

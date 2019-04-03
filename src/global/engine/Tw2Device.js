@@ -3,7 +3,7 @@ import {get} from "../util";
 import {store} from "./Tw2Store";
 import {resMan} from "./Tw2ResMan";
 import {Tw2Effect} from "../../core/mesh/Tw2Effect";
-import {Tw2VertexDeclaration} from "../../core/vertex";
+import {Tw2VertexDeclaration} from "../../core/vertex/Tw2VertexDeclaration";
 import Tw2EventEmitter from "../class/Tw2EventEmitter";
 import {
     RM_ANY,
@@ -358,7 +358,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.viewportHeight = this.canvas.clientHeight;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
 
-        store.SetVariableValue("ViewportSize", [
+        store.variables.SetValue("ViewportSize", [
             this.viewportWidth,
             this.viewportHeight,
             this.viewportWidth,
@@ -391,7 +391,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
         this.previousTime = now;
 
-        store.SetVariableValue("Time", [
+        store.variables.SetValue("Time", [
             this.currentTime,
             this.currentTime - Math.floor(this.currentTime),
             this.frameCounter,
@@ -483,7 +483,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         mat4.multiply(this.viewProjection, this.projection, this.view);
         mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
-        store.SetVariableValue("ViewProjectionMat", this.viewProjection);
+        store.variables.SetValue("ViewProjectionMat", this.viewProjection);
     }
 
     /**

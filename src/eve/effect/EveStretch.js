@@ -8,6 +8,8 @@ import {Tw2Float} from "../../core";
  * TODO: Implement "progressCurve"
  * TODO: Implement "sourceLights"
  * TODO: Implement "useCurveLod"
+ *
+ * @property {String} name                      - The stretches' name
  * @property {Array.<TriCurveSet>} curveSets    - Animation curve sets
  * @property {Curve|CurveAdapter} dest          - Destination curve
  * @property {EveTransform} destObject          - Destination object
@@ -32,7 +34,7 @@ import {Tw2Float} from "../../core";
 export default class EveStretch extends Tw2BaseClass
 {
 
-    // ccp
+    name = "";
     curveSets = [];
     dest = null;
     destObject = null;
@@ -313,36 +315,34 @@ export default class EveStretch extends Tw2BaseClass
      */
     static global = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["curveSets", r.array],
+            ["dest", r.object],
+            ["destObject", r.object],
+            ["length", r.object],
+            ["moveCompletion", r.object],
+            ["moveObject", r.object],
+            ["name", r.string],
+            ["progressCurve", r.object],
+            ["source", r.object],
+            ["sourceLights", r.array],
+            ["sourceObject", r.object],
+            ["stretchObject", r.object],
+            ["useCurveLod", r.boolean]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-Tw2BaseClass.define(EveStretch, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveStretch",
-        props: {
-            curveSets: [["TriCurveSet"]],
-            display: Type.BOOLEAN,
-            dest: ["Tr2CurveConstant", "Tr2TranslationAdapter"],
-            destObject: ["EveTransform"],
-            length: ["Tw2Float"],
-            moveCompletion: ["TriCurveSet"],
-            moveObject: ["EveTransform"],
-            progressCurve: ["Tr2CurveScalar"],
-            source: ["Tr2CurveConstant", "Tr2TranslationAdapter"],
-            sourceLights: Type.ARRAY,
-            sourceObject: ["EveTransform"],
-            stretchObject: ["EveTransform"],
-            updated: Type.BOOLEAN,
-            useCurveLod: Type.BOOLEAN,
-        },
-        notImplemented: [
-            "moveCompletion",
-            "moveObject",
-            "progressCurve",
-            "sourceLights",
-            "useCurveLod"
-        ]
-    };
-});
-

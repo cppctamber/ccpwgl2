@@ -14,6 +14,7 @@ import {EveObject} from "./legacy/EveObject";
  * TODO: Implement "visibilityThreshold"
  * @ccp EveTransform
  *
+ * @property {String} name                                                 -
  * @property {Array.<EveObject>} children                                  -
  * @property {Array.<TriCurveSet>} curveSets                               -
  * @property {Boolean} display                                             -
@@ -42,7 +43,8 @@ import {EveObject} from "./legacy/EveObject";
  */
 export class EveTransform extends EveObject
 {
-    // ccp
+
+    name = "";
     children = [];
     curveSets = [];
     display = true;
@@ -357,46 +359,44 @@ export class EveTransform extends EveObject
         EVE_CAMERA_ROTATION: 103
     };
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["children", r.array],
+            ["curveSets", r.array],
+            ["display", r.boolean],
+            ["distanceBasedScaleArg1", r.float],
+            ["distanceBasedScaleArg2", r.float],
+            ["hideOnLowQuality", r.boolean],
+            ["name", r.string],
+            ["mesh", r.object],
+            ["meshLod", r.object],
+            ["modifier", r.uint],
+            ["observers", r.array],
+            ["overrideBoundsMax", r.vector3],
+            ["overrideBoundsMin", r.vector3],
+            ["particleEmitters", r.array],
+            ["particleSystems", r.array],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3],
+            ["sortValueMultiplier", r.float],
+            ["translation", r.vector3],
+            ["update", r.boolean],
+            ["useDistanceBasedScale", r.boolean],
+            ["useLodLevel", r.boolean],
+            ["visibilityThreshold", r.float]
+        ];
+    }
 
-Tw2BaseClass.define(EveTransform, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveTransform",
-        category: "EveObject",
-        props: {
-            children: [["EveSpherePin", "EveTransform"]],
-            curveSets: [["TriCurveSet"]],
-            display: Type.BOOLEAN,
-            distanceBasedScaleArg1: Type.NUMBER,
-            distanceBasedScaleArg2: Type.NUMBER,
-            hideOnLowQuality: Type.BOOLEAN,
-            mesh: ["Tr2InstancedMesh", "Tr2Mesh", "Tr2MeshLod"],
-            modifier: Type.NUMBER,
-            observers: [["TriObserverLocal"]],
-            overrideBoundsMax: Type.VECTOR3,
-            overrideBoundsMin: Type.VECTOR3,
-            particleEmitters: [["Tr2DynamicEmitter", "Tr2GpuUniqueEmitter", "Tr2StaticEmitter"]],
-            particleSystems: [["Tr2ParticleSystem"]],
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            sortValueMultiplier: Type.NUMBER,
-            translation: Type.TR_TRANSLATION,
-            update: Type.BOOLEAN,
-            useDistanceBasedScale: Type.BOOLEAN,
-            useLodLevel: Type.BOOLEAN,
-            visibilityThreshold: Type.NUMBER
-        },
-        notImplemented: [
-            "distanceBasedScaleArg1",
-            "distanceBasedScaleArg2",
-            "overrideBoundsMax",
-            "overrideBoundsMin",
-            "sortValueMultiplier",
-            "useDistanceBasedScale",
-            "useLodLevel",
-            "visibilityThreshold"
-        ]
-    };
-});
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
+}

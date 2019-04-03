@@ -1,5 +1,5 @@
 import {vec2, vec4} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataGenericHullDamage
@@ -18,7 +18,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Number} hullParticleTurbulenceAmplitude -
  * @property {Number} hullParticleTurbulenceFrequency -
  */
-export class EveSOFDataGenericHullDamage extends EveSOFBaseClass
+export class EveSOFDataGenericHullDamage
 {
 
     hullParticleAngle = 0;
@@ -35,13 +35,15 @@ export class EveSOFDataGenericHullDamage extends EveSOFBaseClass
     hullParticleTurbulenceAmplitude = 0;
     hullParticleTurbulenceFrequency = 0;
 
-}
 
-EveSOFDataGenericHullDamage.define(r =>
-{
-    return {
-        type: "EveSOFDataGenericHullDamage",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["hullParticleAngle", r.float],
             ["hullParticleColor0", r.vector4],
             ["hullParticleColor1", r.vector4],
@@ -55,6 +57,6 @@ EveSOFDataGenericHullDamage.define(r =>
             ["hullParticleTurbulenceAmplitude", r.float],
             ["hullParticleTurbulenceFrequency", r.float],
             ["hullParticleTextureIndex", r.uint],
-        ]
-    };
-});
+        ];
+    }
+}

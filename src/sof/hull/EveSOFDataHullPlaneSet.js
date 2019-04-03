@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullPlaneSet
  *
@@ -12,7 +10,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Boolean} skinned                          -
  * @property {Number} usage                             -
  */
-export class EveSOFDataHullPlaneSet extends EveSOFBaseClass
+export class EveSOFDataHullPlaneSet
 {
 
     name = "";
@@ -24,13 +22,14 @@ export class EveSOFDataHullPlaneSet extends EveSOFBaseClass
     skinned = false;
     usage = 0;
 
-}
-
-EveSOFDataHullPlaneSet.define(r =>
-{
-    return {
-        type: "EveSOFDataHullPlaneSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["atlasSize", r.uint],
             ["items", r.array],
             ["layer1MapResPath", r.path],
@@ -40,6 +39,6 @@ EveSOFDataHullPlaneSet.define(r =>
             ["planeData", r.vector4],
             ["skinned", r.boolean],
             ["usage", r.uint]
-        ]
-    };
-});
+        ];
+    }
+}

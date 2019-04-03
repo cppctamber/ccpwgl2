@@ -4,7 +4,6 @@ import {EveChild} from "./EveChild";
 /**
  * EveChildExplosion
  * TODO: Implement
- * @ccp EveChildExplosion
  *
  * @property {Number} globalDuration                     -
  * @property {EveChildContainer} globalExplosion         -
@@ -23,7 +22,6 @@ import {EveChild} from "./EveChild";
 export class EveChildExplosion extends EveChild
 {
 
-    // ccp
     globalDuration = 0;
     globalExplosion = null;
     globalExplosionDelay = 0;
@@ -38,29 +36,36 @@ export class EveChildExplosion extends EveChild
     rotation = quat.create();
     scaling = vec3.fromValues(1, 1, 1);
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["globalDuration", r.float],
+            ["globalExplosion", r.object],
+            ["globalExplosionDelay", r.float],
+            ["globalExplosions", r.array],
+            ["globalScaling", r.vector3],
+            ["localDuration", r.float],
+            ["localExplosion", r.object],
+            ["localExplosions", r.array],
+            ["localExplosionInterval", r.float],
+            ["localExplosionIntervalFactor", r.float],
+            ["localExplosionShared", r.object],
+            ["localTransform", r.matrix],
+            ["name", r.string],
+            ["rotation", r.vector4],
+            ["scaling", r.vector3]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-EveChild.define(EveChildExplosion, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveChildExplosion",
-        props: {
-            globalDuration: Type.NUMBER,
-            globalExplosion: ["EveChildContainer"],
-            globalExplosionDelay: Type.NUMBER,
-            globalScaling: Type.TR_SCALING,
-            localDuration: Type.NUMBER,
-            localExplosion: ["EveChildContainer"],
-            localExplosionInterval: Type.NUMBER,
-            localExplosionIntervalFactor: Type.NUMBER,
-            localExplosionShared: ["EveChildContainer"],
-            localExplosions: [["EveChildContainer"]],
-            localTransform: Type.TR_LOCAL,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING
-        },
-        notImplemented: ["*"]
-    };
-});
-

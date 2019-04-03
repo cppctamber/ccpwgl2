@@ -1,5 +1,3 @@
-export * from "./EveParticleDirectForce";
-export * from "./EveParticleDragForce";
 export * from "./Tr2ForceSphereVolume";
 export * from "./Tr2ParticleVortexForce";
 export * from "./Tw2ParticleAttractorForce";

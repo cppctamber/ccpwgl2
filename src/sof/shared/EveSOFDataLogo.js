@@ -1,23 +1,22 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataLogo
  *
  * @parameter {Array<EveSOFDataTexture>} textures
  */
-export class EveSOFDataLogo extends EveSOFBaseClass
+export class EveSOFDataLogo
 {
 
     textures = [];
 
-}
-
-EveSOFDataLogo.define(r =>
-{
-    return {
-        type: "EveSOFDataLogo",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["textures", r.array]
-        ]
-    };
-});
+        ];
+    }
+}

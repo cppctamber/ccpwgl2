@@ -14,7 +14,7 @@ import {
     ErrResourcePrefixUndefined,
     ErrResourcePrefixUnregistered
 } from "../../core";
-import {assignIfExists, isError, isString} from "../util";
+import {assignIfExists, isError} from "../util";
 
 
 /**
@@ -244,7 +244,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return null;
         }
 
-        const Constructor = store.GetExtension(extension);
+        const Constructor = store.extensions.Get(extension);
         if (!Constructor)
         {
             this.OnResError(path, new ErrResourceExtensionUnregistered({path, extension}));
@@ -365,7 +365,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return path;
         }
 
-        const fullPrefix = store.GetPath(prefix);
+        const fullPrefix = store.paths.Get(prefix);
         if (!fullPrefix)
         {
             throw new ErrResourcePrefixUnregistered({path, prefix});

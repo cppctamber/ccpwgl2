@@ -1,5 +1,5 @@
 import {quat, vec3} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullHazeSetItem
@@ -14,7 +14,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Number} sourceBrightness      -
  * @property {Number} sourceSize            -
  */
-export class EveSOFDataHullHazeSetItem extends EveSOFBaseClass
+export class EveSOFDataHullHazeSetItem
 {
 
     boosterGainInfluence = false;
@@ -27,13 +27,14 @@ export class EveSOFDataHullHazeSetItem extends EveSOFBaseClass
     sourceBrightness = 0;
     sourceSize = 0;
 
-}
-
-EveSOFDataHullHazeSetItem.define(r =>
-{
-    return {
-        type: "EveSOFDataHullHazeSetItem",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["boosterGainInfluence", r.boolean],
             ["colorType", r.uint],
             ["hazeBrightness", r.float],
@@ -43,6 +44,6 @@ EveSOFDataHullHazeSetItem.define(r =>
             ["scaling", r.vector3],
             ["sourceBrightness", r.float],
             ["sourceSize", r.float],
-        ]
-    };
-});
+        ];
+    }
+}

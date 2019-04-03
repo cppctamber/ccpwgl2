@@ -1,26 +1,25 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullSoundEmitter
  *
  * @property {String} name   -
  * @property {String} prefix -
  */
-export class EveSOFDataHullSoundEmitter extends EveSOFBaseClass
+export class EveSOFDataHullSoundEmitter
 {
 
     name = "";
     prefix = "";
 
-}
-
-EveSOFDataHullSoundEmitter.define(r =>
-{
-    return {
-        type: "EveSOFDataHullSoundEmitter",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["name", r.string],
             ["prefix", r.string]
-        ]
-    };
-});
+        ];
+    }
+}

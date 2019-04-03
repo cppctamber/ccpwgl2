@@ -1,5 +1,3 @@
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
-
 /**
  * EveSOFDataHullHazeSet
  *
@@ -7,23 +5,24 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Array.<EveSOFDataHullHazeSetItem>} items -
  * @property {Number} visibilityGroup                  -
  */
-export class EveSOFDataHullHazeSet extends EveSOFBaseClass
+export class EveSOFDataHullHazeSet
 {
 
     name = "";
     items = [];
     visibilityGroup = 0;
 
-}
-
-EveSOFDataHullHazeSet.define(r =>
-{
-    return {
-        type: "EveSOFDataHullHazeSet",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["items", r.array],
             ["name", r.string],
             ["visibilityGroup", r.string]
-        ]
-    };
-});
+        ];
+    }
+}

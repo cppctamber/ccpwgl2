@@ -1,5 +1,5 @@
 import {quat} from "../../global";
-import {EveSOFBaseClass} from "../EveSOFBaseClass";
+
 
 /**
  * EveSOFDataHullAnimation
@@ -13,7 +13,7 @@ import {EveSOFBaseClass} from "../EveSOFBaseClass";
  * @property {Number} startRotationTime -
  * @property {quat} startRotationValue  -
  */
-export class EveSOFDataHullAnimation extends EveSOFBaseClass
+export class EveSOFDataHullAnimation
 {
 
     name = "";
@@ -25,13 +25,14 @@ export class EveSOFDataHullAnimation extends EveSOFBaseClass
     startRotationTime = 0;
     startRotationValue = quat.create();
 
-}
-
-EveSOFDataHullAnimation.define(r =>
-{
-    return {
-        type: "EveSOFDataHullAnimation",
-        black: [
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
             ["endRate", r.float],
             ["endRotationTime", r.float],
             ["endRotationValue", r.vector4],
@@ -40,6 +41,6 @@ EveSOFDataHullAnimation.define(r =>
             ["startRate", r.float],
             ["startRotationTime", r.float],
             ["startRotationValue", r.vector4]
-        ]
-    };
-});
+        ];
+    }
+}

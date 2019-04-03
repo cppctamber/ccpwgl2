@@ -7,11 +7,13 @@ import {Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator} from "../../core";
  * TODO: Handle device specific global variables (Tw2VertexDeclaration, Tw2Effect)
  * TODO: Handle store
  *
- * @property {Array.<EveTransform>} sprites
+ * @property {String} name                  -
+ * @property {Array.<EveTransform>} sprites -
  */
 export default class EveOccluder extends Tw2BaseClass
 {
 
+    name = "";
     sprites = [];
 
 
@@ -47,7 +49,7 @@ export default class EveOccluder extends Tw2BaseClass
             this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
         }
 
-        store.SetVariableValue("OccluderValue", [(1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0]);
+        store.variables.SetValue("OccluderValue", [(1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0]);
 
         g.accumulator.Render();
 
@@ -191,14 +193,17 @@ export default class EveOccluder extends Tw2BaseClass
      */
     static global = null;
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["sprites", r.array]
+        ];
+    }
 
-Tw2BaseClass.define(EveOccluder, Type =>
-{
-    return {
-        type: "EveOccluder",
-        props: {
-            sprites: [["EveTransform"]]
-        }
-    };
-});
+}
