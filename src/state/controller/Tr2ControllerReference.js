@@ -11,20 +11,22 @@ export class Tr2ControllerReference extends Tw2BaseClass
 
     path = "";
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["path", r.string]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2ControllerReference, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ControllerReference",
-        category: "StateController",
-        props: {
-            path: Type.PATH
-        },
-        notImplemented: [
-            "path"
-        ]
-    };
-});
-

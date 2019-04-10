@@ -190,13 +190,3 @@ export class Tw2VectorParameter extends Tw2BaseClass
     static constantBufferSize = 0;
 
 }
-
-Tw2BaseClass.define(Tw2VectorParameter, Type =>
-{
-    return {
-        type: "Tw2VectorParameter",
-        category: "Parameter",
-        isAbstract: true,
-        isLeaf: true
-    };
-});

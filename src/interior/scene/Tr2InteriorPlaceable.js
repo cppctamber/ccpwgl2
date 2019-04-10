@@ -14,21 +14,23 @@ export class Tr2InteriorPlaceable extends Tw2BaseClass
     placeableResPath = "";
     transform = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["placeableResPath", r.string],
+            ["transform", r.object]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2InteriorPlaceable, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2InteriorPlaceable",
-        props: {
-            placeableResPath: Type.PATH,
-            transform: ["TriMatrix"]
-        },
-        notImplemented: [
-            "placeableResPath",
-            "transform"
-        ]
-    };
-});
-

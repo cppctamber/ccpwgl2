@@ -58,16 +58,16 @@ export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["drag", r.float]
+        ];
+    }
+
 }
-
-Tw2ParticleForce.define(Tw2ParticleFluidDragForce, Type =>
-{
-    return {
-        type: "Tw2ParticleFluidDragForce",
-        category: "ParticleForce",
-        props: {
-            drag: Type.NUMBER
-        }
-    };
-});
-

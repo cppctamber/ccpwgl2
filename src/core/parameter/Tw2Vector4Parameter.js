@@ -97,14 +97,17 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
      */
     static constantBufferSize = 4;
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["value", r.vector4]
+        ];
+    }
 
-Tw2VectorParameter.define(Tw2Vector4Parameter, Type =>
-{
-    return {
-        type: "Tw2Vector4Parameter",
-        props: {
-            value: Type.VECTOR4
-        }
-    };
-});
+}

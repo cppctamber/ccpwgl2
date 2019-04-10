@@ -1,5 +1,4 @@
-import {vec2, vec3, vec4, mat4} from "../../global";
-import {classes} from "./black";
+import {vec2, vec3, vec4, mat4, store} from "../../global";
 import {ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError} from "../Tw2Error";
 
 /**
@@ -55,12 +54,12 @@ export function object(reader, out, id)
         reader.references.set(id, out);
     }
 
-    if (!classes.has(type))
+    if (!store.blacks.Has(type))
     {
         throw new ErrBinaryObjectTypeNotFound({type});
     }
 
-    let properties = classes.get(type);
+    let properties = store.blacks.Get(type);
 
     while (!objectReader.AtEnd())
     {
@@ -146,6 +145,19 @@ export function boolean(reader)
 export function string(reader)
 {
     return onString(reader.ReadStringU16());
+}
+
+export function enums(reader)
+{
+    const value = reader.ReadStringU16();
+    const entry = value.split(",");
+    const out = {};
+    for (let i = 0; i < entry.length; i++)
+    {
+        const split = entry[i].split("=");
+        out[split[0]] = Number(split[1]);
+    }
+    return out;
 }
 
 /**

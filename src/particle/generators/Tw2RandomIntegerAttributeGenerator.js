@@ -14,13 +14,12 @@ import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
  */
 export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
-    //ccp
+
     customName = "";
     elementType = Tw2ParticleElement.Type.CUSTOM;
     minRange = vec4.create();
     maxRange = vec4.create();
 
-    // ccpwgl
     _element = null;
 
 
@@ -61,18 +60,18 @@ export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGene
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["customName", r.string],
+            ["minRange", r.vector4],
+            ["maxRange", r.vector4]
+        ];
+    }
+
 }
-
-Tw2ParticleAttributeGenerator.define(Tw2RandomIntegerAttributeGenerator, Type =>
-{
-    return {
-        type: "Tw2RandomIntegerAttributeGenerator",
-        props: {
-            customName: Type.STRING,
-            elementType: Type.NUMBER,
-            maxRange: Type.VECTOR4,
-            minRange: Type.VECTOR4
-        }
-    };
-});
-

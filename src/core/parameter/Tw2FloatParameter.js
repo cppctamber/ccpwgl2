@@ -16,6 +16,7 @@ export class Tw2FloatParameter extends Tw2Parameter
 {
 
     value = 1;
+
     _constantBuffer = null;
     _offset = null;
 
@@ -114,14 +115,17 @@ export class Tw2FloatParameter extends Tw2Parameter
      */
     static constantBufferSize = 1;
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["value", r.float]
+        ];
+    }
 
-Tw2Parameter.define(Tw2FloatParameter, Type =>
-{
-    return {
-        type: "Tw2FloatParameter",
-        props: {
-            value: Type.NUMBER
-        }
-    };
-});
+}

@@ -42,12 +42,3 @@ export class Tw2ParticleForce extends Tw2BaseClass
     };
 
 }
-
-Tw2BaseClass.define(Tw2ParticleForce, Type =>
-{
-    return {
-        type: "Tw2ParticleForce",
-        category: "ParticleForce",
-        isAbstract: true
-    };
-});

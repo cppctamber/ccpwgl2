@@ -2,6 +2,7 @@ import {vec4} from "../../global";
 import {Tw2ParticleElement} from "../element/Tw2ParticleElement";
 import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 
+
 /**
  * Tw2RandomUniformAttributeGenerator
  * @ccp Tr2RandomUniformAttributeGenerator
@@ -15,7 +16,6 @@ import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 export class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
-    // ccp
     customName = "";
     elementType = Tw2ParticleElement.Type.CUSTOM;
     minRange = vec4.create();
@@ -23,7 +23,6 @@ export class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGene
 
     // ccpwgl
     _element = null;
-
 
     /**
      * Binds a particle system element to the generator
@@ -62,18 +61,19 @@ export class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGene
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["customName", r.string],
+            ["elementType", r.uint],
+            ["minRange", r.vector4],
+            ["maxRange", r.vector4]
+        ];
+    }
+
 }
-
-Tw2ParticleAttributeGenerator.define(Tw2RandomUniformAttributeGenerator, Type =>
-{
-    return {
-        type: "Tw2RandomUniformAttributeGenerator",
-        props: {
-            customName: Type.STRING,
-            elementType: Type.NUMBER,
-            maxRange: Type.VECTOR4,
-            minRange: Type.VECTOR4
-        }
-    };
-});
-

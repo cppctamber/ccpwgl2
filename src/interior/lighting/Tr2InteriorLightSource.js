@@ -6,6 +6,7 @@ import {Tw2BaseClass} from "../../global";
  * TODO: Do we need this class?
  * TODO: Implement
  *
+ * @property {String} name                -
  * @property {vec4} color                 -
  * @property {Number} coneAlphaInner      -
  * @property {Number} coneAlphaOuter      -
@@ -21,6 +22,7 @@ import {Tw2BaseClass} from "../../global";
 export class Tr2InteriorLightSource extends Tw2BaseClass
 {
 
+    name = "";
     color = vec4.create();
     coneAlphaInner = 0;
     coneAlphaOuter = 0;
@@ -33,39 +35,33 @@ export class Tr2InteriorLightSource extends Tw2BaseClass
     radius = 0;
     useKelvinColor = false;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["color", r.vector4],
+            ["coneAlphaInner", r.float],
+            ["coneAlphaOuter", r.float],
+            ["coneDirection", r.vector3],
+            ["falloff", r.float],
+            ["importanceBias", r.float],
+            ["importanceScale", r.float],
+            ["kelvinColor", r.object],
+            ["name", r.string],
+            ["position", r.vector3],
+            ["radius", r.float],
+            ["useKelvinColor", r.boolean],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2InteriorLightSource, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2InteriorLightSource",
-        props: {
-            color: Type.RGBA_LINEAR,
-            coneAlphaInner: Type.NUMBER,
-            coneAlphaOuter: Type.NUMBER,
-            coneDirection: Type.VECTOR3,
-            falloff: Type.NUMBER,
-            importanceBias: Type.NUMBER,
-            importanceScale: Type.NUMBER,
-            kelvinColor: ["Tr2KelvinColor"],
-            position: Type.TR_TRANSLATION,
-            radius: Type.NUMBER,
-            useKelvinColor: Type.BOOLEAN
-        },
-        notImplemented: [
-            "color",
-            "coneAlphaInner",
-            "coneAlphaOuter",
-            "coneDirection",
-            "falloff",
-            "importanceBias",
-            "importanceScale",
-            "kelvinColor",
-            "position",
-            "radius",
-            "useKelvinColor"
-        ]
-    };
-});
-

@@ -59,13 +59,3 @@ export class EveChild extends Tw2BaseClass
     static __isEffectChild = true;
 
 }
-
-Tw2BaseClass.define(EveChild, Type =>
-{
-    return {
-        type: "EveChild",
-        category: "ObjectChild",
-        isAbstract: true
-    };
-});
-

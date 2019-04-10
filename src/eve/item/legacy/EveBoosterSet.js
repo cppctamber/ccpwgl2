@@ -116,24 +116,6 @@ export class EveBoosterSetItem extends EveObjectSetItem
 
 }
 
-EveObjectSetItem.define(EveBoosterSetItem, Type =>
-{
-    return {
-        type: "EveBoosterSetItem",
-        props: {
-            atlas0: Type.NUMBER,
-            atlas1: Type.NUMBER,
-            customValues: Type.PLAIN,
-            locatorName: Type.STRING,
-            seed: Type.NUMBER,
-            transform: Type.TR_LOCAL,
-            updateFromLocator: Type.BOOLEAN,
-            visible: Type.PLAIN,
-            wavePhase: Type.NUMBER
-        }
-    };
-});
-
 /**
  * Booster set
  * TODO: Is this deprecated?

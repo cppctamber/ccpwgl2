@@ -103,17 +103,3 @@ export class Tw2PostEffectStep extends Tw2BaseClass
     }
 
 }
-
-Tw2BaseClass.define(Tw2PostEffectStep, Type=>
-{
-    return {
-        type: "Tw2PostEffectStep",
-        props: {
-            display: Type.BOOLEAN,
-            target: Type.STRING,
-            index: Type.NUMBER,
-            effect: [["Tw2Effect"]],
-            inputs: Type.PLAIN
-        }
-    };
-});

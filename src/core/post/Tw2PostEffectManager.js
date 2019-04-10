@@ -191,14 +191,3 @@ export class Tw2PostEffectManager extends Tw2BaseClass
     static Item = Tw2PostEffect;
 
 }
-
-Tw2BaseClass.define(Tw2PostEffectManager, Type=>
-{
-    return {
-        type: "Tw2PostEffectManager",
-        props: {
-            display: Type.BOOLEAN,
-            effects: [["Tw2PostEffect"]]
-        }
-    };
-});

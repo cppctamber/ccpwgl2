@@ -2,7 +2,6 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2ActionSetValue
- * @implements StateAction
  * Todo: Implement
  *
  * @property {String} attribute -
@@ -16,24 +15,24 @@ export class Tr2ActionSetValue extends Tw2BaseClass
     path = "";
     value = "";
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["attribute", r.string],
+            ["path", r.string],
+            ["value", r.string]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2ActionSetValue, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ActionSetValue",
-        category: "StateAction",
-        props: {
-            attribute: Type.STRING,
-            path: Type.PATH,
-            value: Type.STRING
-        },
-        notImplemented: [
-            "attribute",
-            "path",
-            "value"
-        ]
-    };
-});
-

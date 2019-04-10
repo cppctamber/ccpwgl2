@@ -2,7 +2,7 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2ShLightingManager
- * TODO: Implement (I don't think this class actually has to do anything - T'amber)
+ * TODO: Implement
  *
  * @property {Number} primaryIntensity   -
  * @property {Number} secondaryIntensity -
@@ -13,21 +13,23 @@ export default class Tr2ShLightingManager extends Tw2BaseClass
     primaryIntensity = 0;
     secondaryIntensity = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["primaryIntensity", r.float],
+            ["secondaryIntensity", r.float]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2ShLightingManager, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ShLightingManager",
-        props: {
-            primaryIntensity: Type.NUMBER,
-            secondaryIntensity: Type.NUMBER
-        },
-        notImplemented: [
-            "primaryIntensity",
-            "secondaryIntensity"
-        ]
-    };
-});
-

@@ -240,35 +240,33 @@ export class Tw2InstancedMesh extends Tw2BaseClass
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["additiveAreas", r.array],
+            ["decalAreas", r.array],
+            ["depthAreas", r.array],
+            ["distortionAreas", r.array],
+            ["geometryResPath", r.string],
+            ["instanceGeometryResPath", r.string],
+            ["instanceGeometryResource", r.object],
+            ["instanceMeshIndex", r.uint],
+            ["minBounds", r.vector3],
+            ["maxBounds", r.vector3],
+            ["opaqueAreas", r.array],
+            ["transparentAreas", r.array],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-
-Tw2BaseClass.define(Tw2InstancedMesh, Type =>
-{
-    return {
-        type: "Tw2InstancedMesh",
-        category: "Mesh",
-        props: {
-            additiveAreas: [["Tw2MeshArea"]],
-            decalAreas: [["Tw2MeshArea"]],
-            depthAreas: [["Tw2MeshArea"]],
-            display: Type.BOOLEAN,
-            distortionAreas: [["Tw2MeshArea"]],
-            geometryResPath: Type.PATH,
-            instanceGeometryResPath: Type.PATH,
-            instanceGeometryResource: ["Tr2ParticleSystem", "Tr2RuntimeInstanceData", "TriGeometryRes"],
-            instanceMeshIndex: Type.NUMBER,
-            maxBounds: Type.VECTOR3,
-            minBounds: Type.VECTOR3,
-            opaqueAreas: [["Tw2MeshArea"]],
-            pickableAreas: [["Tw2MeshArea"]],
-            transparentAreas: [["Tw2MeshArea"]],
-            visible: Type.PLAIN
-        },
-        notImplemented: [
-            "distortionAreas",
-            "pickableAreas"
-        ]
-    };
-});
-

@@ -2,7 +2,6 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2ActionPlayMeshAnimation
- * @implements StateAction
  * Todo: Implement
  *
  * @property {String} animation -
@@ -16,24 +15,24 @@ export class Tr2ActionPlayMeshAnimation extends Tw2BaseClass
     loops = 0;
     mask = "";
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["animation", r.string],
+            ["loops", r.uint],
+            ["mask", r.string],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2ActionPlayMeshAnimation, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ActionPlayMeshAnimation",
-        category: "StateAction",
-        props: {
-            animation: Type.STRING,
-            loops: Type.NUMBER,
-            mask: Type.STRING
-        },
-        notImplemented: [
-            "animation",
-            "loops",
-            "mask"
-        ]
-    };
-});
-

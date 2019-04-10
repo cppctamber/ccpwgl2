@@ -1,6 +1,5 @@
 import {vec3} from "../../global";
 import {Tw2ParticleForce} from "./Tw2ParticleForce";
-import {ErrFeatureNotImplemented} from "../../core";
 
 /**
  * Tr2ParticleVortexForce
@@ -40,18 +39,24 @@ export class Tr2ParticleVortexForce extends Tw2ParticleForce
         // Todo: Implement Update
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["axis", r.vector3],
+            ["magnitude", r.float],
+            ["position", r.vector3]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2ParticleForce.define(Tr2ParticleVortexForce, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ParticleVortexForce",
-        props: {
-            axis: Type.VECTOR3,
-            magnitude: Type.NUMBER,
-            position: Type.TR_TRANSLATION
-        }
-    };
-});
-

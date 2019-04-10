@@ -67,28 +67,6 @@ export class EveHazeSetItem extends EveObjectSetItem
 
 }
 
-Tw2BaseClass.define(EveHazeSetItem, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveHazeSetItem",
-        category: "EveObjectSetItem",
-        props: {
-            boosterGainInfluence: Type.BOOLEAN,
-            colorType: Type.NUMBER,
-            hazeBrightness: Type.NUMBER,
-            hazeFalloff: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            sourceBrightness: Type.NUMBER,
-            sourceSize: Type.NUMBER,
-            transform: Type.TR_LOCAL
-        },
-        notImplemented: ["*"]
-    };
-});
-
 
 /**
  * Haze set
@@ -135,17 +113,3 @@ export class EveHazeSet extends EveObjectSet
     }
 
 }
-
-Tw2BaseClass.define(EveHazeSet, Type =>
-{
-    return {
-        isStaging: true,
-        type: "EveHazeSet",
-        category: "EveObjectSet",
-        props: {
-            items: ["EveHazeSetItem"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

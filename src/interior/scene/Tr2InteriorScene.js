@@ -14,21 +14,23 @@ export class Tr2InteriorScene extends Tw2BaseClass
     dynamics = [];
     lights = [];
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["dynamics", r.array],
+            ["lights", r.array]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2InteriorScene, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2InteriorScene",
-        props: {
-            dynamics: [["Tr2IntSkinnedObject"]],
-            lights: [["Tr2InteriorLightSource"]]
-        },
-        notImplemented: [
-            "dynamics",
-            "lights"
-        ]
-    };
-});
-

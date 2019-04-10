@@ -75,48 +75,54 @@ export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
     turbulenceFrequency = 0;
     velocityStretchRotation = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["particleSystem", r.object],
+            ["angle", r.float],
+            ["attractorPosition", r.vector3],
+            ["attractorStrength", r.float],
+            ["color0", r.vector4],
+            ["color1", r.vector4],
+            ["color2", r.vector4],
+            ["color3", r.vector4],
+            ["colorMidpoint", r.float],
+            ["continuousEmitter", r.boolean],
+            ["direction", r.vector3],
+            ["drag", r.float],
+            ["emissionDensity", r.float],
+            ["gravity", r.float],
+            ["maxDisplacement", r.float],
+            ["maxEmissionDensity", r.float],
+            ["maxLifeTime", r.float],
+            ["maxSpeed", r.float],
+            ["minLifeTime", r.float],
+            ["minSpeed", r.float],
+            ["position", r.vector3],
+            ["inheritVelocity", r.float],
+            ["innerAngle", r.float],
+            ["radius", r.float],
+            ["rate", r.float],
+            ["sizeVariance", r.float],
+            ["sizes", r.vector3],
+            ["scaledByParent", r.boolean],
+            ["textureIndex", r.uint],
+            ["turbulenceAmplitude", r.float],
+            ["turbulenceFrequency", r.float],
+            ["velocityStretchRotation", r.float],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2ParticleEmitter.define(Tr2GpuSharedEmitter, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2GpuSharedEmitter",
-        category: "ParticleEmitter",
-        props: {
-            angle: Type.NUMBER,
-            attractorPosition: Type.VECTOR3,
-            attractorStrength: Type.NUMBER,
-            color0: Type.RGBA_LINEAR,
-            color1: Type.RGBA_LINEAR,
-            color2: Type.RGBA_LINEAR,
-            color3: Type.RGBA_LINEAR,
-            colorMidpoint: Type.NUMBER,
-            continuousEmitter: Type.BOOLEAN,
-            direction: Type.VECTOR3,
-            drag: Type.NUMBER,
-            emissionDensity: Type.NUMBER,
-            gravity: Type.NUMBER,
-            inheritVelocity: Type.NUMBER,
-            innerAngle: Type.NUMBER,
-            maxDisplacement: Type.NUMBER,
-            maxEmissionDensity: Type.NUMBER,
-            maxLifeTime: Type.NUMBER,
-            maxSpeed: Type.NUMBER,
-            minLifeTime: Type.NUMBER,
-            minSpeed: Type.NUMBER,
-            particleSystem: ["Tw2GpuParticleSystem"],
-            position: Type.TR_TRANSLATION,
-            radius: Type.NUMBER,
-            rate: Type.NUMBER,
-            sizeVariance: Type.NUMBER,
-            sizes: Type.VECTOR3,
-            textureIndex: Type.NUMBER,
-            turbulenceAmplitude: Type.NUMBER,
-            turbulenceFrequency: Type.NUMBER,
-            velocityStretchRotation: Type.NUMBER
-        },
-        notImplemented: ["*"]
-    };
-});
-

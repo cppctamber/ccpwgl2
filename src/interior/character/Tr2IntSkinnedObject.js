@@ -16,23 +16,24 @@ export class Tr2IntSkinnedObject extends Tw2BaseClass
     transform = null;
     visualModel = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["curveSets", r.array],
+            ["transform", r.object],
+            ["visualModel", r.object],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2IntSkinnedObject, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2IntSkinnedObject",
-        props: {
-            curveSets: [["TriCurveSet"]],
-            transform: ["TriMatrix"],
-            visualModel: ["Tr2SkinnedModel"]
-        },
-        notImplemented: [
-            "curveSets",
-            "transform",
-            "visualModel"
-        ]
-    };
-});
-

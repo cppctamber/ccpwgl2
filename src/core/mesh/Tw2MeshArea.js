@@ -7,6 +7,7 @@ import {util, Tw2BaseClass} from "../../global";
  * TODO: Implement "useSHLighting" - in RenderBatch or Mesh?
  * @ccp Tr2MeshArea
  *
+ * @property {String} name           -
  * @property {Number} count          -
  * @property {Tr2Effect} effect      -
  * @property {Number} index          -
@@ -16,6 +17,7 @@ import {util, Tw2BaseClass} from "../../global";
 export class Tw2MeshArea extends Tw2BaseClass
 {
 
+    name = "";
     count = 1;
     effect = null;
     index = 0;
@@ -50,26 +52,27 @@ export class Tw2MeshArea extends Tw2BaseClass
      */
     static batchType = Tw2GeometryBatch;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["count", r.uint],
+            ["effect", r.object],
+            ["index", r.uint],
+            ["name", r.string],
+            ["reversed", r.boolean],
+            ["useSHLighting", r.boolean],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-Tw2BaseClass.define(Tw2MeshArea, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tw2MeshArea",
-        category: "MeshArea",
-        props: {
-            count: Type.NUMBER,
-            display: Type.BOOLEAN,
-            effect: ["Tw2Effect"],
-            index: Type.NUMBER,
-            reversed: Type.BOOLEAN,
-            useSHLighting: Type.BOOLEAN
-        },
-        notImplemented: [
-            "reversed",
-            "useSHLighting"
-        ]
-    };
-});
-

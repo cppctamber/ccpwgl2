@@ -41,20 +41,6 @@ export class EveObjectSetItem extends Tw2BaseClass
 
 }
 
-Tw2BaseClass.define(EveObjectSetItem, Type =>
-{
-    return {
-        type: "EveObjectSetItem",
-        category: "ObjectSetItem",
-        isLeaf: true,
-        isAbstract: true,
-        props: {
-            display: Type.BOOLEAN
-        }
-    };
-});
-
-
 /**
  * EveObjectSet base class
  * @ccp N/A
@@ -255,16 +241,3 @@ export class EveObjectSet extends Tw2BaseClass
     };
 
 }
-
-Tw2BaseClass.define(EveObjectSet, Type =>
-{
-    return {
-        type: "EveObjectSet",
-        category: "ObjectSet",
-        isAbstract: true,
-        props: {
-            display: Type.BOOLEAN,
-            items: Type.ARRAY
-        }
-    };
-});

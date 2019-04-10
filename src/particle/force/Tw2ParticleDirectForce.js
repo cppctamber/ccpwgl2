@@ -26,15 +26,16 @@ export class Tw2ParticleDirectForce extends Tw2ParticleForce
         vec3.add(force, force, this.force);
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["force", r.vector3]
+        ];
+    }
 
-Tw2ParticleForce.define(Tw2ParticleDirectForce, Type =>
-{
-    return {
-        type: "Tw2ParticleDirectForce",
-        category: "ParticleForce",
-        props: {
-            force: Type.VECTOR3
-        }
-    };
-});
+}

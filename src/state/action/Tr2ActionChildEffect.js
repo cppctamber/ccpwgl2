@@ -2,7 +2,6 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2ActionChildEffect
- * @implements StateAction
  * Todo: Implement
  *
  * @property {String} childName     -
@@ -16,24 +15,24 @@ export class Tr2ActionChildEffect extends Tw2BaseClass
     path = "";
     removeOnStop = false;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["childName", r.string],
+            ["path", r.string],
+            ["removeOnStop", r.boolean]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2ActionChildEffect, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ActionChildEffect",
-        category: "StateAction",
-        props: {
-            childName: Type.STRING,
-            path: Type.PATH,
-            removeOnStop: Type.BOOLEAN
-        },
-        notImplemented: [
-            "childName",
-            "path",
-            "removeOnStop"
-        ]
-    };
-});
-

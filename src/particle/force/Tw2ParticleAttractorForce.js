@@ -36,16 +36,17 @@ export class Tw2ParticleAttractorForce extends Tw2ParticleForce
         vec3.add(force, force, vec3_0);
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["magnitude", r.float],
+            ["position", r.vector3]
+        ];
+    }
+
 }
-
-Tw2ParticleForce.define(Tw2ParticleAttractorForce, Type =>
-{
-    return {
-        type: "Tw2ParticleAttractorForce",
-        props: {
-            magnitude: Type.NUMBER,
-            position: Type.TR_TRANSLATION
-        }
-    };
-});
-

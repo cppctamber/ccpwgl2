@@ -83,19 +83,20 @@ export class Tw2ParticleElementDeclaration extends Tw2BaseClass
         });
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["customName", r.string],
+            ["dimension", r.uint],
+            ["elementType", r.uint],
+            ["usageIndex", r.uint],
+            ["usedByGPU", r.boolean]
+        ];
+    }
 
-Tw2BaseClass.define(Tw2ParticleElementDeclaration, Type =>
-{
-    return {
-        type: "Tw2ParticleElementDeclaration",
-        category: "ElementDeclaration",
-        props: {
-            customName: Type.STRING,
-            dimension: Type.NUMBER,
-            elementType: Type.NUMBER, // Possibly Type.STRING,
-            usageIndex: Type.NUMBER,
-            usedByGPU: Type.BOOLEAN
-        }
-    };
-});
+}

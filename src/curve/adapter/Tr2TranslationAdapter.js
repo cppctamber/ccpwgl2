@@ -2,26 +2,33 @@ import {vec3, Tw2BaseClass} from "../../global";
 
 /**
  * Tr2TranslationAdapter
- * @implements CurveAdapter
  *
- * @property {vec3} value -
+ * @property {Curve|CurveExpression} curve -
+ * @property {vec4} value
  */
-export default class Tr2TranslationAdapter extends Tw2BaseClass
+export class Tr2TranslationAdapter extends Tw2BaseClass
 {
 
+    curve = null;
     value = vec3.create();
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["curve", r.object],
+            ["value", r.vector3]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2TranslationAdapter, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2TranslationAdapter",
-        category: "CurveAdapter",
-        props: {
-            value: Type.VECTOR3
-        }
-    };
-});
-

@@ -2,8 +2,8 @@ import {Tw2BaseClass} from "../../global/index";
 
 /**
  * TriPerlinCurve
- * @implements Curve
  *
+ * @property {String} name   -
  * @property {Number} N      -
  * @property {Number} alpha  -
  * @property {Number} beta   -
@@ -12,9 +12,10 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Number} speed  -
  * @property {Number} value  -
  */
-export default class TriPerlinCurve extends Tw2BaseClass
+export class TriPerlinCurve extends Tw2BaseClass
 {
 
+    name = "";
     N = 0;
     alpha = 0;
     beta = 0;
@@ -23,23 +24,29 @@ export default class TriPerlinCurve extends Tw2BaseClass
     speed = 0;
     value = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["alpha", r.float],
+            ["beta", r.float],
+            ["N", r.uint],
+            ["name", r.string],
+            ["offset", r.float],
+            ["scale", r.float],
+            ["speed", r.float],
+            ["value", r.float]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(TriPerlinCurve, Type =>
-{
-    return {
-        isStaging: true,
-        type: "TriPerlinCurve",
-        category: "Curve",
-        props: {
-            N: Type.NUMBER,
-            alpha: Type.NUMBER,
-            beta: Type.NUMBER,
-            offset: Type.NUMBER,
-            scale: Type.NUMBER,
-            speed: Type.NUMBER,
-            value: Type.NUMBER
-        }
-    };
-});
-

@@ -17,22 +17,3 @@ export class WodPlaceableRes extends Tw2BaseClass
     visualModel = null;
 
 }
-
-Tw2BaseClass.define(WodPlaceableRes, Type =>
-{
-    return {
-        isStaging: true,
-        type: "WodPlaceableRes",
-        props: {
-            farFadeDistance: Type.NUMBER,
-            nearFadeDistance: Type.NUMBER,
-            visualModel: ["Tr2Model"]
-        },
-        notImplemented: [
-            "farFadeDistance",
-            "nearFadeDistance",
-            "visualModel"
-        ]
-    };
-});
-

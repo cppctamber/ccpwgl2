@@ -103,4 +103,17 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     static constantBufferSize = 16;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["rotation", r.vector4]
+        ];
+    }
+
 }

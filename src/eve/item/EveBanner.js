@@ -38,25 +38,3 @@ export class EveBanner extends Tw2BaseClass
     }
 
 }
-
-Tw2BaseClass.define(EveBanner, Type =>
-{
-    return {
-        type: "EveBanner",
-        category: "EveObjectItem",
-        isStaging: true,
-        props: {
-            angleX: Type.NUMBER,
-            angleY: Type.NUMBER,
-            boneIndex: Type.NUMBER,
-            display: Type.BOOLEAN,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION,
-            scaling: Type.TR_SCALING,
-            transform: Type.TR_LOCAL,
-            usage: Type.NUMBER
-        },
-        notImplemented: ["*"]
-    };
-});
-

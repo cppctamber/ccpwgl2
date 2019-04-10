@@ -20,6 +20,7 @@ import {
  * Todo: Handle "useSHLighting" meshAreas
  * @ccp Tr2Mesh
  *
+ * @property {String} name                            -
  * @property {Array.<Tw2MeshArea>} additiveAreas      -
  * @property {Array.<Tw2MeshArea>} decalAreas         -
  * @property {Boolean} deferGeometryLoad              -
@@ -40,7 +41,7 @@ import {
 export class Tw2Mesh
 {
 
-    // ccp
+    name = "";
     additiveAreas = [];
     decalAreas = [];
     deferGeometryLoad = false;
@@ -208,37 +209,34 @@ export class Tw2Mesh
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["additiveAreas", r.array],
+            ["decalAreas", r.array],
+            ["deferGeometryLoad", r.boolean],
+            ["depthAreas", r.array],
+            ["depthNormalAreas", r.array],
+            ["distortionAreas", r.array],
+            ["geometryResPath", r.string],
+            ["meshIndex", r.uint],
+            ["name", r.string],
+            ["opaqueAreas", r.array],
+            ["opaquePrepassAreas", r.array],
+            ["pickableAreas", r.array],
+            ["transparentAreas", r.array],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-Tw2BaseClass.define(Tw2Mesh, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tw2Mesh",
-        category: "Mesh",
-        props: {
-            additiveAreas: [["Tr2MeshArea"]],
-            decalAreas: [["Tr2MeshArea"]],
-            deferGeometryLoad: Type.BOOLEAN,
-            depthAreas: [["Tr2MeshArea"]],
-            depthNormalAreas: [["Tr2MeshArea"]],
-            distortionAreas: [["Tr2MeshArea"]],
-            display: Type.BOOLEAN,
-            geometryResPath: Type.PATH,
-            meshIndex: Type.NUMBER,
-            opaqueAreas: [["Tr2MeshArea"]],
-            opaquePrepassAreas: [["Tr2MeshArea"]],
-            pickableAreas: [["Tr2MeshArea"]],
-            transparentAreas: [["Tr2MeshArea"]],
-            visible: Type.PLAIN
-        },
-        notImplemented: [
-            "deferGeometryLoad",
-            "depthAreas",
-            "depthNormalAreas",
-            "distortionAreas",
-            "opaquePrepassAreas"
-        ]
-    };
-});
-

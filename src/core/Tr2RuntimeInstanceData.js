@@ -13,7 +13,7 @@ import {Tw2ParticleElementDeclaration} from "../particle/element/Tw2ParticleElem
  * @property {WebGLBuffer} _vb
  * @property {Number} _vertexStride
  */
-export default class Tr2RuntimeInstanceData extends Tw2BaseClass
+export class Tr2RuntimeInstanceData extends Tw2BaseClass
 {
 
     _count = 0;
@@ -221,13 +221,14 @@ export default class Tr2RuntimeInstanceData extends Tw2BaseClass
         return this._count;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [];
+    }
+
 }
-
-Tw2BaseClass.define(Tr2RuntimeInstanceData, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2RuntimeInstanceData"
-    };
-});
-

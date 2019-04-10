@@ -3,33 +3,41 @@ import {Tw2BaseClass} from "../../global";
 /**
  * Tr2CurveEulerRotationExpression
  *
+ * @property {String} name                          -
  * @property {String} expressionPitch               -
  * @property {String} expressionRoll                -
  * @property {String} expressionYaw                 -
  * @property {Array.<Curve|CurveExpression>} inputs -
  */
-export default class Tr2CurveEulerRotationExpression extends Tw2BaseClass
+export class Tr2CurveEulerRotationExpression extends Tw2BaseClass
 {
 
+    name = "";
     expressionPitch = "";
     expressionRoll = "";
     expressionYaw = "";
     inputs = [];
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["inputs", r.array],
+            ["name", r.string],
+            ["expressionYaw", r.string],
+            ["expressionPitch", r.string],
+            ["expressionRoll", r.string],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2CurveEulerRotationExpression, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2CurveEulerRotationExpression",
-        category: "CurveExpression",
-        props: {
-            expressionPitch: Type.EXPRESSION,
-            expressionRoll: Type.EXPRESSION,
-            expressionYaw: Type.EXPRESSION,
-            inputs: [["Tr2CurveScalar", "Tr2CurveScalarExpression", "TriPerlinCurve"]]
-        }
-    };
-});
-

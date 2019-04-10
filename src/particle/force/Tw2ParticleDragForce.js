@@ -27,14 +27,17 @@ export class Tw2ParticleDragForce extends Tw2ParticleForce
         force[2] += velocity.buffer[velocity.offset + 2] * -this.drag;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["drag", r.float],
+        ];
+    }
+
 }
 
-Tw2ParticleForce.define(Tw2ParticleDragForce, Type =>
-{
-    return {
-        type: "Tw2ParticleDragForce",
-        props: {
-            drag: Type.NUMBER
-        }
-    };
-});

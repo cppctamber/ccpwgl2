@@ -7,22 +7,27 @@ import {Tw2BaseClass} from "../global/index";
  *
  * @property {vec3} front -
  */
-export default class TriObserverLocal extends Tw2BaseClass
+export class TriObserverLocal extends Tw2BaseClass
 {
 
     front = vec3.create();
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["front", r.vector3]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(TriObserverLocal, Type =>
-{
-    return {
-        isStaging: true,
-        type: "TriObserverLocal",
-        props: {
-            front: Type.VECTOR3
-        },
-        notImplemented: ["*"]
-    };
-});
-

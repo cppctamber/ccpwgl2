@@ -6,11 +6,12 @@ import {ErrBindingType, ErrBindingValueUndefined, ErrBindingReference} from "../
 
 /**
  * Tw2ValueBinding
- * TODO: Looks like there are less swizzles than before, might be able to simplify this class (v1,v2,v3,v4 gone)
+ * TODO: Looks like there are less swizzles than before, might be able to simplify this class (eg if v1,v2,v3,v4 gone)
  * TODO: Handle utility functions
  * TODO: Figure out a way of telling if a source/destination is RGBA when building from a UI rather than a swizzle
  * @ccp TriValueBinding
  *
+ * @property {String} name                 -
  * @property {String} destinationAttribute -
  * @property {*} destinationObject         -
  * @property {vec4} offset                 -
@@ -27,7 +28,7 @@ import {ErrBindingType, ErrBindingValueUndefined, ErrBindingReference} from "../
  */
 export class Tw2ValueBinding extends Tw2BaseClass
 {
-    // ccp
+    name = "";
     destinationAttribute = "";
     destinationObject = null;
     offset = vec4.create();
@@ -560,28 +561,21 @@ export class Tw2ValueBinding extends Tw2BaseClass
         a.destinationObject[a.destinationAttribute] = a.sourceObject[a.sourceAttribute] ? 1 : 0;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["destinationObject", r.object],
+            ["destinationAttribute", r.string],
+            ["name", r.string],
+            ["offset", r.vector4],
+            ["scale", r.float],
+            ["sourceObject", r.object],
+            ["sourceAttribute", r.string]
+        ];
+    }
 }
-
-Tw2BaseClass.define(Tw2ValueBinding, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tw2ValueBinding",
-        isLeaf: true, // Do not traverse references
-        props: {
-            destinationAttribute: {
-                type: Type.STRING,
-                serialize: (a) => a.GetDestinationTarget()
-            },
-            destinationObject: Type.REF,
-            offset: Type.VECTOR4,
-            scale: Type.NUMBER,
-            sourceAttribute: {
-                type: Type.STRING,
-                serialize: (a) => a.GetSourceTarget()
-            },
-            sourceObject: Type.REF
-        }
-    };
-});
-

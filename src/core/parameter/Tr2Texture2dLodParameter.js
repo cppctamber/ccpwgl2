@@ -3,26 +3,33 @@ import {Tw2BaseClass} from "../../global/index";
 /**
  * Tr2Texture2dLodParameter
  * TODO: Implement
- * @ccp Tr2Texture2dLodParameter
  *
- * @property {Tr2LodResource} lodResource -
+ * @property {String} name                -
+ * @property {Tw2LodResource} lodResource -
  */
-export default class Tr2Texture2dLodParameter extends Tw2BaseClass
+export class Tr2Texture2dLodParameter extends Tw2BaseClass
 {
 
+    name = "";
     lodResource = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["lodResource", r.object],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2Texture2dLodParameter, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2Texture2dLodParameter",
-        category: "Parameter",
-        props: {
-            lodResource: ["Tr2LodResource"]
-        }
-    };
-});
-

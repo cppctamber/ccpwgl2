@@ -4,6 +4,7 @@ import {Tw2BaseClass, resMan} from "../../global";
  * Tr2LodResource
  * @ccp Tr2LodResource
  *
+ * @property {String} name                -
  * @property {String} highDetailResPath   -
  * @property {String} lowDetailResPath    -
  * @property {String} mediumDetailResPath -
@@ -11,6 +12,7 @@ import {Tw2BaseClass, resMan} from "../../global";
 export class Tw2LodResource extends Tw2BaseClass
 {
 
+    name = "";
     highDetailResPath = "";
     lowDetailResPath = "";
     mediumDetailResPath = "";
@@ -136,17 +138,26 @@ export class Tw2LodResource extends Tw2BaseClass
         }
         return item;
     }
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["highDetailResPath", r.string],
+            ["lowDetailResPath", r.string],
+            ["mediumDetailResPath", r.string],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 2;
+
 }
-
-Tw2BaseClass.define(Tw2LodResource, Type =>
-{
-    return {
-        type: "Tw2LodResource",
-        props: {
-            highDetailResPath: Type.PATH,
-            lowDetailResPath: Type.PATH,
-            mediumDetailResPath: Type.PATH
-        }
-    };
-});
-

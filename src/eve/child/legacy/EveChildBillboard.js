@@ -100,22 +100,3 @@ export class EveChildBillboard extends EveChild
     }
 
 }
-
-EveChild.define(EveChildBillboard, Type =>
-{
-    return {
-        type: "EveChildBillboard",
-        deprecated: true,
-        props: {
-            display: Type.BOOLEAN,
-            localTransform: Type.TR_LOCAL,
-            lowestLodVisible: Type.NUMBER,
-            mesh: ["Tw2Mesh", "Tw2InstancedMesh"],
-            rotation: Type.TR_ROTATION,
-            translation: Type.TR_TRANSLATION,
-            scaling: Type.TR_SCALING,
-            staticTransform: Type.BOOLEAN,
-            useSRT: Type.BOOLEAN
-        }
-    };
-});

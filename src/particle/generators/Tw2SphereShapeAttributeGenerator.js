@@ -7,8 +7,10 @@ import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
  * TODO: Is "controlPosition" deprecated?
  * TODO: Is "controlVelocity" deprecated?
  * TODO: Implement "distributionExponent"
+ * TODO: Implement "customName"
  * @ccp Tr2SphereShapeAttributeGenerator
  *
+ * @property {String} customName             -
  * @property {Boolean} controlPosition       -
  * @property {Boolean} controlVelocity       -
  * @property {Number} distributionExponent   -
@@ -29,7 +31,7 @@ import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
 export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
-    // ccp
+    customName = "";
     distributionExponent = 0;
     maxPhi = 360;
     maxRadius = 0;
@@ -129,26 +131,34 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["customName", r.string],
+            ["distributionExponent", r.float],
+            ["maxPhi", r.float],
+            ["maxRadius", r.float],
+            ["maxSpeed", r.float],
+            ["maxTheta", r.float],
+            ["minPhi", r.float],
+            ["minRadius", r.float],
+            ["minSpeed", r.float],
+            ["minTheta", r.float],
+            ["parentVelocityFactor", r.float],
+            ["position", r.vector3],
+            ["rotation", r.vector4],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
 }
-
-Tw2ParticleAttributeGenerator.define(Tw2SphereShapeAttributeGenerator, Type =>
-{
-    return {
-        type: "Tw2SphereShapeAttributeGenerator",
-        props: {
-            distributionExponent: Type.NUMBER,
-            maxPhi: Type.NUMBER,
-            maxRadius: Type.NUMBER,
-            maxSpeed: Type.NUMBER,
-            maxTheta: Type.NUMBER,
-            minPhi: Type.NUMBER,
-            minRadius: Type.NUMBER,
-            minSpeed: Type.NUMBER,
-            minTheta: Type.NUMBER,
-            parentVelocityFactor: Type.NUMBER,
-            position: Type.TR_TRANSLATION,
-            rotation: Type.TR_ROTATION
-        }
-    };
-});
-

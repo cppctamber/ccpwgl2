@@ -2,10 +2,9 @@ import {Tw2BaseClass} from "../../global";
 
 /**
  * Tr2ActionAnimateCurveSet
- * @implements StateAction
  * TODO: Implement
  *
- * @property {TriCurveSet} curveSet -
+ * @property {Tw2CurveSet} curveSet -
  * @property {String} value         -
  */
 export class Tr2ActionAnimateCurveSet extends Tw2BaseClass
@@ -14,22 +13,23 @@ export class Tr2ActionAnimateCurveSet extends Tw2BaseClass
     curveSet = null;
     value = "";
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["curveSet", r.object],
+            ["value", r.string]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2ActionAnimateCurveSet, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ActionAnimateCurveSet",
-        category: "StateAction",
-        props: {
-            curveSet: ["TriCurveSet"],
-            value: Type.STRING
-        },
-        notImplemented: [
-            "curveSet",
-            "value"
-        ]
-    };
-});
-

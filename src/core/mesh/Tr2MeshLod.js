@@ -203,29 +203,32 @@ export class Tr2MeshLod extends Tw2BaseClass
             }
         }
     }
-}
 
-Tw2BaseClass.define(Tr2MeshLod, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2MeshLod",
-        category: "Mesh",
-        props: {
-            additiveAreas: [["Tw2MeshArea"]],
-            associatedResources: Type.ARRAY,
-            decalAreas: [["Tw2MeshArea"]],
-            depthAreas: [["Tw2MeshArea"]],
-            display: Type.BOOLEAN,
-            geometryRes: ["Tr2LodResource"],
-            opaqueAreas: [["Tw2MeshArea"]],
-            pickableAreas: [["Tw2MeshArea"]],
-            transparentAreas: [["Tw2MeshArea"]],
-            visible: Type.PLAIN
-        },
-        notImplemented: [
-            "depthAreas"
-        ]
-    };
-});
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["additiveAreas", r.array],
+            ["associatedResources", r.array],
+            ["decalAreas", r.array],
+            ["depthAreas", r.array],
+            ["distortionAreas", r.array],
+            ["geometryRes", r.object],
+            ["opaqueAreas", r.array],
+            ["pickableAreas", r.array],
+            ["transparentAreas", r.array],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 3;
+
+}
 

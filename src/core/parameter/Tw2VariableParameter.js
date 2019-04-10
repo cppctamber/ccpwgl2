@@ -66,15 +66,17 @@ export class Tw2VariableParameter extends Tw2Parameter
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["variableName", r.string]
+        ];
+    }
+
 }
-
-Tw2Parameter.define(Tw2VariableParameter, Type =>
-{
-    return {
-        type: "Tw2VariableParameter",
-        props: {
-            variableName: Type.STRING
-        }
-    };
-});
-

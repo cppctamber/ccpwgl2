@@ -405,16 +405,3 @@ export class Tw2PostEffect extends Tw2BaseClass
     static Item = Tw2PostEffectStep;
 
 }
-
-Tw2BaseClass.define(Tw2PostEffect, Type =>
-{
-    return {
-        type: "Tw2PostEffect",
-        props: {
-            display: Type.BOOLEAN,
-            index: Type.NUMBER,
-            curveSet: ["Tw2CurveSet"],
-            steps: [["Tw2PostEffectStep"]]
-        }
-    };
-});

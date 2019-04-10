@@ -12,16 +12,22 @@ export class Tr2Model extends Tw2BaseClass
 
     meshes = [];
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["meshes", r.array],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2Model, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2Model",
-        props: {
-            meshes: [["Tr2Mesh"]]
-        }
-    };
-});
-

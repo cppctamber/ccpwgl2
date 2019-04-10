@@ -816,6 +816,16 @@ export class Tw2GeometryRes extends Tw2Resource
         return curve;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [];
+    }
+
 }
 
 /**

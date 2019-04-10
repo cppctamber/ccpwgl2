@@ -42,32 +42,31 @@ export default class TriMatrix extends Tw2BaseClass
     _43 = 0;
     _44 = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["_11", r.float],
+            ["_12", r.float],
+            ["_13", r.float],
+            ["_14", r.float],
+            ["_21", r.float],
+            ["_22", r.float],
+            ["_23", r.float],
+            ["_24", r.float],
+            ["_31", r.float],
+            ["_32", r.float],
+            ["_33", r.float],
+            ["_34", r.float],
+            ["_41", r.float],
+            ["_42", r.float],
+            ["_43", r.float],
+            ["_44", r.float]
+        ];
+    }
+
 }
-
-Tw2BaseClass.define(TriMatrix, Type =>
-{
-    return {
-        isStaging: true,
-        type: "TriMatrix",
-        props: {
-            _11: Type.NUMBER,
-            _12: Type.NUMBER,
-            _13: Type.NUMBER,
-            _14: Type.NUMBER,
-            _21: Type.NUMBER,
-            _22: Type.NUMBER,
-            _23: Type.NUMBER,
-            _24: Type.NUMBER,
-            _31: Type.NUMBER,
-            _32: Type.NUMBER,
-            _33: Type.NUMBER,
-            _34: Type.NUMBER,
-            _41: Type.NUMBER,
-            _42: Type.NUMBER,
-            _43: Type.NUMBER,
-            _44: Type.NUMBER
-        }
-    };
-});
-
-

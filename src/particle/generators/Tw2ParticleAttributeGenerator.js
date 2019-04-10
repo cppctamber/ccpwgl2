@@ -41,12 +41,3 @@ export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
     };
 
 }
-
-Tw2BaseClass.define(Tw2ParticleAttributeGenerator, Type =>
-{
-    return {
-        type: "Tw2ParticleAttributeGenerator",
-        category: "ParticleAttributeGenerator",
-        isAbstract: true
-    };
-});

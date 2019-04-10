@@ -3,7 +3,7 @@ import {Tw2BaseClass} from "../../global";
 /**
  * Tr2KelvinColor
  * TODO: Do we need this class?
- * TODO: Implement (I don't think this class actually needs to do anything - T'amber)
+ * TODO: Implement
  *
  * @property {Number} temperature -
  * @property {Number} tint        -
@@ -14,21 +14,23 @@ export class Tr2KelvinColor extends Tw2BaseClass
     temperature = 0;
     tint = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["temperature", r.float],
+            ["tint", r.float],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2KelvinColor, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2KelvinColor",
-        props: {
-            temperature: Type.NUMBER,
-            tint: Type.NUMBER
-        },
-        notImplemented: [
-            "temperature",
-            "tint"
-        ]
-    };
-});
-

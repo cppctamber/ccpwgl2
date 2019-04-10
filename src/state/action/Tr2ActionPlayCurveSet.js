@@ -16,24 +16,24 @@ export class Tr2ActionPlayCurveSet extends Tw2BaseClass
     rangeName = "";
     syncToRange = false;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["curveSetName", r.string],
+            ["rangeName", r.string],
+            ["syncToRange", r.boolean]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2ActionPlayCurveSet, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2ActionPlayCurveSet",
-        category: "StateAction",
-        props: {
-            curveSetName: Type.STRING,
-            rangeName: Type.STRING,
-            syncToRange: Type.BOOLEAN
-        },
-        notImplemented: [
-            "curveSetName",
-            "rangeName",
-            "syncToRange"
-        ]
-    };
-});
-

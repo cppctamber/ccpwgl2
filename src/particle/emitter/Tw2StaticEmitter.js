@@ -7,16 +7,15 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
  * Tw2StaticEmitter
  * @ccp Tr2StaticEmitter
  *
- * @property {Tw2GeometryRes} geometryResource
- * @property {Number} geometryIndex
- * @property {Boolean} _spawned
- * @inherits Tw2ParticleEmitter
- * @class
+ * @property {String} name                     -
+ * @property {Tw2GeometryRes} geometryResource -
+ * @property {Number} geometryIndex            -
+ * @property {Boolean} _spawned                -
  */
 export class Tw2StaticEmitter extends Tw2ParticleEmitter
 {
 
-    // ccp
+    name = "";
     geometryResourcePath = "";
     meshIndex = 0;
 
@@ -156,17 +155,19 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
         }
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["particleSystem", r.object],
+            ["geometryResourcePath", r.string],
+            ["meshIndex", r.uint],
+        ];
+    }
+
 }
-
-Tw2ParticleEmitter.define(Tw2StaticEmitter, Type =>
-{
-    return {
-        type: "Tw2StaticEmitter",
-        category: "ParticleEmitter",
-        props: {
-            geometryResourcePath: Type.PATH,
-            meshIndex: Type.NUMBER
-        }
-    };
-});
-

@@ -76,13 +76,3 @@ export class Tw2Parameter extends Tw2BaseClass
     static constantBufferSize = 0;
 
 }
-
-Tw2BaseClass.define(Tw2Parameter, Type =>
-{
-    return {
-        type: "Tw2Parameter",
-        category: "Parameter",
-        isAbstract: true,
-        isLeaf: true
-    };
-});

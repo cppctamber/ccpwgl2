@@ -3,8 +3,6 @@ import {Tw2VectorParameter} from "./Tw2VectorParameter";
 
 /**
  * Tw2Matrix4Parameter
- *
- * @class
  */
 export class Tw2Matrix4Parameter extends Tw2VectorParameter
 {
@@ -12,27 +10,10 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
     /**
      * Constructor
      * @param {String} [name='']
-     * @param {mat4|Float32Array|Array} [value=mat4.create()]
+     * @param {mat4|Float32Array} [value=mat4.create()]
      */
     constructor(name = "", value = mat4.create())
     {
-        // Convert array of arrays
-        if (Array.isArray(value) && value.length === 4 && value[0].length === 4)
-        {
-            const
-                x = value[0],
-                y = value[1],
-                z = value[2],
-                w = value[3];
-
-            value = [
-                x[0], x[1], x[2], x[3],
-                y[0], y[1], y[2], y[3],
-                z[0], z[1], z[2], z[3],
-                w[0], w[1], w[2], w[3]
-            ];
-        }
-
         super(name, value);
     }
 
@@ -129,17 +110,21 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
      */
     static constantBufferSize = 16;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["value", r.matrix]
+        ];
+    }
+
 }
 
-Tw2VectorParameter.define(Tw2Matrix4Parameter, Type =>
-{
-    return {
-        type: "Tw2Matrix4Parameter",
-        props: {
-            value: Type.MATRIX4
-        }
-    };
-});
 
 export function Tw2MatrixParameter(name, value)
 {

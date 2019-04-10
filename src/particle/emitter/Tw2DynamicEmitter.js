@@ -5,6 +5,7 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
  * Todo: Implement "maxParticles"
  * @ccp Tr2DynamicEmitter
  *
+ * @property {String} name                                      -
  * @property {Array.<Tw2ParticleAttributeGenerator>} generators -
  * @property {Number} maxParticles                              -
  * @property {Tw2ParticleSystem} particleSystem                 -
@@ -14,15 +15,16 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
  */
 export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 {
-    // ccp
+
+    name = "";
     generators = [];
     maxParticles = 0;
     particleSystem = null;
     rate = 0;
 
-    // ccpwgl
     _accumulatedRate = 0;
     _isValid = false;
+
 
     /**
      * Initializes the particle emitter
@@ -85,21 +87,20 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
         }
     }
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["particleSystem", r.object],
+            ["generators", r.array],
+            ["maxParticles", r.uint],
+            ["rate", r.float],
+        ];
+    }
 
-Tw2ParticleEmitter.define(Tw2DynamicEmitter, Type =>
-{
-    return {
-        type: "Tw2DynamicEmitter",
-        category: "ParticleEmitter",
-        props: {
-            generators: [["Tr2RandomIntegerAttributeGenerator", "Tr2RandomUniformAttributeGenerator", "Tr2SphereShapeAttributeGenerator"]],
-            maxParticles: Type.NUMBER,
-            particleSystem: ["Tw2ParticleSystem"],
-            rate: Type.NUMBER
-        },
-        notImplemented: [
-            "maxParticles"
-        ]
-    };
-});
+}

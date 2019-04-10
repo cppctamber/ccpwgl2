@@ -30,16 +30,17 @@ export class Tw2ParticleSpring extends Tw2ParticleForce
         force[2] += (this.position[2] - position.buffer[position.offset + 2]) * this.springConstant;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["position", r.vector3],
+            ["springConstant", r.float]
+        ];
+    }
+
 }
-
-Tw2ParticleForce.define(Tw2ParticleSpring, Type =>
-{
-    return {
-        type: "Tw2ParticleSpring",
-        props: {
-            position: Type.TR_TRANSLATION,
-            springConstant: Type.NUMBER
-        }
-    };
-});
-

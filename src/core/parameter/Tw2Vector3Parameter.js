@@ -80,13 +80,3 @@ export class Tw2Vector3Parameter extends Tw2VectorParameter
     static constantBufferSize = 3;
 
 }
-
-Tw2VectorParameter.define(Tw2Vector3Parameter, Type =>
-{
-    return {
-        type: "Tw2Vector3Parameter",
-        props: {
-            value: Type.VECTOR3
-        }
-    };
-});

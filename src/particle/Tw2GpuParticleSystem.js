@@ -15,7 +15,7 @@ import {Tw2BaseClass} from "../global";
  * @property {Tw2Effect} sortStep          -
  * @property {Tw2Effect} update            -
  */
-export default class Tr2GpuParticleSystem extends Tw2BaseClass
+export class Tr2GpuParticleSystem extends Tw2BaseClass
 {
 
     clear = null;
@@ -28,26 +28,30 @@ export default class Tr2GpuParticleSystem extends Tw2BaseClass
     sortStep = null;
     update = null;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["clear", r.object],
+            ["emit", r.object],
+            ["render", r.object],
+            ["setDrawParameters", r.object],
+            ["setSortParameters", r.object],
+            ["sort", r.object],
+            ["sortInner", r.object],
+            ["sortStep", r.object],
+            ["update", r.object],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
 }
-
-Tw2BaseClass.define(Tr2GpuParticleSystem, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tr2GpuParticleSystem",
-        category: "ParticleSystem",
-        props: {
-            clear: ["Tw2Effect"],
-            emit: ["Tw2Effect"],
-            render: ["Tw2Effect"],
-            setDrawParameters: ["Tw2Effect"],
-            setSortParameters: ["Tw2Effect"],
-            sort: ["Tw2Effect"],
-            sortInner: ["Tw2Effect"],
-            sortStep: ["Tw2Effect"],
-            update: ["Tw2Effect"]
-        },
-        notImplemented: ["*"]
-    };
-});
-

@@ -11,24 +11,42 @@ import {util, Tw2BaseClass} from "../../global";
  * @property {Boolean} playOnLoad                                  -
  * @property {Array.<Tw2CurveSetRange>} ranges                     -
  * @property {Number} scale                                        -
- * @property {Number} scaledTime                                   -
  * @property {Boolean} useSimTimeRebase                            -
  * @property {Boolean} _isPlaying                                  -
+ * @property {Number} _scaledTime                                  -
  */
 export class Tw2CurveSet extends Tw2BaseClass
 {
-    // ccp
+    
+    name = "";
     bindings = [];
     curves = [];
     playOnLoad = true;
     ranges = [];
     scale = 1;
     useSimTimeRebase = false;
-    scaledTime = 0;
-
-    // ccpwgl
+    
+    _scaledTime = 0;
     _isPlaying = false;
 
+    /**
+     * Alias for _scaledTime
+     * @returns {number}
+     */
+    get scaledTime()
+    {
+        return this._scaledTime;
+    }
+
+    /**
+     * Alias for _scaledTime
+     * @param {number} val
+     */
+    set scaledTime(val)
+    {
+        console.log("Tw2CurveSet.scaledTime used");
+        this._scaledTime = val;
+    }
 
     /**
      * Initializes the Tw2CurveSet
@@ -47,7 +65,7 @@ export class Tw2CurveSet extends Tw2BaseClass
     Play()
     {
         this._isPlaying = true;
-        this.scaledTime = 0;
+        this._scaledTime = 0;
     }
 
     /**
@@ -57,7 +75,7 @@ export class Tw2CurveSet extends Tw2BaseClass
     PlayFrom(time = 0)
     {
         this._isPlaying = true;
-        this.scaledTime = time * this.scale;
+        this._scaledTime = time * this.scale;
     }
 
     /**
@@ -76,11 +94,11 @@ export class Tw2CurveSet extends Tw2BaseClass
     {
         if (this._isPlaying)
         {
-            this.scaledTime += dt * this.scale;
+            this._scaledTime += dt * this.scale;
 
             for (let i = 0; i < this.curves.length; ++i)
             {
-                this.curves[i].UpdateValue(this.scaledTime);
+                this.curves[i].UpdateValue(this._scaledTime);
             }
 
             for (let i = 0; i < this.bindings.length; ++i)
@@ -125,25 +143,22 @@ export class Tw2CurveSet extends Tw2BaseClass
         return length;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["bindings", r.array],
+            ["curves", r.array],
+            ["name", r.string],
+            ["playOnLoad", r.boolean],
+            ["ranges", r.array],
+            ["scale", r.float],
+            ["useSimTimeRebase", r.boolean]
+        ];
+    }
+
 }
-
-Tw2BaseClass.define(Tw2CurveSet, Type =>
-{
-    return {
-        isStaging: true,
-        type: "Tw2CurveSet",
-        props: {
-            bindings: [["Tw2ValueBinding"]],
-            curves: Type.ARRAY,
-            playOnLoad: Type.BOOLEAN,
-            ranges: [["Tw2CurveSetRange"]],
-            scale: Type.NUMBER,
-            scaledTime: Type.NUMBER,
-            useSimTimeRebase: Type.BOOLEAN
-        },
-        notImplemented: [
-            "simTimeRebase"
-        ]
-    };
-});
-

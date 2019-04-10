@@ -304,21 +304,17 @@ export class Tw2TextureParameter extends Tw2Parameter
         "maxAnisotropy"
     ];
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["resourcePath", r.string]
+        ];
+    }
 
-Tw2Parameter.define(Tw2TextureParameter, Type =>
-{
-    return {
-        type: "Tw2TextureParameter",
-        props: {
-            resourcePath: Type.PATH,
-            addressUMode: Type.NUMBER,
-            addressVMode: Type.NUMBER,
-            addressWMode: Type.NUMBER,
-            filterMode: Type.NUMBER,
-            maxAnisotropy: Type.NUMBER,
-            mipFilterMode: Type.NUMBER,
-            useAllOverrides: Type.BOOLEAN,
-        }
-    };
-});
+}

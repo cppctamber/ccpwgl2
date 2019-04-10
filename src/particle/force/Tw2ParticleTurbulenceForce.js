@@ -13,13 +13,12 @@ import {Tw2ParticleForce} from "./Tw2ParticleForce";
  */
 export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
 {
-    //ccp
+
     amplitude = vec3.fromValues(1, 1, 1);
     frequency = vec4.fromValues(1, 1, 1, 1);
     noiseLevel = 3;
     noiseRatio = 0.5;
 
-    //ccpwgl
     _time = 0;
 
 
@@ -71,18 +70,19 @@ export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
         this._time += dt;
     }
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["amplitude", r.vector3],
+            ["frequency", r.vector4],
+            ["noiseLevel", r.float],
+            ["noiseRatio", r.float]
+        ];
+    }
+
 }
-
-Tw2ParticleForce.define(Tw2ParticleTurbulenceForce, Type =>
-{
-    return {
-        type: "Tw2ParticleTurbulenceForce",
-        props: {
-            amplitude: Type.VECTOR3,
-            frequency: Type.VECTOR4,
-            noiseLevel: Type.NUMBER,
-            noiseRatio: Type.NUMBER
-        }
-    };
-});
-

@@ -1,6 +1,7 @@
 import Tw2Schema from "./Tw2Schema";
 import {generateID} from "../util/index";
 import {ErrAbstractClassMethod} from "../../core/Tw2Error";
+import {isArray, isObject} from "../util";
 
 /**
  * Tw2StagingClass
@@ -437,6 +438,39 @@ export default class Tw2BaseClass
     }
 
     /**
+     * Temporary fallback when no schema is available
+     * @param {*} obj
+     */
+    static perChildFallBack(obj)
+    {
+        const result = {};
+
+        if (isObject(obj))
+        {
+            for (const key in obj)
+            {
+                if (obj.hasOwnProperty(key) && obj[key])
+                {
+                    if (isArray(obj[key]))
+                    {
+                        if (!result.keys) result.keys = {};
+                        if (!result.keys.arrays) result.keys.arrays = [];
+                        result.keys.arrays.push(key);
+                    }
+                    else if (isObject(obj[key]))
+                    {
+                        if (!result.keys) result.keys = {};
+                        if (!result.keys.arrays) result.keys.objects = [];
+                        result.keys.objects.push(key);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Fires a callback on an object's children, and no further
      * @param {*} obj
      * @param {Function} callback
@@ -446,8 +480,8 @@ export default class Tw2BaseClass
     {
         if (obj.constructor.__isLeaf) return null;
 
-        const schema = Tw2Schema.get(obj.constructor);
-        if (!schema) throw new ErrAbstractClassMethod();
+        let schema = Tw2Schema.get(obj.constructor);
+        if (!schema) schema = this.perChildFallBack(obj);
         if (!schema.keys) return null;
 
         const

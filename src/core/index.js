@@ -13,8 +13,9 @@ export * from "./sampler";
 export * from "./value";
 export * from "./vertex";
 
-export Tr2RuntimeInstanceData from "./Tr2RuntimeInstanceData";
-export TriObserverLocal from "./TriObserverLocal";
+export * from "./Tr2DistanceTracker";
+export * from "./Tr2RuntimeInstanceData";
+export * from "./TriObserverLocal";
 export * from "./Tw2Error";
 export * from "./Tw2Frustum";
 export * from "./Tw2RenderTarget";

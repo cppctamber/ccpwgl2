@@ -11,8 +11,7 @@ import {Tw2ParticleElement} from "./element";
  * TODO: Implement "useSimTimeRebase"
  * @ccp Tr2ParticleSystem
  *
- * @property {vec3} aabbMin                                                     - Where is this used?
- * @property {vec3} aabbMax                                                     - Where is this used?
+ * @property {String} name                                                      - The particle system's name
  * @property {Boolean} applyAging                                               - Applies aging
  * @property {Boolean} applyForce                                               - Applies particle forces
  * @property {Array.<Tw2ParticleConstraint>} constraints                        - Particle constraints
@@ -27,6 +26,8 @@ import {Tw2ParticleElement} from "./element";
  * @property {Boolean} updateBoundingBox                                        - Identifies that bounds require updating
  * @property {Boolean} updateSimulation                                         - Identifies that forces an constraints are used
  * @property {Boolean} useSimTimeRebase                                         -
+ * @property {vec3} _aabbMin                                                    - Axis aligned bounding box min
+ * @property {vec3} _aabbMax                                                    - Axis aligned bounding box max
  * @property {number} _aliveCount                                               - The current particle count
  * @property {Boolean} _bufferDirty                                             - Identifies that buffers require rebuilding
  * @property {Array} _buffers                                                   -
@@ -43,7 +44,8 @@ import {Tw2ParticleElement} from "./element";
  */
 export class Tw2ParticleSystem extends Tw2BaseClass
 {
-    // ccp
+    
+    name = "";
     applyAging = true;
     applyForce = true;
     constraints = [];
@@ -59,10 +61,10 @@ export class Tw2ParticleSystem extends Tw2BaseClass
 
     // ccpwgl
     isGlobal = false;
-    aabbMin = vec3.create();
-    aabbMax = vec3.create();
     peakAliveCount = 0;
 
+    _aabbMin = vec3.create();
+    _aabbMax = vec3.create();
     _aliveCount = 0;
     _bufferDirty = false;
     _buffers = [null, null];
@@ -355,7 +357,7 @@ export class Tw2ParticleSystem extends Tw2BaseClass
 
         if (this.updateBoundingBox)
         {
-            this.GetBoundingBox(this.aabbMin, this.aabbMax);
+            this.GetBoundingBox(this._aabbMin, this._aabbMax);
         }
 
         if (this.emitParticleDuringLifeEmitter && !(this.HasElement(Tw2ParticleElement.Type.POSITION) && this.HasElement(Tw2ParticleElement.Type.VELOCITY)) && this.updateSimulation)
@@ -566,31 +568,28 @@ export class Tw2ParticleSystem extends Tw2BaseClass
      */
     static global = null;
 
-}
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["constraints", r.array],
+            ["name", r.string],
+            ["applyAging", r.boolean],
+            ["applyForce", r.boolean],
+            ["elements", r.array],
+            ["emitParticleDuringLifeEmitter", r.object],
+            ["emitParticleOnDeathEmitter", r.object],
+            ["forces", r.array],
+            ["maxParticleCount", r.uint],
+            ["requiresSorting", r.boolean],
+            ["updateBoundingBox", r.boolean],
+            ["updateSimulation", r.boolean],
+            ["useSimTimeRebase", r.boolean]
+        ];
+    }
 
-Tw2BaseClass.define(Tw2ParticleSystem, Type =>
-{
-    return {
-        type: "Tw2ParticleSystem",
-        category: "ParticleSystem",
-        props: {
-            applyAging: Type.BOOLEAN,
-            applyForce: Type.BOOLEAN,
-            constraints: [["Tw2PlaneConstraint"]],
-            elements: [["Tw2ParticleElementDeclaration"]],
-            emitParticleDuringLifeEmitter: ["Tw2DynamicEmitter", "Tw2GpuUniqueEmitter"],
-            emitParticleOnDeathEmitter: ["Tw2DynamicEmitter", "Tw2GpuUniqueEmitter"],
-            forces: Type.ARRAY,
-            maxParticleCount: Type.NUMBER,
-            requiresSorting: Type.BOOLEAN,
-            updateBoundingBox: Type.BOOLEAN,
-            updateSimulation: Type.BOOLEAN,
-            useSimTimeRebase: Type.BOOLEAN
-        },
-        notImplemented: [
-            "isGlobal",
-            "peakAliveCount",
-            "useSimTimeRebase"
-        ]
-    };
-});
+}
