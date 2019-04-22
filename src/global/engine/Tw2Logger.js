@@ -30,7 +30,7 @@ import {assignIfExists, isError} from "../util";
  * @property {Array} _logs                   - Stored logs
  * @property {?{String:string[]}} _throttled - Throttles message cache
  */
-class Tw2Logger extends Tw2EventEmitter
+export class Tw2Logger extends Tw2EventEmitter
 {
 
     name = "";
@@ -44,15 +44,26 @@ class Tw2Logger extends Tw2EventEmitter
     };
     history = 100;
     throttle = 20;
+    tw2 = null;
+    
     _logs = [];
     _throttled = null;
 
+    /**
+     * Constructor
+     * @param {Tw2Library} tw2
+     */
+    constructor(tw2)
+    {
+        super();
+        Reflect.defineProperty(this, "tw2", {get: () => tw2});
+    }
 
     /**
      * Sets the logger's properties
      * @param {*} [opt]
      */
-    Set(opt)
+    Register(opt)
     {
         if (!opt) return;
         assignIfExists(this, opt, ["name", "display", "history", "throttle"]);
@@ -151,6 +162,7 @@ class Tw2Logger extends Tw2EventEmitter
         }
 
         log._logged = true;
+        
         this.emit(log.type, log);
         return log;
     }
@@ -174,12 +186,3 @@ class Tw2Logger extends Tw2EventEmitter
     static category = "logger";
 
 }
-
-
-export const logger = new Tw2Logger();
-
-/**
- * The default event logger
- * @type {Tw2Logger}
- */
-Tw2EventEmitter.defaultLogger = logger;

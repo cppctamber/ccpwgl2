@@ -79,7 +79,6 @@ export function get(src, prop, defaultValue)
     return defaultValue;
 }
 
-
 /**
  * Returns a string from a string template and a given object's properties
  * - templates are surrounded by %'s (ie. %propertyName%)

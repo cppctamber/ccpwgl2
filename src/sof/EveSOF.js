@@ -1,4 +1,4 @@
-import {vec3, vec4, quat, mat4, resMan} from "../global";
+import {vec3, vec4, quat, mat4} from "../global";
 import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve/legacy";
 import {
     Tw2FloatParameter,
@@ -27,7 +27,7 @@ import {
 } from "../eve";
 
 
-export function EveSOF()
+export function EveSOF(tw2)
 {
     var data = null;
     var spriteEffect = null;
@@ -771,7 +771,7 @@ export function EveSOF()
         }
         else
         {
-            resMan.log({
+            tw2.Log({
                 type: "warning",
                 name: "Space object factory",
                 message: `Unable to bind particle emitters: ${obj.constructor.name}`
@@ -810,11 +810,11 @@ export function EveSOF()
             const resPath = children[i]["redFilePath"];
             if (resPath)
             {
-                resMan.GetObject(resPath, onChildLoaded(children[i]));
+                tw2.GetObject(resPath, onChildLoaded(children[i]));
             }
             else
             {
-                resMan.log({
+                tw2.Log({
                     type: "warning",
                     name: "Space object factory",
                     message: `No resource path found for "${hull.name}" child at index ${i}`
@@ -904,7 +904,7 @@ export function EveSOF()
                 spriteEffect.parameters["GradientMap"] = new Tw2TextureParameter("GradientMap", "res:/texture/particle/whitesharp_gradient.dds.0.png");
                 spriteEffect.Initialize();
 
-                resMan.GetObject("res:/dx9/model/spaceobjectfactory/data.red", function (obj)
+                tw2.GetObject("res:/dx9/model/spaceobjectfactory/data.red", function (obj)
                 {
                     data = obj;
                     for (var i = 0; i < pendingLoads.length; ++i)
@@ -1115,5 +1115,17 @@ export function EveSOF()
         });
     };
 
+    this.GetSofHullBuildClass = function(hull, callback)
+    {
+        this.LoadData(function()
+        {
+            const c = hull.indexOf(":");
+            if (c > 0) hull = hull.substr(0, c);
+            const h = data.hull[hull];
+            if (!h) callback(-1);
+            if (h.buildClass === 2) callback(2);
+            callback(1);
+        });
+    };
 
 }

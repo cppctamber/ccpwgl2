@@ -3,8 +3,6 @@ import Tw2EventEmitter from "../class/Tw2EventEmitter";
 import {ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid} from "../../core/Tw2Error";
 import {toArray, isNumber, isArray,  isFunction, isString, isPlain, enableUUID} from "../util";
 import * as readers from "../../core/reader/Tw2BlackPropertyReaders";
-import {resMan} from "./Tw2ResMan";
-import {logger} from "./Tw2Logger";
 import {ErrStoreKeyProtected} from "../../core";
 
 /**
@@ -19,32 +17,37 @@ import {ErrStoreKeyProtected} from "../../core";
  * @property {Tw2VariableStore} variables
  * @property {Tw2ExtensionStore} extensions
  * @property {Tw2DynamicPathStore} dynamicPaths
+ * @property {Tw2Library} _tw2
  */
-class Tw2Store
+export class Tw2Store
 {
-    constructor()
+
+    types = new Tw2TypeStore();
+    paths = new Tw2PathStore();
+    blacks = new Tw2BlackStore();
+    classes = new Tw2ClassStore(this);
+    schemas = new Tw2SchemaStore();
+    variables = new Tw2VariableStore(this);
+    extensions = new Tw2ExtensionStore();
+    dynamicPaths = new Tw2DynamicPathStore();
+    _tw2 = null;
+
+    /**
+     * Constructor
+     * @param {Tw2Library} tw2
+     */
+    constructor(tw2)
     {
-        this.types = new Tw2TypeStore();
-        this.paths = new Tw2PathStore();
-        this.blacks = new Tw2BlackStore();
-        this.classes = new Tw2ClassStore(this);
-        this.schemas = new Tw2SchemaStore();
-        this.variables = new Tw2VariableStore(this);
-        this.extensions = new Tw2ExtensionStore();
-        this.dynamicPaths = new Tw2DynamicPathStore();
+        this._tw2 = tw2;
     }
 
     /**
      * Registers options
      * @param opt
-     * @constructor
      */
-    Register(opt = {})
+    Register(opt)
     {
-        if ("uuid" in opt) enableUUID(opt.uuid);
-        if ("logger" in opt) logger.Set(opt.logger);
-        if ("resMan" in opt) resMan.Set(opt.resMan);
-
+        if (!opt) return;
         this.paths.Register(opt.paths);
         this.dynamicPaths.Register(opt.dynamicPaths);
         this.types.Register(opt.types);
@@ -67,6 +70,20 @@ class Tw2GenericStore extends Tw2EventEmitter
 
     _values = new Map();
     _missing = [];
+
+    /**
+     * Constructor
+     * @param {Tw2Store} [store]
+     */
+    constructor(store)
+    {
+        super();
+
+        if (store)
+        {
+            Reflect.defineProperty(this, "_store", { get: ()=> store });
+        }
+    }
 
     /**
      * Gets the store's name
@@ -266,6 +283,36 @@ class Tw2BlackStore extends Tw2GenericStore
     }
 
     /**
+     * Gets a black
+     * @param key
+     * @returns {*}
+     */
+    Get(key)
+    {
+        let value = super.Get(key);
+
+        if (!value && (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0))
+        {
+            const originalKey = key;
+            key = "Tw2" + key.substring(3);
+            value = super.Get(key);
+
+            if (value)
+            {
+                this.emit("substitute", {
+                    key, value, originalKey, type: this.name,
+                    log: {
+                        type: "warning",
+                        message: `"${originalKey}" class not found, substituting with "${key}"`
+                    }
+                });
+            }
+        }
+
+        return value;
+    }
+
+    /**
      * Checks if a passed value is a valid store value
      * @param {*} a
      * @returns {boolean}
@@ -420,18 +467,6 @@ class Tw2SchemaStore extends Tw2GenericStore
 class Tw2ClassStore extends Tw2GenericStore
 {
 
-    _store = null;
-
-    /**
-     * Constructor
-     * @param {Tw2Store} store
-     */
-    constructor(store)
-    {
-        super();
-        this._store = store;
-    }
-
     /**
      * Sets a class
      * @param {String} key
@@ -470,7 +505,7 @@ class Tw2ClassStore extends Tw2GenericStore
 
         value = super.Get(key);
 
-        if (!value && (key.indexOf("Tr2") === 0 || key.indexOf("Tr2") === 0))
+        if (!value && (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0))
         {
             const originalKey = key;
             key = "Tw2" + key.substring(3);
@@ -526,18 +561,6 @@ class Tw2ClassStore extends Tw2GenericStore
  */
 class Tw2VariableStore extends Tw2GenericStore
 {
-
-    _store = null;
-
-    /**
-     * Constructor
-     * @param {Tw2Store} store
-     */
-    constructor(store)
-    {
-        super();
-        this._store = store;
-    }
 
     /**
      * Sets a variable store's value
@@ -624,5 +647,3 @@ class Tw2VariableStore extends Tw2GenericStore
     static __storeType = "variable";
 
 }
-
-export const store = new Tw2Store();

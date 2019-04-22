@@ -1,4 +1,3 @@
-import {store} from "./Tw2Store";
 import {Tw2MotherLode} from "./Tw2MotherLode";
 import {Tw2LoadingObject} from "../../core/resource/Tw2LoadingObject";
 import Tw2EventEmitter from "../class/Tw2EventEmitter";
@@ -44,6 +43,7 @@ export class Tw2ResMan extends Tw2EventEmitter
     autoPurgeResources = true;
     activeFrame = 0;
     purgeTime = 30;
+
     _prepareBudget = 0;
     _prepareQueue = [];
     _purgeTime = 0;
@@ -51,13 +51,23 @@ export class Tw2ResMan extends Tw2EventEmitter
     _purgeFrameLimit = 1000;
     _pendingLoads = 0;
     _noLoadFrames = 0;
+    _tw2 = null;
 
+    /**
+     * 
+     * @param tw2
+     */
+    constructor(tw2)
+    {
+        super();
+        this._tw2 = tw2;
+    }
 
     /**
      * Sets resource manager options
      * @param {*} [opt]
      */
-    Set(opt)
+    Register(opt)
     {
         if (!opt) return;
         assignIfExists(this, opt, ["systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime"]);
@@ -144,11 +154,12 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     /**
      * Internal update function. It is called every frame.
-     * @param {Number} dt - deltaTime
+     * @param {Tw2Device} device
      * @returns {Boolean}
      */
-    PrepareLoop(dt)
+    Tick(device)
     {
+
         if (this._prepareQueue.length === 0 && this._pendingLoads === 0)
         {
             if (this._noLoadFrames < 2)
@@ -163,7 +174,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         this._prepareBudget = this.maxPrepareTime;
 
-        const startTime = Date.now();
+        const startTime = device.now;
         while (this._prepareQueue.length)
         {
             const
@@ -182,11 +193,11 @@ export class Tw2ResMan extends Tw2EventEmitter
                 res.OnError(err);
             }
 
-            this._prepareBudget -= (Date.now() - startTime) * 0.001;
+            this._prepareBudget -= (device.now - startTime) * 0.001;
             if (this._prepareBudget < 0) break;
         }
 
-        this._purgeTime += dt;
+        this._purgeTime += device.dt;
 
         if (this._purgeTime > 1)
         {
@@ -244,7 +255,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return null;
         }
 
-        const Constructor = store.extensions.Get(extension);
+        const Constructor = this._tw2.store.extensions.Get(extension);
         if (!Constructor)
         {
             this.OnResError(path, new ErrResourceExtensionUnregistered({path, extension}));
@@ -306,19 +317,6 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Wraps get object with a promise
-     * @param {String} path
-     * @returns {Promise<any>}
-     */
-    async GetAsync(path)
-    {
-        return new Promise((resolve, reject)=>
-        {
-            this.GetObject(path, resolve, reject);
-        });
-    }
-
-    /**
      * Reloads a resource
      * @param {Tw2Resource} resource
      * @returns {Tw2Resource} resource
@@ -365,7 +363,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return path;
         }
 
-        const fullPrefix = store.paths.Get(prefix);
+        const fullPrefix = this._tw2.store.paths.Get(prefix);
         if (!fullPrefix)
         {
             throw new ErrResourcePrefixUnregistered({path, prefix});

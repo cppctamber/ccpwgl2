@@ -1,7 +1,5 @@
 import {num, vec3, vec4, mat4} from "../math";
-import {get} from "../util";
-import {store} from "./Tw2Store";
-import {resMan} from "./Tw2ResMan";
+import {isString} from "../util";
 import {Tw2Effect} from "../../core/mesh/Tw2Effect";
 import {Tw2VertexDeclaration} from "../../core/vertex/Tw2VertexDeclaration";
 import Tw2EventEmitter from "../class/Tw2EventEmitter";
@@ -54,8 +52,6 @@ import {
     BLENDOP_REVSUBTRACT,
     BlendTable,
     WrapModes,
-    VendorRequestAnimationFrame,
-    VendorCancelAnimationFrame,
     VendorWebglPrefixes,
     WebglVersion,
     Webgl2ContextNames,
@@ -70,10 +66,6 @@ import {
  * @property {?number} glVersion                   - The device's gl version
  * @property {?VRDisplay} vrDisplay                - An optional VRDisplay context
  * @property {?{}} ext                             - An object containing compatibility extensions
- * @property {number} dt                           - Clock delta time
- * @property {number} startTime                    - Clock start time
- * @property {number} currentTime                  - Clock current time
- * @property {?number} previousTime                - Clock previous time
  * @property {vec3} eyePosition                    - The device's current eye position
  * @property {vec4} targetResolution               - The device's current target resolution
  * @property {mat4} world                          - The device's current world matrix
@@ -94,6 +86,8 @@ import {
  * @property {number} mipLevelSkipCount            - Controls what quality ccp texture resource to load (mutates paths)
  * @property {String} shaderModel                  - Controls what quality ccp effect resource to load (mutates paths)
  * @property {Boolean} enableAnisotropicFiltering  - Enables anisotropic filtering
+ * @property {Boolean} enableWebgl2                - Enables webgl2
+ * @property {Boolean} enableWebvr                 - Enables webvr (Not yet supported)
  * @property {Boolean} alphaBlendBackBuffer        - Enables alpha blending (glParams.alpha)
  * @property {Boolean} antialiasing                - Identifies if antialiasing is enabled
  * @property {number} msaaSamples                  - The amount of samples used for antialiasing
@@ -104,7 +98,6 @@ import {
  * @property {?{}} _alphaTestState                 - Alpha test states
  * @property {?{}} _depthOffsetState               - Depth states
  * @property {?Float32Array} _shadowStateBuffer    - unused
- * @property {Array<Function>} _scheduled          - Functions that are scheduled to be called per frame
  * @property {WebGLBuffer} _quadBuffer             - Webgl buffer for full screen quad
  * @property {Tw2VertexDeclaration} _quadDecl      - Quad vertex declarations
  * @property {WebGLBuffer} _cameraQuadBuffer       - Webgl buffer for camera space quad
@@ -116,72 +109,113 @@ import {
  */
 export class Tw2Device extends Tw2EventEmitter
 {
-    constructor()
+    name = "Device";
+
+    gl = null;
+    glVersion = WebglVersion.NONE;
+    vrDisplay = null;
+    ext = null;
+
+    dt = 0;
+    frameCounter = 0;
+    startTime = null;
+    currentTime = null;
+    previousTime = null;
+
+    eyePosition = vec3.create();
+    targetResolution = vec4.create();
+    world = mat4.create();
+    view = mat4.create();
+    viewInverse = mat4.create();
+    viewTranspose = mat4.create();
+    projection = mat4.create();
+    projectionInverse = mat4.create();
+    projectionTranspose = mat4.create();
+    viewProjection = mat4.create();
+    viewProjectionTranspose = mat4.create();
+
+    canvas = null;
+    viewportWidth = 0;
+    viewportHeight = 0;
+    viewportAspect = 0;
+    viewportPixelRatio = ("devicePixelRatio" in window) ? window.devicePixelRatio : 1;
+
+    effectDir = "/effect.gles2/";
+    mipLevelSkipCount = 0;
+    shaderModel = "hi";
+    enableAnisotropicFiltering = true;
+    enableWebgl2 = true;
+    enableWebvr = true;
+
+    alphaBlendBackBuffer = true;
+    antialiasing = true;
+    msaaSamples = 0;
+    wrapModes = [];
+    shadowHandles = null;
+    perObjectData = null;
+
+    _alphaBlendState = null;
+    _alphaTestState = null;
+    _depthOffsetState = null;
+    _shadowStateBuffer = null;
+    _quadBuffer = null;
+    _quadDecl = null;
+    _cameraQuadBuffer = null;
+    _currentRenderMode = RM_ANY;
+    _fallbackCube = null;
+    _fallbackTexture = null;
+    _blitEffect = null;
+    _Date = Date;
+
+    /**
+     *
+     * @param tw2
+     */
+    constructor(tw2)
     {
         super();
-        this.name = "Device";
-        this.gl = null;
-        this.glVersion = WebglVersion.NONE;
-        this.vrDisplay = null;
-        this.ext = null;
-
-        this.dt = 0;
-        this.frameCounter = 0;
-        this.startTime = this.Now();
+        this._tw2 = tw2;
+        this.startTime = this.now;
         this.currentTime = this.startTime;
-        this.previousTime = null;
-
-        this.eyePosition = vec3.create();
-        this.targetResolution = vec4.create();
-        this.world = mat4.create();
-        this.view = mat4.create();
-        this.viewInverse = mat4.create();
-        this.viewTranspose = mat4.create();
-        this.projection = mat4.create();
-        this.projectionInverse = mat4.create();
-        this.projectionTranspose = mat4.create();
-        this.viewProjection = mat4.create();
-        this.viewProjectionTranspose = mat4.create();
-
-        this.canvas = null;
-        this.viewportWidth = 0;
-        this.viewportHeight = 0;
-        this.viewportAspect = 0;
-        this.viewportPixelRatio = "devicePixelRatio" in window ? window.devicePixelRatio : 1;
-
-        this.effectDir = "/effect.gles2/";
-        this.mipLevelSkipCount = 0;
-        this.shaderModel = "hi";
-        this.enableAnisotropicFiltering = true;
-        this.alphaBlendBackBuffer = true;
-
-        this.antialiasing = true;
-        this.msaaSamples = 0;
-        this.wrapModes = [];
-        this.shadowHandles = null;
-        this.perObjectData = null;
-
-        this._alphaBlendState = null;
-        this._alphaTestState = null;
-        this._depthOffsetState = null;
-        this._shadowStateBuffer = null;
-        this._scheduled = [];
-        this._quadBuffer = null;
-        this._quadDecl = null;
-        this._cameraQuadBuffer = null;
-        this._currentRenderMode = RM_ANY;
-        this._fallbackCube = null;
-        this._fallbackTexture = null;
-        this._blitEffect = null;
     }
 
     /**
-     * Gets the current device time
-     * @returns {number}
+     * Registers options
+     * @param {*} [opt]
+     * @param {Number} opt.textureQuality
+     * @param {Number} opt.shaderQuality
+     * @param {Boolean} opt.anisotropicFilter
+     * @param {Boolean} opt.antialiasing
+     * @param {Boolean} opt.webgl2
+     * @param {Boolean} opt.webvr
      */
-    Now()
+    Register(opt)
     {
-        return this.constructor.Clock.now();
+        if (!opt) return;
+
+        if (this.gl)
+        {
+            throw new Error("Setting device options after gl creation is not yet supported");
+        }
+
+        if ("performanceClock" in opt)
+        {
+            if (opt.performance && "performance" in window)
+            {
+                this._Date = performance;
+            }
+            else
+            {
+                this._Date = Date;
+            }
+        }
+
+        if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
+        if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
+        if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
+        if ("antialiasing" in opt) this.antialiasing = opt.antialiasing;
+        if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
+        if ("webvr" in opt) this.enableWebvr = opt.webvr;
     }
 
     /**
@@ -199,14 +233,22 @@ export class Tw2Device extends Tw2EventEmitter
         this.canvas = null;
         this.ext = {};
 
-        let {gl, version} = Tw2Device.CreateContext(canvas, params, params.webgl2);
+        // TODO: Handle GlParam Defaults
+        if (!params) params = {};
+
+        if (isString(canvas))
+        {
+            canvas = document.getElementById(canvas);
+        }
+
+        let {gl, version} = this._tw2.client.CreateContext(canvas, params, this.enableWebgl2);
         if (!gl) return this.glVersion;
 
         this.gl = gl;
         this.glVersion = version;
         this.canvas = canvas;
 
-        this.emit("created", {
+        this.emit("device_created", {
             device: this, gl, params, canvas,
             log: {
                 type: "debug",
@@ -317,20 +359,7 @@ export class Tw2Device extends Tw2EventEmitter
 
         this._shadowStateBuffer = new Float32Array(24);
 
-
         return this.glVersion;
-    }
-
-    /**
-     * Schedules a function to be called per tick
-     * @param {Function} func
-     */
-    Schedule(func)
-    {
-        if (!this._scheduled.includes(func))
-        {
-            this._scheduled.push(func);
-        }
     }
 
     /**
@@ -358,7 +387,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.viewportHeight = this.canvas.clientHeight;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
 
-        store.variables.SetValue("ViewportSize", [
+        this._tw2.store.variables.SetValue("ViewportSize", [
             this.viewportWidth,
             this.viewportHeight,
             this.viewportWidth,
@@ -374,7 +403,17 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
-     * Per frame Tick
+     * Gets the current time
+     * @returns {number}
+     */
+    get now()
+    {
+        return this._Date.now();
+    }
+
+    /**
+     * Per frame tick
+     * @param {Tw2Clock} clock
      */
     Tick()
     {
@@ -385,58 +424,20 @@ export class Tw2Device extends Tw2EventEmitter
 
         const
             previousTime = this.previousTime === null ? 0 : this.previousTime,
-            now = this.Now();
+            now = this.now;
 
         this.currentTime = (now - this.startTime) * 0.001;
         this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
         this.previousTime = now;
 
-        store.variables.SetValue("Time", [
+        this._tw2.store.variables.SetValue("Time", [
             this.currentTime,
             this.currentTime - Math.floor(this.currentTime),
             this.frameCounter,
             previousTime
         ]);
 
-        this.emit("tick", {
-            dt: this.dt,
-            previous: previousTime,
-            current: this.currentTime,
-            frame: this.frameCounter
-        });
-
-        resMan.PrepareLoop(this.dt);
-
-        for (let i = 0; i < this._scheduled.length; ++i)
-        {
-            if (!this._scheduled[i](this.dt))
-            {
-                this._scheduled.splice(i, 1);
-                --i;
-            }
-        }
-
         this.frameCounter++;
-    }
-
-    /**
-     * Requests an animation frame
-     * @param {Function} callback
-     * @returns {number}
-     */
-    RequestAnimationFrame(callback)
-    {
-        return this.vrDisplay ? this.vrDisplay.requestAnimationFrame(callback) : Tw2Device.RequestAnimationFrame(callback);
-    }
-
-    /**
-     * Cancels an animation frame
-     * @param id
-     * @returns {*}
-     */
-    CancelAnimationFrame(id)
-    {
-        return this.vrDisplay ? this.vrDisplay.cancelAnimationFrame(id) : Tw2Device.CancelAnimationFrame(id);
     }
 
     /**
@@ -483,7 +484,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         mat4.multiply(this.viewProjection, this.projection, this.view);
         mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
-        store.variables.SetValue("ViewProjectionMat", this.viewProjection);
+        this._tw2.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
     }
 
     /**
@@ -1030,89 +1031,6 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
-     * Creates webgl context
-     * @param {HTMLCanvasElement} canvas
-     * @param {*} params
-     * @param {Boolean} [enableWebgl2]
-     * @returns {{gl: *, version: number}}
-     */
-    static CreateContext(canvas, params, enableWebgl2)
-    {
-        /**
-         * Creates a gl context
-         * @param {HTMLCanvasElement} canvas
-         * @param {*} [params]
-         * @param {*} [contextNames]
-         * @returns {*}
-         */
-        function create(canvas, params, contextNames)
-        {
-            contextNames = Array.isArray(contextNames) ? contextNames : [contextNames];
-            for (let i = 0; i < contextNames.length; i++)
-            {
-                try
-                {
-                    return canvas.getContext(contextNames[i], params);
-                }
-                catch (err)
-                {
-                    /* eslint-disable-line no-empty */
-                }
-            }
-            return null;
-        }
-
-        let gl = null,
-            version = WebglVersion.NONE;
-
-        if (enableWebgl2)
-        {
-            gl = create(canvas, params, Webgl2ContextNames);
-            if (gl) version = WebglVersion.WEBGL2;
-        }
-
-        if (!gl)
-        {
-            gl = create(canvas, params, WebglContextNames);
-            if (gl) version = WebglVersion.WEBGL;
-        }
-
-        return {gl, version};
-    }
-
-    /**
-     * The constructor used to generate the time
-     * @type {DateConstructor}
-     */
-    static Clock = Date;
-
-    /**
-     * Requests an animation frame
-     * @type {Function}
-     */
-    static RequestAnimationFrame = (function ()
-    {
-        const request = get(window, VendorRequestAnimationFrame);
-        return function (callback)
-        {
-            return request(callback);
-        };
-    })();
-
-    /**
-     * Cancels an animation frame
-     * @type {Function}
-     */
-    static CancelAnimationFrame = (function ()
-    {
-        const cancel = get(window, VendorCancelAnimationFrame);
-        return function (id)
-        {
-            return cancel(id);
-        };
-    })();
-
-    /**
      * Class category
      * @type {String}
      */
@@ -1130,7 +1048,3 @@ Tw2Device.prototype.RM_DEPTH = RM_DEPTH;
 Tw2Device.prototype.RM_DISTORTION = RM_DISTORTION;
 Tw2Device.prototype.RM_FULLSCREEN = RM_FULLSCREEN;
 Tw2Device.prototype.RM_PICKABLE = RM_PICKABLE;
-Tw2Device.prototype.RM_DISTORTION = RM_DISTORTION;
-
-
-export const device = new Tw2Device();

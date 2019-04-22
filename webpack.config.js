@@ -30,7 +30,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "./dist"),
         filename: "[name].js",
-        library: "ccpwgl_int",
+        //library: "ccpwgl_int",
         libraryTarget: "umd"
     },
 
