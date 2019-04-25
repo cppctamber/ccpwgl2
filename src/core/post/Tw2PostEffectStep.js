@@ -90,7 +90,7 @@ export class Tw2PostEffectStep extends Tw2BaseClass
             Object.assign(item.inputs, opt.inputs);
         }
 
-        item.effect = Tw2Effect.create({
+        item.effect = Tw2Effect.from({
             name: opt.name,
             autoParameter: true,
             effectFilePath: opt.effectFilePath,

@@ -109,7 +109,7 @@ export class EveObjectSet extends Tw2BaseClass
         if (!this.items.includes(item))
         {
             this.EmitEvent("child_added", {ctx: item});
-            item.SetParent(this);
+            //item.SetParent(this);
             this.items.push(item);
             this._dirty = true;
             if (!skipUpdate) this.UpdateValues(item);
@@ -129,7 +129,7 @@ export class EveObjectSet extends Tw2BaseClass
         if (index !== -1)
         {
             this.EmitEvent("child_removed", {ctx: item});
-            item.UnsetParent(this);
+            //item.UnsetParent(this);
             this.items.splice(index, 1);
             this._dirty = true;
             if (!skipUpdate) this.UpdateValues(item);
@@ -161,7 +161,7 @@ export class EveObjectSet extends Tw2BaseClass
         for (let i = 0; i < this.items.length; i++)
         {
             const item = this.items[i];
-            item.SetParent(this);
+            //item.SetParent(this);
 
             if (item.display)
             {

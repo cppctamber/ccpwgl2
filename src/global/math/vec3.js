@@ -110,6 +110,16 @@ vec3.exponentialDecay = function (out, omega0, torque, I, drag, time)
 };
 
 /**
+ * Checks if all elements are 0
+ * @param {vec3} a
+ * @returns {boolean}
+ */
+vec3.isEmpty = function(a)
+{
+    return a[0] === 0 && a[1] === 0 && a[2] === 0;
+};
+
+/**
  * Projects a local vec3 to screen space with viewport settings
  * @param {vec3} out           - receiving vec3
  * @param {vec3} a             - local vec3

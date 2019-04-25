@@ -14,6 +14,7 @@ export function assignIfExists(dest, src, attrs)
     if (!src) return;
 
     attrs = toArray(attrs);
+
     for (let i = 0; i < attrs.length; i++)
     {
         const attr = attrs[i];
@@ -66,12 +67,12 @@ export function get(src, prop, defaultValue)
 {
     if (!isArray(prop))
     {
-        return prop in src ? src[prop] : defaultValue;
+        return src[prop] !== undefined ? src[prop] : defaultValue;
     }
 
     for (let i = 0; i < prop.length; i++)
     {
-        if (prop[i] in src)
+        if (src[prop[i]] !== undefined)
         {
             return src[prop[i]];
         }

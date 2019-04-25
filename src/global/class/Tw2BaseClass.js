@@ -2,6 +2,7 @@ import Tw2Schema from "./Tw2Schema";
 import {generateID} from "../util/index";
 import {ErrAbstractClassMethod} from "../../core/Tw2Error";
 import {isArray, isObject} from "../util";
+import Tw2EventEmitter from "./Tw2EventEmitter";
 
 /**
  * Tw2StagingClass
@@ -600,3 +601,5 @@ export default class Tw2BaseClass
     static black = null;
 
 }
+
+Object.assign(Tw2BaseClass.prototype, Tw2EventEmitter.prototype);

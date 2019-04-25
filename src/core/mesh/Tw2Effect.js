@@ -448,7 +448,7 @@ export class Tw2Effect
         let updated = false;
         for (let key in options)
         {
-            if (options.hasOwnProperty(key))
+            if (options.hasOwnProperty(key) && options[key] !== undefined)
             {
                 const
                     value = options[key],
@@ -504,7 +504,7 @@ export class Tw2Effect
         let updated = false;
         for (let key in options)
         {
-            if (options.hasOwnProperty(key))
+            if (options.hasOwnProperty(key) && options[key] !== undefined)
             {
                 const
                     value = options[key],
@@ -543,7 +543,7 @@ export class Tw2Effect
         let updated = false;
         for (let key in options)
         {
-            if (options.hasOwnProperty(key))
+            if (options.hasOwnProperty(key) && options[key] !== undefined)
             {
                 const param = this.parameters[key];
                 if (param && param instanceof Tw2TextureParameter)
@@ -630,38 +630,54 @@ export class Tw2Effect
 
     /**
      * Creates a Tw2Effect from an object
-     * @param {{}} [opt]
-     * @param {String} [opt.name='']
-     * @param {String} [opt.effectFilePath='']
-     * @param {Boolean} [opt.autoParameter]
-     * @param {{string: *}} [opt.parameters]
-     * @param {{string: string}} [opt.textures]
-     * @param {{string: {}}} [opt.overrides]
+     * @param {{}|Tw2Effect} [values]
+     * @param {String} [values.name='']
+     * @param {String} [values.effectFilePath='']
+     * @param {Boolean} [values.autoParameter]
+     * @param {{string: *}} [values.parameters]
+     * @param {{string: string}} [values.textures]
+     * @param {{string: {}}} [values.overrides]
+     * @param {*} [options]
      * @returns {Tw2Effect}
      */
-    static create(opt = {})
+    static from(values, options)
     {
+        // Allow already constructed effect to be passed
+        if (values && values instanceof Tw2Effect)
+        {
+            return values;
+        }
+
         const effect = new this();
-        util.assignIfExists(effect, opt, ["name", "effectFilePath", "display", "autoParameter",]);
-        if ("parameters" in opt) effect.SetParameters(opt.parameters);
-        if ("textures" in opt) effect.SetTextures(opt.textures);
-        if ("overrides" in opt) effect.SetOverrides(opt.overrides);
 
-        if (effect.name === "" && opt.effectFilePath !== "")
+        if (values)
         {
-            let path = opt.effectFilePath;
-            effect.name = path.substring(path.lastIndexOf("/") + 1, path.length);
+            util.assignIfExists(effect, values, ["name", "effectFilePath", "display", "autoParameter",]);
+
+            if ("parameters" in values) effect.SetParameters(values.parameters);
+            if ("textures" in values) effect.SetTextures(values.textures);
+            if ("overrides" in values) effect.SetOverrides(values.overrides);
+
+            if (effect.name === "" && values.effectFilePath !== "")
+            {
+                let path = values.effectFilePath;
+                effect.name = path.substring(path.lastIndexOf("/") + 1, path.length);
+            }
+
+            if (!effect.name && effect.effectFilePath)
+            {
+                effect.name = effect.effectFilePath.substring(
+                    effect.effectFilePath.lastIndexOf("/") + 1,
+                    effect.effectFilePath.lastIndexOf(".")
+                );
+            }
         }
 
-        if (!effect.name && effect.effectFilePath)
+        if (!options || !options.skipUpdate)
         {
-            effect.name = effect.effectFilePath.substring(
-                effect.effectFilePath.lastIndexOf("/") + 1,
-                effect.effectFilePath.lastIndexOf(".")
-            );
+            effect.Initialize();
         }
 
-        effect.Initialize();
         return effect;
     }
 

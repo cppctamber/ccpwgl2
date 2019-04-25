@@ -1,5 +1,7 @@
 import {vec3, quat, mat4, util, device, store, Tw2BaseClass} from "../../global";
 import {Tw2PerObjectData, Tw2ForwardingRenderBatch} from "../../core/";
+import {assignIfExists} from "../../global/util";
+import {Tw2Effect} from "../../core/mesh";
 
 /**
  * Decal
@@ -104,6 +106,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
         }
+
         this._dirty = false;
     }
 
@@ -133,7 +136,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             this.Rebuild();
         }
 
-        if (!this.display || !this.effect || !this._parentGeometry || !this._indexBuffer)
+        if (!this.display || !effect || !this._parentGeometry || !this._parentGeometry.meshes[0] || !this._indexBuffer)
         {
             return;
         }
@@ -213,6 +216,49 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
         mesh.areas[0].start = bkStart;
         mesh.areas[0].count = bkCount;
         mesh.indexType = bkIndexType;
+    }
+
+    /**
+     * Creates a decal from a plain object
+     * @param {*} [values]
+     * @param {*} [options]
+     * @returns {EveSpaceObjectDecal}
+     */
+    static from(values, options)
+    {
+        const item = new EveSpaceObjectDecal();
+
+        if (values)
+        {
+            assignIfExists(item, values, [
+                "name", "display", "pickable",
+                "position", "rotation", "scaling",
+                "groupIndex", "parentBoneIndex"
+            ]);
+
+            if (values.indexBuffer)
+            {
+                item.indexBuffer = new Uint16Array(values.indexBuffer);
+            }
+
+            if (values.pickEffect)
+            {
+                item.pickEffect = Tw2Effect.from(values.pickEffect);
+            }
+
+            const decalEffect = values.decalEffect || values.effect;
+            if (decalEffect)
+            {
+                item.decalEffect = Tw2Effect.from(decalEffect);
+            }
+        }
+
+        if (!options || !options.skipUpdate)
+        {
+            item.Initialize();
+        }
+
+        return item;
     }
 
     /**

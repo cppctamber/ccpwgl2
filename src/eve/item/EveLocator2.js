@@ -1,4 +1,5 @@
 import {mat4, Tw2BaseClass} from "../../global";
+import {assignIfExists} from "../../global/util";
 
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
@@ -55,6 +56,22 @@ export class EveLocator2 extends Tw2BaseClass
             }
         }
         return this.bone;
+    }
+
+    /**
+     * Creates a locator from options
+     * @param {*} [values]
+     * @param {*} [options]
+     * @returns {EveLocator2}
+     */
+    static from(values, options)
+    {
+        const item = new EveLocator2();
+        if (values)
+        {
+            assignIfExists(item, values, ["transform", "name", "atlasIndex0", "atlasIndex1"]);
+        }
+        return item;
     }
 
     /**

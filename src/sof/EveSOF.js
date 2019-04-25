@@ -1,4 +1,5 @@
 import {vec3, vec4, quat, mat4} from "../global";
+import {get, assignIfExists} from "../global/util";
 import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve/legacy";
 import {
     Tw2FloatParameter,
@@ -16,12 +17,9 @@ import {
     EveChildMesh,
     EveLocator2,
     EvePlaneSet,
-    EvePlaneSetItem,
     EveSpaceObjectDecal,
     EveSpotlightSet,
-    EveSpotlightSetItem,
     EveSpriteSet,
-    EveSpriteSetItem,
     EveSpaceObject,
     EveShip
 } from "../eve";
@@ -29,30 +27,25 @@ import {
 
 export function EveSOF(tw2)
 {
+    const self = this;
+
     var data = null;
     var spriteEffect = null;
 
-    function _get(obj, property, defaultValue)
-    {
-        if (property in obj)
-        {
-            return obj[property];
-        }
-        return defaultValue;
-    }
+    this.SKIP_EMPTY_ITEMS = true;
 
     /**
      * @String}
      */
     function GetShaderPrefix(isAnimated)
     {
-        return isAnimated ? _get(data["generic"], "shaderPrefixAnimated", "") : _get(data["generic"], "shaderPrefix", "");
+        return isAnimated ? get(data["generic"], "shaderPrefixAnimated", "") : get(data["generic"], "shaderPrefix", "");
     }
 
     function ModifyTextureResPath(path, name, area, faction, commands)
     {
         var pathInsert = null;
-        if (_get(faction, "resPathInsert", "").length)
+        if (get(faction, "resPathInsert", "").length)
         {
             pathInsert = faction.resPathInsert;
         }
@@ -79,7 +72,7 @@ export function EveSOF(tw2)
             if (index >= 0)
             {
                 pathCopy = pathCopy.substr(0, index) + "_" + pathInsert + pathCopy.substr(index);
-                var textureOverrides = _get(area, "textureOverrides",
+                var textureOverrides = get(area, "textureOverrides",
                     {});
                 if ((name in textureOverrides) && (faction.name in textureOverrides[name]))
                 {
@@ -120,13 +113,13 @@ export function EveSOF(tw2)
         {
             prefixes = data.generic.materialPrefixes;
             materialIndex = FindPrefix(prefixes, name);
-            if (materialIndex !== null && materialIndex < commands.mesh.length && (_get(area, "blockedMaterials", 0) & (1 << materialIndex)) === 0)
+            if (materialIndex !== null && materialIndex < commands.mesh.length && (get(area, "blockedMaterials", 0) & (1 << materialIndex)) === 0)
             {
-                materialData = _get(data.material, commands.mesh[materialIndex], null);
+                materialData = get(data.material, commands.mesh[materialIndex], null);
                 if (materialData)
                 {
                     shortName = name.substr(prefixes[materialIndex].length);
-                    return _get(materialData.parameters, shortName, undefined);
+                    return get(materialData.parameters, shortName, undefined);
                 }
             }
         }
@@ -136,22 +129,22 @@ export function EveSOF(tw2)
         {
             if (materialIndex !== null && 1 + materialIndex < commands.pattern.length)
             {
-                materialData = _get(data.material, commands.pattern[1 + materialIndex], null);
+                materialData = get(data.material, commands.pattern[1 + materialIndex], null);
                 if (materialData)
                 {
                     shortName = name.substr(prefixes[materialIndex].length);
-                    return _get(materialData.parameters, shortName, undefined);
+                    return get(materialData.parameters, shortName, undefined);
                 }
             }
         }
 
         if (materialIndex !== null)
         {
-            materialData = _get(data.material, race.defaultPatternLayer1MaterialName, null);
+            materialData = get(data.material, race.defaultPatternLayer1MaterialName, null);
             if (materialData)
             {
                 shortName = name.substr(prefixes[materialIndex].length);
-                return _get(materialData.parameters, shortName, undefined);
+                return get(materialData.parameters, shortName, undefined);
             }
         }
     }
@@ -171,29 +164,29 @@ export function EveSOF(tw2)
 
     function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride)
     {
-        var hullAreas = _get(hull, areasName, []);
+        var hullAreas = get(hull, areasName, []);
         for (var i = 0; i < hullAreas.length; ++i)
         {
             var area = hullAreas[i];
             var effect = new Tw2Effect();
             effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
-            var names = _get(_get(data["generic"]["areaShaders"], area.shader,
+            var names = get(get(data["generic"]["areaShaders"], area.shader,
                 {}), "parameters", []);
             for (var j = 0; j < names.length; ++j)
             {
                 var name = names[j];
                 var param = GetOverridenParameter(name, area, commands, race);
-                param = param || _get(_get(_get(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
-                param = param || _get(_get(_get(race.hullAreas, area.name, {}), "parameters", {}), name);
-                param = param || _get(_get(_get(faction.areas, area.name, {}), "parameters", {}), name);
-                param = param || _get(_get(area, "parameters", {}), name);
+                param = param || get(get(get(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
+                param = param || get(get(get(race.hullAreas, area.name, {}), "parameters", {}), name);
+                param = param || get(get(get(faction.areas, area.name, {}), "parameters", {}), name);
+                param = param || get(get(area, "parameters", {}), name);
                 if (param)
                 {
                     effect.parameters[name] = new Tw2Vector4Parameter(name, param);
                 }
             }
 
-            var hullTextures = _get(area, "textures", []);
+            var hullTextures = get(area, "textures", []);
             for (j in hullTextures)
             {
                 if (hullTextures.hasOwnProperty(j))
@@ -211,14 +204,14 @@ export function EveSOF(tw2)
                     var patternTex = new Tw2TextureParameter(pattern.layers[j].textureName);
                     patternTex.resourcePath = pattern.layers[j].textureResFilePath;
                     patternTex.useAllOverrides = true;
-                    patternTex.addressUMode = GetAddressMode(_get(pattern.layers[j], "projectionTypeU", 0));
-                    patternTex.addressVMode = GetAddressMode(_get(pattern.layers[j], "projectionTypeV", 0));
+                    patternTex.addressUMode = GetAddressMode(get(pattern.layers[j], "projectionTypeU", 0));
+                    patternTex.addressVMode = GetAddressMode(get(pattern.layers[j], "projectionTypeV", 0));
                     patternTex.Initialize();
                     effect.parameters[pattern.layers[j].textureName] = patternTex;
                 }
             }
 
-            var defaultTextures = _get(_get(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
+            var defaultTextures = get(get(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
             for (var texName in defaultTextures)
             {
                 if (defaultTextures.hasOwnProperty(texName))
@@ -235,8 +228,8 @@ export function EveSOF(tw2)
             var newArea = new Tw2MeshArea();
             newArea.name = area.name;
             newArea.effect = effect;
-            newArea.index = _get(area, "index", 0);
-            newArea.count = _get(area, "count", 1);
+            newArea.index = get(area, "index", 0);
+            newArea.count = get(area, "count", 1);
             areas.push(newArea);
         }
 
@@ -250,11 +243,11 @@ export function EveSOF(tw2)
         ship.boundingSphereCenter[1] = hull.boundingSphere[1];
         ship.boundingSphereCenter[2] = hull.boundingSphere[2];
         ship.boundingSphereRadius = hull.boundingSphere[3];
-        FillMeshAreas(_get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(_get(mesh, "transparentAreas", []), "transparentAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(_get(mesh, "additiveAreas", []), "additiveAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(_get(mesh, "decalAreas", []), "decalAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(_get(mesh, "depthAreas", []), "depthAreas", hull, faction, race, pattern, commands);
+        FillMeshAreas(get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands);
+        FillMeshAreas(get(mesh, "transparentAreas", []), "transparentAreas", hull, faction, race, pattern, commands);
+        FillMeshAreas(get(mesh, "additiveAreas", []), "additiveAreas", hull, faction, race, pattern, commands);
+        FillMeshAreas(get(mesh, "decalAreas", []), "decalAreas", hull, faction, race, pattern, commands);
+        FillMeshAreas(get(mesh, "depthAreas", []), "depthAreas", hull, faction, race, pattern, commands);
         mesh.Initialize();
         ship.mesh = mesh;
         if ("shapeEllipsoidCenter" in hull)
@@ -284,28 +277,28 @@ export function EveSOF(tw2)
                     break;
                 }
             }
-            var layer = _get(p, "layer1", null);
+            var layer = get(p, "layer1", null);
             if (layer)
             {
                 pattern.layers.push(layer);
             }
-            layer = _get(p, "layer2", null);
+            layer = get(p, "layer2", null);
             if (layer)
             {
                 pattern.layers.push(layer);
             }
-            var projections = _get(p, "projections", []);
+            var projections = get(p, "projections", []);
             for (var i = 0; i < projections.length; ++i)
             {
                 if (projections[i].name === hull.name)
                 {
                     p = projections[i];
-                    layer = _get(p, "transformLayer1", null);
+                    layer = get(p, "transformLayer1", null);
                     if (layer)
                     {
                         pattern.patterns.push(layer);
                     }
-                    layer = _get(p, "transformLayer2", null);
+                    layer = get(p, "transformLayer2", null);
                     if (layer)
                     {
                         pattern.patterns.push(layer);
@@ -313,26 +306,26 @@ export function EveSOF(tw2)
                 }
             }
         }
-        else if (_get(hull, "defaultPattern"))
+        else if (get(hull, "defaultPattern"))
         {
-            p = _get(hull, "defaultPattern", {});
-            layer = _get(p, "transformLayer1", null);
+            p = get(hull, "defaultPattern", {});
+            layer = get(p, "transformLayer1", null);
             if (layer)
             {
                 pattern.patterns.push(layer);
             }
-            layer = _get(p, "transformLayer2", null);
+            layer = get(p, "transformLayer2", null);
             if (layer)
             {
                 pattern.patterns.push(layer);
             }
-            p = _get(race, "defaultPattern", {});
-            layer = _get(p, "layer1", null);
+            p = get(race, "defaultPattern", {});
+            layer = get(p, "layer1", null);
             if (layer)
             {
                 pattern.layers.push(layer);
             }
-            layer = _get(p, "layer2", null);
+            layer = get(p, "layer2", null);
             if (layer)
             {
                 pattern.layers.push(layer);
@@ -340,6 +333,26 @@ export function EveSOF(tw2)
         }
         return pattern;
     }
+
+    function SetupInstancedMeshes(ship, hull, faction, race, commands, pattern)
+    {
+        var instancedMeshes = get(hull, "instancedMeshes", []);
+        for (var i = 0; i < instancedMeshes.length; ++i)
+        {
+            var him = instancedMeshes[i];
+            var mesh = new Tw2InstancedMesh();
+            mesh.instanceGeometryResPath = him.instanceGeometryResPath;
+            mesh.geometryResPath = him.geometryResPath;
+            mesh.Initialize();
+
+            FillMeshAreas(get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands, him.shader);
+
+            var child = new EveChildMesh();
+            child.mesh = mesh;
+            ship.effectChildren.push(child);
+        }
+    }
+
 
     function SetupCustomMasks(ship, pattern)
     {
@@ -350,400 +363,409 @@ export function EveSOF(tw2)
                 var p = pattern.patterns[i];
                 var l = pattern.layers[i];
                 ship.AddCustomMask(
-                    _get(p, "position", vec3.create()),
-                    _get(p, "scaling", vec3.fromValues(1, 1, 1)),
-                    _get(p, "rotation", quat.create()),
-                    _get(p, "isMirrored", false),
-                    _get(l, "materialSource", 0),
+                    get(p, "position", vec3.create()),
+                    get(p, "scaling", vec3.fromValues(1, 1, 1)),
+                    get(p, "rotation", quat.create()),
+                    get(p, "isMirrored", false),
+                    get(l, "materialSource", 0),
                     vec4.fromValues(
-                        _get(l, "isTargetMtl1", true) ? 1 : 0,
-                        _get(l, "isTargetMtl2", true) ? 1 : 0,
-                        _get(l, "isTargetMtl3", true) ? 1 : 0,
-                        _get(l, "isTargetMtl4", true) ? 1 : 0));
+                        get(l, "isTargetMtl1", true) ? 1 : 0,
+                        get(l, "isTargetMtl2", true) ? 1 : 0,
+                        get(l, "isTargetMtl3", true) ? 1 : 0,
+                        get(l, "isTargetMtl4", true) ? 1 : 0));
             }
         }
     }
 
-    function SetupDecals(ship, hull, faction)
+    /**
+     * Sets up decals
+     * @param ship
+     * @param hull
+     * @param faction
+     */
+    function SetupDecals(ship, hull, faction={})
     {
-        var hullDecals = _get(hull, "hullDecals", []);
-        for (var i = 0; i < hullDecals.length; ++i)
+        const hullDecals = get(hull, "hullDecals", []);
+        for (let i = 0; i < hullDecals.length; ++i)
         {
-            var hullDecal = hullDecals[i];
-            var factionDecal = null;
-            var factionIndex = "group" + _get(hullDecal, "groupIndex", -1);
-            if (faction.decals && (factionIndex in faction.decals))
-            {
-                factionDecal = faction.decals[factionIndex];
-            }
-            if (factionDecal && !factionDecal["isVisible"])
-            {
-                continue;
-            }
-            var effect = new Tw2Effect();
-            if (factionDecal && factionDecal.shader && factionDecal.shader.length)
-            {
-                effect.effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + factionDecal.shader;
-            }
-            else if (hullDecal.shader && hullDecal.shader.length)
-            {
-                effect.effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + hullDecal.shader;
-            }
-            else
-            {
-                continue;
-            }
-            var hullParameters = _get(hullDecal, "parameters", {});
-            for (var j in hullParameters)
-            {
-                if (hullParameters.hasOwnProperty(j))
-                {
-                    effect.parameters[j] = new Tw2Vector4Parameter(j, hullParameters[j]);
-                }
-            }
-            var hullTextures = _get(hullDecal, "textures", {});
-            for (j in hullTextures)
-            {
-                if (hullTextures.hasOwnProperty(j))
-                {
-                    effect.parameters[j] = new Tw2TextureParameter(j, hullTextures[j]);
-                }
-            }
+            const
+                src = hullDecals[i],
+                factionDecal = getGroupIndex(faction.decals, src.groupIndex);
+
+            if (factionDecal && !factionDecal.isVisible) continue;
+
+            const shader = factionDecal ? factionDecal.shader || src.shader : src.shader;
+            if (!shader) continue;
+
+            const
+                effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + shader,
+                parameters = Object.assign({}, src.parameters),
+                // Should src.shader actually be shader?
+                textures = Object.assign(get(get(data["generic"]["decalShaders"], src.shader, {}), "defaultTextures", {}));
+
             if (factionDecal)
             {
-                var factionParameters = _get(factionDecal, "parameters", {});
-                for (j in factionParameters)
-                {
-                    if (factionParameters.hasOwnProperty(j))
-                    {
-                        effect.parameters[j] = new Tw2Vector4Parameter(j, factionParameters[j]);
-                    }
-                }
-                var factionTextures = _get(factionDecal, "textures", {});
-                for (j in factionTextures)
-                {
-                    if (factionTextures.hasOwnProperty(j) && !(j in effect.parameters))
-                    {
-                        effect.parameters[j] = new Tw2TextureParameter(j, factionTextures[j]);
-                    }
-                }
+                Object.assign(parameters, factionDecal.parameters);
+                Object.assign(textures, factionDecal.textures);
             }
 
-            var defaultTextures = _get(_get(data["generic"]["decalShaders"], hullDecal.shader, {}), "defaultTextures", {});
-            for (var texName in defaultTextures)
-            {
-                if (defaultTextures.hasOwnProperty(texName))
-                {
-                    if (!(texName in effect.parameters))
-                    {
-                        effect.parameters[texName] = new Tw2TextureParameter(texName, defaultTextures[texName]);
-                    }
+            Object.assign(textures, src.textures);
+
+            ship.decals.push(EveSpaceObjectDecal.from({
+                name: src.name,
+                groupIndex: src.groupIndex,
+                parentBoneIndex: src.boneIndex,
+                indexBuffer: src.indexBuffer,
+                position: src.position,
+                rotation: src.rotation,
+                scaling: src.scaling,
+                effect: {
+                    effectFilePath,
+                    parameters,
+                    textures
                 }
-            }
+            }));
 
-            effect.Initialize();
-
-            var decal = new EveSpaceObjectDecal();
-            vec3.copy(decal.position, _get(hullDecal, "position", [0, 0, 0]));
-            quat.copy(decal.rotation, _get(hullDecal, "rotation", [0, 0, 0, 1]));
-            vec3.copy(decal.scaling, _get(hullDecal, "scaling", [1, 1, 1]));
-            decal.parentBoneIndex = _get(hullDecal, "boneIndex", -1);
-            decal.indexBuffer = new Uint16Array(hullDecal.indexBuffer);
-            decal.decalEffect = effect;
-            decal.name = _get(hullDecals[i], "name", "");
-            if ("groupIndex" in hullDecals[i])
-            {
-                decal.groupIndex = hullDecals[i].groupIndex;
-            }
-            decal.Initialize();
-            ship.decals.push(decal);
         }
     }
 
-    function SetupInstancedMeshes(ship, hull, faction, race, commands, pattern)
+
+    /**
+     * Gets a group index object
+     * @param {*} src
+     * @param {Number} [groupIndex=-1]
+     * @returns {null|*}
+     */
+    function getGroupIndex(src, groupIndex=-1)
     {
-        var instancedMeshes = _get(hull, "instancedMeshes", []);
-        for (var i = 0; i < instancedMeshes.length; ++i)
-        {
-            var him = instancedMeshes[i];
-            var mesh = new Tw2InstancedMesh();
-            mesh.instanceGeometryResPath = him.instanceGeometryResPath;
-            mesh.geometryResPath = him.geometryResPath;
-            mesh.Initialize();
-
-            FillMeshAreas(_get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands, him.shader);
-
-            var child = new EveChildMesh();
-            child.mesh = mesh;
-            ship.effectChildren.push(child);
-        }
+        if (!src) return null;
+        const groupName = `group${groupIndex}`;
+        return src[groupName] ? src[groupName] : null;
     }
 
+    /**
+     * Sets up sprite sets
+     * @param ship
+     * @param hull
+     * @param faction
+     */
     function SetupSpriteSets(ship, hull, faction)
     {
-        var hullSets = _get(hull, "spriteSets", []);
-        var factionSets = _get(faction, "spriteSets",
-            {});
-        for (var i = 0; i < hullSets.length; ++i)
-        {
-            var spriteSet = new EveSpriteSet(true, !!(hull["isSkinned"] && hullSets[i]["skinned"]));
-            spriteSet.name = _get(hullSets[i], "name", "");
-            spriteSet.effect = spriteEffect;
-            var hullData = _get(hullSets[i], "items", []);
-            for (var j = 0; j < hullData.length; ++j)
-            {
-                if (!("group" + _get(hullData[j], "groupIndex", -1) in factionSets)) continue;
-                var item = new EveSpriteSetItem();
-                item.blinkPhase = _get(hullData[j], "blinkPhase", 0);
-                item.blinkRate = _get(hullData[j], "blinkRate", 0.1);
-                item.boneIndex = _get(hullData[j], "boneIndex", 0);
-                item.falloff = _get(hullData[j], "falloff", 0);
-                item.maxScale = _get(hullData[j], "maxScale", 10);
-                item.minScale = _get(hullData[j], "minScale", 1);
-                item.name = _get(hullData[j], "name", "");
-                item.groupIndex = _get(hullData[j], "groupIndex", -1);
-                vec3.copy(item.position, _get(hullData[j], "position", [0, 0, 0]));
+        const
+            hullSets = get(hull, "spriteSets", []),
+            factionSets = get(faction, "spriteSets", {});
 
-                var factionSet = factionSets["group" + item.groupIndex];
+        for (let i = 0; i < hullSets.length; ++i)
+        {
+            const
+                hullSet = hullSets[i],
+                hullSetItems = get(hullSet, "items", []),
+                items = [];
+
+            for (let j = 0; j < hullSetItems.length; j++)
+            {
+                const
+                    item = Object.assign({blinkRate: 0.1, maxScale: 10, minScale: 1}, hullSetItems[j]),
+                    factionSet = getGroupIndex(factionSets, item.groupIndex);
+
+                /*
+                // const item = Object.assign({}, hullData[j]);
+                // Source data is the same as the input data
+                // -- Defaults don't match
+                const item = {};
+                item.name = src.name;                           // ""
+                item.groupIndex = get(src, "groupIndex", -1);   // -1
+                item.boneIndex = get(src, "boneIndex", 0);      // 0
+                item.blinkPhase = get(src, "blinkPhase", 0);    // 0
+                item.blinkRate = get(src, "blinkRate", 0.1);    // 0.1
+                item.falloff = get(src, "falloff", 0);          // 0
+                item.maxScale = get(src, "maxScale", 10);       // 10
+                item.minScale = get(src, "minScale", 1);        // 1
+                assignIfExists(item, src, "position");          // [0,0,0]
+                */
+
                 if (factionSet)
                 {
-                    item.groupName = factionSet.name;
-                    if ("color" in factionSet) vec4.copy(item.color, factionSet.color);
+                    item.groupName = factionSet.name;           // ""
+                    assignIfExists(item, factionSet, "color");  // [0,0,0,0]
                 }
-                spriteSet.sprites.push(item);
+
+                if (!self.SKIP_EMPTY_ITEMS || (item.color && !vec3.isEmpty(item.color)))
+                {
+                    items.push(item);
+                }
             }
-            spriteSet.Initialize();
-            ship.spriteSets.push(spriteSet);
+
+            if (!self.SKIP_EMPTY_ITEMS || items.length)
+            {
+                ship.spriteSets.push(EveSpriteSet.from({
+                    name: hullSet.name,
+                    useQuads: true,
+                    skinned: !!(hull.isSkinned && hullSet.skinned),
+                    effect: spriteEffect, // Constructed effect can be passed as an option
+                    items
+                }));
+            }
         }
     }
 
+    const EFF_SPOTLIGHT_CONE = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
+    const EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";;
+    const EFF_SPOTLIGHT_GLOW = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
+    const EFF_SPOTLIGHT_GLOW_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
+
+    /**
+     * Sets up spotlight sets
+     * @param ship
+     * @param hull
+     * @param faction
+     */
     function SetupSpotlightSets(ship, hull, faction)
     {
-        var hullSets = _get(hull, "spotlightSets", []);
-        var factionSets = _get(faction, "spotlightSets",
-            {});
-        for (var i = 0; i < hullSets.length; ++i)
+        const
+            hullSets = get(hull, "spotlightSets", []),
+            factionSets = get(faction, "spotlightSets", {});
+
+        for (let i = 0; i < hullSets.length; ++i)
         {
-            var spotlightSet = new EveSpotlightSet();
-            spotlightSet.name = _get(hullSets[i], "name", "");
-            spotlightSet.coneEffect = new Tw2Effect();
-            spotlightSet.glowEffect = new Tw2Effect();
-            if (hullSets[i]["skinned"])
-            {
-                spotlightSet.coneEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
-                spotlightSet.glowEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
-            }
-            else
-            {
-                spotlightSet.coneEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
-                spotlightSet.glowEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
-            }
-            spotlightSet.coneEffect.parameters["TextureMap"] = new Tw2TextureParameter("TextureMap", hullSets[i]["coneTextureResPath"]);
-            spotlightSet.glowEffect.parameters["TextureMap"] = new Tw2TextureParameter("TextureMap", hullSets[i]["glowTextureResPath"]);
-            spotlightSet.coneEffect.parameters["zOffset"] = new Tw2FloatParameter("zOffset", _get(hullSets[i], "zOffset", 0));
-            spotlightSet.coneEffect.Initialize();
-            spotlightSet.glowEffect.Initialize();
+            const
+                hullSet = hullSets[i],
+                hullSetItems = get(hullSet, "items", []),
+                isSkinned = hullSet.skinned,
+                items = [];
 
-            var hullData = _get(hullSets[i], "items", []);
-            for (var j = 0; j < hullData.length; ++j)
+            // Get spotlight items
+            for (let j = 0; j < hullSetItems.length; ++j)
             {
-                var item = new EveSpotlightSetItem();
-                item.name = _get(hullData[j], "name", "");
-                item.groupIndex = _get(hullData[j], "groupIndex", -1);
-                item.boneIndex = _get(hullData[j], "boneIndex", 0);
-                item.boosterGainInfluence = _get(hullData[j], "boosterGainInfluence", 0);
+                const
+                    item = Object.assign({}, hullSetItems[j]),
+                    factionSet = getGroupIndex(factionSets, item.groupIndex);
 
-                item.coneIntensity = _get(hullData[j], "coneIntensity", 0);
-                item.spriteIntensity = _get(hullData[j], "spriteIntensity", 0);
-                item.flareIntensity = _get(hullData[j], "flareIntensity", 0);
+                /*
+                // const item = Object.assign({}, hullData[j]);
+                // Source data is the same as the input data
+                // -- Defaults match
+                const item = {};
+                item.name = src.name;                                // ""
+                item.groupIndex = src.groupIndex;                    // -1
+                item.boneIndex = get(src, "boneIndex", 0);           // 0
+                item.boosterGainInfluence = src.boosterGainInfluence;// 0
+                item.coneIntensity = src.coneIntensity;              // 0
+                item.spriteIntensity = src.spriteIntensity;          // 0
+                item.flareIntensity = src.flareIntensity;            // 0
+                assignIfExists(item, src, "transform");              // mat4.identity
+                */
 
-                var factionSet = factionSets["group" + item.groupIndex];
                 if (factionSet)
                 {
-                    vec4.copy(item.coneColor, _get(factionSet, "coneColor", [0, 0, 0, 0]));
-                    vec4.copy(item.spriteColor, _get(factionSet, "spriteColor", [0, 0, 0, 0]));
-                    vec4.copy(item.flareColor, _get(factionSet, "flareColor", [0, 0, 0, 0]));
+                    assignIfExists(item, factionSet, ["coneColor", "spriteColor", "flareColor"]); // [0,0,0,0]
                 }
-                vec3.copy(item.spriteScale, _get(hullData[j], "spriteScale", [1, 1, 1]));
-
-                if ("transform" in hullData[j])
+                
+                if (!self.SKIP_EMPTY_ITEMS || factionSet)
                 {
-                    mat4.copy(item.transform, hullData[j].transform);
+                    items.push(item);
                 }
-                else
-                {
-                    mat4.identity(item.transform);
-                }
-
-                spotlightSet.spotlightItems.push(item);
             }
-            spotlightSet.Initialize();
-            ship.spotlightSets.push(spotlightSet);
+
+            if (!self.SKIP_EMPTY_ITEMS || items.length)
+            {
+                ship.spotlightSets.push(EveSpotlightSet.from({
+                    name: hullSet.name,
+                    items,
+                    coneEffect: {
+                        effectFilePath: isSkinned ? EFF_SPOTLIGHT_CONE_SKINNED : EFF_SPOTLIGHT_CONE,
+                        parameters: {
+                            TextureMap: hullSet.coneTextureResPath,
+                            zOffset: get(hullSet, "zOffset", 0)
+                        }
+                    },
+                    glowEffect: {
+                        effectFilePath: isSkinned ? EFF_SPOTLIGHT_GLOW_SKINNED : EFF_SPOTLIGHT_GLOW,
+                        parameters: {
+                            TextureMap: hullSet.glowTextureResPath
+                        }
+                    }
+                }));
+            }
         }
     }
 
-    function _assignIfExists(dest, src, attr)
-    {
-        if (attr in src)
-        {
-            dest[attr] = src[attr];
-        }
-    }
+    const EFF_PLANE = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
+    const EFF_PLANE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
 
+    /**
+     * Sets up booster sets
+     * @param ship
+     * @param hull
+     * @param faction
+     */
     function SetupPlaneSets(ship, hull, faction)
     {
-        var hullSets = _get(hull, "planeSets", []);
-        var factionSets = _get(faction, "planeSets", {});
-        for (var i = 0; i < hullSets.length; ++i)
+        const
+            hullSets = get(hull, "planeSets", []),
+            factionSets = get(faction, "planeSets", {});
+
+        for (let i = 0; i < hullSets.length; ++i)
         {
-            var planeSet = new EvePlaneSet();
-            planeSet.name = _get(hullSets[i], "name", "");
-            planeSet.effect = new Tw2Effect();
-            if (hullSets[i]["skinned"])
-            {
-                planeSet.effect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
-            }
-            else
-            {
-                planeSet.effect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
-            }
-            planeSet.effect.parameters["Layer1Map"] = new Tw2TextureParameter("Layer1Map", hullSets[i]["layer1MapResPath"]);
-            planeSet.effect.parameters["Layer2Map"] = new Tw2TextureParameter("Layer2Map", hullSets[i]["layer2MapResPath"]);
-            planeSet.effect.parameters["MaskMap"] = new Tw2TextureParameter("MaskMap", hullSets[i]["maskMapResPath"]);
-            planeSet.effect.parameters["PlaneData"] = new Tw2Vector4Parameter("PlaneData", _get(hullSets[i], "planeData", [1, 0, 0, 0]));
-            planeSet.effect.Initialize();
+            const
+                hullSet = hullSets[i],
+                hullSetItems = get(hullSet, "items", []),
+                items = [];
 
-            var hullData = _get(hullSets[i], "items", []);
-            for (var j = 0; j < hullData.length; ++j)
+            // Get plane items
+            for (let j = 0; j < hullSetItems.length; ++j)
             {
-                var item = new EvePlaneSetItem();
-                _assignIfExists(item, hullData[j], "groupIndex");
-                _assignIfExists(item, hullData[j], "name");
-                item.boneIndex = _get(hullData[j], "boneIndex", -1);
-                item.maskAtlasID = _get(hullData[j], "maskMapAtlasIndex", 0);
-                // Do not copy reference!
-                vec3.copy(item.position, _get(hullData[j], "position", [0, 0, 0]));
-                quat.copy(item.rotation, _get(hullData[j], "rotation", [0, 0, 0, 1]));
-                vec3.copy(item.scaling, _get(hullData[j], "scaling", [1, 1, 1]));
-                vec4.copy(item.color, _get(hullData[j], "color", [0, 0, 0, 0]));
-                vec4.copy(item.layer1Transform, _get(hullData[j], "layer1Transform", [0, 0, 0, 0]));
-                vec4.copy(item.layer1Scroll, _get(hullData[j], "layer1Scroll", [0, 0, 0, 0]));
-                vec4.copy(item.layer2Transform, _get(hullData[j], "layer2Transform", [0, 0, 0, 0]));
-                vec4.copy(item.layer2Scroll, _get(hullData[j], "layer2Scroll", [0, 0, 0, 0]));
+                const
+                    item = Object.assign({boneIndex: -1}, hullSetItems[j]),
+                    factionSet = getGroupIndex(factionSets, item.groupIndex);
 
-                var factionSet = factionSets["group" + _get(hullData[j], "groupIndex", -1)];
-                if (factionSet) vec4.copy(item.color, _get(factionSet, "color", [0, 0, 0, 0]));
-                planeSet.planes.push(item);
+                /*
+                const item = {};
+                item.name = src.name;                       // ""
+                item.groupIndex = src.groupIndex;           // -1
+                item.boneIndex = get(src, "boneIndex", -1); // -1
+                item.maskAtlasID = src.maskMapAtlasIndex;   // 0
+                assignIfExists(item, src, [
+                    "position", "rotation", "scaling",
+                    "layer1Transform", "layer1Scroll", 
+                    "layer2Transform", "layer2Scroll"
+                ]);
+                */
+                
+                if (factionSet)
+                {
+                    assignIfExists(item, factionSet, "color"); // [0, 0, 0, 0]);
+                }
+
+                if (!self.SKIP_EMPTY_ITEMS || (item.color && !vec3.isEmpty(item.color)))
+                {
+                    items.push(item);
+                }
             }
-            planeSet.Initialize();
-            ship.planeSets.push(planeSet);
+
+            if (!self.SKIP_EMPTY_ITEMS || items.length)
+            {
+                ship.planeSets.push(EvePlaneSet.from({
+                    name: hullSet.name,
+                    items,
+                    effect: {
+                        effectFilePath: hullSet.skinned ? EFF_PLANE_SKINNED : EFF_PLANE,
+                        textures: {
+                            Layer1Map: hullSet.layer1MapResPath,
+                            Layer2Map: hullSet.layer2MapResPath,
+                            MaskMap: hullSet.maskMapResPath,
+                            PlaneData: get(hullSet, "planeData", [1, 0, 0, 0])
+                        }
+                    }
+                }));
+            }
         }
     }
 
+    const EFF_BOOSTER_VOLUMETRIC = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
+    const EFF_BOOSTER_GLOW_SKINNED = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
+    const TEX_NOISE = "res:/Texture/global/noise.dds.0.png";
+    const TEX_NOISE_32_CUBE = "res:/Texture/Global/noise32cube_volume.dds.0.png";
+    const TEX_WHITE_SHARP = "res:/Texture/Particle/whitesharp.dds.0.png";
+
+    /**
+     * Sets up boosters
+     * @param ship
+     * @param hull
+     * @param race
+     */
     function SetupBoosters(ship, hull, race)
     {
-        if (!("booster" in hull))
+        if (!hull.booster) return;
+
+        const
+            zero = [ 0,0,0,0],
+            raceBooster = get(race, "booster", {}),
+            hullBooster = hull["booster"],
+            hullBoosterItems = get(hullBooster, "items", []);
+
+        for (let i = 0; i < hullBoosterItems.length; ++i)
         {
-            return;
+            ship.locators.push(EveLocator2.from({
+                name: "locator_booster_" + (i + 1),
+                transform: hullBoosterItems[i].transform,
+                atlasIndex0: get(hullBoosterItems[i], "atlasIndex0", 0),
+                atlasIndex1: get(hullBoosterItems[i], "atlasIndex1", 0)
+            }));
         }
-        var booster = new EveBoosterSet();
-        var hullBooster = hull["booster"];
-        var raceBooster = _get(race, "booster", {});
-        _assignIfExists(booster, raceBooster, "glowScale");
-        _assignIfExists(booster, raceBooster, "symHaloScale");
-        _assignIfExists(booster, raceBooster, "haloScaleX");
-        _assignIfExists(booster, raceBooster, "haloScaleY");
-        _assignIfExists(booster, raceBooster, "haloColor");
-        vec4.copy(booster.glowColor, _get(raceBooster, "glowColor", [0, 0, 0, 0]));
-        vec4.copy(booster.warpGlowColor, _get(raceBooster, "warpGlowColor", [0, 0, 0, 0]));
-        vec4.copy(booster.warpHaloColor, _get(raceBooster, "warpHalpColor", [0, 0, 0, 0]));
-        vec4.copy(booster.trailColor, _get(raceBooster, "trailColor", [0, 0, 0, 0]));
-        vec4.copy(booster.trailSize, _get(raceBooster, "trailSize", [0, 0, 0, 0]));
 
-        booster.effect = new Tw2Effect();
-        booster.effect.effectFilePath = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
-        booster.effect.parameters["NoiseFunction0"] = new Tw2FloatParameter("NoiseFunction0", _get(raceBooster.shape0, "noiseFunction", 0));
-        booster.effect.parameters["NoiseSpeed0"] = new Tw2FloatParameter("NoiseSpeed0", _get(raceBooster.shape0, "noiseSpeed", 0));
-        booster.effect.parameters["NoiseAmplitudeStart0"] = new Tw2Vector4Parameter("NoiseAmplitudeStart0", _get(raceBooster.shape0, "noiseAmplitureStart", [0, 0, 0, 0]));
-        booster.effect.parameters["NoiseAmplitudeEnd0"] = new Tw2Vector4Parameter("NoiseAmplitudeEnd0", _get(raceBooster.shape0, "noiseAmplitureEnd", [0, 0, 0, 0]));
-        booster.effect.parameters["NoiseFrequency0"] = new Tw2Vector4Parameter("NoiseFrequency0", _get(raceBooster.shape0, "noiseFrequency", [0, 0, 0, 0]));
-        booster.effect.parameters["Color0"] = new Tw2Vector4Parameter("Color0", _get(raceBooster.shape0, "color", [0, 0, 0, 0]));
-
-        booster.effect.parameters["NoiseFunction1"] = new Tw2FloatParameter("NoiseFunction1", _get(raceBooster.shape1, "noiseFunction", 0));
-        booster.effect.parameters["NoiseSpeed1"] = new Tw2FloatParameter("NoiseSpeed1", _get(raceBooster.shape1, "noiseSpeed", 0));
-        booster.effect.parameters["NoiseAmplitudeStart1"] = new Tw2Vector4Parameter("NoiseAmplitudeStart1", _get(raceBooster.shape1, "noiseAmplitureStart", [0, 0, 0, 0]));
-        booster.effect.parameters["NoiseAmplitudeEnd1"] = new Tw2Vector4Parameter("NoiseAmplitudeEnd1", _get(raceBooster.shape1, "noiseAmplitureEnd", [0, 0, 0, 0]));
-        booster.effect.parameters["NoiseFrequency1"] = new Tw2Vector4Parameter("NoiseFrequency1", _get(raceBooster.shape1, "noiseFrequency", [0, 0, 0, 0]));
-        booster.effect.parameters["Color1"] = new Tw2Vector4Parameter("Color1", _get(raceBooster.shape1, "color", [0, 0, 0, 0]));
-
-        booster.effect.parameters["WarpNoiseFunction0"] = new Tw2FloatParameter("WarpNoiseFunction0", _get(raceBooster.warpShape0, "noiseFunction", 0));
-        booster.effect.parameters["WarpNoiseSpeed0"] = new Tw2FloatParameter("WarpNoiseSpeed0", _get(raceBooster.warpShape0, "noiseSpeed", 0));
-        booster.effect.parameters["WarpNoiseAmplitudeStart0"] = new Tw2Vector4Parameter("WarpNoiseAmplitudeStart0", _get(raceBooster.warpShape0, "noiseAmplitureStart", [0, 0, 0, 0]));
-        booster.effect.parameters["WarpNoiseAmplitudeEnd0"] = new Tw2Vector4Parameter("WarpNoiseAmplitudeEnd0", _get(raceBooster.warpShape0, "noiseAmplitureEnd", [0, 0, 0, 0]));
-        booster.effect.parameters["WarpNoiseFrequency0"] = new Tw2Vector4Parameter("WarpNoiseFrequency0", _get(raceBooster.warpShape0, "noiseFrequency", [0, 0, 0, 0]));
-        booster.effect.parameters["WarpColor0"] = new Tw2Vector4Parameter("WarpColor0", _get(raceBooster.warpShape0, "color", [0, 0, 0, 0]));
-
-        booster.effect.parameters["WarpNoiseFunction1"] = new Tw2FloatParameter("WarpNoiseFunction1", _get(raceBooster.warpShape1, "noiseFunction", 0));
-        booster.effect.parameters["WarpNoiseSpeed1"] = new Tw2FloatParameter("WarpNoiseSpeed1", _get(raceBooster.warpShape1, "noiseSpeed", 0));
-        booster.effect.parameters["WarpNoiseAmplitudeStart1"] = new Tw2Vector4Parameter("WarpNoiseAmplitudeStart1", _get(raceBooster.warpShape1, "noiseAmplitureStart", [0, 0, 0, 0]));
-        booster.effect.parameters["WarpNoiseAmplitudeEnd1"] = new Tw2Vector4Parameter("WarpNoiseAmplitudeEnd1", _get(raceBooster.warpShape1, "noiseAmplitureEnd", [0, 0, 0, 0]));
-        booster.effect.parameters["WarpNoiseFrequency1"] = new Tw2Vector4Parameter("WarpNoiseFrequency1", _get(raceBooster.warpShape1, "noiseFrequency", [0, 0, 0, 0]));
-        booster.effect.parameters["WarpColor1"] = new Tw2Vector4Parameter("WarpColor1", _get(raceBooster.warpShape1, "color", [0, 0, 0, 0]));
-
-        booster.effect.parameters["ShapeAtlasSize"] = new Tw2Vector4Parameter("ShapeAtlasSize", [_get(raceBooster, "shapeAtlasHeight", 0), _get(raceBooster, "shapeAtlasCount", 0), 0, 0]);
-        booster.effect.parameters["BoosterScale"] = new Tw2Vector4Parameter("BoosterScale", _get(raceBooster, "scale", [1, 1, 1, 1]));
-
-        booster.effect.parameters["ShapeMap"] = new Tw2TextureParameter("ShapeMap", raceBooster.shapeAtlasResPath);
-        booster.effect.parameters["GradientMap0"] = new Tw2TextureParameter("GradientMap0", raceBooster.gradient0ResPath);
-        booster.effect.parameters["GradientMap1"] = new Tw2TextureParameter("GradientMap1", raceBooster.gradient1ResPath);
-        booster.effect.parameters["NoiseMap"] = new Tw2TextureParameter("ShapeMap", "res:/Texture/Global/noise32cube_volume.dds.0.png");
-
-        booster.effect.Initialize();
-
-        booster.glows = new EveSpriteSet(true);
-        booster.glows.effect = new Tw2Effect();
-        booster.glows.effect.effectFilePath = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
-        booster.glows.effect.parameters["DiffuseMap"] = new Tw2TextureParameter("DiffuseMap", "res:/Texture/Particle/whitesharp.dds.0.png");
-        booster.glows.effect.parameters["NoiseMap"] = new Tw2TextureParameter("NoiseMap", "res:/Texture/global/noise.dds.0.png");
-        booster.glows.effect.Initialize();
-
-        var items = _get(hullBooster, "items", []);
-        for (var i = 0; i < items.length; ++i)
-        {
-            var locator = new EveLocator2();
-            locator.name = "locator_booster_" + (i + 1);
-            if ("transform" in items[i])
-            {
-                mat4.copy(locator.transform, items[i].transform);
+        ship.boosters = EveBoosterSet.from({
+            glowScale: raceBooster.glowScale,
+            symHaloScale: raceBooster.symHaloScale,
+            haloScaleX: raceBooster.haloScaleX,
+            haloScaleY: raceBooster.haloScaleY,
+            haloColor: raceBooster.haloColor,
+            glowColor: raceBooster.glowColor,
+            warpGlowColor: raceBooster.warpGlowColor,
+            warpHaloColor: raceBooster.warpHalpColor,
+            trailColor: raceBooster.trailColor,
+            trailSize: raceBooster.trailSize,
+            effect: {
+                effectFilePath: EFF_BOOSTER_VOLUMETRIC,
+                parameters: {
+                    NoiseFunction0: get(raceBooster.shape0, "noiseFunction", 0),
+                    NoiseSpeed0: get(raceBooster.shape0, "noiseSpeed", 0),
+                    NoiseAmplitudeStart0: get(raceBooster.shape0, "noiseAmplitureStart", zero),
+                    NoiseAmplitudeEnd0: get(raceBooster.shape0, "noiseAmplitureEnd", zero),
+                    NoiseFrequency0: get(raceBooster.shape0, "noiseFrequency", zero),
+                    Color0: get(raceBooster.shape0, "color", zero),
+                    NoiseFunction1: get(raceBooster.shape1, "noiseFunction", 0),
+                    NoiseSpeed1: get(raceBooster.shape1, "noiseSpeed", 0),
+                    NoiseAmplitudeStart1: get(raceBooster.shape1, "noiseAmplitureStart", zero),
+                    NoiseAmplitudeEnd1: get(raceBooster.shape1, "noiseAmplitureEnd", zero),
+                    NoiseFrequency1: get(raceBooster.shape1, "noiseFrequency", zero),
+                    Color1: get(raceBooster.shape1, "color", zero),
+                    WarpNoiseFunction0: get(raceBooster.warpShape0, "noiseFunction", 0),
+                    WarpNoiseSpeed0: get(raceBooster.warpShape0, "noiseSpeed", 0),
+                    WarpNoiseAmplitudeStart0: get(raceBooster.warpShape0, "noiseAmplitureStart", zero),
+                    WarpNoiseAmplitudeEnd0: get(raceBooster.warpShape0, "noiseAmplitureEnd", zero),
+                    WarpNoiseFrequency0: get(raceBooster.warpShape0, "noiseFrequency", zero),
+                    WarpColor0: get(raceBooster.warpShape0, "color", zero),
+                    WarpNoiseFunction1: get(raceBooster.warpShape1, "noiseFunction", 0),
+                    WarpNoiseSpeed1: get(raceBooster.warpShape1, "noiseSpeed", 0),
+                    WarpNoiseAmplitudeStart1: get(raceBooster.warpShape1, "noiseAmplitureStart", zero),
+                    WarpNoiseAmplitudeEnd1: get(raceBooster.warpShape1, "noiseAmplitureEnd", zero),
+                    WarpNoiseFrequency1: get(raceBooster.warpShape1, "noiseFrequency", zero),
+                    WarpColor1: get(raceBooster.warpShape1, "color", zero),
+                    ShapeAtlasSize: [get(raceBooster, "shapeAtlasHeight", 0), get(raceBooster, "shapeAtlasCount", 0), 0, 0],
+                    BoosterScale: get(raceBooster, "scale", [1, 1, 1, 1]),
+                },
+                textures: {
+                    ShapeMap: raceBooster.shapeAtlasResPath,
+                    GradientMap0: raceBooster.gradient0ResPath,
+                    GradientMap1: raceBooster.gradient1ResPath,
+                    NoiseMap: TEX_NOISE_32_CUBE
+                }
+            },
+            glows: {
+                useQuads: true,
+                effect: {
+                    effectFilePath: EFF_BOOSTER_GLOW_SKINNED,
+                    textures: {
+                        DiffuseMap: TEX_WHITE_SHARP,
+                        NoiseMap: TEX_NOISE
+                    }
+                }
             }
-            else
-            {
-                mat4.identity(locator.transform);
-            }
-            locator.atlasIndex0 = _get(items[i], "atlasIndex0", 0);
-            locator.atlasIndex1 = _get(items[i], "atlasIndex1", 0);
-            ship.locators.push(locator);
-        }
-        booster.Initialize();
-        ship.boosters = booster;
+        });
     }
 
+    /**
+     * Sets up locators
+     * @param ship
+     * @param hull
+     */
     function SetupLocators(ship, hull)
     {
-        var hullLocators = _get(hull, "locatorTurrets", []);
-        for (var i = 0; i < hullLocators.length; ++i)
+        const hullLocators = get(hull, "locatorTurrets", []);
+        for (let i = 0; i < hullLocators.length; ++i)
         {
-            var locator = new EveLocator2();
-            locator.name = hullLocators[i].name;
-            if ("transform" in hullLocators[i])
-            {
-                mat4.copy(locator.transform, hullLocators[i].transform);
-            }
-            else
-            {
-                mat4.identity(locator.transform);
-            }
-            ship.locators.push(locator);
+            ship.locators.push(EveLocator2.from(hullLocators[i]));
         }
     }
 
@@ -793,10 +815,10 @@ export function EveSOF(tw2)
                 {
                     ship.children.push(obj);
                 }
-                vec3.copy(obj.translation, _get(child, "translation", [0, 0, 0]));
-                quat.copy(obj.rotation, _get(child, "rotation", [0, 0, 0, 1]));
-                vec3.copy(obj.scaling, _get(child, "scaling", [1, 1, 1]));
-                var id = _get(child, "id", -1);
+                vec3.copy(obj.translation, get(child, "translation", [0, 0, 0]));
+                quat.copy(obj.rotation, get(child, "rotation", [0, 0, 0, 1]));
+                vec3.copy(obj.scaling, get(child, "scaling", [1, 1, 1]));
+                var id = get(child, "id", -1);
                 if (id !== -1 && curves[id])
                 {
                     BindParticleEmitters(obj, curveSet, curves[id]);
@@ -804,7 +826,7 @@ export function EveSOF(tw2)
             };
         }
 
-        const children = _get(hull, "children", []);
+        const children = get(hull, "children", []);
         for (let i = 0; i < children.length; ++i)
         {
             const resPath = children[i]["redFilePath"];
@@ -827,10 +849,10 @@ export function EveSOF(tw2)
     {
         var id_curves = [];
         var curveSet = null;
-        var animations = _get(hull, "animations", []);
+        var animations = get(hull, "animations", []);
         for (var i = 0; i < animations.length; ++i)
         {
-            if (_get(animations[i], "id", -1) !== -1 && (_get(animations[i], "startRate", -1) !== -1))
+            if (get(animations[i], "id", -1) !== -1 && (get(animations[i], "startRate", -1) !== -1))
             {
                 if (!curveSet)
                 {
@@ -839,13 +861,13 @@ export function EveSOF(tw2)
                 var curve = new Tw2ScalarCurve2();
                 curve.keys.push(new Tw2ScalarKey2());
                 curve.keys.push(new Tw2ScalarKey2());
-                curve.keys[0].value = _get(animations[i], "startRate", -1);
+                curve.keys[0].value = get(animations[i], "startRate", -1);
                 curve.keys[1].time = 1;
-                curve.keys[1].value = _get(animations[i], "endRate", -1);
+                curve.keys[1].value = get(animations[i], "endRate", -1);
                 curve.Initialize();
                 curveSet.curves.push(curve);
                 ship.curveSets.push(curveSet);
-                id_curves[_get(animations[i], "id", -1)] = curve;
+                id_curves[get(animations[i], "id", -1)] = curve;
             }
         }
         if (curveSet)
@@ -870,7 +892,7 @@ export function EveSOF(tw2)
         var hull = data["hull"][parts[0]];
         var faction = data["faction"][parts[1]];
         var race = data["race"][parts[2]];
-        var ship = new (_get(hull, "buildClass", 0) === 2 ? EveSpaceObject : EveShip)();
+        var ship = new (get(hull, "buildClass", 0) === 2 ? EveSpaceObject : EveShip)();
         var pattern = SetupPattern(hull, race, commands);
         SetupMesh(ship, hull, faction, race, commands, pattern);
         SetupCustomMasks(ship, pattern);
@@ -961,7 +983,7 @@ export function EveSOF(tw2)
         }
         if (materialIdx !== -1)
         {
-            var turretMaterialIndex = _get(parentFaction, "materialUsageMtl" + (materialIdx + 1), materialIdx);
+            var turretMaterialIndex = get(parentFaction, "materialUsageMtl" + (materialIdx + 1), materialIdx);
             if (turretMaterialIndex >= 0 && turretMaterialIndex < data["generic"]["materialPrefixes"].length)
             {
                 name = data["generic"]["materialPrefixes"][turretMaterialIndex] + name;
