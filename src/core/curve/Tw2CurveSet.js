@@ -25,28 +25,9 @@ export class Tw2CurveSet extends Tw2BaseClass
     ranges = [];
     scale = 1;
     useSimTimeRebase = false;
-    
-    _scaledTime = 0;
+
+    scaledTime = 0;         // Used in old models
     _isPlaying = false;
-
-    /**
-     * Alias for _scaledTime
-     * @returns {number}
-     */
-    get scaledTime()
-    {
-        return this._scaledTime;
-    }
-
-    /**
-     * Alias for _scaledTime
-     * @param {number} val
-     */
-    set scaledTime(val)
-    {
-        console.log("Tw2CurveSet.scaledTime used");
-        this._scaledTime = val;
-    }
 
     /**
      * Initializes the Tw2CurveSet
@@ -65,7 +46,7 @@ export class Tw2CurveSet extends Tw2BaseClass
     Play()
     {
         this._isPlaying = true;
-        this._scaledTime = 0;
+        this.scaledTime = 0;
     }
 
     /**
@@ -75,7 +56,7 @@ export class Tw2CurveSet extends Tw2BaseClass
     PlayFrom(time = 0)
     {
         this._isPlaying = true;
-        this._scaledTime = time * this.scale;
+        this.scaledTime = time * this.scale;
     }
 
     /**
@@ -94,7 +75,7 @@ export class Tw2CurveSet extends Tw2BaseClass
     {
         if (this._isPlaying)
         {
-            this._scaledTime += dt * this.scale;
+            this.scaledTime += dt * this.scale;
 
             for (let i = 0; i < this.curves.length; ++i)
             {
