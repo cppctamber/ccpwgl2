@@ -1144,9 +1144,18 @@ export function EveSOF(tw2)
             const c = hull.indexOf(":");
             if (c > 0) hull = hull.substr(0, c);
             const h = data.hull[hull];
-            if (!h) callback(-1);
-            if (h.buildClass === 2) callback(2);
-            callback(1);
+            if (!h)
+            {
+                callback(0);
+            }
+            else if (h.buildClass === 2)
+            {
+                callback(2);
+            }
+            else
+            {
+                callback(1);
+            }
         });
     };
 
