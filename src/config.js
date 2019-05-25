@@ -47,7 +47,8 @@ export const config = {
     store: {
 
         paths: {
-            "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/"
+            "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
+            "cdn" : "https://localhost:3000/"
         },
 
         extensions: {

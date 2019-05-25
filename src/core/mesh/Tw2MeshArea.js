@@ -1,5 +1,7 @@
 import {Tw2GeometryBatch} from "../batch";
 import {util, Tw2BaseClass} from "../../global";
+import {assignIfExists} from "../../global/util";
+import {Tw2Effect} from "./Tw2Effect";
 
 /**
  * Tw2MeshArea
@@ -44,6 +46,33 @@ export class Tw2MeshArea extends Tw2BaseClass
     {
         this.index = val;
     }
+
+    /**
+     * Creates a mesh area from a plain object
+     * @param {*} [values]
+     * @param {*} [options]
+     * @returns {Tw2MeshArea}
+     */
+    static from(values, options)
+    {
+        const item = new this();
+        assignIfExists(item, options, "index");
+
+        if (values)
+        {
+            assignIfExists(item, values, [
+                "name", "display", "count", "index", "reversed", "useSHLighting"
+            ]);
+
+            if (values.effect)
+            {
+                item.effect = Tw2Effect.from(values.effect);
+            }
+        }
+
+        return item;
+    }
+
 
 
     /**

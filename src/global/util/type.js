@@ -144,6 +144,16 @@ export function isObjectLike(a)
 }
 
 /**
+ * Is Object object
+ * @param {*} a
+ * @returns {Boolean}
+ */
+export function isObjectObject(a)
+{
+    return a !== null && isTag(a, "[object Object]");
+}
+
+/**
  * Checks if a value is a plain object
  * @author lodash
  * @param {*} a
@@ -151,7 +161,7 @@ export function isObjectLike(a)
  */
 export function isPlain(a)
 {
-    if (!isObject(a) || !isTag(a, "[object Object]"))
+    if (!isObject(a) || !isObjectObject)
     {
         return false;
     }
@@ -162,6 +172,7 @@ export function isPlain(a)
     }
 
     let proto = a;
+
     while (Object.getPrototypeOf(proto) !== null)
     {
         proto = Object.getPrototypeOf(proto);
@@ -178,6 +189,16 @@ export function isPlain(a)
 export function isPrimary(a)
 {
     return isBoolean(a) || isNumber(a) || isString(a);
+}
+
+/**
+ * Checks if a value is a promise
+ * @param {*} a
+ * @returns {Boolean}
+ */
+export function isPromise(a)
+{
+    return isObject(a) && isFunction(a.then);
 }
 
 /**
@@ -198,6 +219,25 @@ export function isString(a)
 export function isSymbol(a)
 {
     return typeof a === "symbol" || isTag(a, "[object Symbol]");
+}
+
+/**
+ * Checks if a class is extended from another
+ * @param {*} Constructor
+ * @param {*} SuperConstructor
+ * @returns {boolean}
+ */
+export function isSubclassOf(Constructor, SuperConstructor)
+{
+    if (!isFunction(Constructor)) return false;
+
+    while (isFunction(Constructor))
+    {
+        if (Constructor === SuperConstructor) return true;
+        Constructor = Reflect.getPrototypeOf(Constructor);
+    }
+
+    return false;
 }
 
 /**
@@ -238,22 +278,71 @@ export function isUndefined(a)
  */
 export function isVector(a)
 {
-    if (!a)
+    if (a)
     {
-        return false;
-    }
-
-    if (isTyped(a))
-    {
-        return true;
-    }
-
-    if (isArray(a))
-    {
-        for (let i = 0; i < a.length; i++)
+        if (isTyped(a))
         {
-            if (!isNumber(a[i])) return false;
+            return true;
         }
-        return true;
+
+        if (isArray(a))
+        {
+            for (let i = 0; i < a.length; i++)
+            {
+                if (!isNumber(a[i])) return false;
+            }
+            return true;
+        }
     }
+    return false;
+}
+
+/**
+ * Checks if a value is a vector of length 2
+ * @param {*} a
+ * @returns {boolean}
+ */
+export function isVector2(a)
+{
+    return isVector(a) ? a.length === 2 : false;
+}
+
+/**
+ * Checks if a value is a vector of length 3
+ * @param {*} a
+ * @returns {boolean}
+ */
+export function isVector3(a)
+{
+    return isVector(a) ? a.length === 3 : false;
+}
+
+/**
+ * Checks if a value is a vector of length 4
+ * @param {*} a
+ * @returns {boolean}
+ */
+export function isVector4(a)
+{
+    return isVector(a) ? a.length === 4 : false;
+}
+
+/**
+ * Checks if a value is a vector of length 9
+ * @param {*} a
+ * @returns {boolean}
+ */
+export function isMatrix3(a)
+{
+    return isVector(a) ? a.length === 9 : false;
+}
+
+/**
+ * Checks if a value is a vector of length 16
+ * @param {*} a
+ * @returns {boolean}
+ */
+export function isMatrix4(a)
+{
+    return isVector(a) ? a.length === 16 : false;
 }

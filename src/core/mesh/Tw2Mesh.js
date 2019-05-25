@@ -1,4 +1,4 @@
-import {util, resMan, device, Tw2BaseClass} from "../../global";
+import {util, resMan, device, store} from "../../global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -8,6 +8,7 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "../../global/engine";
+import {assignIfExists, get, toArray} from "../../global/util";
 
 /**
  * Tw2Mesh
@@ -207,6 +208,68 @@ export class Tw2Mesh
                 accumulator.Commit(batch);
             }
         }
+    }
+
+    /**
+     * Creates an area if it exists
+     * @param {*} dest
+     * @param {*} src
+     * @param {String|String[]} names
+     */
+    static createAreaIfExists(dest, src, names)
+    {
+        names = toArray(names);
+        for (let i = 0; i < names.length; i++)
+        {
+            const name = names[i];
+            if (name in src && name in dest)
+            {
+                for (let i = 0; i < src[name].length; i++)
+                {
+                    const
+                        type = src[name][i].__type || "Tw2MeshArea",
+                        Constructor = store.classes.Get(type);
+
+                    dest[name].push(Constructor.from(src[name][i], { index: i }));
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a mesh from a plain object
+     * @param {*} [values]
+     * @param {*} [options]
+     * @returns {Tw2Mesh}
+     */
+    static from(values, options)
+    {
+        const item = new Tw2Mesh();
+        item.index = get(options, "index", 0);
+
+        if (values)
+        {
+            assignIfExists(item, values, [
+                "name", "display", "deferGeometryLoad",
+                "geometryResPath", "meshIndex"
+            ]);
+
+            const areaNames = [
+                "additiveAreas", "decalAreas", "depthAreas",
+                "depthNormalAreas", "distortionAreas", "opaqueAreas",
+                "opaquePrepassAreas", "pickableAreas", "transparentAreas"
+            ];
+
+            assignIfExists(item.visible, values.visible, areaNames);
+            this.createAreaIfExists(item, values, areaNames);
+        }
+
+        if (!options || !options.skipUpdate)
+        {
+            item.Initialize();
+        }
+
+        return item;
     }
 
     /**

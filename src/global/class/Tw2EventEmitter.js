@@ -21,7 +21,13 @@ export default class Tw2EventEmitter
         // Short cut to creating a log output
         if (e.log && !e.log._logged)
         {
+            if (e.err) e.log.err = e.err;
             e.log = this.log(e.log);
+        }
+        // Short cut to creating a log from an error
+        else if (e.err)
+        {
+            e.log = this.log(e.err);
         }
 
         const events = PRIVATE.get(this);

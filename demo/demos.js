@@ -468,14 +468,14 @@ function init()
         }
     });
 
-    ccpwgl_int.logger.on('debug', function (e)
+    ccpwgl_int.logger.on("debug", function (e)
     {
         Toasts.create({
-            type: 'warning',
+            type: "warning",
             title: e.name,
             text: e.message,
             timeout: 6000,
-            icon: 'https://image.eveonline.com/Type/24589_64.png'
+            icon: "https://image.eveonline.com/Type/24589_64.png"
         });
     });
 }

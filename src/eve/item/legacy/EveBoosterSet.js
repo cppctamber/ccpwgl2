@@ -206,7 +206,7 @@ export class EveBoosterSet extends EveObjectSet
         for (let i = 0; i < this.items.length; i++)
         {
             const item = this.items[i];
-            item.SetParent(this);
+            //item.SetParent(this);
 
             if (item.display)
             {

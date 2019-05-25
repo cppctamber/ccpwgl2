@@ -383,7 +383,7 @@ export function EveSOF(tw2)
      * @param hull
      * @param faction
      */
-    function SetupDecals(ship, hull, faction={})
+    function SetupDecals(ship, hull, faction = {})
     {
         const hullDecals = get(hull, "hullDecals", []);
         for (let i = 0; i < hullDecals.length; ++i)
@@ -436,7 +436,7 @@ export function EveSOF(tw2)
      * @param {Number} [groupIndex=-1]
      * @returns {null|*}
      */
-    function getGroupIndex(src, groupIndex=-1)
+    function getGroupIndex(src, groupIndex = -1)
     {
         if (!src) return null;
         const groupName = `group${groupIndex}`;
@@ -510,7 +510,8 @@ export function EveSOF(tw2)
     }
 
     const EFF_SPOTLIGHT_CONE = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
-    const EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";;
+    const EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
+    ;
     const EFF_SPOTLIGHT_GLOW = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
     const EFF_SPOTLIGHT_GLOW_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
 
@@ -560,7 +561,7 @@ export function EveSOF(tw2)
                 {
                     assignIfExists(item, factionSet, ["coneColor", "spriteColor", "flareColor"]); // [0,0,0,0]
                 }
-                
+
                 if (!self.SKIP_EMPTY_ITEMS || factionSet)
                 {
                     items.push(item);
@@ -631,7 +632,7 @@ export function EveSOF(tw2)
                     "layer2Transform", "layer2Scroll"
                 ]);
                 */
-                
+
                 if (factionSet)
                 {
                     assignIfExists(item, factionSet, "color"); // [0, 0, 0, 0]);
@@ -679,7 +680,7 @@ export function EveSOF(tw2)
         if (!hull.booster) return;
 
         const
-            zero = [ 0,0,0,0],
+            zero = [0, 0, 0, 0],
             raceBooster = get(race, "booster", {}),
             hullBooster = hull["booster"],
             hullBoosterItems = get(hullBooster, "items", []);
@@ -910,70 +911,10 @@ export function EveSOF(tw2)
         return ship;
     }
 
-    this.LoadData = function (callback)
-    {
-        if (data === null)
-        {
-            if (callback)
-            {
-                pendingLoads.push(callback);
-            }
-            if (!dataLoading)
-            {
-                spriteEffect = new Tw2Effect();
-                spriteEffect.effectFilePath = "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx";
-                spriteEffect.parameters["MainIntensity"] = new Tw2FloatParameter("MainIntensity", 1);
-                spriteEffect.parameters["GradientMap"] = new Tw2TextureParameter("GradientMap", "res:/texture/particle/whitesharp_gradient.dds.0.png");
-                spriteEffect.Initialize();
-
-                tw2.GetObject("res:/dx9/model/spaceobjectfactory/data.red", function (obj)
-                {
-                    data = obj;
-                    for (var i = 0; i < pendingLoads.length; ++i)
-                    {
-                        pendingLoads[i]();
-                    }
-                    pendingLoads = [];
-                });
-                dataLoading = true;
-            }
-        }
-        else
-        {
-            if (callback)
-            {
-                callback();
-            }
-        }
-    };
-
-    this.BuildFromDNA = function (dna, callback)
-    {
-        if (data === null)
-        {
-            this.LoadData(function ()
-            {
-                var result = Build(dna);
-                if (callback)
-                {
-                    callback(result);
-                }
-            });
-        }
-        else
-        {
-            var result = Build(dna);
-            if (callback)
-            {
-                callback(result);
-            }
-        }
-    };
-
     function GetTurretMaterialParameter(name, parentFaction, areaData)
     {
         var materialIdx = -1;
-        for (var i = 0; i < data['generic']['materialPrefixes'].length; ++i)
+        for (var i = 0; i < data["generic"]["materialPrefixes"].length; ++i)
         {
             if (name.substr(0, data["generic"]["materialPrefixes"][i].length) === data["generic"]["materialPrefixes"][i])
             {
@@ -1062,101 +1003,288 @@ export function EveSOF(tw2)
         }
     }
 
-    this.SetupTurretMaterial = function (turretSet, parentFactionName, turretFactionName, callback)
+    this.SetupTurretMaterialAsync = function(turretSet, parentFactionName, turretFactionName)
     {
-        if (data === null)
+        return this.GetDataAsync().then(()=>
         {
-            this.LoadData(function ()
-            {
-                SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
-                if (callback)
-                {
-                    callback();
+            SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
+            return turretSet;
+        });
+    };
+
+    this.SetupTurretMaterial = function (turretSet, parentFactionName, turretFactionName, onResolved, onRejected)
+    {
+        return this.SetupTurretMaterialAsync(turretSet, parentFactionName, turretFactionName)
+            .then(onResolved)
+            .catch(onRejected);
+    };
+
+    function setupSpriteEffect()
+    {
+        if (!spriteEffect)
+        {
+            spriteEffect = Tw2Effect.from({
+                effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+                parameters: {
+                    MainIntensity: 1,
+                    GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
                 }
             });
         }
-        else
-        {
-            SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
-            if (callback)
-            {
-                callback();
-            }
-        }
-    };
-
-    function getDataKeys(name)
-    {
-        if (name !== "all")
-        {
-            var names = {};
-            for (var i in data[name])
-            {
-                if (data[name].hasOwnProperty(i))
-                {
-                    names[i] = data[name][i].description || "";
-                }
-            }
-            return names;
-        }
-        else
-        {
-            return data;
-        }
     }
 
-    this.GetHullNames = function (callback)
-    {
-        this.LoadData(function ()
-        {
-            callback(getDataKeys("hull"));
-        });
-    };
+    let dataPromise = null;
 
-    this.GetFactionNames = function (callback)
+    this.LoadData = function (onResolved, onRejected)
     {
-        this.LoadData(function ()
+        if (data === null)
         {
-            callback(getDataKeys("faction"));
-        });
-    };
-
-    this.GetRaceNames = function (callback)
-    {
-        this.LoadData(function ()
-        {
-            callback(getDataKeys("race"));
-        });
-    };
-
-    this.GetSofData = function (callback)
-    {
-        this.LoadData(function ()
-        {
-            callback(getDataKeys("all"));
-        });
-    };
-
-    this.GetSofHullBuildClass = function(hull, callback)
-    {
-        this.LoadData(function()
-        {
-            const c = hull.indexOf(":");
-            if (c > 0) hull = hull.substr(0, c);
-            const h = data.hull[hull];
-            if (!h)
+            if (onResolved || onRejected)
             {
-                callback(0);
+                pendingLoads.push([onResolved, onRejected]);
             }
-            else if (h.buildClass === 2)
+
+            dataPromise = this.GetDataAsync();
+        }
+        else
+        {
+            if (onResolved)
             {
-                callback(2);
+                onResolved(data);
             }
-            else
+        }
+    };
+
+    /**
+     * Internal handler for updating callbacks
+     * @param [obj]
+     * @param [err]
+     */
+    function updatePending(obj, err)
+    {
+        for (let i = 0; i < pendingLoads.length; i++)
+        {
+            if (obj && pendingLoads[i][0])
             {
-                callback(1);
+                pendingLoads[i][0](obj);
             }
+            else if (err && pendingLoads[i][1])
+            {
+                pendingLoads[i][1](err);
+            }
+        }
+        pendingLoads.length = 0;
+    }
+
+    /**
+     * Gets sof data asynchronously
+     * - TODO: Remove old synchronous methods
+     * @returns {Promise}
+     */
+    this.GetDataAsync = function ()
+    {
+        if (!dataPromise)
+        {
+            setupSpriteEffect();
+
+            dataPromise = new Promise((resolve, reject) =>
+            {
+                tw2.GetObject(
+                    "res:/dx9/model/spaceobjectfactory/data.red",
+                    obj =>
+                    {
+                        data = obj;
+                        updatePending(obj);
+                        resolve(data);
+                    },
+                    err =>
+                    {
+                        tw2.Log({
+                            type: "error",
+                            name: "Space object factory",
+                            message: "Could not load data"
+                        });
+
+                        updatePending(null, err);
+                        reject(err);
+                    });
+            });
+        }
+
+        return dataPromise;
+    };
+
+    /**
+     * Internal handler for loading sof objects asynchronously
+     * @param {String} root   - Root sof object name
+     * @param {String} [prop] - Root sof object child name
+     * @returns {Promise}
+     */
+    function getSofRoot(root, prop)
+    {
+        return self.GetDataAsync().then(data =>
+        {
+            if (!data[root])
+            {
+                throw new Error(`Invalid sof root: ${root}`);
+            }
+
+            if (!prop)
+            {
+                return data[root];
+            }
+
+            if (!data[root][prop])
+            {
+                throw new Error(`Invalid sof ${root} property: ${prop}`);
+            }
+
+            return data[root][prop];
         });
+    }
+
+    /**
+     * Gets the names and descriptions of a sof root object asynchronously
+     * @param {String} root - The root sof object name
+     * @returns {Promise}
+     */
+    function getSofRootNames(root)
+    {
+        return getSofRoot(root)
+            .then(obj =>
+            {
+                const names = {};
+                for (const key in obj)
+                {
+                    if (obj.hasOwnProperty(key))
+                    {
+                        names[key] = obj[key].description || "";
+                    }
+                }
+                return names;
+            });
+    }
+
+    /**
+     * Builds dna async
+     * @param dna
+     * @returns {PromiseLike|Promise}
+     */
+    this.GetObjectAsync = function (dna)
+    {
+        return this.GetDataAsync().then(() => Build(dna));
+    };
+
+    this.GetHullsAsync = function ()
+    {
+        return getSofRootNames("hull");
+    };
+
+    this.GetHullAsync = function (name)
+    {
+        return getSofRoot("hull", name);
+    };
+
+    this.GetFactionsAsync = function ()
+    {
+        return getSofRootNames("faction");
+    };
+
+    this.GetFactionAsync = function (name)
+    {
+        return getSofRoot("faction", name);
+    };
+
+    this.GetRacesAsync = function ()
+    {
+        return getSofRootNames("race");
+    };
+
+    this.GetRaceAsync = function (name)
+    {
+        return getSofRoot("race", name);
+    };
+
+    this.GetMaterialsAsync = function ()
+    {
+        return getSofRootNames("material");
+    };
+
+    this.GetMaterialAsync = function (name)
+    {
+        return getSofRoot("material", name);
+    };
+
+    this.GetHullPatternsAsync = function (hull)
+    {
+
+    };
+
+    this.GetHullPatternAsync = function (hull, pattern)
+    {
+
+    };
+
+    this.GetHullBuildClassAsync = function (name)
+    {
+        const c = name.indexOf(":");
+        if (c > 0) name = name.substr(0, c);
+        return getSofRoot("hull", name).then(obj => obj.buildClass === 2 ? 2 : 1);
+    };
+
+    this.GetObject = function (dna, onResolved, onRejected)
+    {
+        this.LoadData(function ()
+        {
+            try
+            {
+                onResolved(Build(dna));
+            }
+            catch(err)
+            {
+                if (onRejected)
+                {
+                    onRejected(err);
+                }
+            }
+        }, onRejected);
+    };
+
+
+
+    this.GetHullNames = function (onResolved, onRejected)
+    {
+        return this.GetHullsAsync()
+            .then(onResolved)
+            .catch(onRejected);
+    };
+
+    this.GetFactionNames = function (onResolved, onRejected)
+    {
+        return this.GetFactionsAsync()
+            .then(onResolved)
+            .catch(onRejected);
+    };
+
+    this.GetRaceNames = function (onResolved, onRejected)
+    {
+        return this.GetRacesAsync()
+            .then(onResolved)
+            .catch(onRejected);
+    };
+
+    this.GetSofData = function (onResolved, onRejected)
+    {
+        return this.GetDataAsync()
+            .then(onResolved)
+            .catch(onRejected);
+    };
+
+    this.GetSofHullBuildClass = function (hull, onResolved, onRejected)
+    {
+        return this.GetHullBuildClassAsync(hull)
+            .then(onResolved)
+            .catch(onRejected);
     };
 
 }

@@ -76,6 +76,11 @@ export default class Tw2Schema
         Constructor.__isStaging = isStaging;
         Constructor.__isLeaf = isLeaf;
 
+        if (Object.keys(this.keys).length)
+        {
+            Constructor.__keys = this.keys;
+        }
+
         // Replace with decorators once their cost in size is reduced
         if (watch)
         {
@@ -357,7 +362,7 @@ Tw2Schema.TypeCategory = {
     [Type.ARRAY]: "array",
     [Type.OBJECT]: "object",
     [Type.PLAIN]: "plain",
-    [Type.REF]: "ref",
+    //[Type.REF]: "ref",
     // Primary
     [Type.BOOLEAN]: "primary",
     [Type.STRING]: "primary",
@@ -368,19 +373,19 @@ Tw2Schema.TypeCategory = {
     [Type.TYPED]: "typed",
     [Type.FLOAT32]: "typed",
     // Fixed length typed
-    [Type.VECTOR2]: "vector",
-    [Type.VECTOR3]: "vector",
-    [Type.VECTOR4]: "vector",
-    [Type.QUATERNION]: "vector",
-    [Type.MATRIX3]: "vector",
-    [Type.MATRIX4]: "vector",
-    [Type.RGBA]: "vector",
-    [Type.RGBA_LINEAR]: "vector",
-    [Type.TR_ROTATION]: "vector",
-    [Type.TR_SCALING]: "vector",
-    [Type.TR_TRANSLATION]: "vector",
-    [Type.TR_LOCAL]: "vector",
-    [Type.TR_WORLD]: "vector",
+    [Type.VECTOR2]: "typed",
+    [Type.VECTOR3]: "typed",
+    [Type.VECTOR4]: "typed",
+    [Type.QUATERNION]: "typed",
+    [Type.MATRIX3]: "typed",
+    [Type.MATRIX4]: "typed",
+    [Type.RGBA]: "typed",
+    [Type.RGBA_LINEAR]: "typed",
+    [Type.TR_ROTATION]: "typed",
+    [Type.TR_SCALING]: "typed",
+    [Type.TR_TRANSLATION]: "typed",
+    [Type.TR_LOCAL]: "typed",
+    [Type.TR_WORLD]: "typed",
 };
 
 /**

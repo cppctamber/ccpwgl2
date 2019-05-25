@@ -276,6 +276,20 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Gets a promise that will resolve into an object
+     * - TODO: Remove all ajax calls with fetch
+     * @param {String} path
+     * @returns {Promise<any>}
+     */
+    GetObjectAsync(path)
+    {
+        return new Promise((resolve, reject) =>
+        {
+            this.GetObject(path, resolve, reject);
+        });
+    }
+
+    /**
      * Gets a resource object
      * @param {String} path
      * @param {Function} onResolved - Callback fired when the object has loaded

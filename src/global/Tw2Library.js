@@ -114,11 +114,11 @@ class Tw2Library extends Tw2EventEmitter
      * @param {*} [opt.logger]
      * @returns {Number} The gl version that was created
      */
-    Initialize(opt={})
+    Initialize(opt = {})
     {
         this.Register(opt);
 
-        const {canvas = null, render = null, autoTick=true, glParams = {}} = opt;
+        const {canvas = null, render = null, autoTick = true, glParams = {}} = opt;
 
         if (this.device.CreateDevice(canvas, glParams))
         {
@@ -159,7 +159,7 @@ class Tw2Library extends Tw2EventEmitter
     {
         if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/))
         {
-            this.eveSof.BuildFromDNA(resPath, onResolved, onRejected);
+            this.eveSof.GetObject(resPath, onResolved, onRejected);
         }
         else
         {
@@ -170,14 +170,19 @@ class Tw2Library extends Tw2EventEmitter
     /**
      * Gets an object
      * @param {String} resPath
+     * @param {Function} [onIdentifiedObjectType]
      * @returns {Promise<any>}
      */
-    GetObjectAsync(resPath)
+    GetObjectAsync(resPath, onIdentifiedObjectType)
     {
-        return new Promise((onRejected, onResolved)=>
+        if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/))
         {
-            this.GetObject(resPath, onRejected, onResolved);
-        });
+            return this.eveSof.GetObjectAsync(resPath);
+        }
+        else
+        {
+            return this.resMan.GetObjectAsync(resPath);
+        }
     }
 
     /**
@@ -265,7 +270,9 @@ Tw2Library.prototype.math = math;
 Tw2Library.prototype.util = util;
 
 
-
 export const tw2 = new Tw2Library();
 
+// Temporary until instances of Tw2Library are supported
+const {store, resMan, device, client, logger} = tw2;
+export {store, resMan, device, client, logger, util};
 
