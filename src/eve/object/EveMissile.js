@@ -66,6 +66,18 @@ export class EveMissileWarhead extends Tw2BaseClass
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.mesh) this.mesh.GetResources(out);
+        if (this.spriteSet) this.spriteSet.GetResources(out);
+        return out;
+    }
+
+    /**
      * Sets up the warhead for rendering
      * @param {mat4} transform - Initial local to world transform
      */
@@ -77,17 +89,6 @@ export class EveMissileWarhead extends Tw2BaseClass
         this._velocity[2] = transform[10] * this.startEjectVelocity;
         this._time = 0;
         this._state = EveMissileWarhead.State.IN_FLIGHT;
-    }
-
-    /**
-     * Gets warhead resources
-     * @param {Array} [out=[]] - Receiving array
-     * @returns {Array<Tw2Resource>} out
-     */
-    GetResources(out = [])
-    {
-        if (this.mesh) this.mesh.GetResources(out);
-        if (this.spriteSet) this.spriteSet.GetResources(out);
     }
 
     /**
@@ -326,7 +327,7 @@ export class EveMissile extends Tw2BaseClass
         {
             while (this.warheads.length < turretTransforms.length)
             {
-                this.warheads.push(this.CloneWarhead(this.warheads[0]));
+                this.warheads.push(this.constructor.CloneWarhead(this.warheads[0]));
             }
         }
 
@@ -337,22 +338,9 @@ export class EveMissile extends Tw2BaseClass
     }
 
     /**
-     * Clones a warhead
-     * @param {EveMissileWarhead} sourceWarhead
-     * @returns {EveMissileWarhead}
-     */
-    CloneWarhead(sourceWarhead)
-    {
-        const warhead = new EveMissileWarhead();
-        warhead.mesh = sourceWarhead.mesh;
-        warhead.spriteSet = sourceWarhead.spriteSet;
-        return warhead;
-    }
-
-    /**
-     * Gets missile res objects
-     * @param {Array} [out=[]] - Receiving array
-     * @returns {Array<Tw2Resource>} out
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
      */
     GetResources(out = [])
     {
@@ -360,6 +348,7 @@ export class EveMissile extends Tw2BaseClass
         {
             this.warheads[i].GetResources(out);
         }
+        return out;
     }
 
     /**
@@ -437,6 +426,19 @@ export class EveMissile extends Tw2BaseClass
         {
             this.warheads[i].GetBatches(mode, accumulator);
         }
+    }
+
+    /**
+     * Clones a warhead
+     * @param {EveMissileWarhead} sourceWarhead
+     * @returns {EveMissileWarhead}
+     */
+    static CloneWarhead(sourceWarhead)
+    {
+        const warhead = new EveMissileWarhead();
+        warhead.mesh = sourceWarhead.mesh;
+        warhead.spriteSet = sourceWarhead.spriteSet;
+        return warhead;
     }
 
     /**

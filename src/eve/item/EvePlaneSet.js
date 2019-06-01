@@ -178,6 +178,17 @@ export class EvePlaneSet extends EveObjectSet
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out=[])
+    {
+        if (this.effect) this.effect.GetResources(out);
+        return out;
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt - Delta Time
      * @param {mat4} [parentMatrix]

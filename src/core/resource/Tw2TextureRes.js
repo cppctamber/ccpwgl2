@@ -253,7 +253,7 @@ export class Tw2TextureRes extends Tw2Resource
         image.onload = () =>
         {
             resMan._pendingLoads--;
-            resMan._prepareQueue.push([this, image, null]);
+            resMan.Queue(this, image);
             this.OnLoaded();
         };
 

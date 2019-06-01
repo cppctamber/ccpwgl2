@@ -18,7 +18,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Array.<TriObserverLocal>} observers  -
  * @property {Tr2Effect} shadowEffect              -
  */
-export default class EveMobile extends Tw2BaseClass
+export class EveMobile extends Tw2BaseClass
 {
 
     name = "";

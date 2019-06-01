@@ -51,6 +51,18 @@ export class EveChildMesh extends EveChild
     _perObjectData = null;
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.mesh) this.mesh.GetResources(out);
+        return out;
+    }
+
+
+    /**
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform

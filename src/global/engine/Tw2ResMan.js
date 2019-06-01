@@ -3,9 +3,9 @@ import {Tw2LoadingObject} from "../../core/resource/Tw2LoadingObject";
 import Tw2EventEmitter from "../class/Tw2EventEmitter";
 import {
     Tw2Error,
-    ErrHTTPInstance,
-    ErrHTTPReadyState,
-    ErrHTTPRequestSend,
+    //ErrHTTPInstance,
+    //ErrHTTPReadyState,
+    //ErrHTTPRequestSend,
     ErrHTTPStatus,
     ErrFeatureNotImplemented,
     ErrResourceExtensionUndefined,
@@ -13,8 +13,7 @@ import {
     ErrResourcePrefixUndefined,
     ErrResourcePrefixUnregistered
 } from "../../core";
-import {assignIfExists, isError} from "../util";
-
+import {assignIfExists, isError, isFunction, isPromise} from "../util";
 
 /**
  * Resource Manager
@@ -54,7 +53,7 @@ export class Tw2ResMan extends Tw2EventEmitter
     _tw2 = null;
 
     /**
-     * 
+     *
      * @param tw2
      */
     constructor(tw2)
@@ -113,7 +112,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             {
                 const err = eventData.err = log;
                 this.motherLode.AddError(path, err);
-                log = Object.assign({}, defaultLog, { message: err.message, err });
+                log = Object.assign({}, defaultLog, {message: err.message, err});
             }
             else
             {
@@ -159,7 +158,6 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     Tick(device)
     {
-
         if (this._prepareQueue.length === 0 && this._pendingLoads === 0)
         {
             if (this._noLoadFrames < 2)
@@ -218,9 +216,19 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Adds a resource and response to the prepare queue
+     * @param {Tw2Resource} res
+     * @param {*} response
+     */
+    Queue(res, response)
+    {
+        this._prepareQueue.push([res, response]);
+    }
+
+    /**
      * Gets a resource
      * @param {String} path
-     * @returns {Tw2Resource} resource
+     * @returns {Tw2Resource|*} resource
      */
     GetResource(path)
     {
@@ -262,31 +270,9 @@ export class Tw2ResMan extends Tw2EventEmitter
             return null;
         }
 
-        try
-        {
-            res = new Constructor();
-            res.path = path;
-            return Tw2ResMan.LoadResource(this, res);
-        }
-        catch (err)
-        {
-            this.OnResError(path, err);
-            return null;
-        }
-    }
-
-    /**
-     * Gets a promise that will resolve into an object
-     * - TODO: Remove all ajax calls with fetch
-     * @param {String} path
-     * @returns {Promise<any>}
-     */
-    GetObjectAsync(path)
-    {
-        return new Promise((resolve, reject) =>
-        {
-            this.GetObject(path, resolve, reject);
-        });
+        res = new Constructor();
+        res.path = path;
+        return this.LoadResource(res);
     }
 
     /**
@@ -297,7 +283,6 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     GetObject(path, onResolved, onRejected)
     {
-
         path = Tw2ResMan.NormalizePath(path);
 
         // Check if already exists
@@ -317,17 +302,23 @@ export class Tw2ResMan extends Tw2EventEmitter
             return;
         }
 
-        try
+        res = new Tw2LoadingObject();
+        res.path = path;
+        res.AddObject(onResolved, onRejected);
+        this.LoadResource(res);
+    }
+
+    /**
+     * Gets a promise that will resolve into an object
+     * @param {String} path
+     * @returns {Promise<any>}
+     */
+    GetObjectAsync(path)
+    {
+        return new Promise((resolve, reject) =>
         {
-            res = new Tw2LoadingObject();
-            res.path = path;
-            res.AddObject(onResolved, onRejected);
-            Tw2ResMan.LoadResource(this, res);
-        }
-        catch (err)
-        {
-            this.OnResError(path, err);
-        }
+            this.GetObject(path, resolve, reject);
+        });
     }
 
     /**
@@ -337,25 +328,112 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     ReloadResource(resource)
     {
-        const path = resource.path;
-
-        // Check if it hasn't been purged
-        const res = this.motherLode.Find(path);
-        if (res && (!res.IsPurged() || res.HasErrors()))
+        if (resource.IsPurged() || resource.HasErrors())
         {
-            return res;
+            this.LoadResource(resource);
         }
+        return resource;
+    }
+
+    /**
+     * Loads a resource
+     * @param {Tw2Resource|*} res
+     */
+    LoadResource(res)
+    {
+        const
+            path = res.path,
+            responseType = res.requestResponseType;
+
+        let url = path,
+            ext = Tw2ResMan.GetPathExt(url),
+            promise;
+
+        this.motherLode.Add(res.path, res);
+        res.OnRequested();
 
         try
         {
-            Tw2ResMan.LoadResource(this, resource);
+            url = this.BuildUrl(path);
+            if (res.DoCustomLoad && res.DoCustomLoad(url, ext, this))
+            {
+                return res;
+            }
         }
         catch (err)
         {
-            resource.OnError(err);
+            res.OnError(err);
+            return res;
         }
 
-        return resource;
+        this.Fetch(url, responseType)
+            .then(response =>
+            {
+                res.OnLoaded();
+                this.Queue(res, response);
+            })
+            .catch(err =>
+            {
+                res.OnError(err);
+            });
+
+        return res;
+    }
+
+    /**
+     * Fetches cache
+     * @param {String} url
+     * @param {String|Function} responseType
+     * @returns {Promise}
+     */
+    Fetch(url, responseType)
+    {
+        this._pendingLoads++;
+
+        return fetch(url)
+            .then(response =>
+            {
+                if (!response.ok)
+                {
+                    throw new ErrHTTPStatus({status: response.status, url});
+                }
+
+                if (isFunction(responseType))
+                {
+                    return responseType(response);
+                }
+
+                switch (responseType)
+                {
+                    case "arraybuffer":
+                        return response.arrayBuffer();
+
+                    case "body":
+                        return response.body();
+
+                    case "text":
+                        return response.text();
+
+                    case "json":
+                        return response.json();
+
+                    case "blob":
+                        return response.blob();
+
+                    default:
+                        throw new Error("Invalid fetch type: " + responseType);
+                }
+            })
+            .then(response =>
+            {
+                this._pendingLoads--;
+                return response;
+            })
+            .catch(err =>
+            {
+                this._pendingLoads++;
+                throw err;
+            });
     }
 
     /**
@@ -393,7 +471,6 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     static NormalizePath(path)
     {
-        if (path.substr(0, 5) === "str:/") return path;
         path = path.toLowerCase();
         path.replace("\\", "/");
         return path;
@@ -406,155 +483,9 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     static GetPathExt(path)
     {
-        if (path.substr(0, 5) === "str:/")
-        {
-            const slash = path.indexOf("/", 5);
-            if (slash === -1) return null;
-            return path.substr(5, slash - 5);
-        }
-        else
-        {
-            const dot = path.lastIndexOf(".");
-            if (dot === -1) return null;
-            return path.substr(dot + 1);
-        }
-    }
-
-    /**
-     * Loads a resource
-     * @param {Tw2ResMan} resMan
-     * @param {Tw2Resource|Tw2LoadingObject} res
-     * @returns {Tw2Resource|Tw2LoadingObject} res
-     */
-    static LoadResource(resMan, res)
-    {
-        const
-            path = res.path,
-            url = resMan.BuildUrl(path);
-
-        resMan.motherLode.Add(path, res);
-
-        if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url)))
-        {
-            return res;
-        }
-
-        const httpRequest = Tw2ResMan.CreateHttpRequest(res);
-        httpRequest.onreadystatechange = Tw2ResMan.DoLoadResource(resMan, res);
-        httpRequest.open("GET", url);
-
-        try
-        {
-            httpRequest.send();
-            resMan._pendingLoads++;
-            res.OnRequested();
-        }
-        catch (err)
-        {
-            throw new ErrHTTPRequestSend({path});
-        }
-
-        return res;
-    }
-
-    /**
-     * Creates an onreadystatechange callback
-     * @param {Tw2ResMan} resMan
-     * @param {Tw2Resource} res
-     */
-    static DoLoadResource(resMan, res)
-    {
-        const path = res.path;
-
-        return function ()
-        {
-            let readyState = 0;
-
-            try
-            {
-                readyState = this.readyState;
-            }
-            catch (err)
-            {
-                resMan._pendingLoads--;
-                res.OnError(new ErrHTTPReadyState({path}));
-                return;
-            }
-
-            if (readyState === 4)
-            {
-                const status = this.status;
-                if (status === 200)
-                {
-                    let data = null,
-                        xml = null;
-
-                    try
-                    {
-                        data = this.responseText;
-                        xml = this.responseXML;
-                    }
-                    catch (e)
-                    {
-                        data = this.response;
-                    }
-
-                    resMan._prepareQueue.push([res, data, xml]);
-                    res.OnLoaded();
-                }
-                else
-                {
-                    res.OnError(new ErrHTTPStatus({path, status}));
-                }
-                resMan._pendingLoads--;
-            }
-        };
-    }
-
-    /**
-     * Creates an HTTP request
-     * @param {Tw2Resource} res
-     * @returns {XMLHttpRequest|ActiveXObject}
-     */
-    static CreateHttpRequest(res)
-    {
-        let httpRequest = null;
-
-        if (window.XMLHttpRequest)
-        {
-            // Mozilla, Safari, ...
-            httpRequest = new XMLHttpRequest();
-        }
-        else if (window.ActiveXObject)
-        {
-            // IE
-            try
-            {
-                httpRequest = new window["ActiveXObject"]("Msxml2.XMLHTTP");
-            }
-            catch (e)
-            {
-                try
-                {
-                    httpRequest = new window["ActiveXObject"]("Microsoft.XMLHTTP");
-                }
-                catch (e)
-                {
-                    /*eslint-disable-line-no-empty*/
-                }
-            }
-        }
-
-        if (!httpRequest)
-        {
-            throw new ErrHTTPInstance({path: res.path});
-        }
-        else if (res.requestResponseType)
-        {
-            httpRequest.responseType = res.requestResponseType;
-        }
-
-        return httpRequest;
+        const dot = path.lastIndexOf(".");
+        if (dot === -1) return null;
+        return path.substr(dot + 1);
     }
 
     // Default log outputs for resource events

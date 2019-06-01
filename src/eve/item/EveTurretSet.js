@@ -251,6 +251,22 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out=[])
+    {
+        if (this.turretEffect) this.turretEffect.GetResources(out);
+        if (this.firingEffect) this.firingEffect.GetResources(out);
+        if (this.geometryResource && !out.includes(this.geometryResource))
+        {
+            out.push(this.geometryResource);
+        }
+        return out;
+    }
+
+    /**
      * Sets a callback which is called when the turret set fires
      * @param {Function} func
      */

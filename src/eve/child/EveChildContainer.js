@@ -49,6 +49,19 @@ export class EveChildContainer extends EveChild
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        for (let i = 0; i < this.objects.length; i++)
+        {
+            this.objects[i].GetResources(out);
+        }
+        return out;
+    }
 
     /**
      * Per frame update

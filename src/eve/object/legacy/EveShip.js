@@ -29,6 +29,28 @@ export class EveShip extends EveSpaceObject
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        super.GetResources(out);
+
+        for (let i = 0; i < this.turretSets.length; i++)
+        {
+            this.turretSets[i].GetResources(out);
+        }
+
+        if (this.boosters)
+        {
+            this.boosters.GetResources(out);
+        }
+
+        return out;
+    }
+
+    /**
      * Rebuilds the ship's booster set
      */
     RebuildBoosterSet()
@@ -78,29 +100,6 @@ export class EveShip extends EveSpaceObject
         }
 
         turretSet.UpdateItemsFromLocators(locators);
-    }
-
-    /**
-     * Gets ship's res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @param {Boolean} excludeChildren - True to exclude children's res objects
-     * @returns {Array.<Tw2EffectRes|Tw2TextureRes|Tw2GeometryRes>} [out]
-     */
-    GetResources(out = [], excludeChildren)
-    {
-        super.GetResources(out, excludeChildren);
-
-        for (let i = 0; i < this.turretSets.length; i++)
-        {
-            this.turretSets[i].GetResources(out);
-        }
-
-        if (this.boosters)
-        {
-            this.boosters.GetResources(out);
-        }
-
-        return out;
     }
 
     /**

@@ -12571,6 +12571,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return Tw2Effect; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
+/* harmony import */ var _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/class/Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -12578,6 +12579,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -12597,7 +12599,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @class
  */
 
-let Tw2Effect =
+let Tw2Effect //extends Tw2BaseClass
+=
 /*#__PURE__*/
 function () {
   function Tw2Effect() {
@@ -22417,9 +22420,7 @@ function (_Tw2Resource) {
 
       image.onload = () => {
         _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads--;
-
-        _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._prepareQueue.push([this, image, null]);
-
+        _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image);
         this.OnLoaded();
       };
 
@@ -22763,12 +22764,13 @@ function (_Tw2Resource) {
      *
      * @param {String} path
      * @param {String} extension
+     * @param {Tw2ResMan} resMan
      * @returns {Boolean} returns true to tell the resMan not to handle http requests
      */
 
   }, {
     key: "DoCustomLoad",
-    value: function DoCustomLoad(path, extension) {
+    value: function DoCustomLoad(path, extension, resMan) {
       switch (extension) {
         case "mp4":
         case "webm":
@@ -22782,8 +22784,6 @@ function (_Tw2Resource) {
           });
       }
 
-      this.OnRequested();
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"]._pendingLoads++;
       this.video = document.createElement("video");
       this.video.crossOrigin = "anonymous";
       this.video.muted = true;
@@ -22792,7 +22792,7 @@ function (_Tw2Resource) {
        */
 
       this.video.onerror = () => {
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"]._pendingLoads--;
+        resMan._pendingLoads--;
         this.video = null;
         this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrHTTPRequest"]({
           path
@@ -22806,10 +22806,8 @@ function (_Tw2Resource) {
       this.video.oncanplay = () => {
         this._playable = true;
         this.video.oncanplay = null;
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"]._pendingLoads--;
-
-        _global__WEBPACK_IMPORTED_MODULE_0__["resMan"]._prepareQueue.push([this, extension, null]);
-
+        resMan._pendingLoads--;
+        resMan.Queue(this, extension);
         this.OnLoaded();
       };
       /**
@@ -33499,6 +33497,18 @@ function (_Tw2BaseClass) {
       throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
     }
     /**
+     * Gets object resources
+     * @param {Array} [out=[]]
+     * @returns {Array<Tw2Resource>} out
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
+    }
+    /**
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
@@ -33603,14 +33613,27 @@ function (_EveChild) {
     return _this;
   }
 
-  _createClass(EveChildBulletStorm, null, [{
-    key: "black",
+  _createClass(EveChildBulletStorm, [{
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.effect) this.effect.GetResources(out);
+      return out;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["effect", r.object], ["multiplier", r.uint], ["range", r.float], ["speed", r.float], ["sourceLocatorSet", r.string]];
     }
@@ -33706,14 +33729,27 @@ function (_EveChild) {
     return _this;
   }
 
-  _createClass(EveChildCloud, null, [{
-    key: "black",
+  _createClass(EveChildCloud, [{
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.effect) this.effect.GetResources(out);
+      return out;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["cellScreenSize", r.float], ["sortingModifier", r.float], ["effect", r.object], ["name", r.string], ["preTesselationLevel", r.uint], ["rotation", r.vector4], ["scaling", r.vector3], ["translation", r.vector3]];
     }
@@ -33842,13 +33878,30 @@ function (_EveChild) {
   }
 
   _createClass(EveChildContainer, [{
-    key: "Update",
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      for (let i = 0; i < this.objects.length; i++) {
+        this.objects[i].GetResources(out);
+      }
+
+      return out;
+    }
     /**
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
      */
+
+  }, {
+    key: "Update",
     value: function Update(dt, parentTransform) {
       if (this.useSRT) {
         _global__WEBPACK_IMPORTED_MODULE_1__["quat"].normalize(this.rotation, this.rotation);
@@ -34025,14 +34078,33 @@ function (_EveChild) {
     return _this;
   }
 
-  _createClass(EveChildExplosion, null, [{
-    key: "black",
+  _createClass(EveChildExplosion, [{
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.localExplosion) this.localExplosion.GetResources(out);
+      if (this.localExplosionShared) this.localExplosionShared.GetResources(out);
+
+      for (let i = 0; i < this.localExplosions.length; i++) {
+        this.localExplosions[i].GetResources(out);
+      }
+
+      return out;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["globalDuration", r.float], ["globalExplosion", r.object], ["globalExplosionDelay", r.float], ["globalExplosions", r.array], ["globalScaling", r.vector3], ["localDuration", r.float], ["localExplosion", r.object], ["localExplosions", r.array], ["localExplosionInterval", r.float], ["localExplosionIntervalFactor", r.float], ["localExplosionShared", r.object], ["localTransform", r.matrix], ["name", r.string], ["rotation", r.vector4], ["scaling", r.vector3]];
     }
@@ -34176,14 +34248,27 @@ function (_EveChild) {
     return _this;
   }
 
-  _createClass(EveChildLink, null, [{
-    key: "black",
+  _createClass(EveChildLink, [{
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.mesh) this.mesh.GetResources(out);
+      return out;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["linkStrengthBindings", r.array], ["linkStrengthCurves", r.array], ["mesh", r.object], ["name", r.string], ["rotation", r.vector4]];
     }
@@ -34314,13 +34399,26 @@ function (_EveChild) {
   }
 
   _createClass(EveChildMesh, [{
-    key: "Update",
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.mesh) this.mesh.GetResources(out);
+      return out;
+    }
     /**
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
      */
+
+  }, {
+    key: "Update",
     value: function Update(dt, parentTransform) {
       if (this.useSRT) {
         _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
@@ -34495,14 +34593,32 @@ function (_EveChild) {
     return _this;
   }
 
-  _createClass(EveChildParticleSphere, null, [{
-    key: "black",
+  _createClass(EveChildParticleSphere, [{
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.mesh) this.mesh.GetResources(out);
+
+      if (this.particleSystem && this.particleSystem.GetResources) {
+        this.particleSystem.GetResources(out);
+      }
+
+      return out;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["generators", r.array], ["maxSpeed", r.float], ["mesh", r.object], ["movementScale", r.float], ["name", r.string], ["particleSystem", r.object], ["positionShiftDecreaseSpeed", r.float], ["positionShiftIncreaseSpeed", r.float], ["positionShiftMax", r.float], ["positionShiftMin", r.float], ["radius", r.float], ["useSpaceObjectData", r.boolean]];
     }
@@ -34626,13 +34742,35 @@ function (_EveChild) {
   }
 
   _createClass(EveChildParticleSystem, [{
-    key: "Update",
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.mesh) this.mesh.GetResources(out);
+
+      for (let i = 0; i < this.particleEmitters.length; i++) {
+        this.particleEmitters[i].GetResources(out);
+      }
+
+      for (let i = 0; i < this.particleSystems.length; i++) {
+        this.particleSystems[i].GetResources(out);
+      }
+
+      return out;
+    }
     /**
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform
      */
+
+  }, {
+    key: "Update",
     value: function Update(dt, parentTransform) {
       if (this.useSRT) {
         _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
@@ -34774,14 +34912,27 @@ function (_EveChild) {
     return _this;
   }
 
-  _createClass(EveChildQuad, null, [{
-    key: "black",
+  _createClass(EveChildQuad, [{
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.effect) this.effect.GetResources(out);
+      return out;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["brightness", r.float], ["color", r.color], ["effect", r.object], ["localTransform", r.matrix], ["minScreenSize", r.float], ["name", r.string], ["rotation", r.vector4], ["scaling", r.vector3], ["translation", r.vector3]];
     }
@@ -37453,7 +37604,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37591,6 +37742,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissile"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMobile"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveRootTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
@@ -37600,14 +37767,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissile"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
 
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./particle */ "./eve/particle/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_5__["EveParticleDirectForce"]; });
@@ -38333,6 +38492,19 @@ function (_EveObjectSet) {
     value: function Initialize() {
       this.OnValueChanged();
       this.Rebuild();
+    }
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.lineEffect) this.lineEffect.GetResources(out);
+      return out;
     }
     /**
      * Creates a straight line
@@ -40077,13 +40249,26 @@ function (_EveObjectSet) {
   }
 
   _createClass(EvePlaneSet, [{
-    key: "Update",
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.effect) this.effect.GetResources(out);
+      return out;
+    }
     /**
      * Per frame update
      * @param {Number} dt - Delta Time
      * @param {mat4} [parentMatrix]
      */
+
+  }, {
+    key: "Update",
     value: function Update(dt, parentMatrix) {
       this._time += dt;
 
@@ -40473,6 +40658,20 @@ function (_Tw2BaseClass) {
     value: function Initialize() {
       this.Rebuild();
       this.UpdateValues();
+    }
+    /**
+     * Gets effect resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.decalEffect) this.decalEffect.GetResources(out);
+      if (this.pickEffect) this.pickEffect.GetResources(out);
+      return out;
     }
     /**
      * Fire on value changes
@@ -40921,11 +41120,25 @@ function (_EveObjectSet) {
   }
 
   _createClass(EveSpotlightSet, [{
-    key: "Unload",
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.coneEffect) this.coneEffect.GetResources(out);
+      if (this.glowEffect) this.glowEffect.GetResources(out);
+      return out;
+    }
     /**
      * Unloads the spotlight set's buffers
      */
+
+  }, {
+    key: "Unload",
     value: function Unload() {
       if (this._coneVertexBuffer) {
         _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._coneVertexBuffer);
@@ -41719,6 +41932,19 @@ function (_EveObjectSet) {
     value: function Initialize() {
       this.UseQuads(!!this.useQuads);
       this.Rebuild();
+    }
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.effect) this.effect.GetResources(out);
+      return out;
     }
     /**
      * Use instanced rendering or 'quad' rendering
@@ -42755,6 +42981,25 @@ function (_EveObjectSet) {
           this.firingEffect.SetMuzzleBoneID(i, model.FindBoneByName(EveTurretSet.positionBoneSkeletonNames[i]));
         }
       }
+    }
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.turretEffect) this.turretEffect.GetResources(out);
+      if (this.firingEffect) this.firingEffect.GetResources(out);
+
+      if (this.geometryResource && !out.includes(this.geometryResource)) {
+        out.push(this.geometryResource);
+      }
+
+      return out;
     }
     /**
      * Sets a callback which is called when the turret set fires
@@ -43853,12 +44098,25 @@ function (_EveObjectSet) {
   }
 
   _createClass(EveBoosterSet, [{
-    key: "RebuildItems",
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.effect) this.effect.GetResources(out);
+      return out;
+    }
     /**
      * Rebuilds a booster set's items
      * @param {Boolean} [skipUpdate]
      */
+
+  }, {
+    key: "RebuildItems",
     value: function RebuildItems(skipUpdate) {
       const glows = this.glows,
             g = EveBoosterSet.global,
@@ -44509,6 +44767,20 @@ function (_Tw2BaseClass) {
       if (this.spriteSet) this.spriteSet.UseQuads(true);
     }
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.mesh) this.mesh.GetResources(out);
+      if (this.spriteSet) this.spriteSet.GetResources(out);
+      return out;
+    }
+    /**
      * Sets up the warhead for rendering
      * @param {mat4} transform - Initial local to world transform
      */
@@ -44522,19 +44794,6 @@ function (_Tw2BaseClass) {
       this._velocity[2] = transform[10] * this.startEjectVelocity;
       this._time = 0;
       this._state = EveMissileWarhead.State.IN_FLIGHT;
-    }
-    /**
-     * Gets warhead resources
-     * @param {Array} [out=[]] - Receiving array
-     * @returns {Array<Tw2Resource>} out
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      if (this.mesh) this.mesh.GetResources(out);
-      if (this.spriteSet) this.spriteSet.GetResources(out);
     }
     /**
      * Per frame view dependent data update
@@ -44765,7 +45024,7 @@ function (_Tw2BaseClass2) {
         this.warheads.splice(turretTransforms.length);
       } else {
         while (this.warheads.length < turretTransforms.length) {
-          this.warheads.push(this.CloneWarhead(this.warheads[0]));
+          this.warheads.push(this.constructor.CloneWarhead(this.warheads[0]));
         }
       }
 
@@ -44774,23 +45033,9 @@ function (_Tw2BaseClass2) {
       }
     }
     /**
-     * Clones a warhead
-     * @param {EveMissileWarhead} sourceWarhead
-     * @returns {EveMissileWarhead}
-     */
-
-  }, {
-    key: "CloneWarhead",
-    value: function CloneWarhead(sourceWarhead) {
-      const warhead = new EveMissileWarhead();
-      warhead.mesh = sourceWarhead.mesh;
-      warhead.spriteSet = sourceWarhead.spriteSet;
-      return warhead;
-    }
-    /**
-     * Gets missile res objects
-     * @param {Array} [out=[]] - Receiving array
-     * @returns {Array<Tw2Resource>} out
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
      */
 
   }, {
@@ -44801,6 +45046,8 @@ function (_Tw2BaseClass2) {
       for (let i = 0; i < this.warheads.length; ++i) {
         this.warheads[i].GetResources(out);
       }
+
+      return out;
     }
     /**
      * Per frame view dependent data update
@@ -44875,12 +45122,26 @@ function (_Tw2BaseClass2) {
       }
     }
     /**
+     * Clones a warhead
+     * @param {EveMissileWarhead} sourceWarhead
+     * @returns {EveMissileWarhead}
+     */
+
+  }], [{
+    key: "CloneWarhead",
+    value: function CloneWarhead(sourceWarhead) {
+      const warhead = new EveMissileWarhead();
+      warhead.mesh = sourceWarhead.mesh;
+      warhead.spriteSet = sourceWarhead.spriteSet;
+      return warhead;
+    }
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
 
-  }], [{
+  }, {
     key: "black",
     value: function black(r) {
       return [["boundingSphereCenter", r.vector3], ["boundingSphereRadius", r.float], ["modelTranslationCurve", r.object], ["name", r.string], ["warheads", r.array]];
@@ -44903,12 +45164,12 @@ _defineProperty(EveMissile, "__isStaging", 2);
 /*!*********************************!*\
   !*** ./eve/object/EveMobile.js ***!
   \*********************************/
-/*! exports provided: default */
+/*! exports provided: EveMobile */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveMobile; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return EveMobile; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45012,20 +45273,18 @@ function (_Tw2BaseClass) {
 
 _defineProperty(EveMobile, "__isStaging", 4);
 
-
-
 /***/ }),
 
 /***/ "./eve/object/EveRootTransform.js":
 /*!****************************************!*\
   !*** ./eve/object/EveRootTransform.js ***!
   \****************************************/
-/*! exports provided: default */
+/*! exports provided: EveRootTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveRootTransform; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return EveRootTransform; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45138,20 +45397,18 @@ function (_Tw2BaseClass) {
 
 _defineProperty(EveRootTransform, "__isStaging", 4);
 
-
-
 /***/ }),
 
 /***/ "./eve/object/EveShip2.js":
 /*!********************************!*\
   !*** ./eve/object/EveShip2.js ***!
   \********************************/
-/*! exports provided: default */
+/*! exports provided: EveShip2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveShip2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return EveShip2; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45270,20 +45527,18 @@ function (_Tw2BaseClass) {
 
 _defineProperty(EveShip2, "__isStaging", 4);
 
-
-
 /***/ }),
 
 /***/ "./eve/object/EveStation2.js":
 /*!***********************************!*\
   !*** ./eve/object/EveStation2.js ***!
   \***********************************/
-/*! exports provided: default */
+/*! exports provided: EveStation2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EveStation2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return EveStation2; });
 /* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45407,8 +45662,6 @@ function (_Tw2BaseClass) {
 }(_global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
 _defineProperty(EveStation2, "__isStaging", 4);
-
-
 
 /***/ }),
 
@@ -45570,9 +45823,8 @@ function (_EveObject) {
       _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     }
     /**
-     * Gets transform res objects
+     * Gets object resources
      * @param {Array} [out=[]] - Optional receiving array
-     * @param {Boolean} [excludeChildren] - True to exclude children's res objects
      * @returns {Array.<Tw2Resource>} [out]
      */
 
@@ -45580,16 +45832,10 @@ function (_EveObject) {
     key: "GetResources",
     value: function GetResources() {
       let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      let excludeChildren = arguments.length > 1 ? arguments[1] : undefined;
+      if (this.mesh) this.mesh.GetResources(out);
 
-      if (this.mesh) {
-        this.mesh.GetResources(out);
-      }
-
-      if (!excludeChildren) {
-        for (let i = 0; i < this.children.length; i++) {
-          this.children[i].GetResources(out);
-        }
+      for (let i = 0; i < this.children.length; i++) {
+        this.children[i].GetResources(out);
       }
 
       return out;
@@ -45848,7 +46094,7 @@ _defineProperty(EveTransform, "__isStaging", 1);
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveTransform */
+/*! exports provided: EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -45873,10 +46119,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return _EveMissile__WEBPACK_IMPORTED_MODULE_2__["EveMissile"]; });
 
 /* harmony import */ var _EveMobile__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveMobile */ "./eve/object/EveMobile.js");
-/* empty/unused harmony star reexport *//* harmony import */ var _EveRootTransform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveRootTransform */ "./eve/object/EveRootTransform.js");
-/* empty/unused harmony star reexport *//* harmony import */ var _EveShip2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveShip2 */ "./eve/object/EveShip2.js");
-/* empty/unused harmony star reexport *//* harmony import */ var _EveStation2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveStation2 */ "./eve/object/EveStation2.js");
-/* empty/unused harmony star reexport *//* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveTransform */ "./eve/object/EveTransform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return _EveMobile__WEBPACK_IMPORTED_MODULE_3__["EveMobile"]; });
+
+/* harmony import */ var _EveRootTransform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveRootTransform */ "./eve/object/EveRootTransform.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return _EveRootTransform__WEBPACK_IMPORTED_MODULE_4__["EveRootTransform"]; });
+
+/* harmony import */ var _EveShip2__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveShip2 */ "./eve/object/EveShip2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return _EveShip2__WEBPACK_IMPORTED_MODULE_5__["EveShip2"]; });
+
+/* harmony import */ var _EveStation2__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveStation2 */ "./eve/object/EveStation2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _EveStation2__WEBPACK_IMPORTED_MODULE_6__["EveStation2"]; });
+
+/* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveTransform */ "./eve/object/EveTransform.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _EveTransform__WEBPACK_IMPORTED_MODULE_7__["EveTransform"]; });
 
 
@@ -45988,11 +46242,28 @@ function (_EveObject) {
   }
 
   _createClass(EveEffectRoot, [{
-    key: "Start",
+    key: "GetResources",
 
+    /**
+     * Gets effect root res objects
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2EffectRes|Tw2TextureRes>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      for (let i = 0; i < this.effectChildren.length; ++i) {
+        this.effectChildren[i].GetResources(out);
+      }
+
+      return out;
+    }
     /**
      * Starts playing the effectRoot's curveSets if they exist
      */
+
+  }, {
+    key: "Start",
     value: function Start() {
       for (let i = 0; i < this.curveSets.length; ++i) {
         this.curveSets[i].Play();
@@ -46008,23 +46279,6 @@ function (_EveObject) {
       for (let i = 0; i < this.curveSets.length; ++i) {
         this.curveSets[i].Stop();
       }
-    }
-    /**
-     * Gets effect root res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2EffectRes|Tw2TextureRes>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-      for (let i = 0; i < this.effectChildren.length; ++i) {
-        this.effectChildren[i].GetResources(out);
-      }
-
-      return out;
     }
     /**
      * Internal per frame update
@@ -46272,8 +46526,19 @@ function (_EveObject) {
   }
 
   _createClass(EvePlanet, [{
-    key: "Create",
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.highDetail) this.highDetail.GetResources(out);
+      if (this.effectHeight) this.effectHeight.GetResources(out);
+      return out;
+    }
     /**
      * Creates the planet from an options object
      * @param {{}} options={}                   - an object containing the planet's options
@@ -46284,6 +46549,9 @@ function (_EveObject) {
      * @param {String} options.heightMap2       - the planet's second height map
      * @param {function} [onLoaded]             - an optional callback which is fired when the planet has loaded
      */
+
+  }, {
+    key: "Create",
     value: function Create() {
       let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       let onLoaded = arguments.length > 1 ? arguments[1] : undefined;
@@ -46360,20 +46628,6 @@ function (_EveObject) {
           }
         }
       }
-    }
-    /**
-     * Gets planet res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      if (this.highDetail) this.highDetail.GetResources(out);
-      if (this.effectHeight) this.effectHeight.GetResources(out);
-      return out;
     }
     /**
      * Updates view dependent data
@@ -46637,6 +46891,29 @@ function (_EveSpaceObject) {
       }
     }
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+      _get(_getPrototypeOf(EveShip.prototype), "GetResources", this).call(this, out);
+
+      for (let i = 0; i < this.turretSets.length; i++) {
+        this.turretSets[i].GetResources(out);
+      }
+
+      if (this.boosters) {
+        this.boosters.GetResources(out);
+      }
+
+      return out;
+    }
+    /**
      * Rebuilds the ship's booster set
      */
 
@@ -46683,31 +46960,6 @@ function (_EveSpaceObject) {
       }
 
       turretSet.UpdateItemsFromLocators(locators);
-    }
-    /**
-     * Gets ship's res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @param {Boolean} excludeChildren - True to exclude children's res objects
-     * @returns {Array.<Tw2EffectRes|Tw2TextureRes|Tw2GeometryRes>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      let excludeChildren = arguments.length > 1 ? arguments[1] : undefined;
-
-      _get(_getPrototypeOf(EveShip.prototype), "GetResources", this).call(this, out, excludeChildren);
-
-      for (let i = 0; i < this.turretSets.length; i++) {
-        this.turretSets[i].GetResources(out);
-      }
-
-      if (this.boosters) {
-        this.boosters.GetResources(out);
-      }
-
-      return out;
     }
     /**
      * Updates view dependant data
@@ -46961,6 +47213,29 @@ function (_EveObject) {
       }
     }
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.mesh) this.mesh.GetResources(out);
+      if (this.animation) this.animation.GetResources(out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spriteSets, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.turretSets, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decals, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spotlightSets, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.planeSets, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.lineSets, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.overlayEffects, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.effectChildren, "GetResources", out);
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.children, "GetResources", out);
+      return out;
+    }
+    /**
      * Resets the lod
      */
 
@@ -47134,35 +47409,6 @@ function (_EveObject) {
       }
 
       return locators;
-    }
-    /**
-     * Gets object's res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @param {Boolean} excludeChildren - True to exclude children's res objects
-     * @returns {Array.<Tw2EffectRes|Tw2TextureRes|Tw2GeometryRes>} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      let excludeChildren = arguments.length > 1 ? arguments[1] : undefined;
-      if (this.mesh) this.mesh.GetResources(out);
-      if (this.animation) this.animation.GetResources(out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spriteSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.turretSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decals, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spotlightSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.planeSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.lineSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.overlayEffects, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.effectChildren, "GetResources", out);
-
-      if (!excludeChildren) {
-        _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.children, "GetResources", out);
-      }
-
-      return out;
     }
     /**
      * A Per frame function that updates view dependent data
@@ -48488,7 +48734,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Schema */ "./global/class/Tw2Schema.js");
 /* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-/* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -48496,7 +48741,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -48520,8 +48764,6 @@ function () {
 
   _createClass(Tw2BaseClass, [{
     key: "Copy",
-    // Decide if reverse traversal is required (probably not)
-    //_parent = null;
 
     /* ----------------------------------------------------------------------------------------------------------------
                                                       Utilities
@@ -48719,13 +48961,12 @@ function () {
 
     /**
      * Internal handler for value changes
-     * @param [controller]
-     * @param [skipEvents]
+     * @param [opt]
      */
 
   }, {
     key: "OnValueChanged",
-    value: function OnValueChanged(controller, skipEvents) {}
+    value: function OnValueChanged(opt) {}
     /**
      * Triggers update handlers
      * @param {*} [opt]
@@ -48742,12 +48983,12 @@ function () {
     }
     /**
      * Internal handler for object destruction
-     * @param [controller]
+     * @param [opt]
      */
 
   }, {
     key: "OnDestroy",
-    value: function OnDestroy(controller) {}
+    value: function OnDestroy(opt) {}
     /**
      * Destroys the object
      * @param {*} [opt]
@@ -48769,38 +49010,25 @@ function () {
       -----------------------------------------------------------------------------------------------------------------*/
 
     /**
-     * Gets all child resources
-     * @param {Array} [out=[]]
-     * @return {Array} [out]
-     */
-
-  }, {
-    key: "GetResources",
-    value: function GetResources() {
-      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      this.Traverse(item => {
-        if (item.constructor.__isResource && !out.includes(item)) {
-          out.push(item);
-        }
-      });
-      return out;
-    }
-    /**
      * Traverses the object
      * @param {Function} callback
-     * @returns {!*}
+     * @returns {*}
      */
 
   }, {
     key: "Traverse",
     value: function Traverse(callback) {
       const result = callback(this);
-      return result ? result : this.constructor.perChild(this, child => {
+      if (result) return result;
+
+      function onChild(child, parent, property, index) {
         if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(child.Traverse)) {
           const result = child.Traverse(callback);
           if (result) return result;
         }
-      });
+      }
+
+      return this.constructor.perChild(this, onChild);
     }
     /**
      * Fires a callback on an object's children, and no further
@@ -48812,7 +49040,7 @@ function () {
   }], [{
     key: "from",
     value: function from(values, opt) {
-      // Allow setting already instantiated object from json
+      // Allow setting already instantiated object
       if (values && values instanceof this) {
         return values;
       }
@@ -48955,7 +49183,7 @@ function () {
       for (const key in obj) {
         if (obj.hasOwnProperty(key) && key.charAt(0) !== "_") {
           const value = obj[key];
-          if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isPrimary"])(value)) add("primary", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isTyped"])(value)) add("typed", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(value)) add("array", key);else if (value === null || Object(_util__WEBPACK_IMPORTED_MODULE_2__["isObjectObject"])(value)) add("object", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(value)) add("plain", key);
+          if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isPrimary"])(value)) add("primary", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(value)) add("array", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isTyped"])(value)) add("typed", key);else if (value === null || Object(_util__WEBPACK_IMPORTED_MODULE_2__["isObjectObject"])(value)) add("object", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(value)) add("plain", key);
         }
       }
 
@@ -48998,17 +49226,7 @@ function () {
 
 _defineProperty(Tw2BaseClass, "__keys", null);
 
-_defineProperty(Tw2BaseClass, "__type", null);
-
-_defineProperty(Tw2BaseClass, "__category", null);
-
-_defineProperty(Tw2BaseClass, "__isResource", false);
-
 _defineProperty(Tw2BaseClass, "__isStaging", false);
-
-_defineProperty(Tw2BaseClass, "__isLeaf", false);
-
-_defineProperty(Tw2BaseClass, "__ccp", null);
 
 _defineProperty(Tw2BaseClass, "black", null);
 
@@ -52585,7 +52803,7 @@ function (_Tw2EventEmitter) {
   _inherits(Tw2ResMan, _Tw2EventEmitter);
 
   /**
-   * 
+   *
    * @param tw2
    */
   function Tw2ResMan(tw2) {
@@ -52781,9 +52999,20 @@ function (_Tw2EventEmitter) {
       return true;
     }
     /**
+     * Adds a resource and response to the prepare queue
+     * @param {Tw2Resource} res
+     * @param {*} response
+     */
+
+  }, {
+    key: "Queue",
+    value: function Queue(res, response) {
+      this._prepareQueue.push([res, response]);
+    }
+    /**
      * Gets a resource
      * @param {String} path
-     * @returns {Tw2Resource} resource
+     * @returns {Tw2Resource|*} resource
      */
 
   }, {
@@ -52831,28 +53060,9 @@ function (_Tw2EventEmitter) {
         return null;
       }
 
-      try {
-        res = new Constructor();
-        res.path = path;
-        return Tw2ResMan.LoadResource(this, res);
-      } catch (err) {
-        this.OnResError(path, err);
-        return null;
-      }
-    }
-    /**
-     * Gets a promise that will resolve into an object
-     * - TODO: Remove all ajax calls with fetch
-     * @param {String} path
-     * @returns {Promise<any>}
-     */
-
-  }, {
-    key: "GetObjectAsync",
-    value: function GetObjectAsync(path) {
-      return new Promise((resolve, reject) => {
-        this.GetObject(path, resolve, reject);
-      });
+      res = new Constructor();
+      res.path = path;
+      return this.LoadResource(res);
     }
     /**
      * Gets a resource object
@@ -52881,14 +53091,23 @@ function (_Tw2EventEmitter) {
         return;
       }
 
-      try {
-        res = new _core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__["Tw2LoadingObject"]();
-        res.path = path;
-        res.AddObject(onResolved, onRejected);
-        Tw2ResMan.LoadResource(this, res);
-      } catch (err) {
-        this.OnResError(path, err);
-      }
+      res = new _core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__["Tw2LoadingObject"]();
+      res.path = path;
+      res.AddObject(onResolved, onRejected);
+      this.LoadResource(res);
+    }
+    /**
+     * Gets a promise that will resolve into an object
+     * @param {String} path
+     * @returns {Promise<any>}
+     */
+
+  }, {
+    key: "GetObjectAsync",
+    value: function GetObjectAsync(path) {
+      return new Promise((resolve, reject) => {
+        this.GetObject(path, resolve, reject);
+      });
     }
     /**
      * Reloads a resource
@@ -52899,21 +53118,96 @@ function (_Tw2EventEmitter) {
   }, {
     key: "ReloadResource",
     value: function ReloadResource(resource) {
-      const path = resource.path; // Check if it hasn't been purged
-
-      const res = this.motherLode.Find(path);
-
-      if (res && (!res.IsPurged() || res.HasErrors())) {
-        return res;
-      }
-
-      try {
-        Tw2ResMan.LoadResource(this, resource);
-      } catch (err) {
-        resource.OnError(err);
+      if (resource.IsPurged() || resource.HasErrors()) {
+        this.LoadResource(resource);
       }
 
       return resource;
+    }
+    /**
+     * Loads a resource
+     * @param {Tw2Resource|*} res
+     */
+
+  }, {
+    key: "LoadResource",
+    value: function LoadResource(res) {
+      const path = res.path,
+            responseType = res.requestResponseType;
+      let url = path,
+          ext = Tw2ResMan.GetPathExt(url),
+          promise;
+      this.motherLode.Add(res.path, res);
+      res.OnRequested();
+
+      try {
+        url = this.BuildUrl(path);
+
+        if (res.DoCustomLoad && res.DoCustomLoad(url, ext, this)) {
+          return res;
+        }
+      } catch (err) {
+        res.OnError(err);
+        return res;
+      }
+
+      this.Fetch(url, responseType).then(response => {
+        res.OnLoaded();
+        this.Queue(res, response);
+      }).catch(err => {
+        res.OnError(err);
+      });
+      return res;
+    }
+    /**
+     * Fetches cache
+     * @param {String} url
+     * @param {String|Function} responseType
+     * @returns {Promise}
+     */
+
+  }, {
+    key: "Fetch",
+    value: function Fetch(url, responseType) {
+      this._pendingLoads++;
+      return fetch(url).then(response => {
+        if (!response.ok) {
+          throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]({
+            status: response.status,
+            url
+          });
+        }
+
+        if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(responseType)) {
+          return responseType(response);
+        }
+
+        switch (responseType) {
+          case "arraybuffer":
+            return response.arrayBuffer();
+
+          case "body":
+            return response.body();
+
+          case "text":
+            return response.text();
+
+          case "json":
+            return response.json();
+
+          case "blob":
+            return response.blob();
+
+          default:
+            throw new Error("Invalid fetch type: " + responseType);
+        }
+      }).then(response => {
+        this._pendingLoads--;
+        return response;
+      }).catch(err => {
+        this._pendingLoads++;
+        throw err;
+      });
     }
     /**
      * Builds a url from a resource path
@@ -52958,7 +53252,6 @@ function (_Tw2EventEmitter) {
   }], [{
     key: "NormalizePath",
     value: function NormalizePath(path) {
-      if (path.substr(0, 5) === "str:/") return path;
       path = path.toLowerCase();
       path.replace("\\", "/");
       return path;
@@ -52972,137 +53265,9 @@ function (_Tw2EventEmitter) {
   }, {
     key: "GetPathExt",
     value: function GetPathExt(path) {
-      if (path.substr(0, 5) === "str:/") {
-        const slash = path.indexOf("/", 5);
-        if (slash === -1) return null;
-        return path.substr(5, slash - 5);
-      } else {
-        const dot = path.lastIndexOf(".");
-        if (dot === -1) return null;
-        return path.substr(dot + 1);
-      }
-    }
-    /**
-     * Loads a resource
-     * @param {Tw2ResMan} resMan
-     * @param {Tw2Resource|Tw2LoadingObject} res
-     * @returns {Tw2Resource|Tw2LoadingObject} res
-     */
-
-  }, {
-    key: "LoadResource",
-    value: function LoadResource(resMan, res) {
-      const path = res.path,
-            url = resMan.BuildUrl(path);
-      resMan.motherLode.Add(path, res);
-
-      if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url))) {
-        return res;
-      }
-
-      const httpRequest = Tw2ResMan.CreateHttpRequest(res);
-      httpRequest.onreadystatechange = Tw2ResMan.DoLoadResource(resMan, res);
-      httpRequest.open("GET", url);
-
-      try {
-        httpRequest.send();
-        resMan._pendingLoads++;
-        res.OnRequested();
-      } catch (err) {
-        throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPRequestSend"]({
-          path
-        });
-      }
-
-      return res;
-    }
-    /**
-     * Creates an onreadystatechange callback
-     * @param {Tw2ResMan} resMan
-     * @param {Tw2Resource} res
-     */
-
-  }, {
-    key: "DoLoadResource",
-    value: function DoLoadResource(resMan, res) {
-      const path = res.path;
-      return function () {
-        let readyState = 0;
-
-        try {
-          readyState = this.readyState;
-        } catch (err) {
-          resMan._pendingLoads--;
-          res.OnError(new _core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPReadyState"]({
-            path
-          }));
-          return;
-        }
-
-        if (readyState === 4) {
-          const status = this.status;
-
-          if (status === 200) {
-            let data = null,
-                xml = null;
-
-            try {
-              data = this.responseText;
-              xml = this.responseXML;
-            } catch (e) {
-              data = this.response;
-            }
-
-            resMan._prepareQueue.push([res, data, xml]);
-
-            res.OnLoaded();
-          } else {
-            res.OnError(new _core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]({
-              path,
-              status
-            }));
-          }
-
-          resMan._pendingLoads--;
-        }
-      };
-    }
-    /**
-     * Creates an HTTP request
-     * @param {Tw2Resource} res
-     * @returns {XMLHttpRequest|ActiveXObject}
-     */
-
-  }, {
-    key: "CreateHttpRequest",
-    value: function CreateHttpRequest(res) {
-      let httpRequest = null;
-
-      if (window.XMLHttpRequest) {
-        // Mozilla, Safari, ...
-        httpRequest = new XMLHttpRequest();
-      } else if (window.ActiveXObject) {
-        // IE
-        try {
-          httpRequest = new window["ActiveXObject"]("Msxml2.XMLHTTP");
-        } catch (e) {
-          try {
-            httpRequest = new window["ActiveXObject"]("Microsoft.XMLHTTP");
-          } catch (e) {
-            /*eslint-disable-line-no-empty*/
-          }
-        }
-      }
-
-      if (!httpRequest) {
-        throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPInstance"]({
-          path: res.path
-        });
-      } else if (res.requestResponseType) {
-        httpRequest.responseType = res.requestResponseType;
-      }
-
-      return httpRequest;
+      const dot = path.lastIndexOf(".");
+      if (dot === -1) return null;
+      return path.substr(dot + 1);
     } // Default log outputs for resource events
 
   }]);
@@ -57455,19 +57620,19 @@ function addToArray(arr) {
 /**
  * Calls a function with arguments for each child in an array where that function exists
  * @param {Array} arr
- * @param {String} func
+ * @param {String} funcName
  * @param args
  */
 
-function perArrayChild(arr, func) {
-  const len = arr.length;
-
+function perArrayChild(arr, funcName) {
   for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
     args[_key - 2] = arguments[_key];
   }
 
-  for (let i = 0; i < len; i++) {
-    if (func in arr) arr[i][func](...args);
+  for (let i = 0; i < arr.length; i++) {
+    if (funcName in arr[i]) {
+      arr[i][funcName](...args);
+    }
   }
 }
 /**
@@ -59169,14 +59334,35 @@ function (_Tw2BaseClass) {
     return _this;
   }
 
-  _createClass(Tr2GpuParticleSystem, null, [{
-    key: "black",
+  _createClass(Tr2GpuParticleSystem, [{
+    key: "GetResources",
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.clear) this.clear.GetResources(out);
+      if (this.emit) this.emit.GetResources(out);
+      if (this.render) this.render.GetResources(out);
+      if (this.setDrawParameters) this.setDrawParameters.GetResources(out);
+      if (this.setSortParameters) this.setSortParameters.GetResources(out);
+      if (this.sort) this.sort.GetResources(out);
+      if (this.sortInner) this.sortInner.GetResources(out);
+      if (this.sortStep) this.sortStep.GetResources(out);
+      if (this.update) this.update.GetResources(out);
+      return out;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["clear", r.object], ["emit", r.object], ["render", r.object], ["setDrawParameters", r.object], ["setSortParameters", r.object], ["sort", r.object], ["sortInner", r.object], ["sortStep", r.object], ["update", r.object]];
     }
@@ -59361,6 +59547,18 @@ function (_Tw2BaseClass) {
     key: "Initialize",
     value: function Initialize() {
       this.UpdateElementDeclaration();
+    }
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      return out;
     }
     /**
      * Updates Element Declarations
@@ -60872,6 +61070,19 @@ function (_Tw2BaseClass) {
       throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
     }
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+
+  }, {
+    key: "GetResources",
+    value: function GetResources() {
+      let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.particleSystem) this.particleSystem.GetResources(out);
+      return out;
+    }
+    /**
      * Per frame update
      * @param {number} dt - delta time
      */
@@ -60977,15 +61188,16 @@ function (_Tw2ParticleEmitter) {
       this._spawned = false;
     }
     /**
-     * Gets resources
-     * @param {Array} [out=[]]
-     * @returns {Array<Tw2Resource>} out
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
      */
 
   }, {
     key: "GetResources",
     value: function GetResources() {
       let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      if (this.particleSystem) this.particleSystem.GetResources(out);
 
       if (this.geometryResource && !out.includes(this.geometryResource)) {
         out.push(this.geometryResource);

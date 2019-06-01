@@ -1,7 +1,6 @@
 import Tw2Schema from "./Tw2Schema";
 import {ErrAbstractClassMethod} from "../../core/Tw2Error";
-import {generateID, isArray, isFunction, isObject, isObjectObject, isPlain, isPrimary, isTyped} from "../util";
-import Tw2EventEmitter from "./Tw2EventEmitter";
+import {generateID, isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped} from "../util";
 
 /**
  * Provides core functionality for classes
@@ -14,9 +13,6 @@ export default class Tw2BaseClass
 {
 
     _id = generateID();
-
-    // Decide if reverse traversal is required (probably not)
-    //_parent = null;
 
     /* ----------------------------------------------------------------------------------------------------------------
 
@@ -75,7 +71,7 @@ export default class Tw2BaseClass
      */
     static from(values, opt)
     {
-        // Allow setting already instantiated object from json
+        // Allow setting already instantiated object
         if (values && values instanceof this)
         {
             return values;
@@ -92,6 +88,7 @@ export default class Tw2BaseClass
         {
             if ("Initialize" in item) item.Initialize();
         }
+
         return item;
     }
 
@@ -281,10 +278,9 @@ export default class Tw2BaseClass
 
     /**
      * Internal handler for value changes
-     * @param [controller]
-     * @param [skipEvents]
+     * @param [opt]
      */
-    OnValueChanged(controller, skipEvents)
+    OnValueChanged(opt)
     {
 
     }
@@ -304,9 +300,9 @@ export default class Tw2BaseClass
 
     /**
      * Internal handler for object destruction
-     * @param [controller]
+     * @param [opt]
      */
-    OnDestroy(controller)
+    OnDestroy(opt)
     {
 
     }
@@ -332,39 +328,25 @@ export default class Tw2BaseClass
     -----------------------------------------------------------------------------------------------------------------*/
 
     /**
-     * Gets all child resources
-     * @param {Array} [out=[]]
-     * @return {Array} [out]
-     */
-    GetResources(out = [])
-    {
-        this.Traverse(item =>
-        {
-            if (item.constructor.__isResource && !out.includes(item))
-            {
-                out.push(item);
-            }
-        });
-
-        return out;
-    }
-
-    /**
      * Traverses the object
      * @param {Function} callback
-     * @returns {!*}
+     * @returns {*}
      */
     Traverse(callback)
     {
         const result = callback(this);
-        return result ? result : this.constructor.perChild(this, child =>
+        if (result) return result;
+
+        function onChild(child, parent, property, index)
         {
             if (isFunction(child.Traverse))
             {
                 const result = child.Traverse(callback);
                 if (result) return result;
             }
-        });
+        }
+
+        return this.constructor.perChild(this, onChild);
     }
 
     /**
@@ -442,8 +424,8 @@ export default class Tw2BaseClass
             {
                 const value = obj[key];
                 if (isPrimary(value)) add("primary", key);
-                else if (isTyped(value)) add("typed", key);
                 else if (isArray(value)) add("array", key);
+                else if (isTyped(value)) add("typed", key);
                 else if (value === null || isObjectObject(value)) add("object", key);
                 else if (isPlain(value)) add("plain", key);
             }
@@ -466,45 +448,11 @@ export default class Tw2BaseClass
     static __keys = null;
 
     /**
-     * The classes' type
-     * @returns {?String}
-     * @private
-     */
-    static __type = null;
-
-    /**
-     * The classes' category
-     * @returns {?String}
-     * @private
-     */
-    static __category = null;
-
-    /**
-     * Identifies that the object is a resource
-     * @type {boolean}
-     */
-    static __isResource = false;
-
-    /**
      * Identifies that the class is being developed and may not be functional
      * @type {Boolean}
      * @private
      */
     static __isStaging = false;
-
-    /**
-     * Identifies if the class has no traversable children
-     * @returns {Boolean}
-     * @private
-     */
-    static __isLeaf = false;
-
-    /**
-     * Identifies the ccp name
-     * @type {null|String}
-     * @private
-     */
-    static __ccp = null;
 
     /* ----------------------------------------------------------------------------------------------------------------
 

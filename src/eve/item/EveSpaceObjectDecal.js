@@ -61,6 +61,18 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     }
 
     /**
+     * Gets effect resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out=[])
+    {
+        if (this.decalEffect) this.decalEffect.GetResources(out);
+        if (this.pickEffect) this.pickEffect.GetResources(out);
+        return out;
+    }
+
+    /**
      * Fire on value changes
      */
     OnValueChanged()

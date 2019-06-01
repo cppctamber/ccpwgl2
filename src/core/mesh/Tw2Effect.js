@@ -1,5 +1,6 @@
 import {util, resMan, device, store} from "../../global";
 import {Tw2TextureParameter} from "../parameter/Tw2TextureParameter";
+import Tw2BaseClass from "../../global/class/Tw2BaseClass";
 
 /**
  * Tw2Effect
@@ -16,7 +17,7 @@ import {Tw2TextureParameter} from "../parameter/Tw2TextureParameter";
  * @property {Boolean} autoParameter
  * @class
  */
-export class Tw2Effect
+export class Tw2Effect //extends Tw2BaseClass
 {
 
     _id = util.generateID();

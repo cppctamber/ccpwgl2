@@ -86,24 +86,17 @@ export class EveTransform extends EveObject
     }
 
     /**
-     * Gets transform res objects
+     * Gets object resources
      * @param {Array} [out=[]] - Optional receiving array
-     * @param {Boolean} [excludeChildren] - True to exclude children's res objects
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out = [], excludeChildren)
+    GetResources(out = [])
     {
-        if (this.mesh)
-        {
-            this.mesh.GetResources(out);
-        }
+        if (this.mesh) this.mesh.GetResources(out);
 
-        if (!excludeChildren)
+        for (let i = 0; i < this.children.length; i++)
         {
-            for (let i = 0; i < this.children.length; i++)
-            {
-                this.children[i].GetResources(out);
-            }
+            this.children[i].GetResources(out);
         }
 
         return out;

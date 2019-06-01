@@ -7,7 +7,7 @@ export {vec4};
  * @param {vec4} a
  * @returns {boolean}
  */
-vec4.isEmpty = function(a)
+vec4.isEmpty = function (a)
 {
     return a[0] === 0 && a[1] === 0 && a[2] === 0 && a[3] === 0;
 };

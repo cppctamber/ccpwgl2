@@ -23,7 +23,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {vec3} shapeEllipsoidRadius               -
  * @property {Curve|CurveAdapter} translationCurve     -
  */
-export default class EveShip2 extends Tw2BaseClass
+export class EveShip2 extends Tw2BaseClass
 {
 
     attachments = [];

@@ -46,6 +46,29 @@ export class EveChildParticleSystem extends EveChild
     _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.mesh) this.mesh.GetResources(out);
+
+        for (let i = 0; i < this.particleEmitters.length; i++)
+        {
+            this.particleEmitters[i].GetResources(out);
+        }
+
+        for (let i = 0; i < this.particleSystems.length; i++)
+        {
+            this.particleSystems[i].GetResources(out);
+        }
+
+        return out;
+    }
+
+
+    /**
      * Per frame update
      * @param {number} dt
      * @param {mat4} parentTransform

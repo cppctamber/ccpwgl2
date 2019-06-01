@@ -190,6 +190,17 @@ export class EveBoosterSet extends EveObjectSet
     _locatorDirty = true;
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.effect) this.effect.GetResources(out);
+        return out;
+    }
+
+    /**
      * Rebuilds a booster set's items
      * @param {Boolean} [skipUpdate]
      */

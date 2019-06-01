@@ -29,6 +29,25 @@ export class Tr2GpuParticleSystem extends Tw2BaseClass
     update = null;
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.clear) this.clear.GetResources(out);
+        if (this.emit) this.emit.GetResources(out);
+        if (this.render) this.render.GetResources(out);
+        if (this.setDrawParameters) this.setDrawParameters.GetResources(out);
+        if (this.setSortParameters) this.setSortParameters.GetResources(out);
+        if (this.sort) this.sort.GetResources(out);
+        if (this.sortInner) this.sortInner.GetResources(out);
+        if (this.sortStep) this.sortStep.GetResources(out);
+        if (this.update) this.update.GetResources(out);
+        return out;
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}

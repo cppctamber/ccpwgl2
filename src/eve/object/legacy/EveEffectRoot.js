@@ -37,6 +37,19 @@ export class EveEffectRoot extends EveObject
     boundingSphereRadius = 0;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
+    /**
+     * Gets effect root res objects
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2EffectRes|Tw2TextureRes>} [out]
+     */
+    GetResources(out = [])
+    {
+        for (let i = 0; i < this.effectChildren.length; ++i)
+        {
+            this.effectChildren[i].GetResources(out);
+        }
+        return out;
+    }
 
     /**
      * Starts playing the effectRoot's curveSets if they exist
@@ -58,20 +71,6 @@ export class EveEffectRoot extends EveObject
         {
             this.curveSets[i].Stop();
         }
-    }
-
-    /**
-     * Gets effect root res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2EffectRes|Tw2TextureRes>} [out]
-     */
-    GetResources(out = [])
-    {
-        for (let i = 0; i < this.effectChildren.length; ++i)
-        {
-            this.effectChildren[i].GetResources(out);
-        }
-        return out;
     }
 
     /**

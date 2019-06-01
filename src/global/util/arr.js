@@ -23,15 +23,17 @@ export function addToArray(arr, ...args)
 /**
  * Calls a function with arguments for each child in an array where that function exists
  * @param {Array} arr
- * @param {String} func
+ * @param {String} funcName
  * @param args
  */
-export function perArrayChild(arr, func, ...args)
+export function perArrayChild(arr, funcName, ...args)
 {
-    const len = arr.length;
-    for (let i = 0; i < len; i++)
+    for (let i = 0; i < arr.length; i++)
     {
-        if (func in arr) arr[i][func](...args);
+        if (funcName in arr[i])
+        {
+            arr[i][funcName](...args);
+        }
     }
 }
 

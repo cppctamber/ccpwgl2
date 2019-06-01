@@ -97,6 +97,16 @@ export class Tw2ParticleSystem extends Tw2BaseClass
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        return out;
+    }
+
+    /**
      * Updates Element Declarations
      */
     UpdateElementDeclaration()

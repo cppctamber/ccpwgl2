@@ -20,6 +20,17 @@ export class EveChildBulletStorm extends EveChild
     speed = 0;
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.effect) this.effect.GetResources(out);
+        return out;
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}

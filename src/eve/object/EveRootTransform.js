@@ -21,7 +21,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {vec3} translation                  -
  * @property {Tr2CurveConstant} translationCurve -
  */
-export default class EveRootTransform extends Tw2BaseClass
+export class EveRootTransform extends Tw2BaseClass
 {
 
     name = "";

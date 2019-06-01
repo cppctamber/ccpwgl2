@@ -114,7 +114,7 @@ vec3.exponentialDecay = function (out, omega0, torque, I, drag, time)
  * @param {vec3} a
  * @returns {boolean}
  */
-vec3.isEmpty = function(a)
+vec3.isEmpty = function (a)
 {
     return a[0] === 0 && a[1] === 0 && a[2] === 0;
 };

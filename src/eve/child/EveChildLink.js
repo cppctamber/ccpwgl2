@@ -21,6 +21,17 @@ export class EveChildLink extends EveChild
     rotation = quat.create();
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.mesh) this.mesh.GetResources(out);
+        return out;
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}

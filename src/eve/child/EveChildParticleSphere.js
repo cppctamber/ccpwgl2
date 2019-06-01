@@ -34,6 +34,21 @@ export class EveChildParticleSphere extends EveChild
     useSpaceObjectData = false;
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.mesh) this.mesh.GetResources(out);
+        if (this.particleSystem && this.particleSystem.GetResources)
+        {
+            this.particleSystem.GetResources(out);
+        }
+        return out;
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}

@@ -37,6 +37,22 @@ export class EveChildExplosion extends EveChild
     scaling = vec3.fromValues(1, 1, 1);
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.localExplosion) this.localExplosion.GetResources(out);
+        if (this.localExplosionShared) this.localExplosionShared.GetResources(out);
+        for (let i = 0; i < this.localExplosions.length; i++)
+        {
+            this.localExplosions[i].GetResources(out);
+        }
+        return out;
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}

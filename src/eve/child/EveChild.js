@@ -22,6 +22,16 @@ export class EveChild extends Tw2BaseClass
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]]
+     * @returns {Array<Tw2Resource>} out
+     */
+    GetResources(out = [])
+    {
+        throw new ErrAbstractClassMethod();
+    }
+
+    /**
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator

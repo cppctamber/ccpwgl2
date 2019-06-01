@@ -25,7 +25,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Tr2Effect} shadowEffect                 -
  * @property {Tr2TranslationAdapter} translationCurve -
  */
-export default class EveStation2 extends Tw2BaseClass
+export class EveStation2 extends Tw2BaseClass
 {
 
     attachments = [];

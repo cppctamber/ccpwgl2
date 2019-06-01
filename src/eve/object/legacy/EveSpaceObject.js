@@ -102,6 +102,27 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.mesh) this.mesh.GetResources(out);
+        if (this.animation) this.animation.GetResources(out);
+        util.perArrayChild(this.spriteSets, "GetResources", out);
+        util.perArrayChild(this.turretSets, "GetResources", out);
+        util.perArrayChild(this.decals, "GetResources", out);
+        util.perArrayChild(this.spotlightSets, "GetResources", out);
+        util.perArrayChild(this.planeSets, "GetResources", out);
+        util.perArrayChild(this.lineSets, "GetResources", out);
+        util.perArrayChild(this.overlayEffects, "GetResources", out);
+        util.perArrayChild(this.effectChildren, "GetResources", out);
+        util.perArrayChild(this.children, "GetResources", out);
+        return out;
+    }
+
+    /**
      * Resets the lod
      */
     ResetLod()
@@ -279,34 +300,6 @@ export class EveSpaceObject extends EveObject
             }
         }
         return locators;
-    }
-
-    /**
-     * Gets object's res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @param {Boolean} excludeChildren - True to exclude children's res objects
-     * @returns {Array.<Tw2EffectRes|Tw2TextureRes|Tw2GeometryRes>} [out]
-     */
-    GetResources(out = [], excludeChildren)
-    {
-        if (this.mesh) this.mesh.GetResources(out);
-        if (this.animation) this.animation.GetResources(out);
-
-        util.perArrayChild(this.spriteSets, "GetResources", out);
-        util.perArrayChild(this.turretSets, "GetResources", out);
-        util.perArrayChild(this.decals, "GetResources", out);
-        util.perArrayChild(this.spotlightSets, "GetResources", out);
-        util.perArrayChild(this.planeSets, "GetResources", out);
-        util.perArrayChild(this.lineSets, "GetResources", out);
-        util.perArrayChild(this.overlayEffects, "GetResources", out);
-        util.perArrayChild(this.effectChildren, "GetResources", out);
-
-        if (!excludeChildren)
-        {
-            util.perArrayChild(this.children, "GetResources", out);
-        }
-
-        return out;
     }
 
     /**

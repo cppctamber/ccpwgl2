@@ -38,6 +38,17 @@ export class EvePlanet extends EveObject
     _atmosphere = null;
     _planet = null;
 
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.highDetail) this.highDetail.GetResources(out);
+        if (this.effectHeight) this.effectHeight.GetResources(out);
+        return out;
+    }
 
     /**
      * Creates the planet from an options object
@@ -130,18 +141,6 @@ export class EvePlanet extends EveObject
                 }
             }
         }
-    }
-
-    /**
-     * Gets planet res objects
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-    GetResources(out = [])
-    {
-        if (this.highDetail) this.highDetail.GetResources(out);
-        if (this.effectHeight) this.effectHeight.GetResources(out);
-        return out;
     }
 
     /**

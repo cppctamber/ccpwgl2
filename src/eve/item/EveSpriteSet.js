@@ -179,6 +179,17 @@ export class EveSpriteSet extends EveObjectSet
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out=[])
+    {
+        if (this.effect) this.effect.GetResources(out);
+        return out;
+    }
+
+    /**
      * Use instanced rendering or 'quad' rendering
      * @param {Boolean} useQuads - Use quad rendering (CPU transform)
      */

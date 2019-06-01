@@ -328,6 +328,17 @@ export class EveCurveLineSet extends EveObjectSet
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out=[])
+    {
+        if (this.lineEffect) this.lineEffect.GetResources(out);
+        return out;
+    }
+
+    /**
      * Creates a straight line
      * @param {vec3} start
      * @param {vec3} end

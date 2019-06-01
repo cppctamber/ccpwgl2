@@ -148,6 +148,18 @@ export class EveSpotlightSet extends EveObjectSet
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out=[])
+    {
+        if (this.coneEffect) this.coneEffect.GetResources(out);
+        if (this.glowEffect) this.glowEffect.GetResources(out);
+        return out;
+    }
+
+    /**
      * Unloads the spotlight set's buffers
      */
     Unload()

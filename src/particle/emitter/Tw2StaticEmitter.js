@@ -56,12 +56,13 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     }
 
     /**
-     * Gets resources
-     * @param {Array} [out=[]]
-     * @returns {Array<Tw2Resource>} out
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
      */
     GetResources(out = [])
     {
+        if (this.particleSystem) this.particleSystem.GetResources(out);
         if (this.geometryResource && !out.includes(this.geometryResource))
         {
             out.push(this.geometryResource);

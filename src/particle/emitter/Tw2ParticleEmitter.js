@@ -23,6 +23,17 @@ export class Tw2ParticleEmitter extends Tw2BaseClass
     }
 
     /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.particleSystem) this.particleSystem.GetResources(out);
+        return out;
+    }
+
+    /**
      * Per frame update
      * @param {number} dt - delta time
      */
