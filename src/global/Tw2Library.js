@@ -2,7 +2,7 @@ import {Tw2Store, Tw2Client, Tw2ResMan, Tw2Device, Tw2Logger} from "./engine";
 import * as math from "./math";
 import * as util from "./util";
 import * as consts from "./engine/Tw2Constant";
-import Tw2EventEmitter from "./class/Tw2EventEmitter";
+import {Tw2EventEmitter} from "./class/Tw2EventEmitter";
 import {enableUUID} from "./util";
 
 /**

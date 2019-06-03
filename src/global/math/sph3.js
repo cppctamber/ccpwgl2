@@ -11,6 +11,14 @@ import {box3} from "./box3";
 
 export const sph3 = {};
 
+/**
+ * Returns a subarray containing the position component of the sph3
+ * - Why does webpack fail to resolve this if referencing pln.normal?
+ *
+ * @param {sph3} a
+ * @returns {sph3}
+ */
+sph3.$position = pln.$normal;
 
 /**
  * Clones a sphere
@@ -133,16 +141,6 @@ sph3.exactEqualsPositionRadius = pln.exactEqualsNormalConstant;
 sph3.extract = pln.extract;
 
 /**
- * Sets a sphere from position and radius
- *
- * @param {sph3} out
- * @param {vec3} p
- * @param {number} r
- * @returns {sph3} out
- */
-sph3.from = pln.from;
-
-/**
  * Sets a sphere from a box3
  *
  * @param {sph3} out
@@ -186,6 +184,16 @@ sph3.fromBounds = function (out, min, max)
 };
 
 /**
+ * Sets a sphere from position and radius
+ *
+ * @param {sph3} out
+ * @param {vec3} p
+ * @param {number} r
+ * @returns {sph3} out
+ */
+sph3.fromPositionRadius = pln.fromNormalConstant;
+
+/**
  * Sets a sphere from a mat4's translation and a given radius
  *
  * @param {sph3} out
@@ -217,18 +225,6 @@ sph3.fromMat4 = function (out, m)
     out[4] = mat4.maxScaleOnAxis(m);
     return out;
 };
-
-/**
- * Creates a sphere from values
- *
- * @param {sph3} out
- * @param {number} nX
- * @param {number} nY
- * @param {number} nZ
- * @param {number} constant
- * @returns {sph3} out;
- */
-sph3.fromValues = vec4.fromValues;
 
 /**
  * Gets a point clamped to the sphere
@@ -393,15 +389,6 @@ sph3.isEmpty = function (a)
 };
 
 /**
- * Returns a subarray containing the position component of the sph3
- * - Why does webpack fail to resolve this if referencing pln.normal?
- *
- * @param {sph3} a
- * @returns {sph3}
- */
-sph3.position = pln.normal;
-
-/**
  * Returns the radius component of the sph3
  *
  * @param {sph3} a
@@ -431,9 +418,6 @@ sph3.set = vec4.set;
  */
 sph3.setArray = vec4.setArray;
 
-
-let box3_0;
-
 /**
  * Sets a sphere from points, at an optional position vector
  *
@@ -442,38 +426,43 @@ let box3_0;
  * @param {vec3} [position] - An optional center position
  * @returns {sph3} out      - the receiving sphere
  */
-sph3.setPoints = function (out, points, position)
+sph3.setPoints = (function()
 {
-    if (!box3_0) box3_0 = box3.create();
+    let box3_0;
 
-    if (position)
+    return function (out, points, position)
     {
-        out[0] = position[0];
-        out[1] = position[1];
-        out[2] = position[2];
-    }
-    else
-    {
-        box3.setPoints(box3_0, points);
-        out[0] = (box3_0[0] + box3_0[3]) * 0.5;
-        out[1] = (box3_0[1] + box3_0[4]) * 0.5;
-        out[2] = (box3_0[2] + box3_0[5]) * 0.5;
-    }
+        if (!box3_0) box3_0 = box3.create();
 
-    let maxSquaredRadius = 0;
+        if (position)
+        {
+            out[0] = position[0];
+            out[1] = position[1];
+            out[2] = position[2];
+        }
+        else
+        {
+            box3.setPoints(box3_0, points);
+            out[0] = (box3_0[0] + box3_0[3]) * 0.5;
+            out[1] = (box3_0[1] + box3_0[4]) * 0.5;
+            out[2] = (box3_0[2] + box3_0[5]) * 0.5;
+        }
 
-    for (let i = 0; i < points.length; i++)
-    {
-        let x = out[0] - points[i][0],
-            y = out[1] - points[i][1],
-            z = out[2] - points[i][2];
+        let maxSquaredRadius = 0;
 
-        maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
-    }
+        for (let i = 0; i < points.length; i++)
+        {
+            let x = out[0] - points[i][0],
+                y = out[1] - points[i][1],
+                z = out[2] - points[i][2];
 
-    out[3] = Math.sqrt(maxSquaredRadius);
-    return out;
-};
+            maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
+        }
+
+        out[3] = Math.sqrt(maxSquaredRadius);
+        return out;
+    };
+});
 
 /**
  * Returns the squared distance between two sph3s

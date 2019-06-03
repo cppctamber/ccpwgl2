@@ -1,6 +1,6 @@
 import {assignIfExists} from "../../global/util";
 import {Tw2Effect} from "../mesh/Tw2Effect";
-import Tw2BaseClass from "../../global/class/Tw2BaseClass";
+import {Tw2BaseClass} from "../../global/class/Tw2BaseClass";
 
 /**
  * Post effect step

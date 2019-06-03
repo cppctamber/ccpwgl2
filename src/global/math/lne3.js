@@ -8,13 +8,28 @@ import {box3} from "./box3";
 export const lne3 = {};
 
 /**
+ * Line3 End methods
+ *
+ * @param {lne3} a
+ * @returns {TypedArray}
+ */
+lne3.$end = box3.$max;
+
+/**
+ * Line3 start helper methods
+ *
+ * @param {lne3} a
+ * @returns {TypedArray}
+ */
+lne3.$start = box3.$min;
+
+/**
  * Clones a lne3
  *
  * @param {lne3} a
  * @returns {lne3}
  */
 lne3.clone = box3.clone;
-
 
 /**
  * Returns a point parameter based on the closest point as projected on the line segment.
@@ -58,7 +73,6 @@ lne3.closestPointToPointParameter = (function ()
     };
 });
 
-
 /**
  * Copies the values from one lne3 into another
  *
@@ -69,16 +83,29 @@ lne3.closestPointToPointParameter = (function ()
 lne3.copy = box3.copy;
 
 /**
+ * Copies the start component from one lne3 into another
+ *
+ * @param {lne3} out
+ * @param {lne3} a
+ * @returns {lne3} out
+ */
+lne3.copyStart = vec3.copy;
+
+/**
+ * Copies the end component from one lne3 into another
+ *
+ * @param {lne3} out
+ * @param {lne3} a
+ * @returns {lne3} out
+ */
+lne3.copyEnd = box3.copyMax;
+
+/**
  * Creates a lne3
  *
  * @returns {lne3}
  */
 lne3.create = box3.create;
-
-/**
- * Line3 End methods
- */
-lne3.end = box3.max;
 
 /**
  * Checks two lne3's for equality
@@ -119,16 +146,6 @@ lne3.exactEquals = box3.equals;
 lne3.exactEqualsStartEnd = box3.exactEqualsBounds;
 
 /**
- * Sets a line from start and end components
- *
- * @param {lne3} out
- * @param {vec3} start
- * @param {vec3} end
- * @returns {lne3} out
- */
-lne3.from = box3.from;
-
-/**
  * Sets a lne3 from an array at an optional offset
  *
  * @param {lne3} out
@@ -137,6 +154,16 @@ lne3.from = box3.from;
  * @returns {lne3}
  */
 lne3.fromArray = box3.fromArray;
+
+/**
+ * Sets a line from start and end components
+ *
+ * @param {lne3} out
+ * @param {vec3} start
+ * @param {vec3} end
+ * @returns {lne3} out
+ */
+lne3.fromStartEnd = box3.fromBounds;
 
 /**
  * Returns a vector at a certain position along a lne3
@@ -275,11 +302,6 @@ lne3.length = function (a)
 lne3.set = box3.set;
 
 /**
- * Line3 start helper methods
- */
-lne3.start = box3.min;
-
-/**
  * Gets the squared length of the lne3
  *
  * @param {lne3} a  - source line
@@ -303,6 +325,16 @@ lne3.squaredLength = function (a)
  * @returns {lne3} a
  */
 lne3.toArray = box3.toArray;
+
+/**
+ * Sets a start and end vector from a lne3
+ *
+ * @param {lne3} a
+ * @param {vec3} start
+ * @param {vec3} end
+ * @returns {lne3} a
+ */
+lne3.toStartEnd = box3.toBounds;
 
 /**
  * Transforms a lne3 by a mat4

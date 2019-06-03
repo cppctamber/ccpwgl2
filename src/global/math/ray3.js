@@ -13,6 +13,20 @@ import {tri3} from "./tri3";
 export const ray3 = {};
 
 /**
+ * Gets a subarray of a ray3's origin vector
+ * @property {box3} a
+ * @returns {TypedArray}
+ */
+ray3.$origin = box3.$min;
+
+/**
+ * Gets a subarray of a ray3's direction vector
+ * @property {box3} a
+ * @returns {TypedArray}
+ */
+ray3.$direction = box3.$max;
+
+/**
  * Clones a ray3
  *
  * @param {ray3} a
@@ -30,26 +44,29 @@ ray3.clone = box3.clone;
 ray3.copy = box3.copy;
 
 /**
+ * Copies the origin vector of one ray3 to another
+ *
+ * @param {ray3} out
+ * @param {ray3} a
+ * @returns {ray3}
+ */
+ray3.copyOrigin = box3.copyMin;
+
+/**
+ * Copies the direction vector of one ray3 to another
+ *
+ * @param {ray3} out
+ * @param {ray3} a
+ * @returns {ray3}
+ */
+ray3.copyDirection = box3.copyMax;
+
+/**
  * Creates a ray3
  *
  * @returns {ray3}
  */
-ray3.create = function ()
-{
-    let out = new Float32Array(6);
-    out[0] = 0;
-    out[1] = 0;
-    out[2] = 0;
-    out[3] = 0;
-    out[4] = 0;
-    out[5] = 0;
-    return out;
-};
-
-/**
- * Direction helper methods
- */
-ray3.direction = box3.max;
+ray3.create = box3.create;
 
 /**
  * Gets the distance from a ray3 to a point
@@ -711,11 +728,6 @@ ray3.normalize = function (out, a)
 };
 
 /**
- * Origin helper methods
- */
-ray3.origin = box3.min;
-
-/**
  * Shifts the origin of a ray3 to be further down it"s direction
  *
  * @param {ray3} out  - receiving ray3
@@ -802,6 +814,25 @@ ray3.squaredDistance = (function ()
  * @returns {ray3} a
  */
 ray3.toArray = box3.toArray;
+
+/**
+ * Sets origin and direction vectors from a ray3
+ *
+ * @param {ray3} a
+ * @param {vec3} origin
+ * @param {vec3} direction
+ * @returns {ray3} a
+ */
+ray3.toOriginDirection = function(a, origin, direction)
+{
+    origin[0] = a[0];
+    origin[1] = a[1];
+    origin[2] = a[2];
+    direction[0] = a[3];
+    direction[1] = a[4];
+    direction[2] = a[5];
+    return a;
+};
 
 /**
  * Transforms a ray3 by a mat4

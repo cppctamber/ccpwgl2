@@ -7,7 +7,7 @@ import {
 } from "./Tw2Constant";
 
 import {get} from "../util";
-import Tw2EventEmitter from "../class/Tw2EventEmitter";
+import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
 
 /**
  * Provides client information and compatibility

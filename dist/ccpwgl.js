@@ -157,7 +157,7 @@ var ccpwgl = (function (ccpwgl_int)
      * Post effect manager
      * @type {ccpwgl_int.Tw2PostEffectManager}
      */
-    ccpwgl.post = null; //new ccpwgl_int.Tw2PostEffectManager();
+    ccpwgl.post = new ccpwgl_int.Tw2PostEffectManager();
 
     /**
      * Callback that is fired before updating scene state and before any rendering occurs. The dt parameter passed to the
@@ -362,7 +362,7 @@ var ccpwgl = (function (ccpwgl_int)
         {
             if (!ccpwgl.post)
             {
-                ccpwgl.post = new ccpwgl_int.Tw2PostManager();
+                ccpwgl.post = new ccpwgl_int.Tw2PostEffectManager();
             }
 
             if (!bloomEffect)

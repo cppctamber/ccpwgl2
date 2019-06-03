@@ -1,4 +1,3 @@
-import {num} from "./num";
 import {vec3} from "./vec3";
 import {mat3} from "./mat3";
 import {pln} from "./pln";
@@ -11,6 +10,33 @@ import {lne3} from "./lne3";
  */
 
 export const tri3 = {};
+
+/**
+ * Gets a subarray of a tri3's first vertex
+ *
+ * @param {tri3} a
+ * @returns {vec3}
+ */
+tri3.$v1 = lne3.$start;
+
+/**
+ * Gets a subarray of a tri3's second vertex
+ *
+ * @param {tri3} a
+ * @returns {vec3}
+ */
+tri3.$v2 = lne3.$end;
+
+/**
+ * Gets a subarray of a tri3's third vertex
+ *
+ * @param {tri3} a
+ * @returns {vec3}
+ */
+tri3.$v3 = function (a)
+{
+    return a.subarray(6, 9);
+};
 
 /**
  * Gets the area of a triangle
@@ -90,27 +116,6 @@ tri3.contains = (function()
 tri3.copy = mat3.copy;
 
 /**
- * Extracts the vertices of a tri3
- *
- * @param {tri3} a
- * @param {vec3} v1
- * @param {vec3} v2
- * @param {vec3} v3
- */
-tri3.extract = function (a, v1, v2, v3)
-{
-    v1[0] = a[0];
-    v1[1] = a[1];
-    v1[2] = a[2];
-    v2[0] = a[0];
-    v2[1] = a[1];
-    v2[2] = a[2];
-    v3[0] = a[0];
-    v3[1] = a[1];
-    v3[2] = a[2];
-};
-
-/**
  * Sets a tri3 from vertices
  *
  * @param {tri3} out
@@ -119,7 +124,7 @@ tri3.extract = function (a, v1, v2, v3)
  * @param {vec3} v3
  * @returns {tri3} out
  */
-tri3.from = function (out, v1, v2, v3)
+tri3.fromVertices = function (out, v1, v2, v3)
 {
     out[0] = v1[0];
     out[1] = v1[1];
@@ -428,13 +433,7 @@ tri3.getNormal = function (out, a)
  * @param {tri3} a       - source tri3
  * @returns {vec3} [out] - receiving vec3
  */
-tri3.getV1 = function (out, a)
-{
-    out[0] = a[0];
-    out[1] = a[1];
-    out[2] = a[2];
-    return out;
-};
+tri3.getV1 = lne3.getStart;
 
 /**
  * Sets a vec3 with the tri3's second vert
@@ -443,13 +442,7 @@ tri3.getV1 = function (out, a)
  * @param {tri3} a       - source tri3
  * @returns {vec3} [out] - receiving vec3
  */
-tri3.getV2 = function (out, a)
-{
-    out[0] = a[3];
-    out[1] = a[4];
-    out[2] = a[5];
-    return out;
-};
+tri3.getV2 = lne3.getEnd;
 
 /**
  * Sets a vec3 with the tri3's third vert
@@ -476,315 +469,24 @@ tri3.getV3 = function (out, v)
  */
 tri3.toArray = mat3.toArray;
 
-
-/*-------------------------------------------------------------------------------
-
-                         Helper classes for sub arrays
-
- ------------------------------------------------------------------------------*/
-
 /**
- * Handles getting valid subarrays
- * @param a
- * @param start
- * @param end
- * @returns {Int32Array | Uint8Array | Int8Array | Int16Array | Uint16Array | Uint32Array | Float32Array | Uint8ClampedArray | Float64Array}
- * @throws when passed an array
- * @throws when passed a typed array of the incorrect length (which would return an invalid result)
- */
-function getSubarray(a, start, end)
-{
-    if (a.length < end)
-    {
-        throw new Error("Invalid length");
-    }
-
-    if (!a.subarray)
-    {
-        throw new Error("Invalid subarray");
-    }
-
-    return a.subarray(start, end);
-}
-
-/**
- * Gets a subarray of a tri3's first vertex
+ * Extracts the vertices of a tri3
  *
  * @param {tri3} a
- * @returns {vec3}
+ * @param {vec3} v1
+ * @param {vec3} v2
+ * @param {vec3} v3
  */
-tri3.v1 = function (a)
+tri3.toVertices = function (a, v1, v2, v3)
 {
-    return getSubarray(a, 0, 3);
-};
-
-/**
- * Clones the first component of a tri3
- *
- * @param {tri3} v
- * @returns {vec3}
- */
-tri3.v1.clone = vec3.clone;
-
-/**
- * Copies a vec3 into the first component of a tri3
- *
- * @param {tri3} v
- * @param {vec3} b
- * @returns {tri3} v
- */
-tri3.v1.copy = vec3.copy;
-
-/**
- * Checks if the first component of a tri3 is equal to a vec3
- *
- * @param {tri3} v
- * @param {vec3} b
- * @returns {boolean}
- */
-tri3.v1.equals = vec3.equals;
-
-/**
- * Checks if the first component of a tri3 is exactly equal to a vec3
- *
- * @param {tri3} v
- * @param {vec3} b
- * @returns {boolean}
- */
-tri3.v1.exactEquals = vec3.exactEquals;
-
-/**
- * Gets the first vec3 from a tri3 and copies it into a vec3
- *
- * @param {vec3} out
- * @param {tri3} v
- * @returns {vec3} out
- */
-tri3.v1.get = vec3.copy;
-
-/**
- * Sets the first component of a tri3 from values
- *
- * @param {tri3} v
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @returns {tri3} v
- */
-tri3.v1.set = vec3.set;
-
-/**
- * Gets a subarray of a tri3's second vertex
- *
- * @param {tri3} a
- * @returns {vec3}
- */
-tri3.v2 = function (a)
-{
-    return getSubarray(a, 3, 6);
-};
-
-/**
- * Clones the second component of a tri3
- *
- * @param {tri3} v
- * @returns {vec3}
- */
-tri3.v2.clone = function (v)
-{
-    let out = vec3.create();
-    out[0] = v[3];
-    out[1] = v[4];
-    out[2] = v[5];
-    return out;
-};
-
-/**
- * Copies a vec3 into the third vert of a face
- *
- * @param {tri3} v
- * @param {vec3} a
- * @returns {tri3} v
- */
-tri3.v2.copy = function (v, a)
-{
-    v[3] = a[0];
-    v[4] = a[1];
-    v[5] = a[2];
-    return v;
-};
-
-/**
- * Checks if the second component of a tri3 is equal to v vec3
- *
- * @param {tri3} v
- * @param {vec3} b
- * @returns {boolean}
- */
-tri3.v2.equals = function (v, b)
-{
-    let a0 = v[3],
-        a1 = v[4],
-        a2 = v[5],
-        b0 = b[0],
-        b1 = b[1],
-        b2 = b[2];
-
-    return (
-        Math.abs(a0 - b0) <= num.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= num.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= num.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2))
-    );
-};
-
-/**
- * Checks if the second component of a tri3 is exactly equal to a vec3
- *
- * @param {tri3} v
- * @param {vec3} b
- * @returns {boolean}
- */
-tri3.v2.exactEquals = function (v, b)
-{
-    return v[3] === b[0] && v[4] === b[1] && v[5] === b[2];
-};
-
-/**
- * Gets the second component and copies it into a vec3
- *
- * @param {vec3} out
- * @param {tri3} v
- * @returns {vec3} out
- */
-tri3.v2.get = function (out, v)
-{
-    out[0] = v[3];
-    out[1] = v[4];
-    out[2] = v[5];
-    return out;
-};
-
-/**
- * Sets the second component of a tri3 from values
- *
- * @param {tri3} v
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @returns {tri3} v
- */
-tri3.v2.set = function (v, x, y, z)
-{
-    v[3] = x;
-    v[4] = y;
-    v[5] = z;
-    return v;
-};
-
-/**
- * Gets a subarray of a tri3's third vertex
- *
- * @param {tri3} a
- * @returns {vec3}
- */
-tri3.v3 = function (a)
-{
-    return getSubarray(a, 6, 9);
-};
-
-/**
- * Clones the second component of a tri3
- *
- * @param {tri3} v
- * @returns {vec3}
- */
-tri3.v3.clone = function (v)
-{
-    let out = vec3.create();
-    out[0] = v[6];
-    out[1] = v[7];
-    out[2] = v[8];
-    return out;
-};
-
-/**
- * Copies a vec3 into the third vert of a tri3
- *
- * @param {tri3} v
- * @param {vec3} a
- * @returns {tri3} v
- */
-tri3.v3.copy = function (v, a)
-{
-    v[6] = a[0];
-    v[7] = a[1];
-    v[8] = a[2];
-    return v;
-};
-
-/**
- * Checks if the second component of a tri3 is equal to a vec3
- *
- * @param {tri3} v
- * @param {vec3} b
- * @returns {boolean}
- */
-tri3.v3.equals = function (v, b)
-{
-    let a0 = v[6],
-        a1 = v[7],
-        a2 = v[8],
-        b0 = b[0],
-        b1 = b[1],
-        b2 = b[2];
-
-    return (
-        Math.abs(a0 - b0) <= num.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
-        Math.abs(a1 - b1) <= num.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
-        Math.abs(a2 - b2) <= num.EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2))
-    );
-};
-
-/**
- * Checks if the second component of a tri3 is exactly equal to tri3 vec3
- *
- * @param {tri3} v
- * @param {vec3} b
- * @returns {boolean}
- */
-tri3.v3.exactEquals = function (v, b)
-{
-    return v[6] === b[0] && v[7] === b[1] && v[8] === b[2];
-};
-
-/**
- * Gets the third vertex from a triangle and sets it to a vec3
- *
- * @param {vec3} out
- * @param {tri3} t
- * @returns {vec3}
- */
-tri3.v3.get = function (out, t)
-{
-    out[0] = t[6];
-    out[1] = t[7];
-    out[2] = t[8];
-    return out;
-};
-
-/**
- * Sets the second component of a tri3 from values
- *
- * @param {tri3} v
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @returns {tri3} out
- */
-tri3.v3.set = function (v, x, y, z)
-{
-    v[3] = x;
-    v[4] = y;
-    v[5] = z;
-    return v;
+    v1[0] = a[0];
+    v1[1] = a[1];
+    v1[2] = a[2];
+    v2[0] = a[0];
+    v2[1] = a[1];
+    v2[2] = a[2];
+    v3[0] = a[0];
+    v3[1] = a[1];
+    v3[2] = a[2];
+    return a;
 };

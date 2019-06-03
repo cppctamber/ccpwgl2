@@ -2,15 +2,13 @@
  * Emitter privates
  * @type {WeakMap<object, *>}
  */
-import {isError} from "../util";
-
 const PRIVATE = new WeakMap();
 
 /**
  * Tw2EventEmitter
  * @class
  */
-export default class Tw2EventEmitter
+export class Tw2EventEmitter
 {
     /**
      * Emits an event

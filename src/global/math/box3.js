@@ -1,14 +1,32 @@
 import {num} from "./num";
 import {vec3} from "./vec3";
-import {tri3} from "./tri3";
 
 /**
  * 3D Box
  * @typedef {Float32Array} box3
  */
 
-export const box3 = {};
-box3.bounds = {};
+export const box3 = { bounds: {} };
+
+/**
+ * Gets a subarray of a box3's min vector
+ * @property {box3} a
+ * @returns {TypedArray}
+ */
+box3.$min = function(a)
+{
+    return a.subarray(0, 3);
+};
+
+/**
+ * Gets a subarray of a box3's max vector
+ * @property {box3} a
+ * @returns {TypedArray}
+ */
+box3.$max = function(a)
+{
+    return a.subarray(3, 6);
+};
 
 /**
  * Adds a point to a box3
@@ -167,6 +185,30 @@ box3.copy = function (out, a)
     out[4] = a[4];
     out[5] = a[5];
     out[6] = a[6];
+    return out;
+};
+
+/**
+ * Copies the min vector of one box3 to another
+ *
+ * @param {box3} out
+ * @param {box3} a
+ * @returns {box3}
+ */
+box3.copyMin = vec3.copy;
+
+/**
+ * Copies the max vector of one box3 to another
+ *
+ * @param {box3} out
+ * @param {box3} a
+ * @returns {box3}
+ */
+box3.copyMax = function(out, a)
+{
+    out[3] = a[3];
+    out[4] = a[4];
+    out[5] = a[5];
     return out;
 };
 
@@ -412,42 +454,6 @@ box3.expandVec3 = function (out, a, v)
 };
 
 /**
- * Extracts a box3's components to two receiving vec3s
- *
- * @param {vec3} outMin - receiving vector for min bounds
- * @param {vec3} outMax - receiving vector for max bounds
- * @param {box3} a      - source box3
- */
-box3.bounds.from = function (outMin, outMax, a)
-{
-    outMin[0] = a[0];
-    outMin[1] = a[1];
-    outMin[2] = a[2];
-    outMax[0] = a[3];
-    outMax[1] = a[4];
-    outMax[2] = a[5];
-};
-
-/**
- * Sets a box3 from bounds
- *
- * @param {box3} out   - receiving box3
- * @param {vec3} min   - source min bounds
- * @param {vec3} max   - source max bounds
- * @returns {box3} out - receiving box3
- */
-box3.from = function (out, min, max)
-{
-    out[0] = min[0];
-    out[1] = min[1];
-    out[2] = min[2];
-    out[0] = max[0];
-    out[1] = max[1];
-    out[2] = max[2];
-    return out;
-};
-
-/**
  * Sets a box3 from an array at an optional offset
  *
  * @param {box3} out         - receiving box3
@@ -467,6 +473,25 @@ box3.fromArray = function (out, arr, index = 0)
 };
 
 /**
+ * Sets a box3 from bounds
+ *
+ * @param {box3} out   - receiving box3
+ * @param {vec3} min   - source min bounds
+ * @param {vec3} max   - source max bounds
+ * @returns {box3} out - receiving box3
+ */
+box3.fromBounds = function (out, min, max)
+{
+    out[0] = min[0];
+    out[1] = min[1];
+    out[2] = min[2];
+    out[0] = max[0];
+    out[1] = max[1];
+    out[2] = max[2];
+    return out;
+};
+
+/**
  * Sets a box3 from position and size
  *
  * @param {box3} out      - receiving box3
@@ -482,6 +507,35 @@ box3.fromPositionSize = function (out, position, size)
     out[3] = position[0] + size[0] * 0.5;
     out[4] = position[1] + size[1] * 0.5;
     out[5] = position[2] + size[2] * 0.5;
+    return out;
+};
+
+/**
+ * Sets a box3 from an array of points
+ *
+ * @param {box3} out            - receiving box3
+ * @param {Array.<vec3>} points - array of points
+ * @returns {box3} out          - receiving box3
+ */
+box3.fromPoints = function (out, points)
+{
+    out[0] = +Infinity;
+    out[1] = +Infinity;
+    out[2] = +Infinity;
+    out[3] = -Infinity;
+    out[4] = -Infinity;
+    out[5] = -Infinity;
+
+    for (let i = 0; i < points.length; i++)
+    {
+        out[0] = Math.min(out[0], points[i][0]);
+        out[1] = Math.min(out[1], points[i][1]);
+        out[2] = Math.min(out[2], points[i][2]);
+        out[3] = Math.max(out[3], points[i][0]);
+        out[4] = Math.max(out[4], points[i][1]);
+        out[5] = Math.max(out[5], points[i][2]);
+    }
+
     return out;
 };
 
@@ -814,16 +868,6 @@ box3.bounds.isEmpty = function (min, max)
 };
 
 /**
- * Min bounds methods
- */
-box3.min = tri3.v1;
-
-/**
- * Max bounds methods
- */
-box3.max = tri3.v2;
-
-/**
  * Sets a box3 from values
  *
  * @param {box3} out  - receiving box3
@@ -843,35 +887,6 @@ box3.set = function (out, aX, aY, aZ, bX, bY, bZ)
     out[3] = bX;
     out[4] = bY;
     out[5] = bZ;
-    return out;
-};
-
-/**
- * Sets a box3 from an array of points
- *
- * @param {box3} out            - receiving box3
- * @param {Array.<vec3>} points - array of points
- * @returns {box3} out          - receiving box3
- */
-box3.setPoints = function (out, points)
-{
-    out[0] = +Infinity;
-    out[1] = +Infinity;
-    out[2] = +Infinity;
-    out[3] = -Infinity;
-    out[4] = -Infinity;
-    out[5] = -Infinity;
-
-    for (let i = 0; i < points.length; i++)
-    {
-        out[0] = Math.min(out[0], points[i][0]);
-        out[1] = Math.min(out[1], points[i][1]);
-        out[2] = Math.min(out[2], points[i][2]);
-        out[3] = Math.max(out[3], points[i][0]);
-        out[4] = Math.max(out[4], points[i][1]);
-        out[5] = Math.max(out[5], points[i][2]);
-    }
-
     return out;
 };
 
@@ -922,6 +937,24 @@ box3.toArray = function (a, arr, offset = 0)
     arr[offset + 3] = a[3];
     arr[offset + 4] = a[4];
     arr[offset + 5] = a[5];
+    return a;
+};
+
+/**
+ * Converts a box3 to bounds
+ *
+ * @param {vec3} outMin - receiving vector for min bounds
+ * @param {vec3} outMax - receiving vector for max bounds
+ * @param {box3} a      - source box3
+ */
+box3.toBounds = function (a, outMin, outMax)
+{
+    outMin[0] = a[0];
+    outMin[1] = a[1];
+    outMin[2] = a[2];
+    outMax[0] = a[3];
+    outMax[1] = a[4];
+    outMax[2] = a[5];
     return a;
 };
 
@@ -980,7 +1013,7 @@ box3.transformMat4 = (function ()
         vec3.transformMat4(points[6], [a[3], a[4], a[2]], m);
         vec3.transformMat4(points[7], [a[3], a[4], a[5]], m);
 
-        return box3.setPoints(out, points);
+        return box3.fromPoints(out, points);
     };
 });
 

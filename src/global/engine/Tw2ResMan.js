@@ -1,6 +1,6 @@
 import {Tw2MotherLode} from "./Tw2MotherLode";
 import {Tw2LoadingObject} from "../../core/resource/Tw2LoadingObject";
-import Tw2EventEmitter from "../class/Tw2EventEmitter";
+import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
 import {
     Tw2Error,
     //ErrHTTPInstance,

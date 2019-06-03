@@ -1,5 +1,4 @@
-import Tw2Schema from "../class/Tw2Schema";
-import Tw2EventEmitter from "../class/Tw2EventEmitter";
+import {Tw2EventEmitter, Tw2Schema} from "../class";
 import {ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid} from "../../core/Tw2Error";
 import {toArray, isNumber, isArray,  isFunction, isString, isPlain, enableUUID} from "../util";
 import * as readers from "../../core/reader/Tw2BlackPropertyReaders";

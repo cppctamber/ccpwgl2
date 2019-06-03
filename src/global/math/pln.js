@@ -13,6 +13,14 @@ import {box3} from "./box3";
 export const pln = {};
 
 /**
+ * Returns a subarray of a plane's normal
+ *
+ * @param {pln} a - source plane
+ * @returns {*}   - plane normal reference
+ */
+pln.$normal = box3.$min;
+
+/**
  * Clones a pln
  *
  * @param {pln} a - Source plane
@@ -179,7 +187,7 @@ pln.extract = function (a, outNormal)
  * @param {number} c  - plane constant to set
  * @returns {pln} out - receiving plane
  */
-pln.from = function (out, n, c)
+pln.fromNormalConstant = function (out, n, c)
 {
     out[0] = n[0];
     out[1] = n[1];
@@ -248,18 +256,6 @@ pln.fromNormalAndCoplanarPoint = function (out, normal, point)
     out[3] = -(point[0] * normal[0] + point[1] * normal[1] + point[2] * normal[2]);
     return out;
 };
-
-/**
- * Creates a pln from values
- *
- * @param {pln} out         - receiving plane
- * @param {number} nX       - plane normal x to set
- * @param {number} nY       - plane normal y to set
- * @param {number} nZ       - plane normal z to set
- * @param {number} constant - plane constant to set
- * @returns {pln} out;      - receiving plane
- */
-pln.fromValues = vec4.fromValues;
 
 /**
  * Gets a pln's coplanar point
@@ -517,14 +513,6 @@ pln.negate = function (out, a)
     out[3] = a[3] * -1;
     return out;
 };
-
-/**
- * Returns a subarray of a plane, containing it's normal component
- *
- * @param {pln} a - source plane
- * @returns {*}   - plane normal reference
- */
-pln.normal = box3.min;
 
 /**
  * Normalizes a plane

@@ -1,5 +1,5 @@
 import {Tw2PostEffect} from "./Tw2PostEffect";
-import Tw2BaseClass from "../../global/class/Tw2BaseClass";
+import {Tw2BaseClass} from "../../global/class/Tw2BaseClass";
 
 /**
  * Tw2PostEffectManager
