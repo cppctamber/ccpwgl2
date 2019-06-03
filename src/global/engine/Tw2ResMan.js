@@ -341,9 +341,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     LoadResource(res)
     {
-        const
-            path = res.path,
-            responseType = res.requestResponseType;
+        const path = res.path;
 
         let url = path,
             ext = Tw2ResMan.GetPathExt(url),
@@ -366,7 +364,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return res;
         }
 
-        this.Fetch(url, responseType)
+        this.Fetch(url, res.requestResponseType)
             .then(response =>
             {
                 res.OnLoaded();

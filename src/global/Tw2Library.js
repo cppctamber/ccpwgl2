@@ -159,7 +159,9 @@ class Tw2Library extends Tw2EventEmitter
     {
         if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/))
         {
-            this.eveSof.GetObject(resPath, onResolved, onRejected);
+            this.eveSof.GetObject(resPath)
+                .then(onResolved)
+                .catch(onRejected);
         }
         else
         {
@@ -170,14 +172,13 @@ class Tw2Library extends Tw2EventEmitter
     /**
      * Gets an object
      * @param {String} resPath
-     * @param {Function} [onIdentifiedObjectType]
      * @returns {Promise<any>}
      */
-    GetObjectAsync(resPath, onIdentifiedObjectType)
+    GetObjectAsync(resPath)
     {
         if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/))
         {
-            return this.eveSof.GetObjectAsync(resPath);
+            return this.eveSof.GetObject(resPath);
         }
         else
         {

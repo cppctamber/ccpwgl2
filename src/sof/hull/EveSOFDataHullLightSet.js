@@ -10,6 +10,7 @@ export class EveSOFDataHullLightSet
 
     name = "";
     items = [];
+    visibilityGroup = "";
 
     /**
      * Black definition
@@ -21,6 +22,7 @@ export class EveSOFDataHullLightSet
         return [
             ["name", r.string],
             ["items", r.array],
+            ["visibilityGroup", r.string]
         ];
     }
 }

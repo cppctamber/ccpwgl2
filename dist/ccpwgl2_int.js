@@ -7818,7 +7818,7 @@ const config = {
   store: {
     paths: {
       "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-      "cdn": "https://localhost:3000/"
+      "cdn": "http://localhost:3000/"
     },
     extensions: {
       "sm_hi": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
@@ -47294,16 +47294,27 @@ function (_EveObject) {
   }, {
     key: "AddCustomMask",
     value: function AddCustomMask(position, scaling, rotation, isMirrored, sourceMaterial, targetMaterials) {
-      const mask = new _item__WEBPACK_IMPORTED_MODULE_3__["EveCustomMask"]();
+      const transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(_global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(), rotation, position, scaling);
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(transform, transform);
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(transform, transform);
+      this.customMasks.push({
+        transform: transform,
+        maskData: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, isMirrored ? 1 : 0, 0, 0),
+        materialID: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(sourceMaterial, 0, 0, 0),
+        targets: targetMaterials
+      });
+      /*
+      const mask = new EveCustomMask();
       mask._index = this.customMasks.length;
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.position, position);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.scaling, scaling);
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(mask.rotation, rotation);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(mask.targetMaterials, targetMaterials);
+      vec3.copy(mask.position, position);
+      vec3.copy(mask.scaling, scaling);
+      quat.copy(mask.rotation, rotation);
+      vec4.copy(mask.targetMaterials, targetMaterials);
       mask.materialID = sourceMaterial;
       mask.isMirrored = isMirrored ? 1 : 0;
       this.customMasks.push(mask);
       return mask;
+      */
     }
     /**
      * Gets locator count for a specific locator group
@@ -47446,11 +47457,25 @@ function (_EveObject) {
         _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
       }
 
-      const maxCustomMasks = Math.min(this.customMasks.length, 2);
+      for (let i = 0; i < this.customMasks.length; ++i) {
+        const targets = this.visible.customMasks ? this.customMasks[i].targets : [0, 0, 0, 0];
 
-      for (let i = 0; i < maxCustomMasks; ++i) {
-        this.customMasks.UpdatePerObjectData(this.transform, this._perObjectData, i, this.visible.customMasks);
+        this._perObjectData.vs.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
+
+        this._perObjectData.vs.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
+
+        this._perObjectData.ps.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
+
+        this._perObjectData.ps.Set(i ? "CustomMaskTarget1" : "CustomMaskTarget0", targets);
       }
+      /*
+      const maxCustomMasks = Math.min(this.customMasks.length, 2);
+      for (let i = 0; i < maxCustomMasks; ++i)
+      {
+          this.customMasks[i].UpdatePerObjectData(this.transform, this._perObjectData, i, this.visible.customMasks);
+      }
+      */
+
 
       if (this.animation.animations.length) {
         this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
@@ -48597,7 +48622,7 @@ function (_Tw2EventEmitter) {
     key: "GetObject",
     value: function GetObject(resPath, onResolved, onRejected) {
       if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/)) {
-        this.eveSof.GetObject(resPath, onResolved, onRejected);
+        this.eveSof.GetObject(resPath).then(onResolved).catch(onRejected);
       } else {
         this.resMan.GetObject(resPath, onResolved, onRejected);
       }
@@ -48605,15 +48630,14 @@ function (_Tw2EventEmitter) {
     /**
      * Gets an object
      * @param {String} resPath
-     * @param {Function} [onIdentifiedObjectType]
      * @returns {Promise<any>}
      */
 
   }, {
     key: "GetObjectAsync",
-    value: function GetObjectAsync(resPath, onIdentifiedObjectType) {
+    value: function GetObjectAsync(resPath) {
       if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/)) {
-        return this.eveSof.GetObjectAsync(resPath);
+        return this.eveSof.GetObject(resPath);
       } else {
         return this.resMan.GetObjectAsync(resPath);
       }
@@ -52441,8 +52465,7 @@ function (_Tw2EventEmitter) {
   }, {
     key: "LoadResource",
     value: function LoadResource(res) {
-      const path = res.path,
-            responseType = res.requestResponseType;
+      const path = res.path;
       let url = path,
           ext = Tw2ResMan.GetPathExt(url),
           promise;
@@ -52460,7 +52483,7 @@ function (_Tw2EventEmitter) {
         return res;
       }
 
-      this.Fetch(url, responseType).then(response => {
+      this.Fetch(url, res.requestResponseType).then(response => {
         res.OnLoaded();
         this.Queue(res, response);
       }).catch(err => {
@@ -67123,7 +67146,7 @@ function EveSOF(tw2) {
   }
 
   this.SetupTurretMaterialAsync = function (turretSet, parentFactionName, turretFactionName) {
-    return this.GetDataAsync().then(() => {
+    return this.GetData().then(() => {
       SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
       return turretSet;
     });
@@ -67146,52 +67169,17 @@ function EveSOF(tw2) {
   }
 
   let dataPromise = null;
-
-  this.LoadData = function (onResolved, onRejected) {
-    if (data === null) {
-      if (onResolved || onRejected) {
-        pendingLoads.push([onResolved, onRejected]);
-      }
-
-      dataPromise = this.GetDataAsync();
-    } else {
-      if (onResolved) {
-        onResolved(data);
-      }
-    }
-  };
-  /**
-   * Internal handler for updating callbacks
-   * @param [obj]
-   * @param [err]
-   */
-
-
-  function updatePending(obj, err) {
-    for (let i = 0; i < pendingLoads.length; i++) {
-      if (obj && pendingLoads[i][0]) {
-        pendingLoads[i][0](obj);
-      } else if (err && pendingLoads[i][1]) {
-        pendingLoads[i][1](err);
-      }
-    }
-
-    pendingLoads.length = 0;
-  }
   /**
    * Gets sof data asynchronously
-   * - TODO: Remove old synchronous methods
    * @returns {Promise}
    */
 
-
-  this.GetDataAsync = function () {
+  this.GetData = function () {
     if (!dataPromise) {
       setupSpriteEffect();
       dataPromise = new Promise((resolve, reject) => {
         tw2.GetObject("res:/dx9/model/spaceobjectfactory/data.red", obj => {
           data = obj;
-          updatePending(obj);
           resolve(data);
         }, err => {
           tw2.Log({
@@ -67199,7 +67187,6 @@ function EveSOF(tw2) {
             name: "Space object factory",
             message: "Could not load data"
           });
-          updatePending(null, err);
           reject(err);
         });
       });
@@ -67210,26 +67197,44 @@ function EveSOF(tw2) {
   /**
    * Internal handler for loading sof objects asynchronously
    * @param {String} root   - Root sof object name
-   * @param {String} [prop] - Root sof object child name
+   * @param {String} [name] - Root sof object child name (* for all)
    * @returns {Promise}
    */
 
 
-  function getSofRoot(root, prop) {
-    return self.GetDataAsync().then(data => {
+  function getSofRoot(root, name) {
+    root = root.toLowerCase();
+    return self.GetData().then(data => {
       if (!data[root]) {
         throw new Error(`Invalid sof root: ${root}`);
-      }
+      } // Select all children
 
-      if (!prop) {
+
+      if (name === "*") {
         return data[root];
       }
 
-      if (!data[root][prop]) {
-        throw new Error(`Invalid sof ${root} property: ${prop}`);
+      if (!name) {
+        throw new Error(`Invalid sof ${root} child: ${name}`);
       }
 
-      return data[root][prop];
+      name = name.toLowerCase();
+
+      if (Array.isArray(data[root])) {
+        for (let i = 0; i < data[root].length; i++) {
+          if (data[root][i].name === name) {
+            return data[root][i];
+          }
+        }
+
+        throw new Error(`Invalid sof ${root} child: ${name}`);
+      }
+
+      if (!data[root][name]) {
+        throw new Error(`Invalid sof ${root} child: ${name}`);
+      }
+
+      return data[root][name];
     });
   }
   /**
@@ -67240,12 +67245,18 @@ function EveSOF(tw2) {
 
 
   function getSofRootNames(root) {
-    return getSofRoot(root).then(obj => {
+    return getSofRoot(root, "*").then(obj => {
       const names = {};
 
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          names[key] = obj[key].description || "";
+      if (Array.isArray(obj)) {
+        for (let i = 0; i < obj.length; i++) {
+          names[obj[i].name] = obj[i].description || "";
+        }
+      } else {
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            names[key] = obj[key].description || "";
+          }
         }
       }
 
@@ -67259,82 +67270,97 @@ function EveSOF(tw2) {
    */
 
 
-  this.GetObjectAsync = function (dna) {
-    return this.GetDataAsync().then(() => Build(dna));
+  this.GetObject = function (dna) {
+    return this.GetData().then(() => Build(dna));
   };
 
-  this.GetHullsAsync = function () {
-    return getSofRootNames("hull");
-  };
-
-  this.GetHullAsync = function (name) {
+  this.GetHull = function (name) {
     return getSofRoot("hull", name);
   };
 
-  this.GetFactionsAsync = function () {
-    return getSofRootNames("faction");
+  this.GetHulls = function () {
+    return getSofRoot("hull", "*");
   };
 
-  this.GetFactionAsync = function (name) {
+  this.GetHullNames = function () {
+    return getSofRootNames("hull");
+  };
+
+  this.GetFaction = function (name) {
     return getSofRoot("faction", name);
   };
 
-  this.GetRacesAsync = function () {
-    return getSofRootNames("race");
+  this.GetFactions = function () {
+    return getSofRoot("faction", "*");
   };
 
-  this.GetRaceAsync = function (name) {
+  this.GetFactionNames = function () {
+    return getSofRootNames("faction");
+  };
+
+  this.GetRace = function (name) {
     return getSofRoot("race", name);
   };
 
-  this.GetMaterialsAsync = function () {
-    return getSofRootNames("material");
+  this.GetRaces = function () {
+    return getSofRoot("race", "*");
   };
 
-  this.GetMaterialAsync = function (name) {
+  this.GetRaceNames = function () {
+    return getSofRootNames("race");
+  };
+
+  this.GetMaterial = function (name) {
     return getSofRoot("material", name);
   };
 
-  this.GetHullPatternsAsync = function (hull) {};
+  this.GetMaterials = function () {
+    return getSofRoot("material", "*");
+  };
 
-  this.GetHullPatternAsync = function (hull, pattern) {};
+  this.GetMaterialNames = function () {
+    return getSofRootNames("material");
+  };
 
-  this.GetHullBuildClassAsync = function (name) {
+  this.GetPattern = function (name) {
+    return getSofRoot("pattern", name);
+  };
+
+  this.GetPatterns = function (name) {
+    return getSofRoot("pattern", "*");
+  };
+
+  this.GetPatternNames = function () {
+    return getSofRootNames("pattern");
+  };
+  /**
+   * Gets hull pattern names
+   * @param {String} name
+   * @returns {Promise<Array>}
+   */
+
+
+  this.GetHullPatternNames = function () {
+    let name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+    return this.GetHull(name).then(x => {
+      return this.GetPatterns().then(patterns => {
+        const result = {};
+
+        for (let i = 0; i < patterns.length; i++) {
+          const pattern = patterns[i];
+          const found = pattern.projections.filter(x => x.name === name).length;
+          if (found) result[pattern.name] = pattern.description || "";
+        }
+
+        return result;
+      });
+    });
+  };
+
+  this.GetHullBuildClass = function (name) {
     const c = name.indexOf(":");
     if (c > 0) name = name.substr(0, c);
     return getSofRoot("hull", name).then(obj => obj.buildClass === 2 ? 2 : 1);
-  };
-
-  this.GetObject = function (dna, onResolved, onRejected) {
-    this.LoadData(function () {
-      try {
-        onResolved(Build(dna));
-      } catch (err) {
-        if (onRejected) {
-          onRejected(err);
-        }
-      }
-    }, onRejected);
-  };
-
-  this.GetHullNames = function (onResolved, onRejected) {
-    return this.GetHullsAsync().then(onResolved).catch(onRejected);
-  };
-
-  this.GetFactionNames = function (onResolved, onRejected) {
-    return this.GetFactionsAsync().then(onResolved).catch(onRejected);
-  };
-
-  this.GetRaceNames = function (onResolved, onRejected) {
-    return this.GetRacesAsync().then(onResolved).catch(onRejected);
-  };
-
-  this.GetSofData = function (onResolved, onRejected) {
-    return this.GetDataAsync().then(onResolved).catch(onRejected);
-  };
-
-  this.GetSofHullBuildClass = function (hull, onResolved, onRejected) {
-    return this.GetHullBuildClassAsync(hull).then(onResolved).catch(onRejected);
   };
 }
 
@@ -67580,24 +67606,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * EveSOFDataFactionColorSet
  *
- * @property {vec4} Black     -
- * @property {vec4} Blue      -
- * @property {vec4} Booster   -
- * @property {vec4} Cyan      -
- * @property {vec4} Darkhull  -
- * @property {vec4} Fire      -
- * @property {vec4} Glass     -
- * @property {vec4} Green     -
- * @property {vec4} Hull      -
- * @property {vec4} Killmark  -
- * @property {vec4} Orange    -
- * @property {vec4} Primary   -
- * @property {vec4} Reactor   -
- * @property {vec4} Red       -
- * @property {vec4} Secondary -
- * @property {vec4} Tertiary  -
- * @property {vec4} White     -
- * @property {vec4} Yellow    -
+ * @property {vec4} Black          -
+ * @property {vec4} Blue           -
+ * @property {vec4} Booster        -
+ * @property {vec4} Cyan           -
+ * @property {vec4} Darkhull       -
+ * @property {vec4} Fire           -
+ * @property {vec4} Glass          -
+ * @property {vec4} Green          -
+ * @property {vec4} Hull           -
+ * @property {vec4} Killmark       -
+ * @property {vec4} Orange         -
+ * @property {vec4} Primary        -
+ * @property {vec4} PrimaryLight   -
+ * @property {vec4} Reactor        -
+ * @property {vec4} Red            -
+ * @property {vec4} Secondary      -
+ * @property {vec4} SecondaryLight -
+ * @property {vec4} Tertiary       -
+ * @property {vec4} TertiaryLight  -
+ * @property {vec4} White          -
+ * @property {vec4} WhiteLight     -
+ * @property {vec4} Yellow         -
  */
 
 let EveSOFDataFactionColorSet =
@@ -67630,15 +67660,23 @@ function () {
 
     _defineProperty(this, "Primary", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
+    _defineProperty(this, "PrimaryLight", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
     _defineProperty(this, "Reactor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(this, "Red", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(this, "Secondary", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
+    _defineProperty(this, "SecondaryLight", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
     _defineProperty(this, "Tertiary", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
+    _defineProperty(this, "TertiaryLight", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
     _defineProperty(this, "White", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "WhiteLight", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(this, "Yellow", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
   }
@@ -67664,7 +67702,7 @@ function () {
   }], [{
     key: "black",
     value: function black(r) {
-      return [["Black", r.vector4], ["Blue", r.vector4], ["Booster", r.vector4], ["Cyan", r.vector4], ["Darkhull", r.vector4], ["Fire", r.vector4], ["Glass", r.vector4], ["Green", r.vector4], ["Hull", r.vector4], ["Killmark", r.vector4], ["Orange", r.vector4], ["Primary", r.vector4], ["Reactor", r.vector4], ["Red", r.vector4], ["Secondary", r.vector4], ["Tertiary", r.vector4], ["White", r.vector4], ["Yellow", r.vector4]];
+      return [["Black", r.vector4], ["Blue", r.vector4], ["Booster", r.vector4], ["Cyan", r.vector4], ["Darkhull", r.vector4], ["Fire", r.vector4], ["Glass", r.vector4], ["Green", r.vector4], ["Hull", r.vector4], ["Killmark", r.vector4], ["Orange", r.vector4], ["Primary", r.vector4], ["PrimaryLight", r.vector4], ["Reactor", r.vector4], ["Red", r.vector4], ["Secondary", r.vector4], ["SecondaryLight", r.vector4], ["Tertiary", r.vector4], ["TertiaryLight", r.vector4], ["White", r.vector4], ["WhiteLight", r.vector4], ["Yellow", r.vector4]];
     }
   }]);
 
@@ -69483,6 +69521,8 @@ function () {
     _defineProperty(this, "name", "");
 
     _defineProperty(this, "items", []);
+
+    _defineProperty(this, "visibilityGroup", "");
   }
 
   _createClass(EveSOFDataHullLightSet, null, [{
@@ -69494,7 +69534,7 @@ function () {
      * @returns {*[]}
      */
     value: function black(r) {
-      return [["name", r.string], ["items", r.array]];
+      return [["name", r.string], ["items", r.array], ["visibilityGroup", r.string]];
     }
   }]);
 
@@ -69603,9 +69643,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {String} name
  * @property {Number} brightness
  * @property {Number} innerAngle
+ * @property {Number} innerRadius
  * @property {vec4} lightColor
  * @property {Number} outerAngle
  * @property {vec3} position
+ * @property {Number} radius
  * @property {quat} rotation
  */
 
@@ -69621,11 +69663,15 @@ function () {
 
     _defineProperty(this, "innerAngle", 0);
 
+    _defineProperty(this, "innerRadius", 0);
+
     _defineProperty(this, "lightColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(this, "outerAngle", 0);
 
     _defineProperty(this, "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "radius", 0);
 
     _defineProperty(this, "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
   }
@@ -69639,7 +69685,7 @@ function () {
      * @returns {*[]}
      */
     value: function black(r) {
-      return [["name", r.string], ["brightness", r.float], ["innerAngle", r.float], ["lightColor", r.color], ["outerAngle", r.float], ["position", r.vector3], ["rotation", r.vector4]];
+      return [["name", r.string], ["brightness", r.float], ["innerAngle", r.float], ["innerRadius", r.float], ["lightColor", r.color], ["outerAngle", r.float], ["position", r.vector3], ["radius", r.uint], ["rotation", r.vector4]];
     }
   }]);
 

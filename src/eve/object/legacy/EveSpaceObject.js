@@ -186,6 +186,18 @@ export class EveSpaceObject extends EveObject
      */
     AddCustomMask(position, scaling, rotation, isMirrored, sourceMaterial, targetMaterials)
     {
+        const transform = mat4.fromRotationTranslationScale(mat4.create(), rotation, position, scaling);
+        mat4.invert(transform, transform);
+        mat4.transpose(transform, transform);
+
+        this.customMasks.push({
+            transform: transform,
+            maskData: vec4.fromValues(1, isMirrored ? 1 : 0, 0, 0),
+            materialID: vec4.fromValues(sourceMaterial, 0, 0, 0),
+            targets: targetMaterials
+        });
+
+        /*
         const mask = new EveCustomMask();
         mask._index = this.customMasks.length;
         vec3.copy(mask.position, position);
@@ -196,6 +208,7 @@ export class EveSpaceObject extends EveObject
         mask.isMirrored = isMirrored ? 1 : 0;
         this.customMasks.push(mask);
         return mask;
+        */
     }
 
     /**
@@ -338,11 +351,22 @@ export class EveSpaceObject extends EveObject
             vec3.scale(radii, radii, 0.5);
         }
 
+        for (let i = 0; i < this.customMasks.length; ++i)
+        {
+            const targets = this.visible.customMasks ? this.customMasks[i].targets : [0, 0, 0, 0];
+            this._perObjectData.vs.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
+            this._perObjectData.vs.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
+            this._perObjectData.ps.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
+            this._perObjectData.ps.Set(i ? "CustomMaskTarget1" : "CustomMaskTarget0", targets);
+        }
+
+        /*
         const maxCustomMasks = Math.min(this.customMasks.length, 2);
         for (let i = 0; i < maxCustomMasks; ++i)
         {
-            this.customMasks.UpdatePerObjectData(this.transform, this._perObjectData, i, this.visible.customMasks);
+            this.customMasks[i].UpdatePerObjectData(this.transform, this._perObjectData, i, this.visible.customMasks);
         }
+        */
 
         if (this.animation.animations.length)
         {
