@@ -14,10 +14,10 @@
 export class EveSOFDataPatternLayer
 {
 
-    isTargetMtl1 = false;
-    isTargetMtl2 = false;
-    isTargetMtl3 = false;
-    isTargetMtl4 = false;
+    isTargetMtl1 = true;
+    isTargetMtl2 = true;
+    isTargetMtl3 = true;
+    isTargetMtl4 = true;
     materialSource = 0;
     projectionTypeU = 0;
     projectionTypeV = 0;

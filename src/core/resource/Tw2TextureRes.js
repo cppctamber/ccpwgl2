@@ -187,6 +187,8 @@ export class Tw2TextureRes extends Tw2Resource
                         width *= 0.5;
                         height *= 0.5;
                     }
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps > 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 }
                 break;
@@ -381,6 +383,29 @@ export class Tw2TextureRes extends Tw2Resource
     static Int32ToFourCC(value)
     {
         return String.fromCharCode(value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, (value >> 24) & 0xff);
+    }
+
+    static CreateImageFromTexture(texture, width = 512, height = 512, format = device.gl.RGBA)
+    {
+        const gl = device.gl;
+        const fb = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+        const data = new Uint8Array(width * height * 4);
+        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        gl.deleteFramebuffer(fb);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        const imageData = context.createImageData(width, height);
+        imageData.data.set(data);
+        context.putImageData(imageData, 0, 0);
+
+        const img = new Image();
+        img.src = canvas.toDataURL();
+        return img;
     }
 
 }
