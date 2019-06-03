@@ -37604,7 +37604,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37673,12 +37673,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePerMuzzleData", function() { return _effect__WEBPACK_IMPORTED_MODULE_2__["EvePerMuzzleData"]; });
 
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBanner"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2Batch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet2Batch"]; });
@@ -37740,6 +37734,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSetItem"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
@@ -39176,6 +39176,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {vec3} scaling         - Mask's scale
  * @property {vec4} targetMaterials - The target materials this mask is for
  * @property {mat4} localTransform  - Mask's localTransform
+ * @property {Boolean} _dirty       - Identifies if the mask is dirty and requires a rebuild
+ * @property {mat4} _parentTransformLast - The paren't last transform
+ * @property {mat4} _maskMatrix     - The custom mask's final matrix
  */
 
 let EveCustomMask =
@@ -39212,8 +39215,6 @@ function (_Tw2BaseClass) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_dirty", true);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_index", -1);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_parentTransformLast", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_maskMatrix", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
@@ -39244,14 +39245,15 @@ function (_Tw2BaseClass) {
      * Updates the parent's per object data
      * @param {mat4} parentTransform
      * @param {Tw2PerObjectData} perObjectData
+     * @param {Number} index
      * @param {Boolean} visible
      */
 
   }, {
     key: "UpdatePerObjectData",
-    value: function UpdatePerObjectData(parentTransform, perObjectData, visible) {
+    value: function UpdatePerObjectData(parentTransform, perObjectData, index, visible) {
       // TODO: Find a better way to tell if the parent has been updated
-      if (this._dirty || !_global__WEBPACK_IMPORTED_MODULE_0__["mat4"].equals(this._parentTransformLast, parentTransform)) {
+      if (this.display && this._dirty || !_global__WEBPACK_IMPORTED_MODULE_0__["mat4"].equals(this._parentTransformLast, parentTransform)) {
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransformLast, parentTransform);
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._maskMatrix, parentTransform, this.localTransform);
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._maskMatrix, this._maskMatrix);
@@ -39260,10 +39262,10 @@ function (_Tw2BaseClass) {
       }
 
       const targets = this.display && visible ? this.targetMaterials : [0, 0, 0, 0];
-      perObjectData.vs.Set("CustomMaskMatrix" + this._index, this._maskMatrix);
-      perObjectData.vs.Set("CustomMaskData" + this._index, [1, this.isMirrored ? 1 : 0, 0, 0]);
-      perObjectData.ps.Set("CustomMaskMaterialID" + this._index, [this.materialIndex, 0, 0, 0]);
-      perObjectData.ps.Set("CustomMaskTarget" + this._index, targets);
+      perObjectData.vs.Set("CustomMaskMatrix" + index, this._maskMatrix);
+      perObjectData.vs.Set("CustomMaskData" + index, [1, this.isMirrored ? 1 : 0, 0, 0]);
+      perObjectData.ps.Set("CustomMaskMaterialID" + index, [this.materialIndex, 0, 0, 0]);
+      perObjectData.ps.Set("CustomMaskTarget" + index, targets);
     }
     /**
      * Black definition
@@ -39820,7 +39822,7 @@ function (_Tw2BaseClass2) {
   }, {
     key: "OnChildValueChanged",
     value: function OnChildValueChanged(child) {
-      this.EmitEvent("child_modified", {
+      this.emit("child_modified", {
         child
       });
       this._dirty = true; //this.UpdateValues(child);
@@ -39851,7 +39853,7 @@ function (_Tw2BaseClass2) {
     key: "AddItem",
     value: function AddItem(item, skipUpdate) {
       if (!this.items.includes(item)) {
-        this.EmitEvent("child_added", {
+        this.emit("child_added", {
           ctx: item
         }); //item.SetParent(this);
 
@@ -39875,7 +39877,7 @@ function (_Tw2BaseClass2) {
       const index = this.items.indexOf(item);
 
       if (index !== -1) {
-        this.EmitEvent("child_removed", {
+        this.emit("child_removed", {
           ctx: item
         }); //item.UnsetParent(this);
 
@@ -43681,7 +43683,7 @@ _defineProperty(EveTurretSet, "__isStaging", 1);
 /*!***************************!*\
   !*** ./eve/item/index.js ***!
   \***************************/
-/*! exports provided: EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet */
+/*! exports provided: EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47052,9 +47054,10 @@ function (_EveSpaceObject) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return EveSpaceObject; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return EveSpaceObject; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
-/* harmony import */ var _core_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/index */ "./core/index.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core */ "./core/index.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObject */ "./eve/object/legacy/EveObject.js");
+/* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../item */ "./eve/item/index.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -47072,6 +47075,7 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -47152,7 +47156,7 @@ function (_EveObject) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "mesh", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animation", new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "animation", new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "locators", []);
 
@@ -47182,17 +47186,17 @@ function (_EveObject) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "killCount", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transform", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "transform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "boundingSphereRadius", 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidRadius", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidRadius", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shapeEllipsoidCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_perObjectData", _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObject.perObjectData));
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_perObjectData", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObject.perObjectData));
 
     return _this;
   }
@@ -47224,15 +47228,15 @@ function (_EveObject) {
       let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       if (this.mesh) this.mesh.GetResources(out);
       if (this.animation) this.animation.GetResources(out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spriteSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.turretSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decals, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spotlightSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.planeSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.lineSets, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.overlayEffects, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.effectChildren, "GetResources", out);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.children, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spriteSets, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.turretSets, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decals, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spotlightSets, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.planeSets, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.lineSets, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.overlayEffects, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.effectChildren, "GetResources", out);
+      _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.children, "GetResources", out);
       return out;
     }
     /**
@@ -47252,7 +47256,7 @@ function (_EveObject) {
   }, {
     key: "UpdateLod",
     value: function UpdateLod(frustum) {
-      const center = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this.transform);
+      const center = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this.transform);
 
       if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
         const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
@@ -47290,15 +47294,16 @@ function (_EveObject) {
   }, {
     key: "AddCustomMask",
     value: function AddCustomMask(position, scaling, rotation, isMirrored, sourceMaterial, targetMaterials) {
-      const transform = _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(_global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(), rotation, position, scaling);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(transform, transform);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(transform, transform);
-      this.customMasks.push({
-        transform: transform,
-        maskData: _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, isMirrored ? 1 : 0, 0, 0),
-        materialID: _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(sourceMaterial, 0, 0, 0),
-        targets: targetMaterials
-      });
+      const mask = new _item__WEBPACK_IMPORTED_MODULE_3__["EveCustomMask"]();
+      mask._index = this.customMasks.length;
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.position, position);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.scaling, scaling);
+      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(mask.rotation, rotation);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(mask.targetMaterials, targetMaterials);
+      mask.materialID = sourceMaterial;
+      mask.isMirrored = isMirrored ? 1 : 0;
+      this.customMasks.push(mask);
+      return mask;
     }
     /**
      * Gets locator count for a specific locator group
@@ -47421,8 +47426,8 @@ function (_EveObject) {
         this.children[i].UpdateViewDependentData(this.transform);
       }
 
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this.transform);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this.transform);
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this.transform);
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this.transform);
 
       const center = this._perObjectData.vs.Get("EllipsoidCenter"),
             radii = this._perObjectData.vs.Get("EllipsoidRadii");
@@ -47435,22 +47440,16 @@ function (_EveObject) {
         radii[1] = this.shapeEllipsoidRadius[1];
         radii[2] = this.shapeEllipsoidRadius[2];
       } else if (this.mesh && this.mesh.IsGood()) {
-        _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(center, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
-        _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(center, center, 0.5 * 1.732050807);
-        _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(radii, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
-        _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(center, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(center, center, 0.5 * 1.732050807);
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(radii, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
       }
 
-      for (let i = 0; i < this.customMasks.length; ++i) {
-        const targets = this.visible.customMasks ? this.customMasks[i].targets : [0, 0, 0, 0];
+      const maxCustomMasks = Math.min(this.customMasks.length, 2);
 
-        this._perObjectData.vs.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
-
-        this._perObjectData.vs.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
-
-        this._perObjectData.ps.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
-
-        this._perObjectData.ps.Set(i ? "CustomMaskTarget1" : "CustomMaskTarget0", targets);
+      for (let i = 0; i < maxCustomMasks; ++i) {
+        this.customMasks.UpdatePerObjectData(this.transform, this._perObjectData, i, this.visible.customMasks);
       }
 
       if (this.animation.animations.length) {
@@ -47600,7 +47599,7 @@ _defineProperty(EveSpaceObject, "LOD_THRESHOLD_LOW", 200);
 _defineProperty(EveSpaceObject, "LOD_THRESHOLD_MEDIUM", 500);
 
 _defineProperty(EveSpaceObject, "perObjectData", {
-  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", 4], ["CustomMaskData1", 4], ["JointMat", 696]],
+  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", 4], ["CustomMaskData1", 4], ["JointMat", 696]],
   ps: [["Shipdata", [0, 1, 0, 1]], ["Clipdata1", 4], ["Clipdata2", 4], ["ShLighting", 4 * 7], ["CustomMaskMaterialID0", 4], ["CustomMaskMaterialID1", 4], ["CustomMaskTarget0", 4], ["CustomMaskTarget1", 4]]
 });
 
