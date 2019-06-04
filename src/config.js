@@ -48,6 +48,7 @@ export const config = {
 
         paths: {
             "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
+            // Set to you local cdn cache server path
             "cdn" : "http://localhost:3000/"
         },
 

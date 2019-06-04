@@ -1,0 +1,355 @@
+const http = require("http");
+const url = require("url");
+const fs = require("fs");
+const path = require("path");
+
+/**
+ * Gets terminal arguments
+ * @param {{}} CommandList - Allowed commands and their default values
+ * @returns {{}} results
+ */
+function getArguments(CommandList)
+{
+    const args = process.argv.splice(2);
+    const results = Object.assign({}, CommandList);
+    
+    for (let i = 0; i < args.length; i++)
+    {
+        const value = args[i];
+        const nextValue = args[i + 1];
+        
+        if (value.indexOf("-") === 0)
+        {
+            const flag = value.substring(1).toLowerCase();
+            if (flag in CommandList)
+            {
+                if (nextValue && nextValue.charAt(0) !== "-")
+                {
+                    results[flag] = nextValue;
+                    i++;
+                }
+            }
+        }
+    }
+    
+    return results;
+}
+
+const args = getArguments({
+    port: 3000,                             // server port
+    index: "./resfileindex.txt",            // source resfileindex.txt
+    dest: "./cache/",                         // cache destination
+    cdn: "http://resources.eveonline.com/", // ccp's cdn
+    json: false,                            // outputs the current resfileindex to json
+    dir: null                               // local res directory
+});
+
+// Default mime type
+const DEFAULT_CONTENT_TYPE = "binary/octet-stream"
+
+/**
+ * Content types
+ * @type {{}}
+ */
+const ContentTypes = {
+    ".black": "binary/octet-stream",
+    ".json": "application/json",
+    ".yaml": "application/yaml",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".dds": "image/x-dds"
+};
+
+/**
+ * Gets a files content type
+ * @param {String} ext
+ * @returns {string}
+ */
+function getContentType(ext)
+{
+    return ext in ContentTypes ? ContentTypes[ext] : DEFAULT_CONTENT_TYPE;
+}
+
+/**
+ * Logs stuff
+ * @param fileName
+ * @param message
+ * @param isError
+ */
+function log(fileName, message, isError)
+{
+    console.log(`[${fileName}] ${isError ? "ERR:" : "OK!:"} ${message}`);
+}
+
+/**
+ * Converts a resfileindex into json
+ * @param resFileIndex - res file index file path
+ * @returns {{}} the result as json
+ */
+function readResFileIndex(resFileIndex)
+{
+    if (!fs.existsSync(resFileIndex))
+    {
+        throw new Error(`Could not find "${resFileIndex}"`);
+    }
+
+    const
+        array = fs.readFileSync(resFileIndex).toString().split("\n"),
+        json = {};
+
+    // Read each line and split into file path and remove file path
+    array.forEach(line =>
+    {
+        const split = line.split(",");
+        // Remove "res:/" from file name
+        const fileName = split[0].substring(5); 
+        json[fileName] = split[1];
+    });
+
+    if (args.json)
+    {
+        fs.writeFileSync("./resfileindex.json", JSON.stringify(json, null, 4));
+    }
+    return json;
+}
+
+// Convert the resfileindex.txt into json and then store in memory
+const resMapping = readResFileIndex(args.index);
+
+/**
+ * Gets a filename's hash from the resfileindex
+ * @param {String} fileName
+ * @returns {String}
+ */
+function getHash(fileName)
+{
+    const hash = resMapping[fileName];
+    if (hash) return hash;
+    throw new Error("Invalid file name");
+}
+
+/**
+ * Gets a file from the ccp cdn and then stores locally
+ * @param {String} hashFileName
+ * @param {Function} cb
+ */
+function getFromCDN(fileName, cb)
+{
+    const hash = getHash(fileName);
+    const url = args.cdn + hash;
+    const localFile = `${args.dest}${hash}`;
+    const localDir = localFile.substring(0, localFile.lastIndexOf("/"));
+
+    log(fileName, `Retrieving from args.cdn: ${url}`);
+
+    // Ensure root exists
+    if (!fs.existsSync(args.dest))
+    {
+        fs.mkdirSync(args.dest);
+    }
+
+    // Ensure the local directory exists
+    if (!fs.existsSync(localDir))
+    {
+        fs.mkdirSync(localDir);
+    }
+
+    // Create the file
+    const file = fs.createWriteStream(localFile);
+    const request = http.get(url, response =>
+    {
+        response.pipe(file);
+        // close() is async, call cb after close completes.
+        file.on("finish", () => file.close(cb));  
+
+    }).on("error", err =>
+    {
+        // Delete the file async. (But we don't check the result)
+        fs.unlink(file);
+        if (cb) cb(err.message);
+    });
+}
+
+/**
+ * Gets a local file
+ * - Tries to get from local res first, then local cache
+ * @param {String} fileName
+ * @param {Function} cb
+ */
+function getFromLocal(fileName, cb, skipLog)
+{
+    const 
+        hash = getHash(fileName),
+        cache = args.dest + hash;
+
+    function get(localFile, cb, skipLog)
+    {
+        fs.exists(localFile, exist =>
+        {
+            if (exist)
+            {
+                if (!skipLog)
+                {
+                    log(fileName, `Retrieving from local: ${localFile}`);
+                }
+                fs.readFile(localFile, cb);
+            }
+            else
+            {
+                cb("File not found");
+            }
+        });
+    }
+
+    // No local res directory
+    if (!args.dir)
+    {
+        get(cache, cb, skipLog);
+    }
+    else
+    {
+        // Try local res directory first
+        get(args.dir + hash, (err, data) =>
+        {
+            if (data)
+            {
+                cb(null, data, true);
+            }
+            else
+            {
+                // Fallback to local res cache
+                get(cache, cb, skipLog);
+            }
+        }, skipLog);
+    }
+}
+
+/**
+ * Gets a file
+ * @param {String} fileName
+ * @param {Function} cb
+ */
+function getFrom(fileName, cb)
+{
+    // Try local first
+    getFromLocal(fileName, (err, data, local) =>
+    {
+        if (!err) 
+        {
+            cb(null, data, local);
+        }
+        else
+        {
+            // Download from cdn
+            getFromCDN(fileName, (err, data) =>
+            {
+                if (err)
+                {
+                    cb(err);
+                }
+                else
+                {
+                    getFromLocal(fileName, cb, true);
+                }
+            });
+        }
+    });
+}
+
+/**
+ * Adds cors headers to a response
+ * @param {Response} res
+ * @returns {Response}
+ */
+function addCors(res)
+{
+    res.setHeader("Access-Control-Allow-Origin", "*"); // allow requests from any other server
+    res.setHeader("Access-Control-Allow-Methods", "GET"); // allow these verbs
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Cache-Control");
+    return res;
+}
+
+/**
+ * Gets a file
+ * @param {String} fileName
+ * @param {Response} res
+ * @param {Request} req
+ */
+function getFile(fileName, req, res)
+{
+    // Remove backslash
+    if (fileName.indexOf("/") === 0)
+    {
+        fileName = fileName.substring(1);
+    }
+
+    log(fileName, "Requesting");
+
+    // Ensure valid file name
+    if (!resMapping[fileName])
+    {
+        res.statusCode = 404;
+        res.end(`Invalid file name: ${fileName}`);
+        log(fileName, "Invalid file name", true);
+        return;
+    }
+
+    // Get mime type (Don't think we actually care)
+    const contentType = getContentType(path.parse(fileName).ext);
+    log(fileName, `Mimetype: ${contentType}`);
+
+    getFrom(fileName, (err, data, local) =>
+    {
+        if (err)
+        {
+            res.statusCode = 500;
+            res.end(err);
+            log(fileName, err, true);
+        }
+        else
+        {
+            res.setHeader("Content-type", contentType);
+            if (!local) res.setHeader("Content-Encoding", "gzip");
+            addCors(res);
+            res.end(data);
+            log(fileName, "Success");
+        }
+
+        console.log("");
+    });
+}
+
+// Create server
+http.createServer((req, res) =>
+{
+    console.log(`${req.method} ${req.url}`);
+
+    if (req.method === "OPTIONS")
+    {
+        addCors(res);
+        res.end();
+    }
+    
+    var resfilePath = url.parse(req.url).pathname;
+    if (resfilePath !== "/")
+    {
+        getFile(resfilePath, req, res);
+    }
+    else 
+    {
+        res.end("usage: /%filename%")
+    }
+    
+}).listen(parseInt(args.port));
+
+// Boot message
+const BOOT_MESSAGE = `Server listening on port ${args.port}`;
+console.log("");
+console.log(BOOT_MESSAGE);
+console.log("=".repeat(BOOT_MESSAGE.length));
+console.log(JSON.stringify(args, null, 4));
+
+
+
+
+

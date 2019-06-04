@@ -22,3 +22,6 @@ node_modules/
 
 #developement
 .dev/
+
+#cdn proxy resource folder
+cdn/cache
