@@ -12,12 +12,12 @@ function getArguments(CommandList)
 {
     const args = process.argv.splice(2);
     const results = Object.assign({}, CommandList);
-    
+
     for (let i = 0; i < args.length; i++)
     {
         const value = args[i];
         const nextValue = args[i + 1];
-        
+
         if (value.indexOf("-") === 0)
         {
             const flag = value.substring(1).toLowerCase();
@@ -31,7 +31,7 @@ function getArguments(CommandList)
             }
         }
     }
-    
+
     return results;
 }
 
@@ -45,7 +45,7 @@ const args = getArguments({
 });
 
 // Default mime type
-const DEFAULT_CONTENT_TYPE = "binary/octet-stream"
+const DEFAULT_CONTENT_TYPE = "binary/octet-stream";
 
 /**
  * Content types
@@ -104,7 +104,7 @@ function readResFileIndex(resFileIndex)
     {
         const split = line.split(",");
         // Remove "res:/" from file name
-        const fileName = split[0].substring(5); 
+        const fileName = split[0].substring(5);
         json[fileName] = split[1];
     });
 
@@ -162,7 +162,7 @@ function getFromCDN(fileName, cb)
     {
         response.pipe(file);
         // close() is async, call cb after close completes.
-        file.on("finish", () => file.close(cb));  
+        file.on("finish", () => file.close(cb));
 
     }).on("error", err =>
     {
@@ -180,7 +180,7 @@ function getFromCDN(fileName, cb)
  */
 function getFromLocal(fileName, cb, skipLog)
 {
-    const 
+    const
         hash = getHash(fileName),
         cache = args.dest + hash;
 
@@ -227,6 +227,35 @@ function getFromLocal(fileName, cb, skipLog)
 }
 
 /**
+ * Because why not.
+ * @param {String} txt
+ */
+function cookies(txt)
+{
+    if (txt.indexOf("cookie") !== -1 && !cookies.had)
+    {
+        console.log(`
+        
+                                           88         88                       
+                                           88         ""                       
+                                           88                                 
+         ,adPPYba,  ,adPPYba,   ,adPPYba,  88   ,d8   88  ,adPPYba, ,adPPYba,  
+        a8"     "" a8"     "8a a8"     "8a 88 ,a8"    88 a8P_____88 I8[    ""  
+        8b         8b       d8 8b       d8 8888[      88 8PP"""""""   "Y8ba,   
+        "8a,   ,aa "8a,   ,a8" "8a,   ,a8" 88  "Yba,  88 "8b,   ,aa aa    ]8I  
+          "Ybbd8"'   "YbbdP"'   '"YbbdP"'  88    'Y8a 88  '"Ybbd8"' '"YbbdP"'  
+                                                                      
+        
+        
+        `);
+
+        cookies.had = true;
+    }
+}
+
+cookies.had = false;
+
+/**
  * Gets a file
  * @param {String} fileName
  * @param {Function} cb
@@ -236,7 +265,7 @@ function getFrom(fileName, cb)
     // Try local first
     getFromLocal(fileName, (err, data, local) =>
     {
-        if (!err) 
+        if (!err)
         {
             cb(null, data, local);
         }
@@ -285,14 +314,13 @@ function getFile(fileName, req, res)
         fileName = fileName.substring(1);
     }
 
-    log(fileName, "Requesting");
-
     // Ensure valid file name
     if (!resMapping[fileName])
     {
         res.statusCode = 404;
         res.end(`Invalid file name: ${fileName}`);
         log(fileName, "Invalid file name", true);
+        cookies(fileName);
         return;
     }
 
@@ -304,6 +332,7 @@ function getFile(fileName, req, res)
     {
         if (err)
         {
+            cookies(fileName);
             res.statusCode = 500;
             res.end(err);
             log(fileName, err, true);
@@ -324,24 +353,24 @@ function getFile(fileName, req, res)
 // Create server
 http.createServer((req, res) =>
 {
-    console.log(`${req.method} ${req.url}`);
+    log(req.url.substring(1), `${req.method} ${req.url}`);
 
     if (req.method === "OPTIONS")
     {
         addCors(res);
         res.end();
     }
-    
+
     var resfilePath = url.parse(req.url).pathname;
     if (resfilePath !== "/")
     {
         getFile(resfilePath, req, res);
     }
-    else 
+    else
     {
-        res.end("usage: /%filename%")
+        res.end("usage: /%filename%");
     }
-    
+
 }).listen(parseInt(args.port));
 
 // Boot message
@@ -350,7 +379,7 @@ console.log("");
 console.log(BOOT_MESSAGE);
 console.log("=".repeat(BOOT_MESSAGE.length));
 console.log(JSON.stringify(args, null, 4));
-
+console.log("");
 
 
 
