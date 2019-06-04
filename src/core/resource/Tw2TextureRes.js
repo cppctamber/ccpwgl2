@@ -127,8 +127,8 @@ export class Tw2TextureRes extends Tw2Resource
                     isMagic = header[DDS_HEADER_OFFSET_MAGIC] === DDS_MAGIC,
                     isCube = (header[DDS_HEADER_OFFSET_CAPS2] & DDSCAPS2_CUBEMAP) === DDSCAPS2_CUBEMAP,
                     fourCC = header[DDS_HEADER_OFFSET_PF_FOURCC],
-                    mipmaps = (header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
-                        Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
+                    mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
+                        //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
 
                 // Check compatibility
                 if (!ext) throw new ErrResourceFormat("Compressed textures not supported by your device");
@@ -385,7 +385,16 @@ export class Tw2TextureRes extends Tw2Resource
         return String.fromCharCode(value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, (value >> 24) & 0xff);
     }
 
-    static CreateImageFromTexture(texture, width = 512, height = 512, format = device.gl.RGBA)
+    /**
+     * Creates an image from a 2d texture
+     * @param texture
+     * @param width
+     * @param height
+     * @param format
+     * @returns {HTMLImageElement}
+     * @constructor
+     */
+    static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = device.gl.RGBA)
     {
         const gl = device.gl;
         const fb = gl.createFramebuffer();
