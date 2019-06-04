@@ -22294,7 +22294,9 @@ function (_Tw2Resource) {
                 isMagic = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MAGIC"]] === _global__WEBPACK_IMPORTED_MODULE_2__["DDS_MAGIC"],
                 isCube = (header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS2"]] & _global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"]) === _global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"],
                 fourCC = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
-                mipmaps = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_FLAGS"]] & _global__WEBPACK_IMPORTED_MODULE_2__["DDSD_MIPMAPCOUNT"] ? Math.max(1, header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]]) : 1; // Check compatibility
+                mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
+          //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
+          // Check compatibility
 
           if (!ext) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Compressed textures not supported by your device");
           if (!isMagic) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, missing magic number");
@@ -22562,9 +22564,19 @@ function (_Tw2Resource) {
     value: function Int32ToFourCC(value) {
       return String.fromCharCode(value & 0xff, value >> 8 & 0xff, value >> 16 & 0xff, value >> 24 & 0xff);
     }
+    /**
+     * Creates an image from a 2d texture
+     * @param texture
+     * @param width
+     * @param height
+     * @param format
+     * @returns {HTMLImageElement}
+     * @constructor
+     */
+
   }, {
-    key: "CreateImageFromTexture",
-    value: function CreateImageFromTexture(texture) {
+    key: "CreateImageFrom2DTexture",
+    value: function CreateImageFrom2DTexture(texture) {
       let width = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 512;
       let height = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 512;
       let format = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.RGBA;
@@ -67221,6 +67233,57 @@ function EveSOF(tw2) {
     return dataPromise;
   };
   /**
+   * Extends the sof data object with patterns from a space object factory file
+   * @param {String} [resPath] - The resource path to a source space object factory file
+   * @returns {Promise}
+   */
+
+
+  this.ExtendPatternsFrom = function (resPath) {
+    if (!resPath) {
+      return Promise.reject(new Error("Invalid respath: undefined"));
+    }
+
+    return this.GetData().then(data => {
+      return tw2.GetObjectAsync(resPath).then(sof => {
+        data.pattern = data.pattern.concat(sof.pattern);
+        return data;
+      });
+    });
+  };
+  /**
+   * Extends the sof data object with materials from a space object factory file
+   * @param {String} [resPath] - The resource path to a source space object factory file
+   * @returns {Promise}
+   */
+
+
+  this.ExtendMaterialsFrom = function (resPath) {
+    if (!resPath) {
+      return Promise.reject(new Error("Invalid respath: undefined"));
+    }
+
+    return this.GetData().then(data => {
+      return tw2.GetObjectAsync(resPath).then(sof => {
+        const materials = sof.material;
+
+        if (resPath.includes(".black")) {
+          materials.forEach(material => {
+            data.material[material.name] = material.GetPlain();
+          });
+        } else {
+          for (const key in materials) {
+            if (materials.hasOwnProperty(key)) {
+              data[materials[key].name] = materials[key];
+            }
+          }
+        }
+
+        return data;
+      });
+    });
+  };
+  /**
    * Internal handler for loading sof objects asynchronously
    * @param {String} root   - Root sof object name
    * @param {String} [name] - Root sof object child name (* for all)
@@ -67240,27 +67303,21 @@ function EveSOF(tw2) {
         return data[root];
       }
 
-      if (!name) {
-        throw new Error(`Invalid sof ${root} child: ${name}`);
-      }
+      if (name) {
+        name = name.toLowerCase();
 
-      name = name.toLowerCase();
-
-      if (Array.isArray(data[root])) {
-        for (let i = 0; i < data[root].length; i++) {
-          if (data[root][i].name === name) {
-            return data[root][i];
+        if (Array.isArray(data[root])) {
+          for (let i = 0; i < data[root].length; i++) {
+            if (data[root][i].name === name) {
+              return data[root][i];
+            }
           }
+        } else if (data[root][name]) {
+          return data[root][name];
         }
-
-        throw new Error(`Invalid sof ${root} child: ${name}`);
       }
 
-      if (!data[root][name]) {
-        throw new Error(`Invalid sof ${root} child: ${name}`);
-      }
-
-      return data[root][name];
+      throw new Error(`Invalid sof ${root} child: ${name}`);
     });
   }
   /**
@@ -67289,12 +67346,6 @@ function EveSOF(tw2) {
       return names;
     });
   }
-  /**
-   * Builds dna async
-   * @param dna
-   * @returns {PromiseLike|Promise}
-   */
-
 
   this.GetObject = function (dna) {
     return this.GetData().then(() => Build(dna));
@@ -67360,14 +67411,13 @@ function EveSOF(tw2) {
     return getSofRootNames("pattern");
   };
   /**
-   * Gets hull pattern names
+   * Gets a hull's pattern names
    * @param {String} name
    * @returns {Promise<Array>}
    */
 
 
-  this.GetHullPatternNames = function () {
-    let name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+  this.GetHullPatternNames = function (name) {
     return this.GetHull(name).then(x => {
       return this.GetPatterns().then(patterns => {
         const result = {};
@@ -67382,6 +67432,12 @@ function EveSOF(tw2) {
       });
     });
   };
+  /**
+   * Gets a hull's build class
+   * @param {String} name
+   * @returns {Promise<number>}
+   */
+
 
   this.GetHullBuildClass = function (name) {
     const c = name.indexOf(":");
@@ -71826,14 +71882,31 @@ function () {
     _defineProperty(this, "parameters", []);
   }
 
-  _createClass(EveSOFDataMaterial, null, [{
-    key: "black",
+  _createClass(EveSOFDataMaterial, [{
+    key: "GetPlain",
 
+    /**
+     * Gets a simple object containing the material's data
+     * @returns {*}
+     */
+    value: function GetPlain() {
+      const parameters = {};
+      this.parameters.forEach(parameter => {
+        parameters[parameter.name] = Array.from(parameter.value);
+      });
+      return {
+        name: this.name,
+        parameters
+      };
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["name", r.string], ["parameters", r.array]];
     }

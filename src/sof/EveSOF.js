@@ -1071,6 +1071,73 @@ export function EveSOF(tw2)
     };
 
     /**
+     * Extends the sof data object with patterns from a space object factory file
+     * @param {String} [resPath] - The resource path to a source space object factory file
+     * @returns {Promise}
+     */
+    this.ExtendPatternsFrom = function (resPath)
+    {
+        if (!resPath)
+        {
+            return Promise.reject(new Error("Invalid respath: undefined"));
+        }
+
+        return this.GetData()
+            .then(data =>
+            {
+                return tw2.GetObjectAsync(resPath)
+                    .then(sof =>
+                    {
+                        data.pattern = data.pattern.concat(sof.pattern);
+                        return data;
+                    });
+            });
+    };
+
+    /**
+     * Extends the sof data object with materials from a space object factory file
+     * @param {String} [resPath] - The resource path to a source space object factory file
+     * @returns {Promise}
+     */
+    this.ExtendMaterialsFrom = function (resPath)
+    {
+        if (!resPath)
+        {
+            return Promise.reject(new Error("Invalid respath: undefined"));
+        }
+
+        return this.GetData()
+            .then(data =>
+            {
+                return tw2.GetObjectAsync(resPath)
+                    .then(sof =>
+                    {
+                        const materials = sof.material;
+
+                        if (resPath.includes(".black"))
+                        {
+                            materials.forEach(material =>
+                            {
+                                data.material[material.name] = material.GetPlain();
+                            });
+                        }
+                        else
+                        {
+                            for (const key in materials)
+                            {
+                                if (materials.hasOwnProperty(key))
+                                {
+                                    data[materials[key].name] = materials[key];
+                                }
+                            }
+                        }
+
+                        return data;
+                    });
+            });
+    };
+
+    /**
      * Internal handler for loading sof objects asynchronously
      * @param {String} root   - Root sof object name
      * @param {String} [name] - Root sof object child name (* for all)
@@ -1093,31 +1160,27 @@ export function EveSOF(tw2)
                 return data[root];
             }
 
-            if (!name)
+            if (name)
             {
-                throw new Error(`Invalid sof ${root} child: ${name}`);
-            }
+                name = name.toLowerCase();
 
-            name = name.toLowerCase();
-
-            if (Array.isArray(data[root]))
-            {
-                for (let i = 0; i < data[root].length; i++)
+                if (Array.isArray(data[root]))
                 {
-                    if (data[root][i].name === name)
+                    for (let i = 0; i < data[root].length; i++)
                     {
-                        return data[root][i];
+                        if (data[root][i].name === name)
+                        {
+                            return data[root][i];
+                        }
                     }
                 }
-                throw new Error(`Invalid sof ${root} child: ${name}`);
+                else if (data[root][name])
+                {
+                    return data[root][name];
+                }
             }
 
-            if (!data[root][name])
-            {
-                throw new Error(`Invalid sof ${root} child: ${name}`);
-            }
-
-            return data[root][name];
+            throw new Error(`Invalid sof ${root} child: ${name}`);
         });
     }
 
@@ -1154,11 +1217,6 @@ export function EveSOF(tw2)
             });
     }
 
-    /**
-     * Builds dna async
-     * @param dna
-     * @returns {PromiseLike|Promise}
-     */
     this.GetObject = function (dna)
     {
         return this.GetData().then(() => Build(dna));
@@ -1240,11 +1298,11 @@ export function EveSOF(tw2)
     };
 
     /**
-     * Gets hull pattern names
+     * Gets a hull's pattern names
      * @param {String} name
      * @returns {Promise<Array>}
      */
-    this.GetHullPatternNames = function (name = null)
+    this.GetHullPatternNames = function (name)
     {
         return this.GetHull(name)
             .then(x =>
@@ -1265,6 +1323,11 @@ export function EveSOF(tw2)
 
     };
 
+    /**
+     * Gets a hull's build class
+     * @param {String} name
+     * @returns {Promise<number>}
+     */
     this.GetHullBuildClass = function (name)
     {
         const c = name.indexOf(":");

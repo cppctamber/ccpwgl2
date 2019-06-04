@@ -11,6 +11,20 @@ export class EveSOFDataMaterial
     parameters = [];
 
     /**
+     * Gets a simple object containing the material's data
+     * @returns {*}
+     */
+    GetPlain()
+    {
+        const parameters = {};
+        this.parameters.forEach(parameter =>
+        {
+            parameters[parameter.name] = Array.from(parameter.value);
+        });
+        return { name: this.name, parameters };
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
