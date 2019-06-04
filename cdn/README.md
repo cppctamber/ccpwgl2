@@ -40,7 +40,7 @@
 
 
 
-        browser:        "http://localhost:3000/[eve_file_path.extension]"
+        browser:        "http://localhost:[PORT]/[eve_file_path.extension]"
         --------
                         example: 
                         
@@ -49,7 +49,7 @@
 
 
 
-        ccpwgl_int:     set the "cdn" path in "./src/config.js" to match your localhost path
+        ccpwgl_int:     set the "cdn" path in "./src/config.js" object to match your localhost path
         -----------
                         example:
 

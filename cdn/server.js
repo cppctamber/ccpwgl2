@@ -38,7 +38,7 @@ function getArguments(CommandList)
 const args = getArguments({
     port: 3000,                             // server port
     index: "./resfileindex.txt",            // source resfileindex.txt
-    dest: "./cache/",                         // cache destination
+    dest: "./cache/",                       // cache destination
     cdn: "http://resources.eveonline.com/", // ccp's cdn
     json: false,                            // outputs the current resfileindex to json
     dir: null                               // local res directory
@@ -72,9 +72,9 @@ function getContentType(ext)
 
 /**
  * Logs stuff
- * @param fileName
- * @param message
- * @param isError
+ * @param {String} fileName
+ * @param {String} message
+ * @param {Boolean} [isError]
  */
 function log(fileName, message, isError)
 {
@@ -83,7 +83,7 @@ function log(fileName, message, isError)
 
 /**
  * Converts a resfileindex into json
- * @param resFileIndex - res file index file path
+ * @param {String} resFileIndex - res file index file path
  * @returns {{}} the result as json
  */
 function readResFileIndex(resFileIndex)
@@ -97,7 +97,9 @@ function readResFileIndex(resFileIndex)
         array = fs.readFileSync(resFileIndex).toString().split("\n"),
         json = {};
 
-    // Read each line and split into file path and remove file path
+    // Read each line and split into file path and remove the "res:/" prefix
+    // When we only use the eve cdn then we can add the "res" back, if we
+    // don't we could have collision with ccpwgl's "res:/" prefix
     array.forEach(line =>
     {
         const split = line.split(",");
@@ -119,7 +121,7 @@ const resMapping = readResFileIndex(args.index);
 /**
  * Gets a filename's hash from the resfileindex
  * @param {String} fileName
- * @returns {String}
+ * @returns {String} hash file path
  */
 function getHash(fileName)
 {
