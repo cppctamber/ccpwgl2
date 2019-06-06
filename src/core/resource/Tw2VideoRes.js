@@ -94,9 +94,10 @@ export class Tw2VideoRes extends Tw2Resource
 
     /**
      * Prepares the resource
+     * @param {undefined} response
      * @param {String} extension
      */
-    Prepare(extension)
+    Prepare(response, extension)
     {
         const gl = device.gl;
 
@@ -168,7 +169,7 @@ export class Tw2VideoRes extends Tw2Resource
             this._playable = true;
             this.video.oncanplay = null;
             resMan._pendingLoads--;
-            resMan.Queue(this, extension);
+            resMan.Queue(this, undefined, extension);
             this.OnLoaded();
         };
 

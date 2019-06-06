@@ -13,7 +13,7 @@ import {
     ErrResourcePrefixUndefined,
     ErrResourcePrefixUnregistered
 } from "../../core";
-import {assignIfExists, isError, isFunction, isPromise} from "../util";
+import {assignIfExists, isError, isFunction} from "../util";
 
 /**
  * Resource Manager
@@ -219,10 +219,11 @@ export class Tw2ResMan extends Tw2EventEmitter
      * Adds a resource and response to the prepare queue
      * @param {Tw2Resource} res
      * @param {*} response
+     * @param {*} [meta]
      */
-    Queue(res, response)
+    Queue(res, response, meta)
     {
-        this._prepareQueue.push([res, response]);
+        this._prepareQueue.push([res, response, meta]);
     }
 
     /**
@@ -337,14 +338,12 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     /**
      * Loads a resource
+     * TODO: Create a res object for each quality level rather than just one
      * @param {Tw2Resource|*} res
      */
     LoadResource(res)
     {
-        const path = res.path;
-
-        let url = path,
-            ext = Tw2ResMan.GetPathExt(url),
+        let url,
             promise;
 
         this.motherLode.Add(res.path, res);
@@ -352,8 +351,8 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         try
         {
-            url = this.BuildUrl(path);
-            if (res.DoCustomLoad && res.DoCustomLoad(url, ext, this))
+            url = this.BuildUrl(res.path);
+            if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url)))
             {
                 return res;
             }
@@ -364,14 +363,18 @@ export class Tw2ResMan extends Tw2EventEmitter
             return res;
         }
 
+        this._pendingLoads++;
+
         this.Fetch(url, res.requestResponseType)
             .then(response =>
             {
+                this._pendingLoads--;
                 res.OnLoaded();
                 this.Queue(res, response);
             })
             .catch(err =>
             {
+                this._pendingLoads--;
                 res.OnError(err);
             });
 
@@ -470,7 +473,7 @@ export class Tw2ResMan extends Tw2EventEmitter
     static NormalizePath(path)
     {
         path = path.toLowerCase();
-        path.replace("\\", "/");
+        path = path.replace("\\", "/");
         return path;
     }
 

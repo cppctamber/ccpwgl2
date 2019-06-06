@@ -3,16 +3,31 @@ import {ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError} from "../Tw2Error
 
 /**
  * Internal handler for "res" paths
- * @param {String} str
+ * @param {String} path
  * @returns {String}
  */
-function onString(str)
+function onString(path)
 {
-    if (str.indexOf("res:") === 0)
+    // Because there are two sources for "res:" now we need to replace
+    // any references from the eve cdn with a new res path mapping
+    if (path.indexOf("res:") === 0)
     {
-        str = "cdn:" + str.substring(4);
+        path = "cdn:" + path.substring(4);
     }
-    return str;
+
+    let ext = "";
+    const dot = path.lastIndexOf(".");
+    if (dot !== -1) ext = path.substr(dot + 1).toLowerCase();
+
+    // Strip out any cdn quality suffixes
+    if (["dds", "png", "gr2"].includes(ext))
+    {
+        path = path.replace(`_lowdetail.${ext}`);
+        path = path.replace(`_mediumdetail.${ext}`);
+        path = path.replace(ext, `0.${ext}`);
+    }
+
+    return path;
 }
 
 /**

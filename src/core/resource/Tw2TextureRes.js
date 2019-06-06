@@ -48,21 +48,20 @@ export class Tw2TextureRes extends Tw2Resource
     width = 0;
     height = 0;
     hasMipMaps = false;
-    requestResponseType = null;
     _currentSampler = 0;
     _isAttached = false;
-    _extension = null;
 
     /**
      * Prepares the resource
      * @param {*|Image|arrayBuffer} data
+     * @param {String} extension
      */
-    Prepare(data)
+    Prepare(data, extension)
     {
         const gl = device.gl;
         const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
 
-        switch (this._extension)
+        switch (extension)
         {
             case "cube":
                 this.texture = gl.createTexture();
@@ -128,7 +127,7 @@ export class Tw2TextureRes extends Tw2Resource
                     isCube = (header[DDS_HEADER_OFFSET_CAPS2] & DDSCAPS2_CUBEMAP) === DDSCAPS2_CUBEMAP,
                     fourCC = header[DDS_HEADER_OFFSET_PF_FOURCC],
                     mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
-                        //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
+                //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
 
                 // Check compatibility
                 if (!ext) throw new ErrResourceFormat("Compressed textures not supported by your device");
@@ -197,7 +196,6 @@ export class Tw2TextureRes extends Tw2Resource
                 throw new ErrResourceFormat(`Invalid format, ${this._extension} unsupported`);
         }
 
-        this._extension = null;
         this._isAttached = false;
         this.OnPrepared();
     }
@@ -210,8 +208,7 @@ export class Tw2TextureRes extends Tw2Resource
      */
     DoCustomLoad(path, extension)
     {
-        this._extension = extension;
-        switch (this._extension)
+        switch (extension)
         {
             case "cube":
                 this.isCube = true;
@@ -223,17 +220,25 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
 
             case "dds":
-                // Pass back to the ResMan to load
-                this._extension = extension;
-                this.requestResponseType = "arraybuffer";
-                return false;
+                resMan._pendingLoads++;
+                resMan.Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer")
+                    .then(response =>
+                    {
+                        resMan._pendingLoads--;
+                        this.OnLoaded();
+                        resMan.Queue(this, response, extension);
+                    })
+                    .catch(err =>
+                    {
+                        resMan._pendingLoads--;
+                        this.OnError(err);
+                    });
+                return true;
 
             default:
-                this._extension = null;
                 throw new ErrResourceExtensionUnregistered({path, extension});
         }
 
-        this.OnRequested();
         resMan._pendingLoads++;
 
         const image = new Image();
@@ -255,7 +260,7 @@ export class Tw2TextureRes extends Tw2Resource
         image.onload = () =>
         {
             resMan._pendingLoads--;
-            resMan.Queue(this, image);
+            resMan.Queue(this, image, extension);
             this.OnLoaded();
         };
 
@@ -275,8 +280,6 @@ export class Tw2TextureRes extends Tw2Resource
             this.texture = null;
         }
         this._isAttached = false;
-        this._extension = null;
-        this.requestResponseType = null;
         this.OnUnloaded();
         return true;
     }
@@ -290,8 +293,6 @@ export class Tw2TextureRes extends Tw2Resource
         this.path = "";
         this.texture = texture;
         this._isAttached = true;
-        this._extension = null;
-        this.requestResponseType = null;
         this.OnLoaded({hide: true, data: {isAttachment: true}});
         this.OnPrepared({hide: true, data: {isAttachment: true}});
     }
@@ -360,16 +361,13 @@ export class Tw2TextureRes extends Tw2Resource
      */
     static AddMipLevelSkipCount(path)
     {
-        const
-            d = device,
-            mipExt = d.mipLevelSkipCount > 0 ? "." + d.mipLevelSkipCount.toString() : "";
-
+        const d = device;
         if (d.mipLevelSkipCount > 0)
         {
             const index = path.lastIndexOf(".");
             if (index >= 0)
             {
-                path = path.substr(0, index - 2) + mipExt + path.substr(index);
+                path = path.substr(0, index - 2) + "." + d.mipLevelSkipCount.toString() + path.substr(index);
             }
         }
         return path;

@@ -7788,7 +7788,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const config = {
   device: {
-    "textureQuality": 0,
+    "textureQuality": 1,
     "shaderQuality": "hi",
     "antialiasing": true,
     "anisotropicFiltering": true,
@@ -7818,6 +7818,7 @@ const config = {
   store: {
     paths: {
       "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
+      // Set to you local cdn cache server path
       "cdn": "http://localhost:3000/"
     },
     extensions: {
@@ -18656,16 +18657,28 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * Internal handler for "res" paths
- * @param {String} str
+ * @param {String} path
  * @returns {String}
  */
 
-function onString(str) {
-  if (str.indexOf("res:") === 0) {
-    str = "cdn:" + str.substring(4);
+function onString(path) {
+  // Because there are two sources for "res:" now we need to replace
+  // any references from the eve cdn with a new res path mapping
+  if (path.indexOf("res:") === 0) {
+    path = "cdn:" + path.substring(4);
   }
 
-  return str;
+  let ext = "";
+  const dot = path.lastIndexOf(".");
+  if (dot !== -1) ext = path.substr(dot + 1).toLowerCase(); // Strip out any cdn quality suffixes
+
+  if (["dds", "png", "gr2"].includes(ext)) {
+    path = path.replace(`_lowdetail.${ext}`);
+    path = path.replace(`_mediumdetail.${ext}`);
+    path = path.replace(ext, `0.${ext}`);
+  }
+
+  return path;
 }
 /**
  * Reads objects
@@ -22214,13 +22227,9 @@ function (_Tw2Resource) {
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "hasMipMaps", false);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "requestResponseType", null);
-
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_currentSampler", 0);
 
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_isAttached", false);
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "_extension", null);
 
     return _this;
   }
@@ -22231,12 +22240,13 @@ function (_Tw2Resource) {
     /**
      * Prepares the resource
      * @param {*|Image|arrayBuffer} data
+     * @param {String} extension
      */
-    value: function Prepare(data) {
+    value: function Prepare(data, extension) {
       const gl = _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
       const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
 
-      switch (this._extension) {
+      switch (extension) {
         case "cube":
           this.texture = gl.createTexture();
           gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
@@ -22362,7 +22372,6 @@ function (_Tw2Resource) {
           throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"](`Invalid format, ${this._extension} unsupported`);
       }
 
-      this._extension = null;
       this._isAttached = false;
       this.OnPrepared();
     }
@@ -22376,9 +22385,7 @@ function (_Tw2Resource) {
   }, {
     key: "DoCustomLoad",
     value: function DoCustomLoad(path, extension) {
-      this._extension = extension;
-
-      switch (this._extension) {
+      switch (extension) {
         case "cube":
           this.isCube = true;
           path = path.substr(0, path.length - 5) + ".png";
@@ -22389,20 +22396,24 @@ function (_Tw2Resource) {
           break;
 
         case "dds":
-          // Pass back to the ResMan to load
-          this._extension = extension;
-          this.requestResponseType = "arraybuffer";
-          return false;
+          _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads++;
+          _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer").then(response => {
+            _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads--;
+            this.OnLoaded();
+            _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, response, extension);
+          }).catch(err => {
+            _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads--;
+            this.OnError(err);
+          });
+          return true;
 
         default:
-          this._extension = null;
           throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceExtensionUnregistered"]({
             path,
             extension
           });
       }
 
-      this.OnRequested();
       _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads++;
       const image = new Image();
       image.crossOrigin = "anonymous";
@@ -22424,7 +22435,7 @@ function (_Tw2Resource) {
 
       image.onload = () => {
         _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads--;
-        _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image);
+        _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image, extension);
         this.OnLoaded();
       };
 
@@ -22445,8 +22456,6 @@ function (_Tw2Resource) {
       }
 
       this._isAttached = false;
-      this._extension = null;
-      this.requestResponseType = null;
       this.OnUnloaded();
       return true;
     }
@@ -22461,8 +22470,6 @@ function (_Tw2Resource) {
       this.path = "";
       this.texture = texture;
       this._isAttached = true;
-      this._extension = null;
-      this.requestResponseType = null;
       this.OnLoaded({
         hide: true,
         data: {
@@ -22540,14 +22547,13 @@ function (_Tw2Resource) {
   }, {
     key: "AddMipLevelSkipCount",
     value: function AddMipLevelSkipCount(path) {
-      const d = _global__WEBPACK_IMPORTED_MODULE_2__["device"],
-            mipExt = d.mipLevelSkipCount > 0 ? "." + d.mipLevelSkipCount.toString() : "";
+      const d = _global__WEBPACK_IMPORTED_MODULE_2__["device"];
 
       if (d.mipLevelSkipCount > 0) {
         const index = path.lastIndexOf(".");
 
         if (index >= 0) {
-          path = path.substr(0, index - 2) + mipExt + path.substr(index);
+          path = path.substr(0, index - 2) + "." + d.mipLevelSkipCount.toString() + path.substr(index);
         }
       }
 
@@ -22763,12 +22769,13 @@ function (_Tw2Resource) {
     }
     /**
      * Prepares the resource
+     * @param {undefined} response
      * @param {String} extension
      */
 
   }, {
     key: "Prepare",
-    value: function Prepare(extension) {
+    value: function Prepare(response, extension) {
       const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
       switch (extension) {
@@ -22845,7 +22852,7 @@ function (_Tw2Resource) {
         this._playable = true;
         this.video.oncanplay = null;
         resMan._pendingLoads--;
-        resMan.Queue(this, extension);
+        resMan.Queue(this, undefined, extension);
         this.OnLoaded();
       };
       /**
@@ -37642,7 +37649,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37780,16 +37787,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
@@ -37805,6 +37802,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
 
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./particle */ "./eve/particle/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_5__["EveParticleDirectForce"]; });
@@ -46134,7 +46141,7 @@ _defineProperty(EveTransform, "__isStaging", 1);
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform */
+/*! exports provided: EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52373,12 +52380,13 @@ function (_Tw2EventEmitter) {
      * Adds a resource and response to the prepare queue
      * @param {Tw2Resource} res
      * @param {*} response
+     * @param {*} [meta]
      */
 
   }, {
     key: "Queue",
-    value: function Queue(res, response) {
-      this._prepareQueue.push([res, response]);
+    value: function Queue(res, response, meta) {
+      this._prepareQueue.push([res, response, meta]);
     }
     /**
      * Gets a resource
@@ -52497,23 +52505,21 @@ function (_Tw2EventEmitter) {
     }
     /**
      * Loads a resource
+     * TODO: Create a res object for each quality level rather than just one
      * @param {Tw2Resource|*} res
      */
 
   }, {
     key: "LoadResource",
     value: function LoadResource(res) {
-      const path = res.path;
-      let url = path,
-          ext = Tw2ResMan.GetPathExt(url),
-          promise;
+      let url, promise;
       this.motherLode.Add(res.path, res);
       res.OnRequested();
 
       try {
-        url = this.BuildUrl(path);
+        url = this.BuildUrl(res.path);
 
-        if (res.DoCustomLoad && res.DoCustomLoad(url, ext, this)) {
+        if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url))) {
           return res;
         }
       } catch (err) {
@@ -52521,10 +52527,13 @@ function (_Tw2EventEmitter) {
         return res;
       }
 
+      this._pendingLoads++;
       this.Fetch(url, res.requestResponseType).then(response => {
+        this._pendingLoads--;
         res.OnLoaded();
         this.Queue(res, response);
       }).catch(err => {
+        this._pendingLoads--;
         res.OnError(err);
       });
       return res;
@@ -52623,7 +52632,7 @@ function (_Tw2EventEmitter) {
     key: "NormalizePath",
     value: function NormalizePath(path) {
       path = path.toLowerCase();
-      path.replace("\\", "/");
+      path = path.replace("\\", "/");
       return path;
     }
     /**

@@ -110,13 +110,89 @@ function readResFileIndex(resFileIndex)
 
     if (args.json)
     {
-        fs.writeFileSync("./resfileindex.json", JSON.stringify(json, null, 4));
+        // Ensure cache root exists
+        if (!fs.existsSync(args.dest))
+        {
+            fs.mkdirSync(args.dest);
+        }
+
+        fs.writeFileSync(`${args.dest}/resfileindex.json`, JSON.stringify(json, null, 4));
     }
+
     return json;
 }
 
 // Convert the resfileindex.txt into json and then store in memory
 const resMapping = readResFileIndex(args.index);
+
+/**
+ * Gets a filename's extension
+ * @param {String} fileName
+ * @returns {null|String}
+ */
+function getExtension(fileName)
+{
+    const dot = fileName.lastIndexOf(".");
+    if (dot === -1) return null;
+    return fileName.substr(dot + 1).toLowerCase();
+}
+
+// File extensions affected by quality
+const AffectedByQuality = [ "dds", "png", "gr2" ];
+
+/**
+ * Converts a filename from ccpwgl format to ccp format
+ * @param {String} fileName
+ * @returns {String}
+ */
+function fromCCPWGLQuality(fileName)
+{
+    const ext = getExtension(fileName);
+    if (AffectedByQuality.indexOf(ext) === -1) return fileName;
+
+    let newFileName = fileName;
+
+    const highQuality = `.0.${ext}`;
+    if (fileName.indexOf(highQuality) !== -1)
+    {
+        newFileName = fileName.replace(highQuality, `.${ext}`);
+    }
+
+    if (newFileName === fileName)
+    {
+        const mediumQuality = `.1.${ext}`;
+        if (fileName.indexOf(mediumQuality) !== -1)
+        {
+            newFileName = fileName.replace(mediumQuality, `_mediumdetail.${ext}`);
+            // handle files without medium quality settings
+            if (!resMapping[newFileName])
+            {
+                newFileName = fileName.replace(mediumQuality, `.${ext}`);
+            }
+        }
+    }
+
+    if (newFileName === fileName)
+    {
+        const lowQuality = `.2.${ext}`;
+        if (fileName.indexOf(lowQuality) !== -1)
+        {
+            newFileName = fileName.replace(lowQuality, `_lowdetail.${ext}`);
+            // handle files without low quality settings
+            if (!resMapping[newFileName])
+            {
+                newFileName = fileName.replace(lowQuality, `.${ext}`);
+            }
+        }
+    }
+
+    if (newFileName !== fileName)
+    {
+        log(fileName, `Remapping texture to: ${newFileName}`);
+    }
+
+    return newFileName;
+}
 
 /**
  * Gets a filename's hash from the resfileindex
@@ -142,9 +218,9 @@ function getFromCDN(fileName, cb)
     const localFile = `${args.dest}${hash}`;
     const localDir = localFile.substring(0, localFile.lastIndexOf("/"));
 
-    log(fileName, `Retrieving from args.cdn: ${url}`);
+    log(fileName, `Retrieving from cdn: ${url}`);
 
-    // Ensure root exists
+    // Ensure cache root exists
     if (!fs.existsSync(args.dest))
     {
         fs.mkdirSync(args.dest);
@@ -314,6 +390,9 @@ function getFile(fileName, req, res)
         fileName = fileName.substring(1);
     }
 
+    // Handle ccpwgl texture quality suffixes
+    fileName = fromCCPWGLQuality(fileName);
+
     // Ensure valid file name
     if (!resMapping[fileName])
     {
@@ -345,8 +424,6 @@ function getFile(fileName, req, res)
             res.end(data);
             log(fileName, "Success");
         }
-
-        console.log("");
     });
 }
 

@@ -4,18 +4,28 @@
     A proxy server for retrieving ccp files using their human readable file path as an input
 
 
-         1. It will use your local game directory files first (if you provide the directory)
-         2. Then it will fallback to a using a local cache second
-         3. Then it will fallback to ccp's content delivery network (cdn) and store the 
-            results in your local cache directory
+        Services:
+             - Provides cors headers (cdn doesn't and webgl needs them)
+             - Provides ccpwgl resource quality suffixes (cdn uses a different system)
+             - Provides local file caching (if required)
+             - Provides file name mapping
+         
+        File sources:
+            1. It will use your local game directory first (if you provide the directory with the -dir argument)
+            2. It will fallback to using local cache (if the file exists) 
+            3. It will fallback to ccp's content delivery network (cdn) and store in local cache
 
-         CCP stores files as hash file names locally and on their server (for version control)
-         - CCPWGL needs the human readable file names to work
-         - Humans needs human readable file names to work (And cookies)
+        File names:
+            CCP stores files with hashes as names (locally and on the cdn)
+                - ccpwgl needs human readable file names
+                - humans needs human readable file names to not go insane (And cookies)
 
-                human: "dx9/model/spaceobjectfactory/data.black"
-                hash:  "35/350cf81f2f26b64b_176410753cf4e27b375ad74009318b7d"
+                    human: "dx9/model/spaceobjectfactory/data.black"
+                    hash:  "35/350cf81f2f26b64b_176410753cf4e27b375ad74009318b7d"
 
+        Support:
+            The ccpwgl library is tested with the supplied `resfileindex.txt`, other versions may not work
+         
 
     ==============================================================================================================
 
