@@ -50,16 +50,17 @@ export class Tw2ResMan extends Tw2EventEmitter
     _purgeFrameLimit = 1000;
     _pendingLoads = 0;
     _noLoadFrames = 0;
-    _tw2 = null;
+    
+    tw2 = null;
 
     /**
-     *
-     * @param tw2
+     * Constructor
+     * @param {Tw2Library} tw2
      */
     constructor(tw2)
     {
         super();
-        this._tw2 = tw2;
+        tw2.SetLibrary(this);
     }
 
     /**
@@ -264,7 +265,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return null;
         }
 
-        const Constructor = this._tw2.store.extensions.Get(extension);
+        const Constructor = this.tw2.store.extensions.Get(extension);
         if (!Constructor)
         {
             this.OnResError(path, new ErrResourceExtensionUnregistered({path, extension}));
@@ -456,7 +457,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return path;
         }
 
-        const fullPrefix = this._tw2.store.paths.Get(prefix);
+        const fullPrefix = this.tw2.store.paths.Get(prefix);
         if (!fullPrefix)
         {
             throw new ErrResourcePrefixUnregistered({path, prefix});
@@ -509,7 +510,3 @@ export class Tw2ResMan extends Tw2EventEmitter
     static category = "resource_manager";
 
 }
-
-
-// Global instance of Tw2ResMan
-export const resMan = new Tw2ResMan();

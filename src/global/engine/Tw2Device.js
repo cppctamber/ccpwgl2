@@ -167,6 +167,8 @@ export class Tw2Device extends Tw2EventEmitter
     _blitEffect = null;
     _Date = Date;
 
+    tw2 = null;
+
     /**
      *
      * @param tw2
@@ -174,7 +176,7 @@ export class Tw2Device extends Tw2EventEmitter
     constructor(tw2)
     {
         super();
-        this._tw2 = tw2;
+        tw2.SetLibrary(this);
         this.startTime = this.now;
         this.currentTime = this.startTime;
     }
@@ -241,7 +243,7 @@ export class Tw2Device extends Tw2EventEmitter
             canvas = document.getElementById(canvas);
         }
 
-        let {gl, version} = this._tw2.client.CreateContext(canvas, params, this.enableWebgl2);
+        let {gl, version} = this.tw2.client.CreateContext(canvas, params, this.enableWebgl2);
         if (!gl) return this.glVersion;
 
         this.gl = gl;
@@ -387,7 +389,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.viewportHeight = this.canvas.clientHeight;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
 
-        this._tw2.store.variables.SetValue("ViewportSize", [
+        this.tw2.store.variables.SetValue("ViewportSize", [
             this.viewportWidth,
             this.viewportHeight,
             this.viewportWidth,
@@ -430,7 +432,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
         this.previousTime = now;
 
-        this._tw2.store.variables.SetValue("Time", [
+        this.tw2.store.variables.SetValue("Time", [
             this.currentTime,
             this.currentTime - Math.floor(this.currentTime),
             this.frameCounter,
@@ -484,7 +486,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         mat4.multiply(this.viewProjection, this.projection, this.view);
         mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
-        this._tw2.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
+        this.tw2.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
     }
 
     /**

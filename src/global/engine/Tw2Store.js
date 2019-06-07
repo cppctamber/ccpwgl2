@@ -16,7 +16,7 @@ import {ErrStoreKeyProtected} from "../../core";
  * @property {Tw2VariableStore} variables
  * @property {Tw2ExtensionStore} extensions
  * @property {Tw2DynamicPathStore} dynamicPaths
- * @property {Tw2Library} _tw2
+ * @property {Tw2Library} tw2
  */
 export class Tw2Store
 {
@@ -29,7 +29,7 @@ export class Tw2Store
     variables = new Tw2VariableStore(this);
     extensions = new Tw2ExtensionStore();
     dynamicPaths = new Tw2DynamicPathStore();
-    _tw2 = null;
+    tw2 = null;
 
     /**
      * Constructor
@@ -37,7 +37,7 @@ export class Tw2Store
      */
     constructor(tw2)
     {
-        this._tw2 = tw2;
+        tw2.SetLibrary(this);
     }
 
     /**

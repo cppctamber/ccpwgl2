@@ -256,6 +256,22 @@ class Tw2Library extends Tw2EventEmitter
         this.store.Register(opt.store);
     }
 
+    /**
+     * Sets an object's tw2 instantiation
+     * @param {*} target
+     */
+    SetLibrary(target)
+    {
+        if ("tw2" in target)
+        {
+            Reflect.defineProperty(target, "tw2", {
+                value: this,
+                writable: false,
+                configurable: false
+            });
+        }
+    }
+
 }
 
 /**

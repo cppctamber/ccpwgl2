@@ -56,7 +56,7 @@ export class Tw2Logger extends Tw2EventEmitter
     constructor(tw2)
     {
         super();
-        Reflect.defineProperty(this, "tw2", {get: () => tw2});
+        tw2.SetLibrary(this);
     }
 
     /**

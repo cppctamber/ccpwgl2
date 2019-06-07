@@ -17,7 +17,7 @@ import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
 export class Tw2Client extends Tw2EventEmitter
 {
 
-    _tw2 = null;
+    tw2 = null;
 
     /**
      * Gets the client vr display
@@ -25,7 +25,7 @@ export class Tw2Client extends Tw2EventEmitter
      */
     get vrDisplay()
     {
-        return this._tw2.device.vrDisplay;
+        return this.tw2.device.vrDisplay;
     }
 
     /**
@@ -35,7 +35,7 @@ export class Tw2Client extends Tw2EventEmitter
     constructor(tw2)
     {
         super();
-        this._tw2 = tw2;
+        tw2.SetLibrary(this);
     }
 
     /**
