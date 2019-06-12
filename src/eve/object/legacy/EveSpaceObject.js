@@ -1,7 +1,6 @@
 import {vec3, vec4, quat, mat4, util} from "../../../global";
 import {Tw2AnimationController, Tw2PerObjectData} from "../../../core";
 import {EveObject} from "./EveObject";
-import {EveCustomMask} from "../../item";
 
 /**
  * EveSpaceObject

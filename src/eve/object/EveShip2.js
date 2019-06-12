@@ -1,5 +1,5 @@
-import {vec3} from "../../global/index";
-import {Tw2BaseClass} from "../../global/index";
+import {vec3} from "../../global";
+import {EveObject} from "./legacy/EveObject"
 
 /**
  * EveShip2
@@ -16,14 +16,14 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {String} dna                              -
  * @property {Array.<EveLocatorSets>} locatorSets      -
  * @property {Array.<EveLocator2>} locators            -
- * @property {Tw2Mesh|Tw2InstanceMesh|Tr2MeshLod} mesh -
+ * @property {Tw2Mesh|Tw2InstancedMesh|Tr2MeshLod} mesh -
  * @property {Curve|CurveAdapter} rotationCurve        -
  * @property {Tr2Effect} shadowEffect                  -
  * @property {vec3} shapeEllipsoidCenter               -
  * @property {vec3} shapeEllipsoidRadius               -
  * @property {Curve|CurveAdapter} translationCurve     -
  */
-export class EveShip2 extends Tw2BaseClass
+export class EveShip2 extends EveObject
 {
 
     attachments = [];

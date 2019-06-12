@@ -1,5 +1,5 @@
-import {vec3} from "../../global/index";
-import {Tw2BaseClass} from "../../global/index";
+import {vec3} from "../../global";
+import {EveObject} from "./legacy/EveObject";
 
 /**
  * EveMobile
@@ -18,7 +18,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Array.<TriObserverLocal>} observers  -
  * @property {Tr2Effect} shadowEffect              -
  */
-export class EveMobile extends Tw2BaseClass
+export class EveMobile extends EveObject
 {
 
     name = "";

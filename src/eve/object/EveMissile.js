@@ -1,4 +1,4 @@
-import {vec3, mat4, util, Tw2BaseClass} from "../../global";
+import {vec3, mat4, util} from "../../global";
 import {Tw2PerObjectData} from "../../core";
 import {EveObject} from "./legacy/EveObject";
 
@@ -32,7 +32,7 @@ import {EveObject} from "./legacy/EveObject";
  * @property {mat4} _transform                             -
  * @property {vec3} _velocity                              -
  */
-export class EveMissileWarhead extends Tw2BaseClass
+export class EveMissileWarhead extends EveObject
 {
     //ccp
     acceleration = 1;
@@ -50,7 +50,6 @@ export class EveMissileWarhead extends Tw2BaseClass
     warheadRadius = 0;
 
     //ccpwgl
-    display = true;
     _perObjectData = Tw2PerObjectData.from(EveMissileWarhead.perObjectData);
     _state = EveMissileWarhead.State.READY;
     _time = 0;
@@ -272,17 +271,15 @@ export class EveMissileWarhead extends Tw2BaseClass
  * @property {?function(EveMissileWarhead): void} _warheadExplosionCallback -
  * @property {?function(EveMissile): void} _missileFinishedCallback         -
  */
-export class EveMissile extends Tw2BaseClass
+export class EveMissile extends EveObject
 {
     // ccp
-    name = "";
     boundingSphereCenter = vec3.create();
     boundingSphereRadius = 0;
     modelTranslationCurve = null;
     warheads = [];
 
     // ccpwgl
-    display = true;
     curveSets = [];
     speed = 1;
     _position = vec3.create();

@@ -1,4 +1,4 @@
-import {vec3, quat, mat4, device, Tw2BaseClass} from "../../global";
+import {vec3, quat, mat4, device} from "../../global";
 import {Tw2PerObjectData} from "../../core";
 import {EveObject} from "./legacy/EveObject";
 
@@ -16,12 +16,12 @@ import {EveObject} from "./legacy/EveObject";
  *
  * @property {String} name                                                 -
  * @property {Array.<EveObject>} children                                  -
- * @property {Array.<TriCurveSet>} curveSets                               -
+ * @property {Array.<Tw2CurveSet>} curveSets                               -
  * @property {Boolean} display                                             -
  * @property {Number} distanceBasedScaleArg1                               -
  * @property {Number} distanceBasedScaleArg2                               -
  * @property {Boolean} hideOnLowQuality                                    -
- * @property {Mesh|Tr2MeshLod} mesh                                        -
+ * @property {Tw2Mesh|Tr2MeshLod} mesh                                     -
  * @property {Number} modifier                                             -
  * @property {Array.<TriObserverLocal>} observers                          -
  * @property {vec3} overrideBoundsMax                                      -

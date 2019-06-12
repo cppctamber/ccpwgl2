@@ -1,5 +1,5 @@
-import {quat, vec3} from "../../global/index";
-import {Tw2BaseClass} from "../../global/index";
+import {quat, vec3} from "../../global";
+import {EveObject} from "./legacy/EveObject";
 
 /**
  * EveRootTransform
@@ -9,9 +9,9 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {String} name                       -
  * @property {Number} boundingSphereRadius       -
  * @property {Array.<EveObject>} children        -
- * @property {Array.<TriCurveSet>} curveSets     -
+ * @property {Array.<Tw2CurveSet>} curveSets     -
  * @property {Boolean} display                   -
- * @property {Tr2Mesh} mesh                      -
+ * @property {Tw2Mesh} mesh                      -
  * @property {Number} modifier                   -
  * @property {Array} observers                   -
  * @property {quat} rotation                     -
@@ -21,7 +21,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {vec3} translation                  -
  * @property {Tr2CurveConstant} translationCurve -
  */
-export class EveRootTransform extends Tw2BaseClass
+export class EveRootTransform extends EveObject
 {
 
     name = "";

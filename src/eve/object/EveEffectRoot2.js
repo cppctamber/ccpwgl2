@@ -1,5 +1,5 @@
-import {quat, vec3, vec4} from "../../global/index";
-import {Tw2BaseClass} from "../../global/index";
+import {quat, vec3, vec4} from "../../global";
+import {EveObject} from "./legacy/EveObject";
 
 /**
  * EveEffectRoot2
@@ -9,10 +9,10 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {String} name                          -
  * @property {vec3} boundingSphereCenter            -
  * @property {Number} boundingSphereRadius          -
- * @property {Array.<TriCurveSet>} curveSets        -
+ * @property {Array.<Tw2CurveSet>} curveSets        -
  * @property {Number} duration                      -
  * @property {Boolean} dynamicLOD                   -
- * @property {Array.<ObjectChild>} effectChildren   -
+ * @property {Array.<EveChild>} effectChildren      -
  * @property {Array.<Tr2PointLight>} lights         -
  * @property {Array} observers                      -
  * @property {quat} rotation                        -
@@ -21,7 +21,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Number} secondaryLightingSphereRadius -
  * @property {vec3} translation                     -
  */
-export class EveEffectRoot2 extends Tw2BaseClass
+export class EveEffectRoot2 extends EveObject
 {
 
     name = "";

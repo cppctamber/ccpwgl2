@@ -1,5 +1,5 @@
-import {vec3} from "../../global/index";
-import {Tw2BaseClass} from "../../global/index";
+import {vec3} from "../../global";
+import {EveObject} from "./legacy/EveObject"
 
 /**
  * EveStation2
@@ -10,13 +10,13 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {vec3} boundingSphereCenter              -
  * @property {Number} boundingSphereRadius            -
  * @property {Array.<EveObject>} children             -
- * @property {Array.<TriCurveSet>} curveSets          -
- * @property {Array.<EveObjectItem>} decals           -
- * @property {Array.<ObjectChild>} effectChildren     -
+ * @property {Array.<Tw2CurveSet>} curveSets          -
+ * @property {Array.<EveSpaceObjectDecal>} decals     -
+ * @property {Array.<EveChild>} effectChildren        -
  * @property {Array.<Tr2PointLight>} lights           -
- * @property {Array.<EveObjectSet>} locatorSets       -
- * @property {Array.<EveObjectItem>} locators         -
- * @property {Tr2Mesh} mesh                           -
+ * @property {Array.<EveLocatorSets>} locatorSets     -
+ * @property {Array.<EveLocator2>} locators           -
+ * @property {Tw2Mesh} mesh                           -
  * @property {Tr2MeshLod} meshLod                     -
  * @property {Tr2RotationAdapter} modelRotationCurve  -
  * @property {Number} modelScale                      -
@@ -25,7 +25,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Tr2Effect} shadowEffect                 -
  * @property {Tr2TranslationAdapter} translationCurve -
  */
-export class EveStation2 extends Tw2BaseClass
+export class EveStation2 extends EveObject
 {
 
     attachments = [];
