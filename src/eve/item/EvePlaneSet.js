@@ -196,17 +196,14 @@ export class EvePlaneSet extends EveObjectSet
     Update(dt, parentMatrix)
     {
         this._time += dt;
-
-        if (this._dirty)
-        {
-            this.Rebuild();
-        }
+        super.Update(dt);
     }
 
     /**
      * Unloads the set's buffers
+     * @param {Boolean} [skipEvent]
      */
-    Unload()
+    Unload(skipEvent)
     {
         if (this._vertexBuffer)
         {
@@ -219,6 +216,8 @@ export class EvePlaneSet extends EveObjectSet
             device.gl.deleteBuffer(this._indexBuffer);
             this._indexBuffer = null;
         }
+
+        super.Unload(skipEvent);
     }
 
     /**
@@ -226,11 +225,15 @@ export class EvePlaneSet extends EveObjectSet
      */
     Rebuild()
     {
-        this.Unload();
+        this.Unload(true);
         this.RebuildItems();
         this._dirty = false;
         const itemCount = this._visibleItems.length;
-        if (!itemCount) return;
+        if (!itemCount)
+        {
+            super.Rebuild();
+            return;
+        }
 
         const
             vertexSize = 35,
@@ -321,6 +324,8 @@ export class EvePlaneSet extends EveObjectSet
         device.gl.bufferData(device.gl.ELEMENT_ARRAY_BUFFER, indexes, device.gl.STATIC_DRAW);
         device.gl.bindBuffer(device.gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount * 6;
+
+        super.Rebuild();
     }
 
     /**

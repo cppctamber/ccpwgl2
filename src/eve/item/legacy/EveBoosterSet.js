@@ -25,6 +25,7 @@ export class EveBoosterBatch extends Tw2RenderBatch
     {
         this.boosters.Render(technique);
     }
+
 }
 
 
@@ -368,14 +369,15 @@ export class EveBoosterSet extends EveObjectSet
     Update(dt, parentMatrix)
     {
         mat4.copy(this._parentTransform, parentMatrix);
-        if (this._dirty) this.Rebuild();
+        super.Update(dt);
         if (this.glows) this.glows.Update(dt);
     }
 
     /**
      * Unloads the booster's buffers
+     * @param {Boolean} [skipEvent]
      */
-    Unload()
+    Unload(skipEvent)
     {
         if (this._positions)
         {
@@ -385,8 +387,10 @@ export class EveBoosterSet extends EveObjectSet
 
         if (this.glows)
         {
-            this.glows.Unload();
+            this.glows.Unload(skipEvent);
         }
+
+        super.Unload(skipEvent);
     }
 
     /**
@@ -397,7 +401,11 @@ export class EveBoosterSet extends EveObjectSet
         this.RebuildItems();
         const itemCount = this._visibleItems.length;
         this._dirty = false;
-        if (!itemCount) return;
+        if (!itemCount)
+        {
+            super.Rebuild();
+            return;
+        }
 
         const
             d = device,
@@ -438,6 +446,7 @@ export class EveBoosterSet extends EveObjectSet
         this._positions.count = itemCount * 12 * 3;
 
         if (this.glows) this.glows.Rebuild();
+        super.Rebuild();
     }
 
     /**

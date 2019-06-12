@@ -93,12 +93,17 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     /**
      * Unloads the decal's buffers
      */
-    Unload()
+    Unload(skipEvent)
     {
         if (this._indexBuffer)
         {
             device.gl.deleteBuffer(this._indexBuffer);
             this._indexBuffer = null;
+        }
+
+        if (!skipEvent)
+        {
+            this.emit("unloaded");
         }
     }
 
@@ -107,7 +112,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
      */
     Rebuild()
     {
-        this.Unload();
+        this.Unload(true);
         if (this.indexBuffer)
         {
             const
@@ -120,6 +125,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
         }
 
         this._dirty = false;
+        this.emit("rebuilt");
     }
 
     /**

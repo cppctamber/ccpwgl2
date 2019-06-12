@@ -480,13 +480,14 @@ export class EveCurveLineSet extends EveObjectSet
     /**
      * Unloads the line set's buffers
      */
-    Unload()
+    Unload(skipEvent)
     {
         if (this._vb)
         {
             device.gl.deleteBuffer(this._vb);
             this._vb = null;
         }
+        super.Unload(skipEvent);
     }
 
     /**
@@ -494,12 +495,16 @@ export class EveCurveLineSet extends EveObjectSet
      */
     Rebuild()
     {
-        this.Unload();
+        this.Unload(true);
         this.RebuildItems();
         this._vbSize = this.lineCount;
         this._dirty = false;
         const visibleItems = this._visibleItems.length;
-        if (!visibleItems) return;
+        if (!visibleItems)
+        {
+            super.Rebuild();
+            return;
+        }
 
         const
             g = EveCurveLineSet.global,
@@ -605,6 +610,8 @@ export class EveCurveLineSet extends EveObjectSet
         device.gl.bindBuffer(device.gl.ARRAY_BUFFER, this._vb);
         device.gl.bufferData(device.gl.ARRAY_BUFFER, data, device.gl.STATIC_DRAW);
         device.gl.bindBuffer(device.gl.ARRAY_BUFFER, null);
+
+        super.Rebuild();
     }
 
     /**

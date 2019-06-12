@@ -1,6 +1,5 @@
 /* eslint no-unused-vars:0 */
-import {vec3, vec4, mat4, util} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import {vec3, vec4, mat4, util, Tw2BaseClass} from "../../global";
 import {ErrAbstractClassMethod} from "../../core";
 
 /**
@@ -10,11 +9,16 @@ import {ErrAbstractClassMethod} from "../../core";
  * @property {Boolean} display - Toggles the set item's visibility
  * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
-export class EveObjectSetItem extends Tw2BaseClass
+export function EveObjectSetItem()
 {
+    Tw2BaseClass.defineID(this);
+    this.display = true;
+    this._dirty = true;
+}
 
-    display = true;
-    _dirty = true;
+EveObjectSetItem.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
+
+    constructor: EveObjectSetItem,
 
     /**
      * Fire on value changes
@@ -22,24 +26,17 @@ export class EveObjectSetItem extends Tw2BaseClass
     OnValueChanged()
     {
         this._dirty = true;
-        if (this._parent)
-        {
-            this._parent.OnChildValueChanged(this);
-        }
-    }
+    },
 
     /**
      * Fires when the object is destroyed
      */
     OnDestroyed()
     {
-        if (this._parent)
-        {
-            this._parent.RemoveItem(this);
-        }
+
     }
 
-}
+});
 
 /**
  * EveObjectSet base class
@@ -49,15 +46,23 @@ export class EveObjectSetItem extends Tw2BaseClass
  * @property {Array<*>} items         - The set's items
  * @property {Array<*>} _visibleItems - The set's items that will be rendered when the set is visible
  * @property {Boolean} _dirty         - Identifies if the set requires rebuilding
+ * @property {Boolean} _autoRebuild   - Auto rebuilds the object if a child is dirty
  */
-export class EveObjectSet extends Tw2BaseClass
+export function EveObjectSet()
 {
     // ccpwgl
-    display = true;
-    items = [];
-    _dirty = true;
-    _visibleItems = [];
+    Tw2BaseClass.defineID(this);
+    this.autoRebuild = true;
+    this.display = true;
+    this.items = [];
+    this._dirty = true;
+    this._visibleItems = [];
 
+}
+
+EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
+
+    constructor: EveObjectSet,
 
     /**
      * Initializes the set
@@ -65,7 +70,7 @@ export class EveObjectSet extends Tw2BaseClass
     Initialize()
     {
         this.Rebuild();
-    }
+    },
 
     /**
      * Fires on value changes
@@ -73,18 +78,7 @@ export class EveObjectSet extends Tw2BaseClass
     OnValueChanged()
     {
         this._dirty = true;
-    }
-
-    /**
-     * Fires on child value changes
-     * @param {*} child
-     */
-    OnChildValueChanged(child)
-    {
-        this.emit("child_modified", {child});
-        this._dirty = true;
-        //this.UpdateValues(child);
-    }
+    },
 
     /**
      * Creates an item from an options object and then adds it to the set
@@ -97,7 +91,7 @@ export class EveObjectSet extends Tw2BaseClass
         const item = this.constructor.Item.from(values, opt);
         this.AddItem(item, opt ? opt.skipUpdate : false);
         return item;
-    }
+    },
 
     /**
      * Adds a set item
@@ -116,7 +110,7 @@ export class EveObjectSet extends Tw2BaseClass
             return true;
         }
         return false;
-    }
+    },
 
     /**
      * Removes a set item
@@ -136,7 +130,7 @@ export class EveObjectSet extends Tw2BaseClass
             return true;
         }
         return false;
-    }
+    },
 
     /**
      * Clears all items
@@ -150,7 +144,7 @@ export class EveObjectSet extends Tw2BaseClass
             i--;
         }
         if (!skipUpdate) this.UpdateValues();
-    }
+    },
 
     /**
      * Rebuilds items
@@ -161,7 +155,6 @@ export class EveObjectSet extends Tw2BaseClass
         for (let i = 0; i < this.items.length; i++)
         {
             const item = this.items[i];
-            //item.SetParent(this);
 
             if (item.display)
             {
@@ -171,7 +164,23 @@ export class EveObjectSet extends Tw2BaseClass
             item._dirty = false;
         }
         this._dirty = true;
-    }
+    },
+
+    /**
+     * Checks if any children are dirty
+     * @returns {boolean}
+     */
+    AreItemsDirty()
+    {
+        for (let i = 0; i < this.items.length; i++)
+        {
+            if (this.items[i]._dirty)
+            {
+                return true;
+            }
+        }
+        return false;
+    },
 
     /**
      * Per frame update
@@ -180,27 +189,35 @@ export class EveObjectSet extends Tw2BaseClass
      */
     Update(dt, parentMatrix)
     {
+        if (!this._dirty && this.autoRebuild && this.AreItemsDirty())
+        {
+            this._dirty = true;
+        }
+
         if (this._dirty)
         {
             this.Rebuild();
         }
-    }
+    },
 
     /**
      * Unloads the set's buffers
      */
-    Unload()
+    Unload(skipEvent)
     {
-        throw new ErrAbstractClassMethod();
-    }
+        if (!skipEvent)
+        {
+            this.emit("unloaded");
+        }
+    },
 
     /**
      * Rebuilds the set
      */
     Rebuild()
     {
-        throw new ErrAbstractClassMethod();
-    }
+        this.emit("rebuilt");
+    },
 
     /**
      * Gets render batches
@@ -211,7 +228,7 @@ export class EveObjectSet extends Tw2BaseClass
     GetBatches(mode, accumulator, perObjectData)
     {
         throw new ErrAbstractClassMethod();
-    }
+    },
 
     /**
      * Renders the set
@@ -221,23 +238,23 @@ export class EveObjectSet extends Tw2BaseClass
         throw new ErrAbstractClassMethod();
     }
 
-    /**
-     * The object set's item
-     * @type {?Function}
-     */
-    static Item = null;
+});
 
-    /**
-     * Global and scratch variables
-     * @type {*}
-     */
-    static global = {
-        vec3_0: vec3.create(),
-        vec3_1: vec3.create(),
-        vec3_2: vec3.create(),
-        vec4_0: vec4.create(),
-        vec4_1: vec4.create(),
-        mat4_0: mat4.create()
-    };
+/**
+ * The object set's item
+ * @type {?Function}
+ */
+EveObjectSet.Item = null;
 
-}
+/**
+ * Global and scratch variables
+ * @type {*}
+ */
+EveObjectSet.global = {
+    vec3_0: vec3.create(),
+    vec3_1: vec3.create(),
+    vec3_2: vec3.create(),
+    vec4_0: vec4.create(),
+    vec4_1: vec4.create(),
+    mat4_0: mat4.create()
+};

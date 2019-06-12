@@ -161,8 +161,9 @@ export class EveSpotlightSet extends EveObjectSet
 
     /**
      * Unloads the spotlight set's buffers
+     * @param {Boolean} [skipEvent]
      */
-    Unload()
+    Unload(skipEvent)
     {
         if (this._coneVertexBuffer)
         {
@@ -181,6 +182,8 @@ export class EveSpotlightSet extends EveObjectSet
             device.gl.deleteBuffer(this._indexBuffer);
             this._indexBuffer = null;
         }
+
+        super.Unload(skipEvent);
     }
 
     /**
@@ -188,11 +191,15 @@ export class EveSpotlightSet extends EveObjectSet
      */
     Rebuild()
     {
-        this.Unload();
+        this.Unload(true);
         this.RebuildItems();
         this._dirty = false;
         const itemCount = this._visibleItems.length;
-        if (!itemCount) return;
+        if (!itemCount)
+        {
+            super.Rebuild();
+            return;
+        }
 
         const
             d = device,
@@ -331,6 +338,8 @@ export class EveSpotlightSet extends EveObjectSet
         d.gl.bufferData(d.gl.ELEMENT_ARRAY_BUFFER, indexes, d.gl.STATIC_DRAW);
         d.gl.bindBuffer(d.gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount;
+
+        super.Rebuild();
     }
 
     /**

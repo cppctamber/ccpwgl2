@@ -42,10 +42,6 @@ export class EveTurretSetItem extends EveObjectSetItem
     {
         this._dirty = true;
         this.UpdateTransforms();
-        if (this._parent)
-        {
-            this._parent.OnChildValueChanged(this);
-        }
     }
 
     /**
@@ -570,7 +566,8 @@ export class EveTurretSet extends EveObjectSet
             }
         }
 
-        this._locatorDirty = false;
+        this.RebuildItemsFromLocators();
+        // TODO: Leave this for next frame?
         if (this._dirty) this.Rebuild();
     }
 
@@ -601,6 +598,7 @@ export class EveTurretSet extends EveObjectSet
     {
         this.RebuildItems();
         this._dirty = false;
+        super.Rebuild();
     }
 
     /**
@@ -610,10 +608,7 @@ export class EveTurretSet extends EveObjectSet
      */
     Update(dt, parentMatrix)
     {
-        if (this._dirty)
-        {
-            this.Rebuild();
-        }
+        super.Update(dt);
 
         if (this.turretEffect)
         {

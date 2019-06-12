@@ -208,17 +208,14 @@ export class EveSpriteSet extends EveObjectSet
     Update(dt, parentMatrix)
     {
         this._time += dt;
-
-        if (this._dirty)
-        {
-            this.Rebuild();
-        }
+        super.Update(dt);
     }
 
     /**
      * Unloads the sprite set's buffers
+     * @param {Boolean} [skipEvent]
      */
-    Unload()
+    Unload(skipEvent)
     {
         const gl = device.gl;
 
@@ -241,6 +238,8 @@ export class EveSpriteSet extends EveObjectSet
             gl.deleteBuffer(this._instanceBuffer);
             this._instanceBuffer = null;
         }
+
+        super.Unload(skipEvent);
     }
 
     /**
@@ -251,7 +250,11 @@ export class EveSpriteSet extends EveObjectSet
         this.RebuildItems();
         this._dirty = false;
         const itemCount = this._visibleItems.length;
-        if (!itemCount) return;
+        if (!itemCount)
+        {
+            super.Rebuild();
+            return;
+        }
 
         const gl = device.gl;
 
@@ -323,6 +326,8 @@ export class EveSpriteSet extends EveObjectSet
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
         this._indexBuffer.count = itemCount * 6;
+
+        super.Rebuild();
     }
 
     /**
