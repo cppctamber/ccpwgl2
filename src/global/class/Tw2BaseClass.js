@@ -1,8 +1,6 @@
 import {ErrAbstractClassMethod} from "../../core/Tw2Error";
-import {generateID, isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped} from "../util";
+import {isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped} from "../util";
 import {Tw2EventEmitter} from "./Tw2EventEmitter";
-
-let objectID = 0;
 
 /**
  * Base class
@@ -10,11 +8,7 @@ let objectID = 0;
  */
 export function Tw2BaseClass(tw2)
 {
-    Reflect.defineProperty(this, "_id", {
-        value: generateID(),
-        writable: false,
-        configurable: true
-    });
+    Tw2BaseClass.defineID(this);
 }
 
 Tw2BaseClass.prototype = Object.assign(Object.create(Tw2EventEmitter.prototype), {
@@ -80,6 +74,7 @@ Tw2BaseClass.prototype = Object.assign(Object.create(Tw2EventEmitter.prototype),
     UpdateValues(opt)
     {
         this.OnValueChanged(opt);
+
         if (!opt || !opt["skipEvents"])
         {
             this.emit("modified", opt);
@@ -102,10 +97,12 @@ Tw2BaseClass.prototype = Object.assign(Object.create(Tw2EventEmitter.prototype),
     Destroy(opt)
     {
         this.OnDestroy(opt);
+
         if (!opt || !opt["skipEvents"])
         {
             this.emit("destroy", opt);
         }
+
         this.kill();
     },
 
@@ -134,6 +131,21 @@ Tw2BaseClass.prototype = Object.assign(Object.create(Tw2EventEmitter.prototype),
     }
 
 });
+
+let OBJECT_ID = 0;
+
+/**
+ * Defines an id
+ * @param {*} target
+ */
+Tw2BaseClass.defineID = function(target)
+{
+    Reflect.defineProperty(target, "_id", {
+        value: OBJECT_ID++,
+        writable: false,
+        configurable: true
+    });
+};
 
 /**
  * Creates an object from values
