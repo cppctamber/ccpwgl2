@@ -10,6 +10,7 @@ import {mat4, quat, vec3} from "../../global";
  * TODO: Implement "staticTransform"
  * TODO: Implement "transformModifiers"
  *
+ * @property {String} name                                 -
  * @property {Array.<StateController>} controllers         -
  * @property {Array.<Tw2CurveSet>} curveSets               -
  * @property {Boolean} display                             -
@@ -30,6 +31,7 @@ import {mat4, quat, vec3} from "../../global";
 export class EveChildContainer extends EveChild
 {
 
+    name = "";
     controllers = [];
     curveSets = [];
     display = true;

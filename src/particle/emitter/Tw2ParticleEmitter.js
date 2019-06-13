@@ -19,7 +19,7 @@ export class Tw2ParticleEmitter extends Tw2BaseClass
      */
     Initialize()
     {
-        throw new ErrAbstractClassMethod();
+        //throw new ErrAbstractClassMethod();
     }
 
     /**

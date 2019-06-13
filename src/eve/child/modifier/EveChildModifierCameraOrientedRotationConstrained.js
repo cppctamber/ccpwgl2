@@ -2,7 +2,6 @@ import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildModifierCameraOrientedRotationConstrained
- * TODO: Do we just implement this as a modifier mode?
  */
 export class EveChildModifierCameraOrientedRotationConstrained extends Tw2BaseClass
 {
@@ -12,7 +11,12 @@ export class EveChildModifierCameraOrientedRotationConstrained extends Tw2BaseCl
      * @param {*} r
      * @returns {*[]}
      */
-    static black = null;
+    static black = function(r)
+    {
+        return [
+
+        ];
+    };
 
     /**
      * Identifies that the class is in staging

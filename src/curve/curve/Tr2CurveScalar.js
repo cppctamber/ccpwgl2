@@ -22,7 +22,7 @@ export class Tw2CurveScalarKey extends Tw2BaseClass
      * @param {Tw2BlackBinaryReader} r
      * @returns {Tw2CurveScalarKey}
      */
-    static blackReader(r)
+    static readStruct(r)
     {
         const item = new this();
         item.time = r.ReadF32();

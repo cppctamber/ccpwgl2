@@ -21,6 +21,35 @@ export function addToArray(arr, ...args)
 }
 
 /**
+ * Finds the first element in an array with a given property and value
+ * - Throws an optional error if not found
+ * @param {Array} arr
+ * @param {String} property
+ * @param {*} value
+ * @param {Function} [err]
+ * @returns {*|null}
+ */
+export function findElementByProperty(arr, property, value, err)
+{
+    //if (!value || value === "none") return null;
+
+    for (let i = 0; i < arr.length; i++)
+    {
+        if (property in arr[i] && arr[i][property] === value)
+        {
+            return arr[i];
+        }
+    }
+
+    if (err)
+    {
+        throw new err({[property]:value});
+    }
+
+    return null;
+}
+
+/**
  * Calls a function with arguments for each child in an array where that function exists
  * @param {Array} arr
  * @param {String} funcName

@@ -6,6 +6,7 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
  * TODO: Implement
  * @ccp Tr2GpuSharedEmitter
  *
+ * @property {String} name                         -
  * @property {Number} angle                        -
  * @property {vec3} attractorPosition              -
  * @property {Number} attractorStrength            -
@@ -42,6 +43,7 @@ import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
 export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
 {
     // ccp
+    name = "";
     angle = 0;
     attractorPosition = vec3.create();
     attractorStrength = 0;

@@ -6,6 +6,7 @@ import {EveChild} from "./EveChild";
  * EveChildCloud
  * TODO: Implement
  *
+ * @property {String} name                -
  * @property {Number} cellScreenSize      -
  * @property {Tw2Effect} effect           -
  * @property {Number} preTesselationLevel -
@@ -17,6 +18,7 @@ import {EveChild} from "./EveChild";
 export class EveChildCloud extends EveChild
 {
 
+    name = "";
     cellScreenSize = 0;
     effect = null;
     preTesselationLevel = 0;

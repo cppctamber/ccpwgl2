@@ -2,7 +2,6 @@ import {quat, vec3, Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildModifierSRT
- * TODO: Do we just implement this as an EveChild modifier mode and class properties?
  *
  * @property {quat} rotation    -
  * @property {vec3} scaling     -

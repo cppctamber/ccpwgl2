@@ -5,6 +5,7 @@ import {EveChild} from "./EveChild";
  * EveChildExplosion
  * TODO: Implement
  *
+ * @property {String} name                               -
  * @property {Number} globalDuration                     -
  * @property {EveChildContainer} globalExplosion         -
  * @property {Number} globalExplosionDelay               -
@@ -22,6 +23,7 @@ import {EveChild} from "./EveChild";
 export class EveChildExplosion extends EveChild
 {
 
+    name = "";
     globalDuration = 0;
     globalExplosion = null;
     globalExplosionDelay = 0;

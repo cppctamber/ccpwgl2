@@ -9,6 +9,7 @@ import {EveChild} from "./EveChild";
  * TODO: Implement "minScreenSize"
  * TODO: Implement "useDynamicLod"
  *
+ * @property {String} name                                                     -
  * @property {Boolean} display                                                 -
  * @property {mat4} localTransform                                             -
  * @property {Number} lodSphereRadius                                          -
@@ -27,6 +28,7 @@ import {EveChild} from "./EveChild";
 export class EveChildParticleSystem extends EveChild
 {
     // ccp
+    name = "";
     display = true;
     localTransform = mat4.create();
     lodSphereRadius = 0;

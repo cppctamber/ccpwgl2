@@ -1,4 +1,4 @@
-import {vec3, quat, mat4, Tw2BaseClass} from "../../global";
+import {vec3, quat, mat4} from "../../global";
 import {Tw2PerObjectData, Tw2RawData} from "../../core";
 import {EveChild} from "./EveChild";
 
@@ -31,6 +31,7 @@ import {EveChild} from "./EveChild";
 export class EveChildMesh extends EveChild
 {
 
+    name = "";
     display = true;
     localTransform = mat4.create();
     lowestLodVisible = 2;

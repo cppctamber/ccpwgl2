@@ -2,7 +2,7 @@ import {vec2, vec3, vec4, mat4, store} from "../../global";
 import {ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError} from "../Tw2Error";
 
 /**
- * Internal handler for "res" paths
+ * Internal handler for modifying ccp paths and strings
  * @param {String} path
  * @returns {String}
  */
@@ -19,12 +19,29 @@ function onString(path)
     const dot = path.lastIndexOf(".");
     if (dot !== -1) ext = path.substr(dot + 1).toLowerCase();
 
-    // Strip out any cdn quality suffixes
-    if (["dds", "png", "gr2"].includes(ext))
+    switch(ext)
     {
-        path = path.replace(`_lowdetail.${ext}`);
-        path = path.replace(`_mediumdetail.${ext}`);
-        path = path.replace(ext, `0.${ext}`);
+        case "dds":
+        case "png":
+            // Replace cdn resource qualities with ccpwgl quality suffixes
+            // TODO: Remove the need to do this in Tw2TextureRes
+            path = path.replace(`_lowdetail.${ext}`);       // Shouldn't exist
+            path = path.replace(`_mediumdetail.${ext}`);    // Shouldn't exist
+            path = path.replace(ext, `0.${ext}`);
+            break;
+
+        case "gr2":
+        case "sm_hi":
+        case "sm_lo":
+        case "sm_depth":
+            console.log(`Removing unsupported file format: ${path}`);
+            path = "";
+            break;
+
+        case "red":
+            // Dunno why ccp still calls them .red
+            path = path.replace("red", "black");
+            break;
     }
 
     return path;
@@ -85,7 +102,7 @@ export function object(reader, out, id)
             // Debug
             if (!(propertyName in out))
             {
-                console.log(`${type} missing property ${propertyName}`);
+                console.log(`'${type}' missing property: '${propertyName}'`);
             }
 
             try
@@ -316,11 +333,7 @@ export function struct(struct)
 {
     return function (reader)
     {
-        if (struct.blackStruct)
-        {
-            return struct.blackStruct(reader);
-        }
-        return struct.ReadStruct(reader);
+        return struct.readStruct(reader);
     };
 }
 
@@ -340,16 +353,7 @@ export function structList(struct)
         for (let i = 0; i < count; i++)
         {
             let structReader = reader.ReadBinaryReader(byteSize);
-
-            if (struct.blackReader)
-            {
-                result[i] = struct.blackStruct(structReader);
-            }
-            else
-            {
-                result[i] = struct.ReadStruct(structReader);
-            }
-
+            result[i] = struct.readStruct(structReader);
             structReader.ExpectEnd("struct read to end");
         }
 

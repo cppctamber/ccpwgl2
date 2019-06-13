@@ -2,7 +2,6 @@ import {Tw2BaseClass} from "../../../global";
 
 /**
  * EveChildModifierAttachToBone
- * TODO: Do we just implement this as an EveChild modifier mode?
  *
  * @property {Number} boneIndex -
  */

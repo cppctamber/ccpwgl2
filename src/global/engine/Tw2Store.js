@@ -282,8 +282,29 @@ class Tw2BlackStore extends Tw2GenericStore
     }
 
     /**
-     * Gets a black
-     * @param key
+     * Checks if a black definition exists
+     * @param {String} key
+     * @returns {boolean}
+     */
+    Has(key)
+    {
+        if (super.Has(key))
+        {
+            return true;
+        }
+
+        // Fallback to Tw2 version
+        if (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0)
+        {
+            key = "Tw2" + key.substring(3);
+        }
+
+        return super.Has(key);
+    }
+
+    /**
+     * Gets a black definition
+     * @param {String} key
      * @returns {*}
      */
     Get(key)

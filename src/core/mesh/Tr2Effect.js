@@ -13,7 +13,7 @@ class Tw2ConstantParameter
      * @param {Tw2BlackBinaryReader} r
      * @returns {Tw2ConstantParameter}
      */
-    static blackReader(r)
+    static readStruct(r)
     {
         const item = new this();
         item.name = r.ReadStringU16();
