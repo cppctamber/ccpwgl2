@@ -11,6 +11,17 @@ export class EveSOFDataTexture
     resFilePath = "";
 
     /**
+     * Assigns the texture's values to an object
+     * @param {{}} [out={}]
+     * @returns {{}}
+     */
+    Assign(out={})
+    {
+        out[this.name] = this.resFilePath;
+        return out;
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}

@@ -13,6 +13,18 @@ export class EveSOFDataPatternPerHull
     transformLayer2 = null;
 
     /**
+     * Reduces transforms to an array
+     * @param {Array} [out=[]]
+     * @returns {Array}
+     */
+    AssignTransforms(out=[])
+    {
+        if (this.transformLayer1) out[0] = this.transformLayer1.Reduce();
+        if (this.transformLayer2) out[1] = this.transformLayer2.Reduce();
+        return out;
+    }
+
+    /**
      * Black definition
      * @param {*} r
      * @returns {*[]}

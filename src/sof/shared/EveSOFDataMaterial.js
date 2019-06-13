@@ -11,17 +11,28 @@ export class EveSOFDataMaterial
     parameters = [];
 
     /**
-     * Gets a simple object containing the material's data
-     * @returns {*}
+     * Assigns the material to a simple plain object
+     * @param {*} [out={}]
+     * @param {String} [prefix]
+     * @returns {{ name: String, parameters: Object}} out
      */
-    GetPlain()
+    Assign(out={}, prefix)
     {
-        const parameters = {};
-        this.parameters.forEach(parameter =>
-        {
-            parameters[parameter.name] = Array.from(parameter.value);
-        });
-        return { name: this.name, parameters };
+        out.name = this.name;
+        out.parameters = this.AssignParameters(out.parameters, prefix);
+        return out;
+    }
+
+    /**
+     * Assigns the material's parameters to a simple plain object
+     * @param {{}} [out={}]
+     * @param {String} [prefix]
+     * @returns {Object} out
+     */
+    AssignParameters(out={}, prefix)
+    {
+        this.parameters.forEach(parameter => parameter.Assign(out, prefix));
+        return out;
     }
 
     /**

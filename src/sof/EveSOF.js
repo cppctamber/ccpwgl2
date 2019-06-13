@@ -2,7 +2,6 @@ import {vec3, vec4, quat, mat4} from "../global";
 import {get, assignIfExists} from "../global/util";
 import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve/legacy";
 import {
-    Tw2FloatParameter,
     Tw2TextureParameter,
     Tw2Vector4Parameter,
     Tw2Effect,
@@ -511,7 +510,6 @@ export function EveSOF(tw2)
 
     const EFF_SPOTLIGHT_CONE = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
     const EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
-    ;
     const EFF_SPOTLIGHT_GLOW = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
     const EFF_SPOTLIGHT_GLOW_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
 
@@ -1118,7 +1116,7 @@ export function EveSOF(tw2)
                         {
                             materials.forEach(material =>
                             {
-                                data.material[material.name] = material.GetPlain();
+                                data.material[material.name] = material.Assign();
                             });
                         }
                         else

@@ -23,7 +23,7 @@ import {vec3, vec4} from "../../global";
  * @property {Boolean} enableDynamicBoundingSphere                -
  * @property {String} geometryResFilePath                         -
  * @property {Array.<EveSOFDataHullHazeSet>} hazeSets             -
- * @property {Array.<EveSOFDataHullDecal>} hullDecals             -
+ * @property {Array.<EveSOFDataHullDecalSet>} hullDecals          -
  * @property {Number} impactEffectType                            -
  * @property {Array.<EveSOFDataInstancedMesh>} instancedMeshes    -
  * @property {Boolean} isSkinned                                  -
