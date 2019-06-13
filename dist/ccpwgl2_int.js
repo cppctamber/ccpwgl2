@@ -8683,7 +8683,7 @@ function (_Tw2Error13) {
   function ErrBinaryObjectTypeNotFound(data) {
     _classCallCheck(this, ErrBinaryObjectTypeNotFound);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(ErrBinaryObjectTypeNotFound).call(this, data, "Binary object type '%type%' not found"));
+    return _possibleConstructorReturn(this, _getPrototypeOf(ErrBinaryObjectTypeNotFound).call(this, data, "Binary object type \"%type%\" not found"));
   }
 
   return ErrBinaryObjectTypeNotFound;
@@ -12179,14 +12179,14 @@ function () {
   }
 
   _createClass(Tw2ConstantParameter, null, [{
-    key: "readStruct",
+    key: "blackStruct",
 
     /**
      * Black reader
      * @param {Tw2BlackBinaryReader} r
      * @returns {Tw2ConstantParameter}
      */
-    value: function readStruct(r) {
+    value: function blackStruct(r) {
       const item = new this();
       item.name = r.ReadStringU16();
       r.ExpectU16(0, "unknown content");
@@ -18670,24 +18670,59 @@ function onString(path) {
 
   let ext = "";
   const dot = path.lastIndexOf(".");
-  if (dot !== -1) ext = path.substr(dot + 1).toLowerCase(); // Replace cdn resource qualities with ccpwgl quality suffixes
+  if (dot !== -1) ext = path.substr(dot + 1).toLowerCase();
 
-  if (["dds", "png"].includes(ext)) {
-    path = path.replace(`_lowdetail.${ext}`); // Shouldn't exist
+  switch (ext) {
+    case "dds":
+    case "png":
+      // TODO: Remove the need to do this in Tw2TextureRes
+      // Will need to provide all quality versions of these files in the cdn even if they
+      // don't exist as ccpwgl will have no idea if they exist or not, and so we'd get
+      // errors when changing texture qualities in the ccpwgl_int.device
 
-    path = path.replace(`_mediumdetail.${ext}`); // Shouldn't exist
+      /*
+      logger.log({
+          name: "Black reader",
+          type: "debug",
+          message: `Renaming cdn quality format to ccpwgl quality format: ${path}`
+      });
+      */
+      path = path.replace(`_lowdetail.${ext}`); // Shouldn't exist
 
-    path = path.replace(ext, `0.${ext}`);
-  } // Not supported yet
+      path = path.replace(`_mediumdetail.${ext}`); // Shouldn't exist
 
+      path = path.replace(ext, `0.${ext}`);
+      break;
 
-  if (ext === "gr2") {
-    path = "";
-  } // Change .red files to .black files
+    case "gr2":
+    case "fx":
+    case "sm_hi":
+    case "sm_lo":
+    case "sm_depth":
+      // TODO: Add support for these files
 
+      /*
+      logger.log({
+          name: "Black reader",
+          type: "debug",
+          message: `Removing unsupported file: ${path}`
+      });
+      */
+      path = "";
+      break;
 
-  if (ext === "red") {
-    path = path.replace(ext, "black");
+    case "red":
+      // Dunno why ccp still calls them .red
+
+      /*
+      logger.log({
+          name: "Black reader",
+          type: "debug",
+          message: `Renaming '.red' file to '.black': ${path}`
+      });
+      */
+      path = path.replace("red", "black");
+      break;
   }
 
   return path;
@@ -18946,7 +18981,7 @@ function indexBuffer(reader) {
 
 function struct(struct) {
   return function (reader) {
-    return struct.readStruct(reader);
+    return struct.blackStruct(reader);
   };
 }
 /**
@@ -18963,7 +18998,7 @@ function structList(struct) {
 
     for (let i = 0; i < count; i++) {
       let structReader = reader.ReadBinaryReader(byteSize);
-      result[i] = struct.readStruct(structReader);
+      result[i] = struct.blackStruct(structReader);
       structReader.ExpectEnd("struct read to end");
     }
 
@@ -24478,14 +24513,14 @@ function (_Tw2BaseClass) {
   }
 
   _createClass(Tw2CurveScalarKey, null, [{
-    key: "readStruct",
+    key: "blackStruct",
 
     /**
      * Black reader
      * @param {Tw2BlackBinaryReader} r
      * @returns {Tw2CurveScalarKey}
      */
-    value: function readStruct(r) {
+    value: function blackStruct(r) {
       const item = new this();
       item.time = r.ReadF32();
       item.value = r.ReadF32();
@@ -35264,7 +35299,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveChildModifierAttachToBone
- * TODO: Do we just implement this as an EveChild modifier mode?
  *
  * @property {Number} boneIndex -
  */
@@ -35343,7 +35377,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveChildModifierBillboard2D
- * TODO: Do we just implement this as an EveChild modifier mode?
  */
 
 let EveChildModifierBillboard2D =
@@ -35360,7 +35393,9 @@ function (_Tw2BaseClass) {
   return EveChildModifierBillboard2D;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
-_defineProperty(EveChildModifierBillboard2D, "black", null);
+_defineProperty(EveChildModifierBillboard2D, "black", function (r) {
+  return [];
+});
 
 _defineProperty(EveChildModifierBillboard2D, "__isStaging", 4);
 
@@ -35394,7 +35429,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveChildModifierBillboard3D
- * TODO: Do we just implement this as an EveChild modifier mode?
  */
 
 let EveChildModifierBillboard3D =
@@ -35411,7 +35445,9 @@ function (_Tw2BaseClass) {
   return EveChildModifierBillboard3D;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
-_defineProperty(EveChildModifierBillboard3D, "black", null);
+_defineProperty(EveChildModifierBillboard3D, "black", function (r) {
+  return [];
+});
 
 _defineProperty(EveChildModifierBillboard3D, "__isStaging", 4);
 
@@ -35445,7 +35481,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveChildModifierCameraOrientedRotationConstrained
- * TODO: Do we just implement this as a modifier mode?
  */
 
 let EveChildModifierCameraOrientedRotationConstrained =
@@ -35502,7 +35537,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveChildModifierSRT
- * TODO: Do we just implement this as an EveChild modifier mode and class properties?
  *
  * @property {quat} rotation    -
  * @property {vec3} scaling     -
@@ -35587,7 +35621,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EveChildModifierTranslateWithCamera
- * TODO: Do we just implement this as an EveChild modifier mode?
  *
  */
 
@@ -35605,7 +35638,9 @@ function (_Tw2BaseClass) {
   return EveChildModifierTranslateWithCamera;
 }(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]);
 
-_defineProperty(EveChildModifierTranslateWithCamera, "black", null);
+_defineProperty(EveChildModifierTranslateWithCamera, "black", function (r) {
+  return [];
+});
 
 _defineProperty(EveChildModifierTranslateWithCamera, "__isStaging", 4);
 
@@ -37640,7 +37675,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EveTurretFiringFX, EvePerMuzzleData, EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37709,12 +37744,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePerMuzzleData", function() { return _effect__WEBPACK_IMPORTED_MODULE_2__["EvePerMuzzleData"]; });
 
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBanner"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2Batch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet2Batch"]; });
@@ -37777,17 +37806,13 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
+
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
@@ -37803,6 +37828,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
 
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./particle */ "./eve/particle/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_5__["EveParticleDirectForce"]; });
@@ -43700,7 +43735,7 @@ _defineProperty(EveTurretSet, "__isStaging", 1);
 /*!***************************!*\
   !*** ./eve/item/index.js ***!
   \***************************/
-/*! exports provided: EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet */
+/*! exports provided: EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46129,7 +46164,7 @@ _defineProperty(EveTransform, "__isStaging", 1);
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform */
+/*! exports provided: EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -72332,7 +72367,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {vec4} trailColor                   -
  * @property {vec4} trailSize                    -
  * @property {vec4} warpGlowColor                -
- * @property {vec4} warpHalpColor                -
+ * @property {vec4} warpHaloColor                -
  * @property {EveSOFDataBoosterShape} warpShape0 -
  * @property {EveSOFDataBoosterShape} warpShape1 -
  */
@@ -72387,21 +72422,39 @@ function () {
 
     _defineProperty(this, "warpGlowColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
-    _defineProperty(this, "warpHalpColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+    _defineProperty(this, "warpHaloColor", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
 
     _defineProperty(this, "warpShape0", null);
 
     _defineProperty(this, "warpShape1", null);
   }
 
-  _createClass(EveSOFDataBooster, null, [{
-    key: "black",
+  _createClass(EveSOFDataBooster, [{
+    key: "warpHalpColor",
 
+    /**
+     * Alias for `warpHaloColor` (ccp typo)
+     * @returns {vec4}
+     */
+    get: function get() {
+      return this.warpHaloColor;
+    }
+    /**
+     * Alias for `warpHaloColor` (ccp typo)
+     * @param {vec4} v
+     */
+    ,
+    set: function set(v) {
+      this.warpHaloColor = v;
+    }
     /**
      * Black definition
      * @param {*} r
      * @returns {*[]}
      */
+
+  }], [{
+    key: "black",
     value: function black(r) {
       return [["glowColor", r.vector4], ["glowScale", r.float], ["gradient0ResPath", r.path], ["gradient1ResPath", r.path], ["haloColor", r.vector4], ["haloScaleX", r.float], ["haloScaleY", r.float], ["lightFlickerAmplitude", r.float], ["lightFlickerColor", r.vector4], ["lightFlickerFrequency", r.float], ["lightFlickerRadius", r.float], ["lightColor", r.vector4], ["lightRadius", r.float], ["lightWarpColor", r.vector4], ["lightWarpRadius", r.float], ["shape0", r.object], ["shape1", r.object], ["shapeAtlasCount", r.uint], ["shapeAtlasHeight", r.uint], ["shapeAtlasResPath", r.string], ["shapeAtlasWidth", r.uint], ["symHaloScale", r.float], ["trailColor", r.vector4], ["trailSize", r.vector4], ["volumetric", r.boolean], ["warpGlowColor", r.vector4], ["warpHalpColor", r.vector4], ["warpShape0", r.object], ["warpShape1", r.object]];
     }
@@ -72511,8 +72564,8 @@ function () {
   }
 
   _createClass(EveSOFDataInstancedMeshInstanceReader, null, [{
-    key: "ReadStruct",
-    value: function ReadStruct(reader) {
+    key: "blackStruct",
+    value: function blackStruct(reader) {
       let data = [reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32()];
       return new EveSOFDataInstancedMeshInstanceReader(data);
     }

@@ -26,7 +26,7 @@ import {vec4} from "../../global";
  * @property {vec4} trailColor                   -
  * @property {vec4} trailSize                    -
  * @property {vec4} warpGlowColor                -
- * @property {vec4} warpHalpColor                -
+ * @property {vec4} warpHaloColor                -
  * @property {EveSOFDataBoosterShape} warpShape0 -
  * @property {EveSOFDataBoosterShape} warpShape1 -
  */
@@ -55,10 +55,27 @@ export class EveSOFDataBooster
     trailColor = vec4.create();
     trailSize = vec4.create();
     warpGlowColor = vec4.create();
-    warpHalpColor = vec4.create();
+    warpHaloColor = vec4.create();
     warpShape0 = null;
     warpShape1 = null;
 
+    /**
+     * Alias for `warpHaloColor` (ccp typo)
+     * @returns {vec4}
+     */
+    get warpHalpColor()
+    {
+        return this.warpHaloColor;
+    }
+
+    /**
+     * Alias for `warpHaloColor` (ccp typo)
+     * @param {vec4} v
+     */
+    set warpHalpColor(v)
+    {
+        this.warpHaloColor = v;
+    }
     /**
      * Black definition
      * @param {*} r

@@ -8,7 +8,7 @@ class EveSOFDataInstancedMeshInstanceReader
         this.data = data;
     }
 
-    static ReadStruct(reader)
+    static blackStruct(reader)
     {
         let data = [
             reader.ReadF32(),
