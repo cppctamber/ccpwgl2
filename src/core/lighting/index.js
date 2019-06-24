@@ -1,3 +1,3 @@
-export Tr2PointLight from "./Tr2PointLight";
-export Tr2ShLightingManager from "./Tr2ShLightingManager";
+export * from "./Tr2PointLight";
+export * from "./Tr2ShLightingManager";
 

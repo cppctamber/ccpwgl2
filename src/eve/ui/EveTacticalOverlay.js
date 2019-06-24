@@ -14,7 +14,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} targetMaxSegments    -
  * @property {Tw2Effect} velocityEffect    -
  */
-export default class EveTacticalOverlay extends Tw2BaseClass
+export class EveTacticalOverlay extends Tw2BaseClass
 {
 
     anchorEffect = null;

@@ -23,17 +23,7 @@ export class EveLocator2 extends Tw2BaseClass
     atlasIndex1 = null;
 
     // ccpwgl
-    _bone = null;
-
-    /**
-     * Gets the locators bone
-     * @returns {null|Tw2Bone}
-     */
-    get bone()
-    {
-        console.log("property 'bone' has migrated to '_bone'");
-        return this._bone;
-    }
+    bone = null;
 
     /**
      * Gets the locator's bone from an animation controller
@@ -42,7 +32,7 @@ export class EveLocator2 extends Tw2BaseClass
      */
     FindBone(animationController)
     {
-        this._bone = null;
+        this.bone = null;
         const model = animationController.FindModelForMesh(0);
         if (model)
         {
@@ -50,7 +40,7 @@ export class EveLocator2 extends Tw2BaseClass
             {
                 if (model.bones[i].boneRes.name === this.name)
                 {
-                    this._bone = model.bones[i];
+                    this.bone = model.bones[i];
                     break;
                 }
             }

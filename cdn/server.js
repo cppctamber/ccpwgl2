@@ -61,7 +61,19 @@ const ContentTypes = {
 };
 
 /**
- * Gets a files content type
+ * Gets a filename's extension
+ * @param {String} fileName
+ * @returns {null|String}
+ */
+function getExtension(fileName)
+{
+    const dot = fileName.lastIndexOf(".");
+    if (dot === -1) return null;
+    return fileName.substr(dot + 1).toLowerCase();
+}
+
+/**
+ * Gets an extension's content type
  * @param {String} ext
  * @returns {string}
  */
@@ -124,18 +136,6 @@ function readResFileIndex(resFileIndex)
 
 // Convert the resfileindex.txt into json and then store in memory
 const resMapping = readResFileIndex(args.index);
-
-/**
- * Gets a filename's extension
- * @param {String} fileName
- * @returns {null|String}
- */
-function getExtension(fileName)
-{
-    const dot = fileName.lastIndexOf(".");
-    if (dot === -1) return null;
-    return fileName.substr(dot + 1).toLowerCase();
-}
 
 // File extensions affected by quality
 const AffectedByQuality = [ "dds", "png", "gr2" ];

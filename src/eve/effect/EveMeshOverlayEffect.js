@@ -24,7 +24,7 @@ import {assignIfExists, toArray} from "../../global/util";
  * @property {Boolean} visible.additiveEffects      - Enables/ disables additive effect batch accumulation
  * @property {Boolean} visible.distortionEffects    - Currently not supported
  */
-export default class EveMeshOverlayEffect extends Tw2BaseClass
+export class EveMeshOverlayEffect extends Tw2BaseClass
 {
     // ccp
     name = "";

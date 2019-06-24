@@ -31,7 +31,7 @@ import {Tw2Float} from "../../core";
  * @property {number} _time                     - The current stretch time
  * @property {Boolean} _useTransformsForStretch - Toggles using transforms for stretch objects
  */
-export default class EveStretch extends Tw2BaseClass
+export class EveStretch extends Tw2BaseClass
 {
 
     name = "";

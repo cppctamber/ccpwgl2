@@ -13,7 +13,7 @@ import {vec3, vec4, Tw2BaseClass} from "../../global";
  * @property {vec3} position         -
  * @property {Number} radius         -
  */
-export default class Tr2PointLight extends Tw2BaseClass
+export class Tr2PointLight extends Tw2BaseClass
 {
 
     name = "";

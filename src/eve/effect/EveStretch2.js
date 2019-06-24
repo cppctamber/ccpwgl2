@@ -13,7 +13,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {*} sourceLight        -
  * @property {Number} quadCount     -
  */
-export default class EveStretch2 extends Tw2BaseClass
+export class EveStretch2 extends Tw2BaseClass
 {
 
     name = "";

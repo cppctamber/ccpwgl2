@@ -1,6 +1,6 @@
 import {vec3, vec4, mat4, util, device, store, Tw2BaseClass, RS_COLORWRITEENABLE} from "../../global";
 import {Tw2TextureRes, Tw2RenderTarget} from "../../core";
-import EveOccluder from "./EveOccluder";
+import { EveOccluder } from "./EveOccluder";
 
 /**
  * EveLensFlare
@@ -37,7 +37,7 @@ import EveOccluder from "./EveOccluder";
  * @property {mat4} _transform                          -
  * @property {*} _backBuffer                            -
  */
-export default class EveLensflare extends Tw2BaseClass
+export class EveLensflare extends Tw2BaseClass
 {
     // ccp
     name = "";

@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {Number} value -
  */
-export default class Tw2Float extends Tw2BaseClass
+export class Tw2Float extends Tw2BaseClass
 {
 
     value = 0;

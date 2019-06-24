@@ -13,7 +13,7 @@ import {Tw2BaseClass} from "../../global/index";
  * @property {Number} numStars          -
  * @property {Number} seed              -
  */
-export default class EveStarfield extends Tw2BaseClass
+export class EveStarfield extends Tw2BaseClass
 {
 
     effect = null;

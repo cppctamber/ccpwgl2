@@ -247,7 +247,7 @@ export class EveCurveLineSet extends EveObjectSet
 {
 
     // ccp
-    lineEffect = Tw2Effect.create({
+    lineEffect = Tw2Effect.from({
         effectFilePath: "res:/Graphics/Effect/Managed/Space/SpecialFX/Lines3D.fx",
         textures: {
             "TexMap": "res:/texture/global/white.dds.0.png",

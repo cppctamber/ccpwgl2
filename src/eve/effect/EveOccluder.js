@@ -10,7 +10,7 @@ import {Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator} from "../../core";
  * @property {String} name                  -
  * @property {Array.<EveTransform>} sprites -
  */
-export default class EveOccluder extends Tw2BaseClass
+export class EveOccluder extends Tw2BaseClass
 {
 
     name = "";
@@ -125,7 +125,7 @@ export default class EveOccluder extends Tw2BaseClass
         g.vec4_0 = vec4.create();
         g.accumulator = new Tw2BatchAccumulator();
 
-        g.effect = Tw2Effect.create({
+        g.effect = Tw2Effect.from({
             name: "Occluder sampler",
             effectFilePath: "res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx",
             parameters: {

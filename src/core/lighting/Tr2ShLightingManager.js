@@ -7,7 +7,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} primaryIntensity   -
  * @property {Number} secondaryIntensity -
  */
-export default class Tr2ShLightingManager extends Tw2BaseClass
+export class Tr2ShLightingManager extends Tw2BaseClass
 {
 
     primaryIntensity = 0;

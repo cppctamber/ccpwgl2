@@ -655,7 +655,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         if (this._blitEffect === null)
         {
-            this._blitEffect = Tw2Effect.create({
+            this._blitEffect = Tw2Effect.from({
                 effectFilePath: "res:/graphics/effect/managed/space/system/blit.fx",
                 textures: {
                     BlitSource: ""
@@ -902,7 +902,7 @@ export class Tw2Device extends Tw2EventEmitter
                     alphaTestRef = -this._alphaTestState.states[RS_ALPHAREF] - 1;
                     break;
 
-                /*
+                    /*
             case CMP_NOTEQUAL:
                 var alphaTestFunc = 1;
                 var invertedAlphaTest = 1;

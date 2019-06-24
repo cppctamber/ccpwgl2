@@ -1,5 +1,5 @@
 import {vec3} from "../../global";
-import {EveObject} from "./legacy/EveObject"
+import {EveObject} from "./legacy/EveObject";
 
 /**
  * EveStation2

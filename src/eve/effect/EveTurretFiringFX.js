@@ -70,7 +70,7 @@ export class EvePerMuzzleData extends Tw2BaseClass
  * @property {Boolean} _isFiring                       - Identifies if the firing fx is firing
  * @property {Array.<EvePerMuzzleData>} _perMuzzleData -
  */
-export default class EveTurretFiringFX extends Tw2BaseClass
+export class EveTurretFiringFX extends Tw2BaseClass
 {
 
     name = "";

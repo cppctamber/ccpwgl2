@@ -22,7 +22,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} _43 -
  * @property {Number} _44 -
  */
-export default class TriMatrix extends Tw2BaseClass
+export class TriMatrix extends Tw2BaseClass
 {
 
     _11 = 0;

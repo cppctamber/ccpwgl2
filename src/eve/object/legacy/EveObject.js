@@ -48,7 +48,7 @@ EveObject.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
  * Global and scratch variables
  * @type {*}
  */
-Tw2BaseClass.global = {
+EveObject.global = {
     vec3_0: vec3.create(),
     vec3_1: vec3.create(),
     vec3_2: vec3.create(),

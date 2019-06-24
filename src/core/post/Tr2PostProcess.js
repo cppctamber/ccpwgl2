@@ -6,7 +6,7 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {Array.<Tr2Effect>} stages -
  */
-export default class Tr2PostProcess extends Tw2BaseClass
+export class Tr2PostProcess extends Tw2BaseClass
 {
 
     stages = [];
