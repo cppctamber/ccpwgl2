@@ -79,7 +79,7 @@ export class Tw2CurveSet extends Tw2BaseClass
 
             for (let i = 0; i < this.curves.length; ++i)
             {
-                this.curves[i].UpdateValue(this._scaledTime);
+                this.curves[i].UpdateValue(this.scaledTime);
             }
 
             for (let i = 0; i < this.bindings.length; ++i)

@@ -528,7 +528,7 @@ export class EveTurretSet extends EveObjectSet
 
         for (let i = 0; i < locators.length; i++)
         {
-            const {name, transform, _bone = null} = locators[i];
+            const {name, transform, bone = null} = locators[i];
 
             let item = this.FindItemByLocatorName(name);
             if (!item)
@@ -546,7 +546,7 @@ export class EveTurretSet extends EveObjectSet
 
             if (item.updateFromLocator)
             {
-                item._bone = _bone;
+                item._bone = bone;
                 mat4.copy(norm, transform);
                 vec3.normalize(norm.subarray(0, 3), norm.subarray(0, 3));
                 vec3.normalize(norm.subarray(4, 7), norm.subarray(4, 7));

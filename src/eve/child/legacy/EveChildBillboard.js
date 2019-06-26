@@ -35,7 +35,7 @@ export class EveChildBillboard extends EveChild
     staticTransform = false;
     useSRT = true;
 
-    _perObjectData = new Tw2PerObjectData.from(EveChild.perObjectData);
+    _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
 

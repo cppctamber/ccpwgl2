@@ -18070,7 +18070,7 @@ class Tw2CurveSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       this.scaledTime += dt * this.scale;
 
       for (let i = 0; i < this.curves.length; ++i) {
-        this.curves[i].UpdateValue(this._scaledTime);
+        this.curves[i].UpdateValue(this.scaledTime);
       }
 
       for (let i = 0; i < this.bindings.length; ++i) {
@@ -33221,8 +33221,6 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
 
     _defineProperty(this, "startValue", 0);
 
-    _defineProperty(this, "currentValue", 0);
-
     _defineProperty(this, "endValue", 0);
 
     _defineProperty(this, "startTangent", 0);
@@ -33234,11 +33232,26 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
     _defineProperty(this, "keys", []);
 
     _defineProperty(this, "length", 0);
+
+    _defineProperty(this, "_currentValue", 0);
   }
 
+  set currentValue(value) {
+    if (Number.isNaN(value)) {
+      throw new Error();
+    }
+
+    this._currentValue = value;
+  }
+
+  get currentValue() {
+    return this._currentValue;
+  }
   /**
    * Sorts the curve's keys
    */
+
+
   Sort() {
     _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Sort2(this);
   }
@@ -39215,7 +39228,7 @@ class EveChildBillboard extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild
 
     _defineProperty(this, "useSRT", true);
 
-    _defineProperty(this, "_perObjectData", new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData));
+    _defineProperty(this, "_perObjectData", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData));
 
     _defineProperty(this, "_worldTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
@@ -40472,6 +40485,38 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     _defineProperty(this, "_time", 0);
 
     EveStretch.init();
+  }
+  /**
+   * Gets the stretches resources
+   * @param {Array} [out=[]]
+   * @return {Array<Tw2Resource>} out
+   */
+
+
+  GetResources() {
+    let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+    if (this.source && this.source.GetResources) {
+      this.source.GetResources(out);
+    }
+
+    if (this.dest && this.dest.GetResources) {
+      this.dest.GetResources(out);
+    }
+
+    if (this.sourceObject && this.sourceObject.GetResources) {
+      this.sourceObject.GetResources(out);
+    }
+
+    if (this.destObject && this.destObject.GetResources) {
+      this.destObject.GetResources(out);
+    }
+
+    if (this.stretchObject && this.stretchObject.GetResources) {
+      this.stretchObject.GetResources(out);
+    }
+
+    return out;
   }
   /**
    * Sets source's position
@@ -46045,9 +46090,8 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       const _locators$i = locators[i],
             name = _locators$i.name,
             transform = _locators$i.transform,
-            _locators$i$_bone = _locators$i._bone,
-            _bone = _locators$i$_bone === void 0 ? null : _locators$i$_bone;
-
+            _locators$i$bone = _locators$i.bone,
+            bone = _locators$i$bone === void 0 ? null : _locators$i$bone;
       let item = this.FindItemByLocatorName(name);
 
       if (!item) {
@@ -46061,7 +46105,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       }
 
       if (item.updateFromLocator) {
-        item._bone = _bone;
+        item._bone = bone;
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(norm, transform);
         _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(0, 3), norm.subarray(0, 3));
         _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(4, 7), norm.subarray(4, 7));
