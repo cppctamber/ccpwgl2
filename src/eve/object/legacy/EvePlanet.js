@@ -2,6 +2,7 @@ import {util, device, resMan} from "../../../global/index";
 import {Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter} from "../../../core/index";
 import {EveTransform} from "../EveTransform";
 import {EveObject} from "./EveObject";
+import {mat4} from "gl-matrix";
 
 /**
  * EvePlanet
@@ -37,6 +38,15 @@ export class EvePlanet extends EveObject
 
     _atmosphere = null;
     _planet = null;
+
+    /**
+     * Sets the object's local transform
+     * @param {mat4} m
+     */
+    SetLocalTransform(m)
+    {
+        this.highDetail.SetTransform(m);
+    }
 
     /**
      * Gets object resources

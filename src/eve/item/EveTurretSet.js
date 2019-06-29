@@ -128,7 +128,7 @@ export class EveTurretSetItem extends EveObjectSetItem
  * @property {?Function} _fireCallbackPending            -
  * @property {Boolean} _hasCyclingFiringPos              -
  * @property {Tw2AnimationController} _inactiveAnimation -
- * @property {mat4} _parentMatrix                        -
+ * @property {mat4} _parentTransform                        -
  * @property {Number} _state                             -
  * @property {vec3} _targetPosition                      -
  * @property {Object} visible                           -
@@ -183,7 +183,7 @@ export class EveTurretSet extends EveObjectSet
     _hasCyclingFiringPos = false;
     _inactiveAnimation = new Tw2AnimationController();
     _locatorDirty = true;
-    _parentMatrix = mat4.create();
+    _parentTransform = mat4.create();
     _perObjectDataActive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _perObjectDataInactive = Tw2PerObjectData.from(EveTurretSet.perObjectData);
     _state = EveTurretSet.State.IDLE;
@@ -304,12 +304,12 @@ export class EveTurretSet extends EveObjectSet
             turretPosition[1] = item._localTransform[13];
             turretPosition[2] = item._localTransform[14];
             turretPosition[3] = 1;
-            vec4.transformMat4(turretPosition, turretPosition, this._parentMatrix);
+            vec4.transformMat4(turretPosition, turretPosition, this._parentTransform);
             vec3.subtract(nrmToTarget, this._targetPosition, turretPosition);
             vec3.normalize(nrmToTarget, nrmToTarget);
             vec4.set(nrmUp, 0, 1, 0, 0);
             vec4.transformMat4(nrmUp, nrmUp, item._localTransform);
-            vec4.transformMat4(nrmUp, nrmUp, this._parentMatrix);
+            vec4.transformMat4(nrmUp, nrmUp, this._parentTransform);
             const angle = vec3.dot(nrmUp, nrmToTarget);
             if (angle > closestAngle)
             {
@@ -581,12 +581,15 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Updates view dependent data
+     * @param {mat4} parentTransform
      */
-    UpdateViewDependentData(parentTransform, dt)
+    UpdateViewDependentData(parentTransform)
     {
+        mat4.copy(this._parentTransform, parentTransform);
+        
         if (this.firingEffect)
         {
-            this.firingEffect.UpdateViewDependentData(parentTransform, dt);
+            this.firingEffect.UpdateViewDependentData(parentTransform);
         }
     }
 
@@ -604,9 +607,8 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Per frame update
      * @param {Number} dt - Delta Time
-     * @param {mat4} parentMatrix
      */
-    Update(dt, parentMatrix)
+    Update(dt)
     {
         super.Update(dt);
 
@@ -615,8 +617,6 @@ export class EveTurretSet extends EveObjectSet
             this._activeAnimation.Update(dt);
             this._inactiveAnimation.Update(dt);
         }
-
-        mat4.copy(this._parentMatrix, parentMatrix);
 
         if (this.firingEffect && this._visibleItems.length)
         {
@@ -646,14 +646,14 @@ export class EveTurretSet extends EveObjectSet
                             out = this.firingEffect.GetMuzzleTransform(i);
 
                         mat4.multiply(out, activeTurret._localTransform, transform);
-                        mat4.multiply(out, out, parentMatrix);
+                        mat4.multiply(out, this._parentTransform, out);
                     }
                 }
                 else
                 {
                     for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i)
                     {
-                        mat4.multiply(this.firingEffect.GetMuzzleTransform(i), parentMatrix, activeTurret._localTransform);
+                        mat4.multiply(this.firingEffect.GetMuzzleTransform(i), this._parentTransform, activeTurret._localTransform);
                     }
                 }
 
@@ -787,7 +787,7 @@ export class EveTurretSet extends EveObjectSet
      */
     UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations)
     {
-        mat4.transpose(perObjectData.Get("shipMatrix"), this._parentMatrix);
+        mat4.transpose(perObjectData.Get("shipMatrix"), this._parentTransform);
         const transformCount = transforms.length / 12;
         perObjectData.Get("turretSetData")[0] = transformCount;
         perObjectData.Get("baseCutoffData")[0] = this.bottomClipHeight;

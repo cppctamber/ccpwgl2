@@ -105,7 +105,6 @@ export class EveTurretFiringFX extends Tw2BaseClass
     _isFiring = false;
     _perMuzzleData = [];
 
-
     /**
      * Initializes the turret firing fx
      */
@@ -272,12 +271,15 @@ export class EveTurretFiringFX extends Tw2BaseClass
 
     /**
      * Updates view dependant data
+     * @param {mat4} parentTransform
      */
-    UpdateViewDependentData()
+    UpdateViewDependentData(parentTransform)
     {
+        // Eve Turret handles parentTransforms for muzzles
+
         for (let i = 0; i < this.stretch.length; ++i)
         {
-            this.stretch[i].UpdateViewDependentData();
+            this.stretch[i].UpdateViewDependentData(parentTransform);
         }
     }
 

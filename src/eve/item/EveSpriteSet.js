@@ -203,11 +203,12 @@ export class EveSpriteSet extends EveObjectSet
     /**
      * Per frame update
      * @param {Number} dt - Delta time
-     * @param {mat4} [parentMatrix]
+     * @param {Number} [worldSpriteScale=1]
      */
-    Update(dt, parentMatrix)
+    Update(dt, worldSpriteScale)
     {
         this._time += dt;
+        this._worldSpriteScale = worldSpriteScale === undefined ? 1 : worldSpriteScale;
         super.Update(dt);
     }
 
@@ -295,8 +296,8 @@ export class EveSpriteSet extends EveObjectSet
                 array[vtxOffset + 7] = item.color[2];
                 array[vtxOffset + 8] = item.blinkPhase;
                 array[vtxOffset + 9] = item.blinkRate;
-                array[vtxOffset + 10] = item.minScale;
-                array[vtxOffset + 11] = item.maxScale;
+                array[vtxOffset + 10] = item.minScale * this._worldSpriteScale;
+                array[vtxOffset + 11] = item.maxScale * this._worldSpriteScale;
                 array[vtxOffset + 12] = item.falloff;
             }
         }
@@ -441,8 +442,8 @@ export class EveSpriteSet extends EveObjectSet
             array[index++] = world[8];
             array[index++] = item.blinkPhase;
             array[index++] = world[9];
-            array[index++] = item.minScale;
-            array[index++] = item.maxScale;
+            array[index++] = item.minScale * this._worldSpriteScale;
+            array[index++] = item.maxScale * this._worldSpriteScale;
             array[index++] = world[10];
             array[index++] = item.color[0];
             array[index++] = item.color[1];
@@ -517,8 +518,8 @@ export class EveSpriteSet extends EveObjectSet
             array[index++] = 1;
             array[index++] = item.blinkPhase;
             array[index++] = item.blinkRate;
-            array[index++] = item.minScale;
-            array[index++] = item.maxScale;
+            array[index++] = item.minScale * this._worldSpriteScale;
+            array[index++] = item.maxScale * this._worldSpriteScale;
             array[index++] = item.falloff;
             array[index++] = item.color[0];
             array[index++] = item.color[1];

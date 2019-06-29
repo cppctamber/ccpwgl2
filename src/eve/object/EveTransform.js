@@ -86,6 +86,17 @@ export class EveTransform extends EveObject
     }
 
     /**
+     * Sets the object's local transform
+     * @param {mat4} m
+     */
+    SetLocalTransform(m)
+    {
+        mat4.getRotation(this.rotation, m);
+        mat4.getScaling(this.scaling, m);
+        mat4.getTranslation(this.translation, m);
+    }
+
+    /**
      * Gets object resources
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]

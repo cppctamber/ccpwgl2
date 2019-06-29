@@ -15,7 +15,6 @@ import {EveSpaceObject} from "./EveSpaceObject";
  * @property {quat} rotation
  * @property {vec3} translation
  * @property {mat4} localTransform
- * @property {mat4} rotationTransform
  * @property {vec3} boundingSphereCenter
  * @property {number} boundingSphereRadius
  * @property {number} duration
@@ -32,10 +31,21 @@ export class EveEffectRoot extends EveObject
     rotation = quat.create();
     translation = vec3.create();
     localTransform = mat4.create();
-    rotationTransform = mat4.create();
     boundingSphereCenter = vec3.create();
     boundingSphereRadius = 0;
+
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
+
+    /**
+     * Sets the object's local transform
+     * @param {mat4} m
+     */
+    SetLocalTransform(m)
+    {
+        mat4.getRotation(this.rotation, m);
+        mat4.getScaling(this.scaling, m);
+        mat4.getTranslation(this.translation, m);
+    }
 
     /**
      * Gets effect root res objects

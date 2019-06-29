@@ -41,6 +41,8 @@ import {EveObject} from "./EveObject";
  * @property {Tw2AnimationController} animation
  * @property {number} killCount                            - number of kills to show on kill counter decals
  * @property {Tw2PerObjectData} _perObjectData
+ * @property {mat4} _worldTransform
+ * @property {Number} _worldSpriteScale
  * @class
  */
 export class EveSpaceObject extends EveObject
@@ -83,6 +85,9 @@ export class EveSpaceObject extends EveObject
     boundingSphereRadius = 0;
     shapeEllipsoidRadius = vec3.create();
     shapeEllipsoidCenter = vec3.create();
+
+    _worldSpriteScale = 1;
+    _worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
 
@@ -99,6 +104,23 @@ export class EveSpaceObject extends EveObject
             {
                 this.decals[i].SetParentGeometry(this.mesh.geometryResource);
             }
+        }
+    }
+
+    /**
+     * Sets the object's local transform
+     * @param {mat4} m
+     * @param {mat4} offset
+     */
+    SetLocalTransform(m, offset)
+    {
+        if (offset)
+        {
+            mat4.multiply(this.transform, m, offset);
+        }
+        else
+        {
+            mat4.copy(this.transform, m);
         }
     }
 
@@ -137,7 +159,7 @@ export class EveSpaceObject extends EveObject
      */
     UpdateLod(frustum)
     {
-        const center = vec3.transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this.transform);
+        const center = vec3.transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
 
         if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
         {
@@ -318,16 +340,22 @@ export class EveSpaceObject extends EveObject
 
     /**
      * A Per frame function that updates view dependent data
+     * @param {mat4} parentTransform
+     * @param {Number} dt
+     * @param {Number} worldSpriteScale
      */
-    UpdateViewDependentData()
+    UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
     {
+        mat4.multiply(this._worldTransform, parentTransform, this.transform);
+        this._worldSpriteScale = worldSpriteScale;
+
         for (let i = 0; i < this.children.length; ++i)
         {
-            this.children[i].UpdateViewDependentData(this.transform);
+            this.children[i].UpdateViewDependentData(this._worldTransform);
         }
 
-        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this.transform);
-        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this.transform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
+        mat4.transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
         const
             center = this._perObjectData.vs.Get("EllipsoidCenter"),
@@ -363,7 +391,7 @@ export class EveSpaceObject extends EveObject
         const maxCustomMasks = Math.min(this.customMasks.length, 2);
         for (let i = 0; i < maxCustomMasks; ++i)
         {
-            this.customMasks[i].UpdatePerObjectData(this.transform, this._perObjectData, i, this.visible.customMasks);
+            this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
         }
         */
 
@@ -374,7 +402,7 @@ export class EveSpaceObject extends EveObject
 
         for (let i = 0; i < this.lineSets.length; ++i)
         {
-            this.lineSets[i].UpdateViewDependentData(this.transform);
+            this.lineSets[i].UpdateViewDependentData(this._worldTransform);
         }
     }
 
@@ -388,7 +416,7 @@ export class EveSpaceObject extends EveObject
         {
             for (let i = 0; i < this.spriteSets.length; ++i)
             {
-                this.spriteSets[i].Update(dt);
+                this.spriteSets[i].Update(dt, this._worldSpriteScale);
             }
 
             for (let i = 0; i < this.planeSets.length; i++)
@@ -408,7 +436,7 @@ export class EveSpaceObject extends EveObject
 
             for (let i = 0; i < this.effectChildren.length; ++i)
             {
-                this.effectChildren[i].Update(dt, this.transform, this.lod);
+                this.effectChildren[i].Update(dt, this._worldTransform, this.lod);
             }
 
             for (let i = 0; i < this.curveSets.length; ++i)
@@ -452,7 +480,7 @@ export class EveSpaceObject extends EveObject
                 {
                     for (let i = 0; i < this.spriteSets.length; i++)
                     {
-                        this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this.transform);
+                        this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
                     }
                 }
 

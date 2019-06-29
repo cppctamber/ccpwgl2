@@ -73,7 +73,6 @@ export class Tw2ResMan extends Tw2EventEmitter
         assignIfExists(this, opt, ["systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime"]);
     }
 
-
     /**
      * Fires on resource errors
      * - Used when a resource can only be identified by it's path

@@ -381,6 +381,8 @@ export class EveSpaceScene extends Tw2BaseClass
         }
     }
 
+    spriteScale = 1;
+
     /**
      * Updates children's view dependent data and renders them
      * @param {Number} dt - deltaTime
@@ -393,6 +395,7 @@ export class EveSpaceScene extends Tw2BaseClass
             d = device,
             g = EveSpaceScene.global,
             tr = this.localTransform,
+            spriteScale = mat4.maxScaleOnAxis(tr) * this.spriteScale,
             show = this.visible;
 
         if (show["environment"] && this.backgroundEffect)
@@ -446,7 +449,7 @@ export class EveSpaceScene extends Tw2BaseClass
             {
                 if (this.objects[i].UpdateViewDependentData)
                 {
-                    this.objects[i].UpdateViewDependentData(tr, dt);
+                    this.objects[i].UpdateViewDependentData(tr, dt, spriteScale);
                 }
             }
         }
@@ -457,7 +460,7 @@ export class EveSpaceScene extends Tw2BaseClass
             {
                 if (this.backgroundObjects[i].UpdateViewDependentData)
                 {
-                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt);
+                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt, spriteScale);
                 }
             }
         }

@@ -60,6 +60,8 @@ export class EveStretch extends Tw2BaseClass
     _sourceTransform = null;
     _time = 0;
 
+    _useParentMatrix = false;
+
 
     /**
      * Constructor
@@ -157,10 +159,13 @@ export class EveStretch extends Tw2BaseClass
 
     /**
      * Updates view dependent data
+     * @param {mat4} parentTransform
      */
-    UpdateViewDependentData()
+    UpdateViewDependentData(parentTransform)
     {
         if (!this.display) return;
+
+        // TODO: Handle parent scale....
 
         const
             g = EveStretch.global,
@@ -201,6 +206,8 @@ export class EveStretch extends Tw2BaseClass
             m[8] = up[0];
             m[9] = up[1];
             m[10] = up[2];
+
+            mat4.multiply(m, parentTransform, m);
         }
 
         if (this.destObject && this._displayDestObject)
@@ -221,6 +228,7 @@ export class EveStretch extends Tw2BaseClass
             {
                 mat4.setTranslation(m, this._sourcePosition);
             }
+
             this.sourceObject.UpdateViewDependentData(m);
         }
 
@@ -247,6 +255,7 @@ export class EveStretch extends Tw2BaseClass
                 mat4.scale(s, s, [1, 1, scalingLength]);
                 mat4.multiply(m, m, s);
             }
+
             this.stretchObject.UpdateViewDependentData(m);
         }
     }
@@ -282,21 +291,21 @@ export class EveStretch extends Tw2BaseClass
 
         const directionVec = vec3.subtract(EveStretch.global.vec3_0, this._destinationPosition, this._sourcePosition);
         this.length.value = vec3.length(directionVec);
-        vec3.normalize(directionVec, directionVec);
+        vec3.normalize(directionVec, directionVec); // Unused - typo?
 
         if (this.sourceObject && this._displaySourceObject)
         {
             this.sourceObject.Update(dt);
         }
 
-        if (this.stretchObject)
-        {
-            this.stretchObject.Update(dt);
-        }
-
         if (this.destObject && this._displayDestObject)
         {
             this.destObject.Update(dt);
+        }
+
+        if (this.stretchObject)
+        {
+            this.stretchObject.Update(dt);
         }
     }
 

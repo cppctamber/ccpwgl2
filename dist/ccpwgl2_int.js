@@ -19502,7 +19502,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2CurveSetRange, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2CurveSet, Tw2CurveSetRange, Tw2ValueBinding, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19626,8 +19626,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_9__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2TextureRes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2GeometryRes"]; });
@@ -19637,6 +19635,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LodResource", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2LodResource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2Resource"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_10__["Tw2VideoRes"]; });
 
@@ -29533,7 +29533,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -33221,6 +33221,8 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
 
     _defineProperty(this, "startValue", 0);
 
+    _defineProperty(this, "currentValue", 0);
+
     _defineProperty(this, "endValue", 0);
 
     _defineProperty(this, "startTangent", 0);
@@ -33232,26 +33234,11 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
     _defineProperty(this, "keys", []);
 
     _defineProperty(this, "length", 0);
-
-    _defineProperty(this, "_currentValue", 0);
   }
 
-  set currentValue(value) {
-    if (Number.isNaN(value)) {
-      throw new Error();
-    }
-
-    this._currentValue = value;
-  }
-
-  get currentValue() {
-    return this._currentValue;
-  }
   /**
    * Sorts the curve's keys
    */
-
-
   Sort() {
     _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Sort2(this);
   }
@@ -37176,6 +37163,8 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
     _defineProperty(this, "_envMap2Res", null);
 
+    _defineProperty(this, "spriteScale", 1);
+
     Object.defineProperty(this.visible, "environment", {
       get: () => this.backgroundRenderingEnabled,
       set: bool => this.backgroundRenderingEnabled = bool ? 1 : 0
@@ -37398,17 +37387,17 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       }
     }
   }
+
   /**
    * Updates children's view dependent data and renders them
    * @param {Number} dt - deltaTime
    */
-
-
   Render(dt) {
     this.ApplyPerFrameData();
     const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = EveSpaceScene.global,
           tr = this.localTransform,
+          spriteScale = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis(tr) * this.spriteScale,
           show = this.visible;
 
     if (show["environment"] && this.backgroundEffect) {
@@ -37456,7 +37445,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     if (show.objects) {
       for (let i = 0; i < this.objects.length; ++i) {
         if (this.objects[i].UpdateViewDependentData) {
-          this.objects[i].UpdateViewDependentData(tr, dt);
+          this.objects[i].UpdateViewDependentData(tr, dt, spriteScale);
         }
       }
     }
@@ -37464,7 +37453,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     if (show.backgroundObjects) {
       for (let i = 0; i < this.backgroundObjects.length; i++) {
         if (this.backgroundObjects[i].UpdateViewDependentData) {
-          this.backgroundObjects[i].UpdateViewDependentData(tr, dt);
+          this.backgroundObjects[i].UpdateViewDependentData(tr, dt, spriteScale);
         }
       }
     }
@@ -40484,6 +40473,8 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
     _defineProperty(this, "_time", 0);
 
+    _defineProperty(this, "_useParentMatrix", false);
+
     EveStretch.init();
   }
   /**
@@ -40571,11 +40562,13 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   }
   /**
    * Updates view dependent data
+   * @param {mat4} parentTransform
    */
 
 
-  UpdateViewDependentData() {
-    if (!this.display) return;
+  UpdateViewDependentData(parentTransform) {
+    if (!this.display) return; // TODO: Handle parent scale....
+
     const g = EveStretch.global,
           directionVec = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(g.vec3_0, this._destinationPosition, this._sourcePosition),
           m = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
@@ -40607,6 +40600,7 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       m[8] = up[0];
       m[9] = up[1];
       m[10] = up[2];
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, parentTransform, m);
     }
 
     if (this.destObject && this._displayDestObject) {
@@ -40676,18 +40670,18 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
     const directionVec = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(EveStretch.global.vec3_0, this._destinationPosition, this._sourcePosition);
     this.length.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec);
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec); // Unused - typo?
 
     if (this.sourceObject && this._displaySourceObject) {
       this.sourceObject.Update(dt);
     }
 
-    if (this.stretchObject) {
-      this.stretchObject.Update(dt);
-    }
-
     if (this.destObject && this._displayDestObject) {
       this.destObject.Update(dt);
+    }
+
+    if (this.stretchObject) {
+      this.stretchObject.Update(dt);
     }
   }
   /**
@@ -41149,12 +41143,14 @@ class EveTurretFiringFX extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
   }
   /**
    * Updates view dependant data
+   * @param {mat4} parentTransform
    */
 
 
-  UpdateViewDependentData() {
+  UpdateViewDependentData(parentTransform) {
+    // Eve Turret handles parentTransforms for muzzles
     for (let i = 0; i < this.stretch.length; ++i) {
-      this.stretch[i].UpdateViewDependentData();
+      this.stretch[i].UpdateViewDependentData(parentTransform);
     }
   }
   /**
@@ -44928,12 +44924,13 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
   /**
    * Per frame update
    * @param {Number} dt - Delta time
-   * @param {mat4} [parentMatrix]
+   * @param {Number} [worldSpriteScale=1]
    */
 
 
-  Update(dt, parentMatrix) {
+  Update(dt, worldSpriteScale) {
     this._time += dt;
+    this._worldSpriteScale = worldSpriteScale === undefined ? 1 : worldSpriteScale;
     super.Update(dt);
   }
   /**
@@ -45012,8 +45009,8 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
         array[vtxOffset + 7] = item.color[2];
         array[vtxOffset + 8] = item.blinkPhase;
         array[vtxOffset + 9] = item.blinkRate;
-        array[vtxOffset + 10] = item.minScale;
-        array[vtxOffset + 11] = item.maxScale;
+        array[vtxOffset + 10] = item.minScale * this._worldSpriteScale;
+        array[vtxOffset + 11] = item.maxScale * this._worldSpriteScale;
         array[vtxOffset + 12] = item.falloff;
       }
     }
@@ -45144,8 +45141,8 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       array[index++] = world[8];
       array[index++] = item.blinkPhase;
       array[index++] = world[9];
-      array[index++] = item.minScale;
-      array[index++] = item.maxScale;
+      array[index++] = item.minScale * this._worldSpriteScale;
+      array[index++] = item.maxScale * this._worldSpriteScale;
       array[index++] = world[10];
       array[index++] = item.color[0];
       array[index++] = item.color[1];
@@ -45218,8 +45215,8 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       array[index++] = 1;
       array[index++] = item.blinkPhase;
       array[index++] = item.blinkRate;
-      array[index++] = item.minScale;
-      array[index++] = item.maxScale;
+      array[index++] = item.minScale * this._worldSpriteScale;
+      array[index++] = item.maxScale * this._worldSpriteScale;
       array[index++] = item.falloff;
       array[index++] = item.color[0];
       array[index++] = item.color[1];
@@ -45667,7 +45664,7 @@ class EveTurretSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
  * @property {?Function} _fireCallbackPending            -
  * @property {Boolean} _hasCyclingFiringPos              -
  * @property {Tw2AnimationController} _inactiveAnimation -
- * @property {mat4} _parentMatrix                        -
+ * @property {mat4} _parentTransform                        -
  * @property {Number} _state                             -
  * @property {vec3} _targetPosition                      -
  * @property {Object} visible                           -
@@ -45754,7 +45751,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
     _defineProperty(this, "_locatorDirty", true);
 
-    _defineProperty(this, "_parentMatrix", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+    _defineProperty(this, "_parentTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     _defineProperty(this, "_perObjectDataActive", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveTurretSet.perObjectData));
 
@@ -45878,12 +45875,12 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       turretPosition[1] = item._localTransform[13];
       turretPosition[2] = item._localTransform[14];
       turretPosition[3] = 1;
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(turretPosition, turretPosition, this._parentMatrix);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(turretPosition, turretPosition, this._parentTransform);
       _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(nrmToTarget, this._targetPosition, turretPosition);
       _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(nrmToTarget, nrmToTarget);
       _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(nrmUp, 0, 1, 0, 0);
       _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, item._localTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, this._parentMatrix);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, this._parentTransform);
       const angle = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(nrmUp, nrmToTarget);
 
       if (angle > closestAngle) {
@@ -46137,12 +46134,15 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
   }
   /**
    * Updates view dependent data
+   * @param {mat4} parentTransform
    */
 
 
-  UpdateViewDependentData(parentTransform, dt) {
+  UpdateViewDependentData(parentTransform) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentTransform);
+
     if (this.firingEffect) {
-      this.firingEffect.UpdateViewDependentData(parentTransform, dt);
+      this.firingEffect.UpdateViewDependentData(parentTransform);
     }
   }
   /**
@@ -46172,7 +46172,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       this._inactiveAnimation.Update(dt);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentMatrix, parentMatrix);
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentMatrix);
 
     if (this.firingEffect && this._visibleItems.length) {
       if (this._activeTurret !== -1) {
@@ -46195,7 +46195,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
             const transform = bones[EveTurretSet.positionBoneSkeletonNames[i]].worldTransform,
                   out = this.firingEffect.GetMuzzleTransform(i);
             _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, activeTurret._localTransform, transform);
-            _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, out, parentMatrix);
+            _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, parentMatrix, out);
           }
         } else {
           for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
@@ -46325,7 +46325,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(perObjectData.Get("shipMatrix"), this._parentMatrix);
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(perObjectData.Get("shipMatrix"), this._parentTransform);
     const transformCount = transforms.length / 12;
     perObjectData.Get("turretSetData")[0] = transformCount;
     perObjectData.Get("baseCutoffData")[0] = this.bottomClipHeight;
@@ -46742,7 +46742,7 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
  * @property {Number} glowDistance             - The distance between the booster's locators and glow sprites
  * @property {Number} glowScale                - The base scale of the booster's glow sprites
  * @property {vec4} glowColor                  - The color of the booster set's glow sprites
- * @property {?Tw2Effect} glows                - The booster's glows (sprites)
+ * @property {?EveSpriteSet} glows             - The booster's glows (sprites)
  * @property {vec4} warpGlowColor              - The color of the booster set's glow sprites when warping (Not implemented)
  * @property {Number} haloDistance             - The distance between the booster set's locators and halo sprites
  * @property {Number} haloScaleX               - The base vertical scale of the booster set's halos
@@ -46820,6 +46820,8 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
     _defineProperty(this, "_perObjectData", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveBoosterSet.perObjectData));
 
     _defineProperty(this, "_locatorDirty", true);
+
+    _defineProperty(this, "_worldSpriteScale", 1);
   }
 
   /**
@@ -46855,7 +46857,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
           const src = item.customValues && item.customValues.display ? item.customValues : this,
                 pos = item.GetPosition(g.vec3_1),
                 dir = item.GetDirection(g.vec3_2),
-                scale = item.GetScale();
+                scale = item.GetScale() * this._worldSpriteScale;
 
           if (this.visible.glows && item.visible.glow) {
             glows.CreateItem({
@@ -46982,13 +46984,21 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
    * Per frame update
    * @param {Number} dt - DeltaTime
    * @param {mat4} parentMatrix
+   * @param {Number} worldSpriteScale
    */
 
 
-  Update(dt, parentMatrix) {
+  Update(dt, parentMatrix, worldSpriteScale) {
     _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentMatrix);
     super.Update(dt);
-    if (this.glows) this.glows.Update(dt);
+
+    if (this.glows) {
+      if (this._worldSpriteScale !== worldSpriteScale) {
+        this.RebuildItems();
+      }
+
+      this.glows.Update(dt, 1);
+    }
   }
   /**
    * Unloads the booster's buffers
@@ -48264,6 +48274,17 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
     _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
   }
   /**
+   * Sets the object's local transform
+   * @param {mat4} m
+   */
+
+
+  SetLocalTransform(m) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, m);
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
+  }
+  /**
    * Gets object resources
    * @param {Array} [out=[]] - Optional receiving array
    * @returns {Array.<Tw2Resource>} [out]
@@ -48608,7 +48629,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {quat} rotation
  * @property {vec3} translation
  * @property {mat4} localTransform
- * @property {mat4} rotationTransform
  * @property {vec3} boundingSphereCenter
  * @property {number} boundingSphereRadius
  * @property {number} duration
@@ -48634,8 +48654,6 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
     _defineProperty(this, "localTransform", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
-    _defineProperty(this, "rotationTransform", _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
-
     _defineProperty(this, "boundingSphereCenter", _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(this, "boundingSphereRadius", 0);
@@ -48644,10 +48662,21 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
   }
 
   /**
+   * Sets the object's local transform
+   * @param {mat4} m
+   */
+  SetLocalTransform(m) {
+    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, m);
+    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
+    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
+  }
+  /**
    * Gets effect root res objects
    * @param {Array} [out=[]] - Optional receiving array
    * @returns {Array.<Tw2EffectRes|Tw2TextureRes>} [out]
    */
+
+
   GetResources() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
@@ -48801,7 +48830,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/index */ "./core/index.js");
 /* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../EveTransform */ "./eve/object/EveTransform.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveObject */ "./eve/object/legacy/EveObject.js");
+/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! gl-matrix */ "../node_modules/gl-matrix/lib/gl-matrix.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -48856,10 +48887,19 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
   }
 
   /**
+   * Sets the object's local transform
+   * @param {mat4} m
+   */
+  SetLocalTransform(m) {
+    this.highDetail.SetTransform(m);
+  }
+  /**
    * Gets object resources
    * @param {Array} [out=[]] - Optional receiving array
    * @returns {Array.<Tw2Resource>} [out]
    */
+
+
   GetResources() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     if (this.highDetail) this.highDetail.GetResources(out);
@@ -49239,14 +49279,17 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
   }
   /**
    * Updates view dependant data
+   * @param {mat4} parentTransform
+   * @param {Number} dt
+   * @param {Number} worldSpriteScale
    */
 
 
-  UpdateViewDependentData() {
-    super.UpdateViewDependentData();
+  UpdateViewDependentData(parentTransform, dt, worldSpriteScale) {
+    super.UpdateViewDependentData(parentTransform, dt, worldSpriteScale);
 
     for (let i = 0; i < this.turretSets.length; ++i) {
-      this.turretSets[i].UpdateViewDependentData();
+      this.turretSets[i].UpdateViewDependentData(parentTransform);
     }
   }
   /**
@@ -49263,7 +49306,7 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
         this.RebuildBoosterSet();
       }
 
-      this.boosters.Update(dt, this.transform);
+      this.boosters.Update(dt, this._worldTransform, this._worldSpriteScale);
     }
 
     for (let i = 0; i < this.turretSets.length; ++i) {
@@ -49271,7 +49314,7 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
         this.RebuildTurretSet(i);
       }
 
-      this.turretSets[i].Update(dt, this.transform);
+      this.turretSets[i].Update(dt, this._worldTransform);
     }
   }
   /**
@@ -49369,6 +49412,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Tw2AnimationController} animation
  * @property {number} killCount                            - number of kills to show on kill counter decals
  * @property {Tw2PerObjectData} _perObjectData
+ * @property {mat4} _worldTransform
+ * @property {Number} _worldSpriteScale
  * @class
  */
 
@@ -49434,6 +49479,10 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
     _defineProperty(this, "shapeEllipsoidCenter", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
+    _defineProperty(this, "_worldSpriteScale", 1);
+
+    _defineProperty(this, "_worldTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+
     _defineProperty(this, "_perObjectData", _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObject.perObjectData));
   }
 
@@ -49447,6 +49496,20 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
       for (let i = 0; i < this.decals.length; ++i) {
         this.decals[i].SetParentGeometry(this.mesh.geometryResource);
       }
+    }
+  }
+  /**
+   * Sets the object's local transform
+   * @param {mat4} m
+   * @param {mat4} offset
+   */
+
+
+  SetLocalTransform(m, offset) {
+    if (offset) {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.transform, m, offset);
+    } else {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.transform, m);
     }
   }
   /**
@@ -49486,7 +49549,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   UpdateLod(frustum) {
-    const center = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this.transform);
+    const center = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
 
     if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
       const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
@@ -49650,16 +49713,22 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
   }
   /**
    * A Per frame function that updates view dependent data
+   * @param {mat4} parentTransform
+   * @param {Number} dt
+   * @param {Number} worldSpriteScale
    */
 
 
-  UpdateViewDependentData() {
+  UpdateViewDependentData(parentTransform, dt, worldSpriteScale) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.transform);
+    this._worldSpriteScale = worldSpriteScale;
+
     for (let i = 0; i < this.children.length; ++i) {
-      this.children[i].UpdateViewDependentData(this.transform);
+      this.children[i].UpdateViewDependentData(this._worldTransform);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this.transform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this.transform);
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
     const center = this._perObjectData.vs.Get("EllipsoidCenter"),
           radii = this._perObjectData.vs.Get("EllipsoidRadii");
@@ -49693,7 +49762,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
     const maxCustomMasks = Math.min(this.customMasks.length, 2);
     for (let i = 0; i < maxCustomMasks; ++i)
     {
-        this.customMasks[i].UpdatePerObjectData(this.transform, this._perObjectData, i, this.visible.customMasks);
+        this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
     }
     */
 
@@ -49703,7 +49772,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
     }
 
     for (let i = 0; i < this.lineSets.length; ++i) {
-      this.lineSets[i].UpdateViewDependentData(this.transform);
+      this.lineSets[i].UpdateViewDependentData(this._worldTransform);
     }
   }
   /**
@@ -49715,7 +49784,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
   Update(dt) {
     if (this.lod > 0) {
       for (let i = 0; i < this.spriteSets.length; ++i) {
-        this.spriteSets[i].Update(dt);
+        this.spriteSets[i].Update(dt, this._worldSpriteScale);
       }
 
       for (let i = 0; i < this.planeSets.length; i++) {
@@ -49731,7 +49800,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
       }
 
       for (let i = 0; i < this.effectChildren.length; ++i) {
-        this.effectChildren[i].Update(dt, this.transform, this.lod);
+        this.effectChildren[i].Update(dt, this._worldTransform, this.lod);
       }
 
       for (let i = 0; i < this.curveSets.length; ++i) {
@@ -49767,7 +49836,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
       if (this.lod > 1) {
         if (show.spriteSets) {
           for (let i = 0; i < this.spriteSets.length; i++) {
-            this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this.transform);
+            this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
           }
         }
 
@@ -50816,7 +50885,6 @@ Tw2BaseClass.prototype = Object.assign(Object.create(_Tw2EventEmitter__WEBPACK_I
   }
 
 });
-let OBJECT_ID = 0;
 /**
  * Defines an id
  * @param {*} target
@@ -50824,7 +50892,7 @@ let OBJECT_ID = 0;
 
 Tw2BaseClass.defineID = function (target) {
   Reflect.defineProperty(target, "_id", {
-    value: OBJECT_ID++,
+    value: Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])(),
     writable: false,
     configurable: true
   });
@@ -53712,10 +53780,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core */ "./core/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -54030,24 +54094,9 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   GetObjectAsync(path) {
-    var _this = this;
-
-    return _asyncToGenerator(
-    /*#__PURE__*/
-    regeneratorRuntime.mark(function _callee() {
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            return _context.abrupt("return", new Promise((resolve, reject) => {
-              _this.GetObject(path, resolve, reject);
-            }));
-
-          case 1:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }))();
+    return new Promise((resolve, reject) => {
+      this.GetObject(path, resolve, reject);
+    });
   }
   /**
    * Reloads a resource

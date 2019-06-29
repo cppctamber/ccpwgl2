@@ -1,5 +1,5 @@
 import {ErrAbstractClassMethod} from "../../core/Tw2Error";
-import {isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped} from "../util";
+import {generateID, isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped} from "../util";
 import {Tw2EventEmitter} from "./Tw2EventEmitter";
 
 /**
@@ -132,8 +132,6 @@ Tw2BaseClass.prototype = Object.assign(Object.create(Tw2EventEmitter.prototype),
 
 });
 
-let OBJECT_ID = 0;
-
 /**
  * Defines an id
  * @param {*} target
@@ -141,7 +139,7 @@ let OBJECT_ID = 0;
 Tw2BaseClass.defineID = function(target)
 {
     Reflect.defineProperty(target, "_id", {
-        value: OBJECT_ID++,
+        value: generateID(),
         writable: false,
         configurable: true
     });
