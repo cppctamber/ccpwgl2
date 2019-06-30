@@ -1,22 +1,19 @@
-import {Tw2BaseClass} from "../../global";
+import {Tw2CurveExpression} from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveEulerRotationExpression
  *
- * @property {String} name                          -
- * @property {String} expressionPitch               -
- * @property {String} expressionRoll                -
- * @property {String} expressionYaw                 -
- * @property {Array.<Curve|CurveExpression>} inputs -
+ * @property {String} expressionPitch                     -
+ * @property {String} expressionRoll                      -
+ * @property {String} expressionYaw                       -
  */
-export class Tr2CurveEulerRotationExpression extends Tw2BaseClass
+export class Tr2CurveEulerRotationExpression extends Tw2CurveExpression
 {
 
-    name = "";
     expressionPitch = "";
     expressionRoll = "";
     expressionYaw = "";
-    inputs = [];
+
 
     /**
      * Black definition

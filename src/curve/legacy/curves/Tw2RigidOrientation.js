@@ -1,5 +1,5 @@
-import {vec3, quat} from "../../../global/index";
-import {Tw2CurveKey, Tw2Curve} from "./Tw2Curve";
+import {vec3, quat} from "../../../global";
+import {Tw2CurveKey, Tw2Curve} from "../../curve";
 
 /**
  * Tw2Torque

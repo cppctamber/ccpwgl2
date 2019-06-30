@@ -1,24 +1,22 @@
-import {Tw2BaseClass} from "../../global/index";
+import {Tw2CurveExpression} from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveScalarExpression
  * TODO: Implement
  *
- * @property {String} expression    -
- * @property {Number} input1        -
- * @property {Number} input2        -
- * @property {Number} input3        -
- * @property {Array.<Curve>} inputs -
+ * @property {String} expression       -
+ * @property {Number} input1           -
+ * @property {Number} input2           -
+ * @property {Number} input3           -
  */
-export class Tr2CurveScalarExpression extends Tw2BaseClass
+export class Tr2CurveScalarExpression extends Tw2CurveExpression
 {
 
-    name = "";
     expression = "";
-    inputs = [];
     input1 = -1; // What should be the default value?
     input2 = -1; // What should be the default value?
     input3 = -1; // What should be the default value?
+
 
     /**
      * Black definition

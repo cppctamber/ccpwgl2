@@ -1,23 +1,21 @@
 import {Tw2BaseClass} from "../../global/index";
+import {Tw2CurveExpression} from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveVector3Expression
  * TODO: Implement
  *
- * @property {String} name                          -
- * @property {String} expressionX                   -
- * @property {String} expressionY                   -
- * @property {String} expressionZ                   -
- * @property {Array.<Curve|CurveExpression>} inputs -
+ * @property {String} expressionX                         -
+ * @property {String} expressionY                         -
+ * @property {String} expressionZ                         -
  */
-export class Tr2CurveVector3Expression extends Tw2BaseClass
+export class Tr2CurveVector3Expression extends Tw2CurveExpression
 {
 
-    name = "";
     expressionX = "";
     expressionY = "";
     expressionZ = "";
-    inputs = [];
+
 
     /**
      * Black definition

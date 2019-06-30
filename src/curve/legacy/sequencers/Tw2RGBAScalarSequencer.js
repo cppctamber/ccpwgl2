@@ -1,5 +1,5 @@
-import {vec4} from "../../../global/index";
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import {vec4} from "../../../global";
+import {Tw2CurveSequencer} from "../../sequencer";
 
 /**
  * Tw2RGBAScalarSequencer
@@ -35,12 +35,7 @@ export class Tw2RGBAScalarSequencer extends Tw2CurveSequencer
      */
     GetLength()
     {
-        let len = 0;
-        if (this.RedCurve && ("GetLength" in this.RedCurve)) len = this.RedCurve.GetLength();
-        if (this.GreenCurve && ("GetLength" in this.GreenCurve)) len = Math.max(len, this.GreenCurve.GetLength());
-        if (this.BlueCurve && ("GetLength" in this.BlueCurve)) len = Math.max(len, this.BlueCurve.GetLength());
-        if (this.AlphaCurve && ("GetLength" in this.AlphaCurve)) len = Math.max(len, this.AlphaCurve.GetLength());
-        return len;
+        return Tw2CurveSequencer.GetLengthFromProperties(this);
     }
 
     /**

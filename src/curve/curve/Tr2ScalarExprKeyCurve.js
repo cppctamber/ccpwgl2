@@ -1,3 +1,5 @@
+import {Tw2Curve, Tw2CurveKey} from "./Tw2Curve";
+
 /**
  * Tr2ScalarExprKey
  * TODO: Implement
@@ -13,7 +15,7 @@
  * @property {String} timeExpression
  * @property {Number} value
  */
-export class Tr2ScalarExprKey
+export class Tr2ScalarExprKey extends Tw2CurveKey
 {
 
     input1 = -1;
@@ -43,6 +45,44 @@ export class Tr2ScalarExprKey
             ["time", r.float],
             ["timeExpression", r.string],
             ["value", r.float],
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
+
+}
+
+
+/**
+ * Tr2ScalarExprKeyCurve
+ * @ccp Tr2ScalarExprKeyCurve
+ *
+ * @property {String} name                  -
+ * @property {Number} interpolation         -
+ * @property {Array<Tr2ScalarExprKey>} keys -
+ */
+export class Tr2ScalarExprKeyCurve extends Tw2Curve
+{
+
+    interpolation = 0;
+    keys = [];
+
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["interpolation", r.uint],
+            ["keys", r.array],
+            ["name", r.string],
         ];
     }
 

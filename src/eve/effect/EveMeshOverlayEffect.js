@@ -1,4 +1,5 @@
-import {Tw2GeometryBatch, Tw2CurveSet, Tw2Effect} from "../../core";
+import {Tw2GeometryBatch, Tw2Effect} from "../../core";
+import {Tw2CurveSet} from "../../curve";
 import { Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM_DISTORTION, store} from "../../global";
 import {assignIfExists, toArray} from "../../global/util";
 

@@ -1,5 +1,5 @@
-import {vec3} from "../../../global/index";
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import {vec3} from "../../../global";
+import {Tw2CurveSequencer} from "../../sequencer";
 
 /**
  * Tw2VectorSequencer
@@ -34,15 +34,7 @@ export class Tw2VectorSequencer extends Tw2CurveSequencer
      */
     GetLength()
     {
-        let len = 0;
-        for (let i = 0; i < this.functions.length; ++i)
-        {
-            if ("GetLength" in this.functions[i])
-            {
-                len = Math.max(len, this.functions[i].GetLength());
-            }
-        }
-        return len;
+        return Tw2CurveSequencer.GetLengthFromKeys(this);
     }
 
     /**

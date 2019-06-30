@@ -1,5 +1,5 @@
-import {vec3, quat} from "../../../global/index";
-import {Tw2Curve} from "../curves";
+import {vec3, quat} from "../../../global";
+import {Tw2Curve} from "../../curve";
 
 /**
  * Tw2MayaEulerRotationCurve

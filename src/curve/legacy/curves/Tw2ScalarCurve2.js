@@ -1,4 +1,4 @@
-import {Tw2CurveKey, Tw2Curve} from "./Tw2Curve";
+import {Tw2CurveKey, Tw2Curve} from "../../curve";
 
 /**
  * Tw2ScalarKey2

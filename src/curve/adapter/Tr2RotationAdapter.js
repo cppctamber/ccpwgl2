@@ -1,16 +1,16 @@
-import {vec4, Tw2BaseClass} from "../../global";
+import {Tw2CurveAdapter} from "./Tw2CurveAdapter";
+import { vec4} from "../../global";
 
 /**
  * Tr2RotationAdapter
  *
- * @property {Curve|CurveExpression} curve -
- * @property {vec4} value                  -
+ * @property {vec4} value -
  */
-export class Tr2RotationAdapter extends Tw2BaseClass
+export class Tr2RotationAdapter extends Tw2CurveAdapter
 {
 
-    curve = null;
     value = vec4.create();
+
 
     /**
      * Black definition

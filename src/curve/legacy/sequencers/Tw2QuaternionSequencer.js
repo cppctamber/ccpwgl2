@@ -1,5 +1,5 @@
-import {quat} from "../../../global/index";
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import {quat} from "../../../global";
+import {Tw2CurveSequencer} from "../../sequencer";
 
 /**
  * Tw2QuaternionSequencer
@@ -32,15 +32,7 @@ export class Tw2QuaternionSequencer extends Tw2CurveSequencer
      */
     GetLength()
     {
-        let len = 0;
-        for (let i = 0; i < this.functions.length; ++i)
-        {
-            if ("GetLength" in this.functions[i])
-            {
-                len = Math.max(len, this.functions[i].GetLength());
-            }
-        }
-        return len;
+        return Tw2CurveSequencer.GetLengthFromKeys(this);
     }
 
     /**

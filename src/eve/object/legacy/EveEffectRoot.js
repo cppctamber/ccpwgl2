@@ -34,6 +34,7 @@ export class EveEffectRoot extends EveObject
     boundingSphereCenter = vec3.create();
     boundingSphereRadius = 0;
 
+    _worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
     /**
@@ -85,12 +86,22 @@ export class EveEffectRoot extends EveObject
 
     /**
      * Internal per frame update
+     * @param {mat4} parentTransform
+     */
+    UpdateViewDependentData(parentTransform)
+    {
+        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+        mat4.multiply(this._worldTransform, parentTransform, this.localTransform);
+    }
+
+    /**
+     * Internal per frame update
      * @param {number} dt - Delta Time
      */
     Update(dt)
     {
-        quat.normalize(this.rotation, this.rotation); // Don't really need to normalize...
-        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+        //quat.normalize(this.rotation, this.rotation); // Don't really need to normalize...
+        //mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
 
         for (let i = 0; i < this.curveSets.length; ++i)
         {
@@ -99,7 +110,8 @@ export class EveEffectRoot extends EveObject
 
         for (let i = 0; i < this.effectChildren.length; ++i)
         {
-            this.effectChildren[i].Update(dt, this.localTransform);
+            //this.effectChildren[i].Update(dt, this.localTransform);
+            this.effectChildren[i].Update(dt, this._worldTransform);
         }
     }
 

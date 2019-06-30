@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {Tw2CurveKey, Tw2Curve} from "./Tw2Curve";
 
 /**
  * AudEventKey
@@ -7,7 +7,7 @@ import {Tw2BaseClass} from "../../global";
  * @property {Number} time  -
  * @property {Number} value -
  */
-export class AudEventKey extends Tw2BaseClass
+export class AudEventKey extends Tw2CurveKey
 {
 
     time = 0;
@@ -20,14 +20,20 @@ export class AudEventKey extends Tw2BaseClass
  * TODO: Implement
  *
  * @property {Number} extrapolation               -
- * @property {Array.<CurveKey>} keys              -
+ * @property {Array.<AudEventKey>} keys           -
  * @property {TriObserverLocal} sourceTriObserver -
  */
-export class AudEventCurve extends Tw2BaseClass
+export class AudEventCurve extends Tw2Curve
 {
 
     extrapolation = 0;
     keys = [];
     sourceTriObserver = null;
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 4;
 
 }

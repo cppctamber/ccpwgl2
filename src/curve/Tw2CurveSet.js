@@ -1,4 +1,4 @@
-import {util, Tw2BaseClass} from "../../global";
+import {util, Tw2BaseClass} from "../global";
 
 /**
  * Curve set
@@ -6,14 +6,14 @@ import {util, Tw2BaseClass} from "../../global";
  * TODO: Implement ranges - Are these read only or do they need to relate back to an AnimationRes some how?
  * @ccp TriCurveSet
  *
- * @property {Array.<Tw2ValueBinding>} bindings                    -
- * @property {Array.<Curve|CurveExpression|CurveSequencer>} curves -
- * @property {Boolean} playOnLoad                                  -
- * @property {Array.<Tw2CurveSetRange>} ranges                     -
- * @property {Number} scale                                        -
- * @property {Boolean} useSimTimeRebase                            -
- * @property {Boolean} _isPlaying                                  -
- * @property {Number} _scaledTime                                  -
+ * @property {Array.<Tw2ValueBinding>} bindings                             -
+ * @property {Array.<Tw2Curve|Tw2CurveExpression|Tw2CurveSequencer>} curves -
+ * @property {Boolean} playOnLoad                                           -
+ * @property {Array.<Tw2CurveSetRange>} ranges                              -
+ * @property {Number} scale                                                 -
+ * @property {Boolean} useSimTimeRebase                                     -
+ * @property {Boolean} _isPlaying                                           -
+ * @property {Number} _scaledTime                                           -
  */
 export class Tw2CurveSet extends Tw2BaseClass
 {

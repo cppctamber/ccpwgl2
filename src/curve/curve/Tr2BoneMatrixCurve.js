@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import {Tw2Curve} from "./Tw2Curve";
 
 /**
  * Tr2BoneMatrixCurve
@@ -6,10 +6,8 @@ import {Tw2BaseClass} from "../../global";
  *
  * @property {String} name
  */
-export class Tr2BoneMatrixCurve extends Tw2BaseClass
+export class Tr2BoneMatrixCurve extends Tw2Curve
 {
-
-    name = "";
 
     /**
      * Black definition

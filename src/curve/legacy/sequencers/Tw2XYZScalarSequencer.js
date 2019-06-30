@@ -1,5 +1,5 @@
-import {vec3} from "../../../global/index";
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import {vec3} from "../../../global";
+import {Tw2CurveSequencer} from "../../sequencer";
 
 /**
  * Tw2XYZScalarSequencer
@@ -34,11 +34,7 @@ export class Tw2XYZScalarSequencer extends Tw2CurveSequencer
      */
     GetLength()
     {
-        let len = 0;
-        if (this.XCurve && ("GetLength" in this.XCurve)) len = this.XCurve.GetLength();
-        if (this.YCurve && ("GetLength" in this.YCurve)) len = Math.max(len, this.YCurve.GetLength());
-        if (this.ZCurve && ("GetLength" in this.ZCurve)) len = Math.max(len, this.ZCurve.GetLength());
-        return len;
+        return Tw2CurveSequencer.GetLengthFromProperties(this);
     }
 
     /**

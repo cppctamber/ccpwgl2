@@ -1,5 +1,5 @@
-import {vec4} from "../../../global/index";
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import {vec4} from "../../../global";
+import {Tw2CurveSequencer} from "../../sequencer";
 
 /**
  * Tw2ColorSequencer
@@ -33,15 +33,7 @@ export class Tw2ColorSequencer extends Tw2CurveSequencer
      */
     GetLength()
     {
-        let len = 0;
-        for (let i = 0; i < this.functions.length; ++i)
-        {
-            if ("GetLength" in this.functions[i])
-            {
-                len = Math.max(len, this.functions[i].GetLength());
-            }
-        }
-        return len;
+        return Tw2CurveSequencer.GetLengthFromKeys(this);
     }
 
     /**
@@ -72,7 +64,7 @@ export class Tw2ColorSequencer extends Tw2CurveSequencer
                     this.functions[i].GetValueAt(time, vec4_0);
                     vec4.multiply(value, value, vec4_0);
                 }
-                return value;
+                break;
 
             default:
                 vec4.set(value, 0, 0, 0, 0);
@@ -81,8 +73,9 @@ export class Tw2ColorSequencer extends Tw2CurveSequencer
                     this.functions[i].GetValueAt(time, vec4_0);
                     vec4.add(value, value, vec4_0);
                 }
-                return value;
         }
+
+        return value;
     }
 
     /**

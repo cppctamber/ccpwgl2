@@ -1,40 +1,49 @@
 import {Tw2CurveKey, Tw2Curve} from "./Tw2Curve";
 
 /**
- * Tw2EventKey
+ * Event curve key
+ * @ccp TriEventKey
  *
- * @property {String} value
- * @class
+ * @property {Number} value -
  */
 export class Tw2EventKey extends Tw2CurveKey
 {
 
-    value = "";
+    value = 0;
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["time", r.float],
+            ["value", r.ushort]
+        ];
+    }
 
 }
 
-
 /**
- * Tw2EventCurve
+ * Event curve
+ * @ccp TriEventCurve
  *
- * @property {String} value
- * @property {Array.<Tw2EventKey>} keys
- * @property {number} extrapolation
- * @property {number} _time
- * @property {number} _currentKey
- * @property {number} _length
- * @class
+ * @property {Number} extrapolation     -
+ * @property {Array.<Tw2EventKey>} keys -
+ * @property {Number} value             -
  */
 export class Tw2EventCurve extends Tw2Curve
 {
 
-    value = "";
-    keys = [];
     extrapolation = 0;
+    keys = [];
+    value = 0;
+
     _time = 0;
     _currentKey = 0;
     _length = 0;
-
 
     /**
      * Sorts the curve's keys
@@ -127,5 +136,20 @@ export class Tw2EventCurve extends Tw2Curve
         NONE: 0,
         CYCLE: 3
     };
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["extrapolation", r.uint],
+            ["name", r.string],
+            ["keys", r.array],
+            ["value", r.ushort]
+        ];
+    }
 
 }

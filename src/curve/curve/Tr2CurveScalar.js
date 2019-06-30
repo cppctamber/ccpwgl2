@@ -1,11 +1,18 @@
-import {Tw2BaseClass} from "../../global";
+import {Tw2Curve, Tw2CurveKey} from "./Tw2Curve";
+import {ErrFeatureNotImplemented} from "../../core";
 
 /**
- * Tw2ScalarKey2
+ * Tw2CurveScalarKey
  * @ccp N/A
  *
+ * @param {Number} endTangent
+ * @param {Number} extrapolation
+ * @param {Number} index
+ * @param {Number} interpolation
+ * @param {Number} startTangent
+ * @param {Number} value
  */
-export class Tw2CurveScalarKey extends Tw2BaseClass
+export class Tw2CurveScalarKey extends Tw2CurveKey
 {
 
     endTangent = 0.0;
@@ -13,7 +20,6 @@ export class Tw2CurveScalarKey extends Tw2BaseClass
     index = 0;
     interpolation = 1;
     startTangent = 0.0;
-    time = 0.0;
     value = 0.0;
 
 
@@ -35,18 +41,17 @@ export class Tw2CurveScalarKey extends Tw2BaseClass
         return item;
     }
 
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
-
 }
-
 
 
 /**
  * Tr2CurveScalar
+ * TODO: implement extrapolationAfter
+ * TODO: implement extrapolationBefore
+ * TODO: implement timeOffset
+ * TODO: implement timeScale
+ * TODO: Get Extrapolation types from CCP
+ * TODO: Get Interpolation types from CCP
  * @ccp Tr2CurveScalar
  *
  * @property {String} name                -
@@ -56,15 +61,86 @@ export class Tw2CurveScalarKey extends Tw2BaseClass
  * @property {Number} timeOffset          -
  * @property {Number} timeScale           -
  */
-export class Tr2CurveScalar extends Tw2BaseClass
+export class Tr2CurveScalar extends Tw2Curve
 {
 
-    name = "";
     extrapolationAfter = 0;
     extrapolationBefore = 0;
     keys = [];
     timeOffset = 0;
     timeScale = 0;
+
+    _length = 0;
+
+    /**
+     * Sorts the curve
+     */
+    Sort()
+    {
+        this._length = Tw2Curve.Sort3(this.keys);
+    }
+
+    /**
+     * Gets the curve's length
+     * @returns {number}
+     */
+    GetLength()
+    {
+        // TODO: Does timeOffset and timeScale need to be considered here?
+        return this._length;
+    }
+
+    /**
+     * Gets a value at a given time
+     * @param {Number} time
+     */
+    GetValueAt(time)
+    {
+        // TODO: Implement GetValueAt
+        throw new ErrFeatureNotImplemented({feature: "GetValueAt"});
+    }
+
+    /**
+     * The curve's dimension
+     * @type {?number}
+     */
+    static inputDimension = 1;
+
+    /**
+     * The curve's dimension
+     * @type {?number}
+     */
+    static outputDimension = 1;
+
+    /**
+     * The curve's current value property
+     * @type {?String}
+     */
+    static valueProperty = "value";
+
+    /**
+     * The curve's type
+     * @type {?number}
+     */
+    static curveType = Tw2Curve.Type.CURVE3;
+
+    /**
+     * The curve's Key constructor
+     * @type {?Tw2CurveKey}
+     */
+    static Key = Tw2CurveScalarKey;
+
+    /**
+     * Interpolation types
+     * @type {?{ string: number}}
+     */
+    static Interpolation = {};
+
+    /**
+     * Extrapolation types
+     * @type {?{ string: number}}
+     */
+    static Extrapolation = {};
 
     /**
      * Black definition

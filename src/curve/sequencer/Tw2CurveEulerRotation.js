@@ -1,24 +1,23 @@
-import {quat} from "../../../global";
-import {Tw2CurveSequencer} from "../../sequencer";
+import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import {quat} from "../../global";
 
 /**
- * Tw2EulerRotation
+ * Euler to Quaternion sequencer
+ * TODO: No value property by default, how is this curve's value supposed to be read?
+ * @ccp Tr2CurveEulerRotation
  *
- * @property {String} name
- * @property {Tw2Curve} [yawCurve]
- * @property {Tw2Curve} [pitchCurve]
- * @property {Tw2Curve} [rollCurve]
- * @property {quat} currentValue=[0,0,0,1]
- * @class
+ * @property {Tr2CurveScalar} pitch -
+ * @property {Tr2CurveScalar} roll  -
+ * @property {Tr2CurveScalar} yaw   -
  */
-export class Tw2EulerRotation extends Tw2CurveSequencer
+export class Tw2CurveEulerRotation extends Tw2CurveSequencer
 {
 
-    yawCurve = null;
-    pitchCurve = null;
-    rollCurve = null;
-    currentValue = quat.create();
+    pitch = null;
+    roll = null;
+    yaw = null;
 
+    _value = quat.create();
 
     /**
      * Sorts the sequencer
@@ -43,7 +42,7 @@ export class Tw2EulerRotation extends Tw2CurveSequencer
      */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this.currentValue);
+        this.GetValueAt(time, this._value);
     }
 
     /**
@@ -55,9 +54,9 @@ export class Tw2EulerRotation extends Tw2CurveSequencer
     GetValueAt(time, value)
     {
         const
-            yaw = this.yawCurve ? this.yawCurve.GetValueAt(time) : 0.0,
-            pitch = this.pitchCurve ? this.pitchCurve.GetValueAt(time) : 0.0,
-            roll = this.rollCurve ? this.rollCurve.GetValueAt(time) : 0.0;
+            yaw = this.yaw ? this.yaw.GetValueAt(time) : 0.0,
+            pitch = this.pitch ? this.pitch.GetValueAt(time) : 0.0,
+            roll = this.roll ? this.roll.GetValueAt(time) : 0.0;
 
         const
             sinYaw = Math.sin(yaw / 2.0),
@@ -76,13 +75,13 @@ export class Tw2EulerRotation extends Tw2CurveSequencer
     }
 
     /**
-     * The sequencer's curve dimension
+     * The sequencer's curve input dimension
      * @type {number}
      */
     static inputDimension = 1;
 
     /**
-     * The sequencer's dimension
+     * The sequencer's output dimension
      * @type {number}
      */
     static outputDimension = 4;
@@ -91,7 +90,7 @@ export class Tw2EulerRotation extends Tw2CurveSequencer
      * The sequencer's current value property
      * @type {String}
      */
-    static valueProperty = "currentValue";
+    static valueProperty = "_value";
 
     /**
      * The sequencer's type
@@ -101,8 +100,29 @@ export class Tw2EulerRotation extends Tw2CurveSequencer
 
     /**
      * The sequencer's curve property names
-     * @type {Array<String>}
+     * @type {string[]}
      */
-    static childProperties = ["yawCurve", "pitchCurve", "rollCurve"];
+    static childProperties = [ "yaw", "pitch", "roll"];
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["pitch", r.object],
+            ["roll", r.object],
+            ["yaw", r.object]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 2;
 
 }

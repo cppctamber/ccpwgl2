@@ -1,6 +1,11 @@
-import {vec3, vec4, quat, mat4} from "../global";
+import {vec3, vec4, quat} from "../global";
 import {get, assignIfExists} from "../global/util";
-import {Tw2ScalarCurve2, Tw2ScalarKey2} from "../curve/legacy";
+import {
+    Tw2ScalarCurve2,
+    Tw2ScalarKey2,
+    Tw2CurveSet,
+    Tw2ValueBinding
+} from "../curve";
 import {
     Tw2TextureParameter,
     Tw2Vector4Parameter,
@@ -8,9 +13,7 @@ import {
     Tw2Mesh,
     Tw2MeshArea,
     Tw2InstancedMesh,
-    Tw2CurveSet,
-    Tw2ValueBinding
-} from "../core/index";
+} from "../core";
 import {
     EveBoosterSet,
     EveChildMesh,

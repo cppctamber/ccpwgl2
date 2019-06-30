@@ -1,5 +1,5 @@
-import {num, vec4, quat} from "../../../global/index";
-import {Tw2CurveKey, Tw2Curve} from "./Tw2Curve";
+import {num, vec4, quat} from "../../../global";
+import {Tw2CurveKey, Tw2Curve} from "../../curve";
 
 /**
  * Tw2QuaternionKey
@@ -39,8 +39,9 @@ export class Tw2RotationCurve extends Tw2Curve
     value = quat.create();
     extrapolation = 0;
     keys = [];
-    _currentKey = 1;
     length = 0;
+
+    _currentKey = 1;
 
 
     /**

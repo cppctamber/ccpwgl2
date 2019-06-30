@@ -1,5 +1,5 @@
-import {quat, vec3} from "../../../global/index";
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import {quat, vec3} from "../../../global";
+import {Tw2CurveSequencer} from "../../sequencer";
 
 /**
  * Tw2YPRSequencer
@@ -34,11 +34,7 @@ export class Tw2YPRSequencer extends Tw2CurveSequencer
      */
     GetLength()
     {
-        let len = 0;
-        if (this.YawCurve && ("GetLength" in this.YawCurve)) len = this.YawCurve.GetLength();
-        if (this.PitchCurve && ("GetLength" in this.PitchCurve)) len = Math.max(len, this.PitchCurve.GetLength());
-        if (this.RollCurve && ("GetLength" in this.RollCurve)) len = Math.max(len, this.RollCurve.GetLength());
-        return len;
+        return Tw2CurveSequencer.GetLengthFromProperties(this);
     }
 
     /**
