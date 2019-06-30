@@ -1,50 +1,51 @@
-import {vec4} from "../../../global";
-import {Tw2CurveKey, Tw2Curve} from "../../curve";
+import {num, vec4, quat} from "../../../global";
+import {Tw2CurveKey, Tw2Curve} from "../Tw2Curve";
 
 /**
- * Tw2ColorKey
+ * Tw2QuaternionKey
  *
- * @property {vec4} value
- * @property {vec4} left
- * @property {vec4} right
+ * @property {quat} value
+ * @property {vec4} leftTangent
+ * @property {vec4} rightTangent
  * @property {number} interpolation
  * @class
  */
-export class Tw2ColorKey extends Tw2CurveKey
+export class Tw2QuaternionKey extends Tw2CurveKey
 {
 
-    value = vec4.create();
+    value = quat.create();
     left = vec4.create();
     right = vec4.create();
-    interpolation = 0;
+    interpolation = 5;
 
 }
 
 
 /**
- * Tw2ColorCurve
+ * Tw2RotationCurve
  *
  * @property {number} start
- * @property {vec4} currentValue
+ * @property {quat} value
  * @property {number} extrapolation
- * @property {Array.<Tw2ColorKey>} keys
+ * @property {Array.<Tw2QuaternionKey>} keys
  * @property {number} _currentKey
  * @property {number} length
- * @class
+ * @class`
  */
-export class Tw2ColorCurve extends Tw2Curve
+export class Tw2RotationCurve extends Tw2Curve
 {
 
     start = 0;
-    value = vec4.create();
+    value = quat.create();
     extrapolation = 0;
     keys = [];
-    _currentKey = 1;
     length = 0;
+
+    _currentKey = 1;
 
 
     /**
-     * Sorts the curve's keys
+     * Sorts the curve's children
      */
     Sort()
     {
@@ -72,17 +73,18 @@ export class Tw2ColorCurve extends Tw2Curve
     /**
      * Gets a value at a specific time
      * @param {number} time
-     * @param {vec4} value
-     * @returns {vec4} value
+     * @param {quat} value
+     * @returns {quat}
      */
     GetValueAt(time, value)
     {
         if (this.length === 0)
         {
-            return vec4.copy(value, this.value);
+            return quat.copy(value, this.value);
         }
 
         const
+            scratch = Tw2Curve.global,
             firstKey = this.keys[0],
             lastKey = this.keys[this.keys.length - 1];
 
@@ -90,14 +92,11 @@ export class Tw2ColorCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2ColorCurve.Extrapolation.NONE:
-                    return vec4.copy(value, this.value);
+                case Tw2RotationCurve.Extrapolation.NONE:
+                    return quat.copy(value, this.value);
 
-                case Tw2ColorCurve.Extrapolation.CONSTANT:
-                    return vec4.copy(value, lastKey.value);
-
-                case Tw2ColorCurve.Extrapolation.GRADIENT:
-                    return vec4.scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
+                case Tw2RotationCurve.Extrapolation.CONSTANT:
+                    return quat.copy(value, lastKey.value);
 
                 default:
                     time = time % lastKey.time;
@@ -107,14 +106,11 @@ export class Tw2ColorCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2ColorCurve.Extrapolation.NONE:
-                    return vec4.copy(value, this.value);
-
-                case Tw2ColorCurve.Extrapolation.GRADIENT:
-                    return vec4.scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
+                case Tw2RotationCurve.Extrapolation.NONE:
+                    return quat.copy(value, this.value);
 
                 default:
-                    return vec4.copy(value, firstKey.value);
+                    return quat.copy(value, firstKey.value);
             }
         }
 
@@ -130,32 +126,57 @@ export class Tw2ColorCurve extends Tw2Curve
         }
 
         const nt = (time - ck_1.time) / (ck.time - ck_1.time);
-
         switch (ck_1.interpolation)
         {
-            case Tw2ColorCurve.Interpolation.CONSTANT:
-                return vec4.copy(value, ck_1.value);
+            case Tw2RotationCurve.Interpolation.CONSTANT:
+                return quat.copy(value, ck_1.value);
 
-            default:
+            case Tw2RotationCurve.Interpolation.LINEAR:
                 value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
                 value[1] = ck_1.value[1] * (1 - nt) + ck.value[1] * nt;
                 value[2] = ck_1.value[2] * (1 - nt) + ck.value[2] * nt;
                 value[3] = ck_1.value[3] * (1 - nt) + ck.value[3] * nt;
                 return value;
+
+            case Tw2RotationCurve.Interpolation.HERMITE:
+                const
+                    collect = quat.identity(scratch.quat_0),
+                    arr = [ck_1.value, ck_1.right, ck.left, ck.value];
+
+                for (let i = 3; i > 0; i--)
+                {
+                    const power = num.biCumulative(nt, i);
+                    if (power > 1) quat.multiply(value, collect, arr[i]);
+                    value[0] = -arr[i - 1][0];
+                    value[1] = -arr[i - 1][1];
+                    value[2] = -arr[i - 1][2];
+                    value[3] = arr[i - 1][3];
+                    quat.multiply(value, value, arr[i]);
+                    quat.pow(value, value, power);
+                    quat.multiply(collect, collect, value);
+                }
+                return quat.multiply(value, collect, ck_1.value);
+
+            case Tw2RotationCurve.Interpolation.SLERP:
+                return quat.slerp(value, ck_1.value, ck.value, nt);
+
+            default:
+                return quat.sqlerp(value, ck_1.value, ck_1.right, ck.left, ck.value, nt);
         }
     }
+
 
     /**
      * The curve's key dimension
      * @type {number}
      */
-    static inputDimension = 4;
+    static outputDimention = 4;
 
     /**
      * The curve's dimension
      * @type {number}
      */
-    static ouputDimension = 4;
+    static inputDimension = 4;
 
     /**
      * The curve's current value property
@@ -171,9 +192,9 @@ export class Tw2ColorCurve extends Tw2Curve
 
     /**
      * The curve's key constructor
-     * @type {Tw2ColorKey}
+     * @type {Tw2QuaternionKey}
      */
-    static Key = Tw2ColorKey;
+    static Child = Tw2QuaternionKey;
 
     /**
      * Extrapolation types
@@ -188,12 +209,15 @@ export class Tw2ColorCurve extends Tw2Curve
 
     /**
      * Interpolation types
-     * @type {{NONE: number, CONSTANT: number, LINEAR: number}}
+     * @type {{NONE: number, CONSTANT: number, LINEAR: number, HERMITE: number, SLERP: number, SQUAD: number}}
      */
     static Interpolation = {
         NONE: 0,
         CONSTANT: 1,
-        LINEAR: 2
+        LINEAR: 2,
+        HERMITE: 3,
+        SLERP: 5,
+        SQUAD: 6
     };
 
 }

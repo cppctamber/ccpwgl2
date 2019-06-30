@@ -1,55 +1,56 @@
-import {vec4} from "../../../global";
-import {Tw2CurveKey, Tw2Curve} from "../../curve";
+import {vec3} from "../../../global";
+import {Tw2CurveKey, Tw2Curve} from "../Tw2Curve";
 
 /**
- * Tw2ColorKey2
+ * Tw2Vector3Key
  *
  * @property {number} time
- * @property {vec4} value
- * @property {vec4} leftTangent
- * @property {vec4} rightTangent
+ * @property {vec3} value
+ * @property {vec3} leftTangent
+ * @property {vec3} rightTangent
  * @property {number} interpolation
  * @class
  */
-export class Tw2ColorKey2 extends Tw2CurveKey
+export class Tw2Vector3Key extends Tw2CurveKey
 {
 
-    value = vec4.create();
-    leftTangent = vec4.create();
-    rightTangent = vec4.create();
+    value = vec3.create();
+    leftTangent = vec3.create();
+    rightTangent = vec3.create();
     interpolation = 1;
 
 }
 
 
 /**
- * Tw2ColorCurve2
+ * Tw2Vector3Curve
  *
  * @property {Boolean} cycle
  * @property {Boolean} reversed
  * @property {number} timeOffset
  * @property {number} timeScale
- * @property {vec4} startValue=[0,0,0,1]
- * @property {vec4} currentValue=[0,0,0,1]
- * @property {vec4} endValue=[0,0,0,1]
- * @property {vec4} startTangent
- * @property {vec4} endTangent
+ * @property {vec3} startValue
+ * @property {vec3} currentValue
+ * @property {vec3} endValue
+ * @property {vec3} startTangent
+ * @property {vec3} endTangent
  * @property {number} interpolation
- * @property {Array.<Tw2ColorKey2>} keys
+ * @property {Array.<Tw2Vector3Key>} keys
+ * @property {number} length
  * @class
  */
-export class Tw2ColorCurve2 extends Tw2Curve
+export class Tw2Vector3Curve extends Tw2Curve
 {
 
     cycle = false;
     reversed = false;
     timeOffset = 0;
     timeScale = 1;
-    startValue = vec4.fromValues(0, 0, 0, 1);
-    currentValue = vec4.fromValues(0, 0, 0, 1);
-    endValue = vec4.fromValues(0, 0, 0, 1);
-    startTangent = vec4.create();
-    endTangent = vec4.create();
+    startValue = vec3.create();
+    currentValue = vec3.create();
+    endValue = vec3.create();
+    startTangent = vec3.create();
+    endTangent = vec3.create();
     interpolation = 1;
     keys = [];
     length = 0;
@@ -84,15 +85,15 @@ export class Tw2ColorCurve2 extends Tw2Curve
     /**
      * Gets a value at a specific time
      * @param {number} time
-     * @param {vec4} value
-     * @returns {vec4}
+     * @param {vec3} value
+     * @returns {vec3}
      */
     GetValueAt(time, value)
     {
         time = time / this.timeScale + this.timeOffset;
         if (this.length <= 0 || time <= 0)
         {
-            return vec4.copy(value, this.startValue);
+            return vec3.copy(value, this.startValue);
         }
 
         if (time > this.length)
@@ -103,11 +104,11 @@ export class Tw2ColorCurve2 extends Tw2Curve
             }
             else if (this.reversed)
             {
-                return vec4.copy(value, this.startValue);
+                return vec3.copy(value, this.startValue);
             }
             else
             {
-                return vec4.copy(value, this.endValue);
+                return vec3.copy(value, this.endValue);
             }
         }
 
@@ -146,14 +147,14 @@ export class Tw2ColorCurve2 extends Tw2Curve
     /**
      * Interpolate
      * @param {number} time
-     * @param {Tw2ColorKey2} lastKey
-     * @param {Tw2ColorKey2} nextKey
-     * @param {vec4} value
-     * @returns {vec4} value
+     * @param {Tw2Vector3Key} lastKey
+     * @param {Tw2Vector3Key} nextKey
+     * @param {vec3} value
+     * @returns {vec3}
      */
     Interpolate(time, lastKey, nextKey, value)
     {
-        vec4.copy(value, this.startValue);
+        vec3.copy(value, this.startValue);
 
         let startValue = this.startValue,
             endValue = this.endValue,
@@ -168,7 +169,7 @@ export class Tw2ColorCurve2 extends Tw2Curve
 
         switch (interp)
         {
-            case Tw2ColorCurve2.Interpolation.LINEAR:
+            case Tw2Vector3Curve.Interpolation.LINEAR:
                 if (lastKey && nextKey)
                 {
                     startValue = lastKey.value;
@@ -185,10 +186,51 @@ export class Tw2ColorCurve2 extends Tw2Curve
                     startValue = lastKey.value;
                     deltaTime = this.length - lastKey.time;
                 }
+
                 value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
                 value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
                 value[2] = startValue[2] + (endValue[2] - startValue[2]) * (time / deltaTime);
-                value[3] = startValue[3] + (endValue[3] - startValue[3]) * (time / deltaTime);
+                return value;
+
+            case Tw2Vector3Curve.Interpolation.HERMITE:
+                let inTangent = this.startTangent,
+                    outTangent = this.endTangent;
+
+                if (lastKey && nextKey)
+                {
+                    startValue = lastKey.value;
+                    inTangent = lastKey.rightTangent;
+                    endValue = nextKey.value;
+                    outTangent = nextKey.leftTangent;
+                    deltaTime = nextKey.time - lastKey.time;
+                }
+                else if (nextKey)
+                {
+                    endValue = nextKey.value;
+                    outTangent = nextKey.leftTangent;
+                    deltaTime = nextKey.time;
+                }
+                else if (lastKey)
+                {
+                    startValue = lastKey.value;
+                    inTangent = lastKey.rightTangent;
+                    deltaTime = this.length - lastKey.time;
+                }
+
+                const
+                    s = time / deltaTime,
+                    s2 = s * s,
+                    s3 = s2 * s;
+
+                const
+                    c2 = -2.0 * s3 + 3.0 * s2,
+                    c1 = 1.0 - c2,
+                    c4 = s3 - s2,
+                    c3 = s + c4 - s2;
+
+                value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
+                value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
+                value[2] = startValue[2] * c1 + endValue[2] * c2 + inTangent[2] * c3 + outTangent[2] * c4;
                 return value;
 
             default:
@@ -196,18 +238,17 @@ export class Tw2ColorCurve2 extends Tw2Curve
         }
     }
 
-
     /**
      * The curve's key dimension
      * @type {number}
      */
-    static inputDimension = 4;
+    static inputDimension = 3;
 
     /**
      * The curve's dimension
      * @type {number}
      */
-    static outputDimension = 4;
+    static outputDimension = 3;
 
     /**
      * The curve's current value property
@@ -223,17 +264,18 @@ export class Tw2ColorCurve2 extends Tw2Curve
 
     /**
      * The curve's key constructor
-     * @type {Tw2ColorKey2}
+     * @type {Tw2Vector3Key}
      */
-    static Key = Tw2ColorKey2;
+    static Key = Tw2Vector3Key;
 
     /**
      * Interpolation types
-     * @type {{CONSTANT: number, LINEAR: number}}
+     * @type {{CONSTANT: number, LINEAR: number, HERMITE: number}}
      */
     static Interpolation = {
         CONSTANT: 0,
-        LINEAR: 1
+        LINEAR: 1,
+        HERMITE: 2
     };
 
 }

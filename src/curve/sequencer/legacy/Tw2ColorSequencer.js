@@ -1,20 +1,21 @@
-import {quat} from "../../../global";
-import {Tw2CurveSequencer} from "../../sequencer";
+import {vec4} from "../../../global";
+import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
 
 /**
- * Tw2QuaternionSequencer
+ * Tw2ColorSequencer
  *
- * @property {String} name
  * @property {number} start
- * @property {quat} value
+ * @property {vec4} value
+ * @property {number} operator
  * @property {Array<Tw2Curve>} functions
  * @class
  */
-export class Tw2QuaternionSequencer extends Tw2CurveSequencer
+export class Tw2ColorSequencer extends Tw2CurveSequencer
 {
 
     start = 0;
-    value = quat.create();
+    value = vec4.create();
+    operator = 0;
     functions = [];
 
 
@@ -47,18 +48,33 @@ export class Tw2QuaternionSequencer extends Tw2CurveSequencer
     /**
      * Gets a value at a specific time
      * @param {number} time
-     * @param {quat} value
-     * @returns {quat}
+     * @param {vec4} value
+     * @returns {vec4}
      */
     GetValueAt(time, value)
     {
-        quat.identity(value);
-        const quat_0 = Tw2CurveSequencer.global.quat_0;
-        for (let i = 0; i < this.functions.length; ++i)
+        const vec4_0 = Tw2CurveSequencer.global.vec4_0;
+
+        switch (this.operator)
         {
-            this.functions[i].GetValueAt(time, quat_0);
-            quat.multiply(value, value, quat_0);
+            case Tw2ColorSequencer.Operator.MULTIPLY:
+                vec4.set(value, 1, 1, 1, 1);
+                for (let i = 0; i < this.functions.length; ++i)
+                {
+                    this.functions[i].GetValueAt(time, vec4_0);
+                    vec4.multiply(value, value, vec4_0);
+                }
+                break;
+
+            default:
+                vec4.set(value, 0, 0, 0, 0);
+                for (let i = 0; i < this.functions.length; ++i)
+                {
+                    this.functions[i].GetValueAt(time, vec4_0);
+                    vec4.add(value, value, vec4_0);
+                }
         }
+
         return value;
     }
 
@@ -91,5 +107,14 @@ export class Tw2QuaternionSequencer extends Tw2CurveSequencer
      * @type {String}
      */
     static childArray = "functions";
+
+    /**
+     * Operators
+     * @type {{MULTIPLY: number, ADD: number}}
+     */
+    static Operator = {
+        MULTIPLY: 0,
+        ADD: 1
+    };
 
 }

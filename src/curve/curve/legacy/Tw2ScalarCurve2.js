@@ -1,56 +1,54 @@
-import {vec3} from "../../../global";
-import {Tw2CurveKey, Tw2Curve} from "../../curve";
+import {Tw2CurveKey, Tw2Curve} from "../Tw2Curve";
 
 /**
- * Tw2Vector3Key
+ * Tw2ScalarKey2
  *
- * @property {number} time
- * @property {vec3} value
- * @property {vec3} leftTangent
- * @property {vec3} rightTangent
+ * @property {number} value
+ * @property {number} leftTangent
+ * @property {number} rightTangent
  * @property {number} interpolation
  * @class
  */
-export class Tw2Vector3Key extends Tw2CurveKey
+export class Tw2ScalarKey2 extends Tw2CurveKey
 {
 
-    value = vec3.create();
-    leftTangent = vec3.create();
-    rightTangent = vec3.create();
+    value = 0;
+    leftTangent = 0;
+    rightTangent = 0;
     interpolation = 1;
 
 }
 
 
 /**
- * Tw2Vector3Curve
+ * Tw2ScalarCurve2
  *
  * @property {Boolean} cycle
  * @property {Boolean} reversed
  * @property {number} timeOffset
  * @property {number} timeScale
- * @property {vec3} startValue
- * @property {vec3} currentValue
- * @property {vec3} endValue
- * @property {vec3} startTangent
- * @property {vec3} endTangent
+ * @property {number} startValue
+ * @property {number} currentValue
+ * @property {number} endValue
+ * @property {number} startTangent
+ * @property {number} endTangent
  * @property {number} interpolation
- * @property {Array.<Tw2Vector3Key>} keys
+ * @property {Array.<Tw2ScalarKey2>} keys
  * @property {number} length
  * @class
  */
-export class Tw2Vector3Curve extends Tw2Curve
+export class Tw2ScalarCurve2 extends Tw2Curve
 {
 
     cycle = false;
     reversed = false;
     timeOffset = 0;
     timeScale = 1;
-    startValue = vec3.create();
-    currentValue = vec3.create();
-    endValue = vec3.create();
-    startTangent = vec3.create();
-    endTangent = vec3.create();
+    startValue = 0;
+    currentValue = 0;
+    endValue = 0;
+    startTangent = 0;
+    endTangent = 0;
     interpolation = 1;
     keys = [];
     length = 0;
@@ -79,21 +77,20 @@ export class Tw2Vector3Curve extends Tw2Curve
      */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this.currentValue);
+        this.currentValue = this.GetValueAt(time);
     }
 
     /**
      * Gets a value at a specific time
      * @param {number} time
-     * @param {vec3} value
-     * @returns {vec3}
+     * @returns {number}
      */
-    GetValueAt(time, value)
+    GetValueAt(time)
     {
         time = time / this.timeScale + this.timeOffset;
         if (this.length <= 0 || time <= 0)
         {
-            return vec3.copy(value, this.startValue);
+            return this.startValue;
         }
 
         if (time > this.length)
@@ -104,11 +101,11 @@ export class Tw2Vector3Curve extends Tw2Curve
             }
             else if (this.reversed)
             {
-                return vec3.copy(value, this.startValue);
+                return this.startValue;
             }
             else
             {
-                return vec3.copy(value, this.endValue);
+                return this.endValue;
             }
         }
 
@@ -119,7 +116,7 @@ export class Tw2Vector3Curve extends Tw2Curve
 
         if (this.keys.length === 0)
         {
-            return this.Interpolate(time, null, null, value);
+            return this.Interpolate(time, null, null);
         }
 
         let startKey = this.keys[0],
@@ -127,11 +124,11 @@ export class Tw2Vector3Curve extends Tw2Curve
 
         if (time <= startKey.time)
         {
-            return this.Interpolate(time, null, startKey, value);
+            return this.Interpolate(time, null, startKey);
         }
         else if (time >= endKey.time)
         {
-            return this.Interpolate(time, endKey, null, value);
+            return this.Interpolate(time, endKey, null);
         }
 
         for (let i = 0; i + 1 < this.keys.length; ++i)
@@ -141,21 +138,18 @@ export class Tw2Vector3Curve extends Tw2Curve
             if (startKey.time <= time && endKey.time > time) break;
         }
 
-        return this.Interpolate(time, startKey, endKey, value);
+        return this.Interpolate(time, startKey, endKey);
     }
 
     /**
      * Interpolate
      * @param {number} time
-     * @param {Tw2Vector3Key} lastKey
-     * @param {Tw2Vector3Key} nextKey
-     * @param {vec3} value
-     * @returns {vec3}
+     * @param {Tw2ScalarKey2} lastKey
+     * @param {Tw2ScalarKey2} nextKey
+     * @returns {number}
      */
-    Interpolate(time, lastKey, nextKey, value)
+    Interpolate(time, lastKey, nextKey)
     {
-        vec3.copy(value, this.startValue);
-
         let startValue = this.startValue,
             endValue = this.endValue,
             interp = this.interpolation,
@@ -169,7 +163,7 @@ export class Tw2Vector3Curve extends Tw2Curve
 
         switch (interp)
         {
-            case Tw2Vector3Curve.Interpolation.LINEAR:
+            case Tw2ScalarCurve2.Interpolation.LINEAR:
                 if (lastKey && nextKey)
                 {
                     startValue = lastKey.value;
@@ -186,13 +180,9 @@ export class Tw2Vector3Curve extends Tw2Curve
                     startValue = lastKey.value;
                     deltaTime = this.length - lastKey.time;
                 }
+                return startValue + (endValue - startValue) * (time / deltaTime);
 
-                value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
-                value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
-                value[2] = startValue[2] + (endValue[2] - startValue[2]) * (time / deltaTime);
-                return value;
-
-            case Tw2Vector3Curve.Interpolation.HERMITE:
+            case Tw2ScalarCurve2.Interpolation.HERMITE:
                 let inTangent = this.startTangent,
                     outTangent = this.endTangent;
 
@@ -228,13 +218,10 @@ export class Tw2Vector3Curve extends Tw2Curve
                     c4 = s3 - s2,
                     c3 = s + c4 - s2;
 
-                value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
-                value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
-                value[2] = startValue[2] * c1 + endValue[2] * c2 + inTangent[2] * c3 + outTangent[2] * c4;
-                return value;
+                return startValue * c1 + endValue * c2 + inTangent * c3 + outTangent * c4;
 
             default:
-                return value;
+                return this.startValue;
         }
     }
 
@@ -242,13 +229,13 @@ export class Tw2Vector3Curve extends Tw2Curve
      * The curve's key dimension
      * @type {number}
      */
-    static inputDimension = 3;
+    static inputDimension = 1;
 
     /**
      * The curve's dimension
      * @type {number}
      */
-    static outputDimension = 3;
+    static outputDimension = 1;
 
     /**
      * The curve's current value property
@@ -264,9 +251,9 @@ export class Tw2Vector3Curve extends Tw2Curve
 
     /**
      * The curve's key constructor
-     * @type {Tw2Vector3Key}
+     * @type {Tw2ScalarKey2}
      */
-    static Key = Tw2Vector3Key;
+    static Key = Tw2ScalarKey2;
 
     /**
      * Interpolation types

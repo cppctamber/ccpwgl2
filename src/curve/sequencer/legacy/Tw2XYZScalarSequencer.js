@@ -1,5 +1,5 @@
 import {vec3} from "../../../global";
-import {Tw2CurveSequencer} from "../../sequencer";
+import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
 
 /**
  * Tw2XYZScalarSequencer

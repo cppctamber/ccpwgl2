@@ -1,22 +1,30 @@
-import {vec4} from "../../../global";
-import {Tw2CurveSequencer} from "../../sequencer";
+import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
 
 /**
- * Tw2ColorSequencer
+ * Tw2ScalarSequencer
  *
- * @property {number} start
- * @property {vec4} value
+ * @property {String} name
+ * @property {number} value
  * @property {number} operator
  * @property {Array<Tw2Curve>} functions
+ * @property {number} inMinClamp
+ * @property {number} inMaxClamp
+ * @property {number} outMinClamp
+ * @property {number} outMaxClamp
+ * @property {Boolean} clamping
  * @class
  */
-export class Tw2ColorSequencer extends Tw2CurveSequencer
+export class Tw2ScalarSequencer extends Tw2CurveSequencer
 {
 
-    start = 0;
-    value = vec4.create();
+    value = 0;
     operator = 0;
     functions = [];
+    inMinClamp = 0;
+    inMaxClamp = 1;
+    outMinClamp = 0;
+    outMaxClamp = 1;
+    clamping = false;
 
 
     /**
@@ -38,41 +46,55 @@ export class Tw2ColorSequencer extends Tw2CurveSequencer
 
     /**
      * Updates a value at a specific time
+     *
      * @param {number} time
      */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this.value);
+        this.value = this.GetValueAt(time);
     }
 
     /**
      * Gets a value at a specific time
+     *
      * @param {number} time
-     * @param {vec4} value
-     * @returns {vec4}
+     * @returns {number}
      */
-    GetValueAt(time, value)
+    GetValueAt(time)
     {
-        const vec4_0 = Tw2CurveSequencer.global.vec4_0;
+        let value;
 
         switch (this.operator)
         {
-            case Tw2ColorSequencer.Operator.MULTIPLY:
-                vec4.set(value, 1, 1, 1, 1);
+            case Tw2ScalarSequencer.Operator.MULTIPLY:
+                value = 1;
                 for (let i = 0; i < this.functions.length; ++i)
                 {
-                    this.functions[i].GetValueAt(time, vec4_0);
-                    vec4.multiply(value, value, vec4_0);
+                    let v = this.functions[i].GetValueAt(time);
+                    if (this.clamping)
+                    {
+                        v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
+                    }
+                    value *= v;
                 }
                 break;
 
             default:
-                vec4.set(value, 0, 0, 0, 0);
+                value = 0;
                 for (let i = 0; i < this.functions.length; ++i)
                 {
-                    this.functions[i].GetValueAt(time, vec4_0);
-                    vec4.add(value, value, vec4_0);
+                    let v = this.functions[i].GetValueAt(time);
+                    if (this.clamping)
+                    {
+                        v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
+                    }
+                    value += v;
                 }
+        }
+
+        if (this.clamping)
+        {
+            value = Math.min(Math.max(value, this.outMinClamp), this.outMaxClamp);
         }
 
         return value;
@@ -82,13 +104,13 @@ export class Tw2ColorSequencer extends Tw2CurveSequencer
      * The sequencer's curve dimension
      * @type {number}
      */
-    static inputDimension = 4;
+    static inputDimension = 1;
 
     /**
      * The sequencer's dimension
      * @type {number}
      */
-    static outputDimension = 4;
+    static outputDimension = 1;
 
     /**
      * The sequencer's current value property
@@ -103,13 +125,13 @@ export class Tw2ColorSequencer extends Tw2CurveSequencer
     static curveType = Tw2CurveSequencer.Type.SEQUENCER;
 
     /**
-     * The sequencer's curve array
+     * The sequencer's curve properties
      * @type {String}
      */
     static childArray = "functions";
 
     /**
-     * Operators
+     * Operator types
      * @type {{MULTIPLY: number, ADD: number}}
      */
     static Operator = {
