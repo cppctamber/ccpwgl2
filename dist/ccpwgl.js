@@ -570,6 +570,8 @@ var ccpwgl = (function (ccpwgl_int)
         /** Parameter for holding visibility status **/
         var display = true;
 
+        var self = this;
+
         Object.defineProperty(this, "display", {
             get: function ()
             {
@@ -592,15 +594,13 @@ var ccpwgl = (function (ccpwgl_int)
         {
             obj.display = display;
             self.wrappedObjects[0] = obj;
-            obj.SetLocalTransform(this.transform);
+            obj.SetLocalTransform(self.transform);
             rebuildOverlays();
             if (onload)
             {
                 onload.call(self);
             }
         }
-
-        var self = this;
 
         /**
          * Gets the object's resources
