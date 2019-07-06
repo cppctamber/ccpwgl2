@@ -116,10 +116,10 @@ export class Tw2Shader
                     {
                         shaderSize = reader.ReadUInt32();
                         let so = reader.ReadUInt32();
-                        shaderCode = stringTable.substr(so, shaderSize);
+                        stage.shaderCode = shaderCode = stringTable.substr(so, shaderSize);
                         shadowShaderSize = reader.ReadUInt32();
                         so = reader.ReadUInt32();
-                        shadowShaderCode = stringTable.substr(so, shadowShaderSize);
+                        stage.shadowShaderCode = shadowShaderCode = stringTable.substr(so, shadowShaderSize);
                     }
 
                     stage.shader = Tw2Shader.CompileShader(stageType, "", shaderCode, path);
@@ -307,6 +307,7 @@ export class Tw2Shader
                     }
 
                     if (version >= 3) reader.ReadUInt8();
+                    if (version > 7) reader.ReadUInt8();
 
                     pass.stages[stageType] = stage;
                 }

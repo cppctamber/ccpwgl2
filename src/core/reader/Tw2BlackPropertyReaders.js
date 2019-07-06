@@ -41,9 +41,6 @@ function onString(path)
 
         case "gr2":
         case "fx":
-        case "sm_hi":
-        case "sm_lo":
-        case "sm_depth":
             // TODO: Add support for these files
             /*
             logger.log({
@@ -65,6 +62,12 @@ function onString(path)
             });
             */
             path = path.replace("red", "black");
+            break;
+
+        case "sm_hi":
+        case "sm_lo":
+        case "sm_depth":
+            // All good now
             break;
     }
 

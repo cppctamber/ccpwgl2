@@ -67,7 +67,7 @@ export class Tw2EffectRes extends Tw2Resource
         }
 
         const version = reader.ReadUInt32();
-        if (version < 2 || version > 7)
+        if (version < 2 || version > 8)
         {
             this.OnError(new ErrShaderVersion({path: this.path, version}));
             return;
