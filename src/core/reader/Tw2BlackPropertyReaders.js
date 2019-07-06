@@ -1,4 +1,4 @@
-import {vec2, vec3, vec4, mat4, store, logger} from "../../global";
+import {vec2, vec3, vec4, mat4, store} from "../../global";
 import {ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError} from "../Tw2Error";
 
 /**
@@ -40,7 +40,6 @@ function onString(path)
             break;
 
         case "gr2":
-        case "fx":
             // TODO: Add support for these files
             /*
             logger.log({
