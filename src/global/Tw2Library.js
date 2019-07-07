@@ -70,7 +70,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     Log(log)
     {
-        return this.logger.Log(log);
+        return this.logger.log(log);
     }
 
     /**
@@ -242,18 +242,31 @@ class Tw2Library extends Tw2EventEmitter
     Register(opt)
     {
         if (!opt) return;
+        if (opt.uuid) enableUUID(opt.uuid);
 
-        if ("uuid" in opt)
-        {
-            enableUUID(opt.uuid);
-        }
+        this.logger.Register(opt.logger);
+        if (opt.debug) this.Debug(opt.debug);
 
         this.client.Register(opt.client);
-        //this.clock.Register(opt.clock);
         this.device.Register(opt.device);
-        this.logger.Register(opt.logger);
         this.resMan.Register(opt.resMan);
         this.store.Register(opt.store);
+        //this.clock.Register(opt.clock);
+    }
+
+    /**
+     * Enables debug mode
+     * @param {Boolean} bool
+     */
+    Debug(bool)
+    {
+        this.store.classes.Debug(bool);
+
+        this.Log({
+            type: "warn",
+            name: "Tw2Library",
+            message: `Debugging ${bool ? "enabled" : "disabled" }`
+        });
     }
 
     /**
@@ -290,6 +303,6 @@ Tw2Library.prototype.util = util;
 export const tw2 = new Tw2Library();
 
 // Temporary until instances of Tw2Library are supported
-const {store, resMan, device, client, logger} = tw2;
-export {store, resMan, device, client, logger, util};
+const {store, resMan, device, logger} = tw2;
+export {store, resMan, device, logger, util};
 

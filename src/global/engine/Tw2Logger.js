@@ -37,9 +37,9 @@ export class Tw2Logger extends Tw2EventEmitter
     display = true;
     visible = {
         log: true,
-        info: true,
-        debug: true,
-        warn: true,
+        info: false,
+        debug: false,
+        warn: false,
         error: true
     };
     history = 100;

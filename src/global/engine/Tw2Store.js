@@ -1,6 +1,6 @@
 import {Tw2EventEmitter, Tw2Schema} from "../class";
 import {ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid} from "../../core/Tw2Error";
-import {toArray, isNumber, isArray,  isFunction, isString, isPlain, enableUUID} from "../util";
+import {toArray, isNumber, isArray,  isFunction, isString, isPlain} from "../util";
 import * as readers from "../../core/reader/Tw2BlackPropertyReaders";
 import {ErrStoreKeyProtected} from "../../core";
 
@@ -488,6 +488,25 @@ class Tw2ClassStore extends Tw2GenericStore
 {
 
     /**
+     * Enables debugging
+     * @param {Boolean} value
+     */
+    Debug(value)
+    {
+        value = !!value;
+
+        Tw2ClassStore.DEBUG_ENABLED = !!value;
+
+        this._values.forEach(x =>
+        {
+            if ("DEBUG_ENABLED" in x)
+            {
+                x.DEBUG_ENABLED = value;
+            }
+        });
+    }
+
+    /**
      * Sets a class
      * @param {String} key
      * @param {*} value
@@ -497,6 +516,12 @@ class Tw2ClassStore extends Tw2GenericStore
     Set(key, value, override)
     {
         const result = super.Set(key, value, override);
+
+        // Set debug mode
+        if ("DEBUG_ENABLED" in value)
+        {
+            value.DEBUG_ENABLED = Tw2ClassStore.DEBUG_ENABLED;
+        }
 
         // Auto add black definitions
         if (value.black && (override || !this._store.blacks.Has(key)))
@@ -570,6 +595,12 @@ class Tw2ClassStore extends Tw2GenericStore
      * @private
      */
     static __storeType = "class";
+
+    /**
+     * Enables debugging
+     * @type {boolean}
+     */
+    static DEBUG_ENABLED = false;
 
 }
 

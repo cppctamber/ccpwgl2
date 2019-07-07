@@ -13,6 +13,8 @@ import { vec4, mat4 } from "./global/math";
  */
 export const config = {
 
+    debug: true,
+
     device: {
         "textureQuality": 0,
         "shaderQuality": "hi",
