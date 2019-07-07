@@ -1,7 +1,7 @@
 import {vec3, vec4, mat4, util, device, Tw2BaseClass} from "../../global";
 import {Tw2VertexDeclaration, Tw2RenderBatch} from "../../core";
 import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
-import {assignIfExists} from "../../global/util";
+import {assignIfExists, isFunction} from "../../global/util";
 import {Tw2Effect} from "../../core/mesh";
 
 /**
@@ -105,15 +105,15 @@ export class EveSpotlightSetItem extends EveObjectSetItem
  * Todo: Implement "intensity"
  * @ccp EveSpotlightSet
  *
- * @property {String} name                               - The spotlight set's name
- * @property {Tw2Effect} coneEffect                      - The spotlight set's cone effect
- * @property {Tw2Effect} glowEffect                      - The spotlight set's glow effect
- * @property {Number} intensity                          - The spotlight set's intensity
- * @property {Array.<EveSpotlightSetItem) spotlightItems - The spotlight set's children
- * @property {WebGLBuffer} _coneVertexBuffer             - Vertex buffer for the spotlight set's cone vertices
- * @property {WebGLBuffer} _spriteVertexBuffer           - Vertex buffer for the spotlight set's sprite/glow vertices
- * @property {WebGLBuffer} _indexBuffer                  - Index buffer for the spotlight set
- * @property {Tw2VertexDeclaration} _decl                - The spotlight set's vertex declarations
+ * @property {String} name                                - The spotlight set's name
+ * @property {Tw2Effect} coneEffect                       - The spotlight set's cone effect
+ * @property {Tw2Effect} glowEffect                       - The spotlight set's glow effect
+ * @property {Number} intensity                           - The spotlight set's intensity
+ * @property {Array.<EveSpotlightSetItem>} spotlightItems - The spotlight set's children
+ * @property {WebGLBuffer} _coneVertexBuffer              - Vertex buffer for the spotlight set's cone vertices
+ * @property {WebGLBuffer} _spriteVertexBuffer            - Vertex buffer for the spotlight set's sprite/glow vertices
+ * @property {WebGLBuffer} _indexBuffer                   - Index buffer for the spotlight set
+ * @property {Tw2VertexDeclaration} _decl                 - The spotlight set's vertex declarations
  */
 export class EveSpotlightSet extends EveObjectSet
 {
@@ -121,7 +121,7 @@ export class EveSpotlightSet extends EveObjectSet
     name = "";
     coneEffect = null;
     glowEffect = null;
-    intensity = 0;
+    intensity = 1;
 
     // ccpwgl
     _coneVertexBuffer = null;
@@ -218,9 +218,9 @@ export class EveSpotlightSet extends EveObjectSet
                 for (let v = 0; v < vertCount; ++v)
                 {
                     const offset = (i * coneQuadCount * vertCount + vertCount * q + v) * vertexSize;
-                    coneArray[offset] = item.coneColor[0] * item.coneIntensity;
-                    coneArray[offset + 1] = item.coneColor[1] * item.coneIntensity;
-                    coneArray[offset + 2] = item.coneColor[2] * item.coneIntensity;
+                    coneArray[offset] = item.coneColor[0] * item.coneIntensity * this.intensity;
+                    coneArray[offset + 1] = item.coneColor[1] * item.coneIntensity * this.intensity;
+                    coneArray[offset + 2] = item.coneColor[2] * item.coneIntensity * this.intensity;
                     coneArray[offset + 3] = item.coneColor[3];
 
                     coneArray[offset + 4] = item.transform[0];
@@ -270,9 +270,9 @@ export class EveSpotlightSet extends EveObjectSet
                     const offset = (i * spriteQuadCount * vertCount + vertCount * q + v) * vertexSize;
                     if (q % 2 === 0)
                     {
-                        spriteArray[offset] = item.spriteColor[0] * item.spriteIntensity;
-                        spriteArray[offset + 1] = item.spriteColor[1] * item.spriteIntensity;
-                        spriteArray[offset + 2] = item.spriteColor[2] * item.spriteIntensity;
+                        spriteArray[offset] = item.spriteColor[0] * item.spriteIntensity * this.intensity;
+                        spriteArray[offset + 1] = item.spriteColor[1] * item.spriteIntensity * this.intensity;
+                        spriteArray[offset + 2] = item.spriteColor[2] * item.spriteIntensity * this.intensity;
                         spriteArray[offset + 3] = item.spriteColor[3];
 
                         spriteArray[offset + 16] = item.spriteScale[0];
@@ -281,9 +281,9 @@ export class EveSpotlightSet extends EveObjectSet
                     }
                     else
                     {
-                        spriteArray[offset] = item.flareColor[0] * item.flareIntensity;
-                        spriteArray[offset + 1] = item.flareColor[1] * item.flareIntensity;
-                        spriteArray[offset + 2] = item.flareColor[2] * item.flareIntensity;
+                        spriteArray[offset] = item.flareColor[0] * item.flareIntensity * this.intensity;
+                        spriteArray[offset + 1] = item.flareColor[1] * item.flareIntensity * this.intensity;
+                        spriteArray[offset + 2] = item.flareColor[2] * item.flareIntensity * this.intensity;
                         spriteArray[offset + 3] = item.flareColor[3];
 
                         spriteArray[offset + 16] = 1;
@@ -428,12 +428,26 @@ export class EveSpotlightSet extends EveObjectSet
 
             if (values.coneEffect)
             {
-                item.coneEffect = Tw2Effect.from(values.coneEffect);
+                if (isFunction(values.coneEffect))
+                {
+                    item.coneEffect = values.coneEffect;
+                }
+                else
+                {
+                    item.coneEffect = Tw2Effect.from(values.coneEffect);
+                }
             }
 
             if (values.glowEffect)
             {
-                item.glowEffect = Tw2Effect.from(values.glowEffect);
+                if (isFunction(values.glowEffect))
+                {
+                    item.glowEffect = values.glowEffect;
+                }
+                else
+                {
+                    item.glowEffect = Tw2Effect.from(values.glowEffect);
+                }
             }
 
             if (values.items)
