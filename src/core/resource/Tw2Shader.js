@@ -4,6 +4,47 @@ import {Tw2SamplerState} from "../sampler";
 import {ErrShaderCompile, ErrShaderLink} from "../Tw2Error";
 
 /**
+ * Temporary fix for cdn shaders that won't work
+ * @type {*}
+ */
+const badShaderCode = {
+    "blinkinglightspool" : {
+        "r0.xy=r0.xx*c[0+a0.x].xy;":"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}",
+        "texcoord=r3.zzww*c[0+a0.x].zwzz;" : "if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}"
+    },
+    "boostervolumetric" : {
+        "for(int i=0;i<i0.x;++i){":"for(int i=0;i<12;++i){"
+    }
+};
+
+/**
+ * Fixes bad codes
+ * TODO: Fix source files
+ * @param {String} code
+ * @param {String} path
+ * @returns {String}
+ */
+function fixShaderCode(code, path)
+{
+    const
+        fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase(),
+        hasBadCodes = !!badShaderCode[fileName];
+
+    if (!hasBadCodes) return code;
+
+    const badCodes = badShaderCode[fileName];
+    for (const key in badCodes)
+    {
+        if (badCodes.hasOwnProperty(key))
+        {
+            code = code.replace(key, badCodes[key]);
+        }
+    }
+
+    return code;
+}
+
+/**
  * Tw2Shader
  *
  * @property {Object.<string, Object>} techniques
@@ -27,6 +68,7 @@ export class Tw2Shader
      */
     constructor(reader, version, stringTable, stringTableOffset, path)
     {
+
         /**
          * ReadString
          * @returns {String}
@@ -116,13 +158,25 @@ export class Tw2Shader
                     {
                         shaderSize = reader.ReadUInt32();
                         let so = reader.ReadUInt32();
-                        stage.shaderCode = shaderCode = stringTable.substr(so, shaderSize);
+                        stage.shaderCode = shaderCode = fixShaderCode(stringTable.substr(so, shaderSize), path);
                         shadowShaderSize = reader.ReadUInt32();
                         so = reader.ReadUInt32();
-                        stage.shadowShaderCode = shadowShaderCode = stringTable.substr(so, shadowShaderSize);
+                        stage.shadowShaderCode = shadowShaderCode = fixShaderCode(stringTable.substr(so, shadowShaderSize), path);
                     }
 
-                    stage.shader = Tw2Shader.CompileShader(stageType, "", shaderCode, path);
+                    try
+                    {
+                        stage.shader = Tw2Shader.CompileShader(stageType, "", shaderCode, path);
+
+                    }
+                    catch(err)
+                    {
+                        console.group();
+                        console.error(err.message);
+                        console.dir(stage);
+                        console.groupEnd();
+                        throw err;
+                    }
 
                     if (validShadowShader)
                     {
