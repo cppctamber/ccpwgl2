@@ -290,7 +290,7 @@ export class Tw2Resource
             {
                 case Tw2Resource.State.ERROR:
                     funcName = Tw2Resource.Callback.ERROR;
-                    argument = resMan.GetLastError(this.path);
+                    argument = resMan.motherLode.GetLastError(this.path);
                     break;
 
                 case Tw2Resource.State.REQUESTED:
