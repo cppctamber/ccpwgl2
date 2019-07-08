@@ -154,7 +154,7 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
      */
     GetEffects(mode)
     {
-        if (!this.display)
+        if (this.display)
         {
             switch (mode)
             {
@@ -180,8 +180,6 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
         }
         return [];
     }
-
-
 
     /**
      * Black definition
