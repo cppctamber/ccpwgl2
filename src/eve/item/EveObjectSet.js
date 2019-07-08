@@ -9,16 +9,11 @@ import {ErrAbstractClassMethod} from "../../core";
  * @property {Boolean} display - Toggles the set item's visibility
  * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
-export function EveObjectSetItem()
+export class EveObjectSetItem extends Tw2BaseClass
 {
-    Tw2BaseClass.defineID(this);
-    this.display = true;
-    this._dirty = true;
-}
 
-EveObjectSetItem.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
-
-    constructor: EveObjectSetItem,
+    display = true;
+    _dirty = true;
 
     /**
      * Fire on value changes
@@ -26,7 +21,7 @@ EveObjectSetItem.prototype = Object.assign(Object.create(Tw2BaseClass.prototype)
     OnValueChanged()
     {
         this._dirty = true;
-    },
+    }
 
     /**
      * Fires when the object is destroyed
@@ -36,7 +31,7 @@ EveObjectSetItem.prototype = Object.assign(Object.create(Tw2BaseClass.prototype)
 
     }
 
-});
+}
 
 /**
  * EveObjectSet base class
@@ -48,21 +43,14 @@ EveObjectSetItem.prototype = Object.assign(Object.create(Tw2BaseClass.prototype)
  * @property {Boolean} _dirty         - Identifies if the set requires rebuilding
  * @property {Boolean} _autoRebuild   - Auto rebuilds the object if a child is dirty
  */
-export function EveObjectSet()
+export class EveObjectSet extends Tw2BaseClass
 {
     // ccpwgl
-    Tw2BaseClass.defineID(this);
-    this.autoRebuild = true;
-    this.display = true;
-    this.items = [];
-    this._dirty = true;
-    this._visibleItems = [];
-
-}
-
-EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
-
-    constructor: EveObjectSet,
+    autoRebuild = true;
+    display = true;
+    items = [];
+    _dirty = true;
+    _visibleItems = [];
 
     /**
      * Initializes the set
@@ -70,7 +58,7 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     Initialize()
     {
         this.Rebuild();
-    },
+    }
 
     /**
      * Fires on value changes
@@ -78,73 +66,110 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     OnValueChanged()
     {
         this._dirty = true;
-    },
+    }
 
     /**
      * Creates an item from an options object and then adds it to the set
-     * @param {*} {values}
-     * @param {*} [opt={}]
+     * @param {*} [values={}]
+     * @param {Boolean} [skipUpdate]
+     * @param {Boolean} [skipEvents]
      * @returns {*}
      */
-    CreateItem(values = {}, opt)
+    CreateItem(values = {}, skipUpdate, skipEvents)
     {
-        const item = this.constructor.Item.from(values, opt);
-        this.AddItem(item, opt ? opt.skipUpdate : false);
+        const item = this.constructor.Item.from(values);
+
+        this.items.push(item);
+        this._dirty = true;
+
+        if (!skipEvents)
+        {
+            this.emit("item_created", {ctx: item});
+        }
+
+        if (!skipUpdate)
+        {
+            this.UpdateValues();
+        }
+
         return item;
-    },
+    }
 
     /**
      * Adds a set item
      * @param {*} item
      * @param {Boolean} [skipUpdate]
+     * @param {Boolean} [skipEvents]
      */
-    AddItem(item, skipUpdate)
+    AddItem(item, skipUpdate, skipEvents)
     {
         if (!this.items.includes(item))
         {
-            this.emit("child_added", {ctx: item});
-            //item.SetParent(this);
             this.items.push(item);
             this._dirty = true;
-            if (!skipUpdate) this.UpdateValues(item);
+
+            if (!skipEvents)
+            {
+                this.emit("item_added", {ctx: item});
+            }
+
+            if (!skipUpdate)
+            {
+                this.UpdateValues(item);
+            }
+
             return true;
         }
         return false;
-    },
+    }
 
     /**
      * Removes a set item
      * @param {*} item
      * @param {Boolean} [skipUpdate]
+     * @param {Boolean} [skipEvents]
      */
-    RemoveItem(item, skipUpdate)
+    RemoveItem(item, skipUpdate, skipEvents)
     {
         const index = this.items.indexOf(item);
         if (index !== -1)
         {
-            this.emit("child_removed", {ctx: item});
-            //item.UnsetParent(this);
             this.items.splice(index, 1);
             this._dirty = true;
-            if (!skipUpdate) this.UpdateValues(item);
+
+            if (!skipEvents)
+            {
+                this.emit("item_removed", {ctx: item});
+            }
+
+            if (!skipUpdate)
+            {
+                this.UpdateValues(item);
+            }
+
             return true;
         }
         return false;
-    },
+    }
 
     /**
      * Clears all items
      * @param {Boolean} [skipUpdate]
+     * @param {Boolean} [skipEvents]
      */
-    ClearItems(skipUpdate)
+    ClearItems(skipUpdate, skipEvents)
     {
         for (let i = 0; i < this.items.length; i++)
         {
-            this.RemoveItem(this.items[i], true);
+            this.RemoveItem(this.items[i], true, skipEvents);
             i--;
         }
-        if (!skipUpdate) this.UpdateValues();
-    },
+
+        if (!skipUpdate)
+        {
+            this.UpdateValues();
+        }
+    }
 
     /**
      * Rebuilds items
@@ -164,7 +189,7 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
             item._dirty = false;
         }
         this._dirty = true;
-    },
+    }
 
     /**
      * Checks if any children are dirty
@@ -180,14 +205,13 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
             }
         }
         return false;
-    },
+    }
 
     /**
      * Per frame update
      * @param {Number} dt
-     * @param {mat4} parentMatrix
      */
-    Update(dt, parentMatrix)
+    Update(dt)
     {
         if (!this._dirty && this.autoRebuild && this.AreItemsDirty())
         {
@@ -198,7 +222,7 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
         {
             this.Rebuild();
         }
-    },
+    }
 
     /**
      * Unloads the set's buffers
@@ -209,7 +233,7 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
         {
             this.emit("unloaded");
         }
-    },
+    }
 
     /**
      * Rebuilds the set
@@ -217,7 +241,7 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     Rebuild()
     {
         this.emit("rebuilt");
-    },
+    }
 
     /**
      * Gets render batches
@@ -228,7 +252,7 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     GetBatches(mode, accumulator, perObjectData)
     {
         throw new ErrAbstractClassMethod();
-    },
+    }
 
     /**
      * Renders the set
@@ -238,23 +262,23 @@ EveObjectSet.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
         throw new ErrAbstractClassMethod();
     }
 
-});
+    /**
+     * The object set's item
+     * @type {?Function}
+     */
+    static Item = null;
 
-/**
- * The object set's item
- * @type {?Function}
- */
-EveObjectSet.Item = null;
+    /**
+     * Global and scratch variables
+     * @type {*}
+     */
+    static global = {
+        vec3_0: vec3.create(),
+        vec3_1: vec3.create(),
+        vec3_2: vec3.create(),
+        vec4_0: vec4.create(),
+        vec4_1: vec4.create(),
+        mat4_0: mat4.create()
+    }
 
-/**
- * Global and scratch variables
- * @type {*}
- */
-EveObjectSet.global = {
-    vec3_0: vec3.create(),
-    vec3_1: vec3.create(),
-    vec3_2: vec3.create(),
-    vec4_0: vec4.create(),
-    vec4_1: vec4.create(),
-    mat4_0: mat4.create()
-};
+}

@@ -2,16 +2,12 @@
 import {mat4, util, vec3, Tw2BaseClass} from "../../../global";
 import {ErrAbstractClassMethod} from "../../../core";
 
-export function EveObject()
+export class EveObject extends Tw2BaseClass
 {
-    Tw2BaseClass.defineID(this);
-    this.name = "";
-    this.display = true;
-}
 
-EveObject.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
+    name = "";
+    display = true;
 
-    constructor: EveObject,
 
     /**
      * Gets object resources
@@ -21,7 +17,7 @@ EveObject.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     GetResources(out = [])
     {
         throw new ErrAbstractClassMethod();
-    },
+    }
 
     /**
      * Per frame update
@@ -30,7 +26,7 @@ EveObject.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     Update(dt)
     {
         throw new ErrAbstractClassMethod();
-    },
+    }
 
     /**
      * Accumulates batches
@@ -42,23 +38,23 @@ EveObject.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
         throw new ErrAbstractClassMethod();
     }
 
-});
+    /**
+     * Global and scratch variables
+     * @type {*}
+     */
+    static global = {
+        vec3_0: vec3.create(),
+        vec3_1: vec3.create(),
+        vec3_2: vec3.create(),
+        vec3_3: vec3.create(),
+        vec3_4: vec3.create(),
+        vec3_5: vec3.create(),
+        vec3_6: vec3.create(),
+        vec3_7: vec3.create(),
+        mat4_0: mat4.create(),
+        mat4_1: mat4.create(),
+        mat4_2: mat4.create()
+    }
 
-/**
- * Global and scratch variables
- * @type {*}
- */
-EveObject.global = {
-    vec3_0: vec3.create(),
-    vec3_1: vec3.create(),
-    vec3_2: vec3.create(),
-    vec3_3: vec3.create(),
-    vec3_4: vec3.create(),
-    vec3_5: vec3.create(),
-    vec3_6: vec3.create(),
-    vec3_7: vec3.create(),
-    mat4_0: mat4.create(),
-    mat4_1: mat4.create(),
-    mat4_2: mat4.create()
-};
+}
 

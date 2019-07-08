@@ -5,14 +5,8 @@ import {ErrAbstractClassMethod} from "../../core";
 /**
  * Root EveChild class
  */
-export function EveChild()
+export class EveChild extends Tw2BaseClass
 {
-    Tw2BaseClass.defineID(this);
-}
-
-EveChild.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
-
-    constructor: EveChild,
 
     /**
      * Per frame update
@@ -22,7 +16,7 @@ EveChild.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     Update(dt, parentTransform)
     {
         throw new ErrAbstractClassMethod();
-    },
+    }
 
     /**
      * Gets object resources
@@ -32,7 +26,7 @@ EveChild.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
     GetResources(out = [])
     {
         throw new ErrAbstractClassMethod();
-    },
+    }
 
     /**
      * Gets render batches
@@ -45,30 +39,30 @@ EveChild.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
         throw new ErrAbstractClassMethod();
     }
 
-});
+    /**
+     * Class globals and scratch variables
+     * @type {Object}
+     */
+    static global = {
+        mat4_0: mat4.create(),
+        vec3_0: vec3.create()
+    };
 
-/**
- * Class globals and scratch variables
- * @type {Object}
- */
-EveChild.global = {
-    mat4_0: mat4.create(),
-    vec3_0: vec3.create()
-};
+    /**
+     * Per object data
+     * @type {{ffe: *[]}}
+     */
+    static perObjectData = {
+        ffe: [
+            ["world", 16],
+            ["worldInverseTranspose", 16]
+        ]
+    }
 
-/**
- * Per object data
- * @type {{ffe: *[]}}
- */
-EveChild.perObjectData = {
-    ffe: [
-        ["world", 16],
-        ["worldInverseTranspose", 16]
-    ]
-};
+    /**
+     * Identifies that the class is a child effect
+     * @returns {boolean}
+     */
+    static __isEffectChild = true;
 
-/**
- * Identifies that the class is a child effect
- * @returns {boolean}
- */
-EveChild.__isEffectChild = true;
+}
