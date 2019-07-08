@@ -158,10 +158,16 @@ export class Tw2Shader
                     {
                         shaderSize = reader.ReadUInt32();
                         let so = reader.ReadUInt32();
-                        stage.shaderCode = shaderCode = fixShaderCode(stringTable.substr(so, shaderSize), path);
+                        shaderCode = fixShaderCode(stringTable.substr(so, shaderSize), path);
                         shadowShaderSize = reader.ReadUInt32();
                         so = reader.ReadUInt32();
-                        stage.shadowShaderCode = shadowShaderCode = fixShaderCode(stringTable.substr(so, shadowShaderSize), path);
+                        shadowShaderCode = fixShaderCode(stringTable.substr(so, shadowShaderSize), path);
+
+                        if (Tw2Shader.DEBUG_ENABLED)
+                        {
+                            stage.shaderCode =  shaderCode;
+                            stage.shadowShaderCode = shadowShaderCode;
+                        }
                     }
 
                     try
@@ -670,5 +676,7 @@ export class Tw2Shader
         "PerFramePS",
         "PerObjectPS"
     ];
+
+    static DEBUG_ENABLED = false;
 
 }
