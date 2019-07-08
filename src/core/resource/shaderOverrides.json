@@ -1,0 +1,12 @@
+{
+  "blinkinglightspool": {
+    "r0.xy=r0.xx*c[0+a0.x].xy;": "if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}",
+    "texcoord=r3.zzww*c[0+a0.x].zwzz;": "if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}"
+  },
+  "boostervolumetric": {
+    "for(int i=0;i<i0.x;++i){": "for(int i=0;i<12;++i){"
+  },
+  "fxarmorimpactv5": {
+    "for(int i=0;i<i0.x;++i){": "for(int i=0;i<255;++i){"
+  }
+}
