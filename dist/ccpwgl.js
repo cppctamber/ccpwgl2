@@ -9,8 +9,7 @@ var ccpwgl = (function (ccpwgl_int)
     Object.defineProperty(ccpwgl, "debug", {
         set: function (a)
         {
-            ccpwgl_int.Tw2ObjectReader.DEBUG_ENABLED = !!a;
-            ccpwgl_int.Tw2BlackReader.DEBUG_ENABLED = !!a;
+            ccpwgl_int.Debug(a);
         }
     });
 
