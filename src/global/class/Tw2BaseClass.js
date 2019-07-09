@@ -211,28 +211,28 @@ Tw2BaseClass.get = function (a, out = {}, opt = {})
 };
 
 /**
- *
+ * Cached properties
  * @type {*}
  * @private
  */
 Tw2BaseClass.keys = null;
 
 /**
- *
+ * Black definition
  * @type {*}
  */
 Tw2BaseClass.black = null;
 
 /**
- *
+ * Class category
  * @type {null|String}
  */
 Tw2BaseClass.category = null;
 
+
 /**
- * Caches the classes keys
- * -- Fallback if schema not present
- * @param {*} obj
+ * Caches a classes keys if not already defined manually
+ * @param {*} obj - An instantiated object for the given class
  */
 function cacheKeys(obj)
 {
@@ -240,8 +240,15 @@ function cacheKeys(obj)
 
     function add(name, key)
     {
-        if (!cache[name]) cache[name] = [];
-        if (!cache[name].includes(key)) cache[name].push(key);
+        if (!cache[name])
+        {
+            cache[name] = [];
+        }
+
+        if (!cache[name].includes(key))
+        {
+            cache[name].push(key);
+        }
     }
 
     for (const key in obj)
@@ -249,11 +256,38 @@ function cacheKeys(obj)
         if (obj.hasOwnProperty(key) && key.charAt(0) !== "_")
         {
             const value = obj[key];
-            if (isPrimary(value)) add("primary", key);
-            else if (isArray(value)) add("array", key);
-            else if (isTyped(value)) add("typed", key);
-            else if (value === null || isObjectObject(value)) add("object", key);
-            else if (isPlain(value)) add("plain", key);
+
+            if (isPrimary(value))
+            {
+                add("primary", key);
+            }
+            else if (isArray(value))
+            {
+                // Assumes empty array is always a list
+                // Assumes arrays with a primary first value is filled with only primary values
+                if (value.length && isPrimary(value[0]))
+                {
+                    add("array", key);
+                }
+                else
+                {
+                    // type array
+                    add("list", key);
+                }
+            }
+            else if (isTyped(value))
+            {
+                add("typed", key);
+            }
+            // Assumes plain object of primary types
+            else if (isPlain(value))
+            {
+                add("plain", key);
+            }
+            else if (value === null || isObjectObject(value))
+            {
+                add("type", key);
+            }
         }
     }
 
@@ -267,25 +301,27 @@ function cacheKeys(obj)
  * @param {String} [path="root"]
  * @returns {!*}
  */
-Tw2BaseClass.perChild = function (obj, callback, path="root")
+Tw2BaseClass.perChild = function (obj, callback, path = "root")
 {
-    if (!obj.constructor.keys) cacheKeys(obj);
-
-    const {array, object} = obj.constructor.keys;
-
-    if (array)
+    if (!obj.constructor.keys)
     {
-        for (let i = 0; i < array.length; i++)
+        cacheKeys(obj);
+    }
+
+    const {list, type} = obj.constructor.keys;
+
+    if (list)
+    {
+        for (let i = 0; i < list.length; i++)
         {
             const
-                key = array[i],
+                key = list[i],
                 arr = obj[key];
 
             for (let x = 0; x < arr.length; x++)
             {
                 const item = arr[x];
-
-                if (isObjectObject(item))
+                if (item && isObjectObject(item))
                 {
                     let currentPath = `${path}/${key}/${x}`;
                     const result = callback(item, obj, currentPath);
@@ -295,15 +331,15 @@ Tw2BaseClass.perChild = function (obj, callback, path="root")
         }
     }
 
-    if (object)
+    if (type)
     {
-        for (let i = 0; i < object.length; i++)
+        for (let i = 0; i < type.length; i++)
         {
             const
-                key = object[i],
+                key = type[i],
                 item = obj[key];
 
-            if (isObjectObject(item))
+            if (item && isObjectObject(item))
             {
                 let currentPath = `${path}/${key}`;
                 const result = callback(item, obj, currentPath);
@@ -312,5 +348,7 @@ Tw2BaseClass.perChild = function (obj, callback, path="root")
         }
     }
 };
+
+
 
 
