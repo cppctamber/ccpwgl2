@@ -8,18 +8,21 @@ import {toArray} from "./arr";
  * @param {*} dest
  * @param {*} src
  * @param {String|string[]} attrs
+ * @returns {boolean} true if something was assigned
  */
 export function assignIfExists(dest, src, attrs)
 {
-    if (!src) return;
+    if (!src) return false;
 
     attrs = toArray(attrs);
 
+    let modified = false;
     for (let i = 0; i < attrs.length; i++)
     {
         const attr = attrs[i];
         if (src[attr] !== undefined)
         {
+            modified = true;
             if (isArrayLike(dest[attr]))
             {
                 if (isTyped(dest[attr]))
@@ -54,6 +57,7 @@ export function assignIfExists(dest, src, attrs)
             }
         }
     }
+    return modified;
 }
 
 /**

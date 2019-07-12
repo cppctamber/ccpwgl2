@@ -62,7 +62,7 @@ import {
 /**
  * Tw2Device
  *
- * @property {?WebGLRenderingContext|*} gl         - The device's gl context
+ * @property {WebGLRenderingContext} gl             - The device's gl context
  * @property {?number} glVersion                   - The device's gl version
  * @property {?VRDisplay} vrDisplay                - An optional VRDisplay context
  * @property {?{}} ext                             - An object containing compatibility extensions

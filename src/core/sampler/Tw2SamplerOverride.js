@@ -1,4 +1,3 @@
-import {device} from "../../global";
 import {Tw2SamplerState} from "./Tw2SamplerState";
 
 /**
@@ -32,10 +31,11 @@ export class Tw2SamplerOverride
 
     /**
      * Gets the sampler
+     * @param {Tw2Device} device
      * @param {Tw2SamplerState} originalSampler
      * @returns {Tw2SamplerState}
      */
-    GetSampler(originalSampler)
+    GetSampler(device, originalSampler)
     {
         if (this._sampler)
         {

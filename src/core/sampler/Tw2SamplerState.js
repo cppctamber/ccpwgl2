@@ -1,4 +1,4 @@
-import {device, FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D} from "../../global";
+import {FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D} from "../../global";
 
 /**
  * Tw2SamplerState
@@ -13,10 +13,9 @@ import {device, FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D} 
  * @property {Number} addressV
  * @property {Number} addressW
  * @property {Number} anisotropy
- * @property samplerType
+ * @property {Number} samplerType
  * @property {Boolean} isVolume
  * @property {Number} hash
- * @class
  */
 export class Tw2SamplerState
 {
@@ -35,6 +34,13 @@ export class Tw2SamplerState
     isVolume = false;
     hash = 0;
 
+    // Not used
+    _borderColor = null;
+    _comparison = null;
+    _comparisonFunc = null;
+    _mipLODBias = null;
+    _minLOD = null;
+    _maxLOD = null;
 
     /**
      * Gets the current filter mode
@@ -74,9 +80,10 @@ export class Tw2SamplerState
 
     /**
      * Apply
+     * @param {Tw2Device} device
      * @param {Boolean} hasMipMaps
      */
-    Apply(hasMipMaps)
+    Apply(device, hasMipMaps)
     {
         const
             targetType = this.samplerType,

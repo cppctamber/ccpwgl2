@@ -16444,6 +16444,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 const config = {
+  debug: true,
   device: {
     "textureQuality": 0,
     "shaderQuality": "hi",
@@ -18725,7 +18726,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18842,8 +18843,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -18853,6 +18852,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2LodResource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2LodResource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -19738,7 +19741,7 @@ class Tw2Effect //extends Tw2BaseClass
               for (let n = 0; n < stageRes.samplers.length; ++n) {
                 if (stageRes.samplers[n].registerIndex === p.slot) {
                   if (stageRes.samplers[n].name in this.samplerOverrides) {
-                    p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(stageRes.samplers[n]);
+                    p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(_global__WEBPACK_IMPORTED_MODULE_0__["device"], stageRes.samplers[n]);
                   } else {
                     p.sampler = stageRes.samplers[n];
                   }
@@ -20033,7 +20036,7 @@ class Tw2Effect //extends Tw2BaseClass
    */
 
 
-  AutoParameter() {
+  PopulateParameters() {
     this.autoParameter = true;
     return this.BindParameters();
   }
@@ -24801,49 +24804,34 @@ function onString(path) {
       // Will need to provide all quality versions of these files in the cdn even if they
       // don't exist as ccpwgl will have no idea if they exist or not, and so we'd get
       // errors when changing texture qualities in the ccpwgl_int.device
+      path = path.replace("_lowdetail", ""); // Shouldn't exist
 
-      /*
-      logger.log({
-          name: "Black reader",
-          type: "debug",
-          message: `Renaming cdn quality format to ccpwgl quality format: ${path}`
-      });
-      */
-      path = path.replace("_lowdetail.".concat(ext)); // Shouldn't exist
-
-      path = path.replace("_mediumdetail.".concat(ext)); // Shouldn't exist
+      path = path.replace("_mediumdetail", ""); // Shouldn't exist
 
       path = path.replace(ext, "0.".concat(ext));
       break;
 
     case "gr2":
-    case "fx":
-    case "sm_hi":
-    case "sm_lo":
-    case "sm_depth":
       // TODO: Add support for these files
-
-      /*
-      logger.log({
-          name: "Black reader",
-          type: "debug",
-          message: `Removing unsupported file: ${path}`
-      });
-      */
-      path = "";
+      // Temporarily use ccpwgl resources (this won't always work but will do for now)
+      path = path.replace(ext, "wbg").replace("cdn:", "res:");
       break;
 
     case "red":
-      // Dunno why ccp still calls them .red
+      // TODO: Handle red files
+      // There may still be legit .red files some of which we won't be able to read
+      // (Some are in .black format so we'll just rename for now...)
+      path = path.replace(ext, "black");
+      break;
 
-      /*
-      logger.log({
-          name: "Black reader",
-          type: "debug",
-          message: `Renaming '.red' file to '.black': ${path}`
-      });
-      */
-      path = path.replace("red", "black");
+    case "sm_hi":
+    case "sm_lo":
+      path = path.replace(ext, "fx");
+      break;
+
+    case "sm_depth":
+      // TODO: Add support for depth shaders
+      path = "";
       break;
   }
 
@@ -25801,7 +25789,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
 
     const version = reader.ReadUInt32();
 
-    if (version < 2 || version > 7) {
+    if (version < 2 || version > 8) {
       this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderVersion"]({
         path: this.path,
         version
@@ -27369,7 +27357,7 @@ class Tw2Resource {
       switch (this._state) {
         case Tw2Resource.State.ERROR:
           funcName = Tw2Resource.Callback.ERROR;
-          argument = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetLastError(this.path);
+          argument = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.GetLastError(this.path);
           break;
 
         case Tw2Resource.State.REQUESTED:
@@ -27489,7 +27477,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
 /* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sampler */ "./core/sampler/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json");
+var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json", 1);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -27598,13 +27589,26 @@ class Tw2Shader {
           } else {
             shaderSize = reader.ReadUInt32();
             let so = reader.ReadUInt32();
-            shaderCode = stringTable.substr(so, shaderSize);
+            shaderCode = Tw2Shader.InspectShaderCode(stringTable.substr(so, shaderSize), path);
             shadowShaderSize = reader.ReadUInt32();
             so = reader.ReadUInt32();
-            shadowShaderCode = stringTable.substr(so, shadowShaderSize);
+            shadowShaderCode = Tw2Shader.InspectShaderCode(stringTable.substr(so, shadowShaderSize), path);
+
+            if (Tw2Shader.DEBUG_ENABLED) {
+              stage.shaderCode = shaderCode;
+              stage.shadowShaderCode = shadowShaderCode;
+            }
           }
 
-          stage.shader = Tw2Shader.CompileShader(stageType, "", shaderCode, path);
+          try {
+            stage.shader = Tw2Shader.CompileShader(stageType, "", shaderCode, path);
+          } catch (err) {
+            console.group();
+            console.error(err.message);
+            console.dir(stage);
+            console.groupEnd();
+            throw err;
+          }
 
           if (validShadowShader) {
             if (shadowShaderSize === 0) {
@@ -27680,89 +27684,84 @@ class Tw2Shader {
           const samplerCount = reader.ReadUInt8();
 
           for (let samplerIx = 0; samplerIx < samplerCount; ++samplerIx) {
-            const registerIndex = reader.ReadUInt8(),
-                  samplerName = version >= 4 ? ReadString() : "";
-            reader.ReadUInt8(); // comparison
+            const s = new _sampler__WEBPACK_IMPORTED_MODULE_2__["Tw2SamplerState"]();
+            s.registerIndex = reader.ReadUInt8();
+            s.name = version >= 4 ? ReadString() : "";
+            s._comparison = reader.ReadUInt8(); // not used
 
-            const minFilter = reader.ReadUInt8(),
-                  magFilter = reader.ReadUInt8(),
-                  mipFilter = reader.ReadUInt8(),
-                  addressU = reader.ReadUInt8(),
-                  addressV = reader.ReadUInt8(),
-                  addressW = reader.ReadUInt8();
-            reader.ReadFloat32(); // mipLODBias
+            s.minFilter = reader.ReadUInt8();
+            s.magFilter = reader.ReadUInt8();
+            s.mipFilter = reader.ReadUInt8();
+            s.addressU = reader.ReadUInt8();
+            s.addressV = reader.ReadUInt8();
+            s.addressW = reader.ReadUInt8();
+            s.mipLODBias = reader.ReadFloat32(); // not used
 
-            const maxAnisotropy = reader.ReadUInt8();
-            reader.ReadUInt8(); //comparisonFunc
+            s._maxAnisotropy = reader.ReadUInt8();
+            s._comparisonFunc = reader.ReadUInt8(); // not used
 
-            const borderColor = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-            borderColor[0] = reader.ReadFloat32();
-            borderColor[1] = reader.ReadFloat32();
-            borderColor[2] = reader.ReadFloat32();
-            borderColor[3] = reader.ReadFloat32();
-            reader.ReadFloat32(); //minLOD
+            s._borderColor = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+            s._minLOD = reader.ReadFloat32(); // not used
 
-            reader.ReadFloat32(); //maxLOD
+            s._maxLOD = reader.ReadFloat32(); // not used
 
             if (version < 4) reader.ReadUInt8();
-            const sampler = new _sampler__WEBPACK_IMPORTED_MODULE_2__["Tw2SamplerState"]();
-            sampler.registerIndex = registerIndex;
-            sampler.name = samplerName;
 
-            if (minFilter === 1) {
-              switch (mipFilter) {
+            if (s.minFilter === 1) {
+              switch (s.mipFilter) {
                 case 0:
-                  sampler.minFilter = gl.NEAREST;
+                  s.minFilter = gl.NEAREST;
                   break;
 
                 case 1:
-                  sampler.minFilter = gl.NEAREST_MIPMAP_NEAREST;
+                  s.minFilter = gl.NEAREST_MIPMAP_NEAREST;
                   break;
 
                 default:
-                  sampler.minFilter = gl.NEAREST_MIPMAP_LINEAR;
+                  s.minFilter = gl.NEAREST_MIPMAP_LINEAR;
               }
 
-              sampler.minFilterNoMips = gl.NEAREST;
+              s.minFilterNoMips = gl.NEAREST;
             } else {
-              switch (mipFilter) {
+              switch (s.mipFilter) {
                 case 0:
-                  sampler.minFilter = gl.LINEAR;
+                  s.minFilter = gl.LINEAR;
                   break;
 
                 case 1:
-                  sampler.minFilter = gl.LINEAR_MIPMAP_NEAREST;
+                  s.minFilter = gl.LINEAR_MIPMAP_NEAREST;
                   break;
 
                 default:
-                  sampler.minFilter = gl.LINEAR_MIPMAP_LINEAR;
+                  s.minFilter = gl.LINEAR_MIPMAP_LINEAR;
               }
 
-              sampler.minFilterNoMips = gl.LINEAR;
+              s.minFilterNoMips = gl.LINEAR;
             }
 
-            sampler.magFilter = magFilter === 1 ? gl.NEAREST : gl.LINEAR;
-            sampler.addressU = wrapModes[addressU];
-            sampler.addressV = wrapModes[addressV];
-            sampler.addressW = wrapModes[addressW];
+            s.magFilter = s.magFilter === 1 ? gl.NEAREST : gl.LINEAR;
+            s.addressU = wrapModes[s.addressU];
+            s.addressV = wrapModes[s.addressV];
+            s.addressW = wrapModes[s.addressW];
 
-            if (minFilter === 3 || magFilter === 3 || mipFilter === 3) {
-              sampler.anisotropy = Math.max(maxAnisotropy, 1);
+            if (s.minFilter === 3 || s.magFilter === 3 || s.mipFilter === 3) {
+              s.anisotropy = Math.max(s.maxAnisotropy, 1);
             }
 
             for (let n = 0; n < stage.textures.length; ++n) {
-              if (stage.textures[n].registerIndex === sampler.registerIndex) {
-                sampler.samplerType = stage.textures[n].type === 4 ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
-                sampler.isVolume = stage.textures[n].type === 3;
+              if (stage.textures[n].registerIndex === s.registerIndex) {
+                s.samplerType = stage.textures[n].type === 4 ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
+                s.isVolume = stage.textures[n].type === 3;
                 break;
               }
             }
 
-            sampler.ComputeHash();
-            stage.samplers.push(sampler);
+            s.ComputeHash();
+            stage.samplers.push(s);
           }
 
           if (version >= 3) reader.ReadUInt8();
+          if (version > 7) reader.ReadUInt8();
           pass.stages[stageType] = stage;
         }
 
@@ -28032,6 +28031,28 @@ class Tw2Shader {
     return program;
   }
   /**
+   * Inspects shader code for a path and fixes any known errors
+   * TODO: Fix source files
+   * @param {String} code
+   * @param {String} path
+   * @returns {String}
+   */
+
+
+  static InspectShaderCode(code, path) {
+    const fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase(),
+          overrides = _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__[fileName];
+    if (!overrides) return code;
+
+    for (const key in overrides) {
+      if (overrides.hasOwnProperty(key)) {
+        code = code.replace(key, overrides[key]);
+      }
+    }
+
+    return code;
+  }
+  /**
    * Constant names that are ignored
    * @type {String[]}
    */
@@ -28040,6 +28061,8 @@ class Tw2Shader {
 }
 
 _defineProperty(Tw2Shader, "ConstantIgnore", ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS"]);
+
+_defineProperty(Tw2Shader, "DEBUG_ENABLED", false);
 
 /***/ }),
 
@@ -28376,7 +28399,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
     gl.bindTexture(targetType, this.texture);
 
     if (sampler.hash !== this._currentSampler || this._updateSampler) {
-      sampler.Apply(this.hasMipMaps);
+      sampler.Apply(d, this.hasMipMaps);
       this._currentSampler = sampler.hash;
       this._updateSampler = false;
     }
@@ -28735,7 +28758,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
     gl.bindTexture(targetType, this.texture);
 
     if (sampler.hash !== this._currentSampler) {
-      sampler.Apply(false);
+      sampler.Apply(d, false);
       this._currentSampler = sampler.hash;
     }
   }
@@ -28748,7 +28771,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28768,19 +28791,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _Tw2Resource__WEBPACK_IMPORTED_MODULE_4__["Tw2Resource"]; });
 
-/* harmony import */ var _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_5__["Tw2TextureRes"]; });
+/* harmony import */ var _Tw2Shader__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Shader */ "./core/resource/Tw2Shader.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _Tw2Shader__WEBPACK_IMPORTED_MODULE_5__["Tw2Shader"]; });
 
-/* harmony import */ var _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2VideoRes */ "./core/resource/Tw2VideoRes.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_6__["Tw2VideoRes"]; });
+/* harmony import */ var _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _Tw2TextureRes__WEBPACK_IMPORTED_MODULE_6__["Tw2TextureRes"]; });
 
-
-
-
-
+/* harmony import */ var _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2VideoRes */ "./core/resource/Tw2VideoRes.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _Tw2VideoRes__WEBPACK_IMPORTED_MODULE_7__["Tw2VideoRes"]; });
 
 
 
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./core/resource/shaderOverrides.json":
+/*!********************************************!*\
+  !*** ./core/resource/shaderOverrides.json ***!
+  \********************************************/
+/*! exports provided: blinkinglightspool, boostervolumetric, fxarmorimpactv5, default */
+/***/ (function(module) {
+
+module.exports = {"blinkinglightspool":{"r0.xy=r0.xx*c[0+a0.x].xy;":"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}","texcoord=r3.zzww*c[0+a0.x].zwzz;":"if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}"},"boostervolumetric":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<12;++i){"},"fxarmorimpactv5":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<255;++i){"}};
 
 /***/ }),
 
@@ -28794,10 +28832,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerOverride", function() { return Tw2SamplerOverride; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2SamplerState */ "./core/sampler/Tw2SamplerState.js");
+/* harmony import */ var _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2SamplerState */ "./core/sampler/Tw2SamplerState.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 /**
@@ -28840,20 +28876,21 @@ class Tw2SamplerOverride {
 
   /**
    * Gets the sampler
+   * @param {Tw2Device} device
    * @param {Tw2SamplerState} originalSampler
    * @returns {Tw2SamplerState}
    */
-  GetSampler(originalSampler) {
+  GetSampler(device, originalSampler) {
     if (this._sampler) {
       return this._sampler;
     }
 
-    this._sampler = new _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_1__["Tw2SamplerState"]();
+    this._sampler = new _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_0__["Tw2SamplerState"]();
     const sampler = this._sampler;
     sampler.registerIndex = originalSampler.registerIndex;
     sampler.name = originalSampler.name;
-    const wrapModes = _global__WEBPACK_IMPORTED_MODULE_0__["device"].wrapModes,
-          gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const wrapModes = device.wrapModes,
+          gl = device.gl;
 
     if (this.filter === 1) {
       switch (this.mipFilter) {
@@ -28933,10 +28970,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Number} addressV
  * @property {Number} addressW
  * @property {Number} anisotropy
- * @property samplerType
+ * @property {Number} samplerType
  * @property {Boolean} isVolume
  * @property {Number} hash
- * @class
  */
 
 class Tw2SamplerState {
@@ -28966,6 +29002,18 @@ class Tw2SamplerState {
     _defineProperty(this, "isVolume", false);
 
     _defineProperty(this, "hash", 0);
+
+    _defineProperty(this, "_borderColor", null);
+
+    _defineProperty(this, "_comparison", null);
+
+    _defineProperty(this, "_comparisonFunc", null);
+
+    _defineProperty(this, "_mipLODBias", null);
+
+    _defineProperty(this, "_minLOD", null);
+
+    _defineProperty(this, "_maxLOD", null);
   }
 
   /**
@@ -29004,13 +29052,14 @@ class Tw2SamplerState {
   }
   /**
    * Apply
+   * @param {Tw2Device} device
    * @param {Boolean} hasMipMaps
    */
 
 
-  Apply(hasMipMaps) {
+  Apply(device, hasMipMaps) {
     const targetType = this.samplerType,
-          d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+          d = device,
           gl = d.gl;
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? this.addressU : gl.CLAMP_TO_EDGE);
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? this.addressV : gl.CLAMP_TO_EDGE);
@@ -31414,7 +31463,7 @@ _defineProperty(Tw2PerlinCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_
 /*!******************************!*\
   !*** ./curve/curve/index.js ***!
   \******************************/
-/*! exports provided: AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tw2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2CurveKey, Tw2Curve */
+/*! exports provided: AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tw2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2CurveKey, Tw2Curve, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -31452,6 +31501,2504 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return _Tw2Curve__WEBPACK_IMPORTED_MODULE_7__["Tw2CurveKey"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return _Tw2Curve__WEBPACK_IMPORTED_MODULE_7__["Tw2Curve"]; });
+
+/* harmony import */ var _legacy__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./legacy */ "./curve/curve/legacy/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ColorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ColorCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ColorKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ColorCurve2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2QuaternionKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2QuaternionCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2RandomConstantCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2Torque"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2RigidOrientation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2QuaternionKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2RotationCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ScalarKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ScalarCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ScalarKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2ScalarCurve2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2SineCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2Vector2Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2Vector2Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2Vector3Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2Vector3Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2VectorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_8__["Tw2VectorCurve"]; });
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2ColorCurve.js":
+/*!*********************************************!*\
+  !*** ./curve/curve/legacy/Tw2ColorCurve.js ***!
+  \*********************************************/
+/*! exports provided: Tw2ColorKey, Tw2ColorCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return Tw2ColorKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return Tw2ColorCurve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2ColorKey
+ *
+ * @property {vec4} value
+ * @property {vec4} left
+ * @property {vec4} right
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2ColorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "interpolation", 0);
+  }
+
+}
+/**
+ * Tw2ColorCurve
+ *
+ * @property {number} start
+ * @property {vec4} currentValue
+ * @property {number} extrapolation
+ * @property {Array.<Tw2ColorKey>} keys
+ * @property {number} _currentKey
+ * @property {number} length
+ * @class
+ */
+
+class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "extrapolation", 0);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "_currentKey", 1);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec4} value
+   * @returns {vec4} value
+   */
+
+
+  GetValueAt(time, value) {
+    if (this.length === 0) {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+    }
+
+    const firstKey = this.keys[0],
+          lastKey = this.keys[this.keys.length - 1];
+
+    if (time >= lastKey.time) {
+      switch (this.extrapolation) {
+        case Tw2ColorCurve.Extrapolation.NONE:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+
+        case Tw2ColorCurve.Extrapolation.CONSTANT:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, lastKey.value);
+
+        case Tw2ColorCurve.Extrapolation.GRADIENT:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
+
+        default:
+          time = time % lastKey.time;
+      }
+    } else if (time < 0 || time < firstKey.time) {
+      switch (this.extrapolation) {
+        case Tw2ColorCurve.Extrapolation.NONE:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+
+        case Tw2ColorCurve.Extrapolation.GRADIENT:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
+
+        default:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, firstKey.value);
+      }
+    }
+
+    let ck = this.keys[this._currentKey],
+        ck_1 = this.keys[this._currentKey - 1];
+
+    while (time >= ck.time || time < ck_1.time) {
+      if (time < ck_1.time) this._currentKey = 0;
+      this._currentKey++;
+      ck = this.keys[this._currentKey];
+      ck_1 = this.keys[this._currentKey - 1];
+    }
+
+    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+
+    switch (ck_1.interpolation) {
+      case Tw2ColorCurve.Interpolation.CONSTANT:
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, ck_1.value);
+
+      default:
+        value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
+        value[1] = ck_1.value[1] * (1 - nt) + ck.value[1] * nt;
+        value[2] = ck_1.value[2] * (1 - nt) + ck.value[2] * nt;
+        value[3] = ck_1.value[3] * (1 - nt) + ck.value[3] * nt;
+        return value;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2ColorCurve, "inputDimension", 4);
+
+_defineProperty(Tw2ColorCurve, "ouputDimension", 4);
+
+_defineProperty(Tw2ColorCurve, "valueProperty", "value");
+
+_defineProperty(Tw2ColorCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
+
+_defineProperty(Tw2ColorCurve, "Key", Tw2ColorKey);
+
+_defineProperty(Tw2ColorCurve, "Extrapolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  GRADIENT: 2,
+  CYCLE: 3
+});
+
+_defineProperty(Tw2ColorCurve, "Interpolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  LINEAR: 2
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2ColorCurve2.js":
+/*!**********************************************!*\
+  !*** ./curve/curve/legacy/Tw2ColorCurve2.js ***!
+  \**********************************************/
+/*! exports provided: Tw2ColorKey2, Tw2ColorCurve2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return Tw2ColorKey2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return Tw2ColorCurve2; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2ColorKey2
+ *
+ * @property {number} time
+ * @property {vec4} value
+ * @property {vec4} leftTangent
+ * @property {vec4} rightTangent
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2ColorKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "interpolation", 1);
+  }
+
+}
+/**
+ * Tw2ColorCurve2
+ *
+ * @property {Boolean} cycle
+ * @property {Boolean} reversed
+ * @property {number} timeOffset
+ * @property {number} timeScale
+ * @property {vec4} startValue=[0,0,0,1]
+ * @property {vec4} currentValue=[0,0,0,1]
+ * @property {vec4} endValue=[0,0,0,1]
+ * @property {vec4} startTangent
+ * @property {vec4} endTangent
+ * @property {number} interpolation
+ * @property {Array.<Tw2ColorKey2>} keys
+ * @class
+ */
+
+class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "cycle", false);
+
+    _defineProperty(this, "reversed", false);
+
+    _defineProperty(this, "timeOffset", 0);
+
+    _defineProperty(this, "timeScale", 1);
+
+    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1));
+
+    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1));
+
+    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1));
+
+    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "interpolation", 1);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.currentValue);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec4} value
+   * @returns {vec4}
+   */
+
+
+  GetValueAt(time, value) {
+    time = time / this.timeScale + this.timeOffset;
+
+    if (this.length <= 0 || time <= 0) {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
+    }
+
+    if (time > this.length) {
+      if (this.cycle) {
+        time = time % this.length;
+      } else if (this.reversed) {
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
+      } else {
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.endValue);
+      }
+    }
+
+    if (this.reversed) {
+      time = this.length - time;
+    }
+
+    if (this.keys.length === 0) {
+      return this.Interpolate(time, null, null, value);
+    }
+
+    let startKey = this.keys[0],
+        endKey = this.keys[this.keys.length - 1];
+
+    if (time <= startKey.time) {
+      return this.Interpolate(time, null, startKey, value);
+    } else if (time >= endKey.time) {
+      return this.Interpolate(time, endKey, null, value);
+    }
+
+    for (let i = 0; i + 1 < this.keys.length; ++i) {
+      startKey = this.keys[i];
+      endKey = this.keys[i + 1];
+      if (startKey.time <= time && endKey.time > time) break;
+    }
+
+    return this.Interpolate(time, startKey, endKey, value);
+  }
+  /**
+   * Interpolate
+   * @param {number} time
+   * @param {Tw2ColorKey2} lastKey
+   * @param {Tw2ColorKey2} nextKey
+   * @param {vec4} value
+   * @returns {vec4} value
+   */
+
+
+  Interpolate(time, lastKey, nextKey, value) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
+    let startValue = this.startValue,
+        endValue = this.endValue,
+        interp = this.interpolation,
+        deltaTime = this.length;
+
+    if (lastKey !== null) {
+      interp = lastKey.interpolation;
+      time -= lastKey.time;
+    }
+
+    switch (interp) {
+      case Tw2ColorCurve2.Interpolation.LINEAR:
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          endValue = nextKey.value;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
+        value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
+        value[2] = startValue[2] + (endValue[2] - startValue[2]) * (time / deltaTime);
+        value[3] = startValue[3] + (endValue[3] - startValue[3]) * (time / deltaTime);
+        return value;
+
+      default:
+        return value;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2ColorCurve2, "inputDimension", 4);
+
+_defineProperty(Tw2ColorCurve2, "outputDimension", 4);
+
+_defineProperty(Tw2ColorCurve2, "valueProperty", "currentValue");
+
+_defineProperty(Tw2ColorCurve2, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
+
+_defineProperty(Tw2ColorCurve2, "Key", Tw2ColorKey2);
+
+_defineProperty(Tw2ColorCurve2, "Interpolation", {
+  CONSTANT: 0,
+  LINEAR: 1
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2QuaternionCurve.js":
+/*!**************************************************!*\
+  !*** ./curve/curve/legacy/Tw2QuaternionCurve.js ***!
+  \**************************************************/
+/*! exports provided: Tw2QuaternionKey2, Tw2QuaternionCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return Tw2QuaternionKey2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return Tw2QuaternionCurve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2QuaternionKey2
+ *
+ * @property {quat} value
+ * @property {vec4} leftTangent
+ * @property {vec4} rightTangent
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2QuaternionKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "interpolation", 1);
+  }
+
+}
+/**
+ * Tw2QuaternionCurve
+ *
+ * @property {Boolean} cycle
+ * @property {Boolean} reversed
+ * @property {number} timeOffset
+ * @property {number} timeScale
+ * @property {quat} startValue
+ * @property {quat} currentValue
+ * @property {quat} endValue
+ * @property {vec4} startTangent
+ * @property {vec4} endTangent
+ * @property {number} interpolation
+ * @property {Array.<Tw2QuaternionKey>} keys
+ * @property {number} length
+ * @class
+ */
+
+class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "cycle", false);
+
+    _defineProperty(this, "reversed", false);
+
+    _defineProperty(this, "timeOffset", 0);
+
+    _defineProperty(this, "timeScale", 1);
+
+    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "interpolation", 1);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.currentValue);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {quat} value
+   * @returns {quat}
+   */
+
+
+  GetValueAt(time, value) {
+    time = time / this.timeScale + this.timeOffset;
+
+    if (this.length <= 0 || time <= 0) {
+      value[0] = this.startValue[0];
+      value[1] = this.startValue[1];
+      value[2] = this.startValue[2];
+      return value;
+    }
+
+    if (time > this.length) {
+      if (this.cycle) {
+        time = time % this.length;
+      } else if (this.reversed) {
+        value[0] = this.startValue[0];
+        value[1] = this.startValue[1];
+        value[2] = this.startValue[2];
+        return value;
+      } else {
+        value[0] = this.endValue[0];
+        value[1] = this.endValue[1];
+        value[2] = this.endValue[2];
+        return value;
+      }
+    }
+
+    if (this.reversed) {
+      time = this.length - time;
+    }
+
+    if (this.keys.length === 0) {
+      return this.Interpolate(time, null, null, value);
+    }
+
+    let startKey = this.keys[0],
+        endKey = this.keys[this.keys.length - 1];
+
+    if (time <= startKey.time) {
+      return this.Interpolate(time, null, startKey, value);
+    } else if (time >= endKey.time) {
+      return this.Interpolate(time, endKey, null, value);
+    }
+
+    for (let i = 0; i + 1 < this.keys.length; ++i) {
+      startKey = this.keys[i];
+      endKey = this.keys[i + 1];
+      if (startKey.time <= time && endKey.time > time) break;
+    }
+
+    return this.Interpolate(time, startKey, endKey, value);
+  }
+  /**
+   * Interpolate
+   * @param {number} time
+   * @param {null|Tw2QuaternionKey} lastKey
+   * @param {null|Tw2QuaternionKey} nextKey
+   * @param {quat} value
+   * @returns {*}
+   */
+
+
+  Interpolate(time, lastKey, nextKey, value) {
+    value[0] = this.startValue[0];
+    value[1] = this.startValue[1];
+    value[2] = this.startValue[2];
+    let startValue = this.startValue,
+        endValue = this.endValue,
+        interp = this.interpolation,
+        deltaTime = this.length;
+
+    if (lastKey !== null) {
+      interp = lastKey.interpolation;
+      time -= lastKey.time;
+    }
+
+    switch (interp) {
+      case Tw2QuaternionCurve.Interpolation.SPHERICAL_LINEAR:
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          endValue = nextKey.value;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, startValue, endValue, time / deltaTime);
+        return value;
+
+      default:
+        return value;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2QuaternionCurve, "inputDimension", 4);
+
+_defineProperty(Tw2QuaternionCurve, "outputDimension", 4);
+
+_defineProperty(Tw2QuaternionCurve, "valueProperty", "currentValue");
+
+_defineProperty(Tw2QuaternionCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
+
+_defineProperty(Tw2QuaternionCurve, "Key", Tw2QuaternionKey2);
+
+_defineProperty(Tw2QuaternionCurve, "Interpolation", {
+  CONSTANT: 0,
+  SPHERICAL_LINEAR: 4
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2RandomConstantCurve.js":
+/*!******************************************************!*\
+  !*** ./curve/curve/legacy/Tw2RandomConstantCurve.js ***!
+  \******************************************************/
+/*! exports provided: Tw2RandomConstantCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return Tw2RandomConstantCurve; });
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tw2RandomConstantCurve
+ *
+ * @property {number} currentValue
+ * @property {number} min
+ * @property {number} max
+ * @property {Boolean} hold
+ * @class
+ */
+
+class Tw2RandomConstantCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", 0);
+
+    _defineProperty(this, "min", 0);
+
+    _defineProperty(this, "max", 1);
+
+    _defineProperty(this, "hold", true);
+  }
+
+  /**
+   * Updates the current value at the given time
+   */
+  UpdateValue() {
+    this.value = this.GetValueAt();
+  }
+  /**
+   * Gets a value at a specific time
+   * @returns {number}
+   */
+
+
+  GetValueAt() {
+    return this.hold ? this.value : this.min + (this.max - this.min) * Math.random();
+  }
+  /**
+   * The curve's dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2RandomConstantCurve, "outputDimension", 1);
+
+_defineProperty(Tw2RandomConstantCurve, "valueProperty", "value");
+
+_defineProperty(Tw2RandomConstantCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE_NO_KEYS);
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2RigidOrientation.js":
+/*!***************************************************!*\
+  !*** ./curve/curve/legacy/Tw2RigidOrientation.js ***!
+  \***************************************************/
+/*! exports provided: Tw2Torque, Tw2RigidOrientation */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return Tw2Torque; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return Tw2RigidOrientation; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2Torque
+ *
+ * @property {quat} rot0
+ * @property {vec3} omega0
+ * @property {vec3} torque
+ * @class
+ */
+
+class Tw2Torque extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "rot0", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "omega0", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "torque", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+  }
+
+}
+/**
+ * Tw2RigidOrientation
+ *
+ * @property {String} name
+ * @property {number} I
+ * @property {number} drag
+ * @property {quat} value
+ * @property {number} start
+ * @property {Array.<Tw2Torque>} states
+ * @property {number} length
+ * @class
+ */
+
+class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", "");
+
+    _defineProperty(this, "I", 1);
+
+    _defineProperty(this, "drag", 1);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "states", []);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this, this.states);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {quat} value
+   * @returns {quat}
+   */
+
+
+  GetValueAt(time, value) {
+    if (this.states.length === 0 || time < 0 || time < this.states[0].time) {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+    }
+
+    let key = 0;
+
+    if (time >= this.states[this.states.length - 1].time) {
+      key = this.states.length - 1;
+    } else {
+      for (; key + 1 < this.states.length; ++key) {
+        if (time >= this.states[key].time && time < this.states[key + 1].time) {
+          break;
+        }
+      }
+    }
+
+    const vec3_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.vec3_0,
+          quat_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.quat_0;
+    const ck = this.states[key];
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay(vec3_0, ck.omega0, ck.torque, this.I, this.drag, time - ck.time);
+    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].exp(quat_0, vec3_0);
+    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, this.states[key].rot0, quat_0);
+    return value;
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2RigidOrientation, "inputDimension", 4);
+
+_defineProperty(Tw2RigidOrientation, "outputDimension", 4);
+
+_defineProperty(Tw2RigidOrientation, "valueProperty", "value");
+
+_defineProperty(Tw2RigidOrientation, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
+
+_defineProperty(Tw2RigidOrientation, "Key", Tw2Torque);
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2RotationCurve.js":
+/*!************************************************!*\
+  !*** ./curve/curve/legacy/Tw2RotationCurve.js ***!
+  \************************************************/
+/*! exports provided: Tw2QuaternionKey, Tw2RotationCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return Tw2QuaternionKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return Tw2RotationCurve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2QuaternionKey
+ *
+ * @property {quat} value
+ * @property {vec4} leftTangent
+ * @property {vec4} rightTangent
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2QuaternionKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "interpolation", 5);
+  }
+
+}
+/**
+ * Tw2RotationCurve
+ *
+ * @property {number} start
+ * @property {quat} value
+ * @property {number} extrapolation
+ * @property {Array.<Tw2QuaternionKey>} keys
+ * @property {number} _currentKey
+ * @property {number} length
+ * @class`
+ */
+
+class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "extrapolation", 0);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "length", 0);
+
+    _defineProperty(this, "_currentKey", 1);
+  }
+
+  /**
+   * Sorts the curve's children
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {quat} value
+   * @returns {quat}
+   */
+
+
+  GetValueAt(time, value) {
+    if (this.length === 0) {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+    }
+
+    const scratch = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global,
+          firstKey = this.keys[0],
+          lastKey = this.keys[this.keys.length - 1];
+
+    if (time >= lastKey.time) {
+      switch (this.extrapolation) {
+        case Tw2RotationCurve.Extrapolation.NONE:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+
+        case Tw2RotationCurve.Extrapolation.CONSTANT:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, lastKey.value);
+
+        default:
+          time = time % lastKey.time;
+      }
+    } else if (time < 0 || time < firstKey.time) {
+      switch (this.extrapolation) {
+        case Tw2RotationCurve.Extrapolation.NONE:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+
+        default:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, firstKey.value);
+      }
+    }
+
+    let ck = this.keys[this._currentKey],
+        ck_1 = this.keys[this._currentKey - 1];
+
+    while (time >= ck.time || time < ck_1.time) {
+      if (time < ck_1.time) this._currentKey = 0;
+      this._currentKey++;
+      ck = this.keys[this._currentKey];
+      ck_1 = this.keys[this._currentKey - 1];
+    }
+
+    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+
+    switch (ck_1.interpolation) {
+      case Tw2RotationCurve.Interpolation.CONSTANT:
+        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, ck_1.value);
+
+      case Tw2RotationCurve.Interpolation.LINEAR:
+        value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
+        value[1] = ck_1.value[1] * (1 - nt) + ck.value[1] * nt;
+        value[2] = ck_1.value[2] * (1 - nt) + ck.value[2] * nt;
+        value[3] = ck_1.value[3] * (1 - nt) + ck.value[3] * nt;
+        return value;
+
+      case Tw2RotationCurve.Interpolation.HERMITE:
+        const collect = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
+              arr = [ck_1.value, ck_1.right, ck.left, ck.value];
+
+        for (let i = 3; i > 0; i--) {
+          const power = _global__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
+          if (power > 1) _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, arr[i]);
+          value[0] = -arr[i - 1][0];
+          value[1] = -arr[i - 1][1];
+          value[2] = -arr[i - 1][2];
+          value[3] = arr[i - 1][3];
+          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, arr[i]);
+          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].pow(value, value, power);
+          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(collect, collect, value);
+        }
+
+        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, ck_1.value);
+
+      case Tw2RotationCurve.Interpolation.SLERP:
+        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, ck_1.value, ck.value, nt);
+
+      default:
+        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].sqlerp(value, ck_1.value, ck_1.right, ck.left, ck.value, nt);
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2RotationCurve, "outputDimention", 4);
+
+_defineProperty(Tw2RotationCurve, "inputDimension", 4);
+
+_defineProperty(Tw2RotationCurve, "valueProperty", "value");
+
+_defineProperty(Tw2RotationCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
+
+_defineProperty(Tw2RotationCurve, "Child", Tw2QuaternionKey);
+
+_defineProperty(Tw2RotationCurve, "Extrapolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  GRADIENT: 2,
+  CYCLE: 3
+});
+
+_defineProperty(Tw2RotationCurve, "Interpolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  LINEAR: 2,
+  HERMITE: 3,
+  SLERP: 5,
+  SQUAD: 6
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2ScalarCurve.js":
+/*!**********************************************!*\
+  !*** ./curve/curve/legacy/Tw2ScalarCurve.js ***!
+  \**********************************************/
+/*! exports provided: Tw2ScalarKey, Tw2ScalarCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return Tw2ScalarKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return Tw2ScalarCurve; });
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tw2ScalarKey
+ *
+ * @property {number} value
+ * @property {number} left
+ * @property {number} right
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2ScalarKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", 0);
+
+    _defineProperty(this, "left", 0);
+
+    _defineProperty(this, "right", 0);
+
+    _defineProperty(this, "interpolation", 0);
+  }
+
+}
+/**
+ * Tw2ScalarCurve
+ *
+ * @property {number} start
+ * @property {number} timeScale
+ * @property {number} timeOffset
+ * @property {number} value
+ * @property {number} extrapolation
+ * @property {Array.<Tw2ScalarKey>} keys
+ * @property {number} _currentKey
+ * @property {number} length
+ * @class
+ */
+
+class Tw2ScalarCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "timeScale", 1);
+
+    _defineProperty(this, "timeOffset", 0);
+
+    _defineProperty(this, "value", 0);
+
+    _defineProperty(this, "extrapolation", 0);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "_currentKey", 1);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Sort(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.value = this.GetValueAt(time);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @returns {number}
+   */
+
+
+  GetValueAt(time) {
+    time = time / this.timeScale - this.timeOffset;
+
+    if (this.length === 0) {
+      return this.value;
+    }
+
+    const firstKey = this.keys[0],
+          lastKey = this.keys[this.keys.length - 1];
+
+    if (time >= lastKey.time) {
+      switch (this.extrapolation) {
+        case Tw2ScalarCurve.Extrapolation.NONE:
+          return this.value;
+
+        case Tw2ScalarCurve.Extrapolation.CONSTANT:
+          return lastKey.value;
+
+        case Tw2ScalarCurve.Extrapolation.GRADIENT:
+          return lastKey.value + (time - lastKey.time) * lastKey.right;
+
+        default:
+          time = time % lastKey.time;
+      }
+    } else if (time < 0 || time < firstKey.time) {
+      switch (this.extrapolation) {
+        case Tw2ScalarCurve.Extrapolation.NONE:
+          return this.value;
+
+        case Tw2ScalarCurve.Extrapolation.GRADIENT:
+          return firstKey.value + (time * this.length - lastKey.time) * firstKey.left;
+
+        default:
+          return firstKey.value;
+      }
+    }
+
+    let ck = this.keys[this._currentKey],
+        ck_1 = this.keys[this._currentKey - 1];
+
+    while (time >= ck.time || time < ck_1.time) {
+      if (time < ck_1.time) this._currentKey = 0;
+      this._currentKey++;
+      ck = this.keys[this._currentKey];
+      ck_1 = this.keys[this._currentKey - 1];
+    }
+
+    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+
+    switch (ck_1.interpolation) {
+      case Tw2ScalarCurve.Interpolation.CONSTANT:
+        return ck_1.value;
+
+      case Tw2ScalarCurve.Interpolation.LINEAR:
+        return ck_1.value * (1 - nt) + ck.value * nt;
+
+      case Tw2ScalarCurve.Interpolation.HERMITE:
+        const k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
+              k2 = -2 * nt * nt * nt + 3 * nt * nt,
+              k1 = nt * nt * nt - 2 * nt * nt + nt,
+              k0 = nt * nt * nt - nt * nt;
+        return k3 * ck_1.value + k2 * ck.value + k1 * ck_1.right + k0 * ck.left;
+
+      default:
+        const sq = Math.sqrt(ck_1.value / ck.value),
+              exponent = Math.exp(-time / ck_1.right),
+              ret = 1.0 + (sq - 1.0) * exponent;
+        return ret * ret * ck.value;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2ScalarCurve, "inputDimension", 1);
+
+_defineProperty(Tw2ScalarCurve, "outputDimension", 1);
+
+_defineProperty(Tw2ScalarCurve, "valueProperty", "value");
+
+_defineProperty(Tw2ScalarCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE);
+
+_defineProperty(Tw2ScalarCurve, "Key", Tw2ScalarKey);
+
+_defineProperty(Tw2ScalarCurve, "Extrapolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  GRADIENT: 2,
+  CYCLE: 3
+});
+
+_defineProperty(Tw2ScalarCurve, "Interpolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  LINEAR: 2,
+  HERMITE: 3,
+  CATMULROM: 4
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2ScalarCurve2.js":
+/*!***********************************************!*\
+  !*** ./curve/curve/legacy/Tw2ScalarCurve2.js ***!
+  \***********************************************/
+/*! exports provided: Tw2ScalarKey2, Tw2ScalarCurve2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return Tw2ScalarKey2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return Tw2ScalarCurve2; });
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tw2ScalarKey2
+ *
+ * @property {number} value
+ * @property {number} leftTangent
+ * @property {number} rightTangent
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2ScalarKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", 0);
+
+    _defineProperty(this, "leftTangent", 0);
+
+    _defineProperty(this, "rightTangent", 0);
+
+    _defineProperty(this, "interpolation", 1);
+  }
+
+}
+/**
+ * Tw2ScalarCurve2
+ *
+ * @property {Boolean} cycle
+ * @property {Boolean} reversed
+ * @property {number} timeOffset
+ * @property {number} timeScale
+ * @property {number} startValue
+ * @property {number} currentValue
+ * @property {number} endValue
+ * @property {number} startTangent
+ * @property {number} endTangent
+ * @property {number} interpolation
+ * @property {Array.<Tw2ScalarKey2>} keys
+ * @property {number} length
+ * @class
+ */
+
+class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "cycle", false);
+
+    _defineProperty(this, "reversed", false);
+
+    _defineProperty(this, "timeOffset", 0);
+
+    _defineProperty(this, "timeScale", 1);
+
+    _defineProperty(this, "startValue", 0);
+
+    _defineProperty(this, "currentValue", 0);
+
+    _defineProperty(this, "endValue", 0);
+
+    _defineProperty(this, "startTangent", 0);
+
+    _defineProperty(this, "endTangent", 0);
+
+    _defineProperty(this, "interpolation", 1);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Sort2(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.currentValue = this.GetValueAt(time);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @returns {number}
+   */
+
+
+  GetValueAt(time) {
+    time = time / this.timeScale + this.timeOffset;
+
+    if (this.length <= 0 || time <= 0) {
+      return this.startValue;
+    }
+
+    if (time > this.length) {
+      if (this.cycle) {
+        time = time % this.length;
+      } else if (this.reversed) {
+        return this.startValue;
+      } else {
+        return this.endValue;
+      }
+    }
+
+    if (this.reversed) {
+      time = this.length - time;
+    }
+
+    if (this.keys.length === 0) {
+      return this.Interpolate(time, null, null);
+    }
+
+    let startKey = this.keys[0],
+        endKey = this.keys[this.keys.length - 1];
+
+    if (time <= startKey.time) {
+      return this.Interpolate(time, null, startKey);
+    } else if (time >= endKey.time) {
+      return this.Interpolate(time, endKey, null);
+    }
+
+    for (let i = 0; i + 1 < this.keys.length; ++i) {
+      startKey = this.keys[i];
+      endKey = this.keys[i + 1];
+      if (startKey.time <= time && endKey.time > time) break;
+    }
+
+    return this.Interpolate(time, startKey, endKey);
+  }
+  /**
+   * Interpolate
+   * @param {number} time
+   * @param {Tw2ScalarKey2} lastKey
+   * @param {Tw2ScalarKey2} nextKey
+   * @returns {number}
+   */
+
+
+  Interpolate(time, lastKey, nextKey) {
+    let startValue = this.startValue,
+        endValue = this.endValue,
+        interp = this.interpolation,
+        deltaTime = this.length;
+
+    if (lastKey !== null) {
+      interp = lastKey.interpolation;
+      time -= lastKey.time;
+    }
+
+    switch (interp) {
+      case Tw2ScalarCurve2.Interpolation.LINEAR:
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          endValue = nextKey.value;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        return startValue + (endValue - startValue) * (time / deltaTime);
+
+      case Tw2ScalarCurve2.Interpolation.HERMITE:
+        let inTangent = this.startTangent,
+            outTangent = this.endTangent;
+
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          inTangent = lastKey.rightTangent;
+          endValue = nextKey.value;
+          outTangent = nextKey.leftTangent;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          outTangent = nextKey.leftTangent;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          inTangent = lastKey.rightTangent;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        const s = time / deltaTime,
+              s2 = s * s,
+              s3 = s2 * s;
+        const c2 = -2.0 * s3 + 3.0 * s2,
+              c1 = 1.0 - c2,
+              c4 = s3 - s2,
+              c3 = s + c4 - s2;
+        return startValue * c1 + endValue * c2 + inTangent * c3 + outTangent * c4;
+
+      default:
+        return this.startValue;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2ScalarCurve2, "inputDimension", 1);
+
+_defineProperty(Tw2ScalarCurve2, "outputDimension", 1);
+
+_defineProperty(Tw2ScalarCurve2, "valueProperty", "currentValue");
+
+_defineProperty(Tw2ScalarCurve2, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE2);
+
+_defineProperty(Tw2ScalarCurve2, "Key", Tw2ScalarKey2);
+
+_defineProperty(Tw2ScalarCurve2, "Interpolation", {
+  CONSTANT: 0,
+  LINEAR: 1,
+  HERMITE: 2
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2SineCurve.js":
+/*!********************************************!*\
+  !*** ./curve/curve/legacy/Tw2SineCurve.js ***!
+  \********************************************/
+/*! exports provided: Tw2SineCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return Tw2SineCurve; });
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tw2SineCurve
+ *
+ * @property {String} name
+ * @property {number} value
+ * @property {number} offset
+ * @property {number} scale
+ * @property {number} speed
+ */
+
+class Tw2SineCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", 0);
+
+    _defineProperty(this, "offset", 0);
+
+    _defineProperty(this, "scale", 1);
+
+    _defineProperty(this, "speed", 1);
+  }
+
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+  UpdateValue(time) {
+    this.value = this.GetValueAt(time);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @returns {number}
+   */
+
+
+  GetValueAt(time) {
+    return Math.sin(time * Math.PI * 2 * this.speed) * this.scale + this.offset;
+  }
+  /**
+   * THe curve's dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2SineCurve, "outputDimension", 1);
+
+_defineProperty(Tw2SineCurve, "valueProperty", "value");
+
+_defineProperty(Tw2SineCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE_NO_KEYS);
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2Vector2Curve.js":
+/*!***********************************************!*\
+  !*** ./curve/curve/legacy/Tw2Vector2Curve.js ***!
+  \***********************************************/
+/*! exports provided: Tw2Vector2Key, Tw2Vector2Curve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return Tw2Vector2Key; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return Tw2Vector2Curve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2Vector2Key
+ *
+ * @property {vec2} value
+ * @property {vec2} leftTangent
+ * @property {vec2} rightTangent
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2Vector2Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "interpolation", 1);
+  }
+
+}
+/**
+ * Tw2Vector2Curve
+ *
+ * @property {Boolean} cycle
+ * @property {Boolean} reversed
+ * @property {number} timeOffset
+ * @property {number} timeScale
+ * @property {vec2} startValue - vec2 array
+ * @property {vec2} currentValue - vec2 array
+ * @property {vec2} endValue - vec2 array
+ * @property {vec2} startTangent - vec2 array
+ * @property {vec2} endTangent - vec2 array
+ * @property {number} interpolation
+ * @property {Array.<Tw2Vector2Key>} keys
+ * @property {number} length
+ * @class
+ */
+
+class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "cycle", false);
+
+    _defineProperty(this, "reversed", false);
+
+    _defineProperty(this, "timeOffset", 0);
+
+    _defineProperty(this, "timeScale", 1);
+
+    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
+
+    _defineProperty(this, "interpolation", 1);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.currentValue);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec2} value - vec2 array
+   * @returns {vec2} vec2 array
+   * @prototype
+   */
+
+
+  GetValueAt(time, value) {
+    time = time / this.timeScale + this.timeOffset;
+
+    if (this.length <= 0 || time <= 0) {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+    }
+
+    if (time > this.length) {
+      if (this.cycle) {
+        time = time % this.length;
+      } else if (this.reversed) {
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+      } else {
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.endValue);
+      }
+    }
+
+    if (this.reversed) {
+      time = this.length - time;
+    }
+
+    if (this.keys.length === 0) {
+      return this.Interpolate(time, null, null, value);
+    }
+
+    let startKey = this.keys[0],
+        endKey = this.keys[this.keys.length - 1];
+
+    if (time <= startKey.time) {
+      return this.Interpolate(time, null, startKey, value);
+    } else if (time >= endKey.time) {
+      return this.Interpolate(time, endKey, null, value);
+    }
+
+    for (let i = 0; i + 1 < this.keys.length; ++i) {
+      startKey = this.keys[i];
+      endKey = this.keys[i + 1];
+      if (startKey.time <= time && endKey.time > time) break;
+    }
+
+    return this.Interpolate(time, startKey, endKey, value);
+  }
+  /**
+   * Interpolate
+   * @param {number} time
+   * @param {Tw2Vector2Key} lastKey
+   * @param {Tw2Vector2Key} nextKey
+   * @param {vec2} value - vec2 array
+   * @returns {vec2} vec2 array
+   */
+
+
+  Interpolate(time, lastKey, nextKey, value) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+    let startValue = this.startValue,
+        endValue = this.endValue,
+        interp = this.interpolation,
+        deltaTime = this.length;
+
+    if (lastKey !== null) {
+      interp = lastKey.interpolation;
+      time -= lastKey.time;
+    }
+
+    switch (interp) {
+      case Tw2Vector2Curve.Interpolation.LINEAR:
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          endValue = nextKey.value;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
+        value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
+        return value;
+
+      case Tw2Vector2Curve.Interpolation.HERMITE:
+        let inTangent = this.startTangent,
+            outTangent = this.endTangent;
+
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          inTangent = lastKey.rightTangent;
+          endValue = nextKey.value;
+          outTangent = nextKey.leftTangent;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          outTangent = nextKey.leftTangent;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          inTangent = lastKey.rightTangent;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        const s = time / deltaTime,
+              s2 = s * s,
+              s3 = s2 * s;
+        const c2 = -2.0 * s3 + 3.0 * s2,
+              c1 = 1.0 - c2,
+              c4 = s3 - s2,
+              c3 = s + c4 - s2;
+        value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
+        value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
+        return value;
+
+      default:
+        return value;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2Vector2Curve, "inputDimension", 2);
+
+_defineProperty(Tw2Vector2Curve, "outputDimension", 2);
+
+_defineProperty(Tw2Vector2Curve, "valueProperty", "value");
+
+_defineProperty(Tw2Vector2Curve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
+
+_defineProperty(Tw2Vector2Curve, "Key", Tw2Vector2Key);
+
+_defineProperty(Tw2Vector2Curve, "Interpolation", {
+  CONSTANT: 0,
+  LINEAR: 1,
+  HERMITE: 2
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2Vector3Curve.js":
+/*!***********************************************!*\
+  !*** ./curve/curve/legacy/Tw2Vector3Curve.js ***!
+  \***********************************************/
+/*! exports provided: Tw2Vector3Key, Tw2Vector3Curve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return Tw2Vector3Key; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return Tw2Vector3Curve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2Vector3Key
+ *
+ * @property {number} time
+ * @property {vec3} value
+ * @property {vec3} leftTangent
+ * @property {vec3} rightTangent
+ * @property {number} interpolation
+ * @class
+ */
+
+class Tw2Vector3Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "interpolation", 1);
+  }
+
+}
+/**
+ * Tw2Vector3Curve
+ *
+ * @property {Boolean} cycle
+ * @property {Boolean} reversed
+ * @property {number} timeOffset
+ * @property {number} timeScale
+ * @property {vec3} startValue
+ * @property {vec3} currentValue
+ * @property {vec3} endValue
+ * @property {vec3} startTangent
+ * @property {vec3} endTangent
+ * @property {number} interpolation
+ * @property {Array.<Tw2Vector3Key>} keys
+ * @property {number} length
+ * @class
+ */
+
+class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "cycle", false);
+
+    _defineProperty(this, "reversed", false);
+
+    _defineProperty(this, "timeOffset", 0);
+
+    _defineProperty(this, "timeScale", 1);
+
+    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "interpolation", 1);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.currentValue);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec3} value
+   * @returns {vec3}
+   */
+
+
+  GetValueAt(time, value) {
+    time = time / this.timeScale + this.timeOffset;
+
+    if (this.length <= 0 || time <= 0) {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+    }
+
+    if (time > this.length) {
+      if (this.cycle) {
+        time = time % this.length;
+      } else if (this.reversed) {
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+      } else {
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.endValue);
+      }
+    }
+
+    if (this.reversed) {
+      time = this.length - time;
+    }
+
+    if (this.keys.length === 0) {
+      return this.Interpolate(time, null, null, value);
+    }
+
+    let startKey = this.keys[0],
+        endKey = this.keys[this.keys.length - 1];
+
+    if (time <= startKey.time) {
+      return this.Interpolate(time, null, startKey, value);
+    } else if (time >= endKey.time) {
+      return this.Interpolate(time, endKey, null, value);
+    }
+
+    for (let i = 0; i + 1 < this.keys.length; ++i) {
+      startKey = this.keys[i];
+      endKey = this.keys[i + 1];
+      if (startKey.time <= time && endKey.time > time) break;
+    }
+
+    return this.Interpolate(time, startKey, endKey, value);
+  }
+  /**
+   * Interpolate
+   * @param {number} time
+   * @param {Tw2Vector3Key} lastKey
+   * @param {Tw2Vector3Key} nextKey
+   * @param {vec3} value
+   * @returns {vec3}
+   */
+
+
+  Interpolate(time, lastKey, nextKey, value) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+    let startValue = this.startValue,
+        endValue = this.endValue,
+        interp = this.interpolation,
+        deltaTime = this.length;
+
+    if (lastKey !== null) {
+      interp = lastKey.interpolation;
+      time -= lastKey.time;
+    }
+
+    switch (interp) {
+      case Tw2Vector3Curve.Interpolation.LINEAR:
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          endValue = nextKey.value;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
+        value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
+        value[2] = startValue[2] + (endValue[2] - startValue[2]) * (time / deltaTime);
+        return value;
+
+      case Tw2Vector3Curve.Interpolation.HERMITE:
+        let inTangent = this.startTangent,
+            outTangent = this.endTangent;
+
+        if (lastKey && nextKey) {
+          startValue = lastKey.value;
+          inTangent = lastKey.rightTangent;
+          endValue = nextKey.value;
+          outTangent = nextKey.leftTangent;
+          deltaTime = nextKey.time - lastKey.time;
+        } else if (nextKey) {
+          endValue = nextKey.value;
+          outTangent = nextKey.leftTangent;
+          deltaTime = nextKey.time;
+        } else if (lastKey) {
+          startValue = lastKey.value;
+          inTangent = lastKey.rightTangent;
+          deltaTime = this.length - lastKey.time;
+        }
+
+        const s = time / deltaTime,
+              s2 = s * s,
+              s3 = s2 * s;
+        const c2 = -2.0 * s3 + 3.0 * s2,
+              c1 = 1.0 - c2,
+              c4 = s3 - s2,
+              c3 = s + c4 - s2;
+        value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
+        value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
+        value[2] = startValue[2] * c1 + endValue[2] * c2 + inTangent[2] * c3 + outTangent[2] * c4;
+        return value;
+
+      default:
+        return value;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2Vector3Curve, "inputDimension", 3);
+
+_defineProperty(Tw2Vector3Curve, "outputDimension", 3);
+
+_defineProperty(Tw2Vector3Curve, "valueProperty", "currentValue");
+
+_defineProperty(Tw2Vector3Curve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
+
+_defineProperty(Tw2Vector3Curve, "Key", Tw2Vector3Key);
+
+_defineProperty(Tw2Vector3Curve, "Interpolation", {
+  CONSTANT: 0,
+  LINEAR: 1,
+  HERMITE: 2
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/Tw2VectorCurve.js":
+/*!**********************************************!*\
+  !*** ./curve/curve/legacy/Tw2VectorCurve.js ***!
+  \**********************************************/
+/*! exports provided: Tw2VectorKey, Tw2VectorCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return Tw2VectorKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return Tw2VectorCurve; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2VectorKey
+ *
+ * @property {vec3} value
+ * @property {vec3} left
+ * @property {vec3} right
+ * @property {number} interpolation
+ * @inherits Tw2CurveKey
+ * @class
+ */
+
+class Tw2VectorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "interpolation", 0);
+  }
+
+}
+/**
+ * Tw2Vector3Curve
+ *
+ * @property {String} name
+ * @property {number} start
+ * @property {vec3} value
+ * @property {number} extrapolation
+ * @property {Array.<Tw2VectorKey>} keys
+ * @property {number} _currentKey
+ * @property {number} length
+ * @class
+ */
+
+class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "extrapolation", 0);
+
+    _defineProperty(this, "keys", []);
+
+    _defineProperty(this, "_currentKey", 1);
+
+    _defineProperty(this, "length", 0);
+  }
+
+  /**
+   * Sorts the curve's keys
+   */
+  Sort() {
+    _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this);
+  }
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return this.length;
+  }
+  /**
+   * Updates the current value at the given time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec3} value
+   * @returns {vec3}
+   */
+
+
+  GetValueAt(time, value) {
+    if (this.length === 0) {
+      return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+    }
+
+    const firstKey = this.keys[0],
+          lastKey = this.keys[this.keys.length - 1];
+
+    if (time >= lastKey.time) {
+      switch (this.extrapolation) {
+        case Tw2VectorCurve.Extrapolation.NONE:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+
+        case Tw2VectorCurve.Extrapolation.CONSTANT:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, lastKey.value);
+
+        case Tw2VectorCurve.Extrapolation.GRADIENT:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
+
+        default:
+          time = time % lastKey.time;
+      }
+    } else if (time < 0 || time < firstKey.time) {
+      switch (this.extrapolation) {
+        case Tw2VectorCurve.Extrapolation.NONE:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+
+        case Tw2VectorCurve.Extrapolation.GRADIENT:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
+
+        default:
+          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, firstKey.value);
+      }
+    }
+
+    let ck = this.keys[this._currentKey],
+        ck_1 = this.keys[this._currentKey - 1];
+
+    while (time >= ck.time || time < ck_1.time) {
+      if (time < ck_1.time) this._currentKey = 0;
+      this._currentKey++;
+      ck = this.keys[this._currentKey];
+      ck_1 = this.keys[this._currentKey - 1];
+    }
+
+    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+
+    switch (ck_1.interpolation) {
+      case Tw2VectorCurve.Interpolation.CONSTANT:
+        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, ck_1.value);
+
+      case Tw2VectorCurve.Interpolation.LINEAR:
+        value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
+        value[1] = ck_1.value[1] * (1 - nt) + ck.value[1] * nt;
+        value[2] = ck_1.value[2] * (1 - nt) + ck.value[2] * nt;
+        return value;
+
+      case Tw2VectorCurve.Interpolation.HERMITE:
+        const k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
+              k2 = -2 * nt * nt * nt + 3 * nt * nt,
+              k1 = nt * nt * nt - 2 * nt * nt + nt,
+              k0 = nt * nt * nt - nt * nt;
+        value[0] = k3 * ck_1.value[0] + k2 * ck.value[0] + k1 * ck_1.right[0] + k0 * ck.left[0];
+        value[1] = k3 * ck_1.value[1] + k2 * ck.value[1] + k1 * ck_1.right[1] + k0 * ck.left[1];
+        value[2] = k3 * ck_1.value[2] + k2 * ck.value[2] + k1 * ck_1.right[2] + k0 * ck.left[2];
+        return value;
+
+      default:
+        return value;
+    }
+  }
+  /**
+   * The curve's key dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2VectorCurve, "inputDimension", 3);
+
+_defineProperty(Tw2VectorCurve, "outputDimension", 3);
+
+_defineProperty(Tw2VectorCurve, "valueProperty", "value");
+
+_defineProperty(Tw2VectorCurve, "curveType", _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
+
+_defineProperty(Tw2VectorCurve, "Key", Tw2VectorKey);
+
+_defineProperty(Tw2VectorCurve, "Extrapolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  GRADIENT: 2,
+  CYCLE: 3
+});
+
+_defineProperty(Tw2VectorCurve, "Interpolation", {
+  NONE: 0,
+  CONSTANT: 1,
+  LINEAR: 2,
+  HERMITE: 3
+});
+
+/***/ }),
+
+/***/ "./curve/curve/legacy/index.js":
+/*!*************************************!*\
+  !*** ./curve/curve/legacy/index.js ***!
+  \*************************************/
+/*! exports provided: Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ColorCurve */ "./curve/curve/legacy/Tw2ColorCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorCurve"]; });
+
+/* harmony import */ var _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ColorCurve2 */ "./curve/curve/legacy/Tw2ColorCurve2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorCurve2"]; });
+
+/* harmony import */ var _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2QuaternionCurve */ "./curve/curve/legacy/Tw2QuaternionCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_2__["Tw2QuaternionKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_2__["Tw2QuaternionCurve"]; });
+
+/* harmony import */ var _Tw2RandomConstantCurve__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2RandomConstantCurve */ "./curve/curve/legacy/Tw2RandomConstantCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _Tw2RandomConstantCurve__WEBPACK_IMPORTED_MODULE_3__["Tw2RandomConstantCurve"]; });
+
+/* harmony import */ var _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2RigidOrientation */ "./curve/curve/legacy/Tw2RigidOrientation.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_4__["Tw2Torque"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_4__["Tw2RigidOrientation"]; });
+
+/* harmony import */ var _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2RotationCurve */ "./curve/curve/legacy/Tw2RotationCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_5__["Tw2QuaternionKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_5__["Tw2RotationCurve"]; });
+
+/* harmony import */ var _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2ScalarCurve */ "./curve/curve/legacy/Tw2ScalarCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarCurve"]; });
+
+/* harmony import */ var _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2ScalarCurve2 */ "./curve/curve/legacy/Tw2ScalarCurve2.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_7__["Tw2ScalarKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_7__["Tw2ScalarCurve2"]; });
+
+/* harmony import */ var _Tw2SineCurve__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tw2SineCurve */ "./curve/curve/legacy/Tw2SineCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _Tw2SineCurve__WEBPACK_IMPORTED_MODULE_8__["Tw2SineCurve"]; });
+
+/* harmony import */ var _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Tw2Vector2Curve */ "./curve/curve/legacy/Tw2Vector2Curve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_9__["Tw2Vector2Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_9__["Tw2Vector2Curve"]; });
+
+/* harmony import */ var _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Tw2Vector3Curve */ "./curve/curve/legacy/Tw2Vector3Curve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_10__["Tw2Vector3Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_10__["Tw2Vector3Curve"]; });
+
+/* harmony import */ var _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Tw2VectorCurve */ "./curve/curve/legacy/Tw2VectorCurve.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_11__["Tw2VectorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_11__["Tw2VectorCurve"]; });
+
+
+
+
 
 
 
@@ -31687,7 +34234,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!************************!*\
   !*** ./curve/index.js ***!
   \************************/
-/*! exports provided: Tw2CurveSet, Tw2CurveSetRange, Tw2ValueBinding, Tr2RotationAdapter, Tr2TranslationAdapter, Tw2CurveAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tw2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2CurveKey, Tw2Curve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, TriColorSequencer, Tw2CurveColor, Tw2CurveEulerRotation, Tw2CurveVector3, Tw2CurveSequencer, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine */
+/*! exports provided: Tw2CurveSet, Tw2CurveSetRange, Tw2ValueBinding, Tr2RotationAdapter, Tr2TranslationAdapter, Tw2CurveAdapter, AudEventKey, AudEventCurve, Tr2BoneMatrixCurve, Tw2CurveConstant, Tw2CurveScalarKey, Tr2CurveScalar, Tr2ScalarExprKey, Tr2ScalarExprKeyCurve, Tw2EventKey, Tw2EventCurve, Tw2PerlinCurve, Tw2CurveKey, Tw2Curve, Tr2CurveEulerRotationExpression, Tr2CurveScalarExpression, Tr2CurveVector3Expression, Tw2CurveExpression, TriColorSequencer, Tw2CurveColor, Tw2CurveEulerRotation, Tw2CurveVector3, Tw2CurveSequencer, Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -31735,6 +34282,50 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2Curve"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ColorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ColorCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ColorKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ColorCurve2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2QuaternionKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2QuaternionCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2RandomConstantCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2Torque"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2RigidOrientation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2QuaternionKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2RotationCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ScalarKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ScalarCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ScalarKey2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2ScalarCurve2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2SineCurve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2Vector2Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2Vector2Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2Vector3Key"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2Vector3Curve"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2VectorKey"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _curve__WEBPACK_IMPORTED_MODULE_4__["Tw2VectorCurve"]; });
+
 /* harmony import */ var _expression__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./expression */ "./curve/expression/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return _expression__WEBPACK_IMPORTED_MODULE_5__["Tr2CurveEulerRotationExpression"]; });
 
@@ -31745,66 +34336,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveExpression", function() { return _expression__WEBPACK_IMPORTED_MODULE_5__["Tw2CurveExpression"]; });
 
 /* harmony import */ var _legacy__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./legacy */ "./curve/legacy/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ColorKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ColorCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ColorKey2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ColorCurve2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2QuaternionKey2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2QuaternionCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2RandomConstantCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2Torque"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2RigidOrientation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2QuaternionKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2RotationCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarKey2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarCurve2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2SineCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2Vector2Key"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2Vector2Curve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2Vector3Key"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2Vector3Curve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2VectorKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2VectorCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ColorSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2EulerRotation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2QuaternionSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2RGBAScalarSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2VectorSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2XYZScalarSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2YPRSequencer"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2WbgTrack"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return _legacy__WEBPACK_IMPORTED_MODULE_6__["Tw2WbgTransformTrack"]; });
@@ -31830,2457 +34361,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2CurveSequencer"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2ColorSequencer"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2EulerRotation"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2QuaternionSequencer"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2RGBAScalarSequencer"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2ScalarSequencer"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2VectorSequencer"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2XYZScalarSequencer"]; });
 
-
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2ColorCurve.js":
-/*!**********************************************!*\
-  !*** ./curve/legacy/curves/Tw2ColorCurve.js ***!
-  \**********************************************/
-/*! exports provided: Tw2ColorKey, Tw2ColorCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return Tw2ColorKey; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return Tw2ColorCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2ColorKey
- *
- * @property {vec4} value
- * @property {vec4} left
- * @property {vec4} right
- * @property {number} interpolation
- * @class
- */
-
-class Tw2ColorKey extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "interpolation", 0);
-  }
-
-}
-/**
- * Tw2ColorCurve
- *
- * @property {number} start
- * @property {vec4} currentValue
- * @property {number} extrapolation
- * @property {Array.<Tw2ColorKey>} keys
- * @property {number} _currentKey
- * @property {number} length
- * @class
- */
-
-class Tw2ColorCurve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "extrapolation", 0);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "_currentKey", 1);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec4} value
-   * @returns {vec4} value
-   */
-
-
-  GetValueAt(time, value) {
-    if (this.length === 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
-    }
-
-    const firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
-
-    if (time >= lastKey.time) {
-      switch (this.extrapolation) {
-        case Tw2ColorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
-
-        case Tw2ColorCurve.Extrapolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, lastKey.value);
-
-        case Tw2ColorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
-
-        default:
-          time = time % lastKey.time;
-      }
-    } else if (time < 0 || time < firstKey.time) {
-      switch (this.extrapolation) {
-        case Tw2ColorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
-
-        case Tw2ColorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
-
-        default:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, firstKey.value);
-      }
-    }
-
-    let ck = this.keys[this._currentKey],
-        ck_1 = this.keys[this._currentKey - 1];
-
-    while (time >= ck.time || time < ck_1.time) {
-      if (time < ck_1.time) this._currentKey = 0;
-      this._currentKey++;
-      ck = this.keys[this._currentKey];
-      ck_1 = this.keys[this._currentKey - 1];
-    }
-
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
-
-    switch (ck_1.interpolation) {
-      case Tw2ColorCurve.Interpolation.CONSTANT:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, ck_1.value);
-
-      default:
-        value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
-        value[1] = ck_1.value[1] * (1 - nt) + ck.value[1] * nt;
-        value[2] = ck_1.value[2] * (1 - nt) + ck.value[2] * nt;
-        value[3] = ck_1.value[3] * (1 - nt) + ck.value[3] * nt;
-        return value;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2ColorCurve, "inputDimension", 4);
-
-_defineProperty(Tw2ColorCurve, "ouputDimension", 4);
-
-_defineProperty(Tw2ColorCurve, "valueProperty", "value");
-
-_defineProperty(Tw2ColorCurve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
-
-_defineProperty(Tw2ColorCurve, "Key", Tw2ColorKey);
-
-_defineProperty(Tw2ColorCurve, "Extrapolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  GRADIENT: 2,
-  CYCLE: 3
-});
-
-_defineProperty(Tw2ColorCurve, "Interpolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  LINEAR: 2
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2ColorCurve2.js":
-/*!***********************************************!*\
-  !*** ./curve/legacy/curves/Tw2ColorCurve2.js ***!
-  \***********************************************/
-/*! exports provided: Tw2ColorKey2, Tw2ColorCurve2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return Tw2ColorKey2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return Tw2ColorCurve2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2ColorKey2
- *
- * @property {number} time
- * @property {vec4} value
- * @property {vec4} leftTangent
- * @property {vec4} rightTangent
- * @property {number} interpolation
- * @class
- */
-
-class Tw2ColorKey2 extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "interpolation", 1);
-  }
-
-}
-/**
- * Tw2ColorCurve2
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {vec4} startValue=[0,0,0,1]
- * @property {vec4} currentValue=[0,0,0,1]
- * @property {vec4} endValue=[0,0,0,1]
- * @property {vec4} startTangent
- * @property {vec4} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2ColorKey2>} keys
- * @class
- */
-
-class Tw2ColorCurve2 extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "cycle", false);
-
-    _defineProperty(this, "reversed", false);
-
-    _defineProperty(this, "timeOffset", 0);
-
-    _defineProperty(this, "timeScale", 1);
-
-    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1));
-
-    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1));
-
-    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1));
-
-    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "interpolation", 1);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.currentValue);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec4} value
-   * @returns {vec4}
-   */
-
-
-  GetValueAt(time, value) {
-    time = time / this.timeScale + this.timeOffset;
-
-    if (this.length <= 0 || time <= 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
-    }
-
-    if (time > this.length) {
-      if (this.cycle) {
-        time = time % this.length;
-      } else if (this.reversed) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
-      } else {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.endValue);
-      }
-    }
-
-    if (this.reversed) {
-      time = this.length - time;
-    }
-
-    if (this.keys.length === 0) {
-      return this.Interpolate(time, null, null, value);
-    }
-
-    let startKey = this.keys[0],
-        endKey = this.keys[this.keys.length - 1];
-
-    if (time <= startKey.time) {
-      return this.Interpolate(time, null, startKey, value);
-    } else if (time >= endKey.time) {
-      return this.Interpolate(time, endKey, null, value);
-    }
-
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
-      startKey = this.keys[i];
-      endKey = this.keys[i + 1];
-      if (startKey.time <= time && endKey.time > time) break;
-    }
-
-    return this.Interpolate(time, startKey, endKey, value);
-  }
-  /**
-   * Interpolate
-   * @param {number} time
-   * @param {Tw2ColorKey2} lastKey
-   * @param {Tw2ColorKey2} nextKey
-   * @param {vec4} value
-   * @returns {vec4} value
-   */
-
-
-  Interpolate(time, lastKey, nextKey, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
-    let startValue = this.startValue,
-        endValue = this.endValue,
-        interp = this.interpolation,
-        deltaTime = this.length;
-
-    if (lastKey !== null) {
-      interp = lastKey.interpolation;
-      time -= lastKey.time;
-    }
-
-    switch (interp) {
-      case Tw2ColorCurve2.Interpolation.LINEAR:
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          endValue = nextKey.value;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
-        value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
-        value[2] = startValue[2] + (endValue[2] - startValue[2]) * (time / deltaTime);
-        value[3] = startValue[3] + (endValue[3] - startValue[3]) * (time / deltaTime);
-        return value;
-
-      default:
-        return value;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2ColorCurve2, "inputDimension", 4);
-
-_defineProperty(Tw2ColorCurve2, "outputDimension", 4);
-
-_defineProperty(Tw2ColorCurve2, "valueProperty", "currentValue");
-
-_defineProperty(Tw2ColorCurve2, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
-
-_defineProperty(Tw2ColorCurve2, "Key", Tw2ColorKey2);
-
-_defineProperty(Tw2ColorCurve2, "Interpolation", {
-  CONSTANT: 0,
-  LINEAR: 1
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2QuaternionCurve.js":
-/*!***************************************************!*\
-  !*** ./curve/legacy/curves/Tw2QuaternionCurve.js ***!
-  \***************************************************/
-/*! exports provided: Tw2QuaternionKey2, Tw2QuaternionCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return Tw2QuaternionKey2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return Tw2QuaternionCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2QuaternionKey2
- *
- * @property {quat} value
- * @property {vec4} leftTangent
- * @property {vec4} rightTangent
- * @property {number} interpolation
- * @class
- */
-
-class Tw2QuaternionKey2 extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "interpolation", 1);
-  }
-
-}
-/**
- * Tw2QuaternionCurve
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {quat} startValue
- * @property {quat} currentValue
- * @property {quat} endValue
- * @property {vec4} startTangent
- * @property {vec4} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2QuaternionKey>} keys
- * @property {number} length
- * @class
- */
-
-class Tw2QuaternionCurve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "cycle", false);
-
-    _defineProperty(this, "reversed", false);
-
-    _defineProperty(this, "timeOffset", 0);
-
-    _defineProperty(this, "timeScale", 1);
-
-    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "interpolation", 1);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.currentValue);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {quat} value
-   * @returns {quat}
-   */
-
-
-  GetValueAt(time, value) {
-    time = time / this.timeScale + this.timeOffset;
-
-    if (this.length <= 0 || time <= 0) {
-      value[0] = this.startValue[0];
-      value[1] = this.startValue[1];
-      value[2] = this.startValue[2];
-      return value;
-    }
-
-    if (time > this.length) {
-      if (this.cycle) {
-        time = time % this.length;
-      } else if (this.reversed) {
-        value[0] = this.startValue[0];
-        value[1] = this.startValue[1];
-        value[2] = this.startValue[2];
-        return value;
-      } else {
-        value[0] = this.endValue[0];
-        value[1] = this.endValue[1];
-        value[2] = this.endValue[2];
-        return value;
-      }
-    }
-
-    if (this.reversed) {
-      time = this.length - time;
-    }
-
-    if (this.keys.length === 0) {
-      return this.Interpolate(time, null, null, value);
-    }
-
-    let startKey = this.keys[0],
-        endKey = this.keys[this.keys.length - 1];
-
-    if (time <= startKey.time) {
-      return this.Interpolate(time, null, startKey, value);
-    } else if (time >= endKey.time) {
-      return this.Interpolate(time, endKey, null, value);
-    }
-
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
-      startKey = this.keys[i];
-      endKey = this.keys[i + 1];
-      if (startKey.time <= time && endKey.time > time) break;
-    }
-
-    return this.Interpolate(time, startKey, endKey, value);
-  }
-  /**
-   * Interpolate
-   * @param {number} time
-   * @param {null|Tw2QuaternionKey} lastKey
-   * @param {null|Tw2QuaternionKey} nextKey
-   * @param {quat} value
-   * @returns {*}
-   */
-
-
-  Interpolate(time, lastKey, nextKey, value) {
-    value[0] = this.startValue[0];
-    value[1] = this.startValue[1];
-    value[2] = this.startValue[2];
-    let startValue = this.startValue,
-        endValue = this.endValue,
-        interp = this.interpolation,
-        deltaTime = this.length;
-
-    if (lastKey !== null) {
-      interp = lastKey.interpolation;
-      time -= lastKey.time;
-    }
-
-    switch (interp) {
-      case Tw2QuaternionCurve.Interpolation.SPHERICAL_LINEAR:
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          endValue = nextKey.value;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, startValue, endValue, time / deltaTime);
-        return value;
-
-      default:
-        return value;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2QuaternionCurve, "inputDimension", 4);
-
-_defineProperty(Tw2QuaternionCurve, "outputDimension", 4);
-
-_defineProperty(Tw2QuaternionCurve, "valueProperty", "currentValue");
-
-_defineProperty(Tw2QuaternionCurve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
-
-_defineProperty(Tw2QuaternionCurve, "Key", Tw2QuaternionKey2);
-
-_defineProperty(Tw2QuaternionCurve, "Interpolation", {
-  CONSTANT: 0,
-  SPHERICAL_LINEAR: 4
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2RandomConstantCurve.js":
-/*!*******************************************************!*\
-  !*** ./curve/legacy/curves/Tw2RandomConstantCurve.js ***!
-  \*******************************************************/
-/*! exports provided: Tw2RandomConstantCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return Tw2RandomConstantCurve; });
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tw2RandomConstantCurve
- *
- * @property {number} currentValue
- * @property {number} min
- * @property {number} max
- * @property {Boolean} hold
- * @class
- */
-
-class Tw2RandomConstantCurve extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", 0);
-
-    _defineProperty(this, "min", 0);
-
-    _defineProperty(this, "max", 1);
-
-    _defineProperty(this, "hold", true);
-  }
-
-  /**
-   * Updates the current value at the given time
-   */
-  UpdateValue() {
-    this.value = this.GetValueAt();
-  }
-  /**
-   * Gets a value at a specific time
-   * @returns {number}
-   */
-
-
-  GetValueAt() {
-    return this.hold ? this.value : this.min + (this.max - this.min) * Math.random();
-  }
-  /**
-   * The curve's dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2RandomConstantCurve, "outputDimension", 1);
-
-_defineProperty(Tw2RandomConstantCurve, "valueProperty", "value");
-
-_defineProperty(Tw2RandomConstantCurve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE_NO_KEYS);
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2RigidOrientation.js":
-/*!****************************************************!*\
-  !*** ./curve/legacy/curves/Tw2RigidOrientation.js ***!
-  \****************************************************/
-/*! exports provided: Tw2Torque, Tw2RigidOrientation */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return Tw2Torque; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return Tw2RigidOrientation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2Torque
- *
- * @property {quat} rot0
- * @property {vec3} omega0
- * @property {vec3} torque
- * @class
- */
-
-class Tw2Torque extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "rot0", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "omega0", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "torque", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-  }
-
-}
-/**
- * Tw2RigidOrientation
- *
- * @property {String} name
- * @property {number} I
- * @property {number} drag
- * @property {quat} value
- * @property {number} start
- * @property {Array.<Tw2Torque>} states
- * @property {number} length
- * @class
- */
-
-class Tw2RigidOrientation extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "name", "");
-
-    _defineProperty(this, "I", 1);
-
-    _defineProperty(this, "drag", 1);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "states", []);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this, this.states);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {quat} value
-   * @returns {quat}
-   */
-
-
-  GetValueAt(time, value) {
-    if (this.states.length === 0 || time < 0 || time < this.states[0].time) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
-    }
-
-    let key = 0;
-
-    if (time >= this.states[this.states.length - 1].time) {
-      key = this.states.length - 1;
-    } else {
-      for (; key + 1 < this.states.length; ++key) {
-        if (time >= this.states[key].time && time < this.states[key + 1].time) {
-          break;
-        }
-      }
-    }
-
-    const vec3_0 = _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.vec3_0,
-          quat_0 = _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.quat_0;
-    const ck = this.states[key];
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay(vec3_0, ck.omega0, ck.torque, this.I, this.drag, time - ck.time);
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].exp(quat_0, vec3_0);
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, this.states[key].rot0, quat_0);
-    return value;
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2RigidOrientation, "inputDimension", 4);
-
-_defineProperty(Tw2RigidOrientation, "outputDimension", 4);
-
-_defineProperty(Tw2RigidOrientation, "valueProperty", "value");
-
-_defineProperty(Tw2RigidOrientation, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
-
-_defineProperty(Tw2RigidOrientation, "Key", Tw2Torque);
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2RotationCurve.js":
-/*!*************************************************!*\
-  !*** ./curve/legacy/curves/Tw2RotationCurve.js ***!
-  \*************************************************/
-/*! exports provided: Tw2QuaternionKey, Tw2RotationCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return Tw2QuaternionKey; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return Tw2RotationCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2QuaternionKey
- *
- * @property {quat} value
- * @property {vec4} leftTangent
- * @property {vec4} rightTangent
- * @property {number} interpolation
- * @class
- */
-
-class Tw2QuaternionKey extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "interpolation", 5);
-  }
-
-}
-/**
- * Tw2RotationCurve
- *
- * @property {number} start
- * @property {quat} value
- * @property {number} extrapolation
- * @property {Array.<Tw2QuaternionKey>} keys
- * @property {number} _currentKey
- * @property {number} length
- * @class`
- */
-
-class Tw2RotationCurve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "extrapolation", 0);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "length", 0);
-
-    _defineProperty(this, "_currentKey", 1);
-  }
-
-  /**
-   * Sorts the curve's children
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {quat} value
-   * @returns {quat}
-   */
-
-
-  GetValueAt(time, value) {
-    if (this.length === 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
-    }
-
-    const scratch = _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global,
-          firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
-
-    if (time >= lastKey.time) {
-      switch (this.extrapolation) {
-        case Tw2RotationCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
-
-        case Tw2RotationCurve.Extrapolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, lastKey.value);
-
-        default:
-          time = time % lastKey.time;
-      }
-    } else if (time < 0 || time < firstKey.time) {
-      switch (this.extrapolation) {
-        case Tw2RotationCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
-
-        default:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, firstKey.value);
-      }
-    }
-
-    let ck = this.keys[this._currentKey],
-        ck_1 = this.keys[this._currentKey - 1];
-
-    while (time >= ck.time || time < ck_1.time) {
-      if (time < ck_1.time) this._currentKey = 0;
-      this._currentKey++;
-      ck = this.keys[this._currentKey];
-      ck_1 = this.keys[this._currentKey - 1];
-    }
-
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
-
-    switch (ck_1.interpolation) {
-      case Tw2RotationCurve.Interpolation.CONSTANT:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, ck_1.value);
-
-      case Tw2RotationCurve.Interpolation.LINEAR:
-        value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
-        value[1] = ck_1.value[1] * (1 - nt) + ck.value[1] * nt;
-        value[2] = ck_1.value[2] * (1 - nt) + ck.value[2] * nt;
-        value[3] = ck_1.value[3] * (1 - nt) + ck.value[3] * nt;
-        return value;
-
-      case Tw2RotationCurve.Interpolation.HERMITE:
-        const collect = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
-              arr = [ck_1.value, ck_1.right, ck.left, ck.value];
-
-        for (let i = 3; i > 0; i--) {
-          const power = _global__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
-          if (power > 1) _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, arr[i]);
-          value[0] = -arr[i - 1][0];
-          value[1] = -arr[i - 1][1];
-          value[2] = -arr[i - 1][2];
-          value[3] = arr[i - 1][3];
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, arr[i]);
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].pow(value, value, power);
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(collect, collect, value);
-        }
-
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, ck_1.value);
-
-      case Tw2RotationCurve.Interpolation.SLERP:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, ck_1.value, ck.value, nt);
-
-      default:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].sqlerp(value, ck_1.value, ck_1.right, ck.left, ck.value, nt);
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2RotationCurve, "outputDimention", 4);
-
-_defineProperty(Tw2RotationCurve, "inputDimension", 4);
-
-_defineProperty(Tw2RotationCurve, "valueProperty", "value");
-
-_defineProperty(Tw2RotationCurve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
-
-_defineProperty(Tw2RotationCurve, "Child", Tw2QuaternionKey);
-
-_defineProperty(Tw2RotationCurve, "Extrapolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  GRADIENT: 2,
-  CYCLE: 3
-});
-
-_defineProperty(Tw2RotationCurve, "Interpolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  LINEAR: 2,
-  HERMITE: 3,
-  SLERP: 5,
-  SQUAD: 6
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2ScalarCurve.js":
-/*!***********************************************!*\
-  !*** ./curve/legacy/curves/Tw2ScalarCurve.js ***!
-  \***********************************************/
-/*! exports provided: Tw2ScalarKey, Tw2ScalarCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return Tw2ScalarKey; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return Tw2ScalarCurve; });
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tw2ScalarKey
- *
- * @property {number} value
- * @property {number} left
- * @property {number} right
- * @property {number} interpolation
- * @class
- */
-
-class Tw2ScalarKey extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", 0);
-
-    _defineProperty(this, "left", 0);
-
-    _defineProperty(this, "right", 0);
-
-    _defineProperty(this, "interpolation", 0);
-  }
-
-}
-/**
- * Tw2ScalarCurve
- *
- * @property {number} start
- * @property {number} timeScale
- * @property {number} timeOffset
- * @property {number} value
- * @property {number} extrapolation
- * @property {Array.<Tw2ScalarKey>} keys
- * @property {number} _currentKey
- * @property {number} length
- * @class
- */
-
-class Tw2ScalarCurve extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "timeScale", 1);
-
-    _defineProperty(this, "timeOffset", 0);
-
-    _defineProperty(this, "value", 0);
-
-    _defineProperty(this, "extrapolation", 0);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "_currentKey", 1);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Sort(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.value = this.GetValueAt(time);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @returns {number}
-   */
-
-
-  GetValueAt(time) {
-    time = time / this.timeScale - this.timeOffset;
-
-    if (this.length === 0) {
-      return this.value;
-    }
-
-    const firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
-
-    if (time >= lastKey.time) {
-      switch (this.extrapolation) {
-        case Tw2ScalarCurve.Extrapolation.NONE:
-          return this.value;
-
-        case Tw2ScalarCurve.Extrapolation.CONSTANT:
-          return lastKey.value;
-
-        case Tw2ScalarCurve.Extrapolation.GRADIENT:
-          return lastKey.value + (time - lastKey.time) * lastKey.right;
-
-        default:
-          time = time % lastKey.time;
-      }
-    } else if (time < 0 || time < firstKey.time) {
-      switch (this.extrapolation) {
-        case Tw2ScalarCurve.Extrapolation.NONE:
-          return this.value;
-
-        case Tw2ScalarCurve.Extrapolation.GRADIENT:
-          return firstKey.value + (time * this.length - lastKey.time) * firstKey.left;
-
-        default:
-          return firstKey.value;
-      }
-    }
-
-    let ck = this.keys[this._currentKey],
-        ck_1 = this.keys[this._currentKey - 1];
-
-    while (time >= ck.time || time < ck_1.time) {
-      if (time < ck_1.time) this._currentKey = 0;
-      this._currentKey++;
-      ck = this.keys[this._currentKey];
-      ck_1 = this.keys[this._currentKey - 1];
-    }
-
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
-
-    switch (ck_1.interpolation) {
-      case Tw2ScalarCurve.Interpolation.CONSTANT:
-        return ck_1.value;
-
-      case Tw2ScalarCurve.Interpolation.LINEAR:
-        return ck_1.value * (1 - nt) + ck.value * nt;
-
-      case Tw2ScalarCurve.Interpolation.HERMITE:
-        const k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
-              k2 = -2 * nt * nt * nt + 3 * nt * nt,
-              k1 = nt * nt * nt - 2 * nt * nt + nt,
-              k0 = nt * nt * nt - nt * nt;
-        return k3 * ck_1.value + k2 * ck.value + k1 * ck_1.right + k0 * ck.left;
-
-      default:
-        const sq = Math.sqrt(ck_1.value / ck.value),
-              exponent = Math.exp(-time / ck_1.right),
-              ret = 1.0 + (sq - 1.0) * exponent;
-        return ret * ret * ck.value;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2ScalarCurve, "inputDimension", 1);
-
-_defineProperty(Tw2ScalarCurve, "outputDimension", 1);
-
-_defineProperty(Tw2ScalarCurve, "valueProperty", "value");
-
-_defineProperty(Tw2ScalarCurve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE);
-
-_defineProperty(Tw2ScalarCurve, "Key", Tw2ScalarKey);
-
-_defineProperty(Tw2ScalarCurve, "Extrapolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  GRADIENT: 2,
-  CYCLE: 3
-});
-
-_defineProperty(Tw2ScalarCurve, "Interpolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  LINEAR: 2,
-  HERMITE: 3,
-  CATMULROM: 4
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2ScalarCurve2.js":
-/*!************************************************!*\
-  !*** ./curve/legacy/curves/Tw2ScalarCurve2.js ***!
-  \************************************************/
-/*! exports provided: Tw2ScalarKey2, Tw2ScalarCurve2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return Tw2ScalarKey2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return Tw2ScalarCurve2; });
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tw2ScalarKey2
- *
- * @property {number} value
- * @property {number} leftTangent
- * @property {number} rightTangent
- * @property {number} interpolation
- * @class
- */
-
-class Tw2ScalarKey2 extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", 0);
-
-    _defineProperty(this, "leftTangent", 0);
-
-    _defineProperty(this, "rightTangent", 0);
-
-    _defineProperty(this, "interpolation", 1);
-  }
-
-}
-/**
- * Tw2ScalarCurve2
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {number} startValue
- * @property {number} currentValue
- * @property {number} endValue
- * @property {number} startTangent
- * @property {number} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2ScalarKey2>} keys
- * @property {number} length
- * @class
- */
-
-class Tw2ScalarCurve2 extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "cycle", false);
-
-    _defineProperty(this, "reversed", false);
-
-    _defineProperty(this, "timeOffset", 0);
-
-    _defineProperty(this, "timeScale", 1);
-
-    _defineProperty(this, "startValue", 0);
-
-    _defineProperty(this, "currentValue", 0);
-
-    _defineProperty(this, "endValue", 0);
-
-    _defineProperty(this, "startTangent", 0);
-
-    _defineProperty(this, "endTangent", 0);
-
-    _defineProperty(this, "interpolation", 1);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Sort2(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.currentValue = this.GetValueAt(time);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @returns {number}
-   */
-
-
-  GetValueAt(time) {
-    time = time / this.timeScale + this.timeOffset;
-
-    if (this.length <= 0 || time <= 0) {
-      return this.startValue;
-    }
-
-    if (time > this.length) {
-      if (this.cycle) {
-        time = time % this.length;
-      } else if (this.reversed) {
-        return this.startValue;
-      } else {
-        return this.endValue;
-      }
-    }
-
-    if (this.reversed) {
-      time = this.length - time;
-    }
-
-    if (this.keys.length === 0) {
-      return this.Interpolate(time, null, null);
-    }
-
-    let startKey = this.keys[0],
-        endKey = this.keys[this.keys.length - 1];
-
-    if (time <= startKey.time) {
-      return this.Interpolate(time, null, startKey);
-    } else if (time >= endKey.time) {
-      return this.Interpolate(time, endKey, null);
-    }
-
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
-      startKey = this.keys[i];
-      endKey = this.keys[i + 1];
-      if (startKey.time <= time && endKey.time > time) break;
-    }
-
-    return this.Interpolate(time, startKey, endKey);
-  }
-  /**
-   * Interpolate
-   * @param {number} time
-   * @param {Tw2ScalarKey2} lastKey
-   * @param {Tw2ScalarKey2} nextKey
-   * @returns {number}
-   */
-
-
-  Interpolate(time, lastKey, nextKey) {
-    let startValue = this.startValue,
-        endValue = this.endValue,
-        interp = this.interpolation,
-        deltaTime = this.length;
-
-    if (lastKey !== null) {
-      interp = lastKey.interpolation;
-      time -= lastKey.time;
-    }
-
-    switch (interp) {
-      case Tw2ScalarCurve2.Interpolation.LINEAR:
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          endValue = nextKey.value;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        return startValue + (endValue - startValue) * (time / deltaTime);
-
-      case Tw2ScalarCurve2.Interpolation.HERMITE:
-        let inTangent = this.startTangent,
-            outTangent = this.endTangent;
-
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          inTangent = lastKey.rightTangent;
-          endValue = nextKey.value;
-          outTangent = nextKey.leftTangent;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          outTangent = nextKey.leftTangent;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          inTangent = lastKey.rightTangent;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        const s = time / deltaTime,
-              s2 = s * s,
-              s3 = s2 * s;
-        const c2 = -2.0 * s3 + 3.0 * s2,
-              c1 = 1.0 - c2,
-              c4 = s3 - s2,
-              c3 = s + c4 - s2;
-        return startValue * c1 + endValue * c2 + inTangent * c3 + outTangent * c4;
-
-      default:
-        return this.startValue;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2ScalarCurve2, "inputDimension", 1);
-
-_defineProperty(Tw2ScalarCurve2, "outputDimension", 1);
-
-_defineProperty(Tw2ScalarCurve2, "valueProperty", "currentValue");
-
-_defineProperty(Tw2ScalarCurve2, "curveType", _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE2);
-
-_defineProperty(Tw2ScalarCurve2, "Key", Tw2ScalarKey2);
-
-_defineProperty(Tw2ScalarCurve2, "Interpolation", {
-  CONSTANT: 0,
-  LINEAR: 1,
-  HERMITE: 2
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2SineCurve.js":
-/*!*********************************************!*\
-  !*** ./curve/legacy/curves/Tw2SineCurve.js ***!
-  \*********************************************/
-/*! exports provided: Tw2SineCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return Tw2SineCurve; });
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tw2SineCurve
- *
- * @property {String} name
- * @property {number} value
- * @property {number} offset
- * @property {number} scale
- * @property {number} speed
- */
-
-class Tw2SineCurve extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", 0);
-
-    _defineProperty(this, "offset", 0);
-
-    _defineProperty(this, "scale", 1);
-
-    _defineProperty(this, "speed", 1);
-  }
-
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-  UpdateValue(time) {
-    this.value = this.GetValueAt(time);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @returns {number}
-   */
-
-
-  GetValueAt(time) {
-    return Math.sin(time * Math.PI * 2 * this.speed) * this.scale + this.offset;
-  }
-  /**
-   * THe curve's dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2SineCurve, "outputDimension", 1);
-
-_defineProperty(Tw2SineCurve, "valueProperty", "value");
-
-_defineProperty(Tw2SineCurve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE_NO_KEYS);
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2Vector2Curve.js":
-/*!************************************************!*\
-  !*** ./curve/legacy/curves/Tw2Vector2Curve.js ***!
-  \************************************************/
-/*! exports provided: Tw2Vector2Key, Tw2Vector2Curve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return Tw2Vector2Key; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return Tw2Vector2Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2Vector2Key
- *
- * @property {vec2} value
- * @property {vec2} leftTangent
- * @property {vec2} rightTangent
- * @property {number} interpolation
- * @class
- */
-
-class Tw2Vector2Key extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "interpolation", 1);
-  }
-
-}
-/**
- * Tw2Vector2Curve
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {vec2} startValue - vec2 array
- * @property {vec2} currentValue - vec2 array
- * @property {vec2} endValue - vec2 array
- * @property {vec2} startTangent - vec2 array
- * @property {vec2} endTangent - vec2 array
- * @property {number} interpolation
- * @property {Array.<Tw2Vector2Key>} keys
- * @property {number} length
- * @class
- */
-
-class Tw2Vector2Curve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "cycle", false);
-
-    _defineProperty(this, "reversed", false);
-
-    _defineProperty(this, "timeOffset", 0);
-
-    _defineProperty(this, "timeScale", 1);
-
-    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create());
-
-    _defineProperty(this, "interpolation", 1);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.currentValue);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec2} value - vec2 array
-   * @returns {vec2} vec2 array
-   * @prototype
-   */
-
-
-  GetValueAt(time, value) {
-    time = time / this.timeScale + this.timeOffset;
-
-    if (this.length <= 0 || time <= 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
-    }
-
-    if (time > this.length) {
-      if (this.cycle) {
-        time = time % this.length;
-      } else if (this.reversed) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
-      } else {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.endValue);
-      }
-    }
-
-    if (this.reversed) {
-      time = this.length - time;
-    }
-
-    if (this.keys.length === 0) {
-      return this.Interpolate(time, null, null, value);
-    }
-
-    let startKey = this.keys[0],
-        endKey = this.keys[this.keys.length - 1];
-
-    if (time <= startKey.time) {
-      return this.Interpolate(time, null, startKey, value);
-    } else if (time >= endKey.time) {
-      return this.Interpolate(time, endKey, null, value);
-    }
-
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
-      startKey = this.keys[i];
-      endKey = this.keys[i + 1];
-      if (startKey.time <= time && endKey.time > time) break;
-    }
-
-    return this.Interpolate(time, startKey, endKey, value);
-  }
-  /**
-   * Interpolate
-   * @param {number} time
-   * @param {Tw2Vector2Key} lastKey
-   * @param {Tw2Vector2Key} nextKey
-   * @param {vec2} value - vec2 array
-   * @returns {vec2} vec2 array
-   */
-
-
-  Interpolate(time, lastKey, nextKey, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
-    let startValue = this.startValue,
-        endValue = this.endValue,
-        interp = this.interpolation,
-        deltaTime = this.length;
-
-    if (lastKey !== null) {
-      interp = lastKey.interpolation;
-      time -= lastKey.time;
-    }
-
-    switch (interp) {
-      case Tw2Vector2Curve.Interpolation.LINEAR:
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          endValue = nextKey.value;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
-        value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
-        return value;
-
-      case Tw2Vector2Curve.Interpolation.HERMITE:
-        let inTangent = this.startTangent,
-            outTangent = this.endTangent;
-
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          inTangent = lastKey.rightTangent;
-          endValue = nextKey.value;
-          outTangent = nextKey.leftTangent;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          outTangent = nextKey.leftTangent;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          inTangent = lastKey.rightTangent;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        const s = time / deltaTime,
-              s2 = s * s,
-              s3 = s2 * s;
-        const c2 = -2.0 * s3 + 3.0 * s2,
-              c1 = 1.0 - c2,
-              c4 = s3 - s2,
-              c3 = s + c4 - s2;
-        value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
-        value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
-        return value;
-
-      default:
-        return value;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2Vector2Curve, "inputDimension", 2);
-
-_defineProperty(Tw2Vector2Curve, "outputDimension", 2);
-
-_defineProperty(Tw2Vector2Curve, "valueProperty", "value");
-
-_defineProperty(Tw2Vector2Curve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
-
-_defineProperty(Tw2Vector2Curve, "Key", Tw2Vector2Key);
-
-_defineProperty(Tw2Vector2Curve, "Interpolation", {
-  CONSTANT: 0,
-  LINEAR: 1,
-  HERMITE: 2
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2Vector3Curve.js":
-/*!************************************************!*\
-  !*** ./curve/legacy/curves/Tw2Vector3Curve.js ***!
-  \************************************************/
-/*! exports provided: Tw2Vector3Key, Tw2Vector3Curve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return Tw2Vector3Key; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return Tw2Vector3Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2Vector3Key
- *
- * @property {number} time
- * @property {vec3} value
- * @property {vec3} leftTangent
- * @property {vec3} rightTangent
- * @property {number} interpolation
- * @class
- */
-
-class Tw2Vector3Key extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "leftTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "rightTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "interpolation", 1);
-  }
-
-}
-/**
- * Tw2Vector3Curve
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {vec3} startValue
- * @property {vec3} currentValue
- * @property {vec3} endValue
- * @property {vec3} startTangent
- * @property {vec3} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2Vector3Key>} keys
- * @property {number} length
- * @class
- */
-
-class Tw2Vector3Curve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "cycle", false);
-
-    _defineProperty(this, "reversed", false);
-
-    _defineProperty(this, "timeOffset", 0);
-
-    _defineProperty(this, "timeScale", 1);
-
-    _defineProperty(this, "startValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "endValue", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "startTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "endTangent", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "interpolation", 1);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort2(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.currentValue);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec3} value
-   * @returns {vec3}
-   */
-
-
-  GetValueAt(time, value) {
-    time = time / this.timeScale + this.timeOffset;
-
-    if (this.length <= 0 || time <= 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
-    }
-
-    if (time > this.length) {
-      if (this.cycle) {
-        time = time % this.length;
-      } else if (this.reversed) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
-      } else {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.endValue);
-      }
-    }
-
-    if (this.reversed) {
-      time = this.length - time;
-    }
-
-    if (this.keys.length === 0) {
-      return this.Interpolate(time, null, null, value);
-    }
-
-    let startKey = this.keys[0],
-        endKey = this.keys[this.keys.length - 1];
-
-    if (time <= startKey.time) {
-      return this.Interpolate(time, null, startKey, value);
-    } else if (time >= endKey.time) {
-      return this.Interpolate(time, endKey, null, value);
-    }
-
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
-      startKey = this.keys[i];
-      endKey = this.keys[i + 1];
-      if (startKey.time <= time && endKey.time > time) break;
-    }
-
-    return this.Interpolate(time, startKey, endKey, value);
-  }
-  /**
-   * Interpolate
-   * @param {number} time
-   * @param {Tw2Vector3Key} lastKey
-   * @param {Tw2Vector3Key} nextKey
-   * @param {vec3} value
-   * @returns {vec3}
-   */
-
-
-  Interpolate(time, lastKey, nextKey, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
-    let startValue = this.startValue,
-        endValue = this.endValue,
-        interp = this.interpolation,
-        deltaTime = this.length;
-
-    if (lastKey !== null) {
-      interp = lastKey.interpolation;
-      time -= lastKey.time;
-    }
-
-    switch (interp) {
-      case Tw2Vector3Curve.Interpolation.LINEAR:
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          endValue = nextKey.value;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        value[0] = startValue[0] + (endValue[0] - startValue[0]) * (time / deltaTime);
-        value[1] = startValue[1] + (endValue[1] - startValue[1]) * (time / deltaTime);
-        value[2] = startValue[2] + (endValue[2] - startValue[2]) * (time / deltaTime);
-        return value;
-
-      case Tw2Vector3Curve.Interpolation.HERMITE:
-        let inTangent = this.startTangent,
-            outTangent = this.endTangent;
-
-        if (lastKey && nextKey) {
-          startValue = lastKey.value;
-          inTangent = lastKey.rightTangent;
-          endValue = nextKey.value;
-          outTangent = nextKey.leftTangent;
-          deltaTime = nextKey.time - lastKey.time;
-        } else if (nextKey) {
-          endValue = nextKey.value;
-          outTangent = nextKey.leftTangent;
-          deltaTime = nextKey.time;
-        } else if (lastKey) {
-          startValue = lastKey.value;
-          inTangent = lastKey.rightTangent;
-          deltaTime = this.length - lastKey.time;
-        }
-
-        const s = time / deltaTime,
-              s2 = s * s,
-              s3 = s2 * s;
-        const c2 = -2.0 * s3 + 3.0 * s2,
-              c1 = 1.0 - c2,
-              c4 = s3 - s2,
-              c3 = s + c4 - s2;
-        value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
-        value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
-        value[2] = startValue[2] * c1 + endValue[2] * c2 + inTangent[2] * c3 + outTangent[2] * c4;
-        return value;
-
-      default:
-        return value;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2Vector3Curve, "inputDimension", 3);
-
-_defineProperty(Tw2Vector3Curve, "outputDimension", 3);
-
-_defineProperty(Tw2Vector3Curve, "valueProperty", "currentValue");
-
-_defineProperty(Tw2Vector3Curve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE2);
-
-_defineProperty(Tw2Vector3Curve, "Key", Tw2Vector3Key);
-
-_defineProperty(Tw2Vector3Curve, "Interpolation", {
-  CONSTANT: 0,
-  LINEAR: 1,
-  HERMITE: 2
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/Tw2VectorCurve.js":
-/*!***********************************************!*\
-  !*** ./curve/legacy/curves/Tw2VectorCurve.js ***!
-  \***********************************************/
-/*! exports provided: Tw2VectorKey, Tw2VectorCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return Tw2VectorKey; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return Tw2VectorCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2VectorKey
- *
- * @property {vec3} value
- * @property {vec3} left
- * @property {vec3} right
- * @property {number} interpolation
- * @inherits Tw2CurveKey
- * @class
- */
-
-class Tw2VectorKey extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "left", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "right", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "interpolation", 0);
-  }
-
-}
-/**
- * Tw2Vector3Curve
- *
- * @property {String} name
- * @property {number} start
- * @property {vec3} value
- * @property {number} extrapolation
- * @property {Array.<Tw2VectorKey>} keys
- * @property {number} _currentKey
- * @property {number} length
- * @class
- */
-
-class Tw2VectorCurve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "extrapolation", 0);
-
-    _defineProperty(this, "keys", []);
-
-    _defineProperty(this, "_currentKey", 1);
-
-    _defineProperty(this, "length", 0);
-  }
-
-  /**
-   * Sorts the curve's keys
-   */
-  Sort() {
-    _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Sort(this);
-  }
-  /**
-   * Gets the curve's length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return this.length;
-  }
-  /**
-   * Updates the current value at the given time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec3} value
-   * @returns {vec3}
-   */
-
-
-  GetValueAt(time, value) {
-    if (this.length === 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
-    }
-
-    const firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
-
-    if (time >= lastKey.time) {
-      switch (this.extrapolation) {
-        case Tw2VectorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
-
-        case Tw2VectorCurve.Extrapolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, lastKey.value);
-
-        case Tw2VectorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
-
-        default:
-          time = time % lastKey.time;
-      }
-    } else if (time < 0 || time < firstKey.time) {
-      switch (this.extrapolation) {
-        case Tw2VectorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
-
-        case Tw2VectorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
-
-        default:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, firstKey.value);
-      }
-    }
-
-    let ck = this.keys[this._currentKey],
-        ck_1 = this.keys[this._currentKey - 1];
-
-    while (time >= ck.time || time < ck_1.time) {
-      if (time < ck_1.time) this._currentKey = 0;
-      this._currentKey++;
-      ck = this.keys[this._currentKey];
-      ck_1 = this.keys[this._currentKey - 1];
-    }
-
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
-
-    switch (ck_1.interpolation) {
-      case Tw2VectorCurve.Interpolation.CONSTANT:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, ck_1.value);
-
-      case Tw2VectorCurve.Interpolation.LINEAR:
-        value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
-        value[1] = ck_1.value[1] * (1 - nt) + ck.value[1] * nt;
-        value[2] = ck_1.value[2] * (1 - nt) + ck.value[2] * nt;
-        return value;
-
-      case Tw2VectorCurve.Interpolation.HERMITE:
-        const k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
-              k2 = -2 * nt * nt * nt + 3 * nt * nt,
-              k1 = nt * nt * nt - 2 * nt * nt + nt,
-              k0 = nt * nt * nt - nt * nt;
-        value[0] = k3 * ck_1.value[0] + k2 * ck.value[0] + k1 * ck_1.right[0] + k0 * ck.left[0];
-        value[1] = k3 * ck_1.value[1] + k2 * ck.value[1] + k1 * ck_1.right[1] + k0 * ck.left[1];
-        value[2] = k3 * ck_1.value[2] + k2 * ck.value[2] + k1 * ck_1.right[2] + k0 * ck.left[2];
-        return value;
-
-      default:
-        return value;
-    }
-  }
-  /**
-   * The curve's key dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2VectorCurve, "inputDimension", 3);
-
-_defineProperty(Tw2VectorCurve, "outputDimension", 3);
-
-_defineProperty(Tw2VectorCurve, "valueProperty", "value");
-
-_defineProperty(Tw2VectorCurve, "curveType", _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE);
-
-_defineProperty(Tw2VectorCurve, "Key", Tw2VectorKey);
-
-_defineProperty(Tw2VectorCurve, "Extrapolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  GRADIENT: 2,
-  CYCLE: 3
-});
-
-_defineProperty(Tw2VectorCurve, "Interpolation", {
-  NONE: 0,
-  CONSTANT: 1,
-  LINEAR: 2,
-  HERMITE: 3
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/curves/index.js":
-/*!**************************************!*\
-  !*** ./curve/legacy/curves/index.js ***!
-  \**************************************/
-/*! exports provided: Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ColorCurve */ "./curve/legacy/curves/Tw2ColorCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _Tw2ColorCurve__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorCurve"]; });
-
-/* harmony import */ var _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ColorCurve2 */ "./curve/legacy/curves/Tw2ColorCurve2.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorKey2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _Tw2ColorCurve2__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorCurve2"]; });
-
-/* harmony import */ var _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2QuaternionCurve */ "./curve/legacy/curves/Tw2QuaternionCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_2__["Tw2QuaternionKey2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _Tw2QuaternionCurve__WEBPACK_IMPORTED_MODULE_2__["Tw2QuaternionCurve"]; });
-
-/* harmony import */ var _Tw2RandomConstantCurve__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2RandomConstantCurve */ "./curve/legacy/curves/Tw2RandomConstantCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _Tw2RandomConstantCurve__WEBPACK_IMPORTED_MODULE_3__["Tw2RandomConstantCurve"]; });
-
-/* harmony import */ var _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2RigidOrientation */ "./curve/legacy/curves/Tw2RigidOrientation.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_4__["Tw2Torque"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _Tw2RigidOrientation__WEBPACK_IMPORTED_MODULE_4__["Tw2RigidOrientation"]; });
-
-/* harmony import */ var _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2RotationCurve */ "./curve/legacy/curves/Tw2RotationCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_5__["Tw2QuaternionKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _Tw2RotationCurve__WEBPACK_IMPORTED_MODULE_5__["Tw2RotationCurve"]; });
-
-/* harmony import */ var _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2ScalarCurve */ "./curve/legacy/curves/Tw2ScalarCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _Tw2ScalarCurve__WEBPACK_IMPORTED_MODULE_6__["Tw2ScalarCurve"]; });
-
-/* harmony import */ var _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2ScalarCurve2 */ "./curve/legacy/curves/Tw2ScalarCurve2.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_7__["Tw2ScalarKey2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _Tw2ScalarCurve2__WEBPACK_IMPORTED_MODULE_7__["Tw2ScalarCurve2"]; });
-
-/* harmony import */ var _Tw2SineCurve__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tw2SineCurve */ "./curve/legacy/curves/Tw2SineCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _Tw2SineCurve__WEBPACK_IMPORTED_MODULE_8__["Tw2SineCurve"]; });
-
-/* harmony import */ var _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Tw2Vector2Curve */ "./curve/legacy/curves/Tw2Vector2Curve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_9__["Tw2Vector2Key"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _Tw2Vector2Curve__WEBPACK_IMPORTED_MODULE_9__["Tw2Vector2Curve"]; });
-
-/* harmony import */ var _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Tw2Vector3Curve */ "./curve/legacy/curves/Tw2Vector3Curve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_10__["Tw2Vector3Key"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _Tw2Vector3Curve__WEBPACK_IMPORTED_MODULE_10__["Tw2Vector3Curve"]; });
-
-/* harmony import */ var _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Tw2VectorCurve */ "./curve/legacy/curves/Tw2VectorCurve.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_11__["Tw2VectorKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _Tw2VectorCurve__WEBPACK_IMPORTED_MODULE_11__["Tw2VectorCurve"]; });
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _sequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2YPRSequencer"]; });
 
 
 
@@ -34297,90 +34392,26 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************!*\
   !*** ./curve/legacy/index.js ***!
   \*******************************/
-/*! exports provided: Tw2ColorKey, Tw2ColorCurve, Tw2ColorKey2, Tw2ColorCurve2, Tw2QuaternionKey2, Tw2QuaternionCurve, Tw2RandomConstantCurve, Tw2Torque, Tw2RigidOrientation, Tw2QuaternionKey, Tw2RotationCurve, Tw2ScalarKey, Tw2ScalarCurve, Tw2ScalarKey2, Tw2ScalarCurve2, Tw2SineCurve, Tw2Vector2Key, Tw2Vector2Curve, Tw2Vector3Key, Tw2Vector3Curve, Tw2VectorKey, Tw2VectorCurve, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer, Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine */
+/*! exports provided: Tw2WbgTrack, Tw2WbgTransformTrack, Tw2TransformTrack, Tw2MayaEulerRotationCurve, Tw2MayaScalarCurve, Tw2MayaVector3Curve, Tw2MayaAnimationEngine */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _curves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./curves */ "./curve/legacy/curves/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorKey"]; });
+/* harmony import */ var _tracks__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tracks */ "./curve/legacy/tracks/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_0__["Tw2WbgTrack"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorCurve"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_0__["Tw2WbgTransformTrack"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorKey2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_0__["Tw2TransformTrack"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorCurve2"]; });
+/* harmony import */ var _maya__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./maya */ "./curve/legacy/maya/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaEulerRotationCurve", function() { return _maya__WEBPACK_IMPORTED_MODULE_1__["Tw2MayaEulerRotationCurve"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2QuaternionKey2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaScalarCurve", function() { return _maya__WEBPACK_IMPORTED_MODULE_1__["Tw2MayaScalarCurve"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2QuaternionCurve"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaVector3Curve", function() { return _maya__WEBPACK_IMPORTED_MODULE_1__["Tw2MayaVector3Curve"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomConstantCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2RandomConstantCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2Torque"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2RigidOrientation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2QuaternionKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2RotationCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ScalarKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ScalarCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarKey2", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ScalarKey2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarCurve2", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2ScalarCurve2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2SineCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2SineCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2Vector2Key"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2Vector2Curve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2Vector3Key"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2Vector3Curve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2VectorKey"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return _curves__WEBPACK_IMPORTED_MODULE_0__["Tw2VectorCurve"]; });
-
-/* harmony import */ var _sequencers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sequencers */ "./curve/legacy/sequencers/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2ColorSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2EulerRotation"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2QuaternionSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2RGBAScalarSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2ScalarSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2XYZScalarSequencer"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _sequencers__WEBPACK_IMPORTED_MODULE_1__["Tw2YPRSequencer"]; });
-
-/* harmony import */ var _tracks__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./tracks */ "./curve/legacy/tracks/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_2__["Tw2WbgTrack"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_2__["Tw2WbgTransformTrack"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformTrack", function() { return _tracks__WEBPACK_IMPORTED_MODULE_2__["Tw2TransformTrack"]; });
-
-/* harmony import */ var _maya__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./maya */ "./curve/legacy/maya/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaEulerRotationCurve", function() { return _maya__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaEulerRotationCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaScalarCurve", function() { return _maya__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaScalarCurve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaVector3Curve", function() { return _maya__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaVector3Curve"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaAnimationEngine", function() { return _maya__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaAnimationEngine"]; });
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaAnimationEngine", function() { return _maya__WEBPACK_IMPORTED_MODULE_1__["Tw2MayaAnimationEngine"]; });
 
 
 
@@ -35140,961 +35171,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2MayaAnimationEngine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2MayaAnimationEngine */ "./curve/legacy/maya/Tw2MayaAnimationEngine.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaAnimationEngine", function() { return _Tw2MayaAnimationEngine__WEBPACK_IMPORTED_MODULE_3__["Tw2MayaAnimationEngine"]; });
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2ColorSequencer.js":
-/*!******************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2ColorSequencer.js ***!
-  \******************************************************/
-/*! exports provided: Tw2ColorSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return Tw2ColorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2ColorSequencer
- *
- * @property {number} start
- * @property {vec4} value
- * @property {number} operator
- * @property {Array<Tw2Curve>} functions
- * @class
- */
-
-class Tw2ColorSequencer extends _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "operator", 0);
-
-    _defineProperty(this, "functions", []);
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromKeys(this);
-  }
-  /**
-   * Updates a value at a specific time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec4} value
-   * @returns {vec4}
-   */
-
-
-  GetValueAt(time, value) {
-    const vec4_0 = _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec4_0;
-
-    switch (this.operator) {
-      case Tw2ColorSequencer.Operator.MULTIPLY:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 1, 1, 1, 1);
-
-        for (let i = 0; i < this.functions.length; ++i) {
-          this.functions[i].GetValueAt(time, vec4_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(value, value, vec4_0);
-        }
-
-        break;
-
-      default:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 0, 0, 0, 0);
-
-        for (let i = 0; i < this.functions.length; ++i) {
-          this.functions[i].GetValueAt(time, vec4_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
-        }
-
-    }
-
-    return value;
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2ColorSequencer, "inputDimension", 4);
-
-_defineProperty(Tw2ColorSequencer, "outputDimension", 4);
-
-_defineProperty(Tw2ColorSequencer, "valueProperty", "value");
-
-_defineProperty(Tw2ColorSequencer, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER);
-
-_defineProperty(Tw2ColorSequencer, "childArray", "functions");
-
-_defineProperty(Tw2ColorSequencer, "Operator", {
-  MULTIPLY: 0,
-  ADD: 1
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2EulerRotation.js":
-/*!*****************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2EulerRotation.js ***!
-  \*****************************************************/
-/*! exports provided: Tw2EulerRotation */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return Tw2EulerRotation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2EulerRotation
- *
- * @property {String} name
- * @property {Tw2Curve} [yawCurve]
- * @property {Tw2Curve} [pitchCurve]
- * @property {Tw2Curve} [rollCurve]
- * @property {quat} currentValue=[0,0,0,1]
- * @class
- */
-
-class Tw2EulerRotation extends _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "yawCurve", null);
-
-    _defineProperty(this, "pitchCurve", null);
-
-    _defineProperty(this, "rollCurve", null);
-
-    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
-  }
-  /**
-   * Updates the current value at a specific time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.currentValue);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {quat} value
-   * @returns {quat}
-   */
-
-
-  GetValueAt(time, value) {
-    const yaw = this.yawCurve ? this.yawCurve.GetValueAt(time) : 0.0,
-          pitch = this.pitchCurve ? this.pitchCurve.GetValueAt(time) : 0.0,
-          roll = this.rollCurve ? this.rollCurve.GetValueAt(time) : 0.0;
-    const sinYaw = Math.sin(yaw / 2.0),
-          cosYaw = Math.cos(yaw / 2.0),
-          sinPitch = Math.sin(pitch / 2.0),
-          cosPitch = Math.cos(pitch / 2.0),
-          sinRoll = Math.sin(roll / 2.0),
-          cosRoll = Math.cos(roll / 2.0);
-    value[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
-    value[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
-    value[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
-    value[3] = cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll;
-    return value;
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2EulerRotation, "inputDimension", 1);
-
-_defineProperty(Tw2EulerRotation, "outputDimension", 4);
-
-_defineProperty(Tw2EulerRotation, "valueProperty", "currentValue");
-
-_defineProperty(Tw2EulerRotation, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
-
-_defineProperty(Tw2EulerRotation, "childProperties", ["yawCurve", "pitchCurve", "rollCurve"]);
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2QuaternionSequencer.js":
-/*!***********************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2QuaternionSequencer.js ***!
-  \***********************************************************/
-/*! exports provided: Tw2QuaternionSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return Tw2QuaternionSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2QuaternionSequencer
- *
- * @property {String} name
- * @property {number} start
- * @property {quat} value
- * @property {Array<Tw2Curve>} functions
- * @class
- */
-
-class Tw2QuaternionSequencer extends _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "functions", []);
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromKeys(this);
-  }
-  /**
-   * Updates a value at a specific time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {quat} value
-   * @returns {quat}
-   */
-
-
-  GetValueAt(time, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(value);
-    const quat_0 = _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.quat_0;
-
-    for (let i = 0; i < this.functions.length; ++i) {
-      this.functions[i].GetValueAt(time, quat_0);
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, quat_0);
-    }
-
-    return value;
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2QuaternionSequencer, "inputDimension", 4);
-
-_defineProperty(Tw2QuaternionSequencer, "outputDimension", 4);
-
-_defineProperty(Tw2QuaternionSequencer, "valueProperty", "value");
-
-_defineProperty(Tw2QuaternionSequencer, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER);
-
-_defineProperty(Tw2QuaternionSequencer, "childArray", "functions");
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2RGBAScalarSequencer.js":
-/*!***********************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2RGBAScalarSequencer.js ***!
-  \***********************************************************/
-/*! exports provided: Tw2RGBAScalarSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return Tw2RGBAScalarSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2RGBAScalarSequencer
- *
- * @property {vec4} value
- * @property {Tw2Curve} RedCurve
- * @property {Tw2Curve} GreenCurve
- * @property {Tw2Curve} BlueCurve
- * @property {Tw2Curve} AlphaCurve
- * @class
- */
-
-class Tw2RGBAScalarSequencer extends _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
-
-    _defineProperty(this, "RedCurve", null);
-
-    _defineProperty(this, "GreenCurve", null);
-
-    _defineProperty(this, "BlueCurve", null);
-
-    _defineProperty(this, "AlphaCurve", null);
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
-  }
-  /**
-   * Updates the current value at a specific time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec4} value
-   * @returns {vec4}
-   */
-
-
-  GetValueAt(time, value) {
-    value[0] = this.RedCurve ? this.RedCurve.GetValueAt(time) : 0;
-    value[1] = this.GreenCurve ? this.GreenCurve.GetValueAt(time) : 0;
-    value[2] = this.BlueCurve ? this.BlueCurve.GetValueAt(time) : 0;
-    value[3] = this.AlphaCurve ? this.AlphaCurve.GetValueAt(time) : 0;
-    return value;
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2RGBAScalarSequencer, "inputDimension", 1);
-
-_defineProperty(Tw2RGBAScalarSequencer, "outputDimension", 4);
-
-_defineProperty(Tw2RGBAScalarSequencer, "valueProperty", "value");
-
-_defineProperty(Tw2RGBAScalarSequencer, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
-
-_defineProperty(Tw2RGBAScalarSequencer, "childProperties", ["RedCurve", "GreenCurve", "BlueCurve", "AlphaCurve"]);
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2ScalarSequencer.js":
-/*!*******************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2ScalarSequencer.js ***!
-  \*******************************************************/
-/*! exports provided: Tw2ScalarSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return Tw2ScalarSequencer; });
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-/**
- * Tw2ScalarSequencer
- *
- * @property {String} name
- * @property {number} value
- * @property {number} operator
- * @property {Array<Tw2Curve>} functions
- * @property {number} inMinClamp
- * @property {number} inMaxClamp
- * @property {number} outMinClamp
- * @property {number} outMaxClamp
- * @property {Boolean} clamping
- * @class
- */
-
-class Tw2ScalarSequencer extends _sequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", 0);
-
-    _defineProperty(this, "operator", 0);
-
-    _defineProperty(this, "functions", []);
-
-    _defineProperty(this, "inMinClamp", 0);
-
-    _defineProperty(this, "inMaxClamp", 1);
-
-    _defineProperty(this, "outMinClamp", 0);
-
-    _defineProperty(this, "outMaxClamp", 1);
-
-    _defineProperty(this, "clamping", false);
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"].Sort(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"].GetLengthFromKeys(this);
-  }
-  /**
-   * Updates a value at a specific time
-   *
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.value = this.GetValueAt(time);
-  }
-  /**
-   * Gets a value at a specific time
-   *
-   * @param {number} time
-   * @returns {number}
-   */
-
-
-  GetValueAt(time) {
-    let value;
-
-    switch (this.operator) {
-      case Tw2ScalarSequencer.Operator.MULTIPLY:
-        value = 1;
-
-        for (let i = 0; i < this.functions.length; ++i) {
-          let v = this.functions[i].GetValueAt(time);
-
-          if (this.clamping) {
-            v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
-          }
-
-          value *= v;
-        }
-
-        break;
-
-      default:
-        value = 0;
-
-        for (let i = 0; i < this.functions.length; ++i) {
-          let v = this.functions[i].GetValueAt(time);
-
-          if (this.clamping) {
-            v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
-          }
-
-          value += v;
-        }
-
-    }
-
-    if (this.clamping) {
-      value = Math.min(Math.max(value, this.outMinClamp), this.outMaxClamp);
-    }
-
-    return value;
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2ScalarSequencer, "inputDimension", 1);
-
-_defineProperty(Tw2ScalarSequencer, "outputDimension", 1);
-
-_defineProperty(Tw2ScalarSequencer, "valueProperty", "value");
-
-_defineProperty(Tw2ScalarSequencer, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"].Type.SEQUENCER);
-
-_defineProperty(Tw2ScalarSequencer, "childArray", "functions");
-
-_defineProperty(Tw2ScalarSequencer, "Operator", {
-  MULTIPLY: 0,
-  ADD: 1
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2VectorSequencer.js":
-/*!*******************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2VectorSequencer.js ***!
-  \*******************************************************/
-/*! exports provided: Tw2VectorSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return Tw2VectorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2VectorSequencer
- *
- * @property {String} name
- * @property {number} start
- * @property {vec3} value
- * @property {number} operator
- * @property {Array.<Tw2Curve>} functions
- * @class
- */
-
-class Tw2VectorSequencer extends _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "start", 0);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "operator", 0);
-
-    _defineProperty(this, "functions", []);
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromKeys(this);
-  }
-  /**
-   * Updates the current value at a specific time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec3} value
-   * @returns {vec3}
-   */
-
-
-  GetValueAt(time, value) {
-    const vec3_0 = _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec3_0;
-
-    switch (this.operator) {
-      case Tw2VectorSequencer.Operator.MULTIPLY:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 1, 1, 1);
-
-        for (let i = 0; i < this.functions.length; ++i) {
-          this.functions[i].GetValueAt(time, vec3_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(value, value, vec3_0);
-        }
-
-        return value;
-
-      default:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 0, 0, 0);
-
-        for (let i = 0; i < this.functions.length; ++i) {
-          this.functions[i].GetValueAt(time, vec3_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(value, value, vec3_0);
-        }
-
-        return value;
-    }
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2VectorSequencer, "inputDimension", 3);
-
-_defineProperty(Tw2VectorSequencer, "outputDimension", 3);
-
-_defineProperty(Tw2VectorSequencer, "valueProperty", "value");
-
-_defineProperty(Tw2VectorSequencer, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER);
-
-_defineProperty(Tw2VectorSequencer, "childArray", "functions");
-
-_defineProperty(Tw2VectorSequencer, "Operator", {
-  MULTIPLY: 0,
-  ADD: 1
-});
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2XYZScalarSequencer.js":
-/*!**********************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2XYZScalarSequencer.js ***!
-  \**********************************************************/
-/*! exports provided: Tw2XYZScalarSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return Tw2XYZScalarSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2XYZScalarSequencer
- *
- * @property {String} name
- * @property {vec3} value
- * @property {Tw2CurveSequencer} XCurve
- * @property {Tw2CurveSequencer} YCurve
- * @property {Tw2CurveSequencer} ZCurve
- * @class
- */
-
-class Tw2XYZScalarSequencer extends _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "XCurve", null);
-
-    _defineProperty(this, "YCurve", null);
-
-    _defineProperty(this, "ZCurve", null);
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
-  }
-  /**
-   * Updates a value at a specific time
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   * @param {number} time
-   * @param {vec3} value
-   * @returns {vec3}
-   */
-
-
-  GetValueAt(time, value) {
-    value[0] = this.XCurve ? this.XCurve.GetValueAt(time) : 0;
-    value[1] = this.YCurve ? this.YCurve.GetValueAt(time) : 0;
-    value[2] = this.ZCurve ? this.ZCurve.GetValueAt(time) : 0;
-    return value;
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2XYZScalarSequencer, "inputDimension", 1);
-
-_defineProperty(Tw2XYZScalarSequencer, "outputDimension", 3);
-
-_defineProperty(Tw2XYZScalarSequencer, "valueProperty", "value");
-
-_defineProperty(Tw2XYZScalarSequencer, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
-
-_defineProperty(Tw2XYZScalarSequencer, "childProperties", ["XCurve", "YCurve", "ZCurve"]);
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/Tw2YPRSequencer.js":
-/*!****************************************************!*\
-  !*** ./curve/legacy/sequencers/Tw2YPRSequencer.js ***!
-  \****************************************************/
-/*! exports provided: Tw2YPRSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return Tw2YPRSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _sequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../sequencer */ "./curve/sequencer/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-/**
- * Tw2YPRSequencer
- *
- * @property {quat} value
- * @property {vec3} YawPitchRoll
- * @property {Tw2Curve} YawCurve
- * @property {Tw2Curve} PitchCurve
- * @property {Tw2Curve} RollCurve
- * @class
- */
-
-class Tw2YPRSequencer extends _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
-
-    _defineProperty(this, "YawPitchRoll", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
-
-    _defineProperty(this, "YawCurve", null);
-
-    _defineProperty(this, "PitchCurve", null);
-
-    _defineProperty(this, "RollCurve", null);
-  }
-
-  /**
-   * Sorts the sequencer
-   */
-  Sort() {
-    _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
-  }
-  /**
-   * Gets sequencer length
-   * @returns {number}
-   */
-
-
-  GetLength() {
-    return _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
-  }
-  /**
-   * Updates a value at a specific time
-   *
-   * @param {number} time
-   */
-
-
-  UpdateValue(time) {
-    this.GetValueAt(time, this.value);
-  }
-  /**
-   * Gets a value at a specific time
-   *
-   * @param {number} time
-   * @param {quat} value
-   * @returns {quat}
-   */
-
-
-  GetValueAt(time, value) {
-    if (this.YawCurve) this.YawPitchRoll[0] = this.YawCurve.GetValueAt(time);
-    if (this.PitchCurve) this.YawPitchRoll[1] = this.PitchCurve.GetValueAt(time);
-    if (this.RollCurve) this.YawPitchRoll[2] = this.RollCurve.GetValueAt(time);
-    const sinYaw = Math.sin(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
-          cosYaw = Math.cos(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
-          sinPitch = Math.sin(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
-          cosPitch = Math.cos(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
-          sinRoll = Math.sin(this.YawPitchRoll[2] / 180 * Math.PI / 2.0),
-          cosRoll = Math.cos(this.YawPitchRoll[2] / 180 * Math.PI / 2.0);
-    value[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
-    value[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
-    value[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
-    value[3] = cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll;
-    return value;
-  }
-  /**
-   * The sequencer's curve dimension
-   * @type {number}
-   */
-
-
-}
-
-_defineProperty(Tw2YPRSequencer, "inputDimension", 1);
-
-_defineProperty(Tw2YPRSequencer, "outputDimension", 4);
-
-_defineProperty(Tw2YPRSequencer, "valueProperty", "value");
-
-_defineProperty(Tw2YPRSequencer, "curveType", _sequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
-
-_defineProperty(Tw2YPRSequencer, "childProperties", ["YawCurve", "PitchCurve", "RollCurve"]);
-
-/***/ }),
-
-/***/ "./curve/legacy/sequencers/index.js":
-/*!******************************************!*\
-  !*** ./curve/legacy/sequencers/index.js ***!
-  \******************************************/
-/*! exports provided: Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2ColorSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ColorSequencer */ "./curve/legacy/sequencers/Tw2ColorSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _Tw2ColorSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorSequencer"]; });
-
-/* harmony import */ var _Tw2EulerRotation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2EulerRotation */ "./curve/legacy/sequencers/Tw2EulerRotation.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _Tw2EulerRotation__WEBPACK_IMPORTED_MODULE_1__["Tw2EulerRotation"]; });
-
-/* harmony import */ var _Tw2QuaternionSequencer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2QuaternionSequencer */ "./curve/legacy/sequencers/Tw2QuaternionSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _Tw2QuaternionSequencer__WEBPACK_IMPORTED_MODULE_2__["Tw2QuaternionSequencer"]; });
-
-/* harmony import */ var _Tw2RGBAScalarSequencer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2RGBAScalarSequencer */ "./curve/legacy/sequencers/Tw2RGBAScalarSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _Tw2RGBAScalarSequencer__WEBPACK_IMPORTED_MODULE_3__["Tw2RGBAScalarSequencer"]; });
-
-/* harmony import */ var _Tw2ScalarSequencer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ScalarSequencer */ "./curve/legacy/sequencers/Tw2ScalarSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _Tw2ScalarSequencer__WEBPACK_IMPORTED_MODULE_4__["Tw2ScalarSequencer"]; });
-
-/* harmony import */ var _Tw2VectorSequencer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2VectorSequencer */ "./curve/legacy/sequencers/Tw2VectorSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _Tw2VectorSequencer__WEBPACK_IMPORTED_MODULE_5__["Tw2VectorSequencer"]; });
-
-/* harmony import */ var _Tw2XYZScalarSequencer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2XYZScalarSequencer */ "./curve/legacy/sequencers/Tw2XYZScalarSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _Tw2XYZScalarSequencer__WEBPACK_IMPORTED_MODULE_6__["Tw2XYZScalarSequencer"]; });
-
-/* harmony import */ var _Tw2YPRSequencer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2YPRSequencer */ "./curve/legacy/sequencers/Tw2YPRSequencer.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _Tw2YPRSequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2YPRSequencer"]; });
-
-
-
-
 
 
 
@@ -37026,7 +36102,7 @@ _defineProperty(Tw2CurveVector3, "__isStaging", 2);
 /*!**********************************!*\
   !*** ./curve/sequencer/index.js ***!
   \**********************************/
-/*! exports provided: TriColorSequencer, Tw2CurveColor, Tw2CurveEulerRotation, Tw2CurveVector3, Tw2CurveSequencer */
+/*! exports provided: TriColorSequencer, Tw2CurveColor, Tw2CurveEulerRotation, Tw2CurveVector3, Tw2CurveSequencer, Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -37045,6 +36121,979 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveSequencer", function() { return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_4__["Tw2CurveSequencer"]; });
+
+/* harmony import */ var _legacy__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./legacy */ "./curve/sequencer/legacy/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2ColorSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2EulerRotation"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2QuaternionSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2RGBAScalarSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2ScalarSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2VectorSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2XYZScalarSequencer"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _legacy__WEBPACK_IMPORTED_MODULE_5__["Tw2YPRSequencer"]; });
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2ColorSequencer.js":
+/*!*****************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2ColorSequencer.js ***!
+  \*****************************************************/
+/*! exports provided: Tw2ColorSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return Tw2ColorSequencer; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2ColorSequencer
+ *
+ * @property {number} start
+ * @property {vec4} value
+ * @property {number} operator
+ * @property {Array<Tw2Curve>} functions
+ * @class
+ */
+
+class Tw2ColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "operator", 0);
+
+    _defineProperty(this, "functions", []);
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromKeys(this);
+  }
+  /**
+   * Updates a value at a specific time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec4} value
+   * @returns {vec4}
+   */
+
+
+  GetValueAt(time, value) {
+    const vec4_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec4_0;
+
+    switch (this.operator) {
+      case Tw2ColorSequencer.Operator.MULTIPLY:
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 1, 1, 1, 1);
+
+        for (let i = 0; i < this.functions.length; ++i) {
+          this.functions[i].GetValueAt(time, vec4_0);
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(value, value, vec4_0);
+        }
+
+        break;
+
+      default:
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 0, 0, 0, 0);
+
+        for (let i = 0; i < this.functions.length; ++i) {
+          this.functions[i].GetValueAt(time, vec4_0);
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
+        }
+
+    }
+
+    return value;
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2ColorSequencer, "inputDimension", 4);
+
+_defineProperty(Tw2ColorSequencer, "outputDimension", 4);
+
+_defineProperty(Tw2ColorSequencer, "valueProperty", "value");
+
+_defineProperty(Tw2ColorSequencer, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER);
+
+_defineProperty(Tw2ColorSequencer, "childArray", "functions");
+
+_defineProperty(Tw2ColorSequencer, "Operator", {
+  MULTIPLY: 0,
+  ADD: 1
+});
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2EulerRotation.js":
+/*!****************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2EulerRotation.js ***!
+  \****************************************************/
+/*! exports provided: Tw2EulerRotation */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return Tw2EulerRotation; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2EulerRotation
+ *
+ * @property {String} name
+ * @property {Tw2Curve} [yawCurve]
+ * @property {Tw2Curve} [pitchCurve]
+ * @property {Tw2Curve} [rollCurve]
+ * @property {quat} currentValue=[0,0,0,1]
+ * @class
+ */
+
+class Tw2EulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "yawCurve", null);
+
+    _defineProperty(this, "pitchCurve", null);
+
+    _defineProperty(this, "rollCurve", null);
+
+    _defineProperty(this, "currentValue", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
+  }
+  /**
+   * Updates the current value at a specific time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.currentValue);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {quat} value
+   * @returns {quat}
+   */
+
+
+  GetValueAt(time, value) {
+    const yaw = this.yawCurve ? this.yawCurve.GetValueAt(time) : 0.0,
+          pitch = this.pitchCurve ? this.pitchCurve.GetValueAt(time) : 0.0,
+          roll = this.rollCurve ? this.rollCurve.GetValueAt(time) : 0.0;
+    const sinYaw = Math.sin(yaw / 2.0),
+          cosYaw = Math.cos(yaw / 2.0),
+          sinPitch = Math.sin(pitch / 2.0),
+          cosPitch = Math.cos(pitch / 2.0),
+          sinRoll = Math.sin(roll / 2.0),
+          cosRoll = Math.cos(roll / 2.0);
+    value[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
+    value[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
+    value[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
+    value[3] = cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll;
+    return value;
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2EulerRotation, "inputDimension", 1);
+
+_defineProperty(Tw2EulerRotation, "outputDimension", 4);
+
+_defineProperty(Tw2EulerRotation, "valueProperty", "currentValue");
+
+_defineProperty(Tw2EulerRotation, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
+
+_defineProperty(Tw2EulerRotation, "childProperties", ["yawCurve", "pitchCurve", "rollCurve"]);
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2QuaternionSequencer.js":
+/*!**********************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2QuaternionSequencer.js ***!
+  \**********************************************************/
+/*! exports provided: Tw2QuaternionSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return Tw2QuaternionSequencer; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2QuaternionSequencer
+ *
+ * @property {String} name
+ * @property {number} start
+ * @property {quat} value
+ * @property {Array<Tw2Curve>} functions
+ * @class
+ */
+
+class Tw2QuaternionSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "functions", []);
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromKeys(this);
+  }
+  /**
+   * Updates a value at a specific time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {quat} value
+   * @returns {quat}
+   */
+
+
+  GetValueAt(time, value) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(value);
+    const quat_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.quat_0;
+
+    for (let i = 0; i < this.functions.length; ++i) {
+      this.functions[i].GetValueAt(time, quat_0);
+      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, quat_0);
+    }
+
+    return value;
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2QuaternionSequencer, "inputDimension", 4);
+
+_defineProperty(Tw2QuaternionSequencer, "outputDimension", 4);
+
+_defineProperty(Tw2QuaternionSequencer, "valueProperty", "value");
+
+_defineProperty(Tw2QuaternionSequencer, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER);
+
+_defineProperty(Tw2QuaternionSequencer, "childArray", "functions");
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2RGBAScalarSequencer.js":
+/*!**********************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2RGBAScalarSequencer.js ***!
+  \**********************************************************/
+/*! exports provided: Tw2RGBAScalarSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return Tw2RGBAScalarSequencer; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2RGBAScalarSequencer
+ *
+ * @property {vec4} value
+ * @property {Tw2Curve} RedCurve
+ * @property {Tw2Curve} GreenCurve
+ * @property {Tw2Curve} BlueCurve
+ * @property {Tw2Curve} AlphaCurve
+ * @class
+ */
+
+class Tw2RGBAScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create());
+
+    _defineProperty(this, "RedCurve", null);
+
+    _defineProperty(this, "GreenCurve", null);
+
+    _defineProperty(this, "BlueCurve", null);
+
+    _defineProperty(this, "AlphaCurve", null);
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
+  }
+  /**
+   * Updates the current value at a specific time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec4} value
+   * @returns {vec4}
+   */
+
+
+  GetValueAt(time, value) {
+    value[0] = this.RedCurve ? this.RedCurve.GetValueAt(time) : 0;
+    value[1] = this.GreenCurve ? this.GreenCurve.GetValueAt(time) : 0;
+    value[2] = this.BlueCurve ? this.BlueCurve.GetValueAt(time) : 0;
+    value[3] = this.AlphaCurve ? this.AlphaCurve.GetValueAt(time) : 0;
+    return value;
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2RGBAScalarSequencer, "inputDimension", 1);
+
+_defineProperty(Tw2RGBAScalarSequencer, "outputDimension", 4);
+
+_defineProperty(Tw2RGBAScalarSequencer, "valueProperty", "value");
+
+_defineProperty(Tw2RGBAScalarSequencer, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
+
+_defineProperty(Tw2RGBAScalarSequencer, "childProperties", ["RedCurve", "GreenCurve", "BlueCurve", "AlphaCurve"]);
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2ScalarSequencer.js":
+/*!******************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2ScalarSequencer.js ***!
+  \******************************************************/
+/*! exports provided: Tw2ScalarSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return Tw2ScalarSequencer; });
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tw2ScalarSequencer
+ *
+ * @property {String} name
+ * @property {number} value
+ * @property {number} operator
+ * @property {Array<Tw2Curve>} functions
+ * @property {number} inMinClamp
+ * @property {number} inMaxClamp
+ * @property {number} outMinClamp
+ * @property {number} outMaxClamp
+ * @property {Boolean} clamping
+ * @class
+ */
+
+class Tw2ScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", 0);
+
+    _defineProperty(this, "operator", 0);
+
+    _defineProperty(this, "functions", []);
+
+    _defineProperty(this, "inMinClamp", 0);
+
+    _defineProperty(this, "inMaxClamp", 1);
+
+    _defineProperty(this, "outMinClamp", 0);
+
+    _defineProperty(this, "outMaxClamp", 1);
+
+    _defineProperty(this, "clamping", false);
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"].Sort(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"].GetLengthFromKeys(this);
+  }
+  /**
+   * Updates a value at a specific time
+   *
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.value = this.GetValueAt(time);
+  }
+  /**
+   * Gets a value at a specific time
+   *
+   * @param {number} time
+   * @returns {number}
+   */
+
+
+  GetValueAt(time) {
+    let value;
+
+    switch (this.operator) {
+      case Tw2ScalarSequencer.Operator.MULTIPLY:
+        value = 1;
+
+        for (let i = 0; i < this.functions.length; ++i) {
+          let v = this.functions[i].GetValueAt(time);
+
+          if (this.clamping) {
+            v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
+          }
+
+          value *= v;
+        }
+
+        break;
+
+      default:
+        value = 0;
+
+        for (let i = 0; i < this.functions.length; ++i) {
+          let v = this.functions[i].GetValueAt(time);
+
+          if (this.clamping) {
+            v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
+          }
+
+          value += v;
+        }
+
+    }
+
+    if (this.clamping) {
+      value = Math.min(Math.max(value, this.outMinClamp), this.outMaxClamp);
+    }
+
+    return value;
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2ScalarSequencer, "inputDimension", 1);
+
+_defineProperty(Tw2ScalarSequencer, "outputDimension", 1);
+
+_defineProperty(Tw2ScalarSequencer, "valueProperty", "value");
+
+_defineProperty(Tw2ScalarSequencer, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"].Type.SEQUENCER);
+
+_defineProperty(Tw2ScalarSequencer, "childArray", "functions");
+
+_defineProperty(Tw2ScalarSequencer, "Operator", {
+  MULTIPLY: 0,
+  ADD: 1
+});
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2VectorSequencer.js":
+/*!******************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2VectorSequencer.js ***!
+  \******************************************************/
+/*! exports provided: Tw2VectorSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return Tw2VectorSequencer; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2VectorSequencer
+ *
+ * @property {String} name
+ * @property {number} start
+ * @property {vec3} value
+ * @property {number} operator
+ * @property {Array.<Tw2Curve>} functions
+ * @class
+ */
+
+class Tw2VectorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "start", 0);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "operator", 0);
+
+    _defineProperty(this, "functions", []);
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromKeys(this);
+  }
+  /**
+   * Updates the current value at a specific time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec3} value
+   * @returns {vec3}
+   */
+
+
+  GetValueAt(time, value) {
+    const vec3_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec3_0;
+
+    switch (this.operator) {
+      case Tw2VectorSequencer.Operator.MULTIPLY:
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 1, 1, 1);
+
+        for (let i = 0; i < this.functions.length; ++i) {
+          this.functions[i].GetValueAt(time, vec3_0);
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(value, value, vec3_0);
+        }
+
+        return value;
+
+      default:
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 0, 0, 0);
+
+        for (let i = 0; i < this.functions.length; ++i) {
+          this.functions[i].GetValueAt(time, vec3_0);
+          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(value, value, vec3_0);
+        }
+
+        return value;
+    }
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2VectorSequencer, "inputDimension", 3);
+
+_defineProperty(Tw2VectorSequencer, "outputDimension", 3);
+
+_defineProperty(Tw2VectorSequencer, "valueProperty", "value");
+
+_defineProperty(Tw2VectorSequencer, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER);
+
+_defineProperty(Tw2VectorSequencer, "childArray", "functions");
+
+_defineProperty(Tw2VectorSequencer, "Operator", {
+  MULTIPLY: 0,
+  ADD: 1
+});
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2XYZScalarSequencer.js":
+/*!*********************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2XYZScalarSequencer.js ***!
+  \*********************************************************/
+/*! exports provided: Tw2XYZScalarSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return Tw2XYZScalarSequencer; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2XYZScalarSequencer
+ *
+ * @property {String} name
+ * @property {vec3} value
+ * @property {Tw2CurveSequencer} XCurve
+ * @property {Tw2CurveSequencer} YCurve
+ * @property {Tw2CurveSequencer} ZCurve
+ * @class
+ */
+
+class Tw2XYZScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "XCurve", null);
+
+    _defineProperty(this, "YCurve", null);
+
+    _defineProperty(this, "ZCurve", null);
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
+  }
+  /**
+   * Updates a value at a specific time
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   * @param {number} time
+   * @param {vec3} value
+   * @returns {vec3}
+   */
+
+
+  GetValueAt(time, value) {
+    value[0] = this.XCurve ? this.XCurve.GetValueAt(time) : 0;
+    value[1] = this.YCurve ? this.YCurve.GetValueAt(time) : 0;
+    value[2] = this.ZCurve ? this.ZCurve.GetValueAt(time) : 0;
+    return value;
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2XYZScalarSequencer, "inputDimension", 1);
+
+_defineProperty(Tw2XYZScalarSequencer, "outputDimension", 3);
+
+_defineProperty(Tw2XYZScalarSequencer, "valueProperty", "value");
+
+_defineProperty(Tw2XYZScalarSequencer, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
+
+_defineProperty(Tw2XYZScalarSequencer, "childProperties", ["XCurve", "YCurve", "ZCurve"]);
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/Tw2YPRSequencer.js":
+/*!***************************************************!*\
+  !*** ./curve/sequencer/legacy/Tw2YPRSequencer.js ***!
+  \***************************************************/
+/*! exports provided: Tw2YPRSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return Tw2YPRSequencer; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+/**
+ * Tw2YPRSequencer
+ *
+ * @property {quat} value
+ * @property {vec3} YawPitchRoll
+ * @property {Tw2Curve} YawCurve
+ * @property {Tw2Curve} PitchCurve
+ * @property {Tw2Curve} RollCurve
+ * @class
+ */
+
+class Tw2YPRSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "value", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create());
+
+    _defineProperty(this, "YawPitchRoll", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+
+    _defineProperty(this, "YawCurve", null);
+
+    _defineProperty(this, "PitchCurve", null);
+
+    _defineProperty(this, "RollCurve", null);
+  }
+
+  /**
+   * Sorts the sequencer
+   */
+  Sort() {
+    _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Sort2(this);
+  }
+  /**
+   * Gets sequencer length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].GetLengthFromProperties(this);
+  }
+  /**
+   * Updates a value at a specific time
+   *
+   * @param {number} time
+   */
+
+
+  UpdateValue(time) {
+    this.GetValueAt(time, this.value);
+  }
+  /**
+   * Gets a value at a specific time
+   *
+   * @param {number} time
+   * @param {quat} value
+   * @returns {quat}
+   */
+
+
+  GetValueAt(time, value) {
+    if (this.YawCurve) this.YawPitchRoll[0] = this.YawCurve.GetValueAt(time);
+    if (this.PitchCurve) this.YawPitchRoll[1] = this.PitchCurve.GetValueAt(time);
+    if (this.RollCurve) this.YawPitchRoll[2] = this.RollCurve.GetValueAt(time);
+    const sinYaw = Math.sin(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
+          cosYaw = Math.cos(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
+          sinPitch = Math.sin(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
+          cosPitch = Math.cos(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
+          sinRoll = Math.sin(this.YawPitchRoll[2] / 180 * Math.PI / 2.0),
+          cosRoll = Math.cos(this.YawPitchRoll[2] / 180 * Math.PI / 2.0);
+    value[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
+    value[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
+    value[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
+    value[3] = cosYaw * cosPitch * cosRoll + sinYaw * sinPitch * sinRoll;
+    return value;
+  }
+  /**
+   * The sequencer's curve dimension
+   * @type {number}
+   */
+
+
+}
+
+_defineProperty(Tw2YPRSequencer, "inputDimension", 1);
+
+_defineProperty(Tw2YPRSequencer, "outputDimension", 4);
+
+_defineProperty(Tw2YPRSequencer, "valueProperty", "value");
+
+_defineProperty(Tw2YPRSequencer, "curveType", _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].Type.SEQUENCER2);
+
+_defineProperty(Tw2YPRSequencer, "childProperties", ["YawCurve", "PitchCurve", "RollCurve"]);
+
+/***/ }),
+
+/***/ "./curve/sequencer/legacy/index.js":
+/*!*****************************************!*\
+  !*** ./curve/sequencer/legacy/index.js ***!
+  \*****************************************/
+/*! exports provided: Tw2ColorSequencer, Tw2EulerRotation, Tw2QuaternionSequencer, Tw2RGBAScalarSequencer, Tw2ScalarSequencer, Tw2VectorSequencer, Tw2XYZScalarSequencer, Tw2YPRSequencer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Tw2ColorSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ColorSequencer */ "./curve/sequencer/legacy/Tw2ColorSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return _Tw2ColorSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2ColorSequencer"]; });
+
+/* harmony import */ var _Tw2EulerRotation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2EulerRotation */ "./curve/sequencer/legacy/Tw2EulerRotation.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return _Tw2EulerRotation__WEBPACK_IMPORTED_MODULE_1__["Tw2EulerRotation"]; });
+
+/* harmony import */ var _Tw2QuaternionSequencer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2QuaternionSequencer */ "./curve/sequencer/legacy/Tw2QuaternionSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return _Tw2QuaternionSequencer__WEBPACK_IMPORTED_MODULE_2__["Tw2QuaternionSequencer"]; });
+
+/* harmony import */ var _Tw2RGBAScalarSequencer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2RGBAScalarSequencer */ "./curve/sequencer/legacy/Tw2RGBAScalarSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return _Tw2RGBAScalarSequencer__WEBPACK_IMPORTED_MODULE_3__["Tw2RGBAScalarSequencer"]; });
+
+/* harmony import */ var _Tw2ScalarSequencer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2ScalarSequencer */ "./curve/sequencer/legacy/Tw2ScalarSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ScalarSequencer", function() { return _Tw2ScalarSequencer__WEBPACK_IMPORTED_MODULE_4__["Tw2ScalarSequencer"]; });
+
+/* harmony import */ var _Tw2VectorSequencer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2VectorSequencer */ "./curve/sequencer/legacy/Tw2VectorSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return _Tw2VectorSequencer__WEBPACK_IMPORTED_MODULE_5__["Tw2VectorSequencer"]; });
+
+/* harmony import */ var _Tw2XYZScalarSequencer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2XYZScalarSequencer */ "./curve/sequencer/legacy/Tw2XYZScalarSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return _Tw2XYZScalarSequencer__WEBPACK_IMPORTED_MODULE_6__["Tw2XYZScalarSequencer"]; });
+
+/* harmony import */ var _Tw2YPRSequencer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2YPRSequencer */ "./curve/sequencer/legacy/Tw2YPRSequencer.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return _Tw2YPRSequencer__WEBPACK_IMPORTED_MODULE_7__["Tw2YPRSequencer"]; });
+
+
+
 
 
 
@@ -38176,6 +38225,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChild", function() { return EveChild; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* eslint no-unused-vars:0 */
 
 
@@ -38183,12 +38234,7 @@ __webpack_require__.r(__webpack_exports__);
  * Root EveChild class
  */
 
-function EveChild() {
-  _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
-}
-EveChild.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].prototype), {
-  constructor: EveChild,
-
+class EveChild extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Per frame update
    * @param {number} dt
@@ -38196,52 +38242,52 @@ EveChild.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODUL
    */
   Update(dt, parentTransform) {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
-  },
-
+  }
   /**
    * Gets object resources
    * @param {Array} [out=[]]
    * @returns {Array<Tw2Resource>} out
    */
+
+
   GetResources() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
-  },
-
+  }
   /**
    * Gets render batches
    * @param {number} mode
    * @param {Tw2BatchAccumulator} accumulator
    * @param {Tw2PerObjectData} perObjectData
    */
+
+
   GetBatches(mode, accumulator, perObjectData) {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
   }
+  /**
+   * Class globals and scratch variables
+   * @type {Object}
+   */
 
-});
-/**
- * Class globals and scratch variables
- * @type {Object}
- */
 
-EveChild.global = {
+}
+
+_defineProperty(EveChild, "global", {
   mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
   vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
-};
-/**
- * Per object data
- * @type {{ffe: *[]}}
- */
+});
 
-EveChild.perObjectData = {
+_defineProperty(EveChild, "perObjectData", {
   ffe: [["world", 16], ["worldInverseTranspose", 16]]
-};
-/**
- * Identifies that the class is a child effect
- * @returns {boolean}
- */
+  /**
+   * Identifies that the class is a child effect
+   * @returns {boolean}
+   */
 
-EveChild.__isEffectChild = true;
+});
+
+_defineProperty(EveChild, "__isEffectChild", true);
 
 /***/ }),
 
@@ -40291,7 +40337,7 @@ class EveMeshOverlayEffect extends _global__WEBPACK_IMPORTED_MODULE_2__["Tw2Base
 
 
   GetEffects(mode) {
-    if (!this.display) {
+    if (this.display) {
       switch (mode) {
         case _global__WEBPACK_IMPORTED_MODULE_2__["RM_OPAQUE"]:
           if (this.visible.opaqueEffects) return this.opaqueEffects;
@@ -43261,6 +43307,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObjectSet", function() { return EveObjectSet; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* eslint no-unused-vars:0 */
 
 
@@ -43272,27 +43320,29 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
 
-function EveObjectSetItem() {
-  _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
-  this.display = true;
-  this._dirty = true;
-}
-EveObjectSetItem.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].prototype), {
-  constructor: EveObjectSetItem,
+class EveObjectSetItem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "display", true);
+
+    _defineProperty(this, "_dirty", true);
+  }
 
   /**
    * Fire on value changes
    */
   OnValueChanged() {
     this._dirty = true;
-  },
-
+  }
   /**
    * Fires when the object is destroyed
    */
+
+
   OnDestroyed() {}
 
-});
+}
 /**
  * EveObjectSet base class
  * @ccp N/A
@@ -43304,104 +43354,144 @@ EveObjectSetItem.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORT
  * @property {Boolean} _autoRebuild   - Auto rebuilds the object if a child is dirty
  */
 
-function EveObjectSet() {
-  // ccpwgl
-  _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
-  this.autoRebuild = true;
-  this.display = true;
-  this.items = [];
-  this._dirty = true;
-  this._visibleItems = [];
-}
-EveObjectSet.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].prototype), {
-  constructor: EveObjectSet,
+class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "autoRebuild", true);
+
+    _defineProperty(this, "display", true);
+
+    _defineProperty(this, "items", []);
+
+    _defineProperty(this, "_dirty", true);
+
+    _defineProperty(this, "_visibleItems", []);
+  }
 
   /**
    * Initializes the set
    */
   Initialize() {
     this.Rebuild();
-  },
-
+  }
   /**
    * Fires on value changes
    */
+
+
   OnValueChanged() {
     this._dirty = true;
-  },
-
+  }
   /**
    * Creates an item from an options object and then adds it to the set
-   * @param {*} {values}
-   * @param {*} [opt={}]
+   * @param {*} [values={}]
+   * @param {Boolean} [skipUpdate]
+   * @param {Boolean} [skipEvents]
    * @returns {*}
    */
+
+
   CreateItem() {
     let values = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    let opt = arguments.length > 1 ? arguments[1] : undefined;
-    const item = this.constructor.Item.from(values, opt);
-    this.AddItem(item, opt ? opt.skipUpdate : false);
-    return item;
-  },
+    let skipUpdate = arguments.length > 1 ? arguments[1] : undefined;
+    let skipEvents = arguments.length > 2 ? arguments[2] : undefined;
+    const item = this.constructor.Item.from(values);
+    this.items.push(item);
+    this._dirty = true;
 
+    if (!skipEvents) {
+      this.emit("item_created", {
+        ctx: item
+      });
+    }
+
+    if (!skipUpdate) {
+      this.UpdateValues();
+    }
+
+    return item;
+  }
   /**
    * Adds a set item
    * @param {*} item
    * @param {Boolean} [skipUpdate]
+   * @param {Boolean} [skipEvents]
    */
-  AddItem(item, skipUpdate) {
-    if (!this.items.includes(item)) {
-      this.emit("child_added", {
-        ctx: item
-      }); //item.SetParent(this);
 
+
+  AddItem(item, skipUpdate, skipEvents) {
+    if (!this.items.includes(item)) {
       this.items.push(item);
       this._dirty = true;
-      if (!skipUpdate) this.UpdateValues(item);
+
+      if (!skipEvents) {
+        this.emit("item_added", {
+          ctx: item
+        });
+      }
+
+      if (!skipUpdate) {
+        this.UpdateValues(item);
+      }
+
       return true;
     }
 
     return false;
-  },
-
+  }
   /**
    * Removes a set item
    * @param {*} item
    * @param {Boolean} [skipUpdate]
+   * @param {Boolean} [skipEvents]
    */
-  RemoveItem(item, skipUpdate) {
+
+
+  RemoveItem(item, skipUpdate, skipEvents) {
     const index = this.items.indexOf(item);
 
     if (index !== -1) {
-      this.emit("child_removed", {
-        ctx: item
-      }); //item.UnsetParent(this);
-
       this.items.splice(index, 1);
       this._dirty = true;
-      if (!skipUpdate) this.UpdateValues(item);
+
+      if (!skipEvents) {
+        this.emit("item_removed", {
+          ctx: item
+        });
+      }
+
+      if (!skipUpdate) {
+        this.UpdateValues(item);
+      }
+
       return true;
     }
 
     return false;
-  },
-
+  }
   /**
    * Clears all items
    * @param {Boolean} [skipUpdate]
+   * @param {Boolean} [skipEvents]
    */
-  ClearItems(skipUpdate) {
+
+
+  ClearItems(skipUpdate, skipEvents) {
     for (let i = 0; i < this.items.length; i++) {
-      this.RemoveItem(this.items[i], true);
+      this.RemoveItem(this.items[i], true, skipEvents);
       i--;
     }
 
-    if (!skipUpdate) this.UpdateValues();
-  },
-
+    if (!skipUpdate) {
+      this.UpdateValues();
+    }
+  }
   /**
    * Rebuilds items
    */
+
+
   RebuildItems() {
     this._visibleItems.splice(0);
 
@@ -43416,12 +43506,13 @@ EveObjectSet.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_M
     }
 
     this._dirty = true;
-  },
-
+  }
   /**
    * Checks if any children are dirty
    * @returns {boolean}
    */
+
+
   AreItemsDirty() {
     for (let i = 0; i < this.items.length; i++) {
       if (this.items[i]._dirty) {
@@ -43430,14 +43521,14 @@ EveObjectSet.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_M
     }
 
     return false;
-  },
-
+  }
   /**
    * Per frame update
    * @param {Number} dt
-   * @param {mat4} parentMatrix
    */
-  Update(dt, parentMatrix) {
+
+
+  Update(dt) {
     if (!this._dirty && this.autoRebuild && this.AreItemsDirty()) {
       this._dirty = true;
     }
@@ -43445,61 +43536,62 @@ EveObjectSet.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_M
     if (this._dirty) {
       this.Rebuild();
     }
-  },
-
+  }
   /**
    * Unloads the set's buffers
    */
+
+
   Unload(skipEvent) {
     if (!skipEvent) {
       this.emit("unloaded");
     }
-  },
-
+  }
   /**
    * Rebuilds the set
    */
+
+
   Rebuild() {
     this.emit("rebuilt");
-  },
-
+  }
   /**
    * Gets render batches
    * @param {Number} mode
    * @param {Tw2BatchAccumulator} accumulator
    * @param {Tw2PerObjectData} perObjectData
    */
+
+
   GetBatches(mode, accumulator, perObjectData) {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
-  },
-
+  }
   /**
    * Renders the set
    */
+
+
   Render() {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
   }
+  /**
+   * The object set's item
+   * @type {?Function}
+   */
 
-});
-/**
- * The object set's item
- * @type {?Function}
- */
 
-EveObjectSet.Item = null;
-/**
- * Global and scratch variables
- * @type {*}
- */
+}
 
-EveObjectSet.global = {
+_defineProperty(EveObjectSet, "Item", null);
+
+_defineProperty(EveObjectSet, "global", {
   vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
   vec4_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
   mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
-};
+});
 
 /***/ }),
 
@@ -44407,15 +44499,15 @@ class EveSpotlightSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
  * Todo: Implement "intensity"
  * @ccp EveSpotlightSet
  *
- * @property {String} name                               - The spotlight set's name
- * @property {Tw2Effect} coneEffect                      - The spotlight set's cone effect
- * @property {Tw2Effect} glowEffect                      - The spotlight set's glow effect
- * @property {Number} intensity                          - The spotlight set's intensity
- * @property {Array.<EveSpotlightSetItem) spotlightItems - The spotlight set's children
- * @property {WebGLBuffer} _coneVertexBuffer             - Vertex buffer for the spotlight set's cone vertices
- * @property {WebGLBuffer} _spriteVertexBuffer           - Vertex buffer for the spotlight set's sprite/glow vertices
- * @property {WebGLBuffer} _indexBuffer                  - Index buffer for the spotlight set
- * @property {Tw2VertexDeclaration} _decl                - The spotlight set's vertex declarations
+ * @property {String} name                                - The spotlight set's name
+ * @property {Tw2Effect} coneEffect                       - The spotlight set's cone effect
+ * @property {Tw2Effect} glowEffect                       - The spotlight set's glow effect
+ * @property {Number} intensity                           - The spotlight set's intensity
+ * @property {Array.<EveSpotlightSetItem>} spotlightItems - The spotlight set's children
+ * @property {WebGLBuffer} _coneVertexBuffer              - Vertex buffer for the spotlight set's cone vertices
+ * @property {WebGLBuffer} _spriteVertexBuffer            - Vertex buffer for the spotlight set's sprite/glow vertices
+ * @property {WebGLBuffer} _indexBuffer                   - Index buffer for the spotlight set
+ * @property {Tw2VertexDeclaration} _decl                 - The spotlight set's vertex declarations
  */
 
 class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
@@ -44428,7 +44520,7 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
     _defineProperty(this, "glowEffect", null);
 
-    _defineProperty(this, "intensity", 0);
+    _defineProperty(this, "intensity", 1);
 
     _defineProperty(this, "_coneVertexBuffer", null);
 
@@ -44522,9 +44614,9 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
       for (let q = 0; q < coneQuadCount; ++q) {
         for (let v = 0; v < vertCount; ++v) {
           const offset = (i * coneQuadCount * vertCount + vertCount * q + v) * vertexSize;
-          coneArray[offset] = item.coneColor[0] * item.coneIntensity;
-          coneArray[offset + 1] = item.coneColor[1] * item.coneIntensity;
-          coneArray[offset + 2] = item.coneColor[2] * item.coneIntensity;
+          coneArray[offset] = item.coneColor[0] * item.coneIntensity * this.intensity;
+          coneArray[offset + 1] = item.coneColor[1] * item.coneIntensity * this.intensity;
+          coneArray[offset + 2] = item.coneColor[2] * item.coneIntensity * this.intensity;
           coneArray[offset + 3] = item.coneColor[3];
           coneArray[offset + 4] = item.transform[0];
           coneArray[offset + 5] = item.transform[4];
@@ -44565,17 +44657,17 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
           const offset = (i * spriteQuadCount * vertCount + vertCount * q + v) * vertexSize;
 
           if (q % 2 === 0) {
-            spriteArray[offset] = item.spriteColor[0] * item.spriteIntensity;
-            spriteArray[offset + 1] = item.spriteColor[1] * item.spriteIntensity;
-            spriteArray[offset + 2] = item.spriteColor[2] * item.spriteIntensity;
+            spriteArray[offset] = item.spriteColor[0] * item.spriteIntensity * this.intensity;
+            spriteArray[offset + 1] = item.spriteColor[1] * item.spriteIntensity * this.intensity;
+            spriteArray[offset + 2] = item.spriteColor[2] * item.spriteIntensity * this.intensity;
             spriteArray[offset + 3] = item.spriteColor[3];
             spriteArray[offset + 16] = item.spriteScale[0];
             spriteArray[offset + 17] = 1;
             spriteArray[offset + 18] = 1;
           } else {
-            spriteArray[offset] = item.flareColor[0] * item.flareIntensity;
-            spriteArray[offset + 1] = item.flareColor[1] * item.flareIntensity;
-            spriteArray[offset + 2] = item.flareColor[2] * item.flareIntensity;
+            spriteArray[offset] = item.flareColor[0] * item.flareIntensity * this.intensity;
+            spriteArray[offset + 1] = item.flareColor[1] * item.flareIntensity * this.intensity;
+            spriteArray[offset + 2] = item.flareColor[2] * item.flareIntensity * this.intensity;
             spriteArray[offset + 3] = item.flareColor[3];
             spriteArray[offset + 16] = 1;
             spriteArray[offset + 17] = item.spriteScale[1];
@@ -44706,11 +44798,19 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
       Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "intensity"]);
 
       if (values.coneEffect) {
-        item.coneEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.coneEffect);
+        if (Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(values.coneEffect)) {
+          item.coneEffect = values.coneEffect;
+        } else {
+          item.coneEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.coneEffect);
+        }
       }
 
       if (values.glowEffect) {
-        item.glowEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.glowEffect);
+        if (Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(values.glowEffect)) {
+          item.glowEffect = values.glowEffect;
+        } else {
+          item.glowEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.glowEffect);
+        }
       }
 
       if (values.items) {
@@ -48947,8 +49047,6 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
 
   UpdateViewDependentData(parentTransform) {
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation); // Don't really need to normalize...
-
     _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
   }
@@ -49001,16 +49099,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObject", function() { return EveObject; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core */ "./core/index.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* eslint no-unused-vars:0 */
 
 
-function EveObject() {
-  _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
-  this.name = "";
-  this.display = true;
-}
-EveObject.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].prototype), {
-  constructor: EveObject,
+class EveObject extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "name", "");
+
+    _defineProperty(this, "display", true);
+  }
 
   /**
    * Gets object resources
@@ -49020,32 +49121,35 @@ EveObject.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODU
   GetResources() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
-  },
-
+  }
   /**
    * Per frame update
    * @param {number} dt - delta time
    */
+
+
   Update(dt) {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
-  },
-
+  }
   /**
    * Accumulates batches
    * @param {number} mode
    * @param {Tw2BatchAccumulator} accumulator
    */
+
+
   GetBatches(mode, accumulator) {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractClassMethod"]();
   }
+  /**
+   * Global and scratch variables
+   * @type {*}
+   */
 
-});
-/**
- * Global and scratch variables
- * @type {*}
- */
 
-EveObject.global = {
+}
+
+_defineProperty(EveObject, "global", {
   vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
@@ -49057,7 +49161,7 @@ EveObject.global = {
   mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
   mat4_1: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
   mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
-};
+});
 
 /***/ }),
 
@@ -50693,7 +50797,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************!*\
   !*** ./global/Tw2Library.js ***!
   \******************************/
-/*! exports provided: tw2, store, resMan, device, client, logger, util */
+/*! exports provided: tw2, store, resMan, device, logger, util */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -50702,7 +50806,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "store", function() { return store; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return resMan; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "device", function() { return device; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "client", function() { return client; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return logger; });
 /* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./engine */ "./global/engine/index.js");
 /* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
@@ -50788,7 +50891,7 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
 
 
   Log(log) {
-    return this.logger.Log(log);
+    return this.logger.log(log);
   }
   /**
    * Per frame tick
@@ -50951,17 +51054,27 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
 
   Register(opt) {
     if (!opt) return;
-
-    if ("uuid" in opt) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_2__["enableUUID"])(opt.uuid);
-    }
-
-    this.client.Register(opt.client); //this.clock.Register(opt.clock);
-
-    this.device.Register(opt.device);
+    if (opt.uuid) Object(_util__WEBPACK_IMPORTED_MODULE_2__["enableUUID"])(opt.uuid);
     this.logger.Register(opt.logger);
+    if (opt.debug) this.Debug(opt.debug);
+    this.client.Register(opt.client);
+    this.device.Register(opt.device);
     this.resMan.Register(opt.resMan);
-    this.store.Register(opt.store);
+    this.store.Register(opt.store); //this.clock.Register(opt.clock);
+  }
+  /**
+   * Enables debug mode
+   * @param {Boolean} bool
+   */
+
+
+  Debug(bool) {
+    this.store.classes.Debug(bool);
+    this.Log({
+      type: "warn",
+      name: "Tw2Library",
+      message: "Debugging ".concat(bool ? "enabled" : "disabled")
+    });
   }
   /**
    * Sets an object's tw2 instantiation
@@ -50998,7 +51111,6 @@ const tw2 = new Tw2Library(); // Temporary until instances of Tw2Library are sup
 const store = tw2.store,
       resMan = tw2.resMan,
       device = tw2.device,
-      client = tw2.client,
       logger = tw2.logger;
 
 
@@ -51017,87 +51129,100 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core/Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 /* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
 /**
- * Base class
- * @param {Tw2Library} [tw2]
+ * Tw2BaseClass
+ * @namespace Tw2EventEmitter
  */
 
-function Tw2BaseClass(tw2) {
-  Tw2BaseClass.defineID(this);
-}
-Tw2BaseClass.prototype = Object.assign(Object.create(_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"].prototype), {
-  constructor: Tw2BaseClass,
-
+class Tw2BaseClass {
+  constructor() {
+    Reflect.defineProperty(this, "_id", {
+      value: Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])(),
+      writable: false,
+      configurable: true
+    });
+  }
   /**
    * Copies another object's values
    * @param {*} a
    * @param {*} [opt]
    * @returns {*}
    */
+
+
   Copy(a, opt) {
     return this.constructor.copy(this, a, opt);
-  },
-
+  }
   /**
    * Clones the object
    * @param [opt]
    * @returns {*}
    */
+
+
   Clone(opt) {
     this.constructor.clone(this, opt);
-  },
-
+  }
   /**
    * Sets the object's values from a plain object
    * @param [values]
    * @param [opt]
    * @returns {Boolean}
    */
+
+
   Set(values, opt) {
     return this.constructor.set(this, values, opt);
-  },
-
+  }
   /**
    * Gets the object's values as a plain object
    * @param [out]
    * @param [opt]
    * @returns {*}
    */
+
+
   Get(out, opt) {
     return this.constructor.get(this, out, opt);
-  },
-
+  }
   /**
    * Internal handler for value changes
    * @param [opt]
    */
-  OnValueChanged(opt) {},
 
+
+  OnValueChanged(opt) {}
   /**
    * Triggers update handlers
    * @param {*} [opt]
    */
+
+
   UpdateValues(opt) {
     this.OnValueChanged(opt);
 
     if (!opt || !opt["skipEvents"]) {
       this.emit("modified", opt);
     }
-  },
-
+  }
   /**
    * Internal handler for object destruction
    * @param [opt]
    */
-  OnDestroy(opt) {},
 
+
+  OnDestroy(opt) {}
   /**
    * Destroys the object
    * @param {*} [opt]
    */
+
+
   Destroy(opt) {
     this.OnDestroy(opt);
 
@@ -51106,8 +51231,7 @@ Tw2BaseClass.prototype = Object.assign(Object.create(_Tw2EventEmitter__WEBPACK_I
     }
 
     this.kill();
-  },
-
+  }
   /**
    * Traverses the object
    * @param {Function} callback
@@ -51115,6 +51239,8 @@ Tw2BaseClass.prototype = Object.assign(Object.create(_Tw2EventEmitter__WEBPACK_I
    * @param {String} [path]
    * @returns {*}
    */
+
+
   Traverse(callback, parent, path) {
     const result = callback(this, parent, path);
     if (result) return result;
@@ -51128,187 +51254,217 @@ Tw2BaseClass.prototype = Object.assign(Object.create(_Tw2EventEmitter__WEBPACK_I
 
     return this.constructor.perChild(this, onChild, path);
   }
-
-});
-/**
- * Defines an id
- * @param {*} target
- */
-
-Tw2BaseClass.defineID = function (target) {
-  Reflect.defineProperty(target, "_id", {
-    value: Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])(),
-    writable: false,
-    configurable: true
-  });
-};
-/**
- * Creates an object from values
- * @param [values]
- * @param [opt={}]
- * @returns {*}
- */
+  /**
+   * Internal handler for copying one object's values to another
+   * @param {*} a
+   * @param {*} b
+   * @param {*} [opt]
+   * @private
+   */
 
 
-Tw2BaseClass.from = function (values, opt) {
-  if (values && values instanceof this) return values;
-  const item = new this();
-  if (values) this.set(item, values, {
-    skipUpdate: true
-  });
-  if (!opt || !opt.skipUpdate) if ("Initialize" in item) item.Initialize();
-  return item;
-};
-/**
- * Internal handler for copying one object's values to another
- * @param {*} a
- * @param {*} b
- * @param {*} [opt]
- * @private
- */
-
-
-Tw2BaseClass.copy = function (a, b) {
-  let opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  const skipUpdate = opt.skipUpdate;
-  return this.set(a, this.get(b, {}, {
-    skipIds: true
-  }), {
-    skipUpdate,
-    verb: "copy"
-  });
-};
-/**
- * Internal handler for cloning an object
- * @param {*} a
- * @param {*} [opt]
- * @private
- */
-
-
-Tw2BaseClass.clone = function (a, opt) {
-  return this.from(this.get(a, {}, {
-    skipIds: true
-  }), opt);
-};
-/**
- * Internal handler for setting an object's values from a plain object
- * @param {*} a
- * @param {*} [values]
- * @param {*} [opt]
- * @returns {boolean}
- * @private
- */
-
-
-Tw2BaseClass.set = function (a, values) {
-  let opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClassMethod"]();
-};
-/**
- * Internal handler for getting an object's value as a plain object
- * @param {*} a
- * @param {*} [out={}]
- * @param {*} [opt]
- * @returns {*} out
- * @private
- */
-
-
-Tw2BaseClass.get = function (a) {
-  let out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClassMethod"]();
-};
-/**
- *
- * @type {*}
- * @private
- */
-
-
-Tw2BaseClass.keys = null;
-/**
- *
- * @type {*}
- */
-
-Tw2BaseClass.black = null;
-/**
- *
- * @type {null|String}
- */
-
-Tw2BaseClass.category = null;
-/**
- * Caches the classes keys
- * -- Fallback if schema not present
- * @param {*} obj
- */
-
-function cacheKeys(obj) {
-  const cache = obj.constructor.keys || {};
-
-  function add(name, key) {
-    if (!cache[name]) cache[name] = [];
-    if (!cache[name].includes(key)) cache[name].push(key);
+  static copy(a, b) {
+    let opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    opt.verb = "copy";
+    const values = this.get(b, {}, {
+      skipIDs: true
+    });
+    return this.set(a, values, opt);
   }
+  /**
+   * Internal handler for cloning an object
+   * @param {*} a
+   * @param {*} [opt]
+   * @private
+   */
 
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key) && key.charAt(0) !== "_") {
-      const value = obj[key];
-      if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isPrimary"])(value)) add("primary", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(value)) add("array", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isTyped"])(value)) add("typed", key);else if (value === null || Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(value)) add("object", key);else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isPlain"])(value)) add("plain", key);
+
+  static clone(a, opt) {
+    const values = this.get(a, {}, {
+      skipIDs: true
+    });
+    return this.from(values, opt);
+  }
+  /**
+   * Creates an object from values
+   * @param [values]
+   * @param [opt={}]
+   * @returns {*}
+   */
+
+
+  static from(values, opt) {
+    if (values && values instanceof this) {
+      return values;
     }
+
+    const item = new this();
+
+    if (values) {
+      this.set(item, values, {
+        skipUpdate: true,
+        verb: "create"
+      });
+    }
+
+    if ((!opt || !opt.skipUpdate) && "Initialize" in item) {
+      item.Initialize();
+    }
+
+    return item;
   }
-
-  obj.constructor.keys = cache;
-}
-/**
- * Fires a callback on an object's children, and no further
- * @param {*} obj
- * @param {Function} callback
- * @param {String} [path="root"]
- * @returns {!*}
- */
+  /**
+   * Internal handler for setting an object's values from a plain object
+   * @param {*} a
+   * @param {*} [values]
+   * @param {*} [opt]
+   * @returns {boolean}
+   * @private
+   */
 
 
-Tw2BaseClass.perChild = function (obj, callback) {
-  let path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "root";
-  if (!obj.constructor.keys) cacheKeys(obj);
-  const _obj$constructor$keys = obj.constructor.keys,
-        array = _obj$constructor$keys.array,
-        object = _obj$constructor$keys.object;
+  static set(a, values) {
+    let opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClassMethod"]();
+  }
+  /**
+   * Internal handler for getting an object's value as a plain object
+   * @param {*} a
+   * @param {*} [out={}]
+   * @param {*} [opt]
+   * @param {Boolean} [opt.skipID]
+   * @param {Boolean} [opt.skipType]
+   * @param {Boolean} [opt.skipVerb]
+   * @returns {*} out
+   * @private
+   */
 
-  if (array) {
-    for (let i = 0; i < array.length; i++) {
-      const key = array[i],
-            arr = obj[key];
 
-      for (let x = 0; x < arr.length; x++) {
-        const item = arr[x];
+  static get(a) {
+    let out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    let opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClassMethod"]();
+  }
+  /**
+   * Fires a callback on an object's child lists and types, and no further
+   * @param {*} obj
+   * @param {Function} callback
+   * @param {String} [path="root"]
+   * @returns {!*}
+   */
+
+
+  static perChild(obj, callback) {
+    let path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "root";
+
+    if (!obj.constructor.keys) {
+      cacheKeys(obj);
+    }
+
+    const _obj$constructor$keys = obj.constructor.keys,
+          list = _obj$constructor$keys.list,
+          type = _obj$constructor$keys.type;
+
+    if (list) {
+      for (let i = 0; i < list.length; i++) {
+        const key = list[i],
+              arr = obj[key];
+
+        for (let x = 0; x < arr.length; x++) {
+          const item = arr[x];
+
+          if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
+            let currentPath = "".concat(path, "/").concat(key, "/").concat(x);
+            const result = callback(item, obj, currentPath);
+            if (result) return result;
+          }
+        }
+      }
+    }
+
+    if (type) {
+      for (let i = 0; i < type.length; i++) {
+        const key = type[i],
+              item = obj[key];
 
         if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
-          let currentPath = "".concat(path, "/").concat(key, "/").concat(x);
+          let currentPath = "".concat(path, "/").concat(key);
           const result = callback(item, obj, currentPath);
           if (result) return result;
         }
       }
     }
   }
+  /**
+   *
+   * @type {*}
+   * @private
+   */
 
-  if (object) {
-    for (let i = 0; i < object.length; i++) {
-      const key = object[i],
-            item = obj[key];
 
-      if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
-        let currentPath = "".concat(path, "/").concat(key);
-        const result = callback(item, obj, currentPath);
-        if (result) return result;
+}
+/**
+ * Caches the classes keys
+ * -- Fallback if schema not present
+ * @param {*} obj
+ */
+
+_defineProperty(Tw2BaseClass, "keys", null);
+
+_defineProperty(Tw2BaseClass, "black", null);
+
+_defineProperty(Tw2BaseClass, "category", null);
+
+function cacheKeys(obj) {
+  if (obj.constructor.hasOwnProperty("keys")) {
+    return;
+  }
+
+  const cache = {};
+
+  function add(name, key) {
+    if (!cache[name]) {
+      cache[name] = [];
+    }
+
+    if (!cache[name].includes(key)) {
+      cache[name].push(key);
+    }
+  }
+
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      // Don't cache privates
+      if (key.charAt(0) === "_") {
+        continue;
+      }
+
+      const value = obj[key];
+
+      if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isPrimary"])(value)) {
+        add("primary", key);
+      } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(value)) {
+        // Assumes empty arrays are lists
+        // Assumes if first element is a primary value that is all it contains
+        if (value.length && Object(_util__WEBPACK_IMPORTED_MODULE_1__["isPrimary"])(value[0])) {
+          add("array", key);
+        } else {
+          add("list", key);
+        }
+      } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isTyped"])(value)) {
+        add("typed", key);
+      } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isPlain"])(value)) {
+        add("plain", key);
+      } else if (value === null || Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(value)) {
+        add("type", key);
       }
     }
   }
-};
+
+  obj.constructor.keys = cache;
+}
+
+Object.assign(Object.getPrototypeOf(Tw2BaseClass), Object.getPrototypeOf(_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"]));
 
 /***/ }),
 
@@ -52675,7 +52831,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * Tw2Device
  *
- * @property {?WebGLRenderingContext|*} gl         - The device's gl context
+ * @property {WebGLRenderingContext} gl             - The device's gl context
  * @property {?number} glVersion                   - The device's gl version
  * @property {?VRDisplay} vrDisplay                - An optional VRDisplay context
  * @property {?{}} ext                             - An object containing compatibility extensions
@@ -53703,9 +53859,9 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 
     _defineProperty(this, "visible", {
       log: true,
-      info: true,
-      debug: true,
-      warn: true,
+      info: false,
+      debug: false,
+      warn: false,
       error: true
     });
 
@@ -55044,14 +55200,35 @@ _defineProperty(Tw2SchemaStore, "__storeType", "schema");
 
 class Tw2ClassStore extends Tw2GenericStore {
   /**
+   * Enables debugging
+   * @param {Boolean} value
+   */
+  Debug(value) {
+    value = !!value;
+    Tw2ClassStore.DEBUG_ENABLED = !!value;
+
+    this._values.forEach(x => {
+      if ("DEBUG_ENABLED" in x) {
+        x.DEBUG_ENABLED = value;
+      }
+    });
+  }
+  /**
    * Sets a class
    * @param {String} key
    * @param {*} value
    * @param {Boolean} [override]
    * @returns {*} value
    */
+
+
   Set(key, value, override) {
-    const result = super.Set(key, value, override); // Auto add black definitions
+    const result = super.Set(key, value, override); // Set debug mode
+
+    if ("DEBUG_ENABLED" in value) {
+      value.DEBUG_ENABLED = Tw2ClassStore.DEBUG_ENABLED;
+    } // Auto add black definitions
+
 
     if (value.black && (override || !this._store.blacks.Has(key))) {
       this._store.blacks.Set(key, value.black, override);
@@ -55126,6 +55303,8 @@ class Tw2ClassStore extends Tw2GenericStore {
 _defineProperty(Tw2ClassStore, "isValue", _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]);
 
 _defineProperty(Tw2ClassStore, "__storeType", "class");
+
+_defineProperty(Tw2ClassStore, "DEBUG_ENABLED", false);
 
 class Tw2VariableStore extends Tw2GenericStore {
   /**
@@ -55970,7 +56149,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, tw2, store, resMan, device, client, logger, util, Tw2BaseClass, Tw2EventEmitter, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
+/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, tw2, store, resMan, device, logger, util, Tw2BaseClass, Tw2EventEmitter, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56734,8 +56913,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["resMan"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["device"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "client", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["client"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["logger"]; });
 
@@ -62827,16 +63004,20 @@ __webpack_require__.r(__webpack_exports__);
  * @param {*} dest
  * @param {*} src
  * @param {String|string[]} attrs
+ * @returns {boolean} true if something was assigned
  */
 
 function assignIfExists(dest, src, attrs) {
-  if (!src) return;
+  if (!src) return false;
   attrs = Object(_arr__WEBPACK_IMPORTED_MODULE_1__["toArray"])(attrs);
+  let modified = false;
 
   for (let i = 0; i < attrs.length; i++) {
     const attr = attrs[i];
 
     if (src[attr] !== undefined) {
+      modified = true;
+
       if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(dest[attr])) {
         if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(dest[attr])) {
           if (dest[attr].length !== src[attr].length) {
@@ -62860,6 +63041,8 @@ function assignIfExists(dest, src, attrs) {
       }
     }
   }
+
+  return modified;
 }
 /**
  * Gets a source's property value if it exists else returns a default value

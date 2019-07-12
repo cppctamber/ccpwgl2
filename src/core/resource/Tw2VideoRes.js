@@ -251,7 +251,7 @@ export class Tw2VideoRes extends Tw2Resource
         gl.bindTexture(targetType, this.texture);
         if (sampler.hash !== this._currentSampler)
         {
-            sampler.Apply(false);
+            sampler.Apply(d, false);
             this._currentSampler = sampler.hash;
         }
     }

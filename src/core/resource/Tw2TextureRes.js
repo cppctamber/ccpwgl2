@@ -338,7 +338,7 @@ export class Tw2TextureRes extends Tw2Resource
         gl.bindTexture(targetType, this.texture);
         if (sampler.hash !== this._currentSampler || this._updateSampler)
         {
-            sampler.Apply(this.hasMipMaps);
+            sampler.Apply(d, this.hasMipMaps);
             this._currentSampler = sampler.hash;
             this._updateSampler = false;
         }

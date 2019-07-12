@@ -284,7 +284,7 @@ export class Tw2Effect //extends Tw2BaseClass
                                 {
                                     if (stageRes.samplers[n].name in this.samplerOverrides)
                                     {
-                                        p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(stageRes.samplers[n]);
+                                        p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(device, stageRes.samplers[n]);
                                     }
                                     else
                                     {
@@ -599,7 +599,7 @@ export class Tw2Effect //extends Tw2BaseClass
      * Adds effect parameters automatically
      * @returns {Boolean} true if updated
      */
-    AutoParameter()
+    PopulateParameters()
     {
         this.autoParameter = true;
         return this.BindParameters();

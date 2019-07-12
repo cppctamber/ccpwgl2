@@ -232,98 +232,87 @@ export class Tw2Shader
                     const samplerCount = reader.ReadUInt8();
                     for (let samplerIx = 0; samplerIx < samplerCount; ++samplerIx)
                     {
-                        const
-                            registerIndex = reader.ReadUInt8(),
-                            samplerName = version >= 4 ? ReadString() : "";
-
-                        reader.ReadUInt8(); // comparison
-
-                        const
-                            minFilter = reader.ReadUInt8(),
-                            magFilter = reader.ReadUInt8(),
-                            mipFilter = reader.ReadUInt8(),
-                            addressU = reader.ReadUInt8(),
-                            addressV = reader.ReadUInt8(),
-                            addressW = reader.ReadUInt8();
-
-                        reader.ReadFloat32(); // mipLODBias
-
-                        const maxAnisotropy = reader.ReadUInt8();
-
-                        reader.ReadUInt8(); //comparisonFunc
-
-                        const borderColor = quat.create();
-                        borderColor[0] = reader.ReadFloat32();
-                        borderColor[1] = reader.ReadFloat32();
-                        borderColor[2] = reader.ReadFloat32();
-                        borderColor[3] = reader.ReadFloat32();
-
-                        reader.ReadFloat32(); //minLOD
-                        reader.ReadFloat32(); //maxLOD
+                        const s = new Tw2SamplerState();
+                        s.registerIndex = reader.ReadUInt8();
+                        s.name = version >= 4 ? ReadString() : "";
+                        s._comparison = reader.ReadUInt8();     // not used
+                        s.minFilter = reader.ReadUInt8();
+                        s.magFilter = reader.ReadUInt8();
+                        s.mipFilter = reader.ReadUInt8();
+                        s.addressU = reader.ReadUInt8();
+                        s.addressV = reader.ReadUInt8();
+                        s.addressW = reader.ReadUInt8(); 
+                        s.mipLODBias = reader.ReadFloat32();    // not used
+                        s._maxAnisotropy = reader.ReadUInt8();
+                        s._comparisonFunc = reader.ReadUInt8(); // not used
+                        s._borderColor = quat.fromValues(
+                            reader.ReadFloat32(),
+                            reader.ReadFloat32(),
+                            reader.ReadFloat32(),
+                            reader.ReadFloat32()
+                        );
+                        s._minLOD = reader.ReadFloat32();       // not used
+                        s._maxLOD = reader.ReadFloat32();       // not used
 
                         if (version < 4) reader.ReadUInt8();
 
-                        const sampler = new Tw2SamplerState();
-                        sampler.registerIndex = registerIndex;
-                        sampler.name = samplerName;
-
-                        if (minFilter === 1)
+                        if (s.minFilter === 1)
                         {
-                            switch (mipFilter)
+                            switch (s.mipFilter)
                             {
                                 case 0:
-                                    sampler.minFilter = gl.NEAREST;
+                                    s.minFilter = gl.NEAREST;
                                     break;
 
                                 case 1:
-                                    sampler.minFilter = gl.NEAREST_MIPMAP_NEAREST;
+                                    s.minFilter = gl.NEAREST_MIPMAP_NEAREST;
                                     break;
 
                                 default:
-                                    sampler.minFilter = gl.NEAREST_MIPMAP_LINEAR;
+                                    s.minFilter = gl.NEAREST_MIPMAP_LINEAR;
                             }
-                            sampler.minFilterNoMips = gl.NEAREST;
+                            s.minFilterNoMips = gl.NEAREST;
                         }
                         else
                         {
-                            switch (mipFilter)
+                            switch (s.mipFilter)
                             {
                                 case 0:
-                                    sampler.minFilter = gl.LINEAR;
+                                    s.minFilter = gl.LINEAR;
                                     break;
 
                                 case 1:
-                                    sampler.minFilter = gl.LINEAR_MIPMAP_NEAREST;
+                                    s.minFilter = gl.LINEAR_MIPMAP_NEAREST;
                                     break;
 
                                 default:
-                                    sampler.minFilter = gl.LINEAR_MIPMAP_LINEAR;
+                                    s.minFilter = gl.LINEAR_MIPMAP_LINEAR;
                             }
-                            sampler.minFilterNoMips = gl.LINEAR;
+                            s.minFilterNoMips = gl.LINEAR;
                         }
 
-                        sampler.magFilter = magFilter === 1 ? gl.NEAREST : gl.LINEAR;
-                        sampler.addressU = wrapModes[addressU];
-                        sampler.addressV = wrapModes[addressV];
-                        sampler.addressW = wrapModes[addressW];
+                        s.magFilter = s.magFilter === 1 ? gl.NEAREST : gl.LINEAR;
+                        s.addressU = wrapModes[s.addressU];
+                        s.addressV = wrapModes[s.addressV];
+                        s.addressW = wrapModes[s.addressW];
 
-                        if (minFilter === 3 || magFilter === 3 || mipFilter === 3)
+                        if (s.minFilter === 3 || s.magFilter === 3 || s.mipFilter === 3)
                         {
-                            sampler.anisotropy = Math.max(maxAnisotropy, 1);
+                            s.anisotropy = Math.max(s.maxAnisotropy, 1);
                         }
 
                         for (let n = 0; n < stage.textures.length; ++n)
                         {
-                            if (stage.textures[n].registerIndex === sampler.registerIndex)
+                            if (stage.textures[n].registerIndex === s.registerIndex)
                             {
-                                sampler.samplerType = stage.textures[n].type === 4 ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
-                                sampler.isVolume = stage.textures[n].type === 3;
+                                s.samplerType = stage.textures[n].type === 4 ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
+                                s.isVolume = stage.textures[n].type === 3;
                                 break;
                             }
                         }
 
-                        sampler.ComputeHash();
-                        stage.samplers.push(sampler);
+                        s.ComputeHash();
+                        stage.samplers.push(s);
                     }
 
                     if (version >= 3) reader.ReadUInt8();
@@ -371,6 +360,7 @@ export class Tw2Shader
                 technique.passes[passIx] = pass;
             }
         }
+
         const parameterCount = reader.ReadUInt16();
         for (let paramIx = 0; paramIx < parameterCount; ++paramIx)
         {
