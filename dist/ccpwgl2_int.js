@@ -18385,7 +18385,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMesh", function() { return Tw2GeometryMesh; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
+/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var _Tw2GeometryMeshArea__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2GeometryMeshArea */ "./core/geometry/Tw2GeometryMeshArea.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
 
 
 
@@ -18429,9 +18433,9 @@ class Tw2GeometryMesh {
 
     _defineProperty(this, "indexType", 0);
 
-    _defineProperty(this, "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(this, "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
 
-    _defineProperty(this, "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(this, "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
 
     _defineProperty(this, "boundsSpherePosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
@@ -18440,6 +18444,149 @@ class Tw2GeometryMesh {
     _defineProperty(this, "bones", []);
 
     _defineProperty(this, "boneBindings", []);
+
+    _defineProperty(this, "_faces", 0);
+
+    _defineProperty(this, "_vertices", 0);
+
+    _defineProperty(this, "_areas", 0);
+  }
+
+  /**
+   * Gets the object's bounding box
+   * @param {box3} out
+   * @param {mat4} [parentTransform]
+   * @returns {Boolean} True if bounds are valid
+   */
+  GetBoundingBox(out, parentTransform) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
+    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
+    return true;
+  }
+  /**
+   * Gets the object's bounding sphere
+   * @param {sph3} out
+   * @param {mat4} [parentTransform]
+   * @returns {Boolean} True if bounds are valid
+   */
+
+
+  GetBoundingSphere(out, parentTransform) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
+    return true;
+  }
+  /**
+   * Rebuilds bounds
+   * @param {Boolean} [fromVertex]
+   */
+
+
+  RebuildBounds(fromVertex) {
+    const min = this.minBounds,
+          max = this.maxBounds;
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
+
+    for (let i = 0; i < this.areas.length; i++) {
+      const area = this.areas[i];
+      this.RebuildAreaBounds(area, this.bufferData, this.indexData, fromVertex);
+      _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, area.minBounds, area.maxBounds);
+    }
+
+    this.boundsSphereRadius = _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+  }
+  /**
+   * Rebuilds an area's bounds
+   * @param {Tw2GeometryMeshArea} area
+   * @param {*} bufferData
+   * @param {*} indexData
+   * @param {Boolean} [fromVertex]
+   */
+
+
+  RebuildAreaBounds(area, bufferData, indexData, fromVertex) {
+    if (!fromVertex || !bufferData || !indexData) return false;
+    const pDecl = this.declaration.FindUsage(0, 0);
+    if (!pDecl) return false;
+    const stride = this.declaration.stride / 4,
+          pOffset = pDecl.offset;
+    const box = Tw2GeometryMesh.GetBoundsFromVertices(_global__WEBPACK_IMPORTED_MODULE_0__["box3"].create(), area.start, area.count, stride, pOffset, bufferData, indexData);
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectBounds(box, area);
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectPositionRadius(box, area);
+    return true;
+  }
+  /**
+   * Gets a face's vertex indices
+   * @param {vec3} out
+   * @param {Number} index
+   * @param {*} indexData
+   * @returns {vec3}
+   */
+
+
+  static GetFaceVertexIndices(out, index, indexData) {
+    if (index >= indexData.length / 3) {
+      throw new Error("Invalid index: " + index);
+    }
+
+    for (let i = 0; i < 3; i++) {
+      out[i] = indexData[index * 3 + i];
+    }
+
+    return out;
+  }
+  /**
+   * Gets a vertices's position
+   * @param {vec3} out
+   * @param {Number} index
+   * @param {Number} stride
+   * @param {Number} offset
+   * @param {*} bufferData
+   * @returns {vec3}
+   */
+
+
+  static GetVertexPosition(out, index, stride, offset, bufferData) {
+    if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(index) || index > bufferData.length / stride) {
+      throw new Error("Invalid vertex index: " + index);
+    }
+
+    const ix = index * stride;
+    return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, bufferData[ix + offset], bufferData[ix + offset + 1], bufferData[ix + offset + 2]);
+  }
+  /**
+   * Updates an area's bounds
+   * @param {box3} out
+   * @param {Number} start
+   * @param {Number} count
+   * @param {Number} stride
+   * @param {Number} pOffset
+   * @param {*} bufferData
+   * @param {*} indexData
+   */
+
+
+  static GetBoundsFromVertices(out, start, count, stride, pOffset, bufferData, indexData) {
+    count = count / 3;
+    start = start / 2 / 3;
+    const vertexIndices = [],
+          indices = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+          position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].empty(out);
+
+    for (let i = 0; i < count; i++) {
+      this.GetFaceVertexIndices(indices, i + start, indexData);
+
+      for (let x = 0; x < 3; x++) {
+        if (!vertexIndices.includes(indices[x])) {
+          vertexIndices.push(indices[x]);
+          this.GetVertexPosition(position, indices[x], stride, pOffset, bufferData);
+          _global__WEBPACK_IMPORTED_MODULE_0__["box3"].addPoint(out, out, position);
+        }
+      }
+    }
+
+    return out;
   }
 
 }
@@ -18480,13 +18627,38 @@ class Tw2GeometryMeshArea {
 
     _defineProperty(this, "count", 0);
 
-    _defineProperty(this, "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(this, "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
 
-    _defineProperty(this, "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(this, "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
 
     _defineProperty(this, "boundsSpherePosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
     _defineProperty(this, "boundsSphereRadius", 0);
+  }
+
+  /**
+   * Gets the object's bounding box
+   * @param {box3} out
+   * @param {mat4} [parentTransform]
+   * @returns {Boolean} True if bounds are valid
+   */
+  GetBoundingBox(out, parentTransform) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
+    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
+    return true;
+  }
+  /**
+   * Gets the object's bounding sphere
+   * @param {sph3} out
+   * @param {mat4} [parentTransform]
+   * @returns {Boolean} True if bounds are valid
+   */
+
+
+  GetBoundingSphere(out, parentTransform) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
+    return true;
   }
 
 }
@@ -18726,7 +18898,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18843,6 +19015,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -18854,8 +19028,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -21002,6 +21174,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2AnimationController
+ * TODO: Handle bounds in the update function
  *
  * @property {Array.<Tw2GeometryRes>} geometryResources
  * @property {Array.<Tw2Model>} models
@@ -21011,16 +21184,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Boolean} update
  * @property _geometryResource
  * @property {Array} pendingCommands
- * @property {Function} [onLoaded] an optional callback fired when any commands are cleared
+ * @property {Function} [onPendingCleared] an optional callback fired when any commands are cleared
  * @class
  */
 
-class Tw2AnimationController {
+class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    * @param {Tw2GeometryRes} [geometryResource]
    */
   constructor(geometryResource) {
+    super();
+
     _defineProperty(this, "geometryResources", []);
 
     _defineProperty(this, "models", []);
@@ -21037,9 +21212,47 @@ class Tw2AnimationController {
 
     _defineProperty(this, "onPendingCleared", null);
 
-    _defineProperty(this, "_geometryResource", null);
+    _defineProperty(this, "_isPlaying", false);
 
-    if (geometryResource) this.SetGeometryResource(geometryResource);
+    _defineProperty(this, "_boundsDirty", false);
+
+    if (geometryResource) {
+      this.SetGeometryResource(geometryResource);
+    }
+  }
+  /**
+   * Checks if the animation is good
+   * @returns {boolean}
+   */
+
+
+  IsGood() {
+    let isGood = this.geometryResources.length > 0; // Cycle through geometry to keep alive
+
+    for (let i = 0; i < this.geometryResources.length; i++) {
+      if (!this.geometryResources[i] || !this.geometryResources[i].IsGood()) {
+        isGood = false;
+      }
+    }
+
+    if (!isGood || !this.animations.length) return false;
+
+    for (let i = 0; i < this.animations.length; i++) {
+      if (!this.animations[i].animationRes) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+  /**
+   * Checks if any animations are playing
+   * @returns {boolean}
+   */
+
+
+  IsPlaying() {
+    return this._isPlaying;
   }
   /**
    * Gets a loaded Tw2Animation by it's name
@@ -21498,6 +21711,9 @@ class Tw2AnimationController {
 
 
   Update(dt) {
+    let wasPlaying = this._isPlaying;
+    this._isPlaying = false;
+
     if (!this.models || !this.update) {
       return;
     }
@@ -21516,12 +21732,13 @@ class Tw2AnimationController {
       const animation = this.animations[i];
 
       if (animation.isPlaying) {
+        this._isPlaying = true;
         const res = animation.animationRes;
         animation.time += dt * animation.timeScale;
 
         if (animation.time > res.duration) {
           if (animation.callback) {
-            animation.callback(this, animation);
+            animation.callback(this, animation, false);
           }
 
           if (animation.cycle) {
@@ -21594,6 +21811,10 @@ class Tw2AnimationController {
           }
         }
       }
+    }
+
+    if (this._isPlaying || this._isPlaying !== wasPlaying) {
+      this._boundsDirty = true;
     }
   }
   /**
@@ -25979,9 +26200,9 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
     _defineProperty(this, "meshes", []);
 
-    _defineProperty(this, "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(this, "minBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
 
-    _defineProperty(this, "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
+    _defineProperty(this, "maxBounds", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0));
 
     _defineProperty(this, "boundsSpherePosition", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
 
@@ -25991,14 +26212,59 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
     _defineProperty(this, "animations", []);
 
-    _defineProperty(this, "systemMirror", false);
+    _defineProperty(this, "systemMirror", _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].systemMirror);
   }
 
+  /**
+   * Gets the object's bounding box
+   * @param {box3} out
+   * @param {mat4} [parentTransform]
+   * @returns {Boolean} True if bounds are valid
+   */
+  GetBoundingBox(out, parentTransform) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
+    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
+    return true;
+  }
+  /**
+   * Gets the object's bounding sphere
+   * @param {sph3} out
+   * @param {mat4} [parentTransform]
+   * @returns {Boolean} True if bounds are valid
+   */
+
+
+  GetBoundingSphere(out, parentTransform) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
+    return true;
+  }
+  /**
+   * Rebuilds bounds
+   * @returns {Boolean} [fromVertex]
+   */
+
+
+  RebuildBounds(fromVertex) {
+    const min = this.minBounds,
+          max = this.maxBounds;
+    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
+
+    for (let i = 0; i < this.meshes.length; i++) {
+      const mesh = this.meshes[i];
+      mesh.RebuildBounds(fromVertex);
+      _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, mesh.minBounds, mesh.maxBounds);
+    }
+
+    this.boundsSphereRadius = _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+  }
   /**
    * GetInstanceBuffer
    * @param {Number} meshIndex
    * @returns {*}
    */
+
+
   GetInstanceBuffer(meshIndex) {
     return meshIndex < this.meshes.length ? this.meshes[meshIndex].buffer : undefined;
   }
@@ -26074,12 +26340,20 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
       const areaCount = reader.ReadUInt8();
 
       for (let i = 0; i < areaCount; ++i) {
-        mesh.areas[i] = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshArea"]();
-        mesh.areas[i].name = reader.ReadString();
-        mesh.areas[i].start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
-        mesh.areas[i].count = reader.ReadUInt32() * 3;
-        mesh.areas[i].minBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-        mesh.areas[i].maxBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+        const area = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshArea"]();
+        mesh.areas.push(area);
+        area.name = reader.ReadString();
+        area.start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
+        area.count = reader.ReadUInt32() * 3;
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(area.minBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(area.maxBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+        area.boundsSphereRadius = _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(area.minBounds, area.maxBounds, area.boundsSpherePosition); // Recalculate bounds if missing
+
+        if (_global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.isEmpty(area.minBounds, area.maxBounds)) {
+          if (!mesh.RebuildAreaBounds(area, buffer, indexes, true)) {
+            console.log("Could not generate bounds for area: " + area.name || false);
+          }
+        }
       }
 
       const boneBindingCount = reader.ReadUInt8();
@@ -26107,9 +26381,30 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         }
       }
 
-      this.meshes[meshIx] = mesh;
-    }
+      mesh._areas = areaCount;
+      mesh._faces = indexes.length / 3;
+      mesh._vertices = buffer.length / (mesh.declaration.stride / 4);
+      /*
+        // Reduce memory footprint of vertices
+        const stride = mesh.declaration.stride / 4;
+      const vertCount = buffer.length / stride;
+      const position = mesh.declaration.FindUsage(0, 0);
+        mesh._vertices = new Float32Array(vertCount * 3);
+      for (let i = 0; i < mesh._vertices.length; i+=3)
+      {
+          const index = i * stride + position.offset;
+          for (let x = 0; x < 3; x ++)
+          {
+              mesh._vertices[i + x] = buffer[index + x];
+          }
+      }
+        */
 
+      this.meshes[meshIx] = mesh;
+    } // Rebuilds all bounds
+
+
+    this.RebuildBounds();
     const modelCount = reader.ReadUInt8();
 
     for (let modelIx = 0; modelIx < modelCount; ++modelIx) {
@@ -26306,7 +26601,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         if (i + start < mesh.areas.length) {
           let area = mesh.areas[i + start],
               areaStart = area.start,
-              acount = area.count;
+              areaCount = area.count;
 
           while (i + 1 < count) {
             area = mesh.areas[i + 1 + start];
@@ -26319,12 +26614,12 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
               return false;
             }
 
-            if (area.start !== areaStart + acount * 2) break;
-            acount += area.count;
+            if (area.start !== areaStart + areaCount * 2) break;
+            areaCount += area.count;
             ++i;
           }
 
-          gl.drawElementsInstanced(gl.TRIANGLES, acount, mesh.indexType, areaStart, instanceCount);
+          gl.drawElementsInstanced(gl.TRIANGLES, areaCount, mesh.indexType, areaStart, instanceCount);
         }
       }
 
@@ -26374,7 +26669,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         if (i + start < mesh.areas.length) {
           let area = mesh.areas[i + start],
               areaStart = area.start,
-              acount = area.count;
+              areaCount = area.count;
 
           while (i + 1 < count) {
             area = mesh.areas[i + 1 + start];
@@ -26387,12 +26682,12 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
               return false;
             }
 
-            if (area.start !== areaStart + acount * 2) break;
-            acount += area.count;
+            if (area.start !== areaStart + areaCount * 2) break;
+            areaCount += area.count;
             ++i;
           }
 
-          gl.drawElements(gl.TRIANGLES, acount, mesh.indexType, areaStart);
+          gl.drawElements(gl.TRIANGLES, areaCount, mesh.indexType, areaStart);
         }
       }
     }
@@ -26440,7 +26735,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         if (i + start < mesh.areas.length) {
           let area = mesh.areas[i + start],
               areaStart = area.start,
-              acount = area.count;
+              areaCount = area.count;
 
           while (i + 1 < count) {
             area = mesh.areas[i + 1 + start];
@@ -26453,12 +26748,12 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
               return false;
             }
 
-            if (area.start !== areaStart + acount * 2) break;
-            acount += area.count;
+            if (area.start !== areaStart + areaCount * 2) break;
+            areaCount += area.count;
             ++i;
           }
 
-          gl.drawElements(gl.LINES, acount, mesh.indexType, areaStart);
+          gl.drawElements(gl.LINES, areaCount, mesh.indexType, areaStart);
         }
       }
     }
@@ -28771,7 +29066,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51136,16 +51431,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Tw2BaseClass
- * @namespace Tw2EventEmitter
  */
 
-class Tw2BaseClass {
+class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
   constructor() {
-    Reflect.defineProperty(this, "_id", {
-      value: Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])(),
-      writable: false,
-      configurable: true
-    });
+    super();
+    Tw2BaseClass.defineID(this);
   }
   /**
    * Copies another object's values
@@ -51395,6 +51686,14 @@ class Tw2BaseClass {
       }
     }
   }
+
+  static defineID(target) {
+    Reflect.defineProperty(target, "_id", {
+      value: Object(_util__WEBPACK_IMPORTED_MODULE_1__["generateID"])(),
+      writable: false,
+      configurable: true
+    });
+  }
   /**
    *
    * @type {*}
@@ -51463,8 +51762,6 @@ function cacheKeys(obj) {
 
   obj.constructor.keys = cache;
 }
-
-Object.assign(Object.getPrototypeOf(Tw2BaseClass), Object.getPrototypeOf(_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"]));
 
 /***/ }),
 
@@ -53949,6 +54246,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
       if (log.err || log.data) {
         console.group(header, log.message);
         if (log.err) console.debug(log.err.stack || log.err.toString());
+        if (log.stack) console.debug(log.stack);
         if (log.data) console.debug(JSON.stringify(log.data, null, 4));
         console.groupEnd();
       } else {
@@ -54369,6 +54667,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
         res.Prepare(data, xml);
       } catch (err) {
         res.OnError(err);
+        console.error(err);
       }
 
       this._prepareBudget -= (device.now - startTime) * 0.001;
@@ -56937,6 +57236,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "box3", function() { return box3; });
 /* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./num */ "./global/math/num.js");
 /* harmony import */ var _vec3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vec3 */ "./global/math/vec3.js");
+/* harmony import */ var _sph3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./sph3 */ "./global/math/sph3.js");
+/* harmony import */ var _mat4__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./mat4 */ "./global/math/mat4.js");
+
+
 
 
 /**
@@ -56946,7 +57249,11 @@ __webpack_require__.r(__webpack_exports__);
 
 const box3 = {
   bounds: {}
-};
+}; // Scratch
+
+let mat4_0 = null,
+    box3_0 = null,
+    vec3_A = null;
 /**
  * Gets a subarray of a box3's min vector
  * @property {box3} a
@@ -57141,14 +57448,7 @@ box3.copyMax = function (out, a) {
 
 
 box3.create = function () {
-  let out = new Float32Array(6);
-  out[0] = -Infinity;
-  out[1] = -Infinity;
-  out[2] = -Infinity;
-  out[3] = Infinity;
-  out[4] = Infinity;
-  out[5] = Infinity;
-  return out;
+  return box3.empty(new Float32Array(6));
 };
 /**
  * Gets the distance from a box3 to a point
@@ -57191,12 +57491,12 @@ box3.distanceToValues = function (a, px, py, pz) {
 
 
 box3.empty = function (a) {
-  a[0] = +Infinity;
-  a[1] = +Infinity;
-  a[2] = +Infinity;
-  a[3] = -Infinity;
-  a[4] = -Infinity;
-  a[5] = -Infinity;
+  a[0] = 0;
+  a[1] = 0;
+  a[2] = 0;
+  a[3] = 0;
+  a[4] = 0;
+  a[5] = 0;
   return a;
 };
 /**
@@ -57208,12 +57508,12 @@ box3.empty = function (a) {
 
 
 box3.bounds.empty = function (min, max) {
-  min[0] = +Infinity;
-  min[1] = +Infinity;
-  min[2] = +Infinity;
-  max[0] = -Infinity;
-  min[1] = -Infinity;
-  min[2] = -Infinity;
+  min[0] = 0;
+  min[1] = 0;
+  min[2] = 0;
+  max[0] = 0;
+  max[1] = 0;
+  max[2] = 0;
 };
 /**
  * Checks two box3's for equality
@@ -57382,9 +57682,63 @@ box3.fromBounds = function (out, min, max) {
   out[0] = min[0];
   out[1] = min[1];
   out[2] = min[2];
-  out[0] = max[0];
-  out[1] = max[1];
-  out[2] = max[2];
+  out[3] = max[0];
+  out[4] = max[1];
+  out[5] = max[2];
+  return out;
+};
+/**
+ * Helper method which creates a box3 from an eve object's bounding box properties
+ *
+ * @param {box3} out
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ * @returns {box3} out
+ */
+
+
+box3.fromObjectBounds = function (out, obj, m) {
+  if (obj.minBounds) {
+    box3.fromBounds(out, obj.minBounds, obj.maxBounds);
+  } else if (obj._boundingBox) {
+    box3.copy(out, obj._boundingBox);
+  } else {
+    throw new Error("Invalid object bounds");
+  }
+
+  if (m) {
+    box3.transformMat4(out, out, m);
+  }
+
+  return out;
+};
+/**
+ * Helper method which creates a box3 from an eve object's bounding sphere properties
+ *
+ * @param {box3} out
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ * @returns {box3} out
+ */
+
+
+box3.fromObjectPositionRadius = function (out, obj, m) {
+  if (obj.boundsSpherePosition) {
+    box3.fromPositionRadius(out, obj.boundsSpherePosition, obj.boundsSphereRadius);
+  } else if (obj.boundingSphereCenter) {
+    box3.fromPositionRadius(out, obj.boundingSphereCenter, obj.boundingSphereRadius);
+  } else {
+    throw new Error("Invalid object bounds");
+  }
+
+  if (m) {
+    box3.transformMat4(out, out, m);
+  }
+
   return out;
 };
 /**
@@ -57416,12 +57770,7 @@ box3.fromPositionSize = function (out, position, size) {
 
 
 box3.fromPoints = function (out, points) {
-  out[0] = +Infinity;
-  out[1] = +Infinity;
-  out[2] = +Infinity;
-  out[3] = -Infinity;
-  out[4] = -Infinity;
-  out[5] = -Infinity;
+  box3.empty(out);
 
   for (let i = 0; i < points.length; i++) {
     out[0] = Math.min(out[0], points[i][0]);
@@ -57469,6 +57818,28 @@ box3.fromSph3 = function (out, sphere) {
   out[3] = sphere[0] + sphere[3];
   out[4] = sphere[1] + sphere[3];
   out[5] = sphere[2] + sphere[3];
+  return out;
+};
+/**
+ * Creates a box3 from values
+ * @param {Number} minx
+ * @param {Number} miny
+ * @param {Number} minz
+ * @param {Number} maxx
+ * @param {Number} maxy
+ * @param {Number} maxz
+ * @returns {box3}
+ */
+
+
+box3.fromValues = function (minx, miny, minz, maxx, maxy, maxz) {
+  const out = box3.create();
+  out[0] = minx;
+  out[1] = miny;
+  out[2] = minz;
+  out[3] = maxx;
+  out[4] = maxy;
+  out[5] = maxz;
   return out;
 };
 /**
@@ -57546,6 +57917,19 @@ box3.getPosition = function (out, a) {
   out[1] = (a[1] + a[4]) * 0.5;
   out[2] = (a[2] + a[5]) * 0.5;
   return out;
+};
+/**
+ * Gets the effective radius of a bounding box
+ * @param {box3} a
+ * @returns {number}
+ */
+
+
+box3.radius = function (a) {
+  let sX = a[3] - a[0],
+      sY = a[4] - a[1],
+      sZ = a[5] - a[2];
+  return Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
 };
 /**
  * Sets a box3 from the intersect of two box3s
@@ -57729,6 +58113,7 @@ box3.intersectsSph3 = function (a, sphere) {
 
 
 box3.isEmpty = function (a) {
+  if (a[0] + a[1] + a[2] + a[0] + a[1] + a[2] === 0) return true;
   return a[3] < a[0] || a[4] < a[1] || a[5] < a[2];
 };
 /**
@@ -57741,6 +58126,7 @@ box3.isEmpty = function (a) {
 
 
 box3.bounds.isEmpty = function (min, max) {
+  if (min[0] + min[1] + min[2] + max[0] + max[1] + max[2] === 0) return true;
   return max[0] < min[0] || max[1] < min[1] || max[2] < min[2];
 };
 /**
@@ -57834,6 +58220,127 @@ box3.toBounds = function (a, outMin, outMax) {
   return a;
 };
 /**
+ *
+ *
+ * @param {box3} a
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ */
+
+
+box3.toObjectBounds = function (a, obj, m) {
+  const has = obj.minBounds || obj._boundingBox;
+
+  if (!has) {
+    console.dir(obj);
+    throw new Error("Invalid object bounds");
+  }
+
+  if (m) {
+    if (!box3_0) box3_0 = box3.create();
+    a = box3.transformMat4(box3_0, a, m);
+  }
+
+  if (obj.minBounds) {
+    box3.toBounds(a, obj.minBounds, obj.maxBounds);
+  } else {
+    box3.copy(obj._boundingBox, a);
+  }
+};
+/**
+ *
+ *
+ * @param {box3} a
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ */
+
+
+box3.toObjectPositionRadius = function (a, obj, m) {
+  if (m) {
+    if (!box3_0) box3_0 = box3.create();
+    a = box3.transformMat4(box3_0, a, m);
+  }
+
+  if (obj.boundsSpherePosition) {
+    obj.boundsSphereRadius = box3.toPositionRadius(a, obj.boundsSpherePosition);
+    return;
+  } else if (obj.boundingSphereCenter) {
+    obj.boundingSphereRadius = box3.toPositionRadius(a, obj.boundingSphereCenter);
+    return;
+  }
+
+  throw new Error("Invalid object bounds");
+};
+/**
+ * Converts a box3 to an array of points
+ * @param {box3} a
+ * @param {Array} [points]
+ * @returns {Array<Array>} points
+ */
+
+
+box3.toPoints = function (a) {
+  let points = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  const ax = a[0],
+        ay = a[1],
+        az = a[2],
+        bx = a[3],
+        by = a[4],
+        bz = a[5],
+        x = bx + Math.abs(ax),
+        y = by + Math.abs(ay),
+        z = bz + Math.abs(az);
+  points.push([bx + 0, by + 0, bz + 0]);
+  points.push([bx - x, by + 0, bz + 0]);
+  points.push([bx + 0, by + 0, bz - z]);
+  points.push([bx - x, by + 0, bz - z]);
+  points.push([bx + 0, by - y, bz + 0]);
+  points.push([bx - x, by - y, bz + 0]);
+  points.push([bx + 0, by - y, bz - z]);
+  points.push([bx - x, by - y, bz - z]);
+  return points;
+};
+/**
+ * Converts a box3 to position radius
+ * @param a
+ * @param outCenter
+ * @returns {number}
+ */
+
+
+box3.toPositionRadius = function (a, outCenter) {
+  let sX = a[3] - a[0],
+      sY = a[4] - a[1],
+      sZ = a[5] - a[2];
+  outCenter[0] = (a[0] + a[3]) * 0.5;
+  outCenter[1] = (a[1] + a[4]) * 0.5;
+  outCenter[2] = (a[2] + a[5]) * 0.5;
+  return Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+};
+/**
+ * Converts bounds to position radius
+ * @param {vec3} minBounds
+ * @param {vec3} maxBounds
+ * @param {vec3} outCenter
+ * @returns {number}
+ */
+
+
+box3.bounds.toPositionRadius = function (minBounds, maxBounds, outCenter) {
+  let sX = maxBounds[0] - minBounds[0],
+      sY = maxBounds[1] - minBounds[1],
+      sZ = maxBounds[2] - minBounds[2];
+  outCenter[0] = (minBounds[0] + maxBounds[0]) * 0.5;
+  outCenter[1] = (minBounds[1] + maxBounds[1]) * 0.5;
+  outCenter[2] = (minBounds[2] + maxBounds[2]) * 0.5;
+  return Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+};
+/**
  * Sets a receiving box3 from the translation of a box3 and a vec3
  *
  * @param {box3} out   - receiving box3
@@ -57862,27 +58369,24 @@ box3.translate = function (out, a, v) {
  */
 
 
-box3.transformMat4 = function () {
-  let points;
-  return function (out, a, m) {
-    if (!points) {
-      points = [_vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create()];
-    }
+box3.transformMat4 = function (out, a, m) {
+  if (!vec3_A) {
+    vec3_A = [_vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(), _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].create()];
+  }
 
-    if (box3.isEmpty(a)) {
-      return box3.empty(out);
-    }
+  if (box3.isEmpty(a)) {
+    return box3.empty(out);
+  }
 
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[0], [a[0], a[1], a[2]], m);
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[1], [a[0], a[1], a[5]], m);
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[2], [a[0], a[4], a[2]], m);
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[3], [a[0], a[4], a[5]], m);
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[4], [a[3], a[1], a[2]], m);
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[5], [a[3], a[1], a[5]], m);
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[6], [a[3], a[4], a[2]], m);
-    _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(points[7], [a[3], a[4], a[5]], m);
-    return box3.fromPoints(out, points);
-  };
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[0], [a[0], a[1], a[2]], m);
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[1], [a[0], a[1], a[5]], m);
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[2], [a[0], a[4], a[2]], m);
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[3], [a[0], a[4], a[5]], m);
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[4], [a[3], a[1], a[2]], m);
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[5], [a[3], a[1], a[5]], m);
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[6], [a[3], a[4], a[2]], m);
+  _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(vec3_A[7], [a[3], a[4], a[5]], m);
+  return box3.fromPoints(out, vec3_A);
 };
 /**
  * Sets a box3 from the union of two box3s
@@ -57922,6 +58426,26 @@ box3.unionBounds = function (out, a, min, max) {
   out[4] = Math.max(a[4], max[1]);
   out[5] = Math.max(a[5], max[2]);
   return out;
+};
+/**
+ * Sets bounds from the union of two sets of bounds
+ *
+ * @param {vec3} outMin
+ * @param {vec3} outMax
+ * @param {vec3} aMin
+ * @param {vec3} aMax
+ * @param {vec3} bMin
+ * @param {vec3} bMax
+ */
+
+
+box3.bounds.union = function (outMin, outMax, aMin, aMax, bMin, bMax) {
+  outMin[0] = Math.min(aMin[0], bMin[0]);
+  outMin[1] = Math.min(aMin[1], bMin[1]);
+  outMin[2] = Math.min(aMin[2], bMin[2]);
+  outMax[0] = Math.max(aMax[0], bMax[0]);
+  outMax[1] = Math.max(aMax[1], bMax[1]);
+  outMax[2] = Math.max(aMax[2], bMax[2]);
 };
 
 /***/ }),
@@ -59864,13 +60388,16 @@ const pln = {};
  * @returns {*}   - plane normal reference
  */
 
-pln.$normal = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].$min;
+pln.$normal = function (a) {
+  return a.subarray(0, 3);
+};
 /**
  * Clones a pln
  *
  * @param {pln} a - Source plane
  * @returns {pln} - Cloned plane
  */
+
 
 pln.clone = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].clone;
 /**
@@ -61446,7 +61973,9 @@ __webpack_require__.r(__webpack_exports__);
  * @typedef {Float32Array} sph3
  */
 
-const sph3 = {};
+const sph3 = {}; // Scratch
+
+let sph3_0 = null;
 /**
  * Returns a subarray containing the position component of the sph3
  * - Why does webpack fail to resolve this if referencing pln.normal?
@@ -61524,6 +62053,20 @@ sph3.distanceToPoint = function (a, p) {
       y = p[1] - a[1],
       z = p[2] - a[2];
   return Math.sqrt(x * x + y * y + z * z) - a[3];
+};
+/**
+ * Empties a sphere
+ * @param {sph3} a
+ * @returns {sph3} a
+ */
+
+
+sph3.empty = function (a) {
+  a[0] = 0;
+  a[1] = 0;
+  a[2] = 0;
+  a[3] = 0;
+  return a;
 };
 /**
  * Compares two sphere's for equality
@@ -61609,6 +62152,60 @@ sph3.fromBounds = function (out, min, max) {
   out[1] = (min[1] + max[1]) * 0.5;
   out[2] = (min[2] + max[2]) * 0.5;
   out[3] = Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+  return out;
+};
+/**
+ * Helper method which creates a sph3 from an eve object's bounding box properties
+ *
+ * @param {sph3} out
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ * @returns {sph3} out
+ */
+
+
+sph3.fromObjectBounds = function (out, obj, m) {
+  if (obj.minBounds) {
+    sph3.fromBounds(out, obj.minBounds, obj.maxBounds);
+  } else if (obj._boundingBox) {
+    sph3.fromBox3(out, obj._boundingBox);
+  } else {
+    throw new Error("Invalid object bounds");
+  }
+
+  if (m) {
+    sph3.transformMat4(out, out, m);
+  }
+
+  return out;
+};
+/**
+ * Helper method which creates a sph3 from an eve object's bounding sphere properties
+ *
+ * @param {sph3} out
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ * @returns {sph3} out
+ */
+
+
+sph3.fromObjectPositionRadius = function (out, obj, m) {
+  if (obj.boundsSpherePosition) {
+    sph3.fromPositionRadius(out, obj.boundsSpherePosition, obj.boundsSphereRadius);
+  } else if (obj.boundingSphereCenter) {
+    sph3.fromPositionRadius(out, obj.boundingSphereCenter, obj.boundingSphereRadius);
+  } else {
+    throw new Error("Invalid object bounds");
+  }
+
+  if (m) {
+    sph3.transformMat4(out, out, m);
+  }
+
   return out;
 };
 /**
@@ -61921,6 +62518,61 @@ sph3.squaredDistanceToPoint = function (a, p) {
 
 sph3.toArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].toArray;
 /**
+ *
+ *
+ * @param {sph3} a
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ */
+
+sph3.toObjectBounds = function (a, obj, m) {
+  const has = obj.minBounds || obj._boundingBox;
+
+  if (!has) {
+    throw new Error("Invalid object bounds");
+  }
+
+  if (m) {
+    if (!sph3_0) sph3_0 = sph3.create();
+    a = sph3.transformMat4(sph3_0, a, m);
+  }
+
+  if (obj.minBounds) {
+    sph3.toBounds(a, obj.minBounds, obj.maxBounds);
+  } else {
+    _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].fromSph3(obj._boundingBox, a);
+  }
+};
+/**
+ *
+ *
+ * @param {sph3} a
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ */
+
+
+sph3.toObjectPositionRadius = function (a, obj, m) {
+  if (m) {
+    if (!sph3_0) sph3_0 = sph3.create();
+    a = sph3.transformMat4(sph3_0, a, m);
+  }
+
+  if (obj.boundsSpherePosition) {
+    obj.boundsSphereRadius = sph3.toPositionRadius(a, obj.boundsSpherePosition);
+    return;
+  } else if (obj.boundingSphereCenter) {
+    obj.boundingSphereRadius = sph3.toPositionRadius(a, obj.boundingSphereCenter);
+    return;
+  }
+
+  throw new Error("Invalid object bounds");
+};
+/**
  * Transforms a sphere with a mat4
  *
  * @author three.js authors (conversion)
@@ -61929,6 +62581,7 @@ sph3.toArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].toArray;
  * @param {mat4} m   - the matrix to transform by
  * @returns {sph3}
  */
+
 
 sph3.transformMat4 = function (out, a, m) {
   let x = a[0],
