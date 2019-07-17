@@ -189,6 +189,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             catch (err)
             {
                 res.OnError(err);
+                console.error(err);
             }
 
             this._prepareBudget -= (device.now - startTime) * 0.001;

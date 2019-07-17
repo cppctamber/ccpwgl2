@@ -5,18 +5,14 @@ import {Tw2EventEmitter} from "./Tw2EventEmitter";
 
 /**
  * Tw2BaseClass
- * @namespace Tw2EventEmitter
  */
-export class Tw2BaseClass
+export class Tw2BaseClass extends Tw2EventEmitter
 {
 
     constructor()
     {
-        Reflect.defineProperty(this, "_id", {
-            value: generateID(),
-            writable: false,
-            configurable: true
-        });
+        super();
+        Tw2BaseClass.defineID(this);
     }
 
     /**
@@ -274,6 +270,15 @@ export class Tw2BaseClass
         }
     }
 
+    static defineID(target)
+    {
+        Reflect.defineProperty(target, "_id", {
+            value: generateID(),
+            writable: false,
+            configurable: true
+        });
+    }
+
     /**
      *
      * @type {*}
@@ -367,5 +372,3 @@ function cacheKeys(obj)
 
     obj.constructor.keys = cache;
 }
-
-Object.assign(Object.getPrototypeOf(Tw2BaseClass), Object.getPrototypeOf(Tw2EventEmitter));

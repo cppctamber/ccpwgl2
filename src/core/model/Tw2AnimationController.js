@@ -1,4 +1,4 @@
-import {vec3, quat, mat3, mat4, curve, util} from "../../global";
+import {box3, sph3, vec3, quat, mat3, mat4, curve, util, Tw2BaseClass} from "../../global";
 import {Tw2GeometryRes} from "../resource";
 import {Tw2Animation} from "./Tw2Animation";
 import {Tw2Bone} from "./Tw2Bone";
@@ -8,6 +8,7 @@ import {Tw2TrackGroup} from "./Tw2TrackGroup";
 
 /**
  * Tw2AnimationController
+ * TODO: Handle bounds in the update function
  *
  * @property {Array.<Tw2GeometryRes>} geometryResources
  * @property {Array.<Tw2Model>} models
@@ -17,10 +18,10 @@ import {Tw2TrackGroup} from "./Tw2TrackGroup";
  * @property {Boolean} update
  * @property _geometryResource
  * @property {Array} pendingCommands
- * @property {Function} [onLoaded] an optional callback fired when any commands are cleared
+ * @property {Function} [onPendingCleared] an optional callback fired when any commands are cleared
  * @class
  */
-export class Tw2AnimationController
+export class Tw2AnimationController extends Tw2BaseClass
 {
 
     geometryResources = [];
@@ -31,8 +32,9 @@ export class Tw2AnimationController
     update = true;
     pendingCommands = [];
     onPendingCleared = null;
-    _geometryResource = null;
 
+    _isPlaying = false;
+    _boundsDirty = false;
 
     /**
      * Constructor
@@ -40,7 +42,50 @@ export class Tw2AnimationController
      */
     constructor(geometryResource)
     {
-        if (geometryResource) this.SetGeometryResource(geometryResource);
+        super();
+        if (geometryResource)
+        {
+            this.SetGeometryResource(geometryResource);
+        }
+    }
+
+    /**
+     * Checks if the animation is good
+     * @returns {boolean}
+     */
+    IsGood()
+    {
+        let isGood = this.geometryResources.length > 0;
+
+        // Cycle through geometry to keep alive
+        for (let i = 0; i < this.geometryResources.length; i++)
+        {
+            if (!this.geometryResources[i] || !this.geometryResources[i].IsGood())
+            {
+                isGood = false;
+            }
+        }
+
+        if (!isGood || !this.animations.length) return false;
+
+        for (let i = 0; i < this.animations.length; i++)
+        {
+            if (!this.animations[i].animationRes)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if any animations are playing
+     * @returns {boolean}
+     */
+    IsPlaying()
+    {
+        return this._isPlaying;
     }
 
     /**
@@ -547,6 +592,9 @@ export class Tw2AnimationController
      */
     Update(dt)
     {
+        let wasPlaying = this._isPlaying;
+        this._isPlaying = false;
+
         if (!this.models || !this.update)
         {
             return;
@@ -570,13 +618,15 @@ export class Tw2AnimationController
             const animation = this.animations[i];
             if (animation.isPlaying)
             {
+                this._isPlaying = true;
+
                 const res = animation.animationRes;
                 animation.time += dt * animation.timeScale;
                 if (animation.time > res.duration)
                 {
                     if (animation.callback)
                     {
-                        animation.callback(this, animation);
+                        animation.callback(this, animation, false);
                     }
 
                     if (animation.cycle)
@@ -668,6 +718,10 @@ export class Tw2AnimationController
             }
         }
 
+        if (this._isPlaying || this._isPlaying !== wasPlaying)
+        {
+            this._boundsDirty = true;
+        }
     }
 
     /**
