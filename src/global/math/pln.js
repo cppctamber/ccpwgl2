@@ -18,7 +18,11 @@ export const pln = {};
  * @param {pln} a - source plane
  * @returns {*}   - plane normal reference
  */
-pln.$normal = box3.$min;
+pln.$normal = function(a)
+{
+    return a.subarray(0, 3);
+};
+
 
 /**
  * Clones a pln

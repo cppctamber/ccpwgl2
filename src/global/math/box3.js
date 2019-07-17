@@ -1,12 +1,19 @@
 import {num} from "./num";
 import {vec3} from "./vec3";
+import {sph3} from "./sph3";
+import {mat4} from "./mat4";
 
 /**
  * 3D Box
  * @typedef {Float32Array} box3
  */
 
-export const box3 = { bounds: {} };
+export const box3 = {bounds: {}};
+
+// Scratch
+let mat4_0 = null,
+    box3_0 = null,
+    vec3_A = null;
 
 /**
  * Gets a subarray of a box3's min vector
@@ -36,7 +43,7 @@ box3.$max = function(a)
  * @param {vec3} p     - point to add
  * @returns {box3} out - receiving box3
  */
-box3.addPoint = function (out, a, p)
+box3.addPoint = function(out, a, p)
 {
     out[0] = Math.min(a[0], p[0]);
     out[1] = Math.min(a[1], p[1]);
@@ -55,7 +62,7 @@ box3.addPoint = function (out, a, p)
  * @param {Array.<number>} points - points to add
  * @returns {box3} out            - receiving box3
  */
-box3.addPoints = function (out, a, points)
+box3.addPoints = function(out, a, points)
 {
     let minX = a[0],
         minY = a[1],
@@ -89,7 +96,7 @@ box3.addPoints = function (out, a, points)
  * @param {box3} a - source box3
  * @returns {box3} - a new box3
  */
-box3.clone = function (a)
+box3.clone = function(a)
 {
     let out = new Float32Array(6);
     out[0] = a[0];
@@ -109,7 +116,7 @@ box3.clone = function (a)
  * @param {box3} b    - box3 to compare
  * @returns {boolean} - true if the source box3 contains the second
  */
-box3.contains = function (a, b)
+box3.contains = function(a, b)
 {
     return (
         (a[0] <= b[0]) && (b[3] <= a[3]) &&
@@ -126,7 +133,7 @@ box3.contains = function (a, b)
  * @param {vec3} max  - max bounds
  * @returns {boolean} - true if the source box3 contains the bounds
  */
-box3.containsBounds = function (a, min, max)
+box3.containsBounds = function(a, min, max)
 {
     return (
         (a[0] <= min[0]) && (max[0] <= a[3]) &&
@@ -142,7 +149,7 @@ box3.containsBounds = function (a, min, max)
  * @param {vec3} p    - point to compare
  * @returns {boolean} - true if the source box contains the point
  */
-box3.containsPoint = function (a, p)
+box3.containsPoint = function(a, p)
 {
     return !(
         p[0] < a[0] || p[0] > a[3] ||
@@ -160,7 +167,7 @@ box3.containsPoint = function (a, p)
  * @param {Number} pz - point Z
  * @returns {boolean} - true if the source box3 contains the point
  */
-box3.containsValue = function (a, px, py, pz)
+box3.containsValue = function(a, px, py, pz)
 {
     return !(
         px < a[0] || px > a[3] ||
@@ -176,7 +183,7 @@ box3.containsValue = function (a, px, py, pz)
  * @param {box3} a     - source box3
  * @returns {box3} out - receiving box3
  */
-box3.copy = function (out, a)
+box3.copy = function(out, a)
 {
     out[0] = a[0];
     out[1] = a[1];
@@ -217,16 +224,9 @@ box3.copyMax = function(out, a)
  *
  * @returns {box3} - The new box3
  */
-box3.create = function ()
+box3.create = function()
 {
-    let out = new Float32Array(6);
-    out[0] = -Infinity;
-    out[1] = -Infinity;
-    out[2] = -Infinity;
-    out[3] = Infinity;
-    out[4] = Infinity;
-    out[5] = Infinity;
-    return out;
+    return box3.empty(new Float32Array(6));
 };
 
 /**
@@ -236,7 +236,7 @@ box3.create = function ()
  * @param {vec3} p   - point
  * @returns {number} - distance between the source box3 and point
  */
-box3.distanceToPoint = function (a, p)
+box3.distanceToPoint = function(a, p)
 {
     let x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
         y = Math.max(a[1], Math.min(a[4], p[1])) - p[1],
@@ -254,7 +254,7 @@ box3.distanceToPoint = function (a, p)
  * @param {Number} pz - point z
  * @returns {number}  - distance between the source box3 and point
  */
-box3.distanceToValues = function (a, px, py, pz)
+box3.distanceToValues = function(a, px, py, pz)
 {
     let x = Math.max(a[0], Math.min(a[3], px)) - px,
         y = Math.max(a[1], Math.min(a[4], py)) - py,
@@ -269,14 +269,14 @@ box3.distanceToValues = function (a, px, py, pz)
  * @param {box3} a - box3 to empty
  * @returns {box3} - the empty box3
  */
-box3.empty = function (a)
+box3.empty = function(a)
 {
-    a[0] = +Infinity;
-    a[1] = +Infinity;
-    a[2] = +Infinity;
-    a[3] = -Infinity;
-    a[4] = -Infinity;
-    a[5] = -Infinity;
+    a[0] = 0;
+    a[1] = 0;
+    a[2] = 0;
+    a[3] = 0;
+    a[4] = 0;
+    a[5] = 0;
     return a;
 };
 
@@ -286,14 +286,14 @@ box3.empty = function (a)
  * @param {vec3} min - min bounds
  * @param {vec3} max - max bounds
  */
-box3.bounds.empty = function (min, max)
+box3.bounds.empty = function(min, max)
 {
-    min[0] = +Infinity;
-    min[1] = +Infinity;
-    min[2] = +Infinity;
-    max[0] = -Infinity;
-    min[1] = -Infinity;
-    min[2] = -Infinity;
+    min[0] = 0;
+    min[1] = 0;
+    min[2] = 0;
+    max[0] = 0;
+    max[1] = 0;
+    max[2] = 0;
 };
 
 /**
@@ -303,7 +303,7 @@ box3.bounds.empty = function (min, max)
  * @param {box3} b    - box3 to compare
  * @returns {boolean} - true if box3s are equal
  */
-box3.equals = function (a, b)
+box3.equals = function(a, b)
 {
     let a0 = a[0],
         a1 = a[1],
@@ -337,7 +337,7 @@ box3.equals = function (a, b)
  * @param {vec3} max  - max bounds to compare
  * @returns {boolean} - true if the box3 and bounds are equal
  */
-box3.equalsBounds = function (a, min, max)
+box3.equalsBounds = function(a, min, max)
 {
     let a0 = a[0],
         a1 = a[1],
@@ -370,7 +370,7 @@ box3.equalsBounds = function (a, min, max)
  * @param {box3} b    - box3 to compare
  * @returns {boolean} - true if both box3s are exactly equal
  */
-box3.exactEquals = function (a, b)
+box3.exactEquals = function(a, b)
 {
     return (
         a[0] === b[0] && a[1] === b[1] && a[2] === b[2] &&
@@ -386,7 +386,7 @@ box3.exactEquals = function (a, b)
  * @param {vec3} max  - max bounds to compare
  * @returns {boolean} - true if the box3 and bounds are exactly equal
  */
-box3.exactEqualsBounds = function (a, min, max)
+box3.exactEqualsBounds = function(a, min, max)
 {
     return (
         a[0] === min[0] && a[1] === min[1] && a[2] === min[2] &&
@@ -402,7 +402,7 @@ box3.exactEqualsBounds = function (a, min, max)
  * @param {number} s   - scalar to expand by
  * @returns {box3} out - receiving box3
  */
-box3.expandScalar = function (out, a, s)
+box3.expandScalar = function(out, a, s)
 {
     out[0] = a[0] - s;
     out[1] = a[1] - s;
@@ -423,7 +423,7 @@ box3.expandScalar = function (out, a, s)
  * @param {number} vz  - vector z
  * @returns {box3} out - receiving box3
  */
-box3.expandValues = function (out, a, vx, vy, vz)
+box3.expandValues = function(out, a, vx, vy, vz)
 {
     out[0] = a[0] - vx;
     out[1] = a[1] - vy;
@@ -442,7 +442,7 @@ box3.expandValues = function (out, a, vx, vy, vz)
  * @param {vec3} v     - vector to expand by
  * @returns {box3} out - receiving box3
  */
-box3.expandVec3 = function (out, a, v)
+box3.expandVec3 = function(out, a, v)
 {
     out[0] = a[0] - v[0];
     out[1] = a[1] - v[1];
@@ -461,7 +461,7 @@ box3.expandVec3 = function (out, a, v)
  * @param {number} [index=0] - optional array index
  * @returns {box3}           - receiving box3
  */
-box3.fromArray = function (out, arr, index = 0)
+box3.fromArray = function(out, arr, index = 0)
 {
     out[0] = arr[index];
     out[1] = arr[index + 1];
@@ -480,16 +480,83 @@ box3.fromArray = function (out, arr, index = 0)
  * @param {vec3} max   - source max bounds
  * @returns {box3} out - receiving box3
  */
-box3.fromBounds = function (out, min, max)
+box3.fromBounds = function(out, min, max)
 {
     out[0] = min[0];
     out[1] = min[1];
     out[2] = min[2];
-    out[0] = max[0];
-    out[1] = max[1];
-    out[2] = max[2];
+    out[3] = max[0];
+    out[4] = max[1];
+    out[5] = max[2];
     return out;
 };
+
+/**
+ * Helper method which creates a box3 from an eve object's bounding box properties
+ *
+ * @param {box3} out
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ * @returns {box3} out
+ */
+box3.fromObjectBounds = function(out, obj, m)
+{
+    if (obj.minBounds)
+    {
+        box3.fromBounds(out, obj.minBounds, obj.maxBounds);
+    }
+    else if (obj._boundingBox)
+    {
+        box3.copy(out, obj._boundingBox);
+    }
+    else
+    {
+        throw new Error("Invalid object bounds");
+    }
+
+    if (m)
+    {
+        box3.transformMat4(out, out, m);
+    }
+
+    return out;
+};
+
+/**
+ * Helper method which creates a box3 from an eve object's bounding sphere properties
+ *
+ * @param {box3} out
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ * @returns {box3} out
+ */
+box3.fromObjectPositionRadius = function(out, obj, m)
+{
+    if (obj.boundsSpherePosition)
+    {
+        box3.fromPositionRadius(out, obj.boundsSpherePosition, obj.boundsSphereRadius);
+    }
+    else if (obj.boundingSphereCenter)
+    {
+        box3.fromPositionRadius(out, obj.boundingSphereCenter, obj.boundingSphereRadius);
+    }
+    else
+    {
+        throw new Error("Invalid object bounds");
+    }
+
+    if (m)
+    {
+        box3.transformMat4(out, out, m);
+    }
+
+    return out;
+};
+
 
 /**
  * Sets a box3 from position and size
@@ -499,7 +566,7 @@ box3.fromBounds = function (out, min, max)
  * @param {vec3} size     - source size
  * @returns {box3} out    - receiving box3
  */
-box3.fromPositionSize = function (out, position, size)
+box3.fromPositionSize = function(out, position, size)
 {
     out[0] = position[0] - size[0] * 0.5;
     out[1] = position[1] - size[1] * 0.5;
@@ -517,14 +584,9 @@ box3.fromPositionSize = function (out, position, size)
  * @param {Array.<vec3>} points - array of points
  * @returns {box3} out          - receiving box3
  */
-box3.fromPoints = function (out, points)
+box3.fromPoints = function(out, points)
 {
-    out[0] = +Infinity;
-    out[1] = +Infinity;
-    out[2] = +Infinity;
-    out[3] = -Infinity;
-    out[4] = -Infinity;
-    out[5] = -Infinity;
+    box3.empty(out);
 
     for (let i = 0; i < points.length; i++)
     {
@@ -547,7 +609,7 @@ box3.fromPoints = function (out, points)
  * @param {number} radius - radius
  * @returns {box3}        - receiving box3
  */
-box3.fromPositionRadius = function (out, position, radius)
+box3.fromPositionRadius = function(out, position, radius)
 {
     out[0] = position[0] - radius;
     out[1] = position[1] - radius;
@@ -565,7 +627,7 @@ box3.fromPositionRadius = function (out, position, radius)
  * @param {sph3} sphere - source sphere
  * @returns {box3} out - receiving box3
  */
-box3.fromSph3 = function (out, sphere)
+box3.fromSph3 = function(out, sphere)
 {
     out[0] = sphere[0] - sphere[3];
     out[1] = sphere[1] - sphere[3];
@@ -577,6 +639,28 @@ box3.fromSph3 = function (out, sphere)
 };
 
 /**
+ * Creates a box3 from values
+ * @param {Number} minx
+ * @param {Number} miny
+ * @param {Number} minz
+ * @param {Number} maxx
+ * @param {Number} maxy
+ * @param {Number} maxz
+ * @returns {box3}
+ */
+box3.fromValues = function(minx, miny, minz, maxx, maxy, maxz)
+{
+    const out = box3.create();
+    out[0] = minx;
+    out[1] = miny;
+    out[2] = minz;
+    out[3] = maxx;
+    out[4] = maxy;
+    out[5] = maxz;
+    return out;
+};
+
+/**
  * Sets a vec3 from a point clamped to a box3
  *
  * @param {vec3} out     - receiving vec3
@@ -584,7 +668,7 @@ box3.fromSph3 = function (out, sphere)
  * @param {vec3} p       - the point to clamp
  * @returns {vec3} [out] - receiving vec3
  */
-box3.getClampedPoint = function (out, a, p)
+box3.getClampedPoint = function(out, a, p)
 {
     out[0] = Math.max(a[0], Math.min(a[3], p[0]));
     out[1] = Math.max(a[1], Math.min(a[4], p[1]));
@@ -599,7 +683,7 @@ box3.getClampedPoint = function (out, a, p)
  * @param {box3} a          - source box
  * @returns {vec3} [out] - receiving vec3
  */
-box3.getMax = function (out, a)
+box3.getMax = function(out, a)
 {
     out[0] = a[3];
     out[1] = a[4];
@@ -614,7 +698,7 @@ box3.getMax = function (out, a)
  * @param {box3} a          - source box
  * @returns {vec3} [out] - receiving vec3
  */
-box3.getMin = function (out, a)
+box3.getMin = function(out, a)
 {
     out[0] = a[0];
     out[1] = a[1];
@@ -629,7 +713,7 @@ box3.getMin = function (out, a)
  * @param {box3} a          - source box
  * @returns {vec3} [out] - receiving vec3
  */
-box3.getSize = function (out, a)
+box3.getSize = function(out, a)
 {
     out[0] = a[3] - a[0];
     out[1] = a[4] - a[1];
@@ -644,12 +728,26 @@ box3.getSize = function (out, a)
  * @param {box3} a          - source box
  * @returns {vec3} [out] - receiving vec3
  */
-box3.getPosition = function (out, a)
+box3.getPosition = function(out, a)
 {
     out[0] = (a[0] + a[3]) * 0.5;
     out[1] = (a[1] + a[4]) * 0.5;
     out[2] = (a[2] + a[5]) * 0.5;
     return out;
+};
+
+/**
+ * Gets the effective radius of a bounding box
+ * @param {box3} a
+ * @returns {number}
+ */
+box3.radius = function(a)
+{
+    let sX = a[3] - a[0],
+        sY = a[4] - a[1],
+        sZ = a[5] - a[2];
+
+    return Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
 };
 
 /**
@@ -660,7 +758,7 @@ box3.getPosition = function (out, a)
  * @param {box3} b     - second box3
  * @returns {box3} out - receiving box3
  */
-box3.intersect = function (out, a, b)
+box3.intersect = function(out, a, b)
 {
     out[0] = Math.max(a[0], b[0]);
     out[1] = Math.max(a[1], b[1]);
@@ -680,7 +778,7 @@ box3.intersect = function (out, a, b)
  * @param {vec3} max   - max bounds
  * @returns {box3} out - receiving box3
  */
-box3.intersectBounds = function (out, a, min, max)
+box3.intersectBounds = function(out, a, min, max)
 {
     out[0] = Math.max(a[0], min[0]);
     out[1] = Math.max(a[1], min[1]);
@@ -698,7 +796,7 @@ box3.intersectBounds = function (out, a, min, max)
  * @param b           - second box3 to compare
  * @returns {boolean} - true if intersection occurred
  */
-box3.intersects = function (a, b)
+box3.intersects = function(a, b)
 {
     return !(
         b[3] < a[0] || b[0] > a[3] ||
@@ -715,7 +813,7 @@ box3.intersects = function (a, b)
  * @param {vec3} max  - max bounds to compare
  * @returns {boolean} - true if intersection occurred
  */
-box3.intersectsBounds = function (a, min, max)
+box3.intersectsBounds = function(a, min, max)
 {
     return !(
         max[0] < a[0] || min[0] > a[3] ||
@@ -732,7 +830,7 @@ box3.intersectsBounds = function (a, min, max)
  * @param {number} constant - plane constant
  * @returns {boolean}       - true if intersection occurs
  */
-box3.intersectsNormalConstant = function (a, normal, constant)
+box3.intersectsNormalConstant = function(a, normal, constant)
 {
     let tMin, tMax;
 
@@ -779,7 +877,7 @@ box3.intersectsNormalConstant = function (a, normal, constant)
  * @param {(pln|Float32Array)} p     - plane to compare
  * @returns {boolean}                - true if intersection occurs
  */
-box3.intersectsPln = function (a, p)
+box3.intersectsPln = function(a, p)
 {
     // const x = p.subarray(0, 3);
     return box3.intersectsNormalConstant(a, p, p[3]);
@@ -792,7 +890,7 @@ box3.intersectsPln = function (a, p)
  * @param {vec3} p    - point to compare
  * @returns {boolean} - true if intersection occurs
  */
-box3.intersectsPoint = function (a, p)
+box3.intersectsPoint = function(a, p)
 {
     return p[0] >= a[0] && p[0] <= a[3] && p[1] >= a[1] && p[1] <= a[4] && p[2] >= a[2] && p[2] <= a[5];
 };
@@ -806,7 +904,7 @@ box3.intersectsPoint = function (a, p)
  * @param {Number} pz - point z to compare
  * @returns {boolean} - true if intersection occurs
  */
-box3.intersectsValues = function (a, px, py, pz)
+box3.intersectsValues = function(a, px, py, pz)
 {
     return px >= a[0] && px <= a[3] && py >= a[1] && py <= a[4] && pz >= a[2] && pz <= a[5];
 };
@@ -819,7 +917,7 @@ box3.intersectsValues = function (a, px, py, pz)
  * @param {number} radius - sphere radius to compare
  * @returns {boolean}     - true if intersection occurs
  */
-box3.intersectsPositionRadius = function (a, position, radius)
+box3.intersectsPositionRadius = function(a, position, radius)
 {
     let x = Math.max(a[0], Math.min(a[3], position[0])) - position[0],
         y = Math.max(a[1], Math.min(a[4], position[1])) - position[1],
@@ -835,7 +933,7 @@ box3.intersectsPositionRadius = function (a, position, radius)
  * @param {sph3} sphere - sph3 to compare
  * @returns {boolean}   - true if intersection occurs
  */
-box3.intersectsSph3 = function (a, sphere)
+box3.intersectsSph3 = function(a, sphere)
 {
     let x = Math.max(a[0], Math.min(a[3], sphere[0])) - sphere[0],
         y = Math.max(a[1], Math.min(a[4], sphere[1])) - sphere[1],
@@ -850,8 +948,9 @@ box3.intersectsSph3 = function (a, sphere)
  * @param {box3} a    - source box3
  * @returns {boolean} - true if empty
  */
-box3.isEmpty = function (a)
+box3.isEmpty = function(a)
 {
+    if (a[0] + a[1] + a[2] + a[0] + a[1] + a[2] === 0) return true;
     return (a[3] < a[0]) || (a[4] < a[1]) || (a[5] < a[2]);
 };
 
@@ -862,8 +961,9 @@ box3.isEmpty = function (a)
  * @param {vec3} max
  * @returns {boolean}
  */
-box3.bounds.isEmpty = function (min, max)
+box3.bounds.isEmpty = function(min, max)
 {
+    if (min[0] + min[1] + min[2] + max[0] + max[1] + max[2] === 0) return true;
     return (max[0] < min[0]) || (max[1] < min[1]) || (max[2] < min[2]);
 };
 
@@ -879,7 +979,7 @@ box3.bounds.isEmpty = function (min, max)
  * @param {Number} bZ
  * @returns {box3}
  */
-box3.set = function (out, aX, aY, aZ, bX, bY, bZ)
+box3.set = function(out, aX, aY, aZ, bX, bY, bZ)
 {
     out[0] = aX;
     out[1] = aY;
@@ -897,7 +997,7 @@ box3.set = function (out, aX, aY, aZ, bX, bY, bZ)
  * @param {vec3} p   - point
  * @returns {number} - distance
  */
-box3.squaredDistanceToPoint = function (a, p)
+box3.squaredDistanceToPoint = function(a, p)
 {
     let x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
         y = Math.max(a[1], Math.min(a[4], p[1])) - p[1],
@@ -912,7 +1012,7 @@ box3.squaredDistanceToPoint = function (a, p)
  * @param {box3} a   - source box3
  * @returns {number} - surface area
  */
-box3.surfaceArea = function (a)
+box3.surfaceArea = function(a)
 {
     let aa = a[3] - a[0],
         h = a[4] - a[1],
@@ -929,7 +1029,7 @@ box3.surfaceArea = function (a)
  * @param {number} [offset=0] - optional offset
  * @returns {box3} a          - receiving box3
  */
-box3.toArray = function (a, arr, offset = 0)
+box3.toArray = function(a, arr, offset = 0)
 {
     arr[offset] = a[0];
     arr[offset + 1] = a[1];
@@ -947,7 +1047,7 @@ box3.toArray = function (a, arr, offset = 0)
  * @param {vec3} outMax - receiving vector for max bounds
  * @param {box3} a      - source box3
  */
-box3.toBounds = function (a, outMin, outMax)
+box3.toBounds = function(a, outMin, outMax)
 {
     outMin[0] = a[0];
     outMin[1] = a[1];
@@ -959,6 +1059,141 @@ box3.toBounds = function (a, outMin, outMax)
 };
 
 /**
+ *
+ *
+ * @param {box3} a
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ */
+box3.toObjectBounds = function(a, obj, m)
+{
+    const has = obj.minBounds || obj._boundingBox;
+    if (!has)
+    {
+        console.dir(obj);
+        throw new Error("Invalid object bounds");
+    }
+
+    if (m)
+    {
+        if (!box3_0) box3_0 = box3.create();
+        a = box3.transformMat4(box3_0, a, m);
+    }
+
+    if (obj.minBounds)
+    {
+        box3.toBounds(a, obj.minBounds, obj.maxBounds);
+    }
+    else
+    {
+        box3.copy(obj._boundingBox, a);
+    }
+};
+
+/**
+ *
+ *
+ * @param {box3} a
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ */
+box3.toObjectPositionRadius = function(a, obj, m)
+{
+    if (m)
+    {
+        if (!box3_0) box3_0 = box3.create();
+        a = box3.transformMat4(box3_0, a, m);
+    }
+
+    if (obj.boundsSpherePosition)
+    {
+        obj.boundsSphereRadius = box3.toPositionRadius(a, obj.boundsSpherePosition);
+        return;
+    }
+    else if (obj.boundingSphereCenter)
+    {
+        obj.boundingSphereRadius = box3.toPositionRadius(a, obj.boundingSphereCenter);
+        return;
+    }
+
+    throw new Error("Invalid object bounds");
+};
+
+/**
+ * Converts a box3 to an array of points
+ * @param {box3} a
+ * @param {Array} [points]
+ * @returns {Array<Array>} points
+ */
+box3.toPoints = function(a, points = [])
+{
+    const
+        ax = a[0],
+        ay = a[1],
+        az = a[2],
+        bx = a[3],
+        by = a[4],
+        bz = a[5],
+        x = bx + Math.abs(ax),
+        y = by + Math.abs(ay),
+        z = bz + Math.abs(az);
+
+    points.push([bx + 0, by + 0, bz + 0]);
+    points.push([bx - x, by + 0, bz + 0]);
+    points.push([bx + 0, by + 0, bz - z]);
+    points.push([bx - x, by + 0, bz - z]);
+    points.push([bx + 0, by - y, bz + 0]);
+    points.push([bx - x, by - y, bz + 0]);
+    points.push([bx + 0, by - y, bz - z]);
+    points.push([bx - x, by - y, bz - z]);
+
+    return points;
+};
+
+/**
+ * Converts a box3 to position radius
+ * @param a
+ * @param outCenter
+ * @returns {number}
+ */
+box3.toPositionRadius = function(a, outCenter)
+{
+    let sX = a[3] - a[0],
+        sY = a[4] - a[1],
+        sZ = a[5] - a[2];
+
+    outCenter[0] = (a[0] + a[3]) * 0.5;
+    outCenter[1] = (a[1] + a[4]) * 0.5;
+    outCenter[2] = (a[2] + a[5]) * 0.5;
+
+    return Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+};
+
+/**
+ * Converts bounds to position radius
+ * @param {vec3} minBounds
+ * @param {vec3} maxBounds
+ * @param {vec3} outCenter
+ * @returns {number}
+ */
+box3.bounds.toPositionRadius = function(minBounds, maxBounds, outCenter)
+{
+    let sX = maxBounds[0] - minBounds[0],
+        sY = maxBounds[1] - minBounds[1],
+        sZ = maxBounds[2] - minBounds[2];
+
+    outCenter[0] = (minBounds[0] + maxBounds[0]) * 0.5;
+    outCenter[1] = (minBounds[1] + maxBounds[1]) * 0.5;
+    outCenter[2] = (minBounds[2] + maxBounds[2]) * 0.5;
+
+    return Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+};
+
+/**
  * Sets a receiving box3 from the translation of a box3 and a vec3
  *
  * @param {box3} out   - receiving box3
@@ -966,7 +1201,7 @@ box3.toBounds = function (a, outMin, outMax)
  * @param {vec3} v     - vec3 to translate by
  * @returns {box3} out - receiving box3
  */
-box3.translate = function (out, a, v)
+box3.translate = function(out, a, v)
 {
     out[0] = a[0] + v[0];
     out[1] = a[1] + v[1];
@@ -985,37 +1220,32 @@ box3.translate = function (out, a, v)
  * @param {mat4} m     - mat4 to transform with
  * @returns {box3} out - receiving box3
  */
-box3.transformMat4 = (function ()
+box3.transformMat4 = function(out, a, m)
 {
-    let points;
-
-    return function (out, a, m)
+    if (!vec3_A)
     {
-        if (!points)
-        {
-            points = [
-                vec3.create(), vec3.create(), vec3.create(), vec3.create(),
-                vec3.create(), vec3.create(), vec3.create(), vec3.create()
-            ];
-        }
+        vec3_A = [
+            vec3.create(), vec3.create(), vec3.create(), vec3.create(),
+            vec3.create(), vec3.create(), vec3.create(), vec3.create()
+        ];
+    }
 
-        if (box3.isEmpty(a))
-        {
-            return box3.empty(out);
-        }
+    if (box3.isEmpty(a))
+    {
+        return box3.empty(out);
+    }
 
-        vec3.transformMat4(points[0], [a[0], a[1], a[2]], m);
-        vec3.transformMat4(points[1], [a[0], a[1], a[5]], m);
-        vec3.transformMat4(points[2], [a[0], a[4], a[2]], m);
-        vec3.transformMat4(points[3], [a[0], a[4], a[5]], m);
-        vec3.transformMat4(points[4], [a[3], a[1], a[2]], m);
-        vec3.transformMat4(points[5], [a[3], a[1], a[5]], m);
-        vec3.transformMat4(points[6], [a[3], a[4], a[2]], m);
-        vec3.transformMat4(points[7], [a[3], a[4], a[5]], m);
+    vec3.transformMat4(vec3_A[0], [a[0], a[1], a[2]], m);
+    vec3.transformMat4(vec3_A[1], [a[0], a[1], a[5]], m);
+    vec3.transformMat4(vec3_A[2], [a[0], a[4], a[2]], m);
+    vec3.transformMat4(vec3_A[3], [a[0], a[4], a[5]], m);
+    vec3.transformMat4(vec3_A[4], [a[3], a[1], a[2]], m);
+    vec3.transformMat4(vec3_A[5], [a[3], a[1], a[5]], m);
+    vec3.transformMat4(vec3_A[6], [a[3], a[4], a[2]], m);
+    vec3.transformMat4(vec3_A[7], [a[3], a[4], a[5]], m);
 
-        return box3.fromPoints(out, points);
-    };
-});
+    return box3.fromPoints(out, vec3_A);
+};
 
 /**
  * Sets a box3 from the union of two box3s
@@ -1025,7 +1255,7 @@ box3.transformMat4 = (function ()
  * @param {box3} b     - second box3
  * @returns {box3} out - receiving box3
  */
-box3.union = function (out, a, b)
+box3.union = function(out, a, b)
 {
     out[0] = Math.min(a[0], b[0]);
     out[1] = Math.min(a[1], b[1]);
@@ -1045,7 +1275,7 @@ box3.union = function (out, a, b)
  * @param {vec3} max   - max bounds
  * @returns {box3} out - receiving box3
  */
-box3.unionBounds = function (out, a, min, max)
+box3.unionBounds = function(out, a, min, max)
 {
     out[0] = Math.min(a[0], min[0]);
     out[1] = Math.min(a[1], min[1]);
@@ -1054,4 +1284,24 @@ box3.unionBounds = function (out, a, min, max)
     out[4] = Math.max(a[4], max[1]);
     out[5] = Math.max(a[5], max[2]);
     return out;
+};
+
+/**
+ * Sets bounds from the union of two sets of bounds
+ *
+ * @param {vec3} outMin
+ * @param {vec3} outMax
+ * @param {vec3} aMin
+ * @param {vec3} aMax
+ * @param {vec3} bMin
+ * @param {vec3} bMax
+ */
+box3.bounds.union = function(outMin, outMax, aMin, aMax, bMin, bMax)
+{
+    outMin[0] = Math.min(aMin[0], bMin[0]);
+    outMin[1] = Math.min(aMin[1], bMin[1]);
+    outMin[2] = Math.min(aMin[2], bMin[2]);
+    outMax[0] = Math.max(aMax[0], bMax[0]);
+    outMax[1] = Math.max(aMax[1], bMax[1]);
+    outMax[2] = Math.max(aMax[2], bMax[2]);
 };

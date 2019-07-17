@@ -1,4 +1,4 @@
-import {vec3, quat, mat3, mat4, device} from "../../global";
+import {box3, sph3, vec3, quat, mat3, mat4, resMan, device} from "../../global";
 import {Tw2BinaryReader} from "../reader";
 import {Tw2VertexElement} from "../vertex";
 import {Tw2Resource} from "./Tw2Resource";
@@ -40,14 +40,60 @@ export class Tw2GeometryRes extends Tw2Resource
 {
 
     meshes = [];
-    minBounds = vec3.create();
-    maxBounds = vec3.create();
+    minBounds = vec3.fromValues(0, 0, 0);
+    maxBounds = vec3.fromValues(0, 0, 0);
     boundsSpherePosition = vec3.create();
     boundsSphereRadius = 0;
     models = [];
     animations = [];
-    systemMirror = false;
+    systemMirror = resMan.systemMirror;
 
+    /**
+     * Gets the object's bounding box
+     * @param {box3} out
+     * @param {mat4} [parentTransform]
+     * @returns {Boolean} True if bounds are valid
+     */
+    GetBoundingBox(out, parentTransform)
+    {
+        box3.fromBounds(out, this.minBounds, this.maxBounds);
+        if (parentTransform) box3.transformMat4(out, out, parentTransform);
+        return true;
+    }
+
+    /**
+     * Gets the object's bounding sphere
+     * @param {sph3} out
+     * @param {mat4} [parentTransform]
+     * @returns {Boolean} True if bounds are valid
+     */
+    GetBoundingSphere(out, parentTransform)
+    {
+        sph3.fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+        if (parentTransform) sph3.transformMat4(out, out, parentTransform);
+        return true;
+    }
+
+    /**
+     * Rebuilds bounds
+     * @returns {Boolean} [fromVertex]
+     */
+    RebuildBounds(fromVertex)
+    {
+        const
+            min = this.minBounds,
+            max = this.maxBounds;
+
+        box3.bounds.empty(min, max);
+        for (let i = 0; i < this.meshes.length; i++)
+        {
+            const mesh = this.meshes[i];
+            mesh.RebuildBounds(fromVertex);
+            box3.bounds.union(min, max, min, max, mesh.minBounds, mesh.maxBounds);
+        }
+
+        this.boundsSphereRadius = box3.bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+    }
 
     /**
      * GetInstanceBuffer
@@ -136,12 +182,30 @@ export class Tw2GeometryRes extends Tw2Resource
             const areaCount = reader.ReadUInt8();
             for (let i = 0; i < areaCount; ++i)
             {
-                mesh.areas[i] = new Tw2GeometryMeshArea();
-                mesh.areas[i].name = reader.ReadString();
-                mesh.areas[i].start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
-                mesh.areas[i].count = reader.ReadUInt32() * 3;
-                mesh.areas[i].minBounds = vec3.fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-                mesh.areas[i].maxBounds = vec3.fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+                const area = new Tw2GeometryMeshArea();
+                mesh.areas.push(area);
+
+                area.name = reader.ReadString();
+                area.start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
+                area.count = reader.ReadUInt32() * 3;
+
+                vec3.set(area.minBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+                vec3.set(area.maxBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+
+                area.boundsSphereRadius = box3.bounds.toPositionRadius(
+                    area.minBounds,
+                    area.maxBounds,
+                    area.boundsSpherePosition
+                );
+
+                // Recalculate bounds if missing
+                if (box3.bounds.isEmpty(area.minBounds, area.maxBounds))
+                {
+                    if (!mesh.RebuildAreaBounds(area, buffer, indexes, true))
+                    {
+                        console.log("Could not generate bounds for area: " + area.name || "unknown");
+                    }
+                }
             }
 
             const boneBindingCount = reader.ReadUInt8();
@@ -170,8 +234,35 @@ export class Tw2GeometryRes extends Tw2Resource
                 }
             }
 
+            mesh._areas = areaCount;
+            mesh._faces = indexes.length / 3;
+            mesh._vertices = buffer.length / (mesh.declaration.stride / 4);
+
+            /*
+
+            // Reduce memory footprint of vertices
+
+            const stride = mesh.declaration.stride / 4;
+            const vertCount = buffer.length / stride;
+            const position = mesh.declaration.FindUsage(0, 0);
+
+            mesh._vertices = new Float32Array(vertCount * 3);
+            for (let i = 0; i < mesh._vertices.length; i+=3)
+            {
+                const index = i * stride + position.offset;
+                for (let x = 0; x < 3; x ++)
+                {
+                    mesh._vertices[i + x] = buffer[index + x];
+                }
+            }
+
+            */
+
             this.meshes[meshIx] = mesh;
         }
+
+        // Rebuilds all bounds
+        this.RebuildBounds();
 
         const modelCount = reader.ReadUInt8();
         for (let modelIx = 0; modelIx < modelCount; ++modelIx)
@@ -388,7 +479,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 {
                     let area = mesh.areas[i + start],
                         areaStart = area.start,
-                        acount = area.count;
+                        areaCount = area.count;
 
                     while (i + 1 < count)
                     {
@@ -403,11 +494,11 @@ export class Tw2GeometryRes extends Tw2Resource
                             return false;
                         }
 
-                        if (area.start !== areaStart + acount * 2) break;
-                        acount += area.count;
+                        if (area.start !== areaStart + areaCount * 2) break;
+                        areaCount += area.count;
                         ++i;
                     }
-                    gl.drawElementsInstanced(gl.TRIANGLES, acount, mesh.indexType, areaStart, instanceCount);
+                    gl.drawElementsInstanced(gl.TRIANGLES, areaCount, mesh.indexType, areaStart, instanceCount);
                 }
             }
             instanceDecl.ResetInstanceDivisors(d, resetData);
@@ -461,7 +552,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 {
                     let area = mesh.areas[i + start],
                         areaStart = area.start,
-                        acount = area.count;
+                        areaCount = area.count;
 
                     while (i + 1 < count)
                     {
@@ -476,11 +567,11 @@ export class Tw2GeometryRes extends Tw2Resource
                             return false;
                         }
 
-                        if (area.start !== areaStart + acount * 2) break;
-                        acount += area.count;
+                        if (area.start !== areaStart + areaCount * 2) break;
+                        areaCount += area.count;
                         ++i;
                     }
-                    gl.drawElements(gl.TRIANGLES, acount, mesh.indexType, areaStart);
+                    gl.drawElements(gl.TRIANGLES, areaCount, mesh.indexType, areaStart);
                 }
             }
         }
@@ -533,7 +624,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 {
                     let area = mesh.areas[i + start],
                         areaStart = area.start,
-                        acount = area.count;
+                        areaCount = area.count;
 
                     while (i + 1 < count)
                     {
@@ -548,11 +639,11 @@ export class Tw2GeometryRes extends Tw2Resource
                             return false;
                         }
 
-                        if (area.start !== areaStart + acount * 2) break;
-                        acount += area.count;
+                        if (area.start !== areaStart + areaCount * 2) break;
+                        areaCount += area.count;
                         ++i;
                     }
-                    gl.drawElements(gl.LINES, acount, mesh.indexType, areaStart);
+                    gl.drawElements(gl.LINES, areaCount, mesh.indexType, areaStart);
                 }
             }
         }

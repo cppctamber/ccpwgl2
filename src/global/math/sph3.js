@@ -11,6 +11,9 @@ import {box3} from "./box3";
 
 export const sph3 = {};
 
+// Scratch
+let sph3_0 = null;
+
 /**
  * Returns a subarray containing the position component of the sph3
  * - Why does webpack fail to resolve this if referencing pln.normal?
@@ -91,6 +94,20 @@ sph3.distanceToPoint = function (a, p)
         z = p[2] - a[2];
 
     return Math.sqrt(x * x + y * y + z * z) - a[3];
+};
+
+/**
+ * Empties a sphere
+ * @param {sph3} a
+ * @returns {sph3} a
+ */
+sph3.empty = function(a)
+{
+    a[0] = 0;
+    a[1] = 0;
+    a[2] = 0;
+    a[3] = 0;
+    return a;
 };
 
 /**
@@ -180,6 +197,72 @@ sph3.fromBounds = function (out, min, max)
     out[2] = (min[2] + max[2]) * 0.5;
 
     out[3] = Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
+    return out;
+};
+
+/**
+ * Helper method which creates a sph3 from an eve object's bounding box properties
+ *
+ * @param {sph3} out
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ * @returns {sph3} out
+ */
+sph3.fromObjectBounds = function(out, obj, m)
+{
+    if (obj.minBounds)
+    {
+        sph3.fromBounds(out, obj.minBounds, obj.maxBounds);
+    }
+    else if (obj._boundingBox)
+    {
+        sph3.fromBox3(out, obj._boundingBox);
+    }
+    else
+    {
+        throw new Error("Invalid object bounds");
+    }
+
+    if (m)
+    {
+        sph3.transformMat4(out, out, m);
+    }
+
+    return out;
+};
+
+/**
+ * Helper method which creates a sph3 from an eve object's bounding sphere properties
+ *
+ * @param {sph3} out
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ * @returns {sph3} out
+ */
+sph3.fromObjectPositionRadius = function(out, obj, m)
+{
+    if (obj.boundsSpherePosition)
+    {
+        sph3.fromPositionRadius(out, obj.boundsSpherePosition, obj.boundsSphereRadius);
+    }
+    else if (obj.boundingSphereCenter)
+    {
+        sph3.fromPositionRadius(out, obj.boundingSphereCenter, obj.boundingSphereRadius);
+    }
+    else
+    {
+        throw new Error("Invalid object bounds");
+    }
+
+    if (m)
+    {
+        sph3.transformMat4(out, out, m);
+    }
+
     return out;
 };
 
@@ -506,6 +589,70 @@ sph3.squaredDistanceToPoint = function (a, p)
  * @returns {sph3} a
  */
 sph3.toArray = vec4.toArray;
+
+/**
+ *
+ *
+ * @param {sph3} a
+ * @param {*} obj
+ * @param {vec3} obj.minBounds
+ * @param {vec3} obj.maxBounds
+ * @param {mat4} [m]
+ */
+sph3.toObjectBounds = function(a, obj, m)
+{
+    const has = obj.minBounds || obj._boundingBox;
+    if (!has)
+    {
+        throw new Error("Invalid object bounds");
+    }
+
+    if (m)
+    {
+        if (!sph3_0) sph3_0 = sph3.create();
+        a = sph3.transformMat4(sph3_0, a, m);
+    }
+
+    if (obj.minBounds)
+    {
+        sph3.toBounds(a, obj.minBounds, obj.maxBounds);
+    }
+    else
+    {
+        box3.fromSph3(obj._boundingBox, a);
+    }
+};
+
+/**
+ *
+ *
+ * @param {sph3} a
+ * @param {*} obj
+ * @param {vec3} obj.boundsSpherePosition
+ * @param {Number} obj.boundsSphereRadius
+ * @param {mat4} [m]
+ */
+sph3.toObjectPositionRadius = function(a, obj, m)
+{
+    if (m)
+    {
+        if (!sph3_0) sph3_0 = sph3.create();
+        a = sph3.transformMat4(sph3_0, a, m);
+    }
+
+    if (obj.boundsSpherePosition)
+    {
+        obj.boundsSphereRadius = sph3.toPositionRadius(a, obj.boundsSpherePosition);
+        return;
+    }
+    else if (obj.boundingSphereCenter)
+    {
+        obj.boundingSphereRadius = sph3.toPositionRadius(a, obj.boundingSphereCenter);
+        return;
+    }
+
+    throw new Error("Invalid object bounds");
+};
 
 /**
  * Transforms a sphere with a mat4
