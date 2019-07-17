@@ -48,6 +48,7 @@ export class EveChildContainer extends EveChild
     translation = vec3.create();
 
     // ccpwgl
+    useSRT = true;
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
 

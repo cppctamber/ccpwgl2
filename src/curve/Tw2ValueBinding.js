@@ -271,11 +271,11 @@ export class Tw2ValueBinding extends Tw2BaseClass
 
             if ("UpdateValues" in this.destinationObject)
             {
-                this.destinationObject.UpdateValues(controller);
+                this.destinationObject.UpdateValues({controller});
             }
             else if ("OnValueChanged" in this.destinationObject)
             {
-                this.destinationObject.OnValueChanged(controller);
+                this.destinationObject.OnValueChanged({controller});
             }
         }
     }
