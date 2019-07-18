@@ -39,7 +39,7 @@ export class Tw2ParticleEmitter extends Tw2BaseClass
      */
     Update(dt)
     {
-        throw new ErrAbstractClassMethod();
+        //throw new ErrAbstractClassMethod();
     }
 
 }
