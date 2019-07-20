@@ -21,7 +21,7 @@ export class Tr2RotationAdapter extends Tw2CurveAdapter
     {
         return [
             ["curve", r.object],
-            ["value", r.vector3]
+            ["value", r.vector4]
         ];
     }
 
