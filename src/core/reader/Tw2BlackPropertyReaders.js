@@ -70,6 +70,7 @@ export function object(reader, out, id)
 {
     let context = reader.context;
     const givenId = id !== undefined;
+    const debugEnabled = store.classes.constructor.DEBUG_ENABLED;
 
     if (!givenId)
     {
@@ -114,7 +115,10 @@ export function object(reader, out, id)
             // Debug
             if (!(propertyName in out))
             {
-                console.log(`'${type}' missing property: '${propertyName}'`);
+                if (debugEnabled)
+                {
+                    console.log(`'${type}' missing property: '${propertyName}'`);
+                }
             }
 
             try
@@ -123,13 +127,25 @@ export function object(reader, out, id)
             }
             catch (err)
             {
-                throw new ErrBinaryReaderReadError(`${propertyName} > ` + err.message);
+                if (debugEnabled)
+                {
+                    console.dir(out);
+                }
+
+                throw new ErrBinaryReaderReadError({
+                    readError: `${propertyName} > ` + err.message
+                });
             }
         }
         else
         {
+            if (debugEnabled)
+            {
+                console.dir(out);
+            }
+
             throw new ErrBinaryReaderReadError({
-                readerError: `Unknown property "${propertyName}" for "${type}"`
+                readError: `Unknown property "${propertyName}" for "${type}"`
             });
         }
     }
