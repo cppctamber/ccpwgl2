@@ -87,6 +87,8 @@ export class Tw2Shader
                         stageType = reader.ReadUInt8(),
                         inputCount = reader.ReadUInt8();
 
+                    stage.stageType = stageType === 0 ? "vertex" : "fragment";
+
                     for (let inputIx = 0; inputIx < inputCount; ++inputIx)
                     {
                         const usage = reader.ReadUInt8();

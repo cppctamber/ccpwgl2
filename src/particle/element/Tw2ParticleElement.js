@@ -29,6 +29,15 @@ export class Tw2ParticleElement
     vertexStride = 0;
     dirty = false;
 
+    /**
+     * Gets the element type as a string
+     * @returns {String}
+     */
+    get string()
+    {
+        return Tw2ParticleElement.TypeMap[this.elementType] || "UNKNOWN";
+    }
+
 
     /**
      * Particle element factory
@@ -61,5 +70,17 @@ export class Tw2ParticleElement
         MASS: 3,
         CUSTOM: 4
     };
+
+    /**
+     * Particle element type map
+     * @type {string[]}
+     */
+    static TypeMap = [
+        "LIFETIME",
+        "POSITION",
+        "VELOCITY",
+        "MASS",
+        "CUSTOM"
+    ]
 
 }

@@ -19,8 +19,17 @@ export class Tw2VertexElement
     location = null;
     offset = 0;
     type = null;
-    usage = null;
+    usage = -1;
     usageIndex = null;
+
+    /**
+     * Gets the vertex's type as a string
+     * @returns {string|string}
+     */
+    get string()
+    {
+        return Tw2VertexElement.TypeMap[this.usage] || "UNKNOWN";
+    }
 
 
     /**
@@ -64,5 +73,20 @@ export class Tw2VertexElement
         BLENDWEIGHT: 6,
         BLENDINDICES: 7
     };
+
+    /**
+     * Vertex element type map
+     * @type {string[]}
+     */
+    static TypeMap = [
+        "POSITION",
+        "COLOR",
+        "NORMAL",
+        "TANGENT",
+        "BINORMAL",
+        "TEXCOORD",
+        "BLENDWEIGHT",
+        "BLENDINDICES"
+    ]
 
 }
