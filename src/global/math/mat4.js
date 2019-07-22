@@ -8,7 +8,7 @@ export {mat4};
  * @param {vec3} v
  * @return {mat4} out
  */
-mat4.arcFromForward = (function ()
+mat4.arcFromForward = (function()
 {
     let vec3_0;
 
@@ -54,7 +54,7 @@ mat4.arcFromForward = (function ()
  * @param {mat4} a
  * @returns {mat4} out
  */
-mat4.copyTranslation = function (out, a)
+mat4.copyTranslation = function(out, a)
 {
     out[12] = a[12];
     out[13] = a[13];
@@ -68,7 +68,7 @@ mat4.copyTranslation = function (out, a)
  * @param {mat3} m
  * @returns {mat4} out
  */
-mat4.fromMat3 = function (out, m)
+mat4.fromMat3 = function(out, m)
 {
     out[0] = m[0];
     out[1] = m[1];
@@ -93,7 +93,7 @@ mat4.fromMat3 = function (out, m)
  * @param {vec3} up - vec3 pointing up
  * @returns {mat4} out
  */
-mat4.lookAtGL = (function ()
+mat4.lookAtGL = (function()
 {
     let vec3_0, vec3_1, vec3_2;
 
@@ -147,7 +147,7 @@ mat4.lookAtGL = (function ()
  * @param {mat4} a   - source mat4
  * @returns {number} - maximum axis scale
  */
-mat4.maxScaleOnAxis = function (a)
+mat4.maxScaleOnAxis = function(a)
 {
     let m11 = a[0];
     let m12 = a[4];
@@ -175,7 +175,7 @@ mat4.maxScaleOnAxis = function (a)
  * @param {number} far      - Far bound of the frustum
  * @returns {mat4} out      - receiving mat4
  */
-mat4.perspectiveGL = function (out, fovY, aspect, near, far)
+mat4.perspectiveGL = function(out, fovY, aspect, near, far)
 {
     let fH = Math.tan(fovY / 360 * Math.PI) * near;
     let fW = fH * aspect;
@@ -189,7 +189,7 @@ mat4.perspectiveGL = function (out, fovY, aspect, near, far)
  * @param {vec3} v
  * @returns {mat4} out
  */
-mat4.setTranslation = function (out, v)
+mat4.setTranslation = function(out, v)
 {
     out[12] = v[0];
     out[13] = v[1];
@@ -205,7 +205,7 @@ mat4.setTranslation = function (out, v)
  * @param {number} z
  * @returns {mat4} out
  */
-mat4.setTranslationFromValues = function (out, x, y, z)
+mat4.setTranslationFromValues = function(out, x, y, z)
 {
     out[12] = x;
     out[13] = y;

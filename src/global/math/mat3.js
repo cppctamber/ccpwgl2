@@ -10,7 +10,7 @@ export {mat3};
  * @param {number} [offset=0]
  * @returns {mat3} out
  */
-mat3.fromArray = function (out, arr, offset = 0)
+mat3.fromArray = function(out, arr, offset = 0)
 {
     out[0] = arr[offset];
     out[1] = arr[offset + 1];
@@ -32,7 +32,7 @@ mat3.fromArray = function (out, arr, offset = 0)
  * @param {number} [index=0]
  * @returns {mat3} out
  */
-mat3.setArray = function (out, arr, index = 0)
+mat3.setArray = function(out, arr, index = 0)
 {
     out[0] = arr[index];
     out[1] = arr[index + 1];
@@ -54,7 +54,7 @@ mat3.setArray = function (out, arr, index = 0)
  * @param {number} [index=0]
  * @returns {mat3} a
  */
-mat3.toArray = function (a, arr, index = 0)
+mat3.toArray = function(a, arr, index = 0)
 {
     arr[index] = a[0];
     arr[index + 1] = a[1];

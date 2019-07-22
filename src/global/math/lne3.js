@@ -41,11 +41,11 @@ lne3.clone = box3.clone;
  * @param {boolean} clampToLine - optional setting to clamp the result to the lne3
  * @returns {number}            - closest point parameter
  */
-lne3.closestPointToPointParameter = (function ()
+lne3.closestPointToPointParameter = (function()
 {
     let vec3_0, vec3_1;
 
-    return function (a, point, clampToLine)
+    return function(a, point, clampToLine)
     {
         if (!vec3_0)
         {
@@ -174,7 +174,7 @@ lne3.fromStartEnd = box3.fromBounds;
  * @param {number} t     - Float representing the start (0) and end (1) of the line
  * @returns {vec3} [out] - receiving vec3
  */
-lne3.get = function (out, a, t)
+lne3.get = function(out, a, t)
 {
     if (t < 0 || t > 1)
     {
@@ -199,7 +199,7 @@ lne3.get = function (out, a, t)
  * @param {lne3} a     - source lne3
  * @returns {vec3} out - receiving vec3
  */
-lne3.getCenter = function (out, a)
+lne3.getCenter = function(out, a)
 {
     out[0] = (a[0] + a[3]) * 0.5;
     out[1] = (a[1] + a[4]) * 0.5;
@@ -218,7 +218,7 @@ lne3.getCenter = function (out, a)
  * @param {boolean} clampToLine - optional setting to clamp the result to a line segment
  * @returns {vec3} out          - receiving vec3
  */
-lne3.getClosestPointToPoint = function (out, a, point, clampToLine)
+lne3.getClosestPointToPoint = function(out, a, point, clampToLine)
 {
     // const x = a.subarray(0, 3);
     return lne3.get(out, a, lne3.closestPointToPointParameter(a, point, clampToLine));
@@ -240,7 +240,7 @@ lne3.getEnd = box3.getMax;
  * @param {lne3} a       - source lne3
  * @returns {vec3} out - receiving vec3
  */
-lne3.getDelta = function (out, a)
+lne3.getDelta = function(out, a)
 {
     out[0] = a[3] - a[0];
     out[1] = a[4] - a[1];
@@ -265,7 +265,7 @@ lne3.getStart = box3.getMin;
  * @param {number} c  - plane constant
  * @returns {boolean}
  */
-lne3.intersectsNormalConstant = function (a, n, c)
+lne3.intersectsNormalConstant = function(a, n, c)
 {
     let startSign = (n[0] * a[0] + n[1] * a[1] + n[2] * a[2]) + c;
     let endSign = (n[0] * a[3] + n[1] * a[4] + n[2] * a[5]) + c;
@@ -278,7 +278,7 @@ lne3.intersectsNormalConstant = function (a, n, c)
  * @param {lne3} a  - source lne3
  * @returns {number} - distance
  */
-lne3.length = function (a)
+lne3.length = function(a)
 {
     let x = a[0] - a[3],
         y = a[1] - a[4],
@@ -307,7 +307,7 @@ lne3.set = box3.set;
  * @param {lne3} a  - source line
  * @returns {number} - squared distance
  */
-lne3.squaredLength = function (a)
+lne3.squaredLength = function(a)
 {
     let x = a[0] - a[3],
         y = a[1] - a[4],
@@ -344,7 +344,7 @@ lne3.toStartEnd = box3.toBounds;
  * @param {mat4} m
  * @returns {lne3} out
  */
-lne3.transformMat4 = function (out, a, m)
+lne3.transformMat4 = function(out, a, m)
 {
     let ax = a[0],
         ay = a[1],
@@ -372,7 +372,7 @@ lne3.transformMat4 = function (out, a, m)
  * @param {vec3} v
  * @returns {lne3} out
  */
-lne3.translate = function (out, a, v)
+lne3.translate = function(out, a, v)
 {
     out[0] = a[0] + v[0];
     out[1] = a[1] + v[1];

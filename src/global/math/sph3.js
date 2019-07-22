@@ -38,7 +38,7 @@ sph3.clone = vec4.clone;
  * @param {vec3} p
  * @returns {boolean}
  */
-sph3.containsPoint = function (a, p)
+sph3.containsPoint = function(a, p)
 {
     let x = p[0] - a[0],
         y = p[1] - a[1],
@@ -70,7 +70,7 @@ sph3.create = vec4.create;
  * @param {sph3} b
  * @returns {number}
  */
-sph3.distance = function (a, b)
+sph3.distance = function(a, b)
 {
     let x = b[0] - a[0],
         y = b[1] - a[1],
@@ -87,7 +87,7 @@ sph3.distance = function (a, b)
  * @param {vec3} p
  * @returns {number}
  */
-sph3.distanceToPoint = function (a, p)
+sph3.distanceToPoint = function(a, p)
 {
     let x = p[0] - a[0],
         y = p[1] - a[1],
@@ -164,7 +164,7 @@ sph3.extract = pln.extract;
  * @param {box3} b
  * @return {sph3} out
  */
-sph3.fromBox3 = function (out, b)
+sph3.fromBox3 = function(out, b)
 {
     let sX = b[3] - b[0],
         sY = b[4] - b[1],
@@ -186,7 +186,7 @@ sph3.fromBox3 = function (out, b)
  * @param {vec3} max
  * @returns {sph3}
  */
-sph3.fromBounds = function (out, min, max)
+sph3.fromBounds = function(out, min, max)
 {
     let sX = max[0] - min[0],
         sY = max[1] - min[1],
@@ -284,7 +284,7 @@ sph3.fromPositionRadius = pln.fromNormalConstant;
  * @param {number} radius
  * @returns {sph3} out
  */
-sph3.fromTranslationRadius = function (out, a, radius)
+sph3.fromTranslationRadius = function(out, a, radius)
 {
     out[0] = a[12];
     out[1] = a[13];
@@ -300,7 +300,7 @@ sph3.fromTranslationRadius = function (out, a, radius)
  * @param {mat4} m
  * @returns {sph3} out
  */
-sph3.fromMat4 = function (out, m)
+sph3.fromMat4 = function(out, m)
 {
     out[0] = m[12];
     out[1] = m[13];
@@ -318,7 +318,7 @@ sph3.fromMat4 = function (out, m)
  * @param {vec3} p
  * @returns {vec3} out
  */
-sph3.getClampedPoint = function (out, a, p)
+sph3.getClampedPoint = function(out, a, p)
 {
     out[0] = p[0];
     out[1] = p[1];
@@ -353,7 +353,7 @@ sph3.getClampedPoint = function (out, a, p)
  * @param {number} latitude
  * @returns {vec3} out
  */
-sph3.getPointFromLongLat = function (out, a, longitude, latitude)
+sph3.getPointFromLongLat = function(out, a, longitude, latitude)
 {
     out[0] = a[0] + a[3] * Math.sin(latitude) * Math.cos(longitude);
     out[1] = a[1] + a[3] * Math.sin(latitude) * Math.sin(longitude);
@@ -377,7 +377,7 @@ sph3.getPosition = pln.getNormal;
  * @param {sph3} b
  * @returns {boolean}
  */
-sph3.intersectsSph3 = function (a, b)
+sph3.intersectsSph3 = function(a, b)
 {
     let x = b[0] - a[0],
         y = b[1] - a[1],
@@ -394,7 +394,7 @@ sph3.intersectsSph3 = function (a, b)
  * @param {box3} b
  * @returns {boolean}
  */
-sph3.intersectsBox3 = function (a, b)
+sph3.intersectsBox3 = function(a, b)
 {
     return box3.intersectsSph3(b, a);
 };
@@ -407,7 +407,7 @@ sph3.intersectsBox3 = function (a, b)
  * @param {vec3} max
  * @returns {boolean}
  */
-sph3.intersectsBounds = function (a, min, max)
+sph3.intersectsBounds = function(a, min, max)
 {
     let x = Math.max(min[0], Math.min(max[0], a[0])) - a[0],
         y = Math.max(min[1], Math.min(max[1], a[1])) - a[1],
@@ -424,7 +424,7 @@ sph3.intersectsBounds = function (a, min, max)
  * @param {number} r
  * @returns {boolean}
  */
-sph3.intersectsPositionRadius = function (a, p, r)
+sph3.intersectsPositionRadius = function(a, p, r)
 {
     let x = p[0] - a[0],
         y = p[1] - a[1],
@@ -441,7 +441,7 @@ sph3.intersectsPositionRadius = function (a, p, r)
  * @param {pln} p
  * @returns {boolean}
  */
-sph3.intersectsPln = function (a, p)
+sph3.intersectsPln = function(a, p)
 {
     return pln.intersectsSph3(p, a);
 };
@@ -454,7 +454,7 @@ sph3.intersectsPln = function (a, p)
  * @param {number} c - plane constant
  * @returns {boolean}
  */
-sph3.intersectsNormalConstant = function (a, n, c)
+sph3.intersectsNormalConstant = function(a, n, c)
 {
     let dot = a[0] * n[0] + a[1] * n[1] + a[2] * n[2];
     return Math.abs(dot - c) <= a[3];
@@ -466,7 +466,7 @@ sph3.intersectsNormalConstant = function (a, n, c)
  * @param {sph3} a
  * @returns {boolean}
  */
-sph3.isEmpty = function (a)
+sph3.isEmpty = function(a)
 {
     return a[3] <= 0;
 };
@@ -513,7 +513,7 @@ sph3.setPoints = (function()
 {
     let box3_0;
 
-    return function (out, points, position)
+    return function(out, points, position)
     {
         if (!box3_0) box3_0 = box3.create();
 
@@ -554,7 +554,7 @@ sph3.setPoints = (function()
  * @param {sph3} b
  * @returns {number}
  */
-sph3.squaredDistance = function (a, b)
+sph3.squaredDistance = function(a, b)
 {
     let x = b[0] - a[0],
         y = b[1] - a[1],
@@ -571,7 +571,7 @@ sph3.squaredDistance = function (a, b)
  * @param {vec3} p
  * @returns {number}
  */
-sph3.squaredDistanceToPoint = function (a, p)
+sph3.squaredDistanceToPoint = function(a, p)
 {
     let x = p[0] - a[0],
         y = p[1] - a[1],
@@ -663,7 +663,7 @@ sph3.toObjectPositionRadius = function(a, obj, m)
  * @param {mat4} m   - the matrix to transform by
  * @returns {sph3}
  */
-sph3.transformMat4 = function (out, a, m)
+sph3.transformMat4 = function(out, a, m)
 {
     let x = a[0],
         y = a[1],
@@ -689,7 +689,7 @@ sph3.transformMat4 = function (out, a, m)
  * @param {vec3} v   - the vector to translate with
  * @returns {sph3}
  */
-sph3.translate = function (out, a, v)
+sph3.translate = function(out, a, v)
 {
     out[0] = a[0] + v[0];
     out[1] = a[1] + v[1];

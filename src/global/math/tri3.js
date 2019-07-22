@@ -33,7 +33,7 @@ tri3.$v2 = lne3.$end;
  * @param {tri3} a
  * @returns {vec3}
  */
-tri3.$v3 = function (a)
+tri3.$v3 = function(a)
 {
     return a.subarray(6, 9);
 };
@@ -44,7 +44,7 @@ tri3.$v3 = function (a)
  * @param {tri3} a
  * @returns {number}
  */
-tri3.area = function (a)
+tri3.area = function(a)
 {
     let ax = a[7] - a[3],
         ay = a[8] - a[4],
@@ -65,7 +65,7 @@ tri3.area = function (a)
  *
  * @returns {tri3}
  */
-tri3.create = function ()
+tri3.create = function()
 {
     let out = new Float32Array(9);
     out[0] = 0;
@@ -98,7 +98,7 @@ tri3.clone = mat3.clone;
 tri3.contains = (function()
 {
     let vec3_0;
-    return function (a, point)
+    return function(a, point)
     {
         if (!vec3_0) vec3_0 = vec3.create();
         tri3.getBaryCentricCoordinates(vec3_0, a, point);
@@ -124,7 +124,7 @@ tri3.copy = mat3.copy;
  * @param {vec3} v3
  * @returns {tri3} out
  */
-tri3.fromVertices = function (out, v1, v2, v3)
+tri3.fromVertices = function(out, v1, v2, v3)
 {
     out[0] = v1[0];
     out[1] = v1[1];
@@ -157,7 +157,7 @@ tri3.fromArray = mat3.fromArray;
  * @param {vec3} point
  * @returns {tri3} out
  */
-tri3.getBaryCentricCoordinates = function (out, a, point)
+tri3.getBaryCentricCoordinates = function(out, a, point)
 {
     let ax = a[7] - a[0],
         ay = a[8] - a[1],
@@ -206,7 +206,7 @@ tri3.getBaryCentricCoordinates = function (out, a, point)
  * @param {vec3} point
  * @returns {*}
  */
-tri3.getClosestEdgeToPoint = (function ()
+tri3.getClosestEdgeToPoint = (function()
 {
     let v0, v1, edgeList;
 
@@ -258,7 +258,7 @@ tri3.getClosestEdgeToPoint = (function ()
  * @param {vec3} point    - the point
  * @returns {vec3} vecOut - receiving vec3
  */
-tri3.getClosestPointToPoint = (function ()
+tri3.getClosestPointToPoint = (function()
 {
     let plane, edgeList, projectedPoint, closestPoint, vec3_0, vec3_1, vec3_2;
 
@@ -325,11 +325,11 @@ tri3.getClosestPointToPoint = (function ()
  * @param {vec3} point
  * @returns {vec3} out
  */
-tri3.getClosestVertexToPoint = (function ()
+tri3.getClosestVertexToPoint = (function()
 {
     let vec3_0, vec3_1, vec3_2;
 
-    return function (out, a, point)
+    return function(out, a, point)
     {
         if (!vec3_0)
         {
@@ -377,7 +377,7 @@ tri3.getClosestVertexToPoint = (function ()
  * @param {tri3} a      - tri3 to get the midpoint of         -
  * @returns {vec3} out  - receiving vec3
  */
-tri3.getMidpoint = function (out, a)
+tri3.getMidpoint = function(out, a)
 {
     let s = 1 / 3;
     out[0] = (a[0] + a[3] + a[6]) * s;
@@ -393,7 +393,7 @@ tri3.getMidpoint = function (out, a)
  * @param {tri3} a
  * @returns {vec3} out
  */
-tri3.getNormal = function (out, a)
+tri3.getNormal = function(out, a)
 {
     let ax = a[7] - a[3],
         ay = a[8] - a[4],
@@ -451,7 +451,7 @@ tri3.getV2 = lne3.getEnd;
  * @param {tri3} v       - source tri3
  * @returns {vec3} [out] - receiving vec3
  */
-tri3.getV3 = function (out, v)
+tri3.getV3 = function(out, v)
 {
     out[0] = v[6];
     out[1] = v[7];
@@ -477,7 +477,7 @@ tri3.toArray = mat3.toArray;
  * @param {vec3} v2
  * @param {vec3} v3
  */
-tri3.toVertices = function (a, v1, v2, v3)
+tri3.toVertices = function(a, v1, v2, v3)
 {
     v1[0] = a[0];
     v1[1] = a[1];

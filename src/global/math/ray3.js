@@ -75,7 +75,7 @@ ray3.create = box3.create;
  * @param {vec3} p   - point to measure distance to
  * @returns {number} - distance
  */
-ray3.distance = function (a, p)
+ray3.distance = function(a, p)
 {
     return Math.sqrt(ray3.squaredDistance(a, p));
 };
@@ -89,7 +89,7 @@ ray3.distance = function (a, p)
  * @param {number} c      - plane constant
  * @returns {null|number} - distance
  */
-ray3.distanceNormalConstant = function (a, n, c)
+ray3.distanceNormalConstant = function(a, n, c)
 {
     let den = n[0] * a[3] + n[1] * a[4] + n[2] * a[5];
     let dist = (a[0] * n[0] + a[1] * n[1] + a[2] * n[2]) + c;
@@ -112,7 +112,7 @@ ray3.distanceNormalConstant = function (a, n, c)
  * @param {pln} p         - plane to measure distance to
  * @returns {null|Number} - distance
  */
-ray3.distancePln = function (a, p)
+ray3.distancePln = function(a, p)
 {
     let den = p[0] * a[3] + p[1] * a[4] + p[2] * a[5];
     let dist = (a[0] * p[0] + a[1] * p[1] + a[2] * p[2]) + p[3];
@@ -194,7 +194,7 @@ ray3.fromArray = box3.fromArray;
  * @param {mat4} m         -      - inverse view projection matrix
  * @param {mat4} viewport         - viewport settings (x, y, width, height)
  */
-ray3.fromPerspective = function (out, coords, m, viewport)
+ray3.fromPerspective = function(out, coords, m, viewport)
 {
     // Convert view port co-ordinates
     let x = (coords[0] - viewport[0]) * 2.0 / viewport[2] - 1.0,
@@ -227,7 +227,7 @@ ray3.fromPerspective = function (out, coords, m, viewport)
  * @param {number} t   - distance along the ray3
  * @returns {vec3} out - receiving vec3
  */
-ray3.get = function (out, a, t)
+ray3.get = function(out, a, t)
 {
     out[0] = a[0] + (a[3] * t);
     out[1] = a[1] + (a[4] * t);
@@ -253,7 +253,7 @@ ray3.getDirection = box3.getMax;
  * @param {vec3} p     - point to compare
  * @returns {vec3} out - receiving vec3
  */
-ray3.getClosestPointToPoint = function (out, a, p)
+ray3.getClosestPointToPoint = function(out, a, p)
 {
     let x = p[0] - a[0],
         y = p[1] - a[1],
@@ -286,7 +286,7 @@ ray3.getClosestPointToPoint = function (out, a, p)
  * @param {vec3} max            - box max bounds
  * @returns {(null|vec3)} [out] - null or receiving vec3
  */
-ray3.getIntersectBounds = function (out, a, min, max)
+ray3.getIntersectBounds = function(out, a, min, max)
 {
     let tMin, tMax, tyMin, tyMax, tzMin, tzMax;
 
@@ -351,11 +351,11 @@ ray3.getIntersectBounds = function (out, a, min, max)
  * @param {box3|Float32Array} b
  * @returns {null|vec3}
  */
-ray3.getIntersectBox3 = (function ()
+ray3.getIntersectBox3 = (function()
 {
     let vec3_0, vec3_1;
 
-    return function (out, a, b)
+    return function(out, a, b)
     {
         if (!vec3_0)
         {
@@ -381,11 +381,11 @@ ray3.getIntersectBox3 = (function ()
  * @param {boolean} bfc         - enables/ disables back face culling
  * @returns {(null|vec3)} [out] - null or receiving vec3
  */
-ray3.getIntersectTri3 = (function ()
+ray3.getIntersectTri3 = (function()
 {
     let vec3_0, vec3_1, vec3_2;
 
-    return function (out, a, f, bfc)
+    return function(out, a, f, bfc)
     {
         if (!vec3_0)
         {
@@ -416,11 +416,11 @@ ray3.getIntersectTri3 = (function ()
  * @param {boolean} bfc         - enables/ disables back face culling
  * @returns {(null|vec3)} [out] - null or receiving vec3
  */
-ray3.getIntersectVertices = (function ()
+ray3.getIntersectVertices = (function()
 {
     let vec3_0, vec3_1, vec3_2, vec3_3, vec3_4, vec3_5;
 
-    return function (out, a, vertA, vertB, vertC, bfc)
+    return function(out, a, vertA, vertB, vertC, bfc)
     {
         if (!vec3_0)
         {
@@ -480,7 +480,7 @@ ray3.getIntersectVertices = (function ()
  * @param {number} c             - plane constant
  * @returns {(null|vec3)} vecOut - null or receiving vec3
  */
-ray3.getIntersectNormalConstant = function (out, a, n, c)
+ray3.getIntersectNormalConstant = function(out, a, n, c)
 {
     let t = ray3.distanceNormalConstant(a, n, c);
     return t !== null ? ray3.get(out, a, t) : null;
@@ -495,7 +495,7 @@ ray3.getIntersectNormalConstant = function (out, a, n, c)
  * @param {(pln|Float32Array)} p      - plane to intersect
  * @returns {(null|vec3)} [out]    - null or receiving vec3
  */
-ray3.getIntersectPln = function (out, a, p)
+ray3.getIntersectPln = function(out, a, p)
 {
     let t = ray3.distancePln(a, p);
     return t !== null ? ray3.get(out, a, t) : null;
@@ -512,11 +512,11 @@ ray3.getIntersectPln = function (out, a, p)
  * @param {number} r            - sphere radius
  * @returns {(null|vec3)} [out] - null or receiving vec3
  */
-ray3.getIntersectPositionRadius = (function ()
+ray3.getIntersectPositionRadius = (function()
 {
     let sph3_0;
 
-    return function (out, a, p, r)
+    return function(out, a, p, r)
     {
         if (!sph3_0) sph3_0 = sph3.create();
         sph3.from(sph3_0, p, r);
@@ -534,7 +534,7 @@ ray3.getIntersectPositionRadius = (function ()
  * @param {sph3} s              - sphere
  * @returns {(null|vec3)} [out] - null or receiving vec3
  */
-ray3.getIntersectSph3 = function (out, a, s)
+ray3.getIntersectSph3 = function(out, a, s)
 {
     let x = s[0] - a[0],
         y = s[1] - a[1],
@@ -572,10 +572,10 @@ ray3.getOrigin = box3.getMin;
  * @param {(box3|Float32Array)} b - box
  * @returns {boolean}             - true if intersection occurs
  */
-ray3.intersectsBox3 = (function ()
+ray3.intersectsBox3 = (function()
 {
     let vec3_0;
-    return function (a, b)
+    return function(a, b)
     {
         if (!vec3_0) vec3_0 = vec3.create();
         return ray3.vec3_0 = ray3.getIntersectBox3(vec3_0, a, b) !== null;
@@ -590,7 +590,7 @@ ray3.intersectsBox3 = (function ()
  * @param {vec3} max  - box max bounds
  * @returns {boolean} - true if intersection occurs
  */
-ray3.intersectsBounds = (function ()
+ray3.intersectsBounds = (function()
 {
     let vec3_0;
     return function intersectsBounds(a, min, max)
@@ -608,7 +608,7 @@ ray3.intersectsBounds = (function ()
  * @param {number} c  - plane constant
  * @returns {boolean} - true if intersection occurs
  */
-ray3.intersectsNormalConstant = function (a, n, c)
+ray3.intersectsNormalConstant = function(a, n, c)
 {
     let dist = (a[0] * n[0] + a[1] * n[1] + a[2] * n[2]) + c;
     return dist === 0 ? true : ((n[0] * a[3] + n[1] * a[4] + n[2] * a[5]) * dist < 0);
@@ -621,7 +621,7 @@ ray3.intersectsNormalConstant = function (a, n, c)
  * @param {pln} p     - plane
  * @returns {boolean} - true if intersection occurs
  */
-ray3.intersectsPln = function (a, p)
+ray3.intersectsPln = function(a, p)
 {
     let dist = (a[0] * p[0] + a[1] * p[1] + a[2] * p[2]) + p[3];
     return (dist === 0) ? true : ((p[0] * a[3] + p[1] * a[4] + p[2] * a[5]) * dist < 0);
@@ -635,7 +635,7 @@ ray3.intersectsPln = function (a, p)
  * @param {number} r  - sphere radius
  * @returns {boolean} - true if intersection occurs
  */
-ray3.intersectsPositionRadius = function (a, p, r)
+ray3.intersectsPositionRadius = function(a, p, r)
 {
     return ray3.distance(a, p) <= r;
 };
@@ -647,7 +647,7 @@ ray3.intersectsPositionRadius = function (a, p, r)
  * @param {sph3|Float32Array} s - sphere
  * @returns {boolean}           - true if intersection occurs
  */
-ray3.intersectsSph3 = function (a, s)
+ray3.intersectsSph3 = function(a, s)
 {
     return ray3.distance(a, s) <= s[3];
 };
@@ -660,7 +660,7 @@ ray3.intersectsSph3 = function (a, s)
  * @param {vec3} p     - point to look at
  * @returns {ray3} out - receiving ray3
  */
-ray3.lookAt = function (out, a, p)
+ray3.lookAt = function(out, a, p)
 {
     out[0] = a[0];
     out[1] = a[1];
@@ -697,7 +697,7 @@ ray3.lookAt = function (out, a, p)
  * @param {ray3} a     - source ray3
  * @returns {ray3} out - receiving ray3
  */
-ray3.normalize = function (out, a)
+ray3.normalize = function(out, a)
 {
     out[0] = a[0];
     out[1] = a[1];
@@ -735,7 +735,7 @@ ray3.normalize = function (out, a)
  * @param {number} t - distance along the ray3
  * @returns {ray3}    - receiving ray3
  */
-ray3.recast = function (out, a, t)
+ray3.recast = function(out, a, t)
 {
     out[0] = a[0] + (a[3] * t);
     out[1] = a[1] + (a[4] * t);
@@ -765,7 +765,7 @@ ray3.set = box3.set;
  * @param {number} b.distance
  * @returns {number}
  */
-ray3.SORT = function (a, b)
+ray3.SORT = function(a, b)
 {
     return a.distance - b.distance;
 };
@@ -778,7 +778,7 @@ ray3.SORT = function (a, b)
  * @param {vec3} p   - point to measure distance to
  * @returns {number} - squared distance
  */
-ray3.squaredDistance = (function ()
+ray3.squaredDistance = (function()
 {
     let vec3_0, vec3_1;
     return function distanceSquared(a, p)
@@ -841,7 +841,7 @@ ray3.toOriginDirection = function(a, origin, direction)
  * @param {vec3} a     - ray3 to transform
  * @param {mat4} m     - matrix to transform by
  */
-ray3.transformMat4 = function (out, a, m)
+ray3.transformMat4 = function(out, a, m)
 {
     let oX = a[0],
         oY = a[1],
@@ -873,7 +873,7 @@ ray3.transformMat4 = function (out, a, m)
  * @param {vec3} v
  * @returns {ray3} out
  */
-ray3.translate = function (out, a, v)
+ray3.translate = function(out, a, v)
 {
     out[0] = a[0] + v[0];
     out[1] = a[1] + v[1];

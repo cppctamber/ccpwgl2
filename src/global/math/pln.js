@@ -38,7 +38,7 @@ pln.clone = vec4.clone;
  * @param {pln} a    - Source plane
  * @returns {number} - plane's constant
  */
-pln.constant = function (a)
+pln.constant = function(a)
 {
     return a[3];
 };
@@ -66,7 +66,7 @@ pln.create = vec4.create;
  * @param {vec3} p   - Point to compare
  * @returns {number} - The distance between them
  */
-pln.distanceToPoint = function (a, p)
+pln.distanceToPoint = function(a, p)
 {
     return (a[0] * p[0] + a[1] * p[1] + a[2] * p[2]) + a[3];
 };
@@ -79,7 +79,7 @@ pln.distanceToPoint = function (a, p)
  * @param {number} radius - sphere radius to compare
  * @returns {number}      - The distance between them
  */
-pln.distanceToPositionRadius = function (a, position, radius)
+pln.distanceToPositionRadius = function(a, position, radius)
 {
     return (a[0] * position[0] + a[1] * position[1] + a[2] * position[2]) - radius;
 };
@@ -91,7 +91,7 @@ pln.distanceToPositionRadius = function (a, position, radius)
  * @param {sph3} sphere - sphere to compare
  * @returns {number}    - The distance between them
  */
-pln.distanceToSph3 = function (a, sphere)
+pln.distanceToSph3 = function(a, sphere)
 {
     return (a[0] * sphere[0] + a[1] * sphere[1] + a[2] * sphere[2]) - sphere[3];
 };
@@ -105,7 +105,7 @@ pln.distanceToSph3 = function (a, sphere)
  * @param {Number} pz - Point z to compare
  * @returns {number}  - The distance between them
  */
-pln.distanceToValues = function (a, px, py, pz)
+pln.distanceToValues = function(a, px, py, pz)
 {
     return (a[0] * px + a[1] * py + a[2] * pz) + a[3];
 };
@@ -127,7 +127,7 @@ pln.equals = vec4.equals;
  * @param {number} constant - plane constant to compare
  * @returns {boolean}       - true if equal
  */
-pln.equalsNormalConstant = function (a, normal, constant)
+pln.equalsNormalConstant = function(a, normal, constant)
 {
     let a0 = a[0],
         a1 = a[1],
@@ -163,7 +163,7 @@ pln.exactEquals = vec4.exactEquals;
  * @param {number} constant - plane constant to compare
  * @returns {boolean}
  */
-pln.exactEqualsNormalConstant = function (a, normal, constant)
+pln.exactEqualsNormalConstant = function(a, normal, constant)
 {
     return a[0] === normal[0] && a[1] === normal[1] && a[2] === normal[2] && a[3] === constant;
 };
@@ -175,7 +175,7 @@ pln.exactEqualsNormalConstant = function (a, normal, constant)
  * @param {vec3} outNormal - Receiving vec3
  * @returns {number}       - plane constant
  */
-pln.extract = function (a, outNormal)
+pln.extract = function(a, outNormal)
 {
     outNormal[0] = a[0];
     outNormal[1] = a[1];
@@ -191,7 +191,7 @@ pln.extract = function (a, outNormal)
  * @param {number} c  - plane constant to set
  * @returns {pln} out - receiving plane
  */
-pln.fromNormalConstant = function (out, n, c)
+pln.fromNormalConstant = function(out, n, c)
 {
     out[0] = n[0];
     out[1] = n[1];
@@ -210,7 +210,7 @@ pln.fromNormalConstant = function (out, n, c)
  * @param {vec3} c    - Coplanar point c
  * @returns {pln} out - Receiving pln
  */
-pln.fromCoplanarPoints = function (out, a, b, c)
+pln.fromCoplanarPoints = function(out, a, b, c)
 {
     let ax = c[0] - b[0],
         ay = c[1] - b[1],
@@ -252,7 +252,7 @@ pln.fromCoplanarPoints = function (out, a, b, c)
  * @param {vec3} point  - coplanar point
  * @returns {pln} out   - receiving plane
  */
-pln.fromNormalAndCoplanarPoint = function (out, normal, point)
+pln.fromNormalAndCoplanarPoint = function(out, normal, point)
 {
     out[0] = normal[0];
     out[1] = normal[1];
@@ -268,7 +268,7 @@ pln.fromNormalAndCoplanarPoint = function (out, normal, point)
  * @param {pln} a      - the source plane
  * @returns {vec3} out - receiving vec3
  */
-pln.getCoplanarPoint = function (out, a)
+pln.getCoplanarPoint = function(out, a)
 {
     out[0] = a[0] * -a[3];
     out[1] = a[1] * -a[3];
@@ -286,7 +286,7 @@ pln.getCoplanarPoint = function (out, a)
  * @param {(lne3|Float32Array)} l    - line
  * @returns {(null|vec3)} null|out   - null or receiving vec3
  */
-pln.getIntersectLne3 = function (out, a, l)
+pln.getIntersectLne3 = function(out, a, l)
 {
     let lsx = l[0],
         lsy = l[1],
@@ -346,11 +346,11 @@ pln.getIntersectLne3 = function (out, a, l)
  * @param {vec3} lineEnd
  * @returns {vec3}
  */
-pln.getIntersectStartEnd = (function ()
+pln.getIntersectStartEnd = (function()
 {
     let vec6_0;
 
-    return function (out, a, lineStart, lineEnd)
+    return function(out, a, lineStart, lineEnd)
     {
         if (!vec6_0)
         {
@@ -369,7 +369,7 @@ pln.getIntersectStartEnd = (function ()
  * @param {pln} a      - source plane
  * @returns {vec3} out - receiving vec3
  */
-pln.getNormal = function (out, a)
+pln.getNormal = function(out, a)
 {
     out[0] = a[0];
     out[1] = a[1];
@@ -385,7 +385,7 @@ pln.getNormal = function (out, a)
  * @param {vec3} p      - the point to project
  * @returns {vec3} out  - receiving vec3
  */
-pln.getOrthoPoint = function (out, a, p)
+pln.getOrthoPoint = function(out, a, p)
 {
     let pMag = (a[0] * p[0] + a[1] * p[1] + a[2] * p[2]) + a[3];
     vec3.multiplyScalar(out, a, pMag);
@@ -400,7 +400,7 @@ pln.getOrthoPoint = function (out, a, p)
  * @param {vec3} p     - the point to project
  * @returns {vec3} out - receiving vec3
  */
-pln.getProjectedPoint = function (out, a, p)
+pln.getProjectedPoint = function(out, a, p)
 {
     pln.getOrthoPoint(out, a, p);
     out[0] = -(out[0] - p[0]);
@@ -417,11 +417,11 @@ pln.getProjectedPoint = function (out, a, p)
  * @param {vec3} max  - box max bounds to compare
  * @returns {boolean} - true if intersection occurs
  */
-pln.intersectsBounds = (function ()
+pln.intersectsBounds = (function()
 {
     let vec6_0;
 
-    return function (a, min, max)
+    return function(a, min, max)
     {
         if (!vec6_0)
         {
@@ -440,7 +440,7 @@ pln.intersectsBounds = (function ()
  * @param {(box3|Float32Array)} b - box to compare
  * @returns {boolean}             - true if intersection occurs
  */
-pln.intersectsBox3 = function (a, b)
+pln.intersectsBox3 = function(a, b)
 {
     return box3.intersectsPln(b, a);
 };
@@ -453,7 +453,7 @@ pln.intersectsBox3 = function (a, b)
  * @param {lne3|Float32Array} l    - line to compare
  * @returns {boolean}              - true if intersection occurs
  */
-pln.intersectsLne3 = function (a, l)
+pln.intersectsLne3 = function(a, l)
 {
     let startSign = (a[0] * l[0] + a[1] * l[1] + a[2] * l[2]) + a[3];
     let endSign = (a[0] * l[3] + a[1] * l[4] + a[2] * l[5]) + a[3];
@@ -468,7 +468,7 @@ pln.intersectsLne3 = function (a, l)
  * @param {number} radius - sphere radius compare
  * @returns {boolean}     - true if intersection occurs
  */
-pln.intersectsPositionRadius = function (a, position, radius)
+pln.intersectsPositionRadius = function(a, position, radius)
 {
     let dot = position[0] * a[0] + position[1] * a[1] + position[2] * a[2];
     return Math.abs(dot - a[3]) <= radius;
@@ -481,7 +481,7 @@ pln.intersectsPositionRadius = function (a, position, radius)
  * @param {sph3} s    - sphere to compare
  * @returns {boolean} - true if intersection occurs
  */
-pln.intersectsSph3 = function (a, s)
+pln.intersectsSph3 = function(a, s)
 {
     let dot = s[0] * a[0] + s[1] * a[1] + s[2] * a[2];
     return Math.abs(dot - a[3]) <= s[3];
@@ -495,7 +495,7 @@ pln.intersectsSph3 = function (a, s)
  * @param {vec3} end   - line end to compare
  * @returns {boolean}  - true if intersection occurs
  */
-pln.intersectsStartEnd = function (a, start, end)
+pln.intersectsStartEnd = function(a, start, end)
 {
     let startSign = (a[0] * start[0] + a[1] * start[1] + a[2] * start[2]) + a[3];
     let endSign = (a[0] * end[0] + a[1] * end[1] + a[2] * end[2]) + a[3];
@@ -509,7 +509,7 @@ pln.intersectsStartEnd = function (a, start, end)
  * @param {pln} a     - the plane to negate
  * @returns {pln} out - receiving plane
  */
-pln.negate = function (out, a)
+pln.negate = function(out, a)
 {
     out[0] = -a[0];
     out[1] = -a[1];
@@ -525,7 +525,7 @@ pln.negate = function (out, a)
  * @param {pln} a     - the plane to normalize
  * @returns {pln} out - receiving plane
  */
-pln.normalize = function (out, a)
+pln.normalize = function(out, a)
 {
     let x = a[0],
         y = a[1],
@@ -582,7 +582,7 @@ pln.setArray = vec4.setArray;
  * @param {number} [offset = 0]
  * @returns {pln} a
  */
-pln.toArray = function (a, arr, offset = 0)
+pln.toArray = function(a, arr, offset = 0)
 {
     arr[offset] = a[0];
     arr[offset + 1] = a[1];
@@ -601,12 +601,12 @@ pln.toArray = function (a, arr, offset = 0)
  * @param {mat3} [nMatrix] - optional normal matrix
  * @returns {pln} out      - the receiving plane
  */
-pln.transformMat4 = (function ()
+pln.transformMat4 = (function()
 {
 
     let mat4_0;
 
-    return function (out, a, m, nMatrix)
+    return function(out, a, m, nMatrix)
     {
         if (!nMatrix && !mat4_0)
         {
@@ -662,7 +662,7 @@ pln.transformMat4 = (function ()
  * @param {vec3} v    - the vector to translate with
  * @returns {pln} out - the receiving plane
  */
-pln.translate = function (out, a, v)
+pln.translate = function(out, a, v)
 {
     out[0] = a[0];
     out[1] = a[1];

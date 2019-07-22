@@ -9,13 +9,29 @@ export {vec3};
  */
 
 /**
+ * Adds a scalar to a vec3
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @param {Number} s
+ * @returns {vec3} out
+ */
+vec3.addScalar = function(out, a, s)
+{
+    out[0] = a[0] + s;
+    out[1] = a[1] + s;
+    out[2] = a[2] + s;
+    return out;
+};
+
+/**
  * Converts radians to degrees
  *
  * @param {vec3} out
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.degrees = function (out, a)
+vec3.degrees = function(out, a)
 {
     out[0] = a[0] * num.RAD2DEG;
     out[1] = a[1] * num.RAD2DEG;
@@ -30,12 +46,25 @@ vec3.degrees = function (out, a)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.degreesUnwrapped = function (out, a)
+vec3.degreesUnwrapped = function(out, a)
 {
     out[0] = num.unwrapDegrees(a[0] * num.RAD2DEG);
     out[1] = num.unwrapDegrees(a[1] * num.RAD2DEG);
     out[2] = num.unwrapDegrees(a[2] * num.RAD2DEG);
     return out;
+};
+
+/**
+ * Divides a vec3 by a scalar
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @param {Number} s
+ * @returns {vec3} out
+ */
+vec3.divideScalar = function(out, a, s)
+{
+    return vec3.multiplyScalar(out, a, 1 / s);
 };
 
 /**
@@ -45,7 +74,7 @@ vec3.degreesUnwrapped = function (out, a)
  * @param {vec3} [center]  - Optional center
  * @returns {vec3} out     - receiving vec3
  */
-vec3.fromSpherical = function (out, spherical, center)
+vec3.fromSpherical = function(out, spherical, center)
 {
     const
         phi = spherical[0],
@@ -72,7 +101,7 @@ vec3.fromSpherical = function (out, spherical, center)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.getSpherical = function (out, a)
+vec3.getSpherical = function(out, a)
 {
     let phi = 0,
         theta = 0,
@@ -101,7 +130,7 @@ vec3.getSpherical = function (out, a)
  * @param {number} time
  * @returns {vec3} out
  */
-vec3.exponentialDecay = function (out, omega0, torque, I, drag, time)
+vec3.exponentialDecay = function(out, omega0, torque, I, drag, time)
 {
     out[0] = num.exponentialDecay(omega0[0], torque[0], I, drag, time);
     out[1] = num.exponentialDecay(omega0[1], torque[1], I, drag, time);
@@ -114,9 +143,25 @@ vec3.exponentialDecay = function (out, omega0, torque, I, drag, time)
  * @param {vec3} a
  * @returns {boolean}
  */
-vec3.isEmpty = function (a)
+vec3.isEmpty = function(a)
 {
     return a[0] === 0 && a[1] === 0 && a[2] === 0;
+};
+
+/**
+ * Multiplies a vec3 by a scalar
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @param {Number} s
+ * @returns {vec3} out
+ */
+vec3.multiplyScalar = function(out, a, s)
+{
+    out[0] = a[0] * s;
+    out[1] = a[1] * s;
+    out[2] = a[2] * s;
+    return out;
 };
 
 /**
@@ -127,7 +172,7 @@ vec3.isEmpty = function (a)
  * @param {vec4} viewport      - view port settings (x, y, width, height)
  * @returns {vec3} out         - receiving vec3 (x, y, perspectiveDivide)
  */
-vec3.project = function (out, a, m, viewport)
+vec3.project = function(out, a, m, viewport)
 {
     let x = a[0],
         y = a[1],
@@ -153,7 +198,7 @@ vec3.project = function (out, a, m, viewport)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.radians = function (out, a)
+vec3.radians = function(out, a)
 {
     out[0] = a[0] * num.DEG2RAD;
     out[1] = a[1] * num.DEG2RAD;
@@ -168,7 +213,7 @@ vec3.radians = function (out, a)
  * @param {vec3} a
  * @returns {vec3} out
  */
-vec3.radiansUnwrapped = function (out, a)
+vec3.radiansUnwrapped = function(out, a)
 {
     out[0] = num.unwrapRadians(a[0] * num.DEG2RAD);
     out[1] = num.unwrapRadians(a[1] * num.DEG2RAD);
@@ -176,9 +221,40 @@ vec3.radiansUnwrapped = function (out, a)
     return out;
 };
 
+/**
+ * Sets a vec3 from a scalar
+ *
+ * @param {vec3} out
+ * @param {Number} s
+ * @returns {vec3} out
+ */
+vec3.setScalar = function(out, s)
+{
+    out[0] = s;
+    out[1] = s;
+    out[2] = s;
+    return out;
+};
+
+/**
+ * Subtracts a scalar from a vec3
+ *
+ * @param {vec3} out
+ * @param {vec3} a
+ * @param {Number} s
+ * @returns {vec3} out
+ */
+vec3.subtractScalar = function(out, a, s)
+{
+    out[0] = a[0] - s;
+    out[1] = a[1] - s;
+    out[2] = a[2] - s;
+    return out;
+};
 
 /**
  * Unprojects a vec3 with canvas coordinates to world space
+ *
  * @param {vec3} out            - receiving vec3
  * @param {vec3} a              - vec3 to unproject
  * @param {mat4} invViewProj    - inverse view projection matrix
@@ -186,7 +262,7 @@ vec3.radiansUnwrapped = function (out, a)
  * @returns {vec3} out
  * @throw On perspective divide error
  */
-vec3.unproject = (function ()
+vec3.unproject = (function()
 {
     let vec4_0;
 
@@ -230,7 +306,7 @@ vec3.unproject = (function ()
  * @param {vec3} a
  * @returns {vec3}
  */
-vec3.unwrapDegrees = function (out, a)
+vec3.unwrapDegrees = function(out, a)
 {
     out[0] = num.unwrapDegrees(a[0]);
     out[1] = num.unwrapDegrees(a[1]);
@@ -245,7 +321,7 @@ vec3.unwrapDegrees = function (out, a)
  * @param {vec3} a
  * @returns {vec3}
  */
-vec3.unwrapRadians = function (out, a)
+vec3.unwrapRadians = function(out, a)
 {
     out[0] = num.unwrapRadians(a[0]);
     out[1] = num.unwrapRadians(a[1]);
