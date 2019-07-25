@@ -15,9 +15,6 @@ export class Tw2VertexDeclaration
     elementsSorted = [];
     stride = null;
 
-    //vertexSize = null;
-
-
     /**
      * Clears the declaration
      */
@@ -44,24 +41,11 @@ export class Tw2VertexDeclaration
     RebuildHash()
     {
         this.elementsSorted.splice(0, this.elementsSorted.length);
-        //this.vertexSize = 0;
         for (let i = 0; i < this.elements.length; ++i)
         {
             this.elementsSorted.push(this.elements[i]);
-            /*
-            // Doesn't work on turrets
-            if (typeof this.elements[i].elements === "number")
-            {
-                this.vertexSize += this.elements[i].elements;
-            }
-            else
-            {
-                this.vertexSize = null;
-            }
-            */
         }
         this.elementsSorted.sort(Tw2VertexDeclaration.CompareDeclarationElements);
-        //this.stride = this.vertexSize !== null ? this.vertexSize * 4 : null;
     }
 
     /**
@@ -151,7 +135,6 @@ export class Tw2VertexDeclaration
 
     /**
      * Sets a partial declaration
-     * TODO: Move to the device?
      * @param {Tw2Device} device
      * @param {Tw2VertexDeclaration} inputDecl
      * @param {Number} stride

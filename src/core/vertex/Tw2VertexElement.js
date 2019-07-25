@@ -22,6 +22,10 @@ export class Tw2VertexElement
     usage = -1;
     usageIndex = null;
 
+    _registerIndex = null;
+    _usedMask = null;
+    _attr = null;
+
     /**
      * Gets the vertex's type as a string
      * @returns {string|string}
@@ -55,6 +59,13 @@ export class Tw2VertexElement
             item.location = location;
             item.customSetter = customSetter;
 
+            // Unused
+            const {registerIndex = null, usedMask = null, attr = null} = values;
+            item._registerIndex = registerIndex;
+            item._usedMask = usedMask;
+
+            // Debugging
+            item._attr = attr;
         }
         return item;
     }

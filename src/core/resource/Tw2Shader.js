@@ -91,13 +91,15 @@ export class Tw2Shader
 
                     for (let inputIx = 0; inputIx < inputCount; ++inputIx)
                     {
-                        const usage = reader.ReadUInt8();
-                        /* let registerIndex = */
-                        reader.ReadUInt8();
-                        const usageIndex = reader.ReadUInt8();
-                        /* let usedMask = */
-                        reader.ReadUInt8();
-                        stage.inputDefinition.elements[inputIx] = Tw2VertexElement.from({usage, usageIndex, type: 0});
+                        const
+                            usage = reader.ReadUInt8(),
+                            registerIndex = reader.ReadUInt8(), // unused
+                            usageIndex = reader.ReadUInt8(),
+                            usedMask = reader.ReadUInt8(); // unused
+
+                        stage.inputDefinition.elements[inputIx] = Tw2VertexElement.from({
+                            usage, usageIndex, type: 0, registerIndex, usedMask
+                        });
                     }
                     stage.inputDefinition.RebuildHash();
 
@@ -243,7 +245,7 @@ export class Tw2Shader
                         s.mipFilter = reader.ReadUInt8();
                         s.addressU = reader.ReadUInt8();
                         s.addressV = reader.ReadUInt8();
-                        s.addressW = reader.ReadUInt8(); 
+                        s.addressW = reader.ReadUInt8();
                         s.mipLODBias = reader.ReadFloat32();    // not used
                         s._maxAnisotropy = reader.ReadUInt8();
                         s._comparisonFunc = reader.ReadUInt8(); // not used
@@ -590,13 +592,15 @@ export class Tw2Shader
         program.input = new Tw2VertexDeclaration();
         for (let j = 0; j < pass.stages[0].inputDefinition.elements.length; ++j)
         {
-            let location = gl.getAttribLocation(program.program, "attr" + j);
+            const attr = "attr" + j;
+            let location = gl.getAttribLocation(program.program, attr);
             if (location >= 0)
             {
                 const el = Tw2VertexElement.from({
                     usage: pass.stages[0].inputDefinition.elements[j].usage,
                     usageIndex: pass.stages[0].inputDefinition.elements[j].usageIndex,
-                    location
+                    location,
+                    attr
                 });
                 program.input.elements.push(el);
             }
@@ -607,6 +611,7 @@ export class Tw2Shader
         program.shadowStateFloat = gl.getUniformLocation(program.program, "ssf");
         program.shadowStateYFlip = gl.getUniformLocation(program.program, "ssyf");
         gl.uniform3f(program.shadowStateYFlip, 0, 0, 1);
+
         program.volumeSlices = [];
         for (let j = 0; j < pass.stages[1].samplers.length; ++j)
         {
@@ -632,7 +637,7 @@ export class Tw2Shader
             overrides = shaderOverrides[fileName];
 
         if (!overrides) return code;
-        
+
         for (const key in overrides)
         {
             if (overrides.hasOwnProperty(key))
