@@ -56,14 +56,14 @@ vec3.degreesUnwrapped = function(out, a)
 
 /**
  * Gets the direction from a quat
- * @param {vec3} out
+ * @param {vec3} axis
  * @param {vec3} up
  * @param {quat} q
  * @returns {vec3} out
  */
-vec3.directionFromQuat = function(out, up, q)
+vec3.directionFromQuat = function(out, axis, q)
 {
-    return vec3.transformQuat(out, up, q);
+    return vec3.transformQuat(out, axis, q);
 };
 
 /**
@@ -81,8 +81,8 @@ vec3.directionFromMat4 = (function()
     {
         if (!quat_0) quat_0 = quat.create();
         mat4.getRotation(quat_0, m);
-        return vec3.transformQuat(out, up, quat_0)
-    }
+        return vec3.transformQuat(out, axis, quat_0);
+    };
 
 })();
 
@@ -128,7 +128,7 @@ vec3.euler.fromQuat = (function()
         if (!mat4_0) mat4_0 = mat4.create();
         mat4.fromQuat(mat4_0, q);
         return vec3.euler.fromMat4(out, mat4_0, order);
-    }
+    };
 })();
 
 /**
