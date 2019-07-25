@@ -1,4 +1,4 @@
-import {vec3, vec4, mat4} from "gl-matrix";
+import {vec3, vec4, quat, mat4} from "gl-matrix";
 import {num} from "./num";
 
 export {vec3};
@@ -55,6 +55,38 @@ vec3.degreesUnwrapped = function(out, a)
 };
 
 /**
+ * Gets the direction from a quat
+ * @param {vec3} out
+ * @param {vec3} up
+ * @param {quat} q
+ * @returns {vec3} out
+ */
+vec3.directionFromQuat = function(out, up, q)
+{
+    return vec3.transformQuat(out, up, q);
+};
+
+/**
+ * Gets the direction from a mat4's axis
+ * @param {vec3} out
+ * @param {vec3} axis
+ * @param {mat4} m
+ * @returns {vec3} out
+ */
+vec3.directionFromMat4 = (function()
+{
+    let quat_0;
+
+    return function directionFromMat4Axis(out, axis, m)
+    {
+        if (!quat_0) quat_0 = quat.create();
+        mat4.getRotation(quat_0, m);
+        return vec3.transformQuat(out, up, quat_0)
+    }
+
+})();
+
+/**
  * Divides a vec3 by a scalar
  *
  * @param {vec3} out
@@ -91,13 +123,12 @@ vec3.euler.fromQuat = (function()
 {
     let mat4_0;
 
-    return function(out, q, order = vec3.euler.DEFAULT_ORDER)
+    return function fromQuat(out, q, order = vec3.euler.DEFAULT_ORDER)
     {
         if (!mat4_0) mat4_0 = mat4.create();
         mat4.fromQuat(mat4_0, q);
         return vec3.euler.fromMat4(out, mat4_0, order);
     }
-
 })();
 
 /**
@@ -111,11 +142,12 @@ vec3.euler.fromQuat = (function()
  */
 vec3.euler.fromMat4 = function(out, m, order = vec3.euler.DEFAULT_ORDER)
 {
-    let m11 = m[0], m12 = m[4], m13 = m[8],
+    const
+        m11 = m[0], m12 = m[4], m13 = m[8],
         m21 = m[1], m22 = m[5], m23 = m[9],
         m31 = m[2], m32 = m[6], m33 = m[10];
 
-    let clamp = num.clamp;
+    const clamp = num.clamp;
 
     if (order === "XYZ")
     {
@@ -209,7 +241,7 @@ vec3.euler.fromMat4 = function(out, m, order = vec3.euler.DEFAULT_ORDER)
         throw new Error("Unrecognised euler order: " + order);
     }
 
-    return out;
+    return vec3.unwrapRadians(out, out);
 };
 
 /**
@@ -228,11 +260,9 @@ vec3.euler.fromMat4 = function(out, m, order = vec3.euler.DEFAULT_ORDER)
 vec3.euler.getQuat = function(out, euler, order = vec3.euler.DEFAULT_ORDER)
 {
     const
-        x = euler[0],
-        y = euler[1],
-        z = euler[2];
-
-    order = order.toUpperCase();
+        x = num.unwrapRadians(euler[0]),
+        y = num.unwrapRadians(euler[1]),
+        z = num.unwrapRadians(euler[2]);
 
     const
         cosYaw = Math.cos(x / 2),
