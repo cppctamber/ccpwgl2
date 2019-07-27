@@ -13,22 +13,46 @@ export class AudEventKey extends Tw2CurveKey
     time = 0;
     value = 0;
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["time", r.float],
+            ["value", r.ushort]
+        ];
+    }
 }
 
 /**
  * AudEventCurve
  * TODO: Implement
  *
- * @property {Number} extrapolation               -
  * @property {Array.<AudEventKey>} keys           -
  * @property {TriObserverLocal} sourceTriObserver -
  */
 export class AudEventCurve extends Tw2Curve
 {
 
-    extrapolation = 0;
     keys = [];
     sourceTriObserver = null;
+
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["name", r.string],
+            ["keys", r.array],
+            ["sourceTriObserver, r.object"]
+        ];
+    }
 
     /**
      * Identifies that the class is in staging
