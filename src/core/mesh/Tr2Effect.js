@@ -1,29 +1,24 @@
-import {vec4, Tw2BaseClass} from "../../global";
+import {Tw2BaseClass} from "../../global";
 import {ErrFeatureNotImplemented} from "../Tw2Error";
+import {Tw2Vector4Parameter} from "../parameter";
 
 
 class Tw2ConstantParameter
 {
 
-    name = "";
-    value = vec4.create();
-
     /**
      * Black reader
      * @param {Tw2BlackBinaryReader} r
-     * @returns {Tw2ConstantParameter}
+     * @returns {Tw2Vector4Parameter}
      */
     static blackStruct(r)
     {
-        const item = new this();
+        const item = new Tw2Vector4Parameter();
         item.name = r.ReadStringU16();
         r.ExpectU16(0, "unknown content");
         r.ExpectU16(0, "unknown content");
         r.ExpectU16(0, "unknown content");
-        item.value[0] = r.ReadF32();
-        item.value[1] = r.ReadF32();
-        item.value[2] = r.ReadF32();
-        item.value[3] = r.ReadF32();
+        item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
         return item;
     }
 }
