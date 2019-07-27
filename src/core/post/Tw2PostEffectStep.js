@@ -5,7 +5,6 @@ import {Tw2BaseClass} from "../../global/class/Tw2BaseClass";
 /**
  * Post effect step
  *
- * @property {String|number| _id                - A unique id
  * @property {String} name                      - the step's name
  * @property {Boolean} display                  - toggles rendering
  * @property {Number} [index=-1]                - the step's render order (defaults to the order it was added)

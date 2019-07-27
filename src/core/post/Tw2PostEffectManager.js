@@ -4,7 +4,6 @@ import {Tw2BaseClass} from "../../global/class/Tw2BaseClass";
 /**
  * Tw2PostEffectManager
  *
- * @property {Number|String} _id
  * @property {String} name
  * @property {Boolean} display
  * @property {Array<Tw2PostEffect>} items
@@ -17,7 +16,7 @@ export class Tw2PostEffectManager extends Tw2BaseClass
     effects = [];
 
     _dirty = true;
-    _onChildValueChanged = item => this.UpdateValues(item);
+    _onChildValueChanged = item => this.UpdateValues({controller: item});
     _visibleEffects = [];
 
     /**
@@ -97,7 +96,7 @@ export class Tw2PostEffectManager extends Tw2BaseClass
 
             item._onModified = this._onChildValueChanged;
             this.effects.push(item);
-            this.UpdateValues(item);
+            this.UpdateValues();
         }
     }
 
@@ -112,7 +111,7 @@ export class Tw2PostEffectManager extends Tw2BaseClass
         {
             item._onModified = null;
             this.effects.splice(index, 1);
-            this.UpdateValues(item);
+            this.UpdateValues();
         }
     }
 

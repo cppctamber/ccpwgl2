@@ -34,7 +34,7 @@ export class Tw2PostEffect extends Tw2BaseClass
     _texture = null;
     _visibleSteps = [];
     _dirty = true;
-    _onChildModified = item => this.UpdateValues(item);
+    _onChildModified = item => this.UpdateValues({controller: item});
     _onModified = null;
 
 
@@ -119,7 +119,7 @@ export class Tw2PostEffect extends Tw2BaseClass
 
             item._onModified = this._onChildModified;
             this.steps.push(item);
-            this.UpdateValues(item);
+            this.UpdateValues();
         }
     }
 
@@ -134,7 +134,7 @@ export class Tw2PostEffect extends Tw2BaseClass
         {
             item._onModified = null;
             this.steps.splice(index, 1);
-            this.UpdateValues(item);
+            this.UpdateValues();
         }
     }
 
