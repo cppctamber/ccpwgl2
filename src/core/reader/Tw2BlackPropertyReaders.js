@@ -112,18 +112,31 @@ export function object(reader, out, id)
 
         if (properties.has(propertyName))
         {
-            // Debug
-            if (!(propertyName in out))
-            {
-                if (debugEnabled)
-                {
-                    console.log(`'${type}' missing property: '${propertyName}'`);
-                }
-            }
-
             try
             {
-                out[propertyName] = properties.get(propertyName)(objectReader, out[propertyName]);
+                const
+                    r = properties.get(propertyName),
+                    result = r(objectReader, out[propertyName], out);
+
+                if (result !== undefined)
+                {
+                    // Debug
+                    if (!(propertyName in out))
+                    {
+                        if (debugEnabled)
+                        {
+                            console.log(`'${type}' missing property: '${propertyName}'`);
+                        }
+                    }
+
+                    out[propertyName] = result;
+                }
+                // Allow returning undefined from struct and struct list only
+                else if (r !== struct && r !== structList)
+                {
+                    throw new Error(`'${type}' property '${propertyName} reader returned undefined`);
+                }
+
             }
             catch (err)
             {
@@ -132,9 +145,7 @@ export function object(reader, out, id)
                     console.dir(out);
                 }
 
-                throw new ErrBinaryReaderReadError({
-                    readError: `${propertyName} > ` + err.message
-                });
+                throw new ErrBinaryReaderReadError({readError: `${propertyName} > ` + err.message});
             }
         }
         else
@@ -144,9 +155,7 @@ export function object(reader, out, id)
                 console.dir(out);
             }
 
-            throw new ErrBinaryReaderReadError({
-                readError: `Unknown property "${propertyName}" for "${type}"`
-            });
+            throw new ErrBinaryReaderReadError({readError: `Unknown property "${propertyName}" for "${type}"`});
         }
     }
 
@@ -355,36 +364,62 @@ export function indexBuffer(reader)
 /**
  * Reads a struct
  * @param {*} struct
- * @returns {function(*=): *}
+ * @param {Boolean} [allowUndefined]
+ * @returns {Function}
  */
-export function struct(struct)
+export function struct(struct, allowUndefined)
 {
-    return function(reader)
+    return function(reader, out, parent)
     {
-        return struct.blackStruct(reader);
+        const
+            blackStruct = struct.blackStruct || struct,
+            result = blackStruct(reader, out, parent);
+
+        if (result === undefined && !allowUndefined)
+        {
+            throw new Error("Invalid reader response: undefined");
+        }
+
+        return result;
     };
 }
 
 /**
  * Reads a struct list
  * @param {*} struct
- * @returns {function(*): Array}
+ * @param {Boolean} [allowUndefined]
+ * @returns {Function}
  */
-export function structList(struct)
+export function structList(struct, allowUndefined)
 {
-    return function(reader)
+    return function(reader, out, parent)
     {
-        let count = reader.ReadU32();
-        let byteSize = reader.ReadU16();
-        let result = [];
+        let
+            count = reader.ReadU32(),
+            byteSize = reader.ReadU16(),
+            array;
 
         for (let i = 0; i < count; i++)
         {
-            let structReader = reader.ReadBinaryReader(byteSize);
-            result[i] = struct.blackStruct(structReader);
+            const
+                structReader = reader.ReadBinaryReader(byteSize),
+                blackStruct = struct.blackStruct || struct,
+                result = blackStruct(structReader, out, parent);
+
+            if (result)
+            {
+                array = array || [];
+                array.push(result);
+            }
+            else if (!allowUndefined)
+            {
+                throw new Error("Invalid reader response: undefined");
+            }
+
             structReader.ExpectEnd("struct read to end");
         }
 
-        return result;
+        return array;
     };
 }
+
