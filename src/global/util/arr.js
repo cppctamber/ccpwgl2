@@ -43,7 +43,7 @@ export function findElementByProperty(arr, property, value, err)
 
     if (err)
     {
-        throw new err({[property]:value});
+        throw new err({[property]: value});
     }
 
     return null;

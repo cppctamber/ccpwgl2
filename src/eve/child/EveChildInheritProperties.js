@@ -11,9 +11,7 @@ export class EveChildInheritProperties
      */
     static black(r)
     {
-        return [
-
-        ];
+        return [];
     }
 
     /**

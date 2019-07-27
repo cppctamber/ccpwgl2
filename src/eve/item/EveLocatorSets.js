@@ -13,6 +13,7 @@ export class EveLocatorSetItem extends Tw2BaseClass
     // boneIndex = -1`;
     position = vec3.create();
     rotation = quat.create();
+
     //scaling = vec3.fromValues(1,1,1);
 
     /**

@@ -183,7 +183,7 @@ export class EveSpriteSet extends EveObjectSet
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         if (this.effect) this.effect.GetResources(out);
         return out;
@@ -196,7 +196,7 @@ export class EveSpriteSet extends EveObjectSet
     UseQuads(useQuads)
     {
         this.useQuads = useQuads;
-        this._decl = Tw2VertexDeclaration.from(useQuads ?  EveSpriteSet.quadVertexDeclarations : EveSpriteSet.vertexDeclarations);
+        this._decl = Tw2VertexDeclaration.from(useQuads ? EveSpriteSet.quadVertexDeclarations : EveSpriteSet.vertexDeclarations);
         this._dirty = true;
     }
 

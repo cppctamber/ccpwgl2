@@ -182,7 +182,7 @@ export class EvePlaneSet extends EveObjectSet
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         if (this.effect) this.effect.GetResources(out);
         return out;
@@ -420,7 +420,7 @@ export class EvePlaneSet extends EveObjectSet
         {usage: "TEXCOORD", usageIndex: 0, elements: 4},
         {usage: "TEXCOORD", usageIndex: 1, elements: 4},
         {usage: "TEXCOORD", usageIndex: 2, elements: 4},
-        {usage: "COLOR",    usageIndex: 0, elements: 4},
+        {usage: "COLOR", usageIndex: 0, elements: 4},
         {usage: "TEXCOORD", usageIndex: 3, elements: 4},
         {usage: "TEXCOORD", usageIndex: 4, elements: 4},
         {usage: "TEXCOORD", usageIndex: 5, elements: 4},

@@ -19,7 +19,7 @@ function onString(path)
     const dot = path.lastIndexOf(".");
     if (dot !== -1) ext = path.substr(dot + 1).toLowerCase();
 
-    switch(ext)
+    switch (ext)
     {
         case "dds":
         case "png":
@@ -359,7 +359,7 @@ export function indexBuffer(reader)
  */
 export function struct(struct)
 {
-    return function (reader)
+    return function(reader)
     {
         return struct.blackStruct(reader);
     };
@@ -372,7 +372,7 @@ export function struct(struct)
  */
 export function structList(struct)
 {
-    return function (reader)
+    return function(reader)
     {
         let count = reader.ReadU32();
         let byteSize = reader.ReadU16();

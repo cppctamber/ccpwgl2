@@ -6,7 +6,7 @@ import * as particle from "./particle";
 import * as sof from "./sof";
 import * as state from "./state";
 
-import { vec4, mat4 } from "./global/math";
+import {vec4, mat4} from "./global/math";
 
 /**
  * Register global configurations
@@ -22,7 +22,7 @@ export const config = {
         "anisotropicFiltering": true,
         "webgl2": true,
         "webvr": false,
-        "performanceClock" : true
+        "performanceClock": true
     },
 
     resMan: {
@@ -51,7 +51,7 @@ export const config = {
         paths: {
             "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
             // Set to you local cdn cache server path
-            "cdn" : "http://localhost:3000/"
+            "cdn": "http://localhost:3000/"
         },
 
         extensions: {

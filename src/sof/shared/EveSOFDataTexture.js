@@ -15,7 +15,7 @@ export class EveSOFDataTexture
      * @param {{}} [out={}]
      * @returns {{}}
      */
-    Assign(out={})
+    Assign(out = {})
     {
         out[this.name] = this.resFilePath;
         return out;

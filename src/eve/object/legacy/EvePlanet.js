@@ -45,7 +45,7 @@ export class EvePlanet extends EveObject
      */
     SetLocalTransform(m)
     {
-        this.highDetail.SetTransform(m);
+        this.highDetail.SetLocalTransform(m);
     }
 
     /**

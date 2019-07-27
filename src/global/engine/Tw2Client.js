@@ -140,7 +140,7 @@ export class Tw2Client extends Tw2EventEmitter
      * Requests an animation frame
      * @type {Function}
      */
-    static RequestAnimationFrame = (function ()
+    static RequestAnimationFrame = (function()
     {
         const request = get(window, VendorRequestAnimationFrame);
         return callback => request(callback);
@@ -150,7 +150,7 @@ export class Tw2Client extends Tw2EventEmitter
      * Cancels an animation frame
      * @type {Function}
      */
-    static CancelAnimationFrame = (function ()
+    static CancelAnimationFrame = (function()
     {
         const cancel = get(window, VendorCancelAnimationFrame);
         return id => cancel(id);

@@ -265,7 +265,7 @@ class Tw2Library extends Tw2EventEmitter
         this.Log({
             type: "warn",
             name: "Tw2Library",
-            message: `Debugging ${bool ? "enabled" : "disabled" }`
+            message: `Debugging ${bool ? "enabled" : "disabled"}`
         });
     }
 

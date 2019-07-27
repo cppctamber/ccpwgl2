@@ -62,14 +62,14 @@ export class Tr2Effect extends Tw2BaseClass
             ["name", r.string],
             ["parameters", r.array],
             ["resources", r.array],
-            ["constParameters",  r.structList(Tw2ConstantParameter) ],
+            ["constParameters", r.structList(Tw2ConstantParameter)],
             ["options", (reader) =>
             {
-                throw ErrFeatureNotImplemented({ feature: "Tr2Effect options"});
+                throw ErrFeatureNotImplemented({feature: "Tr2Effect options"});
             }],
             ["samplerOverrides", (reader) =>
             {
-                throw ErrFeatureNotImplemented({ feature: "Tr2Effect samplerOverrides"});
+                throw ErrFeatureNotImplemented({feature: "Tr2Effect samplerOverrides"});
             }]
         ];
     }

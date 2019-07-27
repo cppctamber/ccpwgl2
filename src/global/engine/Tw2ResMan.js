@@ -50,7 +50,7 @@ export class Tw2ResMan extends Tw2EventEmitter
     _purgeFrameLimit = 1000;
     _pendingLoads = 0;
     _noLoadFrames = 0;
-    
+
     tw2 = null;
 
     /**

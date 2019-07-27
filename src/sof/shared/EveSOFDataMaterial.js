@@ -16,7 +16,7 @@ export class EveSOFDataMaterial
      * @param {String} [prefix]
      * @returns {{ name: String, parameters: Object}} out
      */
-    Assign(out={}, prefix)
+    Assign(out = {}, prefix)
     {
         out.name = this.name;
         out.parameters = this.AssignParameters(out.parameters, prefix);
@@ -29,7 +29,7 @@ export class EveSOFDataMaterial
      * @param {String} [prefix]
      * @returns {Object} out
      */
-    AssignParameters(out={}, prefix)
+    AssignParameters(out = {}, prefix)
     {
         this.parameters.forEach(parameter => parameter.Assign(out, prefix));
         return out;

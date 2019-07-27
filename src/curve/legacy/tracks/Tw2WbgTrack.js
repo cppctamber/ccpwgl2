@@ -49,14 +49,14 @@ export function Tw2WbgTrack()
     /**
      * Initialize
      */
-    this.Initialize = function ()
+    this.Initialize = function()
     {
         if (this.geometryResPath)
         {
             this.geometryRes = resMan.GetResource(this.geometryResPath);
             const self = this;
             this.geometryRes.RegisterNotification({
-                OnResPrepared: function ()
+                OnResPrepared: function()
                 {
                     SetCurves(self);
                 }
@@ -68,7 +68,7 @@ export function Tw2WbgTrack()
      * Updates a value at a specific time
      * @param {number} time
      */
-    this.UpdateValue = function (time)
+    this.UpdateValue = function(time)
     {
         if (!this._TracksReady()) return;
         if (this.cycle) time = time % this.duration;
@@ -105,7 +105,7 @@ export function Tw2WbgTransformTrack()
      * @returns {*}
      * @private
      */
-    this._TracksReady = function ()
+    this._TracksReady = function()
     {
         return positionCurve || rotationCurve || scaleCurve;
     };
@@ -116,7 +116,7 @@ export function Tw2WbgTransformTrack()
      * @param duration
      * @private
      */
-    this._ApplyTracks = function (trackGroup, duration)
+    this._ApplyTracks = function(trackGroup, duration)
     {
         for (let i = 0; i < trackGroup.transformTracks.length; ++i)
         {
@@ -137,7 +137,7 @@ export function Tw2WbgTransformTrack()
      * @param {number} time
      * @prototype
      */
-    this._UpdateValue = function (time)
+    this._UpdateValue = function(time)
     {
         if (positionCurve)
         {

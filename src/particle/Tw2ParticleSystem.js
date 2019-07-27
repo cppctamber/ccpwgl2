@@ -44,7 +44,7 @@ import {Tw2ParticleElement} from "./element";
  */
 export class Tw2ParticleSystem extends Tw2BaseClass
 {
-    
+
     name = "";
     applyAging = true;
     applyForce = true;

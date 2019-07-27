@@ -19,7 +19,7 @@ export class EveSOFDataParameter
      * @param {String} [prefix]
      * @return {{}} out
      */
-    Assign(out={}, prefix)
+    Assign(out = {}, prefix)
     {
         out[prefix ? prefix + this.name : this.name] = Array.from(this.value);
         return out;

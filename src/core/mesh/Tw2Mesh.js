@@ -230,7 +230,7 @@ export class Tw2Mesh
                         type = src[name][i].__type || "Tw2MeshArea",
                         Constructor = store.classes.Get(type);
 
-                    dest[name].push(Constructor.from(src[name][i], { index: i }));
+                    dest[name].push(Constructor.from(src[name][i], {index: i}));
                 }
             }
         }

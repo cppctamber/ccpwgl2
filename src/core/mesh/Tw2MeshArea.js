@@ -74,7 +74,6 @@ export class Tw2MeshArea extends Tw2BaseClass
     }
 
 
-
     /**
      * Render Batch Constructor
      * @type {Tw2RenderBatch}

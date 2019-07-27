@@ -65,7 +65,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         if (this.decalEffect) this.decalEffect.GetResources(out);
         if (this.pickEffect) this.pickEffect.GetResources(out);
@@ -313,5 +313,5 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             ["indexBuffer", r.indexBuffer]
         ];
     }
-    
+
 }

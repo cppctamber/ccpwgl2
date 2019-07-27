@@ -807,7 +807,7 @@ export function EveSOF(tw2)
     {
         function onChildLoaded(child)
         {
-            return function (obj)
+            return function(obj)
             {
                 if (obj.constructor.__isEffectChild)
                 {
@@ -1004,7 +1004,7 @@ export function EveSOF(tw2)
         }
     }
 
-    this.SetupTurretMaterialAsync = function (turretSet, parentFactionName, turretFactionName)
+    this.SetupTurretMaterialAsync = function(turretSet, parentFactionName, turretFactionName)
     {
         return this.GetData().then(() =>
         {
@@ -1013,7 +1013,7 @@ export function EveSOF(tw2)
         });
     };
 
-    this.SetupTurretMaterial = function (turretSet, parentFactionName, turretFactionName, onResolved, onRejected)
+    this.SetupTurretMaterial = function(turretSet, parentFactionName, turretFactionName, onResolved, onRejected)
     {
         return this.SetupTurretMaterialAsync(turretSet, parentFactionName, turretFactionName)
             .then(onResolved)
@@ -1040,7 +1040,7 @@ export function EveSOF(tw2)
      * Gets sof data asynchronously
      * @returns {Promise}
      */
-    this.GetData = function ()
+    this.GetData = function()
     {
         if (!dataPromise)
         {
@@ -1076,7 +1076,7 @@ export function EveSOF(tw2)
      * @param {String} [resPath] - The resource path to a source space object factory file
      * @returns {Promise}
      */
-    this.ExtendPatternsFrom = function (resPath)
+    this.ExtendPatternsFrom = function(resPath)
     {
         if (!resPath)
         {
@@ -1100,7 +1100,7 @@ export function EveSOF(tw2)
      * @param {String} [resPath] - The resource path to a source space object factory file
      * @returns {Promise}
      */
-    this.ExtendMaterialsFrom = function (resPath)
+    this.ExtendMaterialsFrom = function(resPath)
     {
         if (!resPath)
         {
@@ -1218,82 +1218,82 @@ export function EveSOF(tw2)
             });
     }
 
-    this.GetObject = function (dna)
+    this.GetObject = function(dna)
     {
         return this.GetData().then(() => Build(dna));
     };
 
-    this.GetHull = function (name)
+    this.GetHull = function(name)
     {
         return getSofRoot("hull", name);
     };
 
-    this.GetHulls = function ()
+    this.GetHulls = function()
     {
         return getSofRoot("hull", "*");
     };
 
-    this.GetHullNames = function ()
+    this.GetHullNames = function()
     {
         return getSofRootNames("hull");
     };
 
-    this.GetFaction = function (name)
+    this.GetFaction = function(name)
     {
         return getSofRoot("faction", name);
     };
 
-    this.GetFactions = function ()
+    this.GetFactions = function()
     {
         return getSofRoot("faction", "*");
     };
 
-    this.GetFactionNames = function ()
+    this.GetFactionNames = function()
     {
         return getSofRootNames("faction");
     };
 
-    this.GetRace = function (name)
+    this.GetRace = function(name)
     {
         return getSofRoot("race", name);
     };
 
-    this.GetRaces = function ()
+    this.GetRaces = function()
     {
         return getSofRoot("race", "*");
     };
 
-    this.GetRaceNames = function ()
+    this.GetRaceNames = function()
     {
         return getSofRootNames("race");
     };
 
-    this.GetMaterial = function (name)
+    this.GetMaterial = function(name)
     {
         return getSofRoot("material", name);
     };
 
-    this.GetMaterials = function ()
+    this.GetMaterials = function()
     {
         return getSofRoot("material", "*");
     };
 
-    this.GetMaterialNames = function ()
+    this.GetMaterialNames = function()
     {
         return getSofRootNames("material");
     };
 
-    this.GetPattern = function (name)
+    this.GetPattern = function(name)
     {
         return getSofRoot("pattern", name);
     };
 
-    this.GetPatterns = function (name)
+    this.GetPatterns = function(name)
     {
         return getSofRoot("pattern", "*");
     };
 
-    this.GetPatternNames = function ()
+    this.GetPatternNames = function()
     {
         return getSofRootNames("pattern");
     };
@@ -1303,7 +1303,7 @@ export function EveSOF(tw2)
      * @param {String} name
      * @returns {Promise<Array>}
      */
-    this.GetHullPatternNames = function (name)
+    this.GetHullPatternNames = function(name)
     {
         return this.GetHull(name)
             .then(x =>
@@ -1329,7 +1329,7 @@ export function EveSOF(tw2)
      * @param {String} name
      * @returns {Promise<number>}
      */
-    this.GetHullBuildClass = function (name)
+    this.GetHullBuildClass = function(name)
     {
         const c = name.indexOf(":");
         if (c > 0) name = name.substr(0, c);

@@ -59,7 +59,7 @@ export class Tw2LoadingObject extends Tw2Resource
         {
             this._view = response;
 
-            switch(ext)
+            switch (ext)
             {
                 case "red":
                     this._constructor = new Tw2ObjectReader(response);
@@ -70,7 +70,7 @@ export class Tw2LoadingObject extends Tw2Resource
                     break;
 
                 default:
-                    throw new ErrResourceExtensionUnregistered({ extension: ext });
+                    throw new ErrResourceExtensionUnregistered({extension: ext});
             }
 
             this._inPrepare = 0;

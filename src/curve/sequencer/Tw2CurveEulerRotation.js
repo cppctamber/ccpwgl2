@@ -102,7 +102,7 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {string[]}
      */
-    static childProperties = [ "yaw", "pitch", "roll"];
+    static childProperties = ["yaw", "pitch", "roll"];
 
     /**
      * Black definition

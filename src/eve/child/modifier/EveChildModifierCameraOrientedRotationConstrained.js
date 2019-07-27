@@ -13,9 +13,7 @@ export class EveChildModifierCameraOrientedRotationConstrained extends Tw2BaseCl
      */
     static black = function(r)
     {
-        return [
-
-        ];
+        return [];
     };
 
     /**

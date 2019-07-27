@@ -20,7 +20,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     b = null;
     a = null;
 
-    _value = vec4.fromValues(0,0,0,0);
+    _value = vec4.fromValues(0, 0, 0, 0);
 
     /**
      * Sorts the sequencer
@@ -91,7 +91,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {?Array.<string>}
      */
-    static childProperties = [ "r", "g", "b", "a"];
+    static childProperties = ["r", "g", "b", "a"];
 
     /**
      * Black definition

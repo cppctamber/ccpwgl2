@@ -76,6 +76,7 @@ export class EveSOFDataBooster
     {
         this.warpHaloColor = v;
     }
+
     /**
      * Black definition
      * @param {*} r

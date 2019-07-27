@@ -13,9 +13,7 @@ export class EveChildModifierBillboard2D extends Tw2BaseClass
      */
     static black = function(r)
     {
-        return [
-
-        ];
+        return [];
     };
 
     /**

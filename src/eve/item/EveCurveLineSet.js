@@ -332,7 +332,7 @@ export class EveCurveLineSet extends EveObjectSet
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         if (this.lineEffect) this.lineEffect.GetResources(out);
         return out;

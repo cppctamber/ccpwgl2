@@ -1,6 +1,11 @@
 import {Tw2EventEmitter, Tw2Schema} from "../class";
-import {ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid} from "../../core/Tw2Error";
-import {toArray, isNumber, isArray,  isFunction, isString, isPlain} from "../util";
+import {
+    ErrStoreKeyReserved,
+    ErrStoreValueInvalid,
+    ErrStoreValueMissing,
+    ErrStoreTypeInvalid
+} from "../../core/Tw2Error";
+import {toArray, isNumber, isArray, isFunction, isString, isPlain} from "../util";
 import * as readers from "../../core/reader/Tw2BlackPropertyReaders";
 import {ErrStoreKeyProtected} from "../../core";
 
@@ -80,7 +85,7 @@ class Tw2GenericStore extends Tw2EventEmitter
 
         if (store)
         {
-            Reflect.defineProperty(this, "_store", { get: ()=> store });
+            Reflect.defineProperty(this, "_store", {get: () => store});
         }
     }
 
@@ -530,7 +535,7 @@ class Tw2ClassStore extends Tw2GenericStore
         }
 
         // Auto add schemas
-        if(value.schema && (override || !this._store.schemas.Has(key)))
+        if (value.schema && (override || !this._store.schemas.Has(key)))
         {
             this._store.schemas.Set(key, value.schema, override);
         }
@@ -617,13 +622,13 @@ class Tw2VariableStore extends Tw2GenericStore
      * Sets a variable store's value
      * @param {String} key
      * @param {*} value
-     * @returns {*} 
+     * @returns {*}
      */
     SetValue(key, value)
     {
         if (!this.Has(key))
         {
-            throw new ErrStoreValueMissing({ store: this.name, key }).emitOn(this);
+            throw new ErrStoreValueMissing({store: this.name, key}).emitOn(this);
         }
 
         const variable = this.Get(key);
@@ -640,7 +645,7 @@ class Tw2VariableStore extends Tw2GenericStore
     {
         if (!this.Has(key))
         {
-            throw new ErrStoreValueMissing({ store: this.name, key }).emitOn(this);
+            throw new ErrStoreValueMissing({store: this.name, key}).emitOn(this);
         }
 
         const variable = this.Get(key);
@@ -666,8 +671,8 @@ class Tw2VariableStore extends Tw2GenericStore
         if (isString(Type)) Type = this._store.types.Get(Type); // Should fail if not found?
         if (!Type) Type = this._store.types.GetByValue(value);
         if (isFunction(Type)) return new Type(name, value);
-        
-        throw new ErrStoreTypeInvalid({ store: this.name, type: Type }).emitOn(this);
+
+        throw new ErrStoreTypeInvalid({store: this.name, type: Type}).emitOn(this);
     }
 
     /**

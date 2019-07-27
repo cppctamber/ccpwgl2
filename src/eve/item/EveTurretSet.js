@@ -251,7 +251,7 @@ export class EveTurretSet extends EveObjectSet
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
      */
-    GetResources(out=[])
+    GetResources(out = [])
     {
         if (this.turretEffect) this.turretEffect.GetResources(out);
         if (this.firingEffect) this.firingEffect.GetResources(out);
@@ -586,7 +586,7 @@ export class EveTurretSet extends EveObjectSet
     UpdateViewDependentData(parentTransform)
     {
         mat4.copy(this._parentTransform, parentTransform);
-        
+
         if (this.firingEffect)
         {
             this.firingEffect.UpdateViewDependentData(parentTransform);
@@ -750,7 +750,7 @@ export class EveTurretSet extends EveObjectSet
         if (!this.turretEffect || !this.turretEffect.IsGood() || !this._visibleItems.length) return false;
 
         let index = 0;
-        const customSetter = function (el)
+        const customSetter = function(el)
         {
             device.gl.disableVertexAttribArray(el.location);
             device.gl.vertexAttrib2f(el.location, index, index);
@@ -925,11 +925,11 @@ export class EveTurretSet extends EveObjectSet
     /**
      * mat3x4 to quat
      */
-    static mat3x4toquat = (function ()
+    static mat3x4toquat = (function()
     {
         let m, q;
 
-        return function (mm, index, out, outIndex)
+        return function(mm, index, out, outIndex)
         {
             if (!m)
             {

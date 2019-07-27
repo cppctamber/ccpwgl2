@@ -79,7 +79,7 @@ Tw2Curve.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
  * @param {Tw2CurveKey} b
  * @returns {number}
  */
-Tw2Curve.Compare = function (a, b)
+Tw2Curve.Compare = function(a, b)
 {
     if (a.time < b.time) return -1;
     if (a.time > b.time) return 1;
@@ -91,7 +91,7 @@ Tw2Curve.Compare = function (a, b)
  * @param {*} curve
  * @param {Array.<Tw2CurveKey>} [keys=curve.keys] - Optional keys override
  */
-Tw2Curve.Sort = function (curve, keys = curve.keys)
+Tw2Curve.Sort = function(curve, keys = curve.keys)
 {
     if (keys && keys.length)
     {
@@ -104,7 +104,7 @@ Tw2Curve.Sort = function (curve, keys = curve.keys)
  * Sorts curve keys
  * @param {*} curve
  */
-Tw2Curve.Sort2 = function (curve)
+Tw2Curve.Sort2 = function(curve)
 {
     if (curve.keys && curve.keys.length)
     {

@@ -14,9 +14,7 @@ export class EveChildModifierTranslateWithCamera extends Tw2BaseClass
      */
     static black = function(r)
     {
-        return [
-
-        ];
+        return [];
     };
 
     /**

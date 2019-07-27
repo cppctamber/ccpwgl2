@@ -19,7 +19,7 @@ export class Tw2PostEffectManager extends Tw2BaseClass
     _dirty = true;
     _onChildValueChanged = item => this.UpdateValues(item);
     _visibleEffects = [];
-    
+
     /**
      * Fires on value changes
      */
@@ -147,7 +147,7 @@ export class Tw2PostEffectManager extends Tw2BaseClass
                 }
             }
 
-            this._visibleEffects.sort((a, b)=>
+            this._visibleEffects.sort((a, b) =>
             {
                 return a.index - b.index;
             });

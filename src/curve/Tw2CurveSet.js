@@ -17,7 +17,7 @@ import {util, Tw2BaseClass} from "../global";
  */
 export class Tw2CurveSet extends Tw2BaseClass
 {
-    
+
     name = "";
     bindings = [];
     curves = [];

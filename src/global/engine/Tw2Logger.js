@@ -45,7 +45,7 @@ export class Tw2Logger extends Tw2EventEmitter
     history = 100;
     throttle = 20;
     tw2 = null;
-    
+
     _logs = [];
     _throttled = null;
 
@@ -163,7 +163,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         log._logged = true;
-        
+
         this.emit(log.type, log);
         return log;
     }
