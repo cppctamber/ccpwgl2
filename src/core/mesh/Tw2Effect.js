@@ -1,36 +1,55 @@
-import {util, resMan, device, store} from "../../global";
-import {Tw2TextureParameter} from "../parameter/Tw2TextureParameter";
-import Tw2BaseClass from "../../global/class/Tw2BaseClass";
+import {util, resMan, device, store, Tw2BaseClass} from "../../global";
+import {Tw2TextureParameter, Tw2Vector4Parameter} from "../parameter";
+import {ErrFeatureNotImplemented} from "../Tw2Error";
+
 
 /**
  * Tw2Effect
  *
- * @property {String|Number} _id
  * @property {String} name
- * @property {String} effectFilePath
- * @property {Tw2EffectRes|null} effectRes
- * @property {Object.<string, Tw2Parameter>} parameters
- * @property {Object.<string, Array>} techniques
- * @property {Object.<string, string>} options
- * @property {Tw2Shader|null} shader
- * @property {Array} samplerOverrides
  * @property {Boolean} autoParameter
- * @class
+ * @property {String} effectFilePath
+ * @property {Tw2EffectRes} effectRes
+ * @property {Object.<string, string>} options
+ * @property {Object.<string, Tw2Parameter>} parameters
+ * @property {Object.<string, Tw2TextureParameter>} resources
+ * @property {Object.<string, Tw2SamplerOverride>} samplerOverrides
+ * @property {Tw2Shader|null} shader
+ * @property {Object.<string, Array>} techniques
  */
-export class Tw2Effect //extends Tw2BaseClass
+export class Tw2Effect extends Tw2BaseClass
 {
 
-    _id = util.generateID();
     name = "";
+    //constParameters = {};
     effectFilePath = "";
-    effectRes = null;
-    parameters = {};
-    techniques = [];
-    samplerOverrides = [];
-    autoParameter = false;
     options = {};
+    parameters = {};
+    //resources = {};
+    samplerOverrides = {};
+    techniques = {};
+
+    // ccpwgl
+    autoParameter = false;
+    effectRes = null;
     shader = null;
 
+    /**
+     * Temporary until we know what const parameters are supposed to do
+     * @returns {*}
+     */
+    get constParameters()
+    {
+        const out = {};
+        for (let key in this.parameters)
+        {
+            if (this.parameters.hasOwnProperty(key) && this.parameters[key]._isConstant)
+            {
+                out[key] = this.parameters[key];
+            }
+        }
+        return out;
+    }
 
     /**
      * Initializes the Tw2Effect
@@ -126,9 +145,10 @@ export class Tw2Effect //extends Tw2BaseClass
                         }
                     }
                 }
+
+                Reflect.deleteProperty(this.techniques, t);
             }
         }
-        this.techniques = {};
     }
 
     /**
@@ -138,6 +158,7 @@ export class Tw2Effect //extends Tw2BaseClass
     BindParameters()
     {
         this.UnBindParameters();
+
         if (!this.IsGood())
         {
             return false;
@@ -310,6 +331,11 @@ export class Tw2Effect //extends Tw2BaseClass
             device["effectObserver"]["OnEffectChanged"](this);
         }
 
+        if (this.autoParameter)
+        {
+            this.AutoUnPopulate();
+        }
+
         this.autoParameter = false;
         return true;
     }
@@ -425,14 +451,17 @@ export class Tw2Effect //extends Tw2BaseClass
      */
     GetTextures(out = {})
     {
-        for (let key in this.parameters)
+        for (const key in this.parameters)
         {
-            if (this.parameters.hasOwnProperty(key) && this.parameters[key] instanceof Tw2TextureParameter)
+            if (this.parameters.hasOwnProperty(key))
             {
-                let resourcePath = this.parameters[key].GetValue();
-                if (resourcePath)
+                if (this.parameters[key] instanceof Tw2TextureParameter)
                 {
-                    out[key] = resourcePath;
+                    const resourcePath = this.parameters[key].GetValue();
+                    if (resourcePath)
+                    {
+                        out[key] = resourcePath;
+                    }
                 }
             }
         }
@@ -447,7 +476,7 @@ export class Tw2Effect //extends Tw2BaseClass
     SetTextures(options = {})
     {
         let updated = false;
-        for (let key in options)
+        for (const key in options)
         {
             if (options.hasOwnProperty(key) && options[key] !== undefined)
             {
@@ -455,7 +484,7 @@ export class Tw2Effect //extends Tw2BaseClass
                     value = options[key],
                     param = this.parameters[key];
 
-                if (Tw2TextureParameter.isValue(value))
+                if (param instanceof Tw2TextureParameter)
                 {
                     if (param)
                     {
@@ -485,10 +514,15 @@ export class Tw2Effect //extends Tw2BaseClass
      */
     GetParameters(out = {})
     {
-        for (let key in this.parameters)
+        for (const key in this.parameters)
         {
-            if (this.parameters.hasOwnProperty(key) && !(this.parameters[key] instanceof Tw2TextureParameter))
+            if (this.parameters.hasOwnProperty(key))
             {
+                if (this.parameters[key] instanceof Tw2TextureParameter)
+                {
+                    continue;
+                }
+                
                 out[key] = this.parameters[key].GetValue(true);
             }
         }
@@ -503,13 +537,18 @@ export class Tw2Effect //extends Tw2BaseClass
     SetParameters(options = {})
     {
         let updated = false;
-        for (let key in options)
+        for (const key in options)
         {
             if (options.hasOwnProperty(key) && options[key] !== undefined)
             {
                 const
                     value = options[key],
                     param = this.parameters[key];
+
+                if (Tw2TextureParameter.isValue(value))
+                {
+                    console.log("Use 'Tw2Effect.SetTextures' when setting texture values");
+                }
 
                 if (param)
                 {
@@ -539,10 +578,10 @@ export class Tw2Effect //extends Tw2BaseClass
      * @param {*} [options={}]
      * @returns {Boolean} true if updated
      */
-    SetOverrides(options = {})
+    SetTextureOverrides(options = {})
     {
         let updated = false;
-        for (let key in options)
+        for (const key in options)
         {
             if (options.hasOwnProperty(key) && options[key] !== undefined)
             {
@@ -579,16 +618,19 @@ export class Tw2Effect //extends Tw2BaseClass
      * Gets texture overrides
      * @param {{ string: {}}} [out={}]
      */
-    GetOverrides(out = {})
+    GetTextureOverrides(out = {})
     {
-        for (let key in this.parameters)
+        for (const key in this.parameters)
         {
             if (this.parameters.hasOwnProperty(key))
             {
-                const param = this.parameters[key];
-                if (param && param instanceof Tw2TextureParameter && param.useAllOverrides)
+                if (this.parameters[key] instanceof Tw2TextureParameter)
                 {
-                    out[key] = this.parameters[key].GetOverrides();
+                    const param = this.parameters[key];
+                    if (param && param.useAllOverrides)
+                    {
+                        out[key] = this.parameters[key].GetOverrides();
+                    }
                 }
             }
         }
@@ -596,15 +638,44 @@ export class Tw2Effect //extends Tw2BaseClass
     }
 
     /**
-     * Adds effect parameters automatically
+     * Adds and missing effect parameters and/or resources
      * @returns {Boolean} true if updated
      */
-    PopulateParameters()
+    AutoPopulate()
     {
         this.autoParameter = true;
         return this.BindParameters();
     }
 
+    /**
+     * Removes unsupported effect parameters, resources and samplers
+     * @returns {boolean}
+     */
+    AutoUnPopulate()
+    {
+        const remove = (target, method) =>
+        {
+            for (const key in target)
+            {
+                if (target.hasOwnProperty(key))
+                {
+                    if (!this.shader || !this.shader[method](key))
+                    {
+                        target[key].Destroy();
+                        Reflect.deleteProperty(target, key);
+                        removed = true;
+                    }
+                }
+            }
+        };
+
+        let removed = false;
+        // if(remove(this.constParameters, "HasConstant")) removed = true;
+        if (remove(this.parameters, "HasConstant")) removed = true;
+        if (remove(this.parameters, "HasTexture")) removed = true;
+        if (remove(this.samplerOverrides, "HasSampler")) removed = true;
+        return removed;
+    }
 
     /**
      * Converts an effect file path into one suitable for an effect resource
@@ -657,8 +728,9 @@ export class Tw2Effect //extends Tw2BaseClass
 
             if ("parameters" in values) effect.SetParameters(values.parameters);
             if ("textures" in values) effect.SetTextures(values.textures);
-            if ("overrides" in values) effect.SetOverrides(values.overrides);
-
+            if ("overrides" in values) effect.SetTextureOverrides(values.overrides);
+            //if ("samplerOverrides" in values) effect.SetSamplerOverrides(values.overrides);
+            
             if (effect.name === "" && values.effectFilePath !== "")
             {
                 let path = values.effectFilePath;
@@ -694,4 +766,37 @@ export class Tw2Effect //extends Tw2BaseClass
         "PerObjectPSInt"
     ];
 
+    /**
+     * Black definition
+     * @param {*} r
+     * @returns {*[]}
+     */
+    static black(r)
+    {
+        return [
+            ["effectFilePath", r.path],
+            ["name", r.string],
+            ["parameters", r.fromArray("name", "parameters")],
+            ["resources", r.fromArray("name", "parameters")],
+            ["constParameters", r.fromArray("name", "parameters", r =>
+            {
+                const item = new Tw2Vector4Parameter();
+                item.name = r.ReadStringU16();
+                item._isConstant = true;
+                r.ExpectU16(0, "unknown content");
+                r.ExpectU16(0, "unknown content");
+                r.ExpectU16(0, "unknown content");
+                item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
+                return item;
+            })],
+            ["options", (reader) =>
+            {
+                throw ErrFeatureNotImplemented({feature: "Tw2Effect options"});
+            }],
+            ["samplerOverrides", (reader) =>
+            {
+                throw ErrFeatureNotImplemented({feature: "Tw2Effect samplerOverrides"});
+            }]
+        ];
+    }
 }

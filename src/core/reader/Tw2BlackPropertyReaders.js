@@ -62,11 +62,13 @@ function onString(path)
 /**
  * Reads objects
  * @param {Tw2BlackBinaryReader} reader
- * @param {undefined|Number} [id]
+ * @param {*} [options={}]
  * @returns {*|Object} out
  */
-export function object(reader, id)
+export function object(reader, options = {})
 {
+    let {id = undefined} = options;
+
     const
         context = reader.context,
         givenId = id !== undefined,
@@ -89,11 +91,11 @@ export function object(reader, id)
     const
         objectReader = reader.ReadBinaryReader(reader.ReadU32()),
         type = objectReader.ReadStringU16(),
-        result = context.ConstructType(type);
+        target = context.ConstructType(type);
 
     if (!givenId)
     {
-        reader.references.set(id, result);
+        reader.references.set(id, target);
     }
 
     if (!store.blacks.Has(type))
@@ -105,48 +107,47 @@ export function object(reader, id)
 
     while (!objectReader.AtEnd())
     {
-        let propertyName = objectReader.ReadStringU16();
-
-        if (properties.has(propertyName))
+        let property = objectReader.ReadStringU16();
+        if (properties.has(property))
         {
-            if (!(propertyName in result) && debugEnabled)
-            {
-                console.log(`'${type}' missing property: '${propertyName}'`);
-            }
-
             try
             {
-                result[propertyName] = properties.get(propertyName)(objectReader);
+                const
+                    reader = properties.get(property),
+                    value = reader(objectReader, {target, property});
+
+                // Handlers set their own values
+                if (!reader.handler)
+                {
+                    if (!(property in target) && debugEnabled)
+                    {
+                        console.log(`'${type}' missing property: '${property}'`);
+                    }
+
+                    target[property] = value;
+                }
             }
             catch (err)
             {
-                if (debugEnabled)
-                {
-                    console.dir(result);
-                }
-
-                throw new ErrBinaryReaderReadError({readError: `${propertyName} > ` + err.message});
+                if (debugEnabled) console.dir(target);
+                throw new ErrBinaryReaderReadError(`${property} > ${err.message}`);
             }
         }
         else
         {
-            if (debugEnabled)
-            {
-                console.dir(result);
-            }
-
-            throw new ErrBinaryReaderReadError({readError: `Unknown property "${propertyName}" for "${type}"`});
+            if (debugEnabled) console.dir(target);
+            throw new ErrBinaryReaderReadError({readError: `Unknown property "${property}" for "${type}"`});
         }
     }
 
     objectReader.ExpectEnd("object did not read to end");
 
-    if ("Initialize" in result)
+    if ("Initialize" in target)
     {
-        result.Initialize();
+        target.Initialize();
     }
 
-    return result;
+    return target;
 }
 
 /**
@@ -154,15 +155,14 @@ export function object(reader, id)
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Object} out
  */
-export function plain(reader)
+export function rawObject(reader)
 {
-    return object(reader, null);
+    return object(reader, {id: null});
 }
 
 /**
  * Reads an array
  * @param {Tw2BlackBinaryReader} reader
- * @param {Array} [out=[]]
  * @returns {Array} out
  */
 export function array(reader)
@@ -198,16 +198,24 @@ export function string(reader)
     return onString(reader.ReadStringU16());
 }
 
+/**
+ * Reads enums
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {*}
+ */
 export function enums(reader)
 {
-    const value = reader.ReadStringU16();
-    const entry = value.split(",");
-    const out = {};
+    const
+        value = reader.ReadStringU16(),
+        entry = value.split(","),
+        out = {};
+
     for (let i = 0; i < entry.length; i++)
     {
         const split = entry[i].split("=");
         out[split[0]] = Number(split[1]);
     }
+
     return out;
 }
 
@@ -265,53 +273,61 @@ export function byte(reader)
 /**
  * Reads a vector2
  * @param {Tw2BlackBinaryReader} reader
+ * @param {*} options
  * @returns {vec2}
  */
-export function vector2(reader)
+export function vector2(reader, options)
 {
-    return vec2.fromValues(reader.ReadF32(), reader.ReadF32());
+    const out = options.target[options.property];
+    return vec2.set(out, reader.ReadF32(), reader.ReadF32());
 }
 
 /**
  * Reads a vector3
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec3|TypedArray} [out]
- * @returns {Float32Array} out
+ * @param {*} options
+ * @returns {vec3}
  */
-export function vector3(reader)
+export function vector3(reader, options)
 {
-    return vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+    const out = options.target[options.property];
+    return vec3.set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 
 /**
  * Reads a color
  * @param {Tw2BlackBinaryReader} reader
+ * @param {*} options
  * @returns {vec4} out
  */
-export function color(reader)
+export function color(reader, options)
 {
-    return vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+    const out = options.target[options.property];
+    return vec4.set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 
 /**
  * Reads a vector4
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec4|TypedArray} [out]
+ * @param {*} options
  * @returns {vec4} out
  */
-export function vector4(reader, out = vec4.create())
+export function vector4(reader, options)
 {
-    return vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+    const out = options.target[options.property];
+    return vec4.set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 
 /**
  * Reads a matrix with 16 elements
  * @param {Tw2BlackBinaryReader} reader
+ * @param {*} options
  * @returns {mat4} out
  */
-export function matrix(reader)
+export function matrix(reader, options)
 {
-    return mat4.fromValues(
+    const out = options.target[options.property];
+    return mat4.set(out,
         reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(),
         reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(),
         reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(),
@@ -326,8 +342,9 @@ export function matrix(reader)
  */
 export function indexBuffer(reader)
 {
-    let count = reader.ReadU32();
-    let byteSize = reader.ReadU16();
+    const
+        count = reader.ReadU32(),
+        byteSize = reader.ReadU16();
 
     if (byteSize === 4)
     {
@@ -348,7 +365,7 @@ export function struct(struct)
 {
     return function(reader)
     {
-        return struct.blackStruct(reader);
+        return struct.blackStruct ? struct.blackStruct(reader) : struct(reader);
     };
 }
 
@@ -369,7 +386,7 @@ export function structList(struct)
         for (let i = 0; i < count; i++)
         {
             const structReader = reader.ReadBinaryReader(byteSize);
-            result[i] = struct.blackStruct(structReader);
+            result[i] = struct.blackStruct ? struct.blackStruct(structReader) : struct(structReader);
             structReader.ExpectEnd("struct read to end");
         }
 
@@ -377,19 +394,45 @@ export function structList(struct)
     };
 }
 
-export function plainFromArray(key)
+/**
+ * Gets a plain object from an array or struct list
+ * @param {String} key
+ * @param {String} [targetObjectProperty]
+ * @param {Function} [struct]
+ * @returns {fromArray}
+ */
+export function fromArray(key, targetObjectProperty, struct)
 {
-    return function(reader)
+    function fromArray(reader, options)
     {
         const
-            arr = array(reader),
-            result = {};
+            out = options.target[targetObjectProperty || options.property],
+            arr = struct ? structList(struct)(reader) : array(reader);
+
+        if (!key)
+        {
+            throw new Error("Invalid property");
+        }
+
+        if (!out)
+        {
+            throw new Error("Invalid target");
+        }
 
         for (let i = 0; i < arr.length; i++)
         {
-            result[arr[i].key] = arr[i];
-        }
+            const prop = arr[i][key];
 
-        return result;
-    };
+            if (prop === undefined)
+            {
+                throw new Error("Invalid property key");
+            }
+
+            out[prop] = arr[i];
+        }
+    }
+
+    fromArray.handler = true;
+
+    return fromArray;
 }
