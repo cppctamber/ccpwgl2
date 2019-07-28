@@ -113,9 +113,9 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
     {
         return [
             ["name", r.string],
-            ["pitch", r.object],
-            ["roll", r.object],
-            ["yaw", r.object]
+            ["pitch", r.plain],
+            ["roll", r.plain],
+            ["yaw", r.plain]
         ];
     }
 

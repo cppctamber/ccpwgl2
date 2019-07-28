@@ -102,10 +102,10 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     {
         return [
             ["name", r.string],
-            ["r", r.object],
-            ["g", r.object],
-            ["b", r.object],
-            ["a", r.object]
+            ["r", r.plain],
+            ["g", r.plain],
+            ["b", r.plain],
+            ["a", r.plain]
         ];
     }
 
