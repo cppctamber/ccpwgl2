@@ -62,15 +62,15 @@ function onString(path)
 /**
  * Reads objects
  * @param {Tw2BlackBinaryReader} reader
- * @param {undefined|Object} [out]
  * @param {undefined|Number} [id]
  * @returns {*|Object} out
  */
-export function object(reader, out, id)
+export function object(reader, id)
 {
-    let context = reader.context;
-    const givenId = id !== undefined;
-    const debugEnabled = store.classes.constructor.DEBUG_ENABLED;
+    const
+        context = reader.context,
+        givenId = id !== undefined,
+        debugEnabled = store.classes.constructor.DEBUG_ENABLED;
 
     if (!givenId)
     {
@@ -86,17 +86,14 @@ export function object(reader, out, id)
         }
     }
 
-    let objectReader = reader.ReadBinaryReader(reader.ReadU32());
-    let type = objectReader.ReadStringU16();
-
-    if (!out)
-    {
-        out = context.ConstructType(type);
-    }
+    const
+        objectReader = reader.ReadBinaryReader(reader.ReadU32()),
+        type = objectReader.ReadStringU16(),
+        result = context.ConstructType(type);
 
     if (!givenId)
     {
-        reader.references.set(id, out);
+        reader.references.set(id, result);
     }
 
     if (!store.blacks.Has(type))
@@ -112,37 +109,20 @@ export function object(reader, out, id)
 
         if (properties.has(propertyName))
         {
+            if (!(propertyName in result) && debugEnabled)
+            {
+                console.log(`'${type}' missing property: '${propertyName}'`);
+            }
+
             try
             {
-                const
-                    r = properties.get(propertyName),
-                    result = r(objectReader, out[propertyName], out);
-
-                if (result !== undefined)
-                {
-                    // Debug
-                    if (!(propertyName in out))
-                    {
-                        if (debugEnabled)
-                        {
-                            console.log(`'${type}' missing property: '${propertyName}'`);
-                        }
-                    }
-
-                    out[propertyName] = result;
-                }
-                // Allow returning undefined from struct and struct list only
-                else if (r !== struct && r !== structList)
-                {
-                    throw new Error(`'${type}' property '${propertyName} reader returned undefined`);
-                }
-
+                result[propertyName] = properties.get(propertyName)(objectReader);
             }
             catch (err)
             {
                 if (debugEnabled)
                 {
-                    console.dir(out);
+                    console.dir(result);
                 }
 
                 throw new ErrBinaryReaderReadError({readError: `${propertyName} > ` + err.message});
@@ -152,7 +132,7 @@ export function object(reader, out, id)
         {
             if (debugEnabled)
             {
-                console.dir(out);
+                console.dir(result);
             }
 
             throw new ErrBinaryReaderReadError({readError: `Unknown property "${propertyName}" for "${type}"`});
@@ -161,23 +141,22 @@ export function object(reader, out, id)
 
     objectReader.ExpectEnd("object did not read to end");
 
-    if ("Initialize" in out)
+    if ("Initialize" in result)
     {
-        out.Initialize();
+        result.Initialize();
     }
 
-    return out;
+    return result;
 }
 
 /**
  * Reads a plain object
  * @param {Tw2BlackBinaryReader} reader
- * @param {Object} [out={}]
  * @returns {Object} out
  */
-export function plain(reader, out = {})
+export function plain(reader)
 {
-    return object(reader, out, null);
+    return object(reader, null);
 }
 
 /**
@@ -186,14 +165,17 @@ export function plain(reader, out = {})
  * @param {Array} [out=[]]
  * @returns {Array} out
  */
-export function array(reader, out = [])
+export function array(reader)
 {
-    const count = reader.ReadU32();
+    const
+        result = [],
+        count = reader.ReadU32();
+
     for (let i = 0; i < count; i++)
     {
-        out[i] = object(reader);
+        result[i] = object(reader);
     }
-    return out;
+    return result;
 }
 
 /**
@@ -283,12 +265,11 @@ export function byte(reader)
 /**
  * Reads a vector2
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec2|TypedArray} [out]
  * @returns {vec2}
  */
-export function vector2(reader, out = vec2.create())
+export function vector2(reader)
 {
-    return vec2.set(out, reader.ReadF32(), reader.ReadF32());
+    return vec2.fromValues(reader.ReadF32(), reader.ReadF32());
 }
 
 /**
@@ -297,20 +278,19 @@ export function vector2(reader, out = vec2.create())
  * @param {vec3|TypedArray} [out]
  * @returns {Float32Array} out
  */
-export function vector3(reader, out = vec3.create())
+export function vector3(reader)
 {
-    return vec3.set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+    return vec3.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 
 /**
  * Reads a color
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec4|TypedArray} [out]
  * @returns {vec4} out
  */
-export function color(reader, out = vec4.create())
+export function color(reader)
 {
-    return vec4.set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+    return vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 
 /**
@@ -321,23 +301,21 @@ export function color(reader, out = vec4.create())
  */
 export function vector4(reader, out = vec4.create())
 {
-    return vec4.set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+    return vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 
 /**
  * Reads a matrix with 16 elements
  * @param {Tw2BlackBinaryReader} reader
- * @param {mat4|TypedArray} [out]
  * @returns {mat4} out
  */
-export function matrix(reader, out = mat4.create())
+export function matrix(reader)
 {
-    const buffer = new ArrayBuffer(64);
-    return mat4.set(out,
-        ...vector4(reader, new Float32Array(buffer, 0, 4)),
-        ...vector4(reader, new Float32Array(buffer, 16, 4)),
-        ...vector4(reader, new Float32Array(buffer, 32, 4)),
-        ...vector4(reader, new Float32Array(buffer, 48, 4))
+    return mat4.fromValues(
+        reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(),
+        reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(),
+        reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(),
+        reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32()
     );
 }
 
@@ -364,62 +342,54 @@ export function indexBuffer(reader)
 /**
  * Reads a struct
  * @param {*} struct
- * @param {Boolean} [allowUndefined]
  * @returns {Function}
  */
-export function struct(struct, allowUndefined)
+export function struct(struct)
 {
-    return function(reader, out, parent)
+    return function(reader)
     {
-        const
-            blackStruct = struct.blackStruct || struct,
-            result = blackStruct(reader, out, parent);
-
-        if (result === undefined && !allowUndefined)
-        {
-            throw new Error("Invalid reader response: undefined");
-        }
-
-        return result;
+        return struct.blackStruct(reader);
     };
 }
 
 /**
  * Reads a struct list
  * @param {*} struct
- * @param {Boolean} [allowUndefined]
  * @returns {Function}
  */
-export function structList(struct, allowUndefined)
+export function structList(struct)
 {
-    return function(reader, out, parent)
+    return function(reader)
     {
         let
             count = reader.ReadU32(),
             byteSize = reader.ReadU16(),
-            array;
+            result = [];
 
         for (let i = 0; i < count; i++)
         {
-            const
-                structReader = reader.ReadBinaryReader(byteSize),
-                blackStruct = struct.blackStruct || struct,
-                result = blackStruct(structReader, out, parent);
-
-            if (result)
-            {
-                array = array || [];
-                array.push(result);
-            }
-            else if (!allowUndefined)
-            {
-                throw new Error("Invalid reader response: undefined");
-            }
-
+            const structReader = reader.ReadBinaryReader(byteSize);
+            result[i] = struct.blackStruct(structReader);
             structReader.ExpectEnd("struct read to end");
         }
 
-        return array;
+        return result;
     };
 }
 
+export function plainFromArray(key)
+{
+    return function(reader)
+    {
+        const
+            arr = array(reader),
+            result = {};
+
+        for (let i = 0; i < arr.length; i++)
+        {
+            result[arr[i].key] = arr[i];
+        }
+
+        return result;
+    };
+}
