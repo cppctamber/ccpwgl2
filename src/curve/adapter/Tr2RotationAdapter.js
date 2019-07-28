@@ -11,6 +11,17 @@ export class Tr2RotationAdapter extends Tw2CurveAdapter
 
     value = vec4.create();
 
+    /**
+     * The curve's current value property
+     * @type {?String}
+     */
+    static valueProperty = "value";
+
+    /**
+     * The sequencer's output dimension
+     * @type {number}
+     */
+    static outputDimension = 4;
 
     /**
      * Black definition

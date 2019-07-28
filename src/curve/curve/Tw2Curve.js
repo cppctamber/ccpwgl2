@@ -1,5 +1,6 @@
 /* eslint no-unused-vars:0 */
 import {vec3, vec4, quat, Tw2BaseClass} from "../../global";
+import {ErrFeatureNotImplemented} from "../../core";
 
 /**
  * Tw2CurveKey base class
@@ -50,7 +51,7 @@ Tw2Curve.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
      */
     Sort()
     {
-
+        throw new ErrFeatureNotImplemented({feature: "GetValueAt"});
     },
 
     /**
@@ -59,7 +60,7 @@ Tw2Curve.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
      */
     GetLength()
     {
-        return 0;
+        throw new ErrFeatureNotImplemented({feature: "GetValueAt"});
     },
 
     /**
@@ -68,7 +69,7 @@ Tw2Curve.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
      */
     UpdateValue(time)
     {
-
+        throw new ErrFeatureNotImplemented({feature: "GetValueAt"});
     }
 
 });
@@ -212,6 +213,8 @@ Tw2Curve.Type = {
     CURVE_NO_KEYS: 5,
     SEQUENCER: 100,
     SEQUENCER2: 101,
+    EXPRESSION: 200,
+    ADAPTER: 300
 };
 
 /**

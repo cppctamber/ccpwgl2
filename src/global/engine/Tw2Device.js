@@ -903,12 +903,12 @@ export class Tw2Device extends Tw2EventEmitter
                     break;
 
                 /*
-        case CMP_NOTEQUAL:
-            var alphaTestFunc = 1;
-            var invertedAlphaTest = 1;
-            var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
-            break;
-            */
+    case CMP_NOTEQUAL:
+        var alphaTestFunc = 1;
+        var invertedAlphaTest = 1;
+        var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
+        break;
+        */
 
                 case CMP_GREATEREQUAL:
                     alphaTestFunc = 0;

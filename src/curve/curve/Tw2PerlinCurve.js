@@ -1,5 +1,6 @@
 import {Tw2Curve} from "./Tw2Curve";
 import {noise} from "../../global/math";
+import {ErrFeatureNotImplemented} from "../../core";
 
 /**
  * Perlin curve
@@ -23,6 +24,14 @@ export class Tw2PerlinCurve extends Tw2Curve
     scale = 0;
     speed = 0;
     value = 0;
+
+    /**
+     * Sorts the curve
+     */
+    Sort()
+    {
+        // No operation
+    }
 
     /**
      * Updates the current value at the given time
