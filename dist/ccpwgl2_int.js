@@ -18898,7 +18898,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18951,8 +18951,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./mesh */ "./core/mesh/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _mesh__WEBPACK_IMPORTED_MODULE_4__["Tr2MeshLod"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_4__["Tr2Effect"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"]; });
 
@@ -19302,101 +19300,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./core/mesh/Tr2Effect.js":
-/*!********************************!*\
-  !*** ./core/mesh/Tr2Effect.js ***!
-  \********************************/
-/*! exports provided: Tr2Effect */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return Tr2Effect; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _parameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parameter */ "./core/parameter/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-
-class Tw2ConstantParameter {
-  /**
-   * Black reader
-   * @param {Tw2BlackBinaryReader} r
-   * @returns {Tw2Vector4Parameter}
-   */
-  static blackStruct(r) {
-    const item = new _parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]();
-    item.name = r.ReadStringU16();
-    r.ExpectU16(0, "unknown content");
-    r.ExpectU16(0, "unknown content");
-    r.ExpectU16(0, "unknown content");
-    item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
-    return item;
-  }
-
-}
-/**
- * Tr2Effect
- * TODO: Implement
- * TODO: Replace constant parameter with Tw2Vector4Parameter?
- *
- * @property {Array<Parameter>} constParameters -
- * @property {String} effectFilePath            -
- * @property {Array} options                    -
- * @property {Array.<Parameter>} parameters     -
- * @property {Array.<Parameter>} resources      -
- * @property {Array} samplerOverrides           -
- */
-
-
-class Tr2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "constParameters", []);
-
-    _defineProperty(this, "effectFilePath", "");
-
-    _defineProperty(this, "options", []);
-
-    _defineProperty(this, "parameters", []);
-
-    _defineProperty(this, "resources", []);
-
-    _defineProperty(this, "samplerOverrides", []);
-  }
-
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
-  static black(r) {
-    return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.array], ["resources", r.array], ["constParameters", r.structList(Tw2ConstantParameter)], ["options", reader => {
-      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"])({
-        feature: "Tr2Effect options"
-      });
-    }], ["samplerOverrides", reader => {
-      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"])({
-        feature: "Tr2Effect samplerOverrides"
-      });
-    }]];
-  }
-  /**
-   * Identifies that the class is in staging
-   * @property {null|Number}
-   */
-
-
-}
-
-_defineProperty(Tr2Effect, "__isStaging", 4);
-
-/***/ }),
-
 /***/ "./core/mesh/Tr2MeshLod.js":
 /*!*********************************!*\
   !*** ./core/mesh/Tr2MeshLod.js ***!
@@ -19647,8 +19550,8 @@ _defineProperty(Tr2MeshLod, "__isStaging", 3);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return Tw2Effect; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
-/* harmony import */ var _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/class/Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
+/* harmony import */ var _parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../parameter */ "./core/parameter/index.js");
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -19657,46 +19560,61 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * Tw2Effect
  *
- * @property {String|Number} _id
  * @property {String} name
- * @property {String} effectFilePath
- * @property {Tw2EffectRes|null} effectRes
- * @property {Object.<string, Tw2Parameter>} parameters
- * @property {Object.<string, Array>} techniques
- * @property {Object.<string, string>} options
- * @property {Tw2Shader|null} shader
- * @property {Array} samplerOverrides
  * @property {Boolean} autoParameter
- * @class
+ * @property {String} effectFilePath
+ * @property {Tw2EffectRes} effectRes
+ * @property {Object.<string, string>} options
+ * @property {Object.<string, Tw2Parameter>} parameters
+ * @property {Object.<string, Tw2TextureParameter>} resources
+ * @property {Object.<string, Tw2SamplerOverride>} samplerOverrides
+ * @property {Tw2Shader|null} shader
+ * @property {Object.<string, Array>} techniques
  */
 
-class Tw2Effect //extends Tw2BaseClass
-{
+class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor() {
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    super(...arguments);
 
     _defineProperty(this, "name", "");
 
     _defineProperty(this, "effectFilePath", "");
 
-    _defineProperty(this, "effectRes", null);
+    _defineProperty(this, "options", {});
 
     _defineProperty(this, "parameters", {});
 
-    _defineProperty(this, "techniques", []);
+    _defineProperty(this, "samplerOverrides", {});
 
-    _defineProperty(this, "samplerOverrides", []);
+    _defineProperty(this, "techniques", {});
 
     _defineProperty(this, "autoParameter", false);
 
-    _defineProperty(this, "options", {});
+    _defineProperty(this, "effectRes", null);
 
     _defineProperty(this, "shader", null);
   }
 
   /**
+   * Temporary until we know what const parameters are supposed to do
+   * @returns {*}
+   */
+  get constParameters() {
+    const out = {};
+
+    for (let key in this.parameters) {
+      if (this.parameters.hasOwnProperty(key) && this.parameters[key]._isConstant) {
+        out[key] = this.parameters[key];
+      }
+    }
+
+    return out;
+  }
+  /**
    * Initializes the Tw2Effect
    */
+
+
   Initialize() {
     if (this.effectFilePath !== "") {
       this.effectFilePath = this.effectFilePath.toLowerCase();
@@ -19780,10 +19698,10 @@ class Tw2Effect //extends Tw2BaseClass
             }
           }
         }
+
+        Reflect.deleteProperty(this.techniques, t);
       }
     }
-
-    this.techniques = {};
   }
   /**
    * Binds parameters
@@ -19890,9 +19808,9 @@ class Tw2Effect //extends Tw2BaseClass
               } else if (_global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Has(name)) {
                 param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get(name);
               } else if (stageRes.textures[k].isAutoregister) {
-                param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
+                param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(name, undefined, _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
               } else if (this.autoParameter) {
-                param = this.parameters[name] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](name);
+                param = this.parameters[name] = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](name);
               } else {
                 continue;
               }
@@ -19931,6 +19849,10 @@ class Tw2Effect //extends Tw2BaseClass
 
     if (_global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]) {
       _global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]["OnEffectChanged"](this);
+    }
+
+    if (this.autoParameter) {
+      this.AutoUnPopulate();
     }
 
     this.autoParameter = false;
@@ -20039,12 +19961,14 @@ class Tw2Effect //extends Tw2BaseClass
   GetTextures() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    for (let key in this.parameters) {
-      if (this.parameters.hasOwnProperty(key) && this.parameters[key] instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-        let resourcePath = this.parameters[key].GetValue();
+    for (const key in this.parameters) {
+      if (this.parameters.hasOwnProperty(key)) {
+        if (this.parameters[key] instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
+          const resourcePath = this.parameters[key].GetValue();
 
-        if (resourcePath) {
-          out[key] = resourcePath;
+          if (resourcePath) {
+            out[key] = resourcePath;
+          }
         }
       }
     }
@@ -20062,19 +19986,19 @@ class Tw2Effect //extends Tw2BaseClass
     let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     let updated = false;
 
-    for (let key in options) {
+    for (const key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
         const value = options[key],
               param = this.parameters[key];
 
-        if (_parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].isValue(value)) {
+        if (param instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
           if (param) {
             if (!param.EqualsValue(value)) {
               param.SetValue(value);
               updated = true;
             }
           } else {
-            this.parameters[key] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](key, value);
+            this.parameters[key] = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](key, value);
             updated = true;
           }
         }
@@ -20094,8 +20018,12 @@ class Tw2Effect //extends Tw2BaseClass
   GetParameters() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    for (let key in this.parameters) {
-      if (this.parameters.hasOwnProperty(key) && !(this.parameters[key] instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"])) {
+    for (const key in this.parameters) {
+      if (this.parameters.hasOwnProperty(key)) {
+        if (this.parameters[key] instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
+          continue;
+        }
+
         out[key] = this.parameters[key].GetValue(true);
       }
     }
@@ -20113,10 +20041,14 @@ class Tw2Effect //extends Tw2BaseClass
     let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     let updated = false;
 
-    for (let key in options) {
+    for (const key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
         const value = options[key],
               param = this.parameters[key];
+
+        if (_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].isValue(value)) {
+          console.log("Use 'Tw2Effect.SetTextures' when setting texture values");
+        }
 
         if (param) {
           if (param.constructor.isValue(value) && !param.EqualsValue(value)) {
@@ -20143,20 +20075,20 @@ class Tw2Effect //extends Tw2BaseClass
    */
 
 
-  SetOverrides() {
+  SetTextureOverrides() {
     let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     let updated = false;
 
-    for (let key in options) {
+    for (const key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
         const param = this.parameters[key];
 
-        if (param && param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
+        if (param && param instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
           let doUpdate = false;
           const overrides = options[key];
 
           for (let prop in overrides) {
-            if (overrides.hasOwnProperty(prop) && _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].overrideProperties.includes(prop)) {
+            if (overrides.hasOwnProperty(prop) && _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].overrideProperties.includes(prop)) {
               if (overrides[prop] !== param[prop]) {
                 doUpdate = true;
                 break;
@@ -20180,15 +20112,17 @@ class Tw2Effect //extends Tw2BaseClass
    */
 
 
-  GetOverrides() {
+  GetTextureOverrides() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    for (let key in this.parameters) {
+    for (const key in this.parameters) {
       if (this.parameters.hasOwnProperty(key)) {
-        const param = this.parameters[key];
+        if (this.parameters[key] instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
+          const param = this.parameters[key];
 
-        if (param && param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"] && param.useAllOverrides) {
-          out[key] = this.parameters[key].GetOverrides();
+          if (param && param.useAllOverrides) {
+            out[key] = this.parameters[key].GetOverrides();
+          }
         }
       }
     }
@@ -20196,14 +20130,40 @@ class Tw2Effect //extends Tw2BaseClass
     return out;
   }
   /**
-   * Adds effect parameters automatically
+   * Adds and missing effect parameters and/or resources
    * @returns {Boolean} true if updated
    */
 
 
-  PopulateParameters() {
+  AutoPopulate() {
     this.autoParameter = true;
     return this.BindParameters();
+  }
+  /**
+   * Removes unsupported effect parameters, resources and samplers
+   * @returns {boolean}
+   */
+
+
+  AutoUnPopulate() {
+    const remove = (target, method) => {
+      for (const key in target) {
+        if (target.hasOwnProperty(key)) {
+          if (!this.shader || !this.shader[method](key)) {
+            target[key].Destroy();
+            Reflect.deleteProperty(target, key);
+            removed = true;
+          }
+        }
+      }
+    };
+
+    let removed = false; // if(remove(this.constParameters, "HasConstant")) removed = true;
+
+    if (remove(this.parameters, "HasConstant")) removed = true;
+    if (remove(this.parameters, "HasTexture")) removed = true;
+    if (remove(this.samplerOverrides, "HasSampler")) removed = true;
+    return removed;
   }
   /**
    * Converts an effect file path into one suitable for an effect resource
@@ -20255,7 +20215,7 @@ class Tw2Effect //extends Tw2BaseClass
       _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(effect, values, ["name", "effectFilePath", "display", "autoParameter"]);
       if ("parameters" in values) effect.SetParameters(values.parameters);
       if ("textures" in values) effect.SetTextures(values.textures);
-      if ("overrides" in values) effect.SetOverrides(values.overrides);
+      if ("overrides" in values) effect.SetTextureOverrides(values.overrides); //if ("samplerOverrides" in values) effect.SetSamplerOverrides(values.overrides);
 
       if (effect.name === "" && values.effectFilePath !== "") {
         let path = values.effectFilePath;
@@ -20278,6 +20238,32 @@ class Tw2Effect //extends Tw2BaseClass
    * @type {String[]}
    */
 
+
+  /**
+   * Black definition
+   * @param {*} r
+   * @returns {*[]}
+   */
+  static black(r) {
+    return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.fromArray("name", "parameters")], ["resources", r.fromArray("name", "parameters")], ["constParameters", r.fromArray("name", "parameters", r => {
+      const item = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]();
+      item.name = r.ReadStringU16();
+      item._isConstant = true;
+      r.ExpectU16(0, "unknown content");
+      r.ExpectU16(0, "unknown content");
+      r.ExpectU16(0, "unknown content");
+      item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
+      return item;
+    })], ["options", reader => {
+      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"])({
+        feature: "Tw2Effect options"
+      });
+    }], ["samplerOverrides", reader => {
+      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"])({
+        feature: "Tw2Effect samplerOverrides"
+      });
+    }]];
+  }
 
 }
 
@@ -21050,7 +21036,7 @@ _defineProperty(Tw2MeshLineArea, "batchType", _batch__WEBPACK_IMPORTED_MODULE_0_
 /*!****************************!*\
   !*** ./core/mesh/index.js ***!
   \****************************/
-/*! exports provided: Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea */
+/*! exports provided: Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21058,24 +21044,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2MeshLod */ "./core/mesh/Tr2MeshLod.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_0__["Tr2MeshLod"]; });
 
-/* harmony import */ var _Tr2Effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2Effect */ "./core/mesh/Tr2Effect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _Tr2Effect__WEBPACK_IMPORTED_MODULE_1__["Tr2Effect"]; });
+/* harmony import */ var _Tw2Effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Effect */ "./core/mesh/Tw2Effect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _Tw2Effect__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]; });
 
-/* harmony import */ var _Tw2Effect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Effect */ "./core/mesh/Tw2Effect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _Tw2Effect__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]; });
+/* harmony import */ var _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2InstancedMesh */ "./core/mesh/Tw2InstancedMesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_2__["Tw2InstancedMesh"]; });
 
-/* harmony import */ var _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2InstancedMesh */ "./core/mesh/Tw2InstancedMesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_3__["Tw2InstancedMesh"]; });
+/* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _Tw2Mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]; });
 
-/* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _Tw2Mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Mesh"]; });
+/* harmony import */ var _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2MeshArea */ "./core/mesh/Tw2MeshArea.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_4__["Tw2MeshArea"]; });
 
-/* harmony import */ var _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2MeshArea */ "./core/mesh/Tw2MeshArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshArea"]; });
-
-/* harmony import */ var _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2MeshLineArea */ "./core/mesh/Tw2MeshLineArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_6__["Tw2MeshLineArea"]; });
-
+/* harmony import */ var _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2MeshLineArea */ "./core/mesh/Tw2MeshLineArea.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshLineArea"]; });
 
 
 
@@ -24968,13 +24950,13 @@ _defineProperty(Tw2BlackBinaryReader, "wstringDecoder", new TextDecoder("utf-16l
 /*!************************************************!*\
   !*** ./core/reader/Tw2BlackPropertyReaders.js ***!
   \************************************************/
-/*! exports provided: object, plain, array, boolean, string, enums, path, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, plainFromArray */
+/*! exports provided: object, rawObject, array, boolean, string, enums, path, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, fromArray */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rawObject", function() { return rawObject; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "array", function() { return array; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
@@ -24992,7 +24974,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return indexBuffer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "struct", function() { return struct; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "structList", function() { return structList; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plainFromArray", function() { return plainFromArray; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromArray", function() { return fromArray; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 
@@ -25057,12 +25039,15 @@ function onString(path) {
 /**
  * Reads objects
  * @param {Tw2BlackBinaryReader} reader
- * @param {undefined|Number} [id]
+ * @param {*} [options={}]
  * @returns {*|Object} out
  */
 
 
-function object(reader, id) {
+function object(reader) {
+  let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let _options$id = options.id,
+      id = _options$id === void 0 ? undefined : _options$id;
   const context = reader.context,
         givenId = id !== undefined,
         debugEnabled = _global__WEBPACK_IMPORTED_MODULE_0__["store"].classes.constructor.DEBUG_ENABLED;
@@ -25079,10 +25064,10 @@ function object(reader, id) {
 
   const objectReader = reader.ReadBinaryReader(reader.ReadU32()),
         type = objectReader.ReadStringU16(),
-        result = context.ConstructType(type);
+        target = context.ConstructType(type);
 
   if (!givenId) {
-    reader.references.set(id, result);
+    reader.references.set(id, target);
   }
 
   if (!_global__WEBPACK_IMPORTED_MODULE_0__["store"].blacks.Has(type)) {
@@ -25094,42 +25079,42 @@ function object(reader, id) {
   let properties = _global__WEBPACK_IMPORTED_MODULE_0__["store"].blacks.Get(type);
 
   while (!objectReader.AtEnd()) {
-    let propertyName = objectReader.ReadStringU16();
+    let property = objectReader.ReadStringU16();
 
-    if (properties.has(propertyName)) {
-      if (!(propertyName in result) && debugEnabled) {
-        console.log("'".concat(type, "' missing property: '").concat(propertyName, "'"));
-      }
-
+    if (properties.has(property)) {
       try {
-        result[propertyName] = properties.get(propertyName)(objectReader);
-      } catch (err) {
-        if (debugEnabled) {
-          console.dir(result);
-        }
+        const reader = properties.get(property),
+              value = reader(objectReader, {
+          target,
+          property
+        }); // Handlers set their own values
 
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
-          readError: "".concat(propertyName, " > ") + err.message
-        });
+        if (!reader.handler) {
+          if (!(property in target) && debugEnabled) {
+            console.log("'".concat(type, "' missing property: '").concat(property, "'"));
+          }
+
+          target[property] = value;
+        }
+      } catch (err) {
+        if (debugEnabled) console.dir(target);
+        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]("".concat(property, " > ").concat(err.message));
       }
     } else {
-      if (debugEnabled) {
-        console.dir(result);
-      }
-
+      if (debugEnabled) console.dir(target);
       throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
-        readError: "Unknown property \"".concat(propertyName, "\" for \"").concat(type, "\"")
+        readError: "Unknown property \"".concat(property, "\" for \"").concat(type, "\"")
       });
     }
   }
 
   objectReader.ExpectEnd("object did not read to end");
 
-  if ("Initialize" in result) {
-    result.Initialize();
+  if ("Initialize" in target) {
+    target.Initialize();
   }
 
-  return result;
+  return target;
 }
 /**
  * Reads a plain object
@@ -25137,13 +25122,14 @@ function object(reader, id) {
  * @returns {Object} out
  */
 
-function plain(reader) {
-  return object(reader, null);
+function rawObject(reader) {
+  return object(reader, {
+    id: null
+  });
 }
 /**
  * Reads an array
  * @param {Tw2BlackBinaryReader} reader
- * @param {Array} [out=[]]
  * @returns {Array} out
  */
 
@@ -25175,10 +25161,16 @@ function boolean(reader) {
 function string(reader) {
   return onString(reader.ReadStringU16());
 }
+/**
+ * Reads enums
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {*}
+ */
+
 function enums(reader) {
-  const value = reader.ReadStringU16();
-  const entry = value.split(",");
-  const out = {};
+  const value = reader.ReadStringU16(),
+        entry = value.split(","),
+        out = {};
 
   for (let i = 0; i < entry.length; i++) {
     const split = entry[i].split("=");
@@ -25235,50 +25227,57 @@ function byte(reader) {
 /**
  * Reads a vector2
  * @param {Tw2BlackBinaryReader} reader
+ * @param {*} options
  * @returns {vec2}
  */
 
-function vector2(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(reader.ReadF32(), reader.ReadF32());
+function vector2(reader, options) {
+  const out = options.target[options.property];
+  return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].set(out, reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a vector3
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec3|TypedArray} [out]
- * @returns {Float32Array} out
+ * @param {*} options
+ * @returns {vec3}
  */
 
-function vector3(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+function vector3(reader, options) {
+  const out = options.target[options.property];
+  return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a color
  * @param {Tw2BlackBinaryReader} reader
+ * @param {*} options
  * @returns {vec4} out
  */
 
-function color(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+function color(reader, options) {
+  const out = options.target[options.property];
+  return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a vector4
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec4|TypedArray} [out]
+ * @param {*} options
  * @returns {vec4} out
  */
 
-function vector4(reader) {
-  let out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+function vector4(reader, options) {
+  const out = options.target[options.property];
+  return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a matrix with 16 elements
  * @param {Tw2BlackBinaryReader} reader
+ * @param {*} options
  * @returns {mat4} out
  */
 
-function matrix(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+function matrix(reader, options) {
+  const out = options.target[options.property];
+  return _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].set(out, reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads an index buffer
@@ -25287,8 +25286,8 @@ function matrix(reader) {
  */
 
 function indexBuffer(reader) {
-  let count = reader.ReadU32();
-  let byteSize = reader.ReadU16();
+  const count = reader.ReadU32(),
+        byteSize = reader.ReadU16();
 
   if (byteSize === 4) {
     return reader.ReadU32Array(count);
@@ -25304,7 +25303,7 @@ function indexBuffer(reader) {
 
 function struct(struct) {
   return function (reader) {
-    return struct.blackStruct(reader);
+    return struct.blackStruct ? struct.blackStruct(reader) : struct(reader);
   };
 }
 /**
@@ -25321,24 +25320,47 @@ function structList(struct) {
 
     for (let i = 0; i < count; i++) {
       const structReader = reader.ReadBinaryReader(byteSize);
-      result[i] = struct.blackStruct(structReader);
+      result[i] = struct.blackStruct ? struct.blackStruct(structReader) : struct(structReader);
       structReader.ExpectEnd("struct read to end");
     }
 
     return result;
   };
 }
-function plainFromArray(key) {
-  return function (reader) {
-    const arr = array(reader),
-          result = {};
+/**
+ * Gets a plain object from an array or struct list
+ * @param {String} key
+ * @param {String} [targetObjectProperty]
+ * @param {Function} [struct]
+ * @returns {fromArray}
+ */
 
-    for (let i = 0; i < arr.length; i++) {
-      result[arr[i].key] = arr[i];
+function fromArray(key, targetObjectProperty, struct) {
+  function fromArray(reader, options) {
+    const out = options.target[targetObjectProperty || options.property],
+          arr = struct ? structList(struct)(reader) : array(reader);
+
+    if (!key) {
+      throw new Error("Invalid property");
     }
 
-    return result;
-  };
+    if (!out) {
+      throw new Error("Invalid target");
+    }
+
+    for (let i = 0; i < arr.length; i++) {
+      const prop = arr[i][key];
+
+      if (prop === undefined) {
+        throw new Error("Invalid property key");
+      }
+
+      out[prop] = arr[i];
+    }
+  }
+
+  fromArray.handler = true;
+  return fromArray;
 }
 
 /***/ }),
@@ -29117,10 +29139,10 @@ __webpack_require__.r(__webpack_exports__);
 /*!********************************************!*\
   !*** ./core/resource/shaderOverrides.json ***!
   \********************************************/
-/*! exports provided: blinkinglightspool, boostervolumetric, fxarmorimpactv5, default */
+/*! exports provided: blinkinglightspool, boostervolumetric, fxarmorimpactv5, flarequad, default */
 /***/ (function(module) {
 
-module.exports = {"blinkinglightspool":{"r0.xy=r0.xx*c[0+a0.x].xy;":"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}","texcoord=r3.zzww*c[0+a0.x].zwzz;":"if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}"},"boostervolumetric":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<12;++i){"},"fxarmorimpactv5":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<255;++i){"}};
+module.exports = {"blinkinglightspool":{"r0.xy=r0.xx*c[0+a0.x].xy;":"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}","texcoord=r3.zzww*c[0+a0.x].zwzz;":"if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}"},"boostervolumetric":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<12;++i){"},"fxarmorimpactv5":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<255;++i){"},"flarequad":{"r1.xyz=r0.zzw*c[0+a0.x].xyx;":"if(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else if (a0.x==3){r1.xyz=r0.zzw*c[3].xyx;}else if(a0.x==4){r1.xyz=r0.zzw*c[4].xyx;}else if(a0.x==5){r1.xyz=r0.zzw*c[5].xyx;}","texcoord.xyw=r0.zzw*c[0+a0.x].zwz;":"if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}","r0.x=saturate(sqrt(abs(r0.x)));":"r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);"}};
 
 /***/ }),
 

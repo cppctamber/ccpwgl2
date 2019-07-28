@@ -20,7 +20,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     a = null;
     currentValue = vec4.fromValues(0, 0, 0, 0);
 
-    
+
     /**
      * Sorts the sequencer
      */

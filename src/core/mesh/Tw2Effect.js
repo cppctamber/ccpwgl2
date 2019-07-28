@@ -522,7 +522,7 @@ export class Tw2Effect extends Tw2BaseClass
                 {
                     continue;
                 }
-                
+
                 out[key] = this.parameters[key].GetValue(true);
             }
         }
@@ -730,7 +730,7 @@ export class Tw2Effect extends Tw2BaseClass
             if ("textures" in values) effect.SetTextures(values.textures);
             if ("overrides" in values) effect.SetTextureOverrides(values.overrides);
             //if ("samplerOverrides" in values) effect.SetSamplerOverrides(values.overrides);
-            
+
             if (effect.name === "" && values.effectFilePath !== "")
             {
                 let path = values.effectFilePath;
