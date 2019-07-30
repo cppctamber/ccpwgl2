@@ -19584,6 +19584,8 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
     _defineProperty(this, "parameters", {});
 
+    _defineProperty(this, "resources", {});
+
     _defineProperty(this, "samplerOverrides", {});
 
     _defineProperty(this, "techniques", {});
@@ -19621,6 +19623,14 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
       this.effectRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
       this.effectRes.RegisterNotification(this);
+    } // Migrate textures from older .red files to this.resources
+
+
+    for (const key in this.parameters) {
+      if (this.parameters.hasOwnProperty(key) && this.parameters[key] instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
+        this.resources[key] = this.parameters[key];
+        Reflect.deleteProperty(this.parameters, key);
+      }
     }
   }
   /**
@@ -19659,11 +19669,9 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       out.push(this.effectRes);
     }
 
-    for (let param in this.parameters) {
-      if (this.parameters.hasOwnProperty(param)) {
-        if ("GetResources" in this.parameters[param]) {
-          this.parameters[param].GetResources(out);
-        }
+    for (let key in this.resources) {
+      if (this.resources.hasOwnProperty(key)) {
+        this.resources[key].GetResources(out);
       }
     }
 
@@ -19803,14 +19811,14 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
               const name = stageRes.textures[k].name;
               let param = null;
 
-              if (name in this.parameters) {
-                param = this.parameters[name];
+              if (name in this.resources) {
+                param = this.resources[name];
               } else if (_global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Has(name)) {
                 param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get(name);
               } else if (stageRes.textures[k].isAutoregister) {
                 param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(name, undefined, _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
               } else if (this.autoParameter) {
-                param = this.parameters[name] = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](name);
+                param = this.resources[name] = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](name);
               } else {
                 continue;
               }
@@ -19850,10 +19858,13 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     if (_global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]) {
       _global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]["OnEffectChanged"](this);
     }
-
-    if (this.autoParameter) {
-      this.AutoUnPopulate();
+    /*
+    if (this.autoParameter)
+    {
+        this.AutoUnPopulate();
     }
+    */
+
 
     this.autoParameter = false;
     return true;
@@ -19961,14 +19972,12 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   GetTextures() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    for (const key in this.parameters) {
-      if (this.parameters.hasOwnProperty(key)) {
-        if (this.parameters[key] instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-          const resourcePath = this.parameters[key].GetValue();
+    for (const key in this.resources) {
+      if (this.resources.hasOwnProperty(key)) {
+        const resourcePath = this.resources[key].GetValue();
 
-          if (resourcePath) {
-            out[key] = resourcePath;
-          }
+        if (resourcePath) {
+          out[key] = resourcePath;
         }
       }
     }
@@ -19989,18 +19998,28 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     for (const key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
         const value = options[key],
-              param = this.parameters[key];
+              param = this.resources[key];
 
-        if (param instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-          if (param) {
-            if (!param.EqualsValue(value)) {
-              param.SetValue(value);
-              updated = true;
-            }
-          } else {
-            this.parameters[key] = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](key, value);
+        if (!_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].isValue(value)) {
+          console.warn("Use 'Tw2Effect.SetParameters' when setting parameter values");
+
+          if (this.SetParameters({
+            [key]: value
+          })) {
             updated = true;
           }
+
+          continue;
+        }
+
+        if (param) {
+          if (!param.EqualsValue(value)) {
+            param.SetValue(value);
+            updated = true;
+          }
+        } else {
+          this.resources[key] = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](key, value);
+          updated = true;
         }
       }
     }
@@ -20020,10 +20039,6 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
     for (const key in this.parameters) {
       if (this.parameters.hasOwnProperty(key)) {
-        if (this.parameters[key] instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-          continue;
-        }
-
         out[key] = this.parameters[key].GetValue(true);
       }
     }
@@ -20047,7 +20062,15 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
               param = this.parameters[key];
 
         if (_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].isValue(value)) {
-          console.log("Use 'Tw2Effect.SetTextures' when setting texture values");
+          console.warn("Use 'Tw2Effect.SetTextures' when setting texture values");
+
+          if (this.SetTextures({
+            [key]: value
+          })) {
+            updated = true;
+          }
+
+          continue;
         }
 
         if (param) {
@@ -20080,26 +20103,23 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     let updated = false;
 
     for (const key in options) {
-      if (options.hasOwnProperty(key) && options[key] !== undefined) {
-        const param = this.parameters[key];
+      if (options.hasOwnProperty(key) && options[key] !== undefined && this.resources[key]) {
+        let doUpdate = false;
+        const param = this.resources[key],
+              overrides = options[key];
 
-        if (param && param instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-          let doUpdate = false;
-          const overrides = options[key];
-
-          for (let prop in overrides) {
-            if (overrides.hasOwnProperty(prop) && _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].overrideProperties.includes(prop)) {
-              if (overrides[prop] !== param[prop]) {
-                doUpdate = true;
-                break;
-              }
+        for (let prop in overrides) {
+          if (overrides.hasOwnProperty(prop) && _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].overrideProperties.includes(prop)) {
+            if (overrides[prop] !== param[prop]) {
+              doUpdate = true;
+              break;
             }
           }
+        }
 
-          if (doUpdate) {
-            param.SetOverrides(options[key]);
-            updated = true;
-          }
+        if (doUpdate) {
+          param.SetOverrides(options[key]);
+          updated = true;
         }
       }
     }
@@ -20115,15 +20135,9 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   GetTextureOverrides() {
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    for (const key in this.parameters) {
-      if (this.parameters.hasOwnProperty(key)) {
-        if (this.parameters[key] instanceof _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-          const param = this.parameters[key];
-
-          if (param && param.useAllOverrides) {
-            out[key] = this.parameters[key].GetOverrides();
-          }
-        }
+    for (const key in this.resources) {
+      if (this.resources.hasOwnProperty(key) && this.resources[key].useAllOverrides) {
+        out[key] = this.resources[key].GetOverrides();
       }
     }
 
@@ -20161,7 +20175,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     let removed = false; // if(remove(this.constParameters, "HasConstant")) removed = true;
 
     if (remove(this.parameters, "HasConstant")) removed = true;
-    if (remove(this.parameters, "HasTexture")) removed = true;
+    if (remove(this.resources, "HasTexture")) removed = true;
     if (remove(this.samplerOverrides, "HasSampler")) removed = true;
     return removed;
   }
@@ -20245,7 +20259,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
    * @returns {*[]}
    */
   static black(r) {
-    return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.fromArray("name", "parameters")], ["resources", r.fromArray("name", "parameters")], ["constParameters", r.fromArray("name", "parameters", r => {
+    return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.fromArray("name")], ["resources", r.fromArray("name")], ["constParameters", r.fromArray("name", "parameters", r => {
       const item = new _parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]();
       item.name = r.ReadStringU16();
       item._isConstant = true;
@@ -23959,15 +23973,16 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
               inputs = item.inputs,
               effect = item.effect,
               shader = effect.shader,
-              parameters = effect.parameters; // Auto create current blit
+              parameters = effect.parameters,
+              resources = effect.resources; // Auto create current blit
 
-        if (shader.HasTexture("BlitCurrent") && !parameters.BlitCurrent) {
-          parameters["BlitCurrent"] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"]("BlitCurrent", "rgba:/0,0,0,255");
+        if (shader.HasTexture("BlitCurrent") && !resources.BlitCurrent) {
+          resources["BlitCurrent"] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"]("BlitCurrent", "rgba:/0,0,0,255");
         } // Auto create original blit
 
 
-        if (shader.HasTexture("BlitOriginal") && !parameters.BlitOriginal) {
-          parameters["BlitOriginal"] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"]("BlitOriginal", "rgba:/0,0,0,255");
+        if (shader.HasTexture("BlitOriginal") && !resources.BlitOriginal) {
+          resources["BlitOriginal"] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"]("BlitOriginal", "rgba:/0,0,0,255");
         } // Setup step render target
 
 
@@ -23978,25 +23993,25 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
         } // Assign render targets to textures
 
 
-        for (let texture in inputs) {
-          if (inputs.hasOwnProperty(texture)) {
+        for (let name in inputs) {
+          if (inputs.hasOwnProperty(name)) {
             // Ensure input is supported
-            if (!shader.HasTexture(texture)) {
-              console.warn("Invalid input parameter ".concat(texture));
-              delete inputs[texture];
+            if (!shader.HasTexture(name)) {
+              console.warn("Invalid input parameter ".concat(name));
+              Reflect.deleteProperty(inputs, name);
             } else {
               // Ensure step texture exists
-              if (!parameters[texture]) {
-                parameters[texture] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](texture);
+              if (!resources[name]) {
+                resources[name] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name);
               }
 
-              const parameter = parameters[texture],
-                    target = inputs[texture];
+              const texture = resources[name],
+                    target = inputs[name];
 
               if (target) {
-                parameter.SetTextureRes(this.CreateTarget(target, width, height).texture);
+                texture.SetTextureRes(this.CreateTarget(target, width, height).texture);
               } else {
-                parameter.SetTextureRes(this._texture);
+                texture.SetTextureRes(this._texture);
               }
             }
           }
@@ -31385,7 +31400,7 @@ Tw2Curve.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODUL
    */
   Sort() {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
-      feature: "GetValueAt"
+      feature: "Sort"
     });
   },
 
@@ -31395,7 +31410,7 @@ Tw2Curve.prototype = Object.assign(Object.create(_global__WEBPACK_IMPORTED_MODUL
    */
   GetLength() {
     throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
-      feature: "GetValueAt"
+      feature: "GetLength"
     });
   },
 
@@ -31836,6 +31851,15 @@ class Tw2PerlinCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] 
    */
   Sort() {} // No operation
 
+  /**
+   * Gets the curve's length
+   * @returns {number}
+   */
+
+
+  GetLength() {
+    return 0;
+  }
   /**
    * Updates the current value at the given time
    * @param {number} time
@@ -36238,7 +36262,7 @@ class Tw2CurveColor extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["r", r.plain], ["g", r.plain], ["b", r.plain], ["a", r.plain]];
+    return [["name", r.string], ["r", r.rawObject], ["g", r.rawObject], ["b", r.rawObject], ["a", r.rawObject]];
   }
   /**
    * Identifies that the class is in staging
@@ -36361,7 +36385,7 @@ class Tw2CurveEulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["pitch", r.plain], ["roll", r.plain], ["yaw", r.plain]];
+    return [["name", r.string], ["pitch", r.rawObject], ["roll", r.rawObject], ["yaw", r.rawObject]];
   }
   /**
    * Identifies that the class is in staging
@@ -36595,7 +36619,7 @@ class Tw2CurveVector3 extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["T
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["x", r.plain], ["y", r.plain], ["z", r.plain]];
+    return [["name", r.string], ["x", r.raw], ["y", r.rawObject], ["z", r.rawObject]];
   }
   /**
    * Identifies that the class is in staging
@@ -40999,7 +41023,7 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
           vertexBuffer = g.vertexBuffer,
           decl = g.decl;
     if (!effect.effectRes || !effect.effectRes.IsGood()) return false;
-    effect.parameters.BackBuffer.SetTextureRes(tex);
+    effect.resources.BackBuffer.SetTextureRes(tex);
     effect.parameters.OccluderIndex.SetValue([index, total, samples]);
     d.SetStandardStates(d.RM_ADDITIVE);
     d.gl.bindBuffer(d.gl.ARRAY_BUFFER, vertexBuffer);
@@ -41030,7 +41054,9 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       effectFilePath: "res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx",
       parameters: {
         "OccluderPosition": [1, 1, 1, 1],
-        "OccluderIndex": [1, 1, 1],
+        "OccluderIndex": [1, 1, 1]
+      },
+      textures: {
         "BackBuffer": ""
       }
     });
@@ -49926,7 +49952,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
       }
 
       if (originalEffect) {
-        originalEffect.parameters["HeightMap"].textureRes = this.heightMap.texture;
+        originalEffect.resources["HeightMap"].textureRes = this.heightMap.texture;
       }
     }
 
@@ -49947,6 +49973,34 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     }
   }
   /**
+   * Copies parameters from one effect to another
+   * @param {Tw2Effect} target
+   * @param {Tw2Effect} source
+   * @param {Array} [watched]
+   */
+
+
+  static CopyEffectParameters(target, source, watched) {
+    // Copy parameters
+    for (let name in source.parameters) {
+      if (source.parameters.hasOwnProperty(name)) {
+        target.parameters[name] = source.parameters[name];
+      }
+    } // Copy textures
+
+
+    for (let name in source.resources) {
+      if (source.resources.hasOwnProperty(name)) {
+        const texture = source.resources[name];
+        target.resources[name] = texture;
+
+        if (texture.textureRes && watched) {
+          watched.push(texture.textureRes);
+        }
+      }
+    }
+  }
+  /**
    * Internal helper function that fires when a planet's mesh has loaded
    * @property {EvePlanet} planet
    * @property {*} obj
@@ -49957,6 +50011,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     planet.highDetail.children.unshift(obj);
     planet.lockedResources = [];
     planet.GetPlanetResources(planet.highDetail, [], planet.lockedResources);
+    planet.watchedResources = [];
     let mainMesh = planet.highDetail.children[0].mesh,
         originalEffect = null,
         resPath;
@@ -49972,17 +50027,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     }
 
     resPath = resPath.replace(".fx", "BlitHeight.fx");
-    planet.watchedResources = [];
-
-    for (let param in originalEffect.parameters) {
-      if (originalEffect.parameters.hasOwnProperty(param)) {
-        planet.effectHeight.parameters[param] = originalEffect.parameters[param];
-
-        if ("textureRes" in originalEffect.parameters[param]) {
-          planet.watchedResources.push(originalEffect.parameters[param].textureRes);
-        }
-      }
-    }
+    EvePlanet.CopyEffectParameters(planet.effectHeight, originalEffect, planet.watchedResources);
 
     for (let i = 0; i < planet.highDetail.children[0].children.length; ++i) {
       mainMesh = planet.highDetail.children[0].children[i].mesh;
@@ -49997,27 +50042,19 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
         continue;
       }
 
-      for (let param in originalEffect.parameters) {
-        if (originalEffect.parameters.hasOwnProperty(param)) {
-          planet.effectHeight.parameters[param] = originalEffect.parameters[param];
-
-          if ("textureRes" in originalEffect.parameters[param]) {
-            planet.watchedResources.push(originalEffect.parameters[param].textureRes);
-          }
-        }
-      }
+      EvePlanet.CopyEffectParameters(planet.effectHeight, originalEffect, planet.watchedResources);
     }
 
     const NormalHeight1 = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight1", planet.heightMapResPath1);
     NormalHeight1.Initialize();
     planet.watchedResources.push(NormalHeight1.textureRes);
     planet.lockedResources.push(NormalHeight1.textureRes);
-    planet.effectHeight.parameters.NormalHeight1 = NormalHeight1;
+    planet.effectHeight.resources.NormalHeight1 = NormalHeight1;
     const NormalHeight2 = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight2", planet.heightMapResPath2);
     NormalHeight2.Initialize();
     planet.watchedResources.push(NormalHeight2.textureRes);
     planet.lockedResources.push(NormalHeight2.textureRes);
-    planet.effectHeight.parameters.NormalHeight2 = NormalHeight2;
+    planet.effectHeight.resources.NormalHeight2 = NormalHeight2;
     planet.effectHeight.parameters.Random = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("Random", planet.itemID % 100);
     planet.effectHeight.parameters.TargetTextureHeight = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("TargetTextureHeight", 1024);
     planet.effectHeight.effectFilePath = resPath;
@@ -53963,7 +54000,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
       });
     }
 
-    this._blitEffect.parameters["BlitSource"].SetTextureRes(texture);
+    this._blitEffect.resources["BlitSource"].SetTextureRes(texture);
 
     return this.RenderFullScreenQuad(this._blitEffect);
   }
@@ -68719,19 +68756,19 @@ function EveSOF(tw2) {
         if (hullTextures.hasOwnProperty(j)) {
           var path = hullTextures[j];
           path = ModifyTextureResPath(path, j, area, faction, commands);
-          effect.parameters[j] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](j, path);
+          effect.resources[j] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](j, path);
         }
       }
 
       for (j = 0; j < pattern.layers.length; ++j) {
-        if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.parameters)) {
+        if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.resources)) {
           var patternTex = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](pattern.layers[j].textureName);
           patternTex.resourcePath = pattern.layers[j].textureResFilePath;
           patternTex.useAllOverrides = true;
           patternTex.addressUMode = GetAddressMode(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeU", 0));
           patternTex.addressVMode = GetAddressMode(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeV", 0));
           patternTex.Initialize();
-          effect.parameters[pattern.layers[j].textureName] = patternTex;
+          effect.resources[pattern.layers[j].textureName] = patternTex;
         }
       }
 
@@ -68739,8 +68776,8 @@ function EveSOF(tw2) {
 
       for (var texName in defaultTextures) {
         if (defaultTextures.hasOwnProperty(texName)) {
-          if (!(texName in effect.parameters)) {
-            effect.parameters[texName] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](texName, defaultTextures[texName]);
+          if (!(texName in effect.resources)) {
+            effect.resources[texName] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](texName, defaultTextures[texName]);
           }
         }
       }
@@ -69059,13 +69096,15 @@ function EveSOF(tw2) {
           coneEffect: {
             effectFilePath: isSkinned ? EFF_SPOTLIGHT_CONE_SKINNED : EFF_SPOTLIGHT_CONE,
             parameters: {
-              TextureMap: hullSet.coneTextureResPath,
               zOffset: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "zOffset", 0)
+            },
+            textures: {
+              TextureMap: hullSet.coneTextureResPath
             }
           },
           glowEffect: {
             effectFilePath: isSkinned ? EFF_SPOTLIGHT_GLOW_SKINNED : EFF_SPOTLIGHT_GLOW,
-            parameters: {
+            textures: {
               TextureMap: hullSet.glowTextureResPath
             }
           }
@@ -69125,11 +69164,13 @@ function EveSOF(tw2) {
           items,
           effect: {
             effectFilePath: hullSet.skinned ? EFF_PLANE_SKINNED : EFF_PLANE,
+            parameters: {
+              PlaneData: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "planeData", [1, 0, 0, 0])
+            },
             textures: {
               Layer1Map: hullSet.layer1MapResPath,
               Layer2Map: hullSet.layer2MapResPath,
-              MaskMap: hullSet.maskMapResPath,
-              PlaneData: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "planeData", [1, 0, 0, 0])
+              MaskMap: hullSet.maskMapResPath
             }
           }
         }));
@@ -69474,7 +69515,9 @@ function EveSOF(tw2) {
       spriteEffect = _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
         effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
         parameters: {
-          MainIntensity: 1,
+          MainIntensity: 1
+        },
+        textures: {
           GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
         }
       });
@@ -70731,7 +70774,7 @@ class EveSOFDataGeneric {
 
 
   static black(r) {
-    return [["areaShaderLocation", r.string], ["areaShaders", r.array], ["bannerShader", r.plain], ["decalShaderLocation", r.string], ["decalShaders", r.array], ["damage", r.object], ["genericWreckMaterial", r.object], ["hullAreas", r.array], ["hullDamage", r.object], ["materialPrefixes", r.array], ["patternMaterialPrefixes", r.array], ["resPathDefaultAlliance", r.path], ["resPathDefaultCeo", r.path], ["resPathDefaultCorp", r.path], ["shaderPrefixAnimated", r.string], ["swarm", r.object], ["variants", r.array]];
+    return [["areaShaderLocation", r.string], ["areaShaders", r.array], ["bannerShader", r.rawObject], ["decalShaderLocation", r.string], ["decalShaders", r.array], ["damage", r.object], ["genericWreckMaterial", r.object], ["hullAreas", r.array], ["hullDamage", r.object], ["materialPrefixes", r.array], ["patternMaterialPrefixes", r.array], ["resPathDefaultAlliance", r.path], ["resPathDefaultCeo", r.path], ["resPathDefaultCorp", r.path], ["shaderPrefixAnimated", r.string], ["swarm", r.object], ["variants", r.array]];
   }
 
 }

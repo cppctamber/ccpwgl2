@@ -220,7 +220,7 @@ export class EvePlanet extends EveObject
 
             if (originalEffect)
             {
-                originalEffect.parameters["HeightMap"].textureRes = this.heightMap.texture;
+                originalEffect.resources["HeightMap"].textureRes = this.heightMap.texture;
             }
         }
 
@@ -244,6 +244,39 @@ export class EvePlanet extends EveObject
     }
 
     /**
+     * Copies parameters from one effect to another
+     * @param {Tw2Effect} target
+     * @param {Tw2Effect} source
+     * @param {Array} [watched]
+     */
+    static CopyEffectParameters(target, source, watched)
+    {
+        // Copy parameters
+        for (let name in source.parameters)
+        {
+            if (source.parameters.hasOwnProperty(name))
+            {
+                target.parameters[name] = source.parameters[name];
+            }
+        }
+
+        // Copy textures
+        for (let name in source.resources)
+        {
+            if (source.resources.hasOwnProperty(name))
+            {
+                const texture = source.resources[name];
+                target.resources[name] = texture;
+
+                if (texture.textureRes && watched)
+                {
+                    watched.push(texture.textureRes);
+                }
+            }
+        }
+    }
+
+    /**
      * Internal helper function that fires when a planet's mesh has loaded
      * @property {EvePlanet} planet
      * @property {*} obj
@@ -253,6 +286,7 @@ export class EvePlanet extends EveObject
         planet.highDetail.children.unshift(obj);
         planet.lockedResources = [];
         planet.GetPlanetResources(planet.highDetail, [], planet.lockedResources);
+        planet.watchedResources = [];
 
         let mainMesh = planet.highDetail.children[0].mesh,
             originalEffect = null,
@@ -274,18 +308,7 @@ export class EvePlanet extends EveObject
         }
         resPath = resPath.replace(".fx", "BlitHeight.fx");
 
-        planet.watchedResources = [];
-        for (let param in originalEffect.parameters)
-        {
-            if (originalEffect.parameters.hasOwnProperty(param))
-            {
-                planet.effectHeight.parameters[param] = originalEffect.parameters[param];
-                if ("textureRes" in originalEffect.parameters[param])
-                {
-                    planet.watchedResources.push(originalEffect.parameters[param].textureRes);
-                }
-            }
-        }
+        EvePlanet.CopyEffectParameters(planet.effectHeight, originalEffect, planet.watchedResources);
 
         for (let i = 0; i < planet.highDetail.children[0].children.length; ++i)
         {
@@ -306,30 +329,20 @@ export class EvePlanet extends EveObject
                 continue;
             }
 
-            for (let param in originalEffect.parameters)
-            {
-                if (originalEffect.parameters.hasOwnProperty(param))
-                {
-                    planet.effectHeight.parameters[param] = originalEffect.parameters[param];
-                    if ("textureRes" in originalEffect.parameters[param])
-                    {
-                        planet.watchedResources.push(originalEffect.parameters[param].textureRes);
-                    }
-                }
-            }
+            EvePlanet.CopyEffectParameters(planet.effectHeight, originalEffect, planet.watchedResources);
         }
 
         const NormalHeight1 = new Tw2TextureParameter("NormalHeight1", planet.heightMapResPath1);
         NormalHeight1.Initialize();
         planet.watchedResources.push(NormalHeight1.textureRes);
         planet.lockedResources.push(NormalHeight1.textureRes);
-        planet.effectHeight.parameters.NormalHeight1 = NormalHeight1;
+        planet.effectHeight.resources.NormalHeight1 = NormalHeight1;
 
         const NormalHeight2 = new Tw2TextureParameter("NormalHeight2", planet.heightMapResPath2);
         NormalHeight2.Initialize();
         planet.watchedResources.push(NormalHeight2.textureRes);
         planet.lockedResources.push(NormalHeight2.textureRes);
-        planet.effectHeight.parameters.NormalHeight2 = NormalHeight2;
+        planet.effectHeight.resources.NormalHeight2 = NormalHeight2;
 
         planet.effectHeight.parameters.Random = new Tw2FloatParameter("Random", planet.itemID % 100);
         planet.effectHeight.parameters.TargetTextureHeight = new Tw2FloatParameter("TargetTextureHeight", 1024);

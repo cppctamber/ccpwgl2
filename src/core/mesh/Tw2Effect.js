@@ -25,7 +25,7 @@ export class Tw2Effect extends Tw2BaseClass
     effectFilePath = "";
     options = {};
     parameters = {};
-    //resources = {};
+    resources = {};
     samplerOverrides = {};
     techniques = {};
 
@@ -63,6 +63,16 @@ export class Tw2Effect extends Tw2BaseClass
             this.effectRes = resMan.GetResource(path);
             this.effectRes.RegisterNotification(this);
         }
+
+        // Migrate textures from older .red files to this.resources
+        for (const key in this.parameters)
+        {
+            if (this.parameters.hasOwnProperty(key) && this.parameters[key] instanceof Tw2TextureParameter)
+            {
+                this.resources[key] = this.parameters[key];
+                Reflect.deleteProperty(this.parameters, key);
+            }
+        }
     }
 
     /**
@@ -99,14 +109,11 @@ export class Tw2Effect extends Tw2BaseClass
             out.push(this.effectRes);
         }
 
-        for (let param in this.parameters)
+        for (let key in this.resources)
         {
-            if (this.parameters.hasOwnProperty(param))
+            if (this.resources.hasOwnProperty(key))
             {
-                if ("GetResources" in this.parameters[param])
-                {
-                    this.parameters[param].GetResources(out);
-                }
+                this.resources[key].GetResources(out);
             }
         }
 
@@ -272,9 +279,9 @@ export class Tw2Effect extends Tw2BaseClass
                         {
                             const name = stageRes.textures[k].name;
                             let param = null;
-                            if (name in this.parameters)
+                            if (name in this.resources)
                             {
-                                param = this.parameters[name];
+                                param = this.resources[name];
                             }
                             else if (store.variables.Has(name))
                             {
@@ -286,7 +293,7 @@ export class Tw2Effect extends Tw2BaseClass
                             }
                             else if (this.autoParameter)
                             {
-                                param = this.parameters[name] = new Tw2TextureParameter(name);
+                                param = this.resources[name] = new Tw2TextureParameter(name);
                             }
                             else
                             {
@@ -331,10 +338,12 @@ export class Tw2Effect extends Tw2BaseClass
             device["effectObserver"]["OnEffectChanged"](this);
         }
 
+        /*
         if (this.autoParameter)
         {
             this.AutoUnPopulate();
         }
+        */
 
         this.autoParameter = false;
         return true;
@@ -451,17 +460,14 @@ export class Tw2Effect extends Tw2BaseClass
      */
     GetTextures(out = {})
     {
-        for (const key in this.parameters)
+        for (const key in this.resources)
         {
-            if (this.parameters.hasOwnProperty(key))
+            if (this.resources.hasOwnProperty(key))
             {
-                if (this.parameters[key] instanceof Tw2TextureParameter)
+                const resourcePath = this.resources[key].GetValue();
+                if (resourcePath)
                 {
-                    const resourcePath = this.parameters[key].GetValue();
-                    if (resourcePath)
-                    {
-                        out[key] = resourcePath;
-                    }
+                    out[key] = resourcePath;
                 }
             }
         }
@@ -482,23 +488,30 @@ export class Tw2Effect extends Tw2BaseClass
             {
                 const
                     value = options[key],
-                    param = this.parameters[key];
+                    param = this.resources[key];
 
-                if (param instanceof Tw2TextureParameter)
+                if (!Tw2TextureParameter.isValue(value))
                 {
-                    if (param)
+                    console.warn("Use 'Tw2Effect.SetParameters' when setting parameter values");
+                    if (this.SetParameters({[key]: value}))
                     {
-                        if (!param.EqualsValue(value))
-                        {
-                            param.SetValue(value);
-                            updated = true;
-                        }
-                    }
-                    else
-                    {
-                        this.parameters[key] = new Tw2TextureParameter(key, value);
                         updated = true;
                     }
+                    continue;
+                }
+
+                if (param)
+                {
+                    if (!param.EqualsValue(value))
+                    {
+                        param.SetValue(value);
+                        updated = true;
+                    }
+                }
+                else
+                {
+                    this.resources[key] = new Tw2TextureParameter(key, value);
+                    updated = true;
                 }
             }
         }
@@ -518,11 +531,6 @@ export class Tw2Effect extends Tw2BaseClass
         {
             if (this.parameters.hasOwnProperty(key))
             {
-                if (this.parameters[key] instanceof Tw2TextureParameter)
-                {
-                    continue;
-                }
-
                 out[key] = this.parameters[key].GetValue(true);
             }
         }
@@ -547,7 +555,12 @@ export class Tw2Effect extends Tw2BaseClass
 
                 if (Tw2TextureParameter.isValue(value))
                 {
-                    console.log("Use 'Tw2Effect.SetTextures' when setting texture values");
+                    console.warn("Use 'Tw2Effect.SetTextures' when setting texture values");
+                    if (this.SetTextures({[key]: value}))
+                    {
+                        updated = true;
+                    }
+                    continue;
                 }
 
                 if (param)
@@ -583,32 +596,32 @@ export class Tw2Effect extends Tw2BaseClass
         let updated = false;
         for (const key in options)
         {
-            if (options.hasOwnProperty(key) && options[key] !== undefined)
+            if (options.hasOwnProperty(key) && options[key] !== undefined && this.resources[key])
             {
-                const param = this.parameters[key];
-                if (param && param instanceof Tw2TextureParameter)
-                {
-                    let doUpdate = false;
+                let doUpdate = false;
 
-                    const overrides = options[key];
-                    for (let prop in overrides)
+                const
+                    param = this.resources[key],
+                    overrides = options[key];
+
+                for (let prop in overrides)
+                {
+                    if (overrides.hasOwnProperty(prop) && Tw2TextureParameter.overrideProperties.includes(prop))
                     {
-                        if (overrides.hasOwnProperty(prop) && Tw2TextureParameter.overrideProperties.includes(prop))
+                        if (overrides[prop] !== param[prop])
                         {
-                            if (overrides[prop] !== param[prop])
-                            {
-                                doUpdate = true;
-                                break;
-                            }
+                            doUpdate = true;
+                            break;
                         }
                     }
-
-                    if (doUpdate)
-                    {
-                        param.SetOverrides(options[key]);
-                        updated = true;
-                    }
                 }
+
+                if (doUpdate)
+                {
+                    param.SetOverrides(options[key]);
+                    updated = true;
+                }
+
             }
         }
         return updated;
@@ -620,18 +633,11 @@ export class Tw2Effect extends Tw2BaseClass
      */
     GetTextureOverrides(out = {})
     {
-        for (const key in this.parameters)
+        for (const key in this.resources)
         {
-            if (this.parameters.hasOwnProperty(key))
+            if (this.resources.hasOwnProperty(key) && this.resources[key].useAllOverrides)
             {
-                if (this.parameters[key] instanceof Tw2TextureParameter)
-                {
-                    const param = this.parameters[key];
-                    if (param && param.useAllOverrides)
-                    {
-                        out[key] = this.parameters[key].GetOverrides();
-                    }
-                }
+                out[key] = this.resources[key].GetOverrides();
             }
         }
         return out;
@@ -672,7 +678,7 @@ export class Tw2Effect extends Tw2BaseClass
         let removed = false;
         // if(remove(this.constParameters, "HasConstant")) removed = true;
         if (remove(this.parameters, "HasConstant")) removed = true;
-        if (remove(this.parameters, "HasTexture")) removed = true;
+        if (remove(this.resources, "HasTexture")) removed = true;
         if (remove(this.samplerOverrides, "HasSampler")) removed = true;
         return removed;
     }
@@ -776,8 +782,8 @@ export class Tw2Effect extends Tw2BaseClass
         return [
             ["effectFilePath", r.path],
             ["name", r.string],
-            ["parameters", r.fromArray("name", "parameters")],
-            ["resources", r.fromArray("name", "parameters")],
+            ["parameters", r.fromArray("name")],
+            ["resources", r.fromArray("name")],
             ["constParameters", r.fromArray("name", "parameters", r =>
             {
                 const item = new Tw2Vector4Parameter();

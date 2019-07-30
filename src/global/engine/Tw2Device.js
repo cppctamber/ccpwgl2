@@ -663,7 +663,7 @@ export class Tw2Device extends Tw2EventEmitter
             });
         }
 
-        this._blitEffect.parameters["BlitSource"].SetTextureRes(texture);
+        this._blitEffect.resources["BlitSource"].SetTextureRes(texture);
         return this.RenderFullScreenQuad(this._blitEffect);
     }
 
@@ -904,11 +904,11 @@ export class Tw2Device extends Tw2EventEmitter
 
                 /*
 case CMP_NOTEQUAL:
-    var alphaTestFunc = 1;
-    var invertedAlphaTest = 1;
-    var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
-    break;
-    */
+var alphaTestFunc = 1;
+var invertedAlphaTest = 1;
+var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
+break;
+*/
 
                 case CMP_GREATEREQUAL:
                     alphaTestFunc = 0;
