@@ -34,6 +34,15 @@ export class Tw2PerlinCurve extends Tw2Curve
     }
 
     /**
+     * Gets the curve's length
+     * @returns {number}
+     */
+    GetLength()
+    {
+        return 0;
+    }
+
+    /**
      * Updates the current value at the given time
      * @param {number} time
      */

@@ -51,7 +51,7 @@ Tw2Curve.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
      */
     Sort()
     {
-        throw new ErrFeatureNotImplemented({feature: "GetValueAt"});
+        throw new ErrFeatureNotImplemented({feature: "Sort"});
     },
 
     /**
@@ -60,7 +60,7 @@ Tw2Curve.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
      */
     GetLength()
     {
-        throw new ErrFeatureNotImplemented({feature: "GetValueAt"});
+        throw new ErrFeatureNotImplemented({feature: "GetLength"});
     },
 
     /**
