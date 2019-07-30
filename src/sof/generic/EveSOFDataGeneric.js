@@ -216,7 +216,7 @@ export class EveSOFDataGeneric
         return [
             ["areaShaderLocation", r.string],
             ["areaShaders", r.array],
-            ["bannerShader", r.plain],
+            ["bannerShader", r.rawObject],
             ["decalShaderLocation", r.string],
             ["decalShaders", r.array],
             ["damage", r.object],

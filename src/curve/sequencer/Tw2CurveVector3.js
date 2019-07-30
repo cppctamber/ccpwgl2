@@ -99,9 +99,9 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
     {
         return [
             ["name", r.string],
-            ["x", r.plain],
-            ["y", r.plain],
-            ["z", r.plain]
+            ["x", r.raw],
+            ["y", r.rawObject],
+            ["z", r.rawObject]
         ];
     }
 
