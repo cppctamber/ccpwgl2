@@ -1,3 +1,5 @@
+import {isError, isFunction} from "../util";
+
 /**
  * Emitter privates
  * @type {WeakMap<object, *>}
@@ -57,8 +59,13 @@ export class Tw2EventEmitter
             events = {};
             PRIVATE.set(this, events);
         }
+
         eventName = eventName.toLowerCase();
-        if (!events[eventName]) events[eventName] = new Set();
+        if (!events[eventName])
+        {
+            events[eventName] = new Set();
+        }
+
         events[eventName].add(listener, {context: context, once: once});
         return this;
     }
@@ -87,6 +94,7 @@ export class Tw2EventEmitter
         if (!events) return this;
 
         eventName = eventName.toLowerCase();
+
         if (eventName === "*")
         {
             for (const name in events)
@@ -96,12 +104,46 @@ export class Tw2EventEmitter
                     events[name].delete(listener);
                 }
             }
+            return this;
         }
-        else if (eventName in events)
+
+        if (eventName in events)
         {
             events[eventName].delete(listener);
         }
+
         return this;
+    }
+
+    /**
+     * Checks if a listener exists on an event already
+     * @param {String} eventName
+     * @param {Function} listener
+     * @returns {boolean}
+     */
+    has(eventName, listener)
+    {
+        const events = PRIVATE.get(this);
+        if (!events) return false;
+
+        eventName = eventName.toLowerCase();
+
+        if (eventName === "*")
+        {
+            for (const key in events)
+            {
+                if (events.hasOwnProperty(key))
+                {
+                    if (events[key].has(listener))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        return !!(eventName in events && events[eventName].has(listener));
     }
 
     /**
@@ -115,7 +157,10 @@ export class Tw2EventEmitter
         if (!events) return this;
 
         eventName = eventName.toLowerCase();
-        if (eventName in events) delete events[eventName];
+        if (eventName in events)
+        {
+            Reflect.deleteProperty(events, eventName);
+        }
         return this;
     }
 
@@ -161,6 +206,11 @@ export class Tw2EventEmitter
      */
     log(eventLog)
     {
+        if (isFunction(eventLog) && !isError(eventLog))
+        {
+            throw new Error("Invalid log, must be a plain object or an error");
+        }
+
         if (!eventLog.name)
         {
             eventLog.name = this.constructor.category || this.constructor.name;
