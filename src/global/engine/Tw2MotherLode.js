@@ -26,7 +26,7 @@ export class Tw2MotherLode
         if (!this._errors[path].includes(err))
         {
             err.data = err.data || {};
-            err.data.path = err.data.path || path;
+            err.data.path = path;
             this._errors[path].push(err);
         }
 
@@ -64,6 +64,26 @@ export class Tw2MotherLode
     }
 
     /**
+     * Clears errors for a path
+     * @param {String} path
+     */
+    ClearErrors(path)
+    {
+        if (path && path in this._errors)
+        {
+            Reflect.delete(this._errors, path);
+        }
+    }
+
+    /**
+     * Clears all errors
+     */
+    ClearAllErrors()
+    {
+        this._errors = {};
+    }
+
+    /**
      * Finds a loaded object by it's file path
      * @param {String} path
      * @returns {Tw2LoadingObject|Tw2Resource}
@@ -93,7 +113,7 @@ export class Tw2MotherLode
      */
     Remove(path)
     {
-        delete this._loadedObjects[path];
+        Reflect.deleteProperty(this._loadedObjects, path);
     }
 
     /**
