@@ -214,10 +214,10 @@ export class EveSOFDataGeneric
     static black(r)
     {
         return [
-            ["areaShaderLocation", r.string],
+            ["areaShaderLocation", r.path],
             ["areaShaders", r.array],
-            ["bannerShader", r.plain],
-            ["decalShaderLocation", r.string],
+            ["bannerShader", r.rawObject],
+            ["decalShaderLocation", r.path],
             ["decalShaders", r.array],
             ["damage", r.object],
             ["genericWreckMaterial", r.object],

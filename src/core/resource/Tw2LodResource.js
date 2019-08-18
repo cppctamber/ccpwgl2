@@ -148,9 +148,9 @@ export class Tw2LodResource extends Tw2BaseClass
     {
         return [
             ["name", r.string],
-            ["highDetailResPath", r.string],
-            ["lowDetailResPath", r.string],
-            ["mediumDetailResPath", r.string],
+            ["highDetailResPath", r.path],
+            ["lowDetailResPath", r.path],
+            ["mediumDetailResPath", r.path],
         ];
     }
 

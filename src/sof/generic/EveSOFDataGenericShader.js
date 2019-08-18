@@ -31,7 +31,7 @@ export class EveSOFDataGenericShader
             ["defaultTextures", r.array],
             ["doGenerateDepthArea", r.boolean],
             ["parameters", r.array],
-            ["shader", r.string],
+            ["shader", r.path],
             ["transparencyTextureName", r.string],
         ];
     }

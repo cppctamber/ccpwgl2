@@ -104,7 +104,7 @@ export class EveSOFDataBooster
             ["shape1", r.object],
             ["shapeAtlasCount", r.uint],
             ["shapeAtlasHeight", r.uint],
-            ["shapeAtlasResPath", r.string],
+            ["shapeAtlasResPath", r.path],
             ["shapeAtlasWidth", r.uint],
             ["symHaloScale", r.float],
             ["trailColor", r.vector4],

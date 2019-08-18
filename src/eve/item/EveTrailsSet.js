@@ -139,7 +139,7 @@ export class EveTrailsSet extends Tw2BaseClass
     {
         return [
             ["effect", r.object],
-            ["geometryResPath", r.string]
+            ["geometryResPath", r.path]
         ];
     }
 

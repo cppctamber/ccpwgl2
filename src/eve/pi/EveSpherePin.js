@@ -46,7 +46,7 @@ export class EveSpherePin extends Tw2BaseClass
             ["color", r.color],
             ["curveSets", r.array],
             ["enablePicking", r.boolean],
-            ["geometryResPath", r.string],
+            ["geometryResPath", r.path],
             ["name", r.string],
             ["pinColor", r.color],
             ["pinEffect", r.object],

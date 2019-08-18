@@ -313,7 +313,7 @@ export class Tw2TextureParameter extends Tw2Parameter
     {
         return [
             ["name", r.string],
-            ["resourcePath", r.string]
+            ["resourcePath", r.path]
         ];
     }
 

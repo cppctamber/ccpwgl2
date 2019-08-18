@@ -22857,7 +22857,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["resourcePath", r.string]];
+    return [["name", r.string], ["resourcePath", r.path]];
   }
 
 }
@@ -24968,18 +24968,18 @@ _defineProperty(Tw2BlackBinaryReader, "wstringDecoder", new TextDecoder("utf-16l
 /*!************************************************!*\
   !*** ./core/reader/Tw2BlackPropertyReaders.js ***!
   \************************************************/
-/*! exports provided: object, plain, array, boolean, string, enums, path, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, plainFromArray */
+/*! exports provided: path, object, rawObject, array, boolean, string, enums, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, plainFromArray */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "path", function() { return path; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rawObject", function() { return rawObject; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "array", function() { return array; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "enums", function() { return enums; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "path", function() { return path; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "float", function() { return float; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return ushort; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return uint; });
@@ -24998,14 +24998,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /**
- * Internal handler for modifying ccp paths and strings
- * @param {String} path
+ * Reads a path
+ * - Handles compatibilities so ccpwgl can either load newer files or try to fail gracefully
+ * @param {Tw2BlackBinaryReader} reader
  * @returns {String}
  */
 
-function onString(path) {
-  // Because there are two sources for "res:" now we need to replace
+function path(reader) {
+  let path = reader.ReadStringU16(); // Because there are two sources for "res:" now we need to replace
   // any references from the eve cdn with a new res path mapping
+
   if (path.indexOf("res:") === 0) {
     path = "cdn:" + path.substring(4);
   }
@@ -25060,7 +25062,6 @@ function onString(path) {
  * @param {undefined|Number} [id]
  * @returns {*|Object} out
  */
-
 
 function object(reader, id) {
   const context = reader.context,
@@ -25132,18 +25133,17 @@ function object(reader, id) {
   return result;
 }
 /**
- * Reads a plain object
+ * Reads a rawObject object
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Object} out
  */
 
-function plain(reader) {
+function rawObject(reader) {
   return object(reader, null);
 }
 /**
  * Reads an array
  * @param {Tw2BlackBinaryReader} reader
- * @param {Array} [out=[]]
  * @returns {Array} out
  */
 
@@ -25169,12 +25169,18 @@ function boolean(reader) {
 /**
  * Reads a string
  * @param {Tw2BlackBinaryReader} reader
- * @returns {*}
+ * @returns {String}
  */
 
 function string(reader) {
-  return onString(reader.ReadStringU16());
+  return reader.ReadStringU16();
 }
+/**
+ * Creates an enum object from a string
+ * @param {Tw2BlackReader} reader
+ * @returns {Object}
+ */
+
 function enums(reader) {
   const value = reader.ReadStringU16();
   const entry = value.split(",");
@@ -25186,15 +25192,6 @@ function enums(reader) {
   }
 
   return out;
-}
-/**
- * Reads a path
- * @param {Tw2BlackBinaryReader} reader
- * @returns {String}
- */
-
-function path(reader) {
-  return onString(reader.ReadStringU16());
 }
 /**
  * Reads a float
@@ -25244,8 +25241,7 @@ function vector2(reader) {
 /**
  * Reads a vector3
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec3|TypedArray} [out]
- * @returns {Float32Array} out
+ * @returns {vec3}
  */
 
 function vector3(reader) {
@@ -25254,7 +25250,7 @@ function vector3(reader) {
 /**
  * Reads a color
  * @param {Tw2BlackBinaryReader} reader
- * @returns {vec4} out
+ * @returns {vec4}
  */
 
 function color(reader) {
@@ -25263,18 +25259,16 @@ function color(reader) {
 /**
  * Reads a vector4
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec4|TypedArray} [out]
- * @returns {vec4} out
+ * @returns {vec4}
  */
 
 function vector4(reader) {
-  let out = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a matrix with 16 elements
  * @param {Tw2BlackBinaryReader} reader
- * @returns {mat4} out
+ * @returns {mat4}
  */
 
 function matrix(reader) {
@@ -25328,13 +25322,23 @@ function structList(struct) {
     return result;
   };
 }
+/**
+ * Gets a plain object from an array, using the supplied key as the property for each item
+ * @param {String} key
+ * @returns {function(*=)}
+ */
+
 function plainFromArray(key) {
   return function (reader) {
     const arr = array(reader),
           result = {};
 
     for (let i = 0; i < arr.length; i++) {
-      result[arr[i].key] = arr[i];
+      if (key in arr[i]) {
+        result[arr[i][key]] = arr[i];
+      } else {
+        throw new Error("Supplied key \"".concat(key, "\" is missing from array element"));
+      }
     }
 
     return result;
@@ -27341,7 +27345,7 @@ class Tw2LodResource extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
 
 
   static black(r) {
-    return [["name", r.string], ["highDetailResPath", r.string], ["lowDetailResPath", r.string], ["mediumDetailResPath", r.string]];
+    return [["name", r.string], ["highDetailResPath", r.path], ["lowDetailResPath", r.path], ["mediumDetailResPath", r.path]];
   }
   /**
    * Identifies that the class is in staging
@@ -36191,7 +36195,7 @@ class Tw2CurveColor extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["r", r.plain], ["g", r.plain], ["b", r.plain], ["a", r.plain]];
+    return [["name", r.string], ["r", r.rawObject], ["g", r.rawObject], ["b", r.rawObject], ["a", r.rawObject]];
   }
   /**
    * Identifies that the class is in staging
@@ -36314,7 +36318,7 @@ class Tw2CurveEulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["pitch", r.plain], ["roll", r.plain], ["yaw", r.plain]];
+    return [["name", r.string], ["pitch", r.rawObject], ["roll", r.rawObject], ["yaw", r.rawObject]];
   }
   /**
    * Identifies that the class is in staging
@@ -36548,7 +36552,7 @@ class Tw2CurveVector3 extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["T
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["x", r.raw], ["y", r.plain], ["z", r.plain]];
+    return [["name", r.string], ["x", r.rawObject], ["y", r.rawObject], ["z", r.rawObject]];
   }
   /**
    * Identifies that the class is in staging
@@ -38360,7 +38364,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
    * @returns {*[]}
    */
   static black(r) {
-    return [["ambientColor", r.color], ["backgroundEffect", r.object], ["backgroundObjects", r.array], ["backgroundRenderingEnabled", r.boolean], ["curveSets", r.array], ["enableShadows", r.boolean], ["envMapResPath", r.string], ["envMap1ResPath", r.string], ["envMap2ResPath", r.string], ["envMapRotation", r.vector4], ["externalParameters", r.array], ["fogColor", r.color], ["fogStart", r.float], ["fogEnd", r.float], ["fogMax", r.float], ["nebulaIntensity", r.float], ["objects", r.array], ["postProcessPath", r.string], ["selfShadowOnly", r.boolean], ["starfield", r.object], ["shadowFadeThreshold", r.float], ["shadowThreshold", r.float], ["shLightingManager", r.object], ["sunDiffuseColor", r.color], ["sunDiffuseColorWithDynamicLights", r.vector4], ["sunDirection", r.vector3], ["useSunDiffuseColorWithDynamicLights", r.boolean]];
+    return [["ambientColor", r.color], ["backgroundEffect", r.object], ["backgroundObjects", r.array], ["backgroundRenderingEnabled", r.boolean], ["curveSets", r.array], ["enableShadows", r.boolean], ["envMapResPath", r.path], ["envMap1ResPath", r.path], ["envMap2ResPath", r.path], ["envMapRotation", r.vector4], ["externalParameters", r.array], ["fogColor", r.color], ["fogStart", r.float], ["fogEnd", r.float], ["fogMax", r.float], ["nebulaIntensity", r.float], ["objects", r.array], ["postProcessPath", r.path], ["selfShadowOnly", r.boolean], ["starfield", r.object], ["shadowFadeThreshold", r.float], ["shadowThreshold", r.float], ["shLightingManager", r.object], ["sunDiffuseColor", r.color], ["sunDiffuseColorWithDynamicLights", r.vector4], ["sunDirection", r.vector3], ["useSunDiffuseColorWithDynamicLights", r.boolean]];
   }
   /**
    * Identifies that the class is in staging
@@ -42036,7 +42040,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
+/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42174,16 +42178,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
@@ -42199,6 +42193,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
 
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./particle */ "./eve/particle/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_5__["EveParticleDirectForce"]; });
@@ -46318,7 +46322,7 @@ class EveTrailsSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   static black(r) {
-    return [["effect", r.object], ["geometryResPath", r.string]];
+    return [["effect", r.object], ["geometryResPath", r.path]];
   }
   /**
    * Identifies that the class is in staging
@@ -47210,7 +47214,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
    * @returns {*[]}
    */
   static black(r) {
-    return [["name", r.string], ["bottomClipHeight", r.float], ["boundingSphere", r.vector4], ["chooseRandomLocator", r.boolean], ["cyclingFireGroupCount", r.uint], ["firingEffectResPath", r.string], ["geometryResPath", r.string], ["impactSize", r.float], ["laserMissBehaviour", r.boolean], ["locatorName", r.string], ["maxCyclingFirePos", r.uint], ["projectileMissBehaviour", r.boolean], ["sysBoneHeight", r.float], ["sysBonePitchMax", r.float], ["sysBonePitchMin", r.float], ["sysBonePitchFactor", r.float], ["sysBonePitch01Factor", r.float], ["sysBonePitch02Factor", r.float], ["sysBonePitchOffset", r.float], ["turretEffect", r.object], ["updatePitchPose", r.boolean], ["useDynamicBounds", r.boolean], ["useRandomFiringDelay", r.boolean]];
+    return [["name", r.string], ["bottomClipHeight", r.float], ["boundingSphere", r.vector4], ["chooseRandomLocator", r.boolean], ["cyclingFireGroupCount", r.uint], ["firingEffectResPath", r.path], ["geometryResPath", r.path], ["impactSize", r.float], ["laserMissBehaviour", r.boolean], ["locatorName", r.string], ["maxCyclingFirePos", r.uint], ["projectileMissBehaviour", r.boolean], ["sysBoneHeight", r.float], ["sysBonePitchMax", r.float], ["sysBonePitchMin", r.float], ["sysBonePitchFactor", r.float], ["sysBonePitch01Factor", r.float], ["sysBonePitch02Factor", r.float], ["sysBonePitchOffset", r.float], ["turretEffect", r.object], ["updatePitchPose", r.boolean], ["useDynamicBounds", r.boolean], ["useRandomFiringDelay", r.boolean]];
   }
   /**
    * Identifies that the class is in staging
@@ -49355,7 +49359,7 @@ _defineProperty(EveTransform, "__isStaging", 1);
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform */
+/*! exports provided: EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51083,7 +51087,7 @@ class EveSpherePin extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
    * @returns {*[]}
    */
   static black(r) {
-    return [["centerNormal", r.vector3], ["color", r.color], ["curveSets", r.array], ["enablePicking", r.boolean], ["geometryResPath", r.string], ["name", r.string], ["pinColor", r.color], ["pinEffect", r.object], ["pinMaxRadius", r.float], ["pinRadius", r.float], ["pinRotation", r.float], ["sortValueMultiplier", r.float]];
+    return [["centerNormal", r.vector3], ["color", r.color], ["curveSets", r.array], ["enablePicking", r.boolean], ["geometryResPath", r.path], ["name", r.string], ["pinColor", r.color], ["pinEffect", r.object], ["pinMaxRadius", r.float], ["pinRadius", r.float], ["pinRotation", r.float], ["sortValueMultiplier", r.float]];
   }
   /**
    * Identifies that the class is in staging
@@ -66638,7 +66642,7 @@ class Tw2ParticleElementDeclaration extends _global__WEBPACK_IMPORTED_MODULE_2__
 /*!***********************************!*\
   !*** ./particle/element/index.js ***!
   \***********************************/
-/*! exports provided: Tw2ParticleElementDeclaration, Tw2ParticleElement */
+/*! exports provided: Tw2ParticleElement, Tw2ParticleElementDeclaration */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68436,7 +68440,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./particle/index.js ***!
   \***************************/
-/*! exports provided: Tw2ParticleElementDeclaration, Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68445,9 +68449,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _constraint__WEBPACK_IMPORTED_MODULE_0__["Tr2PlaneConstraint"]; });
 
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./particle/element/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
 
 /* harmony import */ var _emitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./emitter */ "./particle/emitter/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuSharedEmitter"]; });
@@ -70684,7 +70688,7 @@ class EveSOFDataGeneric {
 
 
   static black(r) {
-    return [["areaShaderLocation", r.string], ["areaShaders", r.array], ["bannerShader", r.plain], ["decalShaderLocation", r.string], ["decalShaders", r.array], ["damage", r.object], ["genericWreckMaterial", r.object], ["hullAreas", r.array], ["hullDamage", r.object], ["materialPrefixes", r.array], ["patternMaterialPrefixes", r.array], ["resPathDefaultAlliance", r.path], ["resPathDefaultCeo", r.path], ["resPathDefaultCorp", r.path], ["shaderPrefixAnimated", r.string], ["swarm", r.object], ["variants", r.array]];
+    return [["areaShaderLocation", r.path], ["areaShaders", r.array], ["bannerShader", r.rawObject], ["decalShaderLocation", r.path], ["decalShaders", r.array], ["damage", r.object], ["genericWreckMaterial", r.object], ["hullAreas", r.array], ["hullDamage", r.object], ["materialPrefixes", r.array], ["patternMaterialPrefixes", r.array], ["resPathDefaultAlliance", r.path], ["resPathDefaultCeo", r.path], ["resPathDefaultCorp", r.path], ["shaderPrefixAnimated", r.string], ["swarm", r.object], ["variants", r.array]];
   }
 
 }
@@ -70995,7 +70999,7 @@ class EveSOFDataGenericShader {
    * @returns {*[]}
    */
   static black(r) {
-    return [["defaultParameters", r.array], ["defaultTextures", r.array], ["doGenerateDepthArea", r.boolean], ["parameters", r.array], ["shader", r.string], ["transparencyTextureName", r.string]];
+    return [["defaultParameters", r.array], ["defaultTextures", r.array], ["doGenerateDepthArea", r.boolean], ["parameters", r.array], ["shader", r.path], ["transparencyTextureName", r.string]];
   }
 
 }
@@ -73719,7 +73723,7 @@ class EveSOFDataBooster {
 
 
   static black(r) {
-    return [["glowColor", r.vector4], ["glowScale", r.float], ["gradient0ResPath", r.path], ["gradient1ResPath", r.path], ["haloColor", r.vector4], ["haloScaleX", r.float], ["haloScaleY", r.float], ["lightFlickerAmplitude", r.float], ["lightFlickerColor", r.vector4], ["lightFlickerFrequency", r.float], ["lightFlickerRadius", r.float], ["lightColor", r.vector4], ["lightRadius", r.float], ["lightWarpColor", r.vector4], ["lightWarpRadius", r.float], ["shape0", r.object], ["shape1", r.object], ["shapeAtlasCount", r.uint], ["shapeAtlasHeight", r.uint], ["shapeAtlasResPath", r.string], ["shapeAtlasWidth", r.uint], ["symHaloScale", r.float], ["trailColor", r.vector4], ["trailSize", r.vector4], ["volumetric", r.boolean], ["warpGlowColor", r.vector4], ["warpHalpColor", r.vector4], ["warpShape0", r.object], ["warpShape1", r.object]];
+    return [["glowColor", r.vector4], ["glowScale", r.float], ["gradient0ResPath", r.path], ["gradient1ResPath", r.path], ["haloColor", r.vector4], ["haloScaleX", r.float], ["haloScaleY", r.float], ["lightFlickerAmplitude", r.float], ["lightFlickerColor", r.vector4], ["lightFlickerFrequency", r.float], ["lightFlickerRadius", r.float], ["lightColor", r.vector4], ["lightRadius", r.float], ["lightWarpColor", r.vector4], ["lightWarpRadius", r.float], ["shape0", r.object], ["shape1", r.object], ["shapeAtlasCount", r.uint], ["shapeAtlasHeight", r.uint], ["shapeAtlasResPath", r.path], ["shapeAtlasWidth", r.uint], ["symHaloScale", r.float], ["trailColor", r.vector4], ["trailSize", r.vector4], ["volumetric", r.boolean], ["warpGlowColor", r.vector4], ["warpHalpColor", r.vector4], ["warpShape0", r.object], ["warpShape1", r.object]];
   }
 
 }

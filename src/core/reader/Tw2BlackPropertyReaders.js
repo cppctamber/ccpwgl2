@@ -2,12 +2,15 @@ import {vec2, vec3, vec4, mat4, store} from "../../global";
 import {ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError} from "../Tw2Error";
 
 /**
- * Internal handler for modifying ccp paths and strings
- * @param {String} path
+ * Reads a path
+ * - Handles compatibilities so ccpwgl can either load newer files or try to fail gracefully
+ * @param {Tw2BlackBinaryReader} reader
  * @returns {String}
  */
-function onString(path)
+export function path(reader)
 {
+    let path = reader.ReadStringU16();
+
     // Because there are two sources for "res:" now we need to replace
     // any references from the eve cdn with a new res path mapping
     if (path.indexOf("res:") === 0)
@@ -150,11 +153,11 @@ export function object(reader, id)
 }
 
 /**
- * Reads a plain object
+ * Reads a rawObject object
  * @param {Tw2BlackBinaryReader} reader
  * @returns {Object} out
  */
-export function plain(reader)
+export function rawObject(reader)
 {
     return object(reader, null);
 }
@@ -162,7 +165,6 @@ export function plain(reader)
 /**
  * Reads an array
  * @param {Tw2BlackBinaryReader} reader
- * @param {Array} [out=[]]
  * @returns {Array} out
  */
 export function array(reader)
@@ -191,13 +193,18 @@ export function boolean(reader)
 /**
  * Reads a string
  * @param {Tw2BlackBinaryReader} reader
- * @returns {*}
+ * @returns {String}
  */
 export function string(reader)
 {
-    return onString(reader.ReadStringU16());
+    return reader.ReadStringU16();
 }
 
+/**
+ * Creates an enum object from a string
+ * @param {Tw2BlackReader} reader
+ * @returns {Object}
+ */
 export function enums(reader)
 {
     const value = reader.ReadStringU16();
@@ -210,17 +217,6 @@ export function enums(reader)
     }
     return out;
 }
-
-/**
- * Reads a path
- * @param {Tw2BlackBinaryReader} reader
- * @returns {String}
- */
-export function path(reader)
-{
-    return onString(reader.ReadStringU16());
-}
-
 
 /**
  * Reads a float
@@ -275,8 +271,7 @@ export function vector2(reader)
 /**
  * Reads a vector3
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec3|TypedArray} [out]
- * @returns {Float32Array} out
+ * @returns {vec3}
  */
 export function vector3(reader)
 {
@@ -286,7 +281,7 @@ export function vector3(reader)
 /**
  * Reads a color
  * @param {Tw2BlackBinaryReader} reader
- * @returns {vec4} out
+ * @returns {vec4}
  */
 export function color(reader)
 {
@@ -296,10 +291,9 @@ export function color(reader)
 /**
  * Reads a vector4
  * @param {Tw2BlackBinaryReader} reader
- * @param {vec4|TypedArray} [out]
- * @returns {vec4} out
+ * @returns {vec4}
  */
-export function vector4(reader, out = vec4.create())
+export function vector4(reader)
 {
     return vec4.fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
@@ -307,7 +301,7 @@ export function vector4(reader, out = vec4.create())
 /**
  * Reads a matrix with 16 elements
  * @param {Tw2BlackBinaryReader} reader
- * @returns {mat4} out
+ * @returns {mat4}
  */
 export function matrix(reader)
 {
@@ -377,6 +371,11 @@ export function structList(struct)
     };
 }
 
+/**
+ * Gets a plain object from an array, using the supplied key as the property for each item
+ * @param {String} key
+ * @returns {function(*=)}
+ */
 export function plainFromArray(key)
 {
     return function(reader)
@@ -387,7 +386,14 @@ export function plainFromArray(key)
 
         for (let i = 0; i < arr.length; i++)
         {
-            result[arr[i].key] = arr[i];
+            if (key in arr[i])
+            {
+                result[arr[i][key]] = arr[i];
+            }
+            else
+            {
+                throw new Error(`Supplied key "${key}" is missing from array element`);
+            }
         }
 
         return result;
