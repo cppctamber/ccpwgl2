@@ -12,7 +12,7 @@
 
     <script type="text/javascript">
 
-        var camera, scene, ship, station;
+        var canvas, camera, scene, ship, hangar;
 
         $(document).ready(function()
         {
@@ -26,11 +26,10 @@
             var stationPath = hangars[Math.floor(Math.random() * 4)];
             var shipHeightFromLandingPad = 500;
 
-            var $canvas = $('#mainCanvas');
-            ccpwgl.initialize($canvas[0], demos.options);
+            canvas = document.getElementById('mainCanvas');
+            ccpwgl.initialize(canvas, demos.options);
             ccpwgl.debug = true;
-            camera = ccpwgl.createCamera($canvas[0], undefined, true);
-            camera.poi[1] = shipHeightFromLandingPad;
+            camera = ccpwgl.createCamera(canvas, {poi: [ 0, shipHeightFromLandingPad, 0]});
 
             scene = ccpwgl.loadScene(stationPath, function()
             {
@@ -52,11 +51,7 @@
                 }
             });
 
-
             var lastHull = null;
-
-            if (demos.options.postprocess)
-                ccpwgl.enablePostprocessing(true);
 
             function loadDna(dna)
             {

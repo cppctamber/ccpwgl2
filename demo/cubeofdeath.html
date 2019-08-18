@@ -10,19 +10,19 @@
     <script type="text/javascript" src="demos.js"></script>
 
     <script type="text/javascript">
+
+        var camera, scene, canvas;
+
         function OnDocLoad()
         {
-            var mat4 = ccpwgl_int.math.mat4;
-
-            var canvas = document.getElementById('mainCanvas');
+            canvas = document.getElementById('mainCanvas');
             ccpwgl.initialize(canvas, demos.options);
+            camera = ccpwgl.createCamera(canvas);
+            scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
 
-            var camera = ccpwgl.createCamera(canvas, undefined, true);
+            var mat4 = ccpwgl_int.math.mat4;
             var shipCount = 200;
             var spacing = 1500;
-
-            var scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
-
             var sofData = {hull: null, faction: null, race: null};
 
             function sofDataReceived(member)
@@ -77,10 +77,6 @@
             ccpwgl.getSofHullNames(sofDataReceived('hull'));
             ccpwgl.getSofFactionNames(sofDataReceived('faction'));
             ccpwgl.getSofRaceNames(sofDataReceived('race'));
-
-
-            if (demos.options.postprocess)
-                ccpwgl.enablePostprocessing(true);
 
             ccpwgl.onPreRender = function()
             {

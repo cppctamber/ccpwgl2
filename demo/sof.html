@@ -12,21 +12,16 @@
 
     <script type="text/javascript">
 
-        var camera, scene, ship;
+        var canvas,  camera, scene, ship;
 
         $(document).ready(function()
         {
-            console.dir(ccpwgl_int);
-
-            var $canvas = $('#mainCanvas');
-            ccpwgl.initialize($canvas[0], demos.options);
-
-            camera = ccpwgl.createCamera($canvas[0], undefined, true);
+            canvas = document.getElementById('mainCanvas');
+            ccpwgl.initialize(canvas, demos.options);
+            camera = ccpwgl.createCamera(canvas);
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
-            var lastHull = null;
 
-            if (demos.options.postprocess)
-                ccpwgl.enablePostprocessing(true);
+            var lastHull = null;
 
             function loadDna(dna)
             {

@@ -11,23 +11,18 @@
 
     <script type="text/javascript">
 
-        window.ccpwgl = ccpwgl;
-        window.ccpwgl_int = ccpwgl_int;
+        var canvas, camera, scene, planets = [];
 
         function OnDocLoad()
         {
             var mat4 = ccpwgl_int.math.mat4;
 
-            var canvas = document.getElementById('mainCanvas');
+            canvas = document.getElementById('mainCanvas');
             ccpwgl.initialize(canvas, demos.options);
+            camera = ccpwgl.createCamera(canvas);
+            scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
 
-            var camera = ccpwgl.createCamera(canvas, undefined, true);
-            var scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
-
-            if (demos.options.postprocess)
-                ccpwgl.enablePostprocessing(true);
-
-            var planets = [
+            var planetsData = [
                 [40000004,
                     'res:/dx9/model/WorldObject/Planet/Template/Moon/p_moon_51.red',
                     undefined,
@@ -91,27 +86,25 @@
                     function() { console.warn('Loaded: Terrestrial planet 3')}],
             ];
 
-            window.planets = [];
-
-            for (var i = 0; i < planets.length; ++i)
+            for (var i = 0; i < planetsData.length; ++i)
             {
                 var planet = scene.loadPlanet(
-                    planets[i][0],
-                    planets[i][1],
-                    planets[i][2],
-                    planets[i][3],
-                    planets[i][4],
-                    planets[i][5]
+                    planetsData[i][0],
+                    planetsData[i][1],
+                    planetsData[i][2],
+                    planetsData[i][3],
+                    planetsData[i][4],
+                    planetsData[i][5]
                 );
 
-                var angle = Math.PI * 2 * i / planets.length;
+                var angle = Math.PI * 2 * i / planetsData.length;
                 planet.setTransform(mat4.fromValues(
                     10000, 0, 0, 0,
                     0, 10000, 0, 0,
                     0, 0, 10000, 0,
                     100000 * Math.cos(angle), 0, 100000 * Math.sin(angle), 1
                 ));
-                window.planets.push(planet);
+                planets.push(planet);
             }
 
             ccpwgl.onPreRender = function()

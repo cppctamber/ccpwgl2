@@ -313,9 +313,10 @@ var ccpwgl = (function (ccpwgl_int)
 
         if (!webglVersion) throw new ccpwgl.NoWebGLError();
 
-        if ("postprocessing" in params)
+        var doPost = params.postprocessing || params.postprocess;
+        if (doPost)
         {
-            ccpwgl.enablePostprocessing(params.postprocessing);
+            ccpwgl.enablePostprocessing(doPost);
         }
 
         return webglVersion;
@@ -1615,7 +1616,7 @@ var ccpwgl = (function (ccpwgl_int)
         this.getResources = function (out)
         {
             if (!out) out = [];
-            this.wrappedObjects[0].GetResource(out);
+            this.wrappedObjects[0].GetResources(out);
             return out;
         };
 
@@ -2536,14 +2537,13 @@ var ccpwgl = (function (ccpwgl_int)
      *
      * @param {HTMLCanvasElement|Element} canvas
      * @param {*} [options]
-     *@param {boolean} [setAsCurrent]
      * @returns {Camera}
      */
-    ccpwgl.createCamera = function (canvas, options, setAsCurrent)
+    ccpwgl.createCamera = function (canvas, options)
     {
         function get(src, srcAttr, defaultValue)
         {
-            return src && srcAttr in src ? src[srcAttr] : defaultValue;
+            return src && src[srcAttr] !== undefined ? src[srcAttr] : defaultValue;
         }
 
         var camera = new Camera(canvas);
@@ -2559,7 +2559,7 @@ var ccpwgl = (function (ccpwgl_int)
         camera.minPitch = get(options, "minPitch", -0.5);
         camera.maxPitch = get(options, "maxPitch", 0.35);
 
-        if (setAsCurrent)
+        if (get(options, "current", true))
         {
             ccpwgl.setCamera(camera);
         }

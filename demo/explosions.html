@@ -17,22 +17,21 @@
         {
             canvas = document.getElementById('mainCanvas');
             ccpwgl.initialize(canvas, demos.options);
-
-            camera = ccpwgl.createCamera(canvas, { distance: 75000 }, true);
+            camera = ccpwgl.createCamera(canvas, { distance: 75000 });
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
             sizes = ['c', 'd', 'h', 'l', 'm', 's', 't'];
             races = ['amarr', 'angel', 'blooodraider', 'caldari', 'concord', 'gallente', 'generic', 'jove', 'minmatar', 'ore', 'rogue', 'sansha', 'sepentis', 'sleeper', 'soct', 'soe', 'talocan'];
 
             var currentTime = 0;
 
-            function getRandomExplosion(explodionData)
+            function getRandomExplosion(explosionData)
             {
                 var size = sizes[Math.floor(Math.random() * sizes.length)];
                 var race = races[Math.floor(Math.random() * races.length)];
                 var explosion = scene.loadObject('res:/fisfx/deathexplosion/death_' + size + '_' + race + '.red', function()
                 {
                     this.wrappedObjects[0].Start();
-                    explodionData[1] = currentTime + this.wrappedObjects[0].duration;
+                    explosionData[1] = currentTime + this.wrappedObjects[0].duration;
                 });
                 explosion.setTransform([
                     1, 0, 0, 0,
@@ -64,9 +63,6 @@
             }
 
             spawnExplosion();
-
-            if (demos.options.postprocess)
-                ccpwgl.enablePostprocessing(true);
 
             ccpwgl.onPreRender = function(dt)
             {

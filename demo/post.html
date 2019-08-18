@@ -17,7 +17,6 @@
         {
             canvas = document.getElementById('mainCanvas');
             ccpwgl.initialize(canvas, demos.options);
-
             camera = ccpwgl.createCamera(canvas, undefined, true);
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/c04_cube.red');
             ship = scene.loadShip('cf4_t1:caldaribase:caldari', function() {camera.focus(this, 4)});

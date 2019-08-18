@@ -11,14 +11,13 @@
 
     <script type="text/javascript">
 
-        var ship, camera, scene;
+        var canvas, ship, camera, scene;
 
         function OnDocLoad()
         {
-            var canvas = document.getElementById('mainCanvas');
+            canvas = document.getElementById('mainCanvas');
             ccpwgl.initialize(canvas, demos.options);
-
-            camera = ccpwgl.createCamera(canvas, undefined, true);
+            camera = ccpwgl.createCamera(canvas);
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
             scene.loadShip('ab1_t1:amarrbase:amarr', function() { camera.focus(this, 4)});
             scene.loadSun('res:/fisfx/lensflare/orange_sun.red');

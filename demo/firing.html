@@ -44,9 +44,6 @@
             ship.mountTurret(2, 'res:/dx9/model/turret/Hybrid/Rail/M/Rail_250mm_T1.red');
             ship.setBoosterStrength(0.3);
 
-            if (demos.options.postprocess)
-                ccpwgl.enablePostprocessing(true);
-
             ccpwgl.onPreRender = function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
