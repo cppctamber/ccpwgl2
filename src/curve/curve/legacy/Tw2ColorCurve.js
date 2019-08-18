@@ -155,7 +155,7 @@ export class Tw2ColorCurve extends Tw2Curve
      * The curve's dimension
      * @type {number}
      */
-    static ouputDimension = 4;
+    static outputDimension = 4;
 
     /**
      * The curve's current value property

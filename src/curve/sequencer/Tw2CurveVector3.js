@@ -3,13 +3,12 @@ import {vec3} from "../../global";
 
 /**
  * Vector3 curve sequencer
- * TODO: No value property by default, how is this curve's value supposed to be read?
  * @ccp Tr2CurveVector3
  *
  * @property {Tr2CurveScalar} x -
  * @property {Tr2CurveScalar} y -
  * @property {Tr2CurveScalar} z -
- * @property {vec3} _value      -
+ * @property {vec3} currentValue      -
  */
 export class Tw2CurveVector3 extends Tw2CurveSequencer
 {
@@ -17,9 +16,7 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
     x = null;
     y = null;
     z = null;
-
-    _value = vec3.create();
-
+    currentValue = vec3.create();
 
     /**
      * Sorts the sequencer
@@ -44,7 +41,7 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
      */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this._value);
+        this.GetValueAt(time, this.currentValue);
     }
 
     /**
@@ -77,7 +74,7 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
      * The sequencer's current value property
      * @type {String}
      */
-    static valueProperty = "_value";
+    static valueProperty = "currentValue";
 
     /**
      * The sequencer's type
@@ -101,7 +98,7 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
     {
         return [
             ["name", r.string],
-            ["x", r.plain],
+            ["x", r.raw],
             ["y", r.plain],
             ["z", r.plain]
         ];

@@ -3,14 +3,13 @@ import {vec4} from "../../global";
 
 /**
  * Tw2CurveColor
- * TODO: No value property by default, how is this curve's value supposed to be read?
  * @ccp Tr2CurveColor
  *
- * @property {Tr2CurveScalar} r -
- * @property {Tr2CurveScalar} g -
- * @property {Tr2CurveScalar} b -
- * @property {Tr2CurveScalar} a -
- * @property {vec4} _value      -
+ * @property {Tr2CurveScalar} r  -
+ * @property {Tr2CurveScalar} g  -
+ * @property {Tr2CurveScalar} b  -
+ * @property {Tr2CurveScalar} a  -
+ * @property {vec4} currentValue -
  */
 export class Tw2CurveColor extends Tw2CurveSequencer
 {
@@ -19,8 +18,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     g = null;
     b = null;
     a = null;
-
-    _value = vec4.fromValues(0, 0, 0, 0);
+    currentValue = vec4.fromValues(0, 0, 0, 0);
 
     /**
      * Sorts the sequencer
@@ -45,7 +43,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this._value);
+        this.GetValueAt(time, this.currentValue);
     }
 
     /**
@@ -79,7 +77,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      * The sequencer's current value property
      * @type {String}
      */
-    static valueProperty = "_value";
+    static valueProperty = "currentValue";
 
     /**
      * The sequencer's type

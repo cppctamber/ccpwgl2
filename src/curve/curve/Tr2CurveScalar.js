@@ -1,5 +1,4 @@
 import {Tw2Curve, Tw2CurveKey} from "./Tw2Curve";
-import {ErrFeatureNotImplemented} from "../../core";
 
 /**
  * Tw2CurveScalarKey
@@ -52,6 +51,8 @@ export class Tw2CurveScalarKey extends Tw2CurveKey
  * TODO: implement timeScale
  * TODO: Get Extrapolation types from CCP
  * TODO: Get Interpolation types from CCP
+ * TODO: implement GetValueAt
+ * TODO: implement UpdateValue
  * @ccp Tr2CurveScalar
  *
  * @property {String} name                -
@@ -69,7 +70,9 @@ export class Tr2CurveScalar extends Tw2Curve
     keys = [];
     timeOffset = 0;
     timeScale = 0;
+    currentValue = 0;
 
+    // ccpwgl
     _length = 0;
 
     /**
@@ -91,16 +94,6 @@ export class Tr2CurveScalar extends Tw2Curve
     }
 
     /**
-     * Gets a value at a given time
-     * @param {Number} time
-     */
-    GetValueAt(time)
-    {
-        // TODO: Implement GetValueAt
-        throw new ErrFeatureNotImplemented({feature: "GetValueAt"});
-    }
-
-    /**
      * The curve's dimension
      * @type {?number}
      */
@@ -116,7 +109,7 @@ export class Tr2CurveScalar extends Tw2Curve
      * The curve's current value property
      * @type {?String}
      */
-    static valueProperty = "value";
+    static valueProperty = "currentValue";
 
     /**
      * The curve's type

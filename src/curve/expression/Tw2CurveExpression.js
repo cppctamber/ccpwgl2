@@ -1,14 +1,32 @@
-import {Tw2BaseClass} from "../../global/class";
+import {Tw2Curve} from "../curve";
 
-export function Tw2CurveExpression()
+/**
+ * Tw2CurveExpression
+ * Todo: Add expression engine
+ * @ccp N/A
+ *
+ * @property {String} name
+ * @property {Array} inputs
+ */
+export class Tw2CurveExpression extends Tw2Curve
 {
-    Tw2BaseClass.defineID(this);
-    this.name = "";
-    this.inputs = [];
+
+    name = "";
+    inputs = [];
+
+    /**
+     * Updates the current value at a specific time
+     * @param {number} time
+     */
+    UpdateValue(time)
+    {
+        this.GetValueAt(time, this.currentValue);
+    }
+
+    /**
+     * Curve type
+     * @type {number}
+     */
+    static curveType = Tw2Curve.Type.EXPRESSION;
+
 }
-
-Tw2CurveExpression.prototype = Object.assign(Object.create(Tw2BaseClass.prototype), {
-
-    constructor: Tw2CurveExpression,
-
-});

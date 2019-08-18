@@ -25,6 +25,23 @@ export class Tw2PerlinCurve extends Tw2Curve
     value = 0;
 
     /**
+     * Sorts the curve
+     */
+    Sort()
+    {
+        // No operation
+    }
+
+    /**
+     * Gets the curve's length
+     * @returns {number}
+     */
+    GetLength()
+    {
+        return 0;
+    }
+
+    /**
      * Updates the current value at the given time
      * @param {number} time
      */
