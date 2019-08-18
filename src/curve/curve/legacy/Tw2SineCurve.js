@@ -17,6 +17,22 @@ export class Tw2SineCurve extends Tw2Curve
     scale = 1;
     speed = 1;
 
+    /**
+     * Sorts the curve
+     */
+    Sort()
+    {
+        // No operation
+    }
+
+    /**
+     * Gets the curve's length
+     * @returns {number}
+     */
+    GetLength()
+    {
+        return 0;
+    }
 
     /**
      * Updates the current value at the given time

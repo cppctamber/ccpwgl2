@@ -17,6 +17,22 @@ export class Tw2RandomConstantCurve extends Tw2Curve
     max = 1;
     hold = true;
 
+    /**
+     * Sorts the curve
+     */
+    Sort()
+    {
+        // No operation
+    }
+
+    /**
+     * Gets the curve's length
+     * @returns {number}
+     */
+    GetLength()
+    {
+        return 0;
+    }
 
     /**
      * Updates the current value at the given time

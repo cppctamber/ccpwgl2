@@ -13,6 +13,22 @@ export class Tw2CurveConstant extends Tw2Curve
 
     value = vec4.create();
 
+    /**
+     * Sorts the curve
+     */
+    Sort()
+    {
+        // No operation
+    }
+
+    /**
+     * Gets the curve's length
+     * @returns {number}
+     */
+    GetLength()
+    {
+        return 0;
+    }
 
     /**
      * Updates the current value at the given time
