@@ -94,7 +94,7 @@ export class EveOccluder extends Tw2BaseClass
 
         if (!effect.effectRes || !effect.effectRes.IsGood()) return false;
 
-        effect.resources.BackBuffer.SetTextureRes(tex);
+        effect.parameters.BackBuffer.SetTextureRes(tex);
         effect.parameters.OccluderIndex.SetValue([index, total, samples]);
 
         d.SetStandardStates(d.RM_ADDITIVE);
@@ -130,9 +130,7 @@ export class EveOccluder extends Tw2BaseClass
             effectFilePath: "res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx",
             parameters: {
                 "OccluderPosition": [1, 1, 1, 1],
-                "OccluderIndex": [1, 1, 1]
-            },
-            textures: {
+                "OccluderIndex": [1, 1, 1],
                 "BackBuffer": ""
             }
         });

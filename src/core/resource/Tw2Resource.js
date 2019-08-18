@@ -22,6 +22,7 @@ export class Tw2Resource
 
     /**
      * Checks if the resource is good and keeps it alive
+     * TODO: Replace with explicit calls to "IsPrepared"
      * @returns {boolean}
      */
     IsGood()
@@ -110,10 +111,7 @@ export class Tw2Resource
     Reload()
     {
         this.Unload();
-        if (this.IsUnloaded() || this.IsPurged())
-        {
-            resMan.LoadResource(this);
-        }
+        resMan.ReloadResource(this);
     }
 
     /**
@@ -247,13 +245,6 @@ export class Tw2Resource
      */
     RegisterCallbacks(onResolved, onRejected)
     {
-        this.KeepAlive();
-
-        if (!onResolved && !onRejected)
-        {
-            return;
-        }
-
         const notification = {
 
             /**
@@ -411,4 +402,3 @@ Tw2Resource.prototype.DoCustomLoad = null;
  * @type {null}
  */
 Tw2Resource.prototype.requestResponseType = null;
-

@@ -3,12 +3,12 @@ import {quat} from "../../global";
 
 /**
  * Euler to Quaternion sequencer
+ * TODO: No value property by default, how is this curve's value supposed to be read?
  * @ccp Tr2CurveEulerRotation
  *
  * @property {Tr2CurveScalar} pitch -
  * @property {Tr2CurveScalar} roll  -
  * @property {Tr2CurveScalar} yaw   -
- * @property {quat} currentValue
  */
 export class Tw2CurveEulerRotation extends Tw2CurveSequencer
 {
@@ -16,7 +16,8 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
     pitch = null;
     roll = null;
     yaw = null;
-    currentValue = quat.create();
+
+    _value = quat.create();
 
     /**
      * Sorts the sequencer
@@ -41,7 +42,7 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
      */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this.currentValue);
+        this.GetValueAt(time, this._value);
     }
 
     /**
@@ -89,7 +90,7 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
      * The sequencer's current value property
      * @type {String}
      */
-    static valueProperty = "currentValue";
+    static valueProperty = "_value";
 
     /**
      * The sequencer's type
@@ -112,9 +113,9 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
     {
         return [
             ["name", r.string],
-            ["pitch", r.rawObject],
-            ["roll", r.rawObject],
-            ["yaw", r.rawObject]
+            ["pitch", r.plain],
+            ["roll", r.plain],
+            ["yaw", r.plain]
         ];
     }
 

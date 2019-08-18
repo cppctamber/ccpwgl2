@@ -476,7 +476,7 @@ export class ErrBindingValueUndefined extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Error binding '%name=unknown%', %object% property is undefined (%property%)");
+        super(data, "Error binding object, %object% property is undefined (%property%)");
     }
 }
 
@@ -487,7 +487,7 @@ export class ErrBindingType extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Error binding '%name=unknown%', cannot identify binding type");
+        super(data, "Error binding object, cannot identify binding type");
     }
 }
 
@@ -498,6 +498,6 @@ export class ErrBindingReference extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Error binding '%name=unknown%', could not find %object% object reference");
+        super(data, "Error binding object, could not find %object% object reference");
     }
 }

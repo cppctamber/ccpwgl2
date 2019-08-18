@@ -63,7 +63,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
         if (!this.sourceObject || this.sourceAttribute === "") return;
         if (!this.destinationObject || this.destinationAttribute === "") return;
 
-        /*
+        // Handle source by reference
         if (this.sourceObject && "_ref" in this.sourceObject)
         {
             this.sourceObject = this.FindIDFromRoot(this.sourceObject._ref);
@@ -76,7 +76,6 @@ export class Tw2ValueBinding extends Tw2BaseClass
             this.destinationObject = this.FindIDFromRoot(this.destinationObject._ref);
             if (!this.destinationObject) throw new ErrBindingReference({object: "destination"});
         }
-         */
 
         let srcSwizzled = false,
             destSwizzled = false,
@@ -202,21 +201,12 @@ export class Tw2ValueBinding extends Tw2BaseClass
         // Targets must be defined
         if (src === undefined)
         {
-            throw new ErrBindingValueUndefined({name: this.name, object: "source", property: this.sourceAttribute});
+            throw new ErrBindingValueUndefined({object: "source", property: this.sourceAttribute});
         }
 
         if (dest === undefined)
         {
-            throw new ErrBindingValueUndefined({
-                name: this.name,
-                object: "destination",
-                property: this.destinationAttribute
-            });
-        }
-
-        if (!src || !dest)
-        {
-            return null;
+            throw new ErrBindingValueUndefined({object: "destination", property: this.destinationAttribute});
         }
 
         const
@@ -263,7 +253,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
 
         if (!copyFunc)
         {
-            throw new ErrBindingType({name: this.name});
+            throw new ErrBindingType();
         }
 
         this._copyFunc = copyFunc;

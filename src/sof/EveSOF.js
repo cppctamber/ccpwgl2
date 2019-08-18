@@ -195,13 +195,13 @@ export function EveSOF(tw2)
                 {
                     var path = hullTextures[j];
                     path = ModifyTextureResPath(path, j, area, faction, commands);
-                    effect.resources[j] = new Tw2TextureParameter(j, path);
+                    effect.parameters[j] = new Tw2TextureParameter(j, path);
                 }
             }
 
             for (j = 0; j < pattern.layers.length; ++j)
             {
-                if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.resources))
+                if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.parameters))
                 {
                     var patternTex = new Tw2TextureParameter(pattern.layers[j].textureName);
                     patternTex.resourcePath = pattern.layers[j].textureResFilePath;
@@ -209,7 +209,7 @@ export function EveSOF(tw2)
                     patternTex.addressUMode = GetAddressMode(get(pattern.layers[j], "projectionTypeU", 0));
                     patternTex.addressVMode = GetAddressMode(get(pattern.layers[j], "projectionTypeV", 0));
                     patternTex.Initialize();
-                    effect.resources[pattern.layers[j].textureName] = patternTex;
+                    effect.parameters[pattern.layers[j].textureName] = patternTex;
                 }
             }
 
@@ -218,9 +218,9 @@ export function EveSOF(tw2)
             {
                 if (defaultTextures.hasOwnProperty(texName))
                 {
-                    if (!(texName in effect.resources))
+                    if (!(texName in effect.parameters))
                     {
-                        effect.resources[texName] = new Tw2TextureParameter(texName, defaultTextures[texName]);
+                        effect.parameters[texName] = new Tw2TextureParameter(texName, defaultTextures[texName]);
                     }
                 }
             }
@@ -577,15 +577,13 @@ export function EveSOF(tw2)
                     coneEffect: {
                         effectFilePath: isSkinned ? EFF_SPOTLIGHT_CONE_SKINNED : EFF_SPOTLIGHT_CONE,
                         parameters: {
+                            TextureMap: hullSet.coneTextureResPath,
                             zOffset: get(hullSet, "zOffset", 0)
-                        },
-                        textures: {
-                            TextureMap: hullSet.coneTextureResPath
                         }
                     },
                     glowEffect: {
                         effectFilePath: isSkinned ? EFF_SPOTLIGHT_GLOW_SKINNED : EFF_SPOTLIGHT_GLOW,
-                        textures: {
+                        parameters: {
                             TextureMap: hullSet.glowTextureResPath
                         }
                     }
@@ -654,13 +652,11 @@ export function EveSOF(tw2)
                     items,
                     effect: {
                         effectFilePath: hullSet.skinned ? EFF_PLANE_SKINNED : EFF_PLANE,
-                        parameters: {
-                            PlaneData: get(hullSet, "planeData", [1, 0, 0, 0])
-                        },
                         textures: {
                             Layer1Map: hullSet.layer1MapResPath,
                             Layer2Map: hullSet.layer2MapResPath,
-                            MaskMap: hullSet.maskMapResPath
+                            MaskMap: hullSet.maskMapResPath,
+                            PlaneData: get(hullSet, "planeData", [1, 0, 0, 0])
                         }
                     }
                 }));
@@ -1031,9 +1027,7 @@ export function EveSOF(tw2)
             spriteEffect = Tw2Effect.from({
                 effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
                 parameters: {
-                    MainIntensity: 1
-                },
-                textures: {
+                    MainIntensity: 1,
                     GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
                 }
             });

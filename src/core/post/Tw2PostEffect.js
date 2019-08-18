@@ -245,19 +245,18 @@ export class Tw2PostEffect extends Tw2BaseClass
                     inputs = item.inputs,
                     effect = item.effect,
                     shader = effect.shader,
-                    parameters = effect.parameters,
-                    resources = effect.resources;
+                    parameters = effect.parameters;
 
                 // Auto create current blit
-                if (shader.HasTexture("BlitCurrent") && !resources.BlitCurrent)
+                if (shader.HasTexture("BlitCurrent") && !parameters.BlitCurrent)
                 {
-                    resources["BlitCurrent"] = new Tw2TextureParameter("BlitCurrent", "rgba:/0,0,0,255");
+                    parameters["BlitCurrent"] = new Tw2TextureParameter("BlitCurrent", "rgba:/0,0,0,255");
                 }
 
                 // Auto create original blit
-                if (shader.HasTexture("BlitOriginal") && !resources.BlitOriginal)
+                if (shader.HasTexture("BlitOriginal") && !parameters.BlitOriginal)
                 {
-                    resources["BlitOriginal"] = new Tw2TextureParameter("BlitOriginal", "rgba:/0,0,0,255");
+                    parameters["BlitOriginal"] = new Tw2TextureParameter("BlitOriginal", "rgba:/0,0,0,255");
                 }
 
                 // Setup step render target
@@ -271,35 +270,35 @@ export class Tw2PostEffect extends Tw2BaseClass
                 }
 
                 // Assign render targets to textures
-                for (let name in inputs)
+                for (let texture in inputs)
                 {
-                    if (inputs.hasOwnProperty(name))
+                    if (inputs.hasOwnProperty(texture))
                     {
                         // Ensure input is supported
-                        if (!shader.HasTexture(name))
+                        if (!shader.HasTexture(texture))
                         {
-                            console.warn(`Invalid input parameter ${name}`);
-                            Reflect.deleteProperty(inputs, name);
+                            console.warn(`Invalid input parameter ${texture}`);
+                            delete inputs[texture];
                         }
                         else
                         {
                             // Ensure step texture exists
-                            if (!resources[name])
+                            if (!parameters[texture])
                             {
-                                resources[name] = new Tw2TextureParameter(name);
+                                parameters[texture] = new Tw2TextureParameter(texture);
                             }
 
                             const
-                                texture = resources[name],
-                                target = inputs[name];
+                                parameter = parameters[texture],
+                                target = inputs[texture];
 
                             if (target)
                             {
-                                texture.SetTextureRes(this.CreateTarget(target, width, height).texture);
+                                parameter.SetTextureRes(this.CreateTarget(target, width, height).texture);
                             }
                             else
                             {
-                                texture.SetTextureRes(this._texture);
+                                parameter.SetTextureRes(this._texture);
                             }
                         }
                     }

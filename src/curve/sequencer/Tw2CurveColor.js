@@ -3,13 +3,14 @@ import {vec4} from "../../global";
 
 /**
  * Tw2CurveColor
+ * TODO: No value property by default, how is this curve's value supposed to be read?
  * @ccp Tr2CurveColor
  *
- * @property {Tr2CurveScalar} r  -
- * @property {Tr2CurveScalar} g  -
- * @property {Tr2CurveScalar} b  -
- * @property {Tr2CurveScalar} a  -
- * @property {vec4} currentValue -      -
+ * @property {Tr2CurveScalar} r -
+ * @property {Tr2CurveScalar} g -
+ * @property {Tr2CurveScalar} b -
+ * @property {Tr2CurveScalar} a -
+ * @property {vec4} _value      -
  */
 export class Tw2CurveColor extends Tw2CurveSequencer
 {
@@ -18,8 +19,8 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     g = null;
     b = null;
     a = null;
-    currentValue = vec4.fromValues(0, 0, 0, 0);
 
+    _value = vec4.fromValues(0, 0, 0, 0);
 
     /**
      * Sorts the sequencer
@@ -44,7 +45,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      */
     UpdateValue(time)
     {
-        this.GetValueAt(time, this.currentValue);
+        this.GetValueAt(time, this._value);
     }
 
     /**
@@ -78,7 +79,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      * The sequencer's current value property
      * @type {String}
      */
-    static valueProperty = "currentValue";
+    static valueProperty = "_value";
 
     /**
      * The sequencer's type
@@ -101,10 +102,10 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     {
         return [
             ["name", r.string],
-            ["r", r.rawObject],
-            ["g", r.rawObject],
-            ["b", r.rawObject],
-            ["a", r.rawObject]
+            ["r", r.plain],
+            ["g", r.plain],
+            ["b", r.plain],
+            ["a", r.plain]
         ];
     }
 

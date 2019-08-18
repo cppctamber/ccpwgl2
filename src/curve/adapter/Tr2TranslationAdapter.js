@@ -11,17 +11,6 @@ export class Tr2TranslationAdapter extends Tw2CurveAdapter
 
     value = vec3.create();
 
-    /**
-     * The curve's current value property
-     * @type {?String}
-     */
-    static valueProperty = "value";
-
-    /**
-     * The sequencer's output dimension
-     * @type {number}
-     */
-    static outputDimension = 3;
 
     /**
      * Black definition
