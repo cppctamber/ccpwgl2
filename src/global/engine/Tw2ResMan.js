@@ -3,9 +3,6 @@ import {Tw2LoadingObject} from "../../core/resource/Tw2LoadingObject";
 import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
 import {
     Tw2Error,
-    //ErrHTTPInstance,
-    //ErrHTTPReadyState,
-    //ErrHTTPRequestSend,
     ErrHTTPStatus,
     ErrFeatureNotImplemented,
     ErrResourceExtensionUndefined,
@@ -110,17 +107,12 @@ export class Tw2ResMan extends Tw2EventEmitter
 
             if (isError(log))
             {
-                const err = eventData.err = log;
-                this.motherLode.AddError(path, err);
-                log = Object.assign({}, defaultLog, {message: err.message, err});
-            }
-            else
-            {
-                log = Object.assign({}, defaultLog, log);
+                const err = eventData.err = this.motherLode.AddError(path, log);
+                log = {err};
             }
 
-            eventData.log = log;
-            log.message = log.message.includes(path) ? log.message : log.message += ` "${path}"`;
+            log.path = path;
+            eventData.log = Object.assign({}, defaultLog, log);
             this.emit(eventName.toLowerCase(), eventData);
         }
     }
@@ -137,18 +129,20 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     /**
      * Clears the motherLode {@link Tw2MotherLode}
+     * @param {Function} [onClear] - An optional function which is called on each cleared resource
      */
-    Clear()
+    Clear(onClear)
     {
-        this.motherLode.Clear();
+        this.motherLode.Clear(onClear);
     }
 
     /**
      * Unloads and Clears the motherLode {@link Tw2MotherLode}
+     * @param {Function} [onClear] - An optional function which is called on each cleared resource
      */
-    UnloadAndClear()
+    UnloadAndClear(onClear)
     {
-        this.motherLode.UnloadAndClear();
+        this.motherLode.UnloadAndClear(onClear);
     }
 
     /**
@@ -185,15 +179,14 @@ export class Tw2ResMan extends Tw2EventEmitter
             try
             {
                 res.Prepare(data, xml);
+                this._prepareBudget -= (device.now - startTime) * 0.001;
+                if (this._prepareBudget < 0) break;
             }
             catch (err)
             {
+                this._prepareBudget = 0;
                 res.OnError(err);
-                console.error(err);
             }
-
-            this._prepareBudget -= (device.now - startTime) * 0.001;
-            if (this._prepareBudget < 0) break;
         }
 
         this._purgeTime += device.dt;
@@ -229,10 +222,12 @@ export class Tw2ResMan extends Tw2EventEmitter
 
     /**
      * Gets a resource
-     * @param {String} path
+     * @param {String} path           - The path to load
+     * @param {Function} [onResolved] - Callback fired when the object has loaded
+     * @param {Function} [onRejected] - Callback fired when the object fails to load
      * @returns {Tw2Resource|*} resource
      */
-    GetResource(path)
+    GetResource(path, onResolved, onRejected)
     {
         let res;
         path = Tw2ResMan.NormalizePath(path);
@@ -241,66 +236,55 @@ export class Tw2ResMan extends Tw2EventEmitter
         res = this.motherLode.Find(path);
         if (res)
         {
-            if (res.IsPurged()) res.Reload();
+            res.RegisterCallbacks(onResolved, onRejected);
             return res;
         }
 
-        // Check if errored
-        if (this.motherLode.HasErrors(path))
+        try
         {
-            this.OnResError(path, this.motherLode.GetLastError(path));
+            const Constructor = this.GetResourceConstructor(path);
+            res = new Constructor();
+        }
+        catch (err)
+        {
+            this.OnResError(path, err);
+            if (onRejected) onRejected(err);
             return null;
         }
 
-        if (path.indexOf("dynamic:/") === 0)
-        {
-            this.OnResError(path, new ErrFeatureNotImplemented({feature: "Dynamic resources"}));
-            return null;
-        }
-
-        const extension = Tw2ResMan.GetPathExt(path);
-        if (extension === null)
-        {
-            this.OnResError(path, new ErrResourceExtensionUndefined({path}));
-            return null;
-        }
-
-        const Constructor = this.tw2.store.extensions.Get(extension);
-        if (!Constructor)
-        {
-            this.OnResError(path, new ErrResourceExtensionUnregistered({path, extension}));
-            return null;
-        }
-
-        res = new Constructor();
         res.path = path;
+        res.RegisterCallbacks(onResolved, onRejected);
         return this.LoadResource(res);
     }
 
     /**
-     * Gets a resource object
+     * Gets a promise that will resolve into a resource
      * @param {String} path
-     * @param {Function} onResolved - Callback fired when the object has loaded
-     * @param {Function} onRejected - Callback fired when the object fails to load
+     * @returns {Promise<Tw2Resource>}
+     */
+    async GetResourceAsync(path)
+    {
+        return new Promise((resolve, reject) =>
+        {
+            this.GetResource(path, resolve, reject);
+        });
+    }
+
+    /**
+     * Gets a resource object
+     * @param {String} path           - The path to load
+     * @param {Function} [onResolved] - Callback fired when the object has loaded
+     * @param {Function} [onRejected] - Callback fired when the object fails to load
      */
     GetObject(path, onResolved, onRejected)
     {
         path = Tw2ResMan.NormalizePath(path);
 
-        // Check if already exists
+        // Check if already loaded
         let res = this.motherLode.Find(path);
         if (res)
         {
             res.AddObject(onResolved, onRejected);
-            return;
-        }
-
-        // Check if already failed
-        if (this.motherLode.HasErrors(path))
-        {
-            const lastError = this.motherLode.GetLastError(path);
-            this.OnResError(path, lastError);
-            if (onRejected) onRejected(lastError);
             return;
         }
 
@@ -315,26 +299,12 @@ export class Tw2ResMan extends Tw2EventEmitter
      * @param {String} path
      * @returns {Promise<any>}
      */
-    GetObjectAsync(path)
+    async GetObjectAsync(path)
     {
         return new Promise((resolve, reject) =>
         {
             this.GetObject(path, resolve, reject);
         });
-    }
-
-    /**
-     * Reloads a resource
-     * @param {Tw2Resource} resource
-     * @returns {Tw2Resource} resource
-     */
-    ReloadResource(resource)
-    {
-        if (resource.IsPurged() || resource.HasErrors())
-        {
-            this.LoadResource(resource);
-        }
-        return resource;
     }
 
     /**
@@ -344,40 +314,43 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     LoadResource(res)
     {
-        let url,
-            promise;
-
         this.motherLode.Add(res.path, res);
-        res.OnRequested();
+
+        // Don't load if already errored
+        if (res.HasErrors())
+        {
+            return res;
+        }
 
         try
         {
-            url = this.BuildUrl(res.path);
+            const url = this.BuildUrl(res.path);
+
+            res.OnRequested();
+
             if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url)))
             {
                 return res;
+            }
+
+            if (!res.HasErrors())
+            {
+                this.Fetch(url, res.requestResponseType)
+                    .then(response =>
+                    {
+                        res.OnLoaded();
+                        this.Queue(res, response);
+                    })
+                    .catch(err =>
+                    {
+                        res.OnError(err);
+                    });
             }
         }
         catch (err)
         {
             res.OnError(err);
-            return res;
         }
-
-        this._pendingLoads++;
-
-        this.Fetch(url, res.requestResponseType)
-            .then(response =>
-            {
-                this._pendingLoads--;
-                res.OnLoaded();
-                this.Queue(res, response);
-            })
-            .catch(err =>
-            {
-                this._pendingLoads--;
-                res.OnError(err);
-            });
 
         return res;
     }
@@ -410,9 +383,6 @@ export class Tw2ResMan extends Tw2EventEmitter
                     case "arraybuffer":
                         return response.arrayBuffer();
 
-                    case "body":
-                        return response.body();
-
                     case "text":
                         return response.text();
 
@@ -433,18 +403,57 @@ export class Tw2ResMan extends Tw2EventEmitter
             })
             .catch(err =>
             {
-                this._pendingLoads++;
+                this._pendingLoads--;
                 throw err;
             });
     }
 
     /**
+     * Gets a resource constructor
+     * @param {String} path
+     * @returns {Tw2Resource}
+     * @throws {ErrFeatureNotImplemented} When passed an unsupported resource prefix
+     * @throws {ErrResourceExtensionUndefined} When passed a resource without an extension
+     * @throws {ErrResourceExtensionUnregistered} When passed a resource extension that isn't registered/ supported
+     */
+    GetResourceConstructor(path)
+    {
+        const {extensions} = this.tw2.store;
+
+        path = Tw2ResMan.NormalizePath(path);
+
+        if (path.indexOf("dynamic:/") === 0)
+        {
+            throw new ErrFeatureNotImplemented({feature: "Dynamic resources"});
+        }
+
+        const extension = Tw2ResMan.GetPathExt(path);
+        if (extension === null)
+        {
+            throw new ErrResourceExtensionUndefined({path});
+        }
+
+        const Constructor = extensions.Get(extension);
+        if (!Constructor)
+        {
+            throw new ErrResourceExtensionUnregistered({path, extension});
+        }
+
+        return Constructor;
+    }
+
+
+    /**
      * Builds a url from a resource path
      * @param {String} path
      * @returns {String}
+     * @throws {ErrResourcePrefixUndefined} When passed a url without a resource prefix
+     * @throws {ErrResourcePrefixUnregistered} When passed a url with an unregistered resource prefix
      */
     BuildUrl(path)
     {
+        const {paths} = this.tw2.store;
+
         const prefixIndex = path.indexOf(":/");
         if (prefixIndex === -1)
         {
@@ -457,7 +466,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return path;
         }
 
-        const fullPrefix = this.tw2.store.paths.Get(prefix);
+        const fullPrefix = paths.Get(prefix);
         if (!fullPrefix)
         {
             throw new ErrResourcePrefixUnregistered({path, prefix});
@@ -465,6 +474,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         return fullPrefix + path.substr(prefixIndex + 2);
     }
+
 
     /**
      * Normalizes a file path by making it lower case and replaces all '\\' with '/'

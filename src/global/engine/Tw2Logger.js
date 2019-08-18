@@ -29,6 +29,7 @@ import {assignIfExists, isError} from "../util";
  * @property {number} throttle               - The maximum throttling per log type
  * @property {Array} _logs                   - Stored logs
  * @property {?{String:string[]}} _throttled - Throttles message cache
+ * @property {Boolean} _debugMode            - When true all logs are forced to display
  */
 export class Tw2Logger extends Tw2EventEmitter
 {
@@ -36,7 +37,7 @@ export class Tw2Logger extends Tw2EventEmitter
     name = "";
     display = true;
     visible = {
-        log: true,
+        log: false,
         info: false,
         debug: false,
         warn: false,
@@ -44,10 +45,10 @@ export class Tw2Logger extends Tw2EventEmitter
     };
     history = 100;
     throttle = 20;
-    tw2 = null;
 
     _logs = [];
     _throttled = null;
+    _debugMode = false;
 
     /**
      * Constructor
@@ -57,6 +58,16 @@ export class Tw2Logger extends Tw2EventEmitter
     {
         super();
         tw2.SetLibrary(this);
+    }
+
+    /**
+     * Enables debugging
+     * - Forces all logs to show regardless of visibility settings
+     * @param {Boolean} bool
+     */
+    Debug(bool)
+    {
+        this._debugMode = bool;
     }
 
     /**
@@ -75,7 +86,7 @@ export class Tw2Logger extends Tw2EventEmitter
      * @param {*|eventLog|Error} log - The eventLog or error to log
      * @returns {eventLog} log
      */
-    log(log)
+    Log(log)
     {
         if (log._logged) return log;
 
@@ -98,6 +109,16 @@ export class Tw2Logger extends Tw2EventEmitter
             log.message = log.message || "";
         }
 
+        // Ensure messages include path
+        if (log.path)
+        {
+            log.path = log.path.toLowerCase();
+            if (!log.message.includes(log.path))
+            {
+                log.message = `${log.message} "${log.path}"`;
+            }
+        }
+
         // Normalize the log name
         let name = log.name || this.constructor.category;
         name = name.replace(/_/g, " ");
@@ -110,7 +131,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Throttle excessive output
-        if (!this.throttle)
+        if (!this.throttle || this._debugMode)
         {
             this._throttled = null;
         }
@@ -134,14 +155,14 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Output to the console
-        if (!log.hide)
+        if (!log.hide || this._debugMode)
         {
             let header = `${this.name} ${log.name}:`;
+
             if (log.err || log.data)
             {
                 console.group(header, log.message);
-                if (log.err) console.debug(log.err.stack || log.err.toString());
-                if (log.stack) console.debug(log.stack);
+                if (log.err) console.error(log.err.stack || log.err.toString());
                 if (log.data) console.debug(JSON.stringify(log.data, null, 4));
                 console.groupEnd();
             }
@@ -152,10 +173,11 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Manage log history
-        if (this.history)
+        const logsToKeep = this._debugMode ? 1000 : this.history;
+        if (logsToKeep)
         {
             this._logs.unshift(log);
-            this._logs.splice(this.history);
+            this._logs.splice(logsToKeep);
         }
         else
         {

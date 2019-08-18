@@ -2,7 +2,7 @@
  * Manages loaded resources
  *
  * @property {Object} _loadedObjects            - loaded resources
- * @property {{string:Array<eventLog>}} _errors - Not implemented yet
+ * @property {{string:Array<eventLog>}} _errors - history of all errors for a path
  * @class
  */
 export class Tw2MotherLode
@@ -23,10 +23,14 @@ export class Tw2MotherLode
     {
         this._errors[path] = this._errors[path] || [];
 
+        // Ensure error includes file path
+        if (!err.message.includes(path))
+        {
+            err.message = `${err.message} "${path}"`;
+        }
+
         if (!this._errors[path].includes(err))
         {
-            err.data = err.data || {};
-            err.data.path = err.data.path || path;
             this._errors[path].push(err);
         }
 
@@ -93,30 +97,39 @@ export class Tw2MotherLode
      */
     Remove(path)
     {
-        delete this._loadedObjects[path];
+        if (this._loadedObjects[path])
+        {
+            Reflect.deleteProperty(this._loadedObjects, path);
+        }
     }
 
     /**
      * Clears the loaded object object
+     * @param {Function} [onClear] - Function that is called on each unloaded resource
      */
-    Clear()
+    Clear(onClear)
     {
-        this._loadedObjects = {};
+        for (const key in this._loadedObjects)
+        {
+            if (this._loadedObjects.hasOwnProperty(key))
+            {
+                if (onClear) onClear(this._loadedObjects[key]);
+                this.Remove(key);
+            }
+        }
     }
 
     /**
      * Unloads all loaded objects and then clears the loadedObject object
+     * @param {Function} [onClear] - Function that is called on each unloaded and cleared resource
      */
-    UnloadAndClear()
+    UnloadAndClear(onClear)
     {
-        for (const path in this._loadedObjects)
+        this.Clear(res =>
         {
-            if (this._loadedObjects.hasOwnProperty(path))
-            {
-                this._loadedObjects[path].Unload();
-            }
-        }
-        this._loadedObjects = {};
+            res.Unload();
+            if (onClear) onClear(res);
+        });
     }
 
     /**

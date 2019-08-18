@@ -32,11 +32,12 @@ export class Tw2LoadingObject extends Tw2Resource
      */
     AddObject(onResolved, onRejected)
     {
-        if (this.HasErrors())
+        const err = this.GetLastError();
+        if (err)
         {
             if (onRejected)
             {
-                onRejected(this.GetLastError());
+                onRejected(err);
             }
         }
         else
@@ -54,6 +55,7 @@ export class Tw2LoadingObject extends Tw2Resource
         const dot = this.path.lastIndexOf(".");
         if (dot === -1) return null;
         const ext = this.path.substr(dot + 1);
+        let first;
 
         if (this._inPrepare === null)
         {
@@ -75,7 +77,7 @@ export class Tw2LoadingObject extends Tw2Resource
 
             this._inPrepare = 0;
             // Test construction once for errors??
-            this._constructor.Construct();
+            first = this._constructor.Construct();
         }
 
         while (this._inPrepare < this._objects.length)
@@ -84,7 +86,15 @@ export class Tw2LoadingObject extends Tw2Resource
 
             try
             {
-                object.onResolved(this._constructor.Construct());
+                if (first)
+                {
+                    object.onResolved(first);
+                    first = null;
+                }
+                else
+                {
+                    object.onResolved(this._constructor.Construct());
+                }
             }
             catch (err)
             {
@@ -113,26 +123,25 @@ export class Tw2LoadingObject extends Tw2Resource
         super.OnError(err);
         for (let i = 0; i < this._objects.length; i++)
         {
-            const object = this._objects[i];
-            if (object.onRejected)
+            if (this._objects[i].onRejected)
             {
-                object.onRejected(err);
+                this._objects[i].onRejected(err);
             }
         }
         resMan.motherLode.Remove(this.path);
-        this._objects = [];
+        this._objects.splice(0);
         return err;
     }
 
     /**
      * Fires when prepared
-     * @param log
+     * @param {eventLog} eventLog
      */
-    OnPrepared(log)
+    OnPrepared(eventLog)
     {
         resMan.motherLode.Remove(this.path);
-        this._objects = [];
-        super.OnPrepared(log);
+        this._objects.splice(0);
+        super.OnPrepared(eventLog);
     }
 
 }

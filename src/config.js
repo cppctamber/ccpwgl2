@@ -13,7 +13,7 @@ import {vec4, mat4} from "./global/math";
  */
 export const config = {
 
-    debug: true,
+    debug: false,
 
     device: {
         "textureQuality": 0,
@@ -39,10 +39,10 @@ export const config = {
         "display": true,
         "visible": {
             "error": true,
-            "warning": true,
-            "log": true,
-            "info": true,
-            "debug": true
+            "warning": false,
+            "log": false,
+            "info": false,
+            "debug": false
         }
     },
 

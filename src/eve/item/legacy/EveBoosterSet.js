@@ -332,7 +332,7 @@ export class EveBoosterSet extends EveObjectSet
                     mat4.copy(item.transform, transform);
                     item.atlas0 = atlasIndex0;
                     item.atlas1 = atlasIndex1;
-                    item.OnValueChanged();
+                    item.UpdateValues();
                 }
             }
         }

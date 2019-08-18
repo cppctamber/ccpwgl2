@@ -47,7 +47,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     {
         vec3.copy(this.color1, startColor);
         vec3.copy(this.color2, endColor);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -57,7 +57,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     ChangeWidth(width)
     {
         this.width = width;
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -71,7 +71,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
         vec3.copy(this.position1, startPosition);
         vec3.copy(this.position2, endPosition);
         vec3.copy(this.intermediatePosition, middle);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -83,7 +83,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     {
         vec3.copy(this.position1, startPosition);
         vec3.copy(this.position2, endPosition);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -93,7 +93,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     ChangeIntermediateCartesian(intermediatePosition)
     {
         vec3.copy(this.intermediatePosition, intermediatePosition);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -108,7 +108,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
         vec3.fromSpherical(this.position1, startPosition, center);
         vec3.fromSpherical(this.position2, endPosition, center);
         vec3.fromSpherical(this.intermediatePosition, middle, center);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -121,7 +121,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     {
         vec3.fromSpherical(this.position1, startPosition, center);
         vec3.fromSpherical(this.position2, endPosition, center);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -132,7 +132,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     ChangeIntermediateSpherical(intermediatePosition, center)
     {
         vec3.fromSpherical(this.intermediatePosition, intermediatePosition, center);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -144,7 +144,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     {
         vec4.copy(this.multiColor, color);
         this.multiColorBorder = border;
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -158,7 +158,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
         vec4.copy(this.overlayColor, color);
         this.animationSpeed = speed;
         this.animationScale = scale;
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -170,7 +170,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
         if (this.type !== EveCurveLineSetItem.Type.STRAIGHT)
         {
             this.numOfSegments = numOfSegments;
-            this.OnValueChanged();
+            this.UpdateValues();
         }
     }
 
@@ -323,7 +323,7 @@ export class EveCurveLineSet extends EveObjectSet
      */
     Initialize()
     {
-        this.OnValueChanged();
+        this.UpdateValues();
         this.Rebuild();
     }
 

@@ -220,17 +220,14 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
 
             case "dds":
-                resMan._pendingLoads++;
                 resMan.Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer")
                     .then(response =>
                     {
-                        resMan._pendingLoads--;
                         this.OnLoaded();
                         resMan.Queue(this, response, extension);
                     })
                     .catch(err =>
                     {
-                        resMan._pendingLoads--;
                         this.OnError(err);
                     });
                 return true;

@@ -30,7 +30,7 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
         if ("value" in scaling) scaling = scaling["value"];
 
         mat4.fromRotationTranslationScale(this.value, rotation, translation, scaling);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -45,9 +45,9 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
         mat4.getTranslation("value" in translation ? translation.value : translation, this.value);
         mat4.getScaling("value" in scaling ? scaling.value : scaling, this.value);
 
-        if ("OnValueChanged" in rotation) rotation.OnValueChanged();
-        if ("OnValueChanged" in translation) translation.OnValueChanged();
-        if ("OnValueChanged" in scaling) scaling.OnValueChanged();
+        if ("UpdateValues" in rotation) rotation.UpdateValues();
+        if ("UpdateValues" in translation) translation.UpdateValues();
+        if ("UpdateValues" in scaling) scaling.UpdateValues();
     }
 
     /**

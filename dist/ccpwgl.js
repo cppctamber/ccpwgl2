@@ -13,6 +13,12 @@ var ccpwgl = (function (ccpwgl_int)
         }
     });
 
+    // Allow debug to be set from the browser
+    if (ccpwgl_int.util.getURLBoolean("debug", false))
+    {
+        ccpwgl.debug = true;
+    }
+
     /**
      * Values for textureQuality option that can be passed to ccpwgl.initialize.
      */

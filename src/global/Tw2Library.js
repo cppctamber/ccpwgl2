@@ -22,10 +22,10 @@ class Tw2Library extends Tw2EventEmitter
 {
 
     consts = consts;
+    logger = new Tw2Logger(this);
     client = new Tw2Client(this);
     //clock = new Tw2Clock(this);
     store = new Tw2Store(this);
-    logger = new Tw2Logger(this);
     device = new Tw2Device(this);
     resMan = new Tw2ResMan(this);
     eveSof = null;
@@ -70,7 +70,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     Log(log)
     {
-        return this.logger.log(log);
+        return this.logger.Log(log);
     }
 
     /**
@@ -261,6 +261,7 @@ class Tw2Library extends Tw2EventEmitter
     Debug(bool)
     {
         this.store.classes.Debug(bool);
+        this.logger.Debug(bool);
 
         this.Log({
             type: "warn",
@@ -284,7 +285,6 @@ class Tw2Library extends Tw2EventEmitter
             });
         }
     }
-
 }
 
 /**

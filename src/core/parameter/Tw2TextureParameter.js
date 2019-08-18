@@ -81,7 +81,7 @@ export class Tw2TextureParameter extends Tw2Parameter
     SetValue(value)
     {
         this.resourcePath = value;
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
@@ -178,7 +178,7 @@ export class Tw2TextureParameter extends Tw2Parameter
     SetOverrides(opt = {})
     {
         util.assignIfExists(this, opt, Tw2TextureParameter.overrideProperties);
-        this.OnValueChanged();
+        this.UpdateValues();
     }
 
     /**
