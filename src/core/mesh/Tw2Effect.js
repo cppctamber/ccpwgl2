@@ -41,8 +41,7 @@ export class Tw2Effect //extends Tw2BaseClass
         {
             this.effectFilePath = this.effectFilePath.toLowerCase();
             const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-            this.effectRes = resMan.GetResource(path);
-            this.effectRes.RegisterNotification(this);
+            this.effectRes = resMan.GetResource(path, res => this.OnResPrepared(res));
         }
     }
 

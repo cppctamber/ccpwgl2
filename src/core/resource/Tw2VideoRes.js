@@ -95,13 +95,12 @@ export class Tw2VideoRes extends Tw2Resource
     /**
      * Prepares the resource
      * @param {undefined} response
-     * @param {String} extension
      */
-    Prepare(response, extension)
+    Prepare(response)
     {
         const gl = device.gl;
 
-        switch (extension)
+        switch (this._extension)
         {
             case "mp4":
             case "webm":
@@ -120,7 +119,7 @@ export class Tw2VideoRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceExtensionUnregistered({path: this.path, extension});
+                throw new ErrResourceExtensionUnregistered({path: this.path, extension: this._extension});
         }
 
         this.OnPrepared();
@@ -131,16 +130,16 @@ export class Tw2VideoRes extends Tw2Resource
      *
      * @param {String} path
      * @param {String} extension
-     * @param {Tw2ResMan} resMan
      * @returns {Boolean} returns true to tell the resMan not to handle http requests
      */
-    DoCustomLoad(path, extension, resMan)
+    DoCustomLoad(path, extension)
     {
         switch (extension)
         {
             case "mp4":
             case "webm":
             case "ogg":
+                this._extension = extension;
                 break;
 
             default:
@@ -206,8 +205,9 @@ export class Tw2VideoRes extends Tw2Resource
 
     /**
      * Unloads the video and texture from memory
+     * @param {eventLog} eventLog
      */
-    Unload()
+    Unload(eventLog)
     {
         if (this.texture)
         {
@@ -215,11 +215,12 @@ export class Tw2VideoRes extends Tw2Resource
             this.texture = null;
         }
 
+        this._extension = null;
         this._isPlaying = false;
         this._playable = false;
         this.playOnLoad = true;
         this.video = null;
-        this.OnUnloaded();
+        this.OnUnloaded(eventLog);
         return true;
     }
 

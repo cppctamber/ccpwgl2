@@ -347,15 +347,11 @@ export class Tw2AnimationController extends Tw2BaseClass
      */
     AddGeometryResource(geometryResource)
     {
-        for (let i = 0; i < this.geometryResources.length; ++i)
+        if (!this.geometryResources.includes(geometryResource))
         {
-            if (this.geometryResources[i] === geometryResource)
-            {
-                return;
-            }
+            this.geometryResources.push(geometryResource);
+            geometryResource.RegisterNotification(this);
         }
-        this.geometryResources.push(geometryResource);
-        geometryResource.RegisterNotification(this);
     }
 
     /**
@@ -564,9 +560,10 @@ export class Tw2AnimationController extends Tw2BaseClass
      */
     OnResPrepared(res)
     {
+        res.UnregisterNotification(this);
         let found = this.geometryResources.includes(res);
 
-        // Unknown resource
+        // Unknown resource ignore
         if (!found)
         {
             return;

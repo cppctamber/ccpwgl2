@@ -53,14 +53,7 @@ export function Tw2WbgTrack()
     {
         if (this.geometryResPath)
         {
-            this.geometryRes = resMan.GetResource(this.geometryResPath);
-            const self = this;
-            this.geometryRes.RegisterNotification({
-                OnResPrepared: function()
-                {
-                    SetCurves(self);
-                }
-            });
+            this.geometryRes = resMan.GetResource(this.geometryResPath, res => SetCurves(this));
         }
     };
 

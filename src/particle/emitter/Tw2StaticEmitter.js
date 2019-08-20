@@ -48,9 +48,11 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     {
         if (this.geometryResourcePath !== "")
         {
-            this.geometryResource = resMan.GetResource(this.geometryResourcePath);
-            this.geometryResource.systemMirror = true;
-            this.geometryResource.RegisterNotification(this);
+            this.geometryResource = resMan.GetResource(this.geometryResourcePath, res =>
+            {
+                res.systemMirror = true;
+                this.OnResPrepared(res);
+            });
         }
         this._spawned = false;
     }

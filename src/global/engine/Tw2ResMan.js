@@ -77,7 +77,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      * @param {Error} err
      * @returns {Error} err
      */
-    OnResError(path, err = new Tw2Error({path}))
+    OnPathError(path, err = new Tw2Error({path}))
     {
         path = Tw2ResMan.NormalizePath(path);
         const res = this.motherLode.Find(path);
@@ -139,10 +139,11 @@ export class Tw2ResMan extends Tw2EventEmitter
     /**
      * Unloads and Clears the motherLode {@link Tw2MotherLode}
      * @param {Function} [onClear] - An optional function which is called on each cleared resource
+     * @param {eventLog} [eventLog]
      */
-    UnloadAndClear(onClear)
+    UnloadAndClear(onClear, eventLog)
     {
-        this.motherLode.UnloadAndClear(onClear);
+        this.motherLode.UnloadAndClear(onClear, eventLog);
     }
 
     /**
@@ -247,7 +248,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         }
         catch (err)
         {
-            this.OnResError(path, err);
+            this.OnPathError(path, err);
             if (onRejected) onRejected(err);
             return null;
         }
@@ -311,8 +312,9 @@ export class Tw2ResMan extends Tw2EventEmitter
      * Loads a resource
      * TODO: Create a res object for each quality level rather than just one
      * @param {Tw2Resource|*} res
+     * @param {eventLog} [eventLog]
      */
-    LoadResource(res)
+    LoadResource(res, eventLog)
     {
         this.motherLode.Add(res.path, res);
 
@@ -326,7 +328,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         {
             const url = this.BuildUrl(res.path);
 
-            res.OnRequested();
+            res.OnRequested(eventLog);
 
             if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url)))
             {
@@ -474,7 +476,6 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         return fullPrefix + path.substr(prefixIndex + 2);
     }
-
 
     /**
      * Normalizes a file path by making it lower case and replaces all '\\' with '/'

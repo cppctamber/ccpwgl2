@@ -29,10 +29,6 @@ export class Tw2EventEmitter
         if (!events) return this;
 
         eventName = eventName.toLowerCase();
-
-        e.ctx = e.ctx || this;
-        e.evt = e.evt || eventName;
-
         if (eventName in events)
         {
             events[eventName].forEach(
@@ -42,6 +38,11 @@ export class Tw2EventEmitter
                     if (value.once) events[eventName].delete(key);
                 }
             );
+
+            if (events[eventName].size === 0)
+            {
+                Reflect.deleteProperty(events, eventName);
+            }
         }
         return this;
     }
@@ -66,10 +67,10 @@ export class Tw2EventEmitter
         eventName = eventName.toLowerCase();
         if (!events[eventName])
         {
-            events[eventName] = new Set();
+            events[eventName] = new Map();
         }
 
-        events[eventName].add(listener, {context: context, once: once});
+        events[eventName].set(listener, {context: context, once: once});
         return this;
     }
 
@@ -86,7 +87,7 @@ export class Tw2EventEmitter
     }
 
     /**
-     * Removes a listener from a specific event or from all by passing '*' as the eventName
+     * Removes a listener from a specific event or from all events by passing "*"
      * @param {String} eventName
      * @param {Function} listener
      * @returns {Tw2EventEmitter}
@@ -96,30 +97,38 @@ export class Tw2EventEmitter
         const events = PRIVATE.get(this);
         if (!events) return this;
 
-        eventName = eventName.toLowerCase();
-
+        // Remove listener from all events
         if (eventName === "*")
         {
-            for (const name in events)
+            for (const eventName in events)
             {
-                if (events.hasOwnProperty(name))
+                if (events.hasOwnProperty(eventName))
                 {
-                    events[name].delete(listener);
+                    events[eventName].delete(listener);
+                    if (events[eventName].size === 0)
+                    {
+                        Reflect.deleteProperty(events, eventName);
+                    }
                 }
             }
             return this;
         }
 
+        eventName = eventName.toLowerCase();
         if (eventName in events)
         {
             events[eventName].delete(listener);
+            if (events[eventName].size === 0)
+            {
+                Reflect.deleteProperty(events, eventName);
+            }
         }
 
         return this;
     }
 
     /**
-     * Checks if a listener exists on an event already
+     * Checks if a listener exists on an event, or on any event by passing "*"
      * @param {String} eventName
      * @param {Function} listener
      * @returns {boolean}
@@ -129,8 +138,7 @@ export class Tw2EventEmitter
         const events = PRIVATE.get(this);
         if (!events) return false;
 
-        eventName = eventName.toLowerCase();
-
+        // Check all events
         if (eventName === "*")
         {
             for (const key in events)
@@ -146,11 +154,12 @@ export class Tw2EventEmitter
             return false;
         }
 
+        eventName = eventName.toLowerCase();
         return !!(eventName in events && events[eventName].has(listener));
     }
 
     /**
-     * Deletes an event and it's listeners
+     * Clears an event and it's listeners, or all events by passing "*"
      * @param {String} eventName
      * @returns {Tw2EventEmitter}
      */
@@ -159,45 +168,27 @@ export class Tw2EventEmitter
         const events = PRIVATE.get(this);
         if (!events) return this;
 
+        // Clear all
+        if (eventName === "*")
+        {
+            this.emit("kill");
+            for (const e in events)
+            {
+                if (events.hasOwnProperty(e))
+                {
+                    events[e].clear();
+                    Reflect.deleteProperty(events, e);
+                }
+            }
+            PRIVATE.delete(this);
+            return this;
+        }
+
         eventName = eventName.toLowerCase();
         if (eventName in events)
         {
+            events[eventName].clear();
             Reflect.deleteProperty(events, eventName);
-        }
-        return this;
-    }
-
-    /**
-     * Clears a listener from all events
-     * @param {Function} listener
-     * @returns {Tw2EventEmitter}
-     */
-    clr(listener)
-    {
-        const events = PRIVATE.get(this);
-        if (!events) return this;
-
-        for (let eventName in events)
-        {
-            if (events.hasOwnProperty(eventName) && events[eventName].has(listener))
-            {
-                events[eventName].delete(listener);
-            }
-        }
-        return this;
-    }
-
-    /**
-     * Kills all events and listeners from the emitter
-     * @returns {Tw2EventEmitter}
-     * @emit event_kill
-     */
-    kill()
-    {
-        if (PRIVATE.has(this))
-        {
-            this.emit("kill");
-            PRIVATE.delete(this);
         }
         return this;
     }
@@ -214,17 +205,12 @@ export class Tw2EventEmitter
             throw new Error("Invalid log, must be a plain object or an error");
         }
 
-        if (!eventLog.name)
-        {
-            eventLog.name = this.constructor.category || this.constructor.name;
-        }
-
         if (!this.constructor.defaultLogger)
         {
             return eventLog;
         }
 
-        return this.constructor.defaultLogger.Log(eventLog, this);
+        return this.constructor.defaultLogger.Log(eventLog, this.constructor.category || this.constructor.name);
     }
 
     /**

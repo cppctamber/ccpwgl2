@@ -215,10 +215,9 @@ export class EveTurretSet extends EveObjectSet
     {
         if (this.turretEffect && this.geometryResPath !== "")
         {
-            this.geometryResource = resMan.GetResource(this.geometryResPath);
+            this.geometryResource = resMan.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
             this._activeAnimation.SetGeometryResource(this.geometryResource);
             this._inactiveAnimation.SetGeometryResource(this.geometryResource);
-            if (this.geometryResource) this.geometryResource.RegisterNotification(this);
         }
 
         if (this.firingEffectResPath !== "")

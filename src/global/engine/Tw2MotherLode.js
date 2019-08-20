@@ -31,7 +31,8 @@ export class Tw2MotherLode
 
         if (!this._errors[path].includes(err))
         {
-            this._errors[path].push(err);
+            err.path = path;
+            this._errors[path].unshift(err);
         }
 
         return err;
@@ -44,7 +45,7 @@ export class Tw2MotherLode
      */
     GetErrors(path)
     {
-        return path && path in this._errors ? Object.assign([], this._errors[path]) : [];
+        return path && path in this._errors ? Array.from(this._errors[path]) : [];
     }
 
     /**
@@ -54,7 +55,7 @@ export class Tw2MotherLode
      */
     GetLastError(path)
     {
-        return path && path in this._errors ? this._errors[path].slice(-1)[0] : undefined;
+        return path && path in this._errors ? this._errors[path][0] : undefined;
     }
 
     /**
@@ -92,6 +93,16 @@ export class Tw2MotherLode
     }
 
     /**
+     * Checks if a res exists
+     * @param {String} path
+     * @returns {boolean}
+     */
+    Has(path)
+    {
+        return !!this._loadedObjects[path];
+    }
+
+    /**
      * Removes a loaded object by it's file path
      * @param {String} path
      */
@@ -122,12 +133,13 @@ export class Tw2MotherLode
     /**
      * Unloads all loaded objects and then clears the loadedObject object
      * @param {Function} [onClear] - Function that is called on each unloaded and cleared resource
+     * @param {eventLog} [eventLog]
      */
-    UnloadAndClear(onClear)
+    UnloadAndClear(onClear, eventLog)
     {
         this.Clear(res =>
         {
-            res.Unload();
+            res.Unload(eventLog);
             if (onClear) onClear(res);
         });
     }
@@ -150,7 +162,12 @@ export class Tw2MotherLode
             if (this._loadedObjects.hasOwnProperty(path))
             {
                 const res = this._loadedObjects[path];
-                if (res.doNotPurge) continue;
+
+                // Don't purge
+                if (res.doNotPurge)
+                {
+                    continue;
+                }
 
                 // Already purged
                 if (res.IsPurged())
@@ -164,17 +181,20 @@ export class Tw2MotherLode
                 // Has errors
                 if (res.HasErrors())
                 {
-                    reason = "error";
+                    reason = "errors(s)";
                 }
                 // Waiting for purge
                 else if (res.IsUnloaded())
                 {
                     reason = "unloaded";
                 }
-                // inactive
-                else if (res.IsGood() && (curFrame - res.activeFrame) % frameLimit >= frameDistance && res.Unload())
+                // good but inactive
+                else if (res.IsLoaded() || res.IsPrepared())
                 {
-                    reason = "inactivity";
+                    if ((curFrame - res.activeFrame) % frameLimit >= frameDistance && res.Unload({hide: true}))
+                    {
+                        reason = "inactivity";
+                    }
                 }
 
                 if (reason)

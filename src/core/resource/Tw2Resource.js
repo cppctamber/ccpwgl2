@@ -98,22 +98,24 @@ export class Tw2Resource
 
     /**
      * Unloads the resource
+     * @param {eventLog} [eventLog]
      * @returns {Boolean}
      */
-    Unload()
+    Unload(eventLog)
     {
         return false;
     }
 
     /**
      * Reloads the resource
+     * @param {eventLog} [eventLog]
      */
-    Reload()
+    Reload(eventLog)
     {
-        this.Unload();
+        this.Unload({hide:true});
         if (this.IsPurged() || this.IsUnloaded())
         {
-            resMan.LoadResource(this);
+            resMan.LoadResource(this, eventLog);
         }
     }
 
@@ -144,7 +146,7 @@ export class Tw2Resource
      */
     GetLastError()
     {
-        return this._errors.length ? this._errors[this._errors.length - 1] : null;
+        return this._errors[0];
     }
 
     /**
@@ -174,12 +176,13 @@ export class Tw2Resource
     {
         if (!this._errors.includes(err))
         {
-            this._errors.push(err);
+            this._errors.unshift(err);
         }
 
-        const doUnload = !this.IsUnloaded();
-        this._state = Tw2Resource.State.ERROR;
-        if (doUnload) this.Unload();
+        const doUnload = !this.IsUnloaded() || !this.IsPurged();
+        this._SetState(Tw2Resource.State.ERROR);
+        if (doUnload) this.Unload({hide: true});
+
         resMan.OnResEvent("error", this.path, err);
         this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
         return err;
@@ -191,11 +194,12 @@ export class Tw2Resource
      */
     OnRequested(eventLog)
     {
-        if (this.HasErrors()) return;
-        const reloading = this.IsPurged() || this.IsUnloaded();
-        this._state = Tw2Resource.State.REQUESTED;
-        resMan.OnResEvent(reloading ? "reloading" : "requested", this.path, eventLog);
-        this.UpdateNotifications(Tw2Resource.Callback.REQUESTED);
+        const reloading = this._state !== Tw2Resource.State.NO_INIT;
+        if (this._SetState(Tw2Resource.State.REQUESTED))
+        {
+            resMan.OnResEvent(reloading ? "reloading" : "requested", this.path, eventLog);
+            this.UpdateNotifications(Tw2Resource.Callback.REQUESTED);
+        }
     }
 
     /**
@@ -204,10 +208,11 @@ export class Tw2Resource
      */
     OnLoaded(eventLog)
     {
-        if (this.HasErrors()) return;
-        this._state = Tw2Resource.State.LOADED;
-        resMan.OnResEvent("loaded", this.path, eventLog);
-        this.UpdateNotifications(Tw2Resource.Callback.LOADED);
+        if (this._SetState(Tw2Resource.State.LOADED))
+        {
+            resMan.OnResEvent("loaded", this.path, eventLog);
+            this.UpdateNotifications(Tw2Resource.Callback.LOADED);
+        }
     }
 
     /**
@@ -216,10 +221,11 @@ export class Tw2Resource
      */
     OnPrepared(eventLog)
     {
-        if (this.HasErrors()) return;
-        this._state = Tw2Resource.State.PREPARED;
-        resMan.OnResEvent("prepared", this.path, eventLog);
-        this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
+        if (this._SetState(Tw2Resource.State.PREPARED))
+        {
+            resMan.OnResEvent("prepared", this.path, eventLog);
+            this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
+        }
     }
 
     /**
@@ -228,10 +234,11 @@ export class Tw2Resource
      */
     OnUnloaded(eventLog)
     {
-        if (this.HasErrors()) return;
-        this._state = Tw2Resource.State.UNLOADED;
-        resMan.OnResEvent("unloaded", this.path, eventLog);
-        this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
+        if (this._SetState(Tw2Resource.State.UNLOADED))
+        {
+            resMan.OnResEvent("unloaded", this.path, eventLog);
+            this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
+        }
     }
 
     /**
@@ -240,18 +247,34 @@ export class Tw2Resource
      */
     OnPurged(eventLog)
     {
-        if (!this.HasErrors()) this._state = Tw2Resource.State.PURGED;
+        this._SetState(Tw2Resource.State.PURGED);
         resMan.OnResEvent("purged", this.path, eventLog);
         this.UpdateNotifications(Tw2Resource.Callback.PURGED);
     }
 
     /**
+     * Sets state
+     * @param state
+     * @returns {boolean}
+     */
+    _SetState(state)
+    {
+        if (this._state !== Tw2Resource.State.ERROR)
+        {
+            this._state = state;
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Wraps callbacks as a notification
      * - The notification is removed as soon as the resource is prepared or errored
-     * @param {Function} [onResolved]
-     * @param {Function} [onRejected]
+     * @param {Function} [onResolved] - Callback fired when prepared or purged
+     * @param {Function} [onRejected] - Callback fired when errored
+     * @param {Function} [onProgress] - Callback fires on any progress
      */
-    RegisterCallbacks(onResolved, onRejected)
+    RegisterCallbacks(onResolved, onRejected, onProgress)
     {
         this.KeepAlive();
         if (!onResolved && !onRejected) return;
@@ -259,12 +282,12 @@ export class Tw2Resource
         /**
          * Handles resource events
          * @param {Tw2Resource} res
+         * @returns {Boolean}
          */
         const handler = function(res)
         {
             if (res.HasCompleted())
             {
-                res.UnregisterNotification(handler);
                 const err = res.GetLastError();
                 if (err)
                 {
@@ -274,7 +297,15 @@ export class Tw2Resource
                 {
                     if (onResolved) onResolved(res);
                 }
+                return true;
             }
+
+            if (onProgress)
+            {
+                onProgress(res);
+            }
+
+            return false;
         };
 
         this.RegisterNotification(handler);
@@ -330,7 +361,7 @@ export class Tw2Resource
         // Don't add notification if it returns true
         if (isFunction(notification))
         {
-            if (notification(this)) return;
+            if (notification(this, argument)) return;
         }
         else if (funcName && funcName in notification)
         {
@@ -354,25 +385,26 @@ export class Tw2Resource
      * @param {String} funcName - The function name to call
      * @param {*} [argument]    - An optional argument
      */
-    UpdateNotifications(funcName, argument)
+    UpdateNotifications(funcName, argument, log)
     {
+        resMan.OnResEvent(funcName, this.path, log);
+
         this._notifications.forEach(notification =>
         {
+            let remove = false;
+
             if (isFunction(notification))
             {
-                // Remove notification if it returns true
-                if (notification(this))
-                {
-                    this.UnregisterNotification(notification);
-                }
+                remove = notification(this, argument);
             }
             else if (funcName && funcName in notification)
             {
-                // Remove notification if it returns true
-                if (notification[funcName](this, argument))
-                {
-                    this.UnregisterNotification(notification);
-                }
+                remove = notification[funcName](this, argument);
+            }
+
+            if (remove)
+            {
+                this.UnregisterNotification(notification);
             }
         });
     }
@@ -416,9 +448,7 @@ export class Tw2Resource
         UNLOADED: "OnResUnloaded",
         REQUESTED: "OnResRequested",
         LOADED: "OnResLoaded",
-        PREPARED: "OnResPrepared",
-        DEBUG: "OnResDebug",
-        WARNING: "OnResWarning"
+        PREPARED: "OnResPrepared"
     };
 
 }

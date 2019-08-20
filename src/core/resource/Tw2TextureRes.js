@@ -54,14 +54,13 @@ export class Tw2TextureRes extends Tw2Resource
     /**
      * Prepares the resource
      * @param {*|Image|arrayBuffer} data
-     * @param {String} extension
      */
-    Prepare(data, extension)
+    Prepare(data)
     {
         const gl = device.gl;
         const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
 
-        switch (extension)
+        switch (this._extension)
         {
             case "cube":
                 this.texture = gl.createTexture();
@@ -211,20 +210,23 @@ export class Tw2TextureRes extends Tw2Resource
         switch (extension)
         {
             case "cube":
+                this._extension = extension;
                 this.isCube = true;
                 path = path.substr(0, path.length - 5) + ".png";
                 break;
 
             case "png":
+                this._extension = extension;
                 this.isCube = false;
                 break;
 
             case "dds":
+                this._extension = extension;
                 resMan.Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer")
                     .then(response =>
                     {
                         this.OnLoaded();
-                        resMan.Queue(this, response, extension);
+                        resMan.Queue(this, response);
                     })
                     .catch(err =>
                     {
@@ -247,7 +249,6 @@ export class Tw2TextureRes extends Tw2Resource
         image.onerror = () =>
         {
             resMan._pendingLoads--;
-            this._extension = null;
             this.OnError(new ErrHTTPRequest({path}));
         };
 
@@ -257,7 +258,7 @@ export class Tw2TextureRes extends Tw2Resource
         image.onload = () =>
         {
             resMan._pendingLoads--;
-            resMan.Queue(this, image, extension);
+            resMan.Queue(this, image);
             this.OnLoaded();
         };
 
@@ -267,17 +268,19 @@ export class Tw2TextureRes extends Tw2Resource
 
     /**
      * Unloads the texture from memory
+     * @param {eventLog} [eventLog]
      * @returns {Boolean}
      */
-    Unload()
+    Unload(eventLog)
     {
         if (this.texture)
         {
             device.gl.deleteTexture(this.texture);
             this.texture = null;
         }
+        this._extension = null;
         this._isAttached = false;
-        this.OnUnloaded();
+        this.OnUnloaded(eventLog);
         return true;
     }
 
@@ -289,19 +292,21 @@ export class Tw2TextureRes extends Tw2Resource
     {
         this.path = "";
         this.texture = texture;
+        this._extension = null;
         this._isAttached = true;
-        this.OnLoaded({hide: true, data: {isAttachment: true}});
-        this.OnPrepared({hide: true, data: {isAttachment: true}});
+        this.OnLoaded({hide: true, path: "attachment"});
+        this.OnPrepared({hide: true, path: "attachment"});
     }
 
     /**
      * Reloads the texture
+     * @param {eventLog} [eventLog]
      */
-    Reload()
+    Reload(eventLog)
     {
         if (!this._isAttached)
         {
-            return super.Reload();
+            return super.Reload(eventLog);
         }
     }
 

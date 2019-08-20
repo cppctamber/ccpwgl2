@@ -84,9 +84,10 @@ export class Tw2Logger extends Tw2EventEmitter
     /**
      * Adds an event log and outputs it to the console
      * @param {*|eventLog|Error} log - The eventLog or error to log
+     * @param {String} [defaultName]
      * @returns {eventLog} log
      */
-    Log(log)
+    Log(log, defaultName="Logger")
     {
         if (log._logged) return log;
 
@@ -109,6 +110,8 @@ export class Tw2Logger extends Tw2EventEmitter
             log.message = log.message || "";
         }
 
+        log.name = log.name || defaultName;
+
         // Ensure messages include path
         if (log.path)
         {
@@ -120,7 +123,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
 
         // Normalize the log name
-        let name = log.name || this.constructor.category;
+        let name = log.name || defaultName;
         name = name.replace(/_/g, " ");
         name = name.charAt(0).toUpperCase() + name.slice(1);
         log.name = name;

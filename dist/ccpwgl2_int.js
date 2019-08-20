@@ -19701,8 +19701,7 @@ class Tw2Effect //extends Tw2BaseClass
     if (this.effectFilePath !== "") {
       this.effectFilePath = this.effectFilePath.toLowerCase();
       const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-      this.effectRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
-      this.effectRes.RegisterNotification(this);
+      this.effectRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path, res => this.OnResPrepared(res));
     }
   }
   /**
@@ -21488,14 +21487,10 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
 
   AddGeometryResource(geometryResource) {
-    for (let i = 0; i < this.geometryResources.length; ++i) {
-      if (this.geometryResources[i] === geometryResource) {
-        return;
-      }
+    if (!this.geometryResources.includes(geometryResource)) {
+      this.geometryResources.push(geometryResource);
+      geometryResource.RegisterNotification(this);
     }
-
-    this.geometryResources.push(geometryResource);
-    geometryResource.RegisterNotification(this);
   }
   /**
    * Adds animations from a resource
@@ -21681,7 +21676,8 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
 
   OnResPrepared(res) {
-    let found = this.geometryResources.includes(res); // Unknown resource
+    res.UnregisterNotification(this);
+    let found = this.geometryResources.includes(res); // Unknown resource ignore
 
     if (!found) {
       return;
@@ -23741,7 +23737,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Array<Tw2PostEffectStep>} _visibleSteps - visible and ordered post effect steps
  * @property {Boolean} _dirty                         - identifies if the post is pending a rebuild
  * @property {Function} _onChildModified              - a function called when a child step is modified
- * @property {?Function} _onModified                  - a function which is called when the post effect is modified
  */
 
 class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
@@ -23771,8 +23766,6 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     _defineProperty(this, "_onChildModified", item => this.UpdateValues({
       controller: item
     }));
-
-    _defineProperty(this, "_onModified", null);
   }
 
   /**
@@ -23780,10 +23773,6 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
    */
   OnValueChanged() {
     this._dirty = true;
-
-    if (this._onModified) {
-      this._onModified(this);
-    }
   }
   /**
    * Checks if the post effect is good
@@ -24373,8 +24362,6 @@ class Tw2PostEffectStep extends _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MOD
     _defineProperty(this, "_renderTarget", null);
 
     _defineProperty(this, "_dirty", true);
-
-    _defineProperty(this, "_onModified", null);
   }
 
   /**
@@ -24382,10 +24369,6 @@ class Tw2PostEffectStep extends _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MOD
    */
   OnValueChanged() {
     this._dirty = true;
-
-    if (this._onModified) {
-      this._onModified(this);
-    }
   }
   /**
    * Checks if the step is good
@@ -26793,11 +26776,12 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   }
   /**
    * Unloads webgl and javascript resources
+   * @param {eventLog} eventLog
    * @returns {Boolean}
    */
 
 
-  Unload() {
+  Unload(eventLog) {
     for (let i = 0; i < this.meshes.length; ++i) {
       const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
@@ -26812,7 +26796,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
       }
     }
 
-    this.OnUnloaded();
+    this.OnUnloaded(eventLog);
     return true;
   }
   /**
@@ -27487,23 +27471,27 @@ class Tw2Resource {
   }
   /**
    * Unloads the resource
+   * @param {eventLog} [eventLog]
    * @returns {Boolean}
    */
 
 
-  Unload() {
+  Unload(eventLog) {
     return false;
   }
   /**
    * Reloads the resource
+   * @param {eventLog} [eventLog]
    */
 
 
-  Reload() {
-    this.Unload();
+  Reload(eventLog) {
+    this.Unload({
+      hide: true
+    });
 
     if (this.IsPurged() || this.IsUnloaded()) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].LoadResource(this);
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].LoadResource(this, eventLog);
     }
   }
   /**
@@ -27534,7 +27522,7 @@ class Tw2Resource {
 
 
   GetLastError() {
-    return this._errors.length ? this._errors[this._errors.length - 1] : null;
+    return this._errors[0];
   }
   /**
    * Fires on warnings
@@ -27565,12 +27553,16 @@ class Tw2Resource {
     let err = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"]();
 
     if (!this._errors.includes(err)) {
-      this._errors.push(err);
+      this._errors.unshift(err);
     }
 
-    const doUnload = !this.IsUnloaded();
-    this._state = Tw2Resource.State.ERROR;
-    if (doUnload) this.Unload();
+    const doUnload = !this.IsUnloaded() || !this.IsPurged();
+
+    this._SetState(Tw2Resource.State.ERROR);
+
+    if (doUnload) this.Unload({
+      hide: true
+    });
     _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("error", this.path, err);
     this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
     return err;
@@ -27582,11 +27574,12 @@ class Tw2Resource {
 
 
   OnRequested(eventLog) {
-    if (this.HasErrors()) return;
-    const reloading = this.IsPurged() || this.IsUnloaded();
-    this._state = Tw2Resource.State.REQUESTED;
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(reloading ? "reloading" : "requested", this.path, eventLog);
-    this.UpdateNotifications(Tw2Resource.Callback.REQUESTED);
+    const reloading = this._state !== Tw2Resource.State.NO_INIT;
+
+    if (this._SetState(Tw2Resource.State.REQUESTED)) {
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(reloading ? "reloading" : "requested", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.REQUESTED);
+    }
   }
   /**
    * LoadFinished
@@ -27595,10 +27588,10 @@ class Tw2Resource {
 
 
   OnLoaded(eventLog) {
-    if (this.HasErrors()) return;
-    this._state = Tw2Resource.State.LOADED;
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("loaded", this.path, eventLog);
-    this.UpdateNotifications(Tw2Resource.Callback.LOADED);
+    if (this._SetState(Tw2Resource.State.LOADED)) {
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("loaded", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.LOADED);
+    }
   }
   /**
    * PrepareFinished
@@ -27607,10 +27600,10 @@ class Tw2Resource {
 
 
   OnPrepared(eventLog) {
-    if (this.HasErrors()) return;
-    this._state = Tw2Resource.State.PREPARED;
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("prepared", this.path, eventLog);
-    this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
+    if (this._SetState(Tw2Resource.State.PREPARED)) {
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("prepared", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
+    }
   }
   /**
    * Fires when the resource has been unloads
@@ -27619,10 +27612,10 @@ class Tw2Resource {
 
 
   OnUnloaded(eventLog) {
-    if (this.HasErrors()) return;
-    this._state = Tw2Resource.State.UNLOADED;
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("unloaded", this.path, eventLog);
-    this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
+    if (this._SetState(Tw2Resource.State.UNLOADED)) {
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("unloaded", this.path, eventLog);
+      this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
+    }
   }
   /**
    * Fires when the resource is purged
@@ -27631,29 +27624,46 @@ class Tw2Resource {
 
 
   OnPurged(eventLog) {
-    if (!this.HasErrors()) this._state = Tw2Resource.State.PURGED;
+    this._SetState(Tw2Resource.State.PURGED);
+
     _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("purged", this.path, eventLog);
     this.UpdateNotifications(Tw2Resource.Callback.PURGED);
   }
   /**
-   * Wraps callbacks as a notification
-   * - The notification is removed as soon as the resource is prepared or errored
-   * @param {Function} [onResolved]
-   * @param {Function} [onRejected]
+   * Sets state
+   * @param state
+   * @returns {boolean}
    */
 
 
-  RegisterCallbacks(onResolved, onRejected) {
+  _SetState(state) {
+    if (this._state !== Tw2Resource.State.ERROR) {
+      this._state = state;
+      return true;
+    }
+
+    return false;
+  }
+  /**
+   * Wraps callbacks as a notification
+   * - The notification is removed as soon as the resource is prepared or errored
+   * @param {Function} [onResolved] - Callback fired when prepared or purged
+   * @param {Function} [onRejected] - Callback fired when errored
+   * @param {Function} [onProgress] - Callback fires on any progress
+   */
+
+
+  RegisterCallbacks(onResolved, onRejected, onProgress) {
     this.KeepAlive();
     if (!onResolved && !onRejected) return;
     /**
      * Handles resource events
      * @param {Tw2Resource} res
+     * @returns {Boolean}
      */
 
     const handler = function handler(res) {
       if (res.HasCompleted()) {
-        res.UnregisterNotification(handler);
         const err = res.GetLastError();
 
         if (err) {
@@ -27661,7 +27671,15 @@ class Tw2Resource {
         } else {
           if (onResolved) onResolved(res);
         }
+
+        return true;
       }
+
+      if (onProgress) {
+        onProgress(res);
+      }
+
+      return false;
     };
 
     this.RegisterNotification(handler);
@@ -27715,7 +27733,7 @@ class Tw2Resource {
 
 
     if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
-      if (notification(this)) return;
+      if (notification(this, argument)) return;
     } else if (funcName && funcName in notification) {
       if (notification[funcName](this, argument)) return;
     }
@@ -27738,18 +27756,20 @@ class Tw2Resource {
    */
 
 
-  UpdateNotifications(funcName, argument) {
+  UpdateNotifications(funcName, argument, log) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(funcName, this.path, log);
+
     this._notifications.forEach(notification => {
+      let remove = false;
+
       if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
-        // Remove notification if it returns true
-        if (notification(this)) {
-          this.UnregisterNotification(notification);
-        }
+        remove = notification(this, argument);
       } else if (funcName && funcName in notification) {
-        // Remove notification if it returns true
-        if (notification[funcName](this, argument)) {
-          this.UnregisterNotification(notification);
-        }
+        remove = notification[funcName](this, argument);
+      }
+
+      if (remove) {
+        this.UnregisterNotification(notification);
       }
     });
   }
@@ -27794,9 +27814,7 @@ _defineProperty(Tw2Resource, "Callback", {
   UNLOADED: "OnResUnloaded",
   REQUESTED: "OnResRequested",
   LOADED: "OnResLoaded",
-  PREPARED: "OnResPrepared",
-  DEBUG: "OnResDebug",
-  WARNING: "OnResWarning"
+  PREPARED: "OnResPrepared"
 });
 
 Tw2Resource.prototype.DoCustomLoad = null;
@@ -28471,13 +28489,12 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
   /**
    * Prepares the resource
    * @param {*|Image|arrayBuffer} data
-   * @param {String} extension
    */
-  Prepare(data, extension) {
+  Prepare(data) {
     const gl = _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
     const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
 
-    switch (extension) {
+    switch (this._extension) {
       case "cube":
         this.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
@@ -28617,18 +28634,21 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
   DoCustomLoad(path, extension) {
     switch (extension) {
       case "cube":
+        this._extension = extension;
         this.isCube = true;
         path = path.substr(0, path.length - 5) + ".png";
         break;
 
       case "png":
+        this._extension = extension;
         this.isCube = false;
         break;
 
       case "dds":
+        this._extension = extension;
         _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer").then(response => {
           this.OnLoaded();
-          _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, response, extension);
+          _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, response);
         }).catch(err => {
           this.OnError(err);
         });
@@ -28650,7 +28670,6 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
     image.onerror = () => {
       _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads--;
-      this._extension = null;
       this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrHTTPRequest"]({
         path
       }));
@@ -28662,7 +28681,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
     image.onload = () => {
       _global__WEBPACK_IMPORTED_MODULE_2__["resMan"]._pendingLoads--;
-      _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image, extension);
+      _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image);
       this.OnLoaded();
     };
 
@@ -28671,18 +28690,20 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
   }
   /**
    * Unloads the texture from memory
+   * @param {eventLog} [eventLog]
    * @returns {Boolean}
    */
 
 
-  Unload() {
+  Unload(eventLog) {
     if (this.texture) {
       _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.deleteTexture(this.texture);
       this.texture = null;
     }
 
+    this._extension = null;
     this._isAttached = false;
-    this.OnUnloaded();
+    this.OnUnloaded(eventLog);
     return true;
   }
   /**
@@ -28694,28 +28715,26 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
   Attach(texture) {
     this.path = "";
     this.texture = texture;
+    this._extension = null;
     this._isAttached = true;
     this.OnLoaded({
       hide: true,
-      data: {
-        isAttachment: true
-      }
+      path: "attachment"
     });
     this.OnPrepared({
       hide: true,
-      data: {
-        isAttachment: true
-      }
+      path: "attachment"
     });
   }
   /**
    * Reloads the texture
+   * @param {eventLog} [eventLog]
    */
 
 
-  Reload() {
+  Reload(eventLog) {
     if (!this._isAttached) {
-      return super.Reload();
+      return super.Reload(eventLog);
     }
   }
   /**
@@ -28947,14 +28966,13 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
   /**
    * Prepares the resource
    * @param {undefined} response
-   * @param {String} extension
    */
 
 
-  Prepare(response, extension) {
+  Prepare(response) {
     const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
-    switch (extension) {
+    switch (this._extension) {
       case "mp4":
       case "webm":
       case "ogg":
@@ -28974,7 +28992,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
       default:
         throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrResourceExtensionUnregistered"]({
           path: this.path,
-          extension
+          extension: this._extension
         });
     }
 
@@ -28985,16 +29003,16 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
    *
    * @param {String} path
    * @param {String} extension
-   * @param {Tw2ResMan} resMan
    * @returns {Boolean} returns true to tell the resMan not to handle http requests
    */
 
 
-  DoCustomLoad(path, extension, resMan) {
+  DoCustomLoad(path, extension) {
     switch (extension) {
       case "mp4":
       case "webm":
       case "ogg":
+        this._extension = extension;
         break;
 
       default:
@@ -29012,7 +29030,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
      */
 
     this.video.onerror = () => {
-      resMan._pendingLoads--;
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"]._pendingLoads--;
       this.video = null;
       this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrHTTPRequest"]({
         path
@@ -29026,8 +29044,8 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
     this.video.oncanplay = () => {
       this._playable = true;
       this.video.oncanplay = null;
-      resMan._pendingLoads--;
-      resMan.Queue(this, undefined, extension);
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"]._pendingLoads--;
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Queue(this, undefined, extension);
       this.OnLoaded();
     };
     /**
@@ -29063,20 +29081,22 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
   }
   /**
    * Unloads the video and texture from memory
+   * @param {eventLog} eventLog
    */
 
 
-  Unload() {
+  Unload(eventLog) {
     if (this.texture) {
       _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteTexture(this.texture);
       this.texture = null;
     }
 
+    this._extension = null;
     this._isPlaying = false;
     this._playable = false;
     this.playOnLoad = true;
     this.video = null;
-    this.OnUnloaded();
+    this.OnUnloaded(eventLog);
     return true;
   }
   /**
@@ -35944,13 +35964,7 @@ function Tw2WbgTrack() {
 
   this.Initialize = function () {
     if (this.geometryResPath) {
-      this.geometryRes = _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
-      const self = this;
-      this.geometryRes.RegisterNotification({
-        OnResPrepared: function OnResPrepared() {
-          SetCurves(self);
-        }
-      });
+      this.geometryRes = _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => SetCurves(this));
     }
   };
   /**
@@ -46330,8 +46344,7 @@ class EveTrailsSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
    */
   Initialize() {
     if (this.geometryResPath) {
-      this.geometryRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
-      this.geometryRes.RegisterNotification(this);
+      this.geometryRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => this.OnResPrepared(res));
     }
   }
   /**
@@ -46689,13 +46702,11 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   Initialize() {
     if (this.turretEffect && this.geometryResPath !== "") {
-      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
+      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => this.OnResPrepared(res));
 
       this._activeAnimation.SetGeometryResource(this.geometryResource);
 
       this._inactiveAnimation.SetGeometryResource(this.geometryResource);
-
-      if (this.geometryResource) this.geometryResource.RegisterNotification(this);
     }
 
     if (this.firingEffectResPath !== "") {
@@ -52081,14 +52092,16 @@ class Tw2EventEmitter {
     const events = PRIVATE.get(this);
     if (!events) return this;
     eventName = eventName.toLowerCase();
-    e.ctx = e.ctx || this;
-    e.evt = e.evt || eventName;
 
     if (eventName in events) {
       events[eventName].forEach(function (value, key) {
         key.call(value.context, e);
         if (value.once) events[eventName].delete(key);
       });
+
+      if (events[eventName].size === 0) {
+        Reflect.deleteProperty(events, eventName);
+      }
     }
 
     return this;
@@ -52116,10 +52129,10 @@ class Tw2EventEmitter {
     eventName = eventName.toLowerCase();
 
     if (!events[eventName]) {
-      events[eventName] = new Set();
+      events[eventName] = new Map();
     }
 
-    events[eventName].add(listener, {
+    events[eventName].set(listener, {
       context: context,
       once: once
     });
@@ -52138,7 +52151,7 @@ class Tw2EventEmitter {
     return this.on(eventName, listener, context, true);
   }
   /**
-   * Removes a listener from a specific event or from all by passing '*' as the eventName
+   * Removes a listener from a specific event or from all events by passing "*"
    * @param {String} eventName
    * @param {Function} listener
    * @returns {Tw2EventEmitter}
@@ -52147,27 +52160,36 @@ class Tw2EventEmitter {
 
   off(eventName, listener) {
     const events = PRIVATE.get(this);
-    if (!events) return this;
-    eventName = eventName.toLowerCase();
+    if (!events) return this; // Remove listener from all events
 
     if (eventName === "*") {
-      for (const name in events) {
-        if (events.hasOwnProperty(name)) {
-          events[name].delete(listener);
+      for (const eventName in events) {
+        if (events.hasOwnProperty(eventName)) {
+          events[eventName].delete(listener);
+
+          if (events[eventName].size === 0) {
+            Reflect.deleteProperty(events, eventName);
+          }
         }
       }
 
       return this;
     }
 
+    eventName = eventName.toLowerCase();
+
     if (eventName in events) {
       events[eventName].delete(listener);
+
+      if (events[eventName].size === 0) {
+        Reflect.deleteProperty(events, eventName);
+      }
     }
 
     return this;
   }
   /**
-   * Checks if a listener exists on an event already
+   * Checks if a listener exists on an event, or on any event by passing "*"
    * @param {String} eventName
    * @param {Function} listener
    * @returns {boolean}
@@ -52176,8 +52198,7 @@ class Tw2EventEmitter {
 
   has(eventName, listener) {
     const events = PRIVATE.get(this);
-    if (!events) return false;
-    eventName = eventName.toLowerCase();
+    if (!events) return false; // Check all events
 
     if (eventName === "*") {
       for (const key in events) {
@@ -52191,56 +52212,39 @@ class Tw2EventEmitter {
       return false;
     }
 
+    eventName = eventName.toLowerCase();
     return !!(eventName in events && events[eventName].has(listener));
   }
   /**
-   * Deletes an event and it's listeners
+   * Clears an event and it's listeners, or all events by passing "*"
    * @param {String} eventName
    * @returns {Tw2EventEmitter}
    */
 
 
-  del(eventName) {
+  clr(eventName) {
     const events = PRIVATE.get(this);
-    if (!events) return this;
+    if (!events) return this; // Clear all
+
+    if (eventName === "*") {
+      this.emit("kill");
+
+      for (const e in events) {
+        if (events.hasOwnProperty(e)) {
+          events[e].clear();
+          Reflect.deleteProperty(events, e);
+        }
+      }
+
+      PRIVATE.delete(this);
+      return this;
+    }
+
     eventName = eventName.toLowerCase();
 
     if (eventName in events) {
+      events[eventName].clear();
       Reflect.deleteProperty(events, eventName);
-    }
-
-    return this;
-  }
-  /**
-   * Clears a listener from all events
-   * @param {Function} listener
-   * @returns {Tw2EventEmitter}
-   */
-
-
-  clr(listener) {
-    const events = PRIVATE.get(this);
-    if (!events) return this;
-
-    for (let eventName in events) {
-      if (events.hasOwnProperty(eventName) && events[eventName].has(listener)) {
-        events[eventName].delete(listener);
-      }
-    }
-
-    return this;
-  }
-  /**
-   * Kills all events and listeners from the emitter
-   * @returns {Tw2EventEmitter}
-   * @emit event_kill
-   */
-
-
-  kill() {
-    if (PRIVATE.has(this)) {
-      this.emit("kill");
-      PRIVATE.delete(this);
     }
 
     return this;
@@ -52257,15 +52261,11 @@ class Tw2EventEmitter {
       throw new Error("Invalid log, must be a plain object or an error");
     }
 
-    if (!eventLog.name) {
-      eventLog.name = this.constructor.category || this.constructor.name;
-    }
-
     if (!this.constructor.defaultLogger) {
       return eventLog;
     }
 
-    return this.constructor.defaultLogger.Log(eventLog, this);
+    return this.constructor.defaultLogger.Log(eventLog, this.constructor.category || this.constructor.name);
   }
   /**
    * Global logger
@@ -54520,11 +54520,13 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
   /**
    * Adds an event log and outputs it to the console
    * @param {*|eventLog|Error} log - The eventLog or error to log
+   * @param {String} [defaultName]
    * @returns {eventLog} log
    */
 
 
   Log(log) {
+    let defaultName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Logger";
     if (log._logged) return log; // Allow errors as logs
 
     if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isError"])(log)) {
@@ -54541,8 +54543,9 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     } else {
       log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
       log.message = log.message || "";
-    } // Ensure messages include path
+    }
 
+    log.name = log.name || defaultName; // Ensure messages include path
 
     if (log.path) {
       log.path = log.path.toLowerCase();
@@ -54553,7 +54556,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     } // Normalize the log name
 
 
-    let name = log.name || this.constructor.category;
+    let name = log.name || defaultName;
     name = name.replace(/_/g, " ");
     name = name.charAt(0).toUpperCase() + name.slice(1);
     log.name = name;
@@ -54667,7 +54670,9 @@ class Tw2MotherLode {
     }
 
     if (!this._errors[path].includes(err)) {
-      this._errors[path].push(err);
+      err.path = path;
+
+      this._errors[path].unshift(err);
     }
 
     return err;
@@ -54680,7 +54685,7 @@ class Tw2MotherLode {
 
 
   GetErrors(path) {
-    return path && path in this._errors ? Object.assign([], this._errors[path]) : [];
+    return path && path in this._errors ? Array.from(this._errors[path]) : [];
   }
   /**
    * Gets the last error for a path
@@ -54690,7 +54695,7 @@ class Tw2MotherLode {
 
 
   GetLastError(path) {
-    return path && path in this._errors ? this._errors[path].slice(-1)[0] : undefined;
+    return path && path in this._errors ? this._errors[path][0] : undefined;
   }
   /**
    * Checks if a path has any errors
@@ -54727,13 +54732,22 @@ class Tw2MotherLode {
     this._loadedObjects[path] = obj;
   }
   /**
-   * Removes a loaded object by it's file path
+   * Checks if a res exists
    * @param {String} path
-   * @param {Boolean} [clearErrors]
+   * @returns {boolean}
    */
 
 
-  Remove(path, clearErrors) {
+  Has(path) {
+    return !!this._loadedObjects[path];
+  }
+  /**
+   * Removes a loaded object by it's file path
+   * @param {String} path
+   */
+
+
+  Remove(path) {
     if (this._loadedObjects[path]) {
       Reflect.deleteProperty(this._loadedObjects, path);
     }
@@ -54755,12 +54769,13 @@ class Tw2MotherLode {
   /**
    * Unloads all loaded objects and then clears the loadedObject object
    * @param {Function} [onClear] - Function that is called on each unloaded and cleared resource
+   * @param {eventLog} [eventLog]
    */
 
 
-  UnloadAndClear(onClear) {
+  UnloadAndClear(onClear, eventLog) {
     this.Clear(res => {
-      res.Unload();
+      res.Unload(eventLog);
       if (onClear) onClear(res);
     });
   }
@@ -54780,8 +54795,12 @@ class Tw2MotherLode {
   PurgeInactive(curFrame, frameLimit, frameDistance) {
     for (const path in this._loadedObjects) {
       if (this._loadedObjects.hasOwnProperty(path)) {
-        const res = this._loadedObjects[path];
-        if (res.doNotPurge) continue; // Already purged
+        const res = this._loadedObjects[path]; // Don't purge
+
+        if (res.doNotPurge) {
+          continue;
+        } // Already purged
+
 
         if (res.IsPurged()) {
           this.Remove(path);
@@ -54791,13 +54810,17 @@ class Tw2MotherLode {
         let reason; // Has errors
 
         if (res.HasErrors()) {
-          reason = "error";
+          reason = "errors(s)";
         } // Waiting for purge
         else if (res.IsUnloaded()) {
             reason = "unloaded";
-          } // inactive
-          else if (res.IsGood() && (curFrame - res.activeFrame) % frameLimit >= frameDistance && res.Unload()) {
-              reason = "inactivity";
+          } // good but inactive
+          else if (res.IsLoaded() || res.IsPrepared()) {
+              if ((curFrame - res.activeFrame) % frameLimit >= frameDistance && res.Unload({
+                hide: true
+              })) {
+                reason = "inactivity";
+              }
             }
 
         if (reason) {
@@ -54916,7 +54939,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
    */
 
 
-  OnResError(path) {
+  OnPathError(path) {
     let err = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"]({
       path
     });
@@ -54958,7 +54981,8 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
       log.path = path;
       eventData.log = Object.assign({}, defaultLog, log);
-      this.emit(eventName.toLowerCase(), eventData);
+      this.emit("res." + eventName.toLowerCase(), eventData);
+      this.emit("res.event", eventData);
     }
   }
   /**
@@ -54983,11 +55007,12 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
   /**
    * Unloads and Clears the motherLode {@link Tw2MotherLode}
    * @param {Function} [onClear] - An optional function which is called on each cleared resource
+   * @param {eventLog} [eventLog]
    */
 
 
-  UnloadAndClear(onClear) {
-    this.motherLode.UnloadAndClear(onClear);
+  UnloadAndClear(onClear, eventLog) {
+    this.motherLode.UnloadAndClear(onClear, eventLog);
   }
   /**
    * Internal update function. It is called every frame.
@@ -55076,7 +55101,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       const Constructor = this.GetResourceConstructor(path);
       res = new Constructor();
     } catch (err) {
-      this.OnResError(path, err);
+      this.OnPathError(path, err);
       if (onRejected) onRejected(err);
       return null;
     }
@@ -55166,10 +55191,11 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
    * Loads a resource
    * TODO: Create a res object for each quality level rather than just one
    * @param {Tw2Resource|*} res
+   * @param {eventLog} [eventLog]
    */
 
 
-  LoadResource(res) {
+  LoadResource(res, eventLog) {
     this.motherLode.Add(res.path, res); // Don't load if already errored
 
     if (res.HasErrors()) {
@@ -55178,7 +55204,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
     try {
       const url = this.BuildUrl(res.path);
-      res.OnRequested();
+      res.OnRequested(eventLog);
 
       if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url))) {
         return res;
@@ -67402,9 +67428,10 @@ class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__[
 
   Initialize() {
     if (this.geometryResourcePath !== "") {
-      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResourcePath);
-      this.geometryResource.systemMirror = true;
-      this.geometryResource.RegisterNotification(this);
+      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResourcePath, res => {
+        res.systemMirror = true;
+        this.OnResPrepared(res);
+      });
     }
 
     this._spawned = false;

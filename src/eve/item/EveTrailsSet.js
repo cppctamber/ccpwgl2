@@ -51,8 +51,7 @@ export class EveTrailsSet extends Tw2BaseClass
     {
         if (this.geometryResPath)
         {
-            this.geometryRes = resMan.GetResource(this.geometryResPath);
-            this.geometryRes.RegisterNotification(this);
+            this.geometryRes = resMan.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
         }
     }
 

@@ -681,9 +681,10 @@ export class Tw2GeometryRes extends Tw2Resource
 
     /**
      * Unloads webgl and javascript resources
+     * @param {eventLog} eventLog
      * @returns {Boolean}
      */
-    Unload()
+    Unload(eventLog)
     {
         for (let i = 0; i < this.meshes.length; ++i)
         {
@@ -701,7 +702,7 @@ export class Tw2GeometryRes extends Tw2Resource
                 this.meshes[i].indexes = null;
             }
         }
-        this.OnUnloaded();
+        this.OnUnloaded(eventLog);
         return true;
     }
 
