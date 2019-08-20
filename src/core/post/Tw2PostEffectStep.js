@@ -26,7 +26,6 @@ export class Tw2PostEffectStep extends Tw2BaseClass
 
     _renderTarget = null;
     _dirty = true;
-    _onModified = null;
 
     /**
      * Fires on value changes
@@ -34,10 +33,6 @@ export class Tw2PostEffectStep extends Tw2BaseClass
     OnValueChanged()
     {
         this._dirty = true;
-        if (this._onModified)
-        {
-            this._onModified(this);
-        }
     }
 
     /**

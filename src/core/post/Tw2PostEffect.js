@@ -18,7 +18,6 @@ import {assignIfExists} from "../../global/util";
  * @property {Array<Tw2PostEffectStep>} _visibleSteps - visible and ordered post effect steps
  * @property {Boolean} _dirty                         - identifies if the post is pending a rebuild
  * @property {Function} _onChildModified              - a function called when a child step is modified
- * @property {?Function} _onModified                  - a function which is called when the post effect is modified
  */
 export class Tw2PostEffect extends Tw2BaseClass
 {
@@ -35,8 +34,6 @@ export class Tw2PostEffect extends Tw2BaseClass
     _visibleSteps = [];
     _dirty = true;
     _onChildModified = item => this.UpdateValues({controller: item});
-    _onModified = null;
-
 
     /**
      * Fires on value changes
@@ -44,10 +41,6 @@ export class Tw2PostEffect extends Tw2BaseClass
     OnValueChanged()
     {
         this._dirty = true;
-        if (this._onModified)
-        {
-            this._onModified(this);
-        }
     }
 
     /**
