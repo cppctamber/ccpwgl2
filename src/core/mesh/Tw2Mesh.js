@@ -286,7 +286,7 @@ export class Tw2Mesh
             ["depthAreas", r.array],
             ["depthNormalAreas", r.array],
             ["distortionAreas", r.array],
-            ["geometryResPath", r.string],
+            ["geometryResPath", r.path],
             ["meshIndex", r.uint],
             ["name", r.string],
             ["opaqueAreas", r.array],

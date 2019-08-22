@@ -24,7 +24,7 @@ export class Tr2ActionSetValue extends Tw2BaseClass
     {
         return [
             ["attribute", r.string],
-            ["path", r.string],
+            ["path", r.path],
             ["value", r.string]
         ];
     }

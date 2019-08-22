@@ -19,7 +19,7 @@ export class Tr2ControllerReference extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["path", r.string]
+            ["path", r.path]
         ];
     }
 

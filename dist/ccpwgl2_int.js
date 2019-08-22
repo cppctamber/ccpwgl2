@@ -18898,7 +18898,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18951,8 +18951,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./mesh */ "./core/mesh/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _mesh__WEBPACK_IMPORTED_MODULE_4__["Tr2MeshLod"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_4__["Tr2Effect"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"]; });
 
@@ -19302,101 +19300,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./core/mesh/Tr2Effect.js":
-/*!********************************!*\
-  !*** ./core/mesh/Tr2Effect.js ***!
-  \********************************/
-/*! exports provided: Tr2Effect */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return Tr2Effect; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _parameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parameter */ "./core/parameter/index.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-
-class Tw2ConstantParameter {
-  /**
-   * Black reader
-   * @param {Tw2BlackBinaryReader} r
-   * @returns {Tw2Vector4Parameter}
-   */
-  static blackStruct(r) {
-    const item = new _parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"]();
-    item.name = r.ReadStringU16();
-    r.ExpectU16(0, "unknown content");
-    r.ExpectU16(0, "unknown content");
-    r.ExpectU16(0, "unknown content");
-    item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
-    return item;
-  }
-
-}
-/**
- * Tr2Effect
- * TODO: Implement
- * TODO: Replace constant parameter with Tw2Vector4Parameter?
- *
- * @property {Array<Parameter>} constParameters -
- * @property {String} effectFilePath            -
- * @property {Array} options                    -
- * @property {Array.<Parameter>} parameters     -
- * @property {Array.<Parameter>} resources      -
- * @property {Array} samplerOverrides           -
- */
-
-
-class Tr2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "constParameters", []);
-
-    _defineProperty(this, "effectFilePath", "");
-
-    _defineProperty(this, "options", []);
-
-    _defineProperty(this, "parameters", []);
-
-    _defineProperty(this, "resources", []);
-
-    _defineProperty(this, "samplerOverrides", []);
-  }
-
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
-  static black(r) {
-    return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.array], ["resources", r.array], ["constParameters", r.structList(Tw2ConstantParameter)], ["options", reader => {
-      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"])({
-        feature: "Tr2Effect options"
-      });
-    }], ["samplerOverrides", reader => {
-      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"])({
-        feature: "Tr2Effect samplerOverrides"
-      });
-    }]];
-  }
-  /**
-   * Identifies that the class is in staging
-   * @property {null|Number}
-   */
-
-
-}
-
-_defineProperty(Tr2Effect, "__isStaging", 4);
-
-/***/ }),
-
 /***/ "./core/mesh/Tr2MeshLod.js":
 /*!*********************************!*\
   !*** ./core/mesh/Tr2MeshLod.js ***!
@@ -19648,8 +19551,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return Tw2Effect; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
-/* harmony import */ var _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/class/Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../parameter */ "./core/parameter/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -19670,10 +19575,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @class
  */
 
-class Tw2Effect //extends Tw2BaseClass
-{
+class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor() {
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    super(...arguments);
 
     _defineProperty(this, "name", "");
 
@@ -19693,6 +19597,9 @@ class Tw2Effect //extends Tw2BaseClass
 
     _defineProperty(this, "shader", null);
   }
+
+  //resources
+  //constParameters
 
   /**
    * Initializes the Tw2Effect
@@ -20278,9 +20185,61 @@ class Tw2Effect //extends Tw2BaseClass
    */
 
 
+  static black(r) {
+    return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.plainFromArray("name")], // Reroute resources to parameters for now
+    ["resources", r.intercept((reader, effect) => {
+      Object.assign(effect.parameters, r.plainFromArray("name")(reader));
+    })], // Reroute constant parameters for now
+    ["constParameters", r.intercept((reader, effect) => {
+      const result = r.structList(Tw2ConstantParameter)(reader);
+
+      for (let i = 0; i < result.length; i++) {
+        effect.parameters[result[i].name] = result[i];
+      }
+    })], ["options", reader => {
+      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"])({
+        feature: "Tr2Effect options"
+      });
+    }], ["samplerOverrides", reader => {
+      throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"])({
+        feature: "Tr2Effect samplerOverrides"
+      });
+    }]];
+  }
+  /**
+   * Identifies that the class is in staging
+   * @property {null|Number}
+   */
+
+
 }
 
 _defineProperty(Tw2Effect, "ConstantIgnore", ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS", "PerObjectPSInt"]);
+
+_defineProperty(Tw2Effect, "__isStaging", 1);
+
+class Tw2ConstantParameter {
+  /**
+   * Black reader
+   * @param {Tw2BlackBinaryReader} r
+   * @returns {Tw2Vector4Parameter}
+   */
+  static blackStruct(r) {
+    const item = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"](); // Temporary
+
+    Object.defineProperty(item, "isConstant", {
+      value: true,
+      writable: false
+    });
+    item.name = r.ReadStringU16();
+    r.ExpectU16(0, "unknown content");
+    r.ExpectU16(0, "unknown content");
+    r.ExpectU16(0, "unknown content");
+    item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
+    return item;
+  }
+
+}
 
 /***/ }),
 
@@ -20584,7 +20543,7 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
 
   static black(r) {
-    return [["additiveAreas", r.array], ["decalAreas", r.array], ["depthAreas", r.array], ["distortionAreas", r.array], ["geometryResPath", r.string], ["instanceGeometryResPath", r.string], ["instanceGeometryResource", r.object], ["instanceMeshIndex", r.uint], ["minBounds", r.vector3], ["maxBounds", r.vector3], ["opaqueAreas", r.array], ["transparentAreas", r.array]];
+    return [["additiveAreas", r.array], ["decalAreas", r.array], ["depthAreas", r.array], ["distortionAreas", r.array], ["geometryResPath", r.path], ["instanceGeometryResPath", r.path], ["instanceGeometryResource", r.object], ["instanceMeshIndex", r.uint], ["minBounds", r.vector3], ["maxBounds", r.vector3], ["opaqueAreas", r.array], ["transparentAreas", r.array]];
   }
   /**
    * Identifies that the class is in staging
@@ -20884,7 +20843,7 @@ class Tw2Mesh {
 
 
   static black(r) {
-    return [["additiveAreas", r.array], ["decalAreas", r.array], ["deferGeometryLoad", r.boolean], ["depthAreas", r.array], ["depthNormalAreas", r.array], ["distortionAreas", r.array], ["geometryResPath", r.string], ["meshIndex", r.uint], ["name", r.string], ["opaqueAreas", r.array], ["opaquePrepassAreas", r.array], ["pickableAreas", r.array], ["transparentAreas", r.array]];
+    return [["additiveAreas", r.array], ["decalAreas", r.array], ["deferGeometryLoad", r.boolean], ["depthAreas", r.array], ["depthNormalAreas", r.array], ["distortionAreas", r.array], ["geometryResPath", r.path], ["meshIndex", r.uint], ["name", r.string], ["opaqueAreas", r.array], ["opaquePrepassAreas", r.array], ["pickableAreas", r.array], ["transparentAreas", r.array]];
   }
   /**
    * Identifies that the class is in staging
@@ -21049,7 +21008,7 @@ _defineProperty(Tw2MeshLineArea, "batchType", _batch__WEBPACK_IMPORTED_MODULE_0_
 /*!****************************!*\
   !*** ./core/mesh/index.js ***!
   \****************************/
-/*! exports provided: Tr2MeshLod, Tr2Effect, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea */
+/*! exports provided: Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -21057,24 +21016,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tr2MeshLod */ "./core/mesh/Tr2MeshLod.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return _Tr2MeshLod__WEBPACK_IMPORTED_MODULE_0__["Tr2MeshLod"]; });
 
-/* harmony import */ var _Tr2Effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tr2Effect */ "./core/mesh/Tr2Effect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2Effect", function() { return _Tr2Effect__WEBPACK_IMPORTED_MODULE_1__["Tr2Effect"]; });
+/* harmony import */ var _Tw2Effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Effect */ "./core/mesh/Tw2Effect.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _Tw2Effect__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]; });
 
-/* harmony import */ var _Tw2Effect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Effect */ "./core/mesh/Tw2Effect.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return _Tw2Effect__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"]; });
+/* harmony import */ var _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2InstancedMesh */ "./core/mesh/Tw2InstancedMesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_2__["Tw2InstancedMesh"]; });
 
-/* harmony import */ var _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2InstancedMesh */ "./core/mesh/Tw2InstancedMesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return _Tw2InstancedMesh__WEBPACK_IMPORTED_MODULE_3__["Tw2InstancedMesh"]; });
+/* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _Tw2Mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]; });
 
-/* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return _Tw2Mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Mesh"]; });
+/* harmony import */ var _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2MeshArea */ "./core/mesh/Tw2MeshArea.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_4__["Tw2MeshArea"]; });
 
-/* harmony import */ var _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2MeshArea */ "./core/mesh/Tw2MeshArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshArea"]; });
-
-/* harmony import */ var _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2MeshLineArea */ "./core/mesh/Tw2MeshLineArea.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_6__["Tw2MeshLineArea"]; });
-
+/* harmony import */ var _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2MeshLineArea */ "./core/mesh/Tw2MeshLineArea.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshLineArea", function() { return _Tw2MeshLineArea__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshLineArea"]; });
 
 
 
@@ -24951,7 +24906,7 @@ _defineProperty(Tw2BlackBinaryReader, "wstringDecoder", new TextDecoder("utf-16l
 /*!************************************************!*\
   !*** ./core/reader/Tw2BlackPropertyReaders.js ***!
   \************************************************/
-/*! exports provided: path, object, rawObject, array, boolean, string, enums, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, plainFromArray */
+/*! exports provided: path, object, rawObject, array, boolean, string, enums, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, plainFromArray, intercept */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -24976,6 +24931,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "struct", function() { return struct; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "structList", function() { return structList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plainFromArray", function() { return plainFromArray; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "intercept", function() { return intercept; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 
@@ -25081,12 +25037,21 @@ function object(reader, id) {
     let propertyName = objectReader.ReadStringU16();
 
     if (properties.has(propertyName)) {
-      if (!(propertyName in result) && debugEnabled) {
-        console.log("'".concat(type, "' missing property: '").concat(propertyName, "'"));
-      }
-
       try {
-        result[propertyName] = properties.get(propertyName)(objectReader);
+        const reader = properties.get(propertyName);
+        let doPropertyCheck = true;
+
+        if (reader.interceptor) {
+          if (reader(objectReader, result, propertyName, result[propertyName]) === undefined) {
+            doPropertyCheck = false;
+          }
+        } else {
+          result[propertyName] = reader(objectReader);
+        }
+
+        if (doPropertyCheck && !(propertyName in result) && debugEnabled) {
+          console.log("'".concat(type, "' missing property: '").concat(propertyName, "'"));
+        }
       } catch (err) {
         if (debugEnabled) {
           console.dir(result);
@@ -25326,6 +25291,20 @@ function plainFromArray(key) {
 
     return result;
   };
+}
+/**
+ * Allows rerouting of a readers value
+ * @param {Function} interceptor
+ * @returns {Function}
+ */
+
+function intercept(interceptor) {
+  function intercept(reader, parent, property, value) {
+    interceptor(reader, parent, property, value);
+  }
+
+  interceptor.interceptor = true;
+  return interceptor;
 }
 
 /***/ }),
@@ -42142,7 +42121,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42280,16 +42259,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
@@ -42305,6 +42274,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
 
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./particle */ "./eve/particle/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_5__["EveParticleDirectForce"]; });
@@ -49458,7 +49437,7 @@ _defineProperty(EveTransform, "__isStaging", 1);
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform */
+/*! exports provided: EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52222,7 +52201,7 @@ class Tw2EventEmitter {
    */
 
 
-  clr(eventName) {
+  del(eventName) {
     const events = PRIVATE.get(this);
     if (!events) return this; // Clear all
 
@@ -54981,8 +54960,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
       log.path = path;
       eventData.log = Object.assign({}, defaultLog, log);
-      this.emit("res." + eventName.toLowerCase(), eventData);
-      this.emit("res.event", eventData);
+      this.emit(eventName.toLowerCase(), eventData);
     }
   }
   /**
@@ -65716,7 +65694,7 @@ class Tr2InteriorPlaceable extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Base
    * @returns {*[]}
    */
   static black(r) {
-    return [["placeableResPath", r.string], ["transform", r.object]];
+    return [["placeableResPath", r.path], ["transform", r.object]];
   }
   /**
    * Identifies that the class is in staging
@@ -66874,7 +66852,7 @@ class Tw2ParticleElementDeclaration extends _global__WEBPACK_IMPORTED_MODULE_2__
 /*!***********************************!*\
   !*** ./particle/element/index.js ***!
   \***********************************/
-/*! exports provided: Tw2ParticleElement, Tw2ParticleElementDeclaration */
+/*! exports provided: Tw2ParticleElementDeclaration, Tw2ParticleElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68673,7 +68651,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./particle/index.js ***!
   \***************************/
-/*! exports provided: Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: Tw2ParticleElementDeclaration, Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68682,9 +68660,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _constraint__WEBPACK_IMPORTED_MODULE_0__["Tr2PlaneConstraint"]; });
 
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./particle/element/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"]; });
 
 /* harmony import */ var _emitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./emitter */ "./particle/emitter/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuSharedEmitter"]; });
@@ -71936,7 +71914,7 @@ class EveSOFDataHullController {
    * @returns {*[]}
    */
   static black(r) {
-    return [["path", r.string]];
+    return [["path", r.path]];
   }
 
 }
@@ -74734,7 +74712,7 @@ class Tr2ActionAnimateValue extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
    * @returns {*[]}
    */
   static black(r) {
-    return [["attribute", r.string], ["curve", r.object], ["path", r.string], ["value", r.string]];
+    return [["attribute", r.string], ["curve", r.object], ["path", r.path], ["value", r.string]];
   }
   /**
    * Identifies that the class is in staging
@@ -74788,7 +74766,7 @@ class Tr2ActionChildEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Base
    * @returns {*[]}
    */
   static black(r) {
-    return [["childName", r.string], ["path", r.string], ["removeOnStop", r.boolean]];
+    return [["childName", r.string], ["path", r.path], ["removeOnStop", r.boolean]];
   }
   /**
    * Identifies that the class is in staging
@@ -74836,7 +74814,7 @@ class Tr2ActionOverlay extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
    * @returns {*[]}
    */
   static black(r) {
-    return [["path", r.string]];
+    return [["path", r.path]];
   }
   /**
    * Identifies that the class is in staging
@@ -75086,7 +75064,7 @@ class Tr2ActionSetValue extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
    * @returns {*[]}
    */
   static black(r) {
-    return [["attribute", r.string], ["path", r.string], ["value", r.string]];
+    return [["attribute", r.string], ["path", r.path], ["value", r.string]];
   }
   /**
    * Identifies that the class is in staging
@@ -75351,7 +75329,7 @@ class Tr2ControllerReference extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
    * @returns {*[]}
    */
   static black(r) {
-    return [["path", r.string]];
+    return [["path", r.path]];
   }
   /**
    * Identifies that the class is in staging

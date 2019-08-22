@@ -27,7 +27,7 @@ export class Tr2ActionAnimateValue extends Tw2BaseClass
         return [
             ["attribute", r.string],
             ["curve", r.object],
-            ["path", r.string],
+            ["path", r.path],
             ["value", r.string]
         ];
     }

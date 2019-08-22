@@ -112,14 +112,28 @@ export function object(reader, id)
 
         if (properties.has(propertyName))
         {
-            if (!(propertyName in result) && debugEnabled)
-            {
-                console.log(`'${type}' missing property: '${propertyName}'`);
-            }
-
             try
             {
-                result[propertyName] = properties.get(propertyName)(objectReader);
+                const reader = properties.get(propertyName);
+                let doPropertyCheck = true;
+
+                if (reader.interceptor)
+                {
+                    if (reader(objectReader, result, propertyName, result[propertyName]) === undefined)
+                    {
+                        doPropertyCheck = false;
+                    }
+                }
+                else
+                {
+                    result[propertyName] = reader(objectReader);
+                }
+
+                if (doPropertyCheck && !(propertyName in result) && debugEnabled)
+                {
+                    console.log(`'${type}' missing property: '${propertyName}'`);
+                }
+
             }
             catch (err)
             {
@@ -398,4 +412,21 @@ export function plainFromArray(key)
 
         return result;
     };
+}
+
+/**
+ * Allows rerouting of a readers value
+ * @param {Function} interceptor
+ * @returns {Function}
+ */
+export function intercept(interceptor)
+{
+    function intercept(reader, parent, property, value)
+    {
+        interceptor(reader, parent, property, value);
+    }
+
+    interceptor.interceptor = true;
+
+    return interceptor;
 }

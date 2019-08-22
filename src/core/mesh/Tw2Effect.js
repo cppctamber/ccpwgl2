@@ -1,6 +1,7 @@
-import {util, resMan, device, store} from "../../global";
+import {util, resMan, device, store, Tw2BaseClass} from "../../global";
 import {Tw2TextureParameter} from "../parameter/Tw2TextureParameter";
-import Tw2BaseClass from "../../global/class/Tw2BaseClass";
+import {ErrFeatureNotImplemented} from "../Tw2Error";
+import {Tw2Vector4Parameter} from "../parameter";
 
 /**
  * Tw2Effect
@@ -17,10 +18,9 @@ import Tw2BaseClass from "../../global/class/Tw2BaseClass";
  * @property {Boolean} autoParameter
  * @class
  */
-export class Tw2Effect //extends Tw2BaseClass
+export class Tw2Effect extends Tw2BaseClass
 {
 
-    _id = util.generateID();
     name = "";
     effectFilePath = "";
     effectRes = null;
@@ -31,6 +31,8 @@ export class Tw2Effect //extends Tw2BaseClass
     options = {};
     shader = null;
 
+    //resources
+    //constParameters
 
     /**
      * Initializes the Tw2Effect
@@ -692,5 +694,66 @@ export class Tw2Effect //extends Tw2BaseClass
         "PerObjectPS",
         "PerObjectPSInt"
     ];
+
+    static black(r)
+    {
+        return [
+            ["effectFilePath", r.path],
+            ["name", r.string],
+            ["parameters", r.plainFromArray("name")],
+            // Reroute resources to parameters for now
+            ["resources", r.intercept((reader, effect) =>
+            {
+                Object.assign(effect.parameters, r.plainFromArray("name")(reader));
+            })],
+            // Reroute constant parameters for now
+            ["constParameters", r.intercept((reader, effect) =>
+            {
+                const result = r.structList(Tw2ConstantParameter)(reader);
+                for (let i = 0; i < result.length; i++)
+                {
+                    effect.parameters[result[i].name] = result[i];
+                }
+            })],
+            ["options", (reader) =>
+            {
+                throw ErrFeatureNotImplemented({feature: "Tr2Effect options"});
+            }],
+            ["samplerOverrides", (reader) =>
+            {
+                throw ErrFeatureNotImplemented({feature: "Tr2Effect samplerOverrides"});
+            }]
+        ];
+    }
+
+    /**
+     * Identifies that the class is in staging
+     * @property {null|Number}
+     */
+    static __isStaging = 1;
+
+}
+
+class Tw2ConstantParameter
+{
+    /**
+     * Black reader
+     * @param {Tw2BlackBinaryReader} r
+     * @returns {Tw2Vector4Parameter}
+     */
+    static blackStruct(r)
+    {
+        const item = new Tw2Vector4Parameter();
+
+        // Temporary
+        Object.defineProperty(item, "isConstant", {value: true, writable: false});
+
+        item.name = r.ReadStringU16();
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+        item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
+        return item;
+    }
 
 }

@@ -19,7 +19,7 @@ export class Tr2ActionOverlay extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["path", r.string]
+            ["path", r.path]
         ];
     }
 

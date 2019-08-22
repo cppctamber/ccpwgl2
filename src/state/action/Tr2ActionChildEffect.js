@@ -24,7 +24,7 @@ export class Tr2ActionChildEffect extends Tw2BaseClass
     {
         return [
             ["childName", r.string],
-            ["path", r.string],
+            ["path", r.path],
             ["removeOnStop", r.boolean]
         ];
     }

@@ -22,7 +22,7 @@ export class Tr2InteriorPlaceable extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["placeableResPath", r.string],
+            ["placeableResPath", r.path],
             ["transform", r.object]
         ];
     }

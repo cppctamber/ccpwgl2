@@ -16,7 +16,7 @@ export class EveSOFDataHullController
     static black(r)
     {
         return [
-            ["path", r.string],
+            ["path", r.path],
         ];
     }
 }
