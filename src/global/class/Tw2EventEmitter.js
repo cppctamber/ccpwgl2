@@ -1,5 +1,3 @@
-import {isError, isFunction} from "../util";
-
 /**
  * Emitter privates
  * @type {WeakMap<object, *>}
@@ -62,6 +60,15 @@ export class Tw2EventEmitter
         if (!events[eventName])
         {
             events[eventName] = new Map();
+        }
+
+        // Allow intercepting of a listener when it is first added
+        if (!events[eventName].has(listener) && this.constructor.onListener)
+        {
+            if (this.constructor.onListener(eventName, listener, context) && once)
+            {
+                return this;
+            }
         }
 
         events[eventName].set(listener, {context: context, once: once});
@@ -188,29 +195,13 @@ export class Tw2EventEmitter
     }
 
     /**
-     * Logs an event log
-     * @param {eventLog|Error} eventLog
-     * @returns {eventLog}
+     * Fires before a listener is added
+     * @param {String} eventName
+     * @param {Function} listener
+     * @param {*} context
+     * @returns {Boolean} true if fired immediately
+     * @type {null|Function}
      */
-    msg(eventLog)
-    {
-        if (isFunction(eventLog) && !isError(eventLog))
-        {
-            throw new Error("Invalid log, must be a plain object or an error");
-        }
-
-        if (!this.constructor.defaultLogger)
-        {
-            return eventLog;
-        }
-
-        return this.constructor.defaultLogger.Log(eventLog, this.constructor.category || this.constructor.name);
-    }
-
-    /**
-     * Global logger
-     * @type {*}
-     */
-    static defaultLogger = null;
+    static onListener = null;
 
 }
