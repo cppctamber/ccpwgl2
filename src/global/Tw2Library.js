@@ -66,11 +66,12 @@ class Tw2Library extends Tw2EventEmitter
     /**
      * Creates a log
      * @param {*} log
+     * @param {String} [title]
      * @returns {*}
      */
-    Log(log)
+    Log(log, title)
     {
-        return this.logger.Log(log);
+        return this.logger.Log(log, title);
     }
 
     /**

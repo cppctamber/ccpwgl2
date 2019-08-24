@@ -14,17 +14,11 @@ export class Tw2EventEmitter
     /**
      * Emits an event
      * @param {String} eventName
-     * @param {*} [e={}]
+     * @param {*} args
      * @returns {Tw2EventEmitter}
      */
-    emit(eventName, e = {})
+    emit(eventName, ...args)
     {
-        // Short cut to creating a log output
-        if (e.log && !e.log._logged)
-        {
-            e.log = this.msg(e.log);
-        }
-
         const events = PRIVATE.get(this);
         if (!events) return this;
 
@@ -34,7 +28,7 @@ export class Tw2EventEmitter
             events[eventName].forEach(
                 function(value, key)
                 {
-                    key.call(value.context, e);
+                    key.call(value.context, ...args);
                     if (value.once) events[eventName].delete(key);
                 }
             );

@@ -27374,11 +27374,12 @@ class Tw2Resource {
     _defineProperty(this, "_state", Tw2Resource.State.NO_INIT);
 
     _defineProperty(this, "_errors", []);
+
+    _defineProperty(this, "_requested", 0);
   }
 
   /**
    * Checks if the resource is good and keeps it alive
-   * TODO: Replace with explicit calls to "IsPrepared"
    * @returns {boolean}
    */
   IsGood() {
@@ -27450,27 +27451,30 @@ class Tw2Resource {
   }
   /**
    * Unloads the resource
-   * @param {eventLog} [eventLog]
+   * @param {*} [log]
    * @returns {Boolean}
    */
 
 
-  Unload(eventLog) {
+  Unload(log) {
     return false;
   }
   /**
    * Reloads the resource
-   * @param {eventLog} [eventLog]
+   * @param {*} [log]
    */
 
 
-  Reload(eventLog) {
-    this.Unload({
-      hide: true
-    });
+  Reload(log) {
+    if (this.IsLoaded() || this.IsPrepared()) {
+      this.Unload({
+        hide: true,
+        detail: "reloading"
+      });
+    }
 
     if (this.IsPurged() || this.IsUnloaded()) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].LoadResource(this, eventLog);
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].LoadResource(this, log);
     }
   }
   /**
@@ -27482,7 +27486,10 @@ class Tw2Resource {
     this.activeFrame = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].activeFrame;
 
     if (this.IsPurged() || this.IsUnloaded()) {
-      this.Reload();
+      this.Reload({
+        hide: true,
+        detail: "inuse"
+      });
     }
   }
   /**
@@ -27496,7 +27503,7 @@ class Tw2Resource {
   }
   /**
    * Gets the resource's last error
-   * @returns {Tw2Error|Error}
+   * @returns {undefined|Tw2Error|Error}
    */
 
 
@@ -27505,21 +27512,21 @@ class Tw2Resource {
   }
   /**
    * Fires on warnings
-   * @param {*} [eventLog]
+   * @param {*} [log]
    */
 
 
-  OnWarning(eventLog) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("warning", this.path, eventLog);
+  OnWarning(log) {
+    this.UpdateNotifications("WARNING", undefined, log);
   }
   /**
    * Fires on debugs
-   * @param {*} eventLog
+   * @param {*} [log]
    */
 
 
-  OnDebug(eventLog) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("debug", this.path, eventLog);
+  OnDebug(log) {
+    this.UpdateNotifications("DEBUG", undefined, log);
   }
   /**
    * Fires on errors
@@ -27530,83 +27537,87 @@ class Tw2Resource {
 
   OnError() {
     let err = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"]();
+    let wasGood = this.IsLoaded() || this.IsPrepared();
 
     if (!this._errors.includes(err)) {
       this._errors.unshift(err);
     }
 
-    const doUnload = !this.IsUnloaded() || !this.IsPurged();
-
     this._SetState(Tw2Resource.State.ERROR);
 
-    if (doUnload) this.Unload({
-      hide: true
-    });
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("error", this.path, err);
-    this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
+    if (wasGood) {
+      this.Unload({
+        hide: true,
+        detail: "errored"
+      });
+    }
+
+    this.UpdateNotifications("ERROR", err, err);
     return err;
   }
   /**
    * LoadStarted
-   * @param {*} [eventLog]
+   * @param {*} [log]
    */
 
 
-  OnRequested(eventLog) {
-    const reloading = this._state !== Tw2Resource.State.NO_INIT;
+  OnRequested(log) {
+    const stateName = this._state === Tw2Resource.State.NO_INIT ? "REQUESTED" : "RELOADING";
 
     if (this._SetState(Tw2Resource.State.REQUESTED)) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(reloading ? "reloading" : "requested", this.path, eventLog);
-      this.UpdateNotifications(Tw2Resource.Callback.REQUESTED);
+      this._requested = Date.now();
+      this.UpdateNotifications(stateName, undefined, log);
     }
   }
   /**
    * LoadFinished
-   * @param {*} [eventLog]
+   * @param {*} [log]
    */
 
 
-  OnLoaded(eventLog) {
+  OnLoaded() {
+    let log = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     if (this._SetState(Tw2Resource.State.LOADED)) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("loaded", this.path, eventLog);
-      this.UpdateNotifications(Tw2Resource.Callback.LOADED);
+      log.time = (Date.now() - this._requested) * 0.001;
+      this.UpdateNotifications("LOADED", undefined, log);
     }
   }
   /**
    * PrepareFinished
-   * @param {*} [eventLog]
+   * @param {*} [log]
    */
 
 
-  OnPrepared(eventLog) {
+  OnPrepared() {
+    let log = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     if (this._SetState(Tw2Resource.State.PREPARED)) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("prepared", this.path, eventLog);
-      this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
+      log.time = (Date.now() - this._requested) * 0.001;
+      this.UpdateNotifications("PREPARED", undefined, log);
     }
   }
   /**
    * Fires when the resource has been unloads
-   * @param {*} [eventLog]
+   * @param {*} [log]
    */
 
 
-  OnUnloaded(eventLog) {
+  OnUnloaded(log) {
     if (this._SetState(Tw2Resource.State.UNLOADED)) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("unloaded", this.path, eventLog);
-      this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
+      this.UpdateNotifications("UNLOADED", undefined, log);
     }
   }
   /**
    * Fires when the resource is purged
-   * @param eventLog
+   * @param {*} [log]
    */
 
 
-  OnPurged(eventLog) {
+  OnPurged(log) {
     this._SetState(Tw2Resource.State.PURGED);
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent("purged", this.path, eventLog);
-    this.UpdateNotifications(Tw2Resource.Callback.PURGED);
+    this.UpdateNotifications("PURGED", this.GetLastError(), log);
   }
   /**
    * Sets state
@@ -27617,6 +27628,7 @@ class Tw2Resource {
 
   _SetState(state) {
     if (this._state !== Tw2Resource.State.ERROR) {
+      //this._lastState = this._state;
       this._state = state;
       return true;
     }
@@ -27628,22 +27640,22 @@ class Tw2Resource {
    * - The notification is removed as soon as the resource is prepared or errored
    * @param {Function} [onResolved] - Callback fired when prepared or purged
    * @param {Function} [onRejected] - Callback fired when errored
-   * @param {Function} [onProgress] - Callback fires on any progress
    */
 
 
-  RegisterCallbacks(onResolved, onRejected, onProgress) {
+  RegisterCallbacks(onResolved, onRejected) {
     this.KeepAlive();
     if (!onResolved && !onRejected) return;
     /**
      * Handles resource events
      * @param {Tw2Resource} res
+     * @param {Error} [err]
      * @returns {Boolean}
      */
 
-    const handler = function handler(res) {
+    const handler = function handler(res, err) {
       if (res.HasCompleted()) {
-        const err = res.GetLastError();
+        err = err || res.GetLastError();
 
         if (err) {
           if (onRejected) onRejected(err);
@@ -27652,10 +27664,6 @@ class Tw2Resource {
         }
 
         return true;
-      }
-
-      if (onProgress) {
-        onProgress(res);
       }
 
       return false;
@@ -27730,21 +27738,24 @@ class Tw2Resource {
   }
   /**
    * Updates a notification
-   * @param {String} funcName - The function name to call
-   * @param {*} [argument]    - An optional argument
+   * @param {String} stateName - Event state name
+   * @param {*} [err]          - Event error
+   * @param {*} [log]          - Event log
    */
 
 
-  UpdateNotifications(funcName, argument, log) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnResEvent(funcName, this.path, log);
+  UpdateNotifications(stateName, err, log) {
+    stateName = stateName.toUpperCase();
+    const funcName = Tw2Resource.Callback[stateName];
+    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, stateName, log);
 
     this._notifications.forEach(notification => {
       let remove = false;
 
       if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
-        remove = notification(this, argument);
+        remove = notification(this, err);
       } else if (funcName && funcName in notification) {
-        remove = notification[funcName](this, argument);
+        remove = notification[funcName](this, err);
       }
 
       if (remove) {
@@ -27793,7 +27804,9 @@ _defineProperty(Tw2Resource, "Callback", {
   UNLOADED: "OnResUnloaded",
   REQUESTED: "OnResRequested",
   LOADED: "OnResLoaded",
-  PREPARED: "OnResPrepared"
+  PREPARED: "OnResPrepared",
+  WARNING: "OnResWarning",
+  DEBUG: "OnResDebug"
 });
 
 Tw2Resource.prototype.DoCustomLoad = null;
@@ -28669,12 +28682,12 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
   }
   /**
    * Unloads the texture from memory
-   * @param {eventLog} [eventLog]
+   * @param {*} [log]
    * @returns {Boolean}
    */
 
 
-  Unload(eventLog) {
+  Unload(log) {
     if (this.texture) {
       _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.deleteTexture(this.texture);
       this.texture = null;
@@ -28682,7 +28695,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
     this._extension = null;
     this._isAttached = false;
-    this.OnUnloaded(eventLog);
+    this.OnUnloaded(log);
     return true;
   }
   /**
@@ -29060,11 +29073,11 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
   }
   /**
    * Unloads the video and texture from memory
-   * @param {eventLog} eventLog
+   * @param {*} log
    */
 
 
-  Unload(eventLog) {
+  Unload(log) {
     if (this.texture) {
       _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteTexture(this.texture);
       this.texture = null;
@@ -29075,7 +29088,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
     this._playable = false;
     this.playOnLoad = true;
     this.video = null;
-    this.OnUnloaded(eventLog);
+    this.OnUnloaded(log);
     return true;
   }
   /**
@@ -42121,7 +42134,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
+/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42190,6 +42203,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretFiringFX", function() { return _effect__WEBPACK_IMPORTED_MODULE_2__["EveTurretFiringFX"]; });
 
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBanner"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2Batch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet2Batch"]; });
@@ -42251,12 +42270,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSetItem"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
@@ -47366,7 +47379,7 @@ _defineProperty(EveTurretSet, "__isStaging", 1);
 /*!***************************!*\
   !*** ./eve/item/index.js ***!
   \***************************/
-/*! exports provided: EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
+/*! exports provided: EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51444,12 +51457,13 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
   /**
    * Creates a log
    * @param {*} log
+   * @param {String} [title]
    * @returns {*}
    */
 
 
-  Log(log) {
-    return this.logger.Log(log);
+  Log(log, title) {
+    return this.logger.Log(log, title);
   }
   /**
    * Per frame tick
@@ -52057,15 +52071,12 @@ class Tw2EventEmitter {
   /**
    * Emits an event
    * @param {String} eventName
-   * @param {*} [e={}]
+   * @param {*} args
    * @returns {Tw2EventEmitter}
    */
   emit(eventName) {
-    let e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    // Short cut to creating a log output
-    if (e.log && !e.log._logged) {
-      e.log = this.msg(e.log);
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
     }
 
     const events = PRIVATE.get(this);
@@ -52074,7 +52085,7 @@ class Tw2EventEmitter {
 
     if (eventName in events) {
       events[eventName].forEach(function (value, key) {
-        key.call(value.context, e);
+        key.call(value.context, ...args);
         if (value.once) events[eventName].delete(key);
       });
 
@@ -54419,7 +54430,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {String} eventLog.type       - The log's type
  * @property {String} eventLog.name       - The log's name
  * @property {String} eventLog.message    - The log's message
- * @property {Boolean} [eventLog.hide]    - Toggles log visibility
+ * @property {String} [eventLog.path]     - optional related resource path
+ * @property {String} [eventLog.detail]   - optional extra detail
+ * @property {String} [eventLog.time]     - optional time taken
+ * @property {Boolean} [eventLog.hide]    - optional visibility
  * @property {Boolean} [eventLog._logged] - Identifies if the log has been logged
  * @property {Error} [eventLog.err]       - Optional error (output to the console)
  * @property {*} [eventLog.data]          - Optional data (output to the console)
@@ -54498,47 +54512,27 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
   }
   /**
    * Adds an event log and outputs it to the console
-   * @param {*|eventLog|Error} log - The eventLog or error to log
-   * @param {String} [defaultName]
+   * @param {*} log                - The eventLog or error to log
+   * @param {String} [defaultName] - Default message name/ title
    * @returns {eventLog} log
    */
 
 
   Log(log) {
     let defaultName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Logger";
-    if (log._logged) return log; // Allow errors as logs
 
+    // Allow errors as logs
     if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isError"])(log)) {
       log = {
-        err: log
+        err: log,
+        message: log.message
       };
-    } // Normalize log details
-
-
-    if (log.err) {
-      log.type = "error";
-      if (!log.name) log.name = log.err.name;
-      if (!log.message) log.message = log.err.message;
-    } else {
-      log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
-      log.message = log.message || "";
     }
 
-    log.name = log.name || defaultName; // Ensure messages include path
-
-    if (log.path) {
-      log.path = log.path.toLowerCase();
-
-      if (!log.message.includes(log.path)) {
-        log.message = "".concat(log.message, " \"").concat(log.path, "\"");
-      }
-    } // Normalize the log name
-
-
-    let name = log.name || defaultName;
-    name = name.replace(/_/g, " ");
-    name = name.charAt(0).toUpperCase() + name.slice(1);
-    log.name = name;
+    if (log._logged) return log;
+    log.name = log.name || defaultName;
+    log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
+    log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : ""; // Set visibility
 
     if (!this.display || !this.visible[log.type]) {
       log.hide = true;
@@ -54564,15 +54558,20 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 
 
     if (!log.hide || this._debugMode) {
+      // Optional details
+      let subMessage = "";
+      if (log.path && !log.message.includes(log.path)) subMessage += "'".concat(log.path, "' ");
+      if (log.time) subMessage += "in ".concat(log.time.toFixed(3), " secs ");
+      if (log.detail) subMessage += "(".concat(log.detail, ") ");
       let header = "".concat(this.name, " ").concat(log.name, ":");
 
       if (log.err || log.data) {
-        console.group(header, log.message);
+        console.group(header, log.message, subMessage);
         if (log.err) console.error(log.err.stack || log.err.toString());
         if (log.data) console.debug(JSON.stringify(log.data, null, 4));
         console.groupEnd();
       } else {
-        console[log.type](header, log.message);
+        console[log.type](header, log.message, subMessage);
       }
     } // Manage log history
 
@@ -54606,8 +54605,6 @@ _defineProperty(Tw2Logger, "LogType", {
   LOG: "log",
   DEBUG: "debug"
 });
-
-_defineProperty(Tw2Logger, "category", "logger");
 
 /***/ }),
 
@@ -54786,25 +54783,26 @@ class Tw2MotherLode {
           continue;
         }
 
-        let reason; // Has errors
+        let detail; // Has errors
 
         if (res.HasErrors()) {
-          reason = "errors(s)";
+          detail = "errored";
         } // Waiting for purge
         else if (res.IsUnloaded()) {
-            reason = "unloaded";
+            detail = "unloaded";
           } // good but inactive
-          else if (res.IsLoaded() || res.IsPrepared()) {
-              if ((curFrame - res.activeFrame) % frameLimit >= frameDistance && res.Unload({
-                hide: true
+          else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance) {
+              if (res.Unload({
+                hide: true,
+                detail: "inactivity"
               })) {
-                reason = "inactivity";
+                detail = "inactivity";
               }
             }
 
-        if (reason) {
+        if (detail) {
           res.OnPurged({
-            message: "Purged (".concat(reason, ")")
+            detail
           });
           this.Remove(path);
         }
@@ -54924,44 +54922,43 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     });
     path = Tw2ResMan.NormalizePath(path);
     const res = this.motherLode.Find(path);
-
-    if (res) {
-      res.OnError(err);
-    } else {
-      this.OnResEvent("error", path, err);
-    }
-
+    if (res) return res.OnError(err);
+    this.OnPathEvent(path, "ERROR", err);
     return err;
   }
   /**
-   * Fires on resource events
-   * @param {String} eventName - The event's name
-   * @param {String} path      - The resource's path
-   * @param {*} [log={}]       - The event's log
+   * Fires on path events
+   * @param {String} path      - Resource path
+   * @param {String} stateName - Resource state name
+   * @param {*} [log={}]       - Resource log
    */
 
 
-  OnResEvent(eventName, path) {
+  OnPathEvent(path, stateName) {
     let log = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    const defaultLog = Tw2ResMan.DefaultLog[eventName.toUpperCase()];
+    const evt = stateName.toLowerCase(),
+          res = this.motherLode.Find(path),
+          err = Object(_util__WEBPACK_IMPORTED_MODULE_4__["isError"])(log) ? log : undefined;
 
-    if (defaultLog) {
-      const eventData = {
-        res: this.motherLode.Find(path),
-        path
+    if (err) {
+      this.motherLode.AddError(path, err);
+      log = {
+        err,
+        message: err.message
       };
-
-      if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isError"])(log)) {
-        const err = eventData.err = this.motherLode.AddError(path, log);
-        log = {
-          err
-        };
-      }
-
-      log.path = path;
-      eventData.log = Object.assign({}, defaultLog, log);
-      this.emit(eventName.toLowerCase(), eventData);
     }
+
+    log.type = Tw2ResMan.LogType[stateName.toUpperCase()] || "info";
+    log.path = path;
+    log.message = log.message || evt;
+    log = this.tw2.Log(log, "Resource Manager");
+    this.emit(evt, {
+      err,
+      log,
+      res,
+      evt,
+      path
+    });
   }
   /**
    * IsLoading
@@ -55346,48 +55343,25 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     const dot = path.lastIndexOf(".");
     if (dot === -1) return null;
     return path.substr(dot + 1);
-  } // Default log outputs for resource events
+  }
+  /**
+   * Log type
+   * @type {*}
+   */
 
 
 }
 
-_defineProperty(Tw2ResMan, "DefaultLog", {
-  ERROR: {
-    type: "error",
-    message: "Uncaught error"
-  },
-  WARNING: {
-    type: "warn",
-    message: "Undefined warning"
-  },
-  REQUESTED: {
-    type: "info",
-    message: "Requested"
-  },
-  RELOADING: {
-    type: "info",
-    message: "Reloading"
-  },
-  LOADED: {
-    type: "info",
-    message: "Loaded"
-  },
-  PREPARED: {
-    type: "log",
-    message: "Prepared"
-  },
-  PURGED: {
-    type: "info",
-    message: "Purged"
-  },
-  UNLOADED: {
-    type: "info",
-    message: "Unloaded"
-  },
-  DEBUG: {
-    type: "debug",
-    message: "Debug"
-  }
+_defineProperty(Tw2ResMan, "LogType", {
+  ERROR: "error",
+  PURGED: "info",
+  UNLOADED: "info",
+  REQUESTED: "info",
+  RELOADING: "info",
+  LOADED: "info",
+  PREPARED: "log",
+  WARNING: "warn",
+  DEBUG: "debug"
 });
 
 _defineProperty(Tw2ResMan, "category", "resource_manager");
@@ -66852,7 +66826,7 @@ class Tw2ParticleElementDeclaration extends _global__WEBPACK_IMPORTED_MODULE_2__
 /*!***********************************!*\
   !*** ./particle/element/index.js ***!
   \***********************************/
-/*! exports provided: Tw2ParticleElementDeclaration, Tw2ParticleElement */
+/*! exports provided: Tw2ParticleElement, Tw2ParticleElementDeclaration */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68651,7 +68625,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./particle/index.js ***!
   \***************************/
-/*! exports provided: Tw2ParticleElementDeclaration, Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68660,9 +68634,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _constraint__WEBPACK_IMPORTED_MODULE_0__["Tr2PlaneConstraint"]; });
 
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./particle/element/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
 
 /* harmony import */ var _emitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./emitter */ "./particle/emitter/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuSharedEmitter"]; });

@@ -7,7 +7,10 @@ import {assignIfExists, isError} from "../util";
  * @property {String} eventLog.type       - The log's type
  * @property {String} eventLog.name       - The log's name
  * @property {String} eventLog.message    - The log's message
- * @property {Boolean} [eventLog.hide]    - Toggles log visibility
+ * @property {String} [eventLog.path]     - optional related resource path
+ * @property {String} [eventLog.detail]   - optional extra detail
+ * @property {String} [eventLog.time]     - optional time taken
+ * @property {Boolean} [eventLog.hide]    - optional visibility
  * @property {Boolean} [eventLog._logged] - Identifies if the log has been logged
  * @property {Error} [eventLog.err]       - Optional error (output to the console)
  * @property {*} [eventLog.data]          - Optional data (output to the console)
@@ -83,51 +86,25 @@ export class Tw2Logger extends Tw2EventEmitter
 
     /**
      * Adds an event log and outputs it to the console
-     * @param {*|eventLog|Error} log - The eventLog or error to log
-     * @param {String} [defaultName]
+     * @param {*} log                - The eventLog or error to log
+     * @param {String} [defaultName] - Default message name/ title
      * @returns {eventLog} log
      */
-    Log(log, defaultName="Logger")
+    Log(log, defaultName = "Logger")
     {
-        if (log._logged) return log;
-
         // Allow errors as logs
         if (isError(log))
         {
-            log = {err: log};
+            log = {err: log, message: log.message};
         }
 
-        // Normalize log details
-        if (log.err)
-        {
-            log.type = "error";
-            if (!log.name) log.name = log.err.name;
-            if (!log.message) log.message = log.err.message;
-        }
-        else
-        {
-            log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
-            log.message = log.message || "";
-        }
+        if (log._logged) return log;
 
         log.name = log.name || defaultName;
+        log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
+        log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
 
-        // Ensure messages include path
-        if (log.path)
-        {
-            log.path = log.path.toLowerCase();
-            if (!log.message.includes(log.path))
-            {
-                log.message = `${log.message} "${log.path}"`;
-            }
-        }
-
-        // Normalize the log name
-        let name = log.name || defaultName;
-        name = name.replace(/_/g, " ");
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-        log.name = name;
-
+        // Set visibility
         if (!this.display || !this.visible[log.type])
         {
             log.hide = true;
@@ -160,18 +137,23 @@ export class Tw2Logger extends Tw2EventEmitter
         // Output to the console
         if (!log.hide || this._debugMode)
         {
-            let header = `${this.name} ${log.name}:`;
+            // Optional details
+            let subMessage = "";
+            if (log.path && !log.message.includes(log.path)) subMessage += `'${log.path}' `;
+            if (log.time) subMessage += `in ${log.time.toFixed(3)} secs `;
+            if (log.detail) subMessage += `(${log.detail}) `;
 
+            let header = `${this.name} ${log.name}:`;
             if (log.err || log.data)
             {
-                console.group(header, log.message);
+                console.group(header, log.message, subMessage);
                 if (log.err) console.error(log.err.stack || log.err.toString());
                 if (log.data) console.debug(JSON.stringify(log.data, null, 4));
                 console.groupEnd();
             }
             else
             {
-                console[log.type](header, log.message);
+                console[log.type](header, log.message, subMessage);
             }
         }
 
@@ -204,11 +186,5 @@ export class Tw2Logger extends Tw2EventEmitter
         LOG: "log",
         DEBUG: "debug"
     };
-
-    /**
-     * Class category
-     * @type {String}
-     */
-    static category = "logger";
 
 }

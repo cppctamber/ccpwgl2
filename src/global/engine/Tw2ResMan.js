@@ -81,40 +81,37 @@ export class Tw2ResMan extends Tw2EventEmitter
     {
         path = Tw2ResMan.NormalizePath(path);
         const res = this.motherLode.Find(path);
-        if (res)
-        {
-            res.OnError(err);
-        }
-        else
-        {
-            this.OnResEvent("error", path, err);
-        }
+        if (res) return res.OnError(err);
+
+        this.OnPathEvent(path, "ERROR", err);
         return err;
     }
 
     /**
-     * Fires on resource events
-     * @param {String} eventName - The event's name
-     * @param {String} path      - The resource's path
-     * @param {*} [log={}]       - The event's log
+     * Fires on path events
+     * @param {String} path      - Resource path
+     * @param {String} stateName - Resource state name
+     * @param {*} [log={}]       - Resource log
      */
-    OnResEvent(eventName, path, log = {})
+    OnPathEvent(path, stateName, log={})
     {
-        const defaultLog = Tw2ResMan.DefaultLog[eventName.toUpperCase()];
-        if (defaultLog)
+        const
+            evt = stateName.toLowerCase(),
+            res = this.motherLode.Find(path),
+            err = isError(log) ? log : undefined;
+
+        if (err)
         {
-            const eventData = {res: this.motherLode.Find(path), path};
-
-            if (isError(log))
-            {
-                const err = eventData.err = this.motherLode.AddError(path, log);
-                log = {err};
-            }
-
-            log.path = path;
-            eventData.log = Object.assign({}, defaultLog, log);
-            this.emit(eventName.toLowerCase(), eventData);
+            this.motherLode.AddError(path, err);
+            log = { err, message: err.message };
         }
+
+        log.type = Tw2ResMan.LogType[stateName.toUpperCase()] || "info";
+        log.path = path;
+        log.message = log.message || evt;
+        log = this.tw2.Log(log, "Resource Manager");
+
+        this.emit(evt, {err, log, res, evt, path});
     }
 
     /**
@@ -501,17 +498,20 @@ export class Tw2ResMan extends Tw2EventEmitter
         return path.substr(dot + 1);
     }
 
-    // Default log outputs for resource events
-    static DefaultLog = {
-        ERROR: {type: "error", message: "Uncaught error"},
-        WARNING: {type: "warn", message: "Undefined warning"},
-        REQUESTED: {type: "info", message: "Requested"},
-        RELOADING: {type: "info", message: "Reloading"},
-        LOADED: {type: "info", message: "Loaded"},
-        PREPARED: {type: "log", message: "Prepared"},
-        PURGED: {type: "info", message: "Purged"},
-        UNLOADED: {type: "info", message: "Unloaded"},
-        DEBUG: {type: "debug", message: "Debug"}
+    /**
+     * Log type
+     * @type {*}
+     */
+    static LogType = {
+        ERROR: "error",
+        PURGED: "info",
+        UNLOADED: "info",
+        REQUESTED: "info",
+        RELOADING: "info",
+        LOADED: "info",
+        PREPARED: "log",
+        WARNING: "warn",
+        DEBUG: "debug"
     };
 
     /**

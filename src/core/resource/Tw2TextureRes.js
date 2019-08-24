@@ -268,10 +268,10 @@ export class Tw2TextureRes extends Tw2Resource
 
     /**
      * Unloads the texture from memory
-     * @param {eventLog} [eventLog]
+     * @param {*} [log]
      * @returns {Boolean}
      */
-    Unload(eventLog)
+    Unload(log)
     {
         if (this.texture)
         {
@@ -280,7 +280,7 @@ export class Tw2TextureRes extends Tw2Resource
         }
         this._extension = null;
         this._isAttached = false;
-        this.OnUnloaded(eventLog);
+        this.OnUnloaded(log);
         return true;
     }
 

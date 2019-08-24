@@ -176,30 +176,30 @@ export class Tw2MotherLode
                     continue;
                 }
 
-                let reason;
+                let detail;
 
                 // Has errors
                 if (res.HasErrors())
                 {
-                    reason = "errors(s)";
+                    detail = "errored";
                 }
                 // Waiting for purge
                 else if (res.IsUnloaded())
                 {
-                    reason = "unloaded";
+                    detail = "unloaded";
                 }
                 // good but inactive
-                else if (res.IsLoaded() || res.IsPrepared())
+                else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance)
                 {
-                    if ((curFrame - res.activeFrame) % frameLimit >= frameDistance && res.Unload({hide: true}))
+                    if (res.Unload({hide: true, detail: "inactivity"}))
                     {
-                        reason = "inactivity";
+                        detail = "inactivity";
                     }
                 }
 
-                if (reason)
+                if (detail)
                 {
-                    res.OnPurged({message: `Purged (${reason})`});
+                    res.OnPurged({detail});
                     this.Remove(path);
                 }
             }

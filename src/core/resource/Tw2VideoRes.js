@@ -205,9 +205,9 @@ export class Tw2VideoRes extends Tw2Resource
 
     /**
      * Unloads the video and texture from memory
-     * @param {eventLog} eventLog
+     * @param {*} log
      */
-    Unload(eventLog)
+    Unload(log)
     {
         if (this.texture)
         {
@@ -220,7 +220,7 @@ export class Tw2VideoRes extends Tw2Resource
         this._playable = false;
         this.playOnLoad = true;
         this.video = null;
-        this.OnUnloaded(eventLog);
+        this.OnUnloaded(log);
         return true;
     }
 
