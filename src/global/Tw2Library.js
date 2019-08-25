@@ -38,12 +38,12 @@ class Tw2Library extends Tw2EventEmitter
     {
         super();
 
-        this.store.classes.on("registered", (e) =>
+        this.store.classes.on("registered", (key, value) =>
         {
-            Tw2Library.prototype[e.key] = e.value;
+            Tw2Library.prototype[key] = value;
         });
 
-        Tw2EventEmitter.defaultLogger = this.logger;
+        Tw2EventEmitter.defaultLogger = this;
 
         // Lazy load the space object factory
         let eveSof;
@@ -65,13 +65,14 @@ class Tw2Library extends Tw2EventEmitter
 
     /**
      * Creates a log
+     * @param {String} type
      * @param {*} log
      * @param {String} [category]
      * @returns {*}
      */
-    Log(log, category=this.constructor.category)
+    Log(type, log, category=Tw2Library.constructor.__category)
     {
-        return this.logger.Log(log, category);
+        return this.logger.Log(type, log, category);
     }
 
     /**
@@ -263,12 +264,7 @@ class Tw2Library extends Tw2EventEmitter
     {
         this.store.classes.Debug(bool);
         this.logger.Debug(bool);
-
-        this.Log({
-            type: "warn",
-            name: "Tw2Library",
-            message: `Debugging ${bool ? "enabled" : "disabled"}`
-        });
+        this.Log("warning", `Debugging ${bool ? "enabled" : "disabled"}`);
     }
 
     /**

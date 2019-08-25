@@ -50,21 +50,13 @@ export class Tw2Error extends Error
      * Emits an event on a target emitter
      * @param {*} emitter
      * @param {String} [eventName='error']
-     * @param {*} [e={}]
      * @returns {Tw2Error}
      */
-    emitOn(emitter, eventName = "error", e = {})
+    emitOn(emitter, eventName = "error")
     {
         if (emitter && emitter.emit)
         {
-            emitter.emit(eventName, Object.assign({
-                err: this,
-                log: {
-                    type: "error",
-                    message: this.message,
-                    err: this
-                }
-            }, this.data, e));
+            emitter.emit(eventName, this);
         }
         return this;
     }

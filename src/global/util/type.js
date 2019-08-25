@@ -79,7 +79,7 @@ export function isDNA(a)
  */
 export function isError(a)
 {
-    return !!(a && a instanceof Error || a.constructor.category === "error");
+    return a ? a instanceof Error || a.constructor.__category === "Error" : false;
 }
 
 /**

@@ -1,5 +1,5 @@
 import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
-import {assignIfExists, isError} from "../util";
+import {assignIfExists, isError, isString} from "../util";
 
 /**
  * eventLog
@@ -86,24 +86,37 @@ export class Tw2Logger extends Tw2EventEmitter
 
     /**
      * Adds an event log and outputs it to the console
+     * @param {String}    type       - Log type
      * @param {*} log                - The eventLog or error to log
      * @param {String} [defaultName] - Default message name/ title
      * @returns {eventLog} log
      */
-    Log(log, defaultName)
+    Log(type="log", log, defaultName)
     {
-        if (log._logged) return log;
-
-        // Allow errors as logs
-        if (isError(log))
+        if (!log)
         {
-            log = {err: log, message: log.message};
+            log = { message: "" };
+        }
+        else if (isString(log))
+        {
+            log = { message : log };
+        }
+        else if (isError(log))
+        {
+            log = { message: log.message, err: log };
         }
 
+        if (log._logged) return log;
+
         // Normalize logs
+        log.type = type.toLowerCase();
         log.name = log.name || defaultName || Tw2Logger.constructor.category;
-        log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
         log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
+
+        if (!Tw2Logger.LogType[log.type.toUpperCase()])
+        {
+            log.type = "log";
+        }
 
         // Set visibility
         if (!this.display || !this.visible[log.type])

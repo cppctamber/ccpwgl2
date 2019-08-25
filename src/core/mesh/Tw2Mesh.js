@@ -1,4 +1,4 @@
-import {util, resMan, device, store} from "../../global";
+import {util, resMan, device, store, Tw2BaseClass} from "../../global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -39,7 +39,7 @@ import {assignIfExists, get, toArray} from "../../global/util";
  * @parameter {*} visible                            -
 
  */
-export class Tw2Mesh
+export class Tw2Mesh extends Tw2BaseClass
 {
 
     name = "";

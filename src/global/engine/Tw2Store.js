@@ -64,6 +64,26 @@ export class Tw2Store
 }
 
 /**
+ * Checks if a key is a Tr2 or Tri constructor
+ * @param {String} key
+ * @returns {boolean}
+ */
+function isTr2OrTri(key = "")
+{
+    return key.indexOf("Tr2") === 0 || key.indexOf("Tri") === 0;
+}
+
+/**
+ * Converts from a Tr2 or Tri constructor to a Tw2 constructor
+ * @param key
+ * @returns {string}
+ */
+function toTw2(key = "")
+{
+    return key.replace("Tr2", "Tw2").replace("Tri", "Tw2");
+}
+
+/**
  * Generic variable store
  *
  * @property {string} name
@@ -99,17 +119,17 @@ class Tw2GenericStore extends Tw2EventEmitter
     }
 
     /**
-     *
+     * Checks if a value is valid for the store
      * @param value
      * @returns {*}
      */
     IsValidValue(value)
     {
-        return this.constructor.isValue ? this.constructor.isValue : true;
+        return this.constructor.isValue ? this.constructor.isValue(value) : true;
     }
 
     /**
-     *
+     * Checks if a key is valid for the store
      * @param key
      * @returns {boolean}
      * @constructor
@@ -180,13 +200,8 @@ class Tw2GenericStore extends Tw2EventEmitter
 
         this._values.set(key, value);
 
-        this.emit("registered", {
-            key, value,
-            log: {
-                type: "debug",
-                message: `Registered ${this.name}: ${key}`
-            }
-        });
+        this.emit("registered", key, value)
+            .msg("debug", `Registered ${this.name}: ${key}`);
 
         return value;
     }
@@ -277,13 +292,24 @@ class Tw2BlackStore extends Tw2GenericStore
      * Sets a black
      * @param {String} key
      * @param {Function} func
-     * @param {Boolean} [override]
+     * @param {Boolean} override
      * @returns {Map}
      */
     Set(key, func, override)
     {
+        if (!isFunction(func))
+        {
+            throw new ErrStoreValueInvalid({store: this.name, key}).emitOn(this);
+        }
+
         const result = func(readers);
-        return super.Set(key, new Map(result));
+
+        if (!isArray(result))
+        {
+            throw new ErrStoreValueInvalid({store: this.name, key}).emitOn(this);
+        }
+
+        return super.Set(key, new Map(result), override);
     }
 
     /**
@@ -293,18 +319,7 @@ class Tw2BlackStore extends Tw2GenericStore
      */
     Has(key)
     {
-        if (super.Has(key))
-        {
-            return true;
-        }
-
-        // Fallback to Tw2 version
-        if (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0)
-        {
-            key = "Tw2" + key.substring(3);
-        }
-
-        return super.Has(key);
+        return super.Has(key) || super.Has(toTw2(key));
     }
 
     /**
@@ -316,33 +331,21 @@ class Tw2BlackStore extends Tw2GenericStore
     {
         let value = super.Get(key);
 
-        if (!value && (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0))
+        if (!value && isTr2OrTri(key))
         {
             const originalKey = key;
-            key = "Tw2" + key.substring(3);
+            key = toTw2(key);
             value = super.Get(key);
 
             if (value)
             {
-                this.emit("substitute", {
-                    key, value, originalKey, type: this.name,
-                    log: {
-                        type: "warning",
-                        message: `"${originalKey}" class not found, substituting with "${key}"`
-                    }
-                });
+                this.emit("substitute", key, value, originalKey)
+                    .msg("warning", `"${originalKey}" class not found, substituting with "${key}"`);
             }
         }
 
         return value;
     }
-
-    /**
-     * Checks if a passed value is a valid store value
-     * @param {*} a
-     * @returns {boolean}
-     */
-    static isValue = isFunction;
 
     /**
      * Store type
@@ -555,34 +558,24 @@ class Tw2ClassStore extends Tw2GenericStore
 
         value = super.Get(key);
 
-        if (!value && (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0))
+        if (!value && isTr2OrTri(key))
         {
             const originalKey = key;
-            key = "Tw2" + key.substring(3);
+            key = toTw2(key);
             value = super.Get(key);
 
             if (value)
             {
-                this.emit("substitute", {
-                    key, value, originalKey, type: this.name,
-                    log: {
-                        type: "warning",
-                        message: `"${originalKey}" class not found, substituting with "${key}"`
-                    }
-                });
+                this.emit("substitute", key, value, originalKey)
+                    .msg("warning", `"${originalKey}" class not found, substituting with "${key}"`);
             }
         }
 
         // Create a warning when a partially implemented class is called
         if (value && value.__isStaging)
         {
-            this.emit("partial", {
-                key, value,
-                log: {
-                    type: "warning",
-                    message: `Class partially implemented: ${key}`
-                }
-            });
+            this.emit("partial", key, value)
+                .msg("warning", `Class partially implemented: ${key}`);
         }
 
         return value;

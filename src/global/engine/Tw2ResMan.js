@@ -83,20 +83,19 @@ export class Tw2ResMan extends Tw2EventEmitter
         const res = this.motherLode.Find(path);
         if (res) return res.OnError(err);
 
-        this.OnPathEvent(path, "ERROR", err);
+        this.OnPathEvent(path, "error", err);
         return err;
     }
 
     /**
      * Fires on path events
      * @param {String} path      - Resource path
-     * @param {String} stateName - Resource state name
+     * @param {String} eventName - Resource state name
      * @param {*} [log={}]       - Resource log
      */
-    OnPathEvent(path, stateName, log={})
+    OnPathEvent(path, eventName, log={})
     {
         const
-            evt = stateName.toLowerCase(),
             res = this.motherLode.Find(path),
             err = isError(log) ? log : undefined;
 
@@ -106,11 +105,11 @@ export class Tw2ResMan extends Tw2EventEmitter
             log = { err, message: err.message };
         }
 
-        log.type = Tw2ResMan.LogType[stateName] || "info";
         log.path = path;
-        log.message = log.message || evt;
+        log.message = log.message || eventName;
 
-        this.emit(evt, { err, res, evt, log });
+        this.emit(eventName, path, res, err)
+            .msg(Tw2ResMan.LogType[eventName.toUpperCase()], log);
     }
 
     /**

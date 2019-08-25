@@ -250,17 +250,12 @@ export class Tw2Device extends Tw2EventEmitter
         this.glVersion = version;
         this.canvas = canvas;
 
-        this.emit("device_created", {
-            device: this, gl, params, canvas,
-            log: {
-                type: "debug",
-                message: `Webgl${version} context created`,
-            }
-        });
+        this.emit("device_created", this, gl, params, canvas)
+            .msg("debug", `Webgl${version} context created`);
 
         const
-            returnFalse = () => (false),
-            returnTrue = () => (true);
+            returnFalse = () => false,
+            returnTrue = () => true;
 
         switch (this.glVersion)
         {

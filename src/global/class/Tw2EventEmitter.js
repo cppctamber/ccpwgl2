@@ -12,17 +12,11 @@ export class Tw2EventEmitter
     /**
      * Emits an event
      * @param {String} eventName
-     * @param {*} [e={}]
+     * @param {*} args
      * @returns {Tw2EventEmitter}
      */
-    emit(eventName, e = {})
+    emit(eventName, ...args)
     {
-        // Logger
-        if (e && e.log)
-        {
-            e.log = this.msg(e.log);
-        }
-
         const events = PRIVATE.get(this);
         if (!events) return this;
 
@@ -31,7 +25,7 @@ export class Tw2EventEmitter
         {
             events[eventName].forEach((value, key) =>
             {
-                key.call(value.context, e);
+                key.call(value.context, ...args);
                 if (value.once) events[eventName].delete(key);
             });
 
@@ -201,14 +195,15 @@ export class Tw2EventEmitter
 
     /**
      * Logs a message
-     * @param {*} log
+     * @param {String} type
+     * @param {*|Error|Tw2Error} log
      * @returns {eventLog|*}
      */
-    msg(log)
+    msg(type, log)
     {
         if (this.constructor.defaultLogger)
         {
-            return this.constructor.defaultLogger.Log(log, this.constructor.__category);
+            return this.constructor.defaultLogger.Log(type, log, this.constructor.__category);
         }
 
         return log;

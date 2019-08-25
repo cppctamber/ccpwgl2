@@ -77,7 +77,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
 
         if (!opt || !opt["skipEvents"])
         {
-            this.emit("modified", opt);
+            this.emit("modified", this, opt);
         }
     }
 
@@ -100,7 +100,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
 
         if (!opt || !opt["skipEvents"])
         {
-            this.emit("destroy", opt);
+            this.emit("destroy", this, opt);
         }
 
         this.del("*");
@@ -113,18 +113,23 @@ export class Tw2BaseClass extends Tw2EventEmitter
      * @param {String} [path]
      * @returns {*}
      */
-    Traverse(callback, parent, path)
+    Traverse(callback, parent, path="")
     {
         const result = callback(this, parent, path);
         if (result) return result;
 
         function onChild(child, parent, path)
         {
+            let result;
             if (isFunction(child.Traverse))
             {
-                const result = child.Traverse(callback, parent, path);
-                if (result) return result;
+                result = child.Traverse(callback, parent, path);
             }
+            else if (isObjectObject(child))
+            {
+                result = callback(child, parent, path);
+            }
+            if (result) return result;
         }
 
         return this.constructor.perChild(this, onChild, path);
@@ -219,10 +224,18 @@ export class Tw2BaseClass extends Tw2EventEmitter
      * @param {*} obj
      * @param {Function} callback
      * @param {String} [path="root"]
+     * @param {Set} [visited]
      * @returns {!*}
      */
-    static perChild(obj, callback, path = "root")
+    static perChild(obj, callback, path = "", visited = new Set())
     {
+        if (visited.has(obj))
+        {
+            return;
+        }
+
+        visited.add(obj);
+
         if (!obj.constructor.keys)
         {
             cacheKeys(obj);

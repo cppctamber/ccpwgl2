@@ -69,6 +69,25 @@ export class EveObjectSet extends Tw2BaseClass
     }
 
     /**
+     * Fires when an item is modified
+     * @param {*} item
+     * @param {*} opt
+     */
+    OnItemModified(item, opt)
+    {
+        if (this.items.includes(item))
+        {
+            this._dirty = true;
+            this.emit("item_modified", item, opt);
+        }
+        else
+        {
+            this.emit("item_removed", item, opt);
+            item.off("modified", this.OnItemModified);
+        }
+    }
+
+    /**
      * Creates an item from an options object and then adds it to the set
      * @param {*} [values={}]
      * @param {Boolean} [skipUpdate]
@@ -79,12 +98,11 @@ export class EveObjectSet extends Tw2BaseClass
     {
         const item = this.constructor.Item.from(values);
 
-        this.items.push(item);
-        this._dirty = true;
+        this.AddItem(item, true, true);
 
         if (!skipEvents)
         {
-            this.emit("item_created", {ctx: item});
+            this.emit("item_created", item);
         }
 
         if (!skipUpdate)
@@ -108,9 +126,11 @@ export class EveObjectSet extends Tw2BaseClass
             this.items.push(item);
             this._dirty = true;
 
+            item.on("modified", this.OnItemModified, this);
+
             if (!skipEvents)
             {
-                this.emit("item_added", {ctx: item});
+                this.emit("item_added", item);
             }
 
             if (!skipUpdate)
@@ -137,9 +157,11 @@ export class EveObjectSet extends Tw2BaseClass
             this.items.splice(index, 1);
             this._dirty = true;
 
+            item.off("modified", this.OnItemModified);
+
             if (!skipEvents)
             {
-                this.emit("item_removed", {ctx: item});
+                this.emit("item_removed", item);
             }
 
             if (!skipUpdate)
@@ -159,10 +181,21 @@ export class EveObjectSet extends Tw2BaseClass
      */
     ClearItems(skipUpdate, skipEvents)
     {
+        let items;
+        if (!skipEvents)
+        {
+            items = Array.from(this.items);
+        }
+
         for (let i = 0; i < this.items.length; i++)
         {
-            this.RemoveItem(this.items[i], true, skipEvents);
+            this.RemoveItem(this.items[i], true, true);
             i--;
+        }
+
+        if (!skipEvents)
+        {
+            this.emit("items_cleared", items);
         }
 
         if (!skipUpdate)
@@ -181,13 +214,25 @@ export class EveObjectSet extends Tw2BaseClass
         {
             const item = this.items[i];
 
+            if (!item.has("modified", this.OnItemModified))
+            {
+                this.emit("item_added", item);
+                item.on("modified", this.OnItemModified, this);
+            }
+
             if (item.display)
             {
                 this._visibleItems.push(item);
             }
 
+            if (item._dirty)
+            {
+                this.emit("item_rebuilt", item);
+            }
+
             item._dirty = false;
         }
+
         this._dirty = true;
     }
 

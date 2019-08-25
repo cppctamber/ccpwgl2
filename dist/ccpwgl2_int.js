@@ -16548,8 +16548,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {vec3} targetPosition
  */
 
-class Tr2DistanceTracker {
+class Tr2DistanceTracker extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor() {
+    super(...arguments);
+
     _defineProperty(this, "name", "");
 
     _defineProperty(this, "direction", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
@@ -16962,24 +16964,15 @@ class Tw2Error extends Error {
    * Emits an event on a target emitter
    * @param {*} emitter
    * @param {String} [eventName='error']
-   * @param {*} [e={}]
    * @returns {Tw2Error}
    */
 
 
   emitOn(emitter) {
     let eventName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "error";
-    let e = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     if (emitter && emitter.emit) {
-      emitter.emit(eventName, Object.assign({
-        err: this,
-        log: {
-          type: "error",
-          message: this.message,
-          err: this
-        }
-      }, this.data, e));
+      emitter.emit(eventName, this);
     }
 
     return this;
@@ -17526,9 +17519,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @class
  */
 
-class Tw2RenderTarget {
+class Tw2RenderTarget extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor() {
-    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
+    super(...arguments);
 
     _defineProperty(this, "name", "");
 
@@ -18898,7 +18891,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18969,6 +18962,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Bone", function() { return _model__WEBPACK_IMPORTED_MODULE_5__["Tw2Bone"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BoneBinding", function() { return _model__WEBPACK_IMPORTED_MODULE_5__["Tw2BoneBinding"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshBinding", function() { return _model__WEBPACK_IMPORTED_MODULE_5__["Tw2MeshBinding"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Model", function() { return _model__WEBPACK_IMPORTED_MODULE_5__["Tw2Model"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Track", function() { return _model__WEBPACK_IMPORTED_MODULE_5__["Tw2Track"]; });
@@ -19013,8 +19010,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -19026,6 +19021,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -20605,8 +20602,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
  */
 
-class Tw2Mesh {
+class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor() {
+    super(...arguments);
+
     _defineProperty(this, "name", "");
 
     _defineProperty(this, "additiveAreas", []);
@@ -21062,7 +21061,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Boolean} isPlaying
  * @property {Function} callback - Stores optional callback passed to prototypes
  * @property {Array} trackGroups - Array of {@link Tw2TrackGroup}
- * @class
  */
 class Tw2Animation {
   constructor() {
@@ -21107,10 +21105,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../resource */ "./core/resource/index.js");
 /* harmony import */ var _Tw2Animation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Animation */ "./core/model/Tw2Animation.js");
 /* harmony import */ var _Tw2Bone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Bone */ "./core/model/Tw2Bone.js");
-/* harmony import */ var _Tw2Model__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Model */ "./core/model/Tw2Model.js");
-/* harmony import */ var _Tw2Track__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Track */ "./core/model/Tw2Track.js");
-/* harmony import */ var _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2TrackGroup */ "./core/model/Tw2TrackGroup.js");
+/* harmony import */ var _Tw2BoneBinding__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2BoneBinding */ "./core/model/Tw2BoneBinding.js");
+/* harmony import */ var _Tw2Model__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Model */ "./core/model/Tw2Model.js");
+/* harmony import */ var _Tw2Track__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2Track */ "./core/model/Tw2Track.js");
+/* harmony import */ var _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2TrackGroup */ "./core/model/Tw2TrackGroup.js");
+/* harmony import */ var _Tw2MeshBinding__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Tw2MeshBinding */ "./core/model/Tw2MeshBinding.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
 
 
 
@@ -21126,7 +21128,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Array.<Tw2GeometryRes>} geometryResources
  * @property {Array.<Tw2Model>} models
  * @property {Array.<Tw2Animation>} animations
- * @property {Array.<Tw2GeometryMeshBinding>} meshBindings
+ * @property {Array.<Tw2MeshBinding>} meshBindings
  * @property {Boolean} loaded
  * @property {Boolean} update
  * @property _geometryResource
@@ -21419,16 +21421,16 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
 
   SetGeometryResource(geometryResource) {
-    this.models = [];
-    this.animations = [];
-    this.meshBindings = [];
+    this.models.splice(0);
+    this.animations.splice(0);
+    this.meshBindings.splice(0);
 
     for (let i = 0; i < this.geometryResources.length; ++i) {
       this.geometryResources[i].UnregisterNotification(this);
     }
 
     this.loaded = false;
-    this.geometryResources = [];
+    this.geometryResources.splice(0);
 
     if (geometryResource) {
       this.geometryResources.push(geometryResource);
@@ -21494,13 +21496,13 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
         }
 
         if (model !== null) {
-          const group = new _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_6__["Tw2TrackGroup"]();
+          const group = new _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__["Tw2TrackGroup"]();
           group.trackGroupRes = animation.animationRes.trackGroups[j];
 
           for (let k = 0; k < group.trackGroupRes.transformTracks.length; ++k) {
             for (let m = 0; m < model.bones.length; ++m) {
               if (model.bones[m].boneRes.name === group.trackGroupRes.transformTracks[k].name) {
-                const track = new _Tw2Track__WEBPACK_IMPORTED_MODULE_5__["Tw2Track"]();
+                const track = new _Tw2Track__WEBPACK_IMPORTED_MODULE_6__["Tw2Track"]();
                 track.trackRes = group.trackGroupRes.transformTracks[k];
                 track.bone = model.bones[m];
                 group.transformTracks.push(track);
@@ -21539,10 +21541,10 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     const id = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(Tw2AnimationController.global.mat4_0);
 
     for (let i = 0; i < this.meshBindings.length; ++i) {
-      for (let j = 0; j < this.meshBindings[i].length; ++j) {
-        for (let k = 0; k * 16 < this.meshBindings[i][j].length; ++k) {
+      for (let j = 0; j < this.meshBindings[i].meshIndex.length; ++j) {
+        for (let k = 0; k * 16 < this.meshBindings[i].meshIndex[j].length; ++k) {
           for (let m = 0; m < 16; ++m) {
-            this.meshBindings[i][j][k * 16 + m] = id[m];
+            this.meshBindings[i].meshIndex[j][k * 16 + m] = id[m];
           }
         }
       }
@@ -21567,8 +21569,8 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
     const meshBindings = Tw2AnimationController.FindMeshBindings(this, geometryResource);
 
-    if (meshBindings && meshIndex < meshBindings.length) {
-      return meshBindings[meshIndex];
+    if (meshBindings && meshBindings.meshIndex[meshIndex] !== undefined) {
+      return meshBindings.meshIndex[meshIndex];
     }
 
     return new Float32Array();
@@ -21738,21 +21740,21 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
         _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.offsetTransform, bone.worldTransform, bone.boneRes.worldTransformInv);
 
-        if (bone.bindingArrays) {
-          for (let a = 0; a < bone.bindingArrays.length; ++a) {
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 0] = bone.offsetTransform[0];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 1] = bone.offsetTransform[4];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 2] = bone.offsetTransform[8];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 3] = bone.offsetTransform[12];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 4] = bone.offsetTransform[1];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 5] = bone.offsetTransform[5];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 6] = bone.offsetTransform[9];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 7] = bone.offsetTransform[13];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 8] = bone.offsetTransform[2];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 9] = bone.offsetTransform[6];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 10] = bone.offsetTransform[10];
-            bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 11] = bone.offsetTransform[14];
-          }
+        for (let a = 0; a < bone.bindingArrays.length; ++a) {
+          const ba = bone.bindingArrays[a],
+                tr = bone.offsetTransform;
+          ba.array[ba.offset + 0] = tr[0];
+          ba.array[ba.offset + 1] = tr[4];
+          ba.array[ba.offset + 2] = tr[8];
+          ba.array[ba.offset + 3] = tr[12];
+          ba.array[ba.offset + 4] = tr[1];
+          ba.array[ba.offset + 5] = tr[5];
+          ba.array[ba.offset + 6] = tr[9];
+          ba.array[ba.offset + 7] = tr[13];
+          ba.array[ba.offset + 8] = tr[2];
+          ba.array[ba.offset + 9] = tr[6];
+          ba.array[ba.offset + 10] = tr[10];
+          ba.array[ba.offset + 11] = tr[14];
         }
       }
     }
@@ -21799,7 +21801,7 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
       }
     }
 
-    const model = new _Tw2Model__WEBPACK_IMPORTED_MODULE_4__["Tw2Model"]();
+    const model = new _Tw2Model__WEBPACK_IMPORTED_MODULE_5__["Tw2Model"]();
     model.modelRes = modelRes;
     const skeleton = modelRes.skeleton;
 
@@ -21816,7 +21818,7 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     return model;
   }
   /**
-   * Finds a mesh binding for a supplied resource from an animation controller
+   * Finds a mesh binding for a supplied resource
    * @param {Tw2AnimationController} animationController
    * @param {Tw2GeometryRes} resource
    * @returns {Object|null} Returns the mesh binding of a resource if it exists, null if it doesn't
@@ -21884,24 +21886,20 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
         let meshBindings = Tw2AnimationController.FindMeshBindings(animationController, resource);
 
         if (meshBindings === null) {
-          meshBindings = [];
+          meshBindings = new _Tw2MeshBinding__WEBPACK_IMPORTED_MODULE_8__["Tw2MeshBinding"]();
           meshBindings.resource = resource;
           animationController.meshBindings.push(meshBindings);
         }
 
-        meshBindings[meshIx] = new Float32Array(resource.models[i].meshBindings[j].bones.length * 12);
+        meshBindings.meshIndex[meshIx] = new Float32Array(resource.models[i].meshBindings[j].bones.length * 12);
 
         for (let k = 0; k < resource.models[i].meshBindings[j].bones.length; ++k) {
           for (let n = 0; n < model.bones.length; ++n) {
             if (model.bones[n].boneRes.name === resource.models[i].meshBindings[j].bones[k].name) {
-              if (!model.bones[n].bindingArrays) {
-                model.bones[n].bindingArrays = [];
-              }
-
-              model.bones[n].bindingArrays[model.bones[n].bindingArrays.length] = {
-                "array": meshBindings[meshIx],
-                "offset": k * 12
-              }; //meshBindings[meshIx][k] = model.bones[n].offsetTransform;
+              const boneBinding = new _Tw2BoneBinding__WEBPACK_IMPORTED_MODULE_4__["Tw2BoneBinding"]();
+              boneBinding.array = meshBindings.meshIndex[meshIx];
+              boneBinding.offset = k * 12;
+              model.bones[n].bindingArrays.push(boneBinding); //meshBindings.meshIndex[meshIx][k] = model.bones[n].offsetTransform;
 
               break;
             }
@@ -21927,7 +21925,7 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
         }
       }
 
-      animationController.pendingCommands = [];
+      animationController.pendingCommands.splice(0);
 
       if (animationController.onPendingCleared) {
         animationController.onPendingCleared(animationController);
@@ -21946,6 +21944,10 @@ _defineProperty(Tw2AnimationController, "global", {
   quat_0: _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
   mat3_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat3"].create(),
   mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+});
+
+_defineProperty(Tw2AnimationController, "keys", {
+  primary: ["update"]
 });
 
 /***/ }),
@@ -21968,21 +21970,79 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * Tw2Bone
  *
  * @property {Tw2GeometryBone} boneRes
+ * @property {Array<Tw2BoneBinding>} bindingArrays
  * @property {mat4} localTransform
  * @property {mat4} worldTransform
  * @property {mat4} offsetTransform
- * @class
  */
 
 class Tw2Bone {
   constructor() {
     _defineProperty(this, "boneRes", null);
 
+    _defineProperty(this, "bindingArrays", []);
+
     _defineProperty(this, "localTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     _defineProperty(this, "worldTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
     _defineProperty(this, "offsetTransform", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/model/Tw2BoneBinding.js":
+/*!**************************************!*\
+  !*** ./core/model/Tw2BoneBinding.js ***!
+  \**************************************/
+/*! exports provided: Tw2BoneBinding */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2BoneBinding", function() { return Tw2BoneBinding; });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Bone binding
+ * @param {Float32Array} array
+ * @param {Number} offset
+ */
+class Tw2BoneBinding {
+  constructor() {
+    _defineProperty(this, "array", null);
+
+    _defineProperty(this, "offset", 0);
+  }
+
+}
+
+/***/ }),
+
+/***/ "./core/model/Tw2MeshBinding.js":
+/*!**************************************!*\
+  !*** ./core/model/Tw2MeshBinding.js ***!
+  \**************************************/
+/*! exports provided: Tw2MeshBinding */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshBinding", function() { return Tw2MeshBinding; });
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Tw2MeshBinding
+ * @param {Array<Float32Array>} meshIndex
+ * @param {*} resource
+ */
+class Tw2MeshBinding {
+  constructor() {
+    _defineProperty(this, "meshIndex", []);
+
+    _defineProperty(this, "resource", null);
   }
 
 }
@@ -22007,7 +22067,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Tw2GeometryModel} modelRes
  * @property {Array.<Tw2Bone>} bones
  * @property {Object.<string, Tw2Bone>} bonesByName - An object containing every Tw2Bone name and it's object
- * @class
  */
 class Tw2Model {
   constructor() {
@@ -22039,7 +22098,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *
  * @property {Tw2GeometryTransformTrack} trackRes
  * @property {Tw2Bone} bone
- * @class
  */
 class Tw2Track {
   constructor() {
@@ -22070,7 +22128,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Tw2GeometryTrackGroup} trackGroupRes
  * @property {Tw2GeometryModel} model
  * @property {Array.<Tw2Track>} transformTracks
- * @class
  */
 class Tw2TrackGroup {
   constructor() {
@@ -22089,7 +22146,7 @@ class Tw2TrackGroup {
 /*!*****************************!*\
   !*** ./core/model/index.js ***!
   \*****************************/
-/*! exports provided: Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2Model, Tw2Track, Tw2TrackGroup */
+/*! exports provided: Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -22103,14 +22160,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Bone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Bone */ "./core/model/Tw2Bone.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Bone", function() { return _Tw2Bone__WEBPACK_IMPORTED_MODULE_2__["Tw2Bone"]; });
 
-/* harmony import */ var _Tw2Model__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Model */ "./core/model/Tw2Model.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Model", function() { return _Tw2Model__WEBPACK_IMPORTED_MODULE_3__["Tw2Model"]; });
+/* harmony import */ var _Tw2BoneBinding__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2BoneBinding */ "./core/model/Tw2BoneBinding.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BoneBinding", function() { return _Tw2BoneBinding__WEBPACK_IMPORTED_MODULE_3__["Tw2BoneBinding"]; });
 
-/* harmony import */ var _Tw2Track__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Track */ "./core/model/Tw2Track.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Track", function() { return _Tw2Track__WEBPACK_IMPORTED_MODULE_4__["Tw2Track"]; });
+/* harmony import */ var _Tw2MeshBinding__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2MeshBinding */ "./core/model/Tw2MeshBinding.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshBinding", function() { return _Tw2MeshBinding__WEBPACK_IMPORTED_MODULE_4__["Tw2MeshBinding"]; });
 
-/* harmony import */ var _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2TrackGroup */ "./core/model/Tw2TrackGroup.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TrackGroup", function() { return _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_5__["Tw2TrackGroup"]; });
+/* harmony import */ var _Tw2Model__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Model */ "./core/model/Tw2Model.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Model", function() { return _Tw2Model__WEBPACK_IMPORTED_MODULE_5__["Tw2Model"]; });
+
+/* harmony import */ var _Tw2Track__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Tw2Track */ "./core/model/Tw2Track.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Track", function() { return _Tw2Track__WEBPACK_IMPORTED_MODULE_6__["Tw2Track"]; });
+
+/* harmony import */ var _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Tw2TrackGroup */ "./core/model/Tw2TrackGroup.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TrackGroup", function() { return _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__["Tw2TrackGroup"]; });
+
+
 
 
 
@@ -27364,8 +27429,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 
 class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
+  /**
+   * Constructor
+   */
   constructor() {
-    super(...arguments);
+    super();
 
     _defineProperty(this, "path", "");
 
@@ -27378,12 +27446,15 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
     _defineProperty(this, "_errors", []);
 
     _defineProperty(this, "_requested", 0);
-  }
 
+    _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
+  }
   /**
    * Checks if the resource is good and keeps it alive
    * @returns {boolean}
    */
+
+
   IsGood() {
     this.KeepAlive();
     return this.IsPrepared() || this.IsLoaded();
@@ -27727,9 +27798,8 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
     return false;
   }
   /**
-   * Identifies that this object is a resource
-   * @type {boolean}
-   * @private
+   * Resource states
+   * @type {*}
    */
 
 
@@ -27740,8 +27810,6 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
  * @type {?Function}
  * @returns {Boolean}
  */
-
-_defineProperty(Tw2Resource, "__isResource", true);
 
 _defineProperty(Tw2Resource, "State", {
   ERROR: -3,
@@ -27763,6 +27831,8 @@ _defineProperty(Tw2Resource, "Callback", {
   WARNING: "OnResWarning",
   DEBUG: "OnResDebug"
 });
+
+_defineProperty(Tw2Resource, "__isResource", true);
 
 Tw2Resource.prototype.DoCustomLoad = null;
 /**
@@ -27819,11 +27889,13 @@ class Tw2Shader {
 
     _defineProperty(this, "annotations", {});
 
+    _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
     /**
      * ReadString
      * @returns {String}
      * @private
      */
+
     function ReadString() {
       const offset = reader.ReadUInt32();
       let end = offset;
@@ -29084,7 +29156,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -29567,7 +29639,9 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexDeclaration", function() { return Tw2VertexDeclaration; });
 /* harmony import */ var _Tw2VertexElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2VertexElement */ "./core/vertex/Tw2VertexElement.js");
+/* harmony import */ var _global_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/class */ "./global/class/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 /**
@@ -29579,8 +29653,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {?Number} vertexSize
  */
 
-class Tw2VertexDeclaration {
+class Tw2VertexDeclaration extends _global_class__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
   constructor() {
+    super(...arguments);
+
     _defineProperty(this, "elements", []);
 
     _defineProperty(this, "elementsSorted", []);
@@ -29843,8 +29919,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Number} usageIndex
  */
 
-class Tw2VertexElement {
+class Tw2VertexElement extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor() {
+    super(...arguments);
+
     _defineProperty(this, "customSetter", null);
 
     _defineProperty(this, "elements", null);
@@ -43913,6 +43991,22 @@ class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     this._dirty = true;
   }
   /**
+   * Fires when an item is modified
+   * @param {*} item
+   * @param {*} opt
+   */
+
+
+  OnItemModified(item, opt) {
+    if (this.items.includes(item)) {
+      this._dirty = true;
+      this.emit("item_modified", item, opt);
+    } else {
+      this.emit("item_removed", item, opt);
+      item.off("modified", this.OnItemModified);
+    }
+  }
+  /**
    * Creates an item from an options object and then adds it to the set
    * @param {*} [values={}]
    * @param {Boolean} [skipUpdate]
@@ -43926,13 +44020,10 @@ class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     let skipUpdate = arguments.length > 1 ? arguments[1] : undefined;
     let skipEvents = arguments.length > 2 ? arguments[2] : undefined;
     const item = this.constructor.Item.from(values);
-    this.items.push(item);
-    this._dirty = true;
+    this.AddItem(item, true, true);
 
     if (!skipEvents) {
-      this.emit("item_created", {
-        ctx: item
-      });
+      this.emit("item_created", item);
     }
 
     if (!skipUpdate) {
@@ -43953,11 +44044,10 @@ class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     if (!this.items.includes(item)) {
       this.items.push(item);
       this._dirty = true;
+      item.on("modified", this.OnItemModified, this);
 
       if (!skipEvents) {
-        this.emit("item_added", {
-          ctx: item
-        });
+        this.emit("item_added", item);
       }
 
       if (!skipUpdate) {
@@ -43983,11 +44073,10 @@ class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     if (index !== -1) {
       this.items.splice(index, 1);
       this._dirty = true;
+      item.off("modified", this.OnItemModified);
 
       if (!skipEvents) {
-        this.emit("item_removed", {
-          ctx: item
-        });
+        this.emit("item_removed", item);
       }
 
       if (!skipUpdate) {
@@ -44007,9 +44096,19 @@ class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   ClearItems(skipUpdate, skipEvents) {
+    let items;
+
+    if (!skipEvents) {
+      items = Array.from(this.items);
+    }
+
     for (let i = 0; i < this.items.length; i++) {
-      this.RemoveItem(this.items[i], true, skipEvents);
+      this.RemoveItem(this.items[i], true, true);
       i--;
+    }
+
+    if (!skipEvents) {
+      this.emit("items_cleared", items);
     }
 
     if (!skipUpdate) {
@@ -44027,8 +44126,17 @@ class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i];
 
+      if (!item.has("modified", this.OnItemModified)) {
+        this.emit("item_added", item);
+        item.on("modified", this.OnItemModified, this);
+      }
+
       if (item.display) {
         this._visibleItems.push(item);
+      }
+
+      if (item._dirty) {
+        this.emit("item_rebuilt", item);
       }
 
       item._dirty = false;
@@ -51388,10 +51496,10 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
 
     _defineProperty(this, "category", "Library");
 
-    this.store.classes.on("registered", e => {
-      Tw2Library.prototype[e.key] = e.value;
+    this.store.classes.on("registered", (key, value) => {
+      Tw2Library.prototype[key] = value;
     });
-    _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2EventEmitter"].defaultLogger = this.logger; // Lazy load the space object factory
+    _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2EventEmitter"].defaultLogger = this; // Lazy load the space object factory
 
     let eveSof;
 
@@ -51413,15 +51521,16 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
   }
   /**
    * Creates a log
+   * @param {String} type
    * @param {*} log
    * @param {String} [category]
    * @returns {*}
    */
 
 
-  Log(log) {
-    let category = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.constructor.category;
-    return this.logger.Log(log, category);
+  Log(type, log) {
+    let category = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Tw2Library.constructor.__category;
+    return this.logger.Log(type, log, category);
   }
   /**
    * Per frame tick
@@ -51601,11 +51710,7 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
   Debug(bool) {
     this.store.classes.Debug(bool);
     this.logger.Debug(bool);
-    this.Log({
-      type: "warn",
-      name: "Tw2Library",
-      message: "Debugging ".concat(bool ? "enabled" : "disabled")
-    });
+    this.Log("warning", "Debugging ".concat(bool ? "enabled" : "disabled"));
   }
   /**
    * Sets an object's tw2 instantiation
@@ -51740,7 +51845,7 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     this.OnValueChanged(opt);
 
     if (!opt || !opt["skipEvents"]) {
-      this.emit("modified", opt);
+      this.emit("modified", this, opt);
     }
   }
   /**
@@ -51760,7 +51865,7 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     this.OnDestroy(opt);
 
     if (!opt || !opt["skipEvents"]) {
-      this.emit("destroy", opt);
+      this.emit("destroy", this, opt);
     }
 
     this.del("*");
@@ -51774,15 +51879,21 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
    */
 
 
-  Traverse(callback, parent, path) {
+  Traverse(callback, parent) {
+    let path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
     const result = callback(this, parent, path);
     if (result) return result;
 
     function onChild(child, parent, path) {
+      let result;
+
       if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(child.Traverse)) {
-        const result = child.Traverse(callback, parent, path);
-        if (result) return result;
+        result = child.Traverse(callback, parent, path);
+      } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(child)) {
+        result = callback(child, parent, path);
       }
+
+      if (result) return result;
     }
 
     return this.constructor.perChild(this, onChild, path);
@@ -51883,12 +51994,20 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
    * @param {*} obj
    * @param {Function} callback
    * @param {String} [path="root"]
+   * @param {Set} [visited]
    * @returns {!*}
    */
 
 
   static perChild(obj, callback) {
-    let path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "root";
+    let path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+    let visited = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new Set();
+
+    if (visited.has(obj)) {
+      return;
+    }
+
+    visited.add(obj);
 
     if (!obj.constructor.keys) {
       cacheKeys(obj);
@@ -52017,12 +52136,15 @@ function cacheKeys(obj) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return Tw2EventEmitter; });
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 /**
  * Emitter privates
  * @type {WeakMap<object, *>}
  */
+
 const PRIVATE = new WeakMap();
 /**
  * Tw2EventEmitter
@@ -52032,15 +52154,12 @@ class Tw2EventEmitter {
   /**
    * Emits an event
    * @param {String} eventName
-   * @param {*} [e={}]
+   * @param {*} args
    * @returns {Tw2EventEmitter}
    */
   emit(eventName) {
-    let e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    // Logger
-    if (e && e.log) {
-      e.log = this.msg(e.log);
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
     }
 
     const events = PRIVATE.get(this);
@@ -52049,7 +52168,7 @@ class Tw2EventEmitter {
 
     if (eventName in events) {
       events[eventName].forEach((value, key) => {
-        key.call(value.context, e);
+        key.call(value.context, ...args);
         if (value.once) events[eventName].delete(key);
       });
 
@@ -52212,14 +52331,15 @@ class Tw2EventEmitter {
   }
   /**
    * Logs a message
-   * @param {*} log
+   * @param {String} type
+   * @param {*|Error|Tw2Error} log
    * @returns {eventLog|*}
    */
 
 
-  msg(log) {
+  msg(type, log) {
     if (this.constructor.defaultLogger) {
-      return this.constructor.defaultLogger.Log(log, this.constructor.__category);
+      return this.constructor.defaultLogger.Log(type, log, this.constructor.__category);
     }
 
     return log;
@@ -53754,16 +53874,8 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     this.gl = gl;
     this.glVersion = version;
     this.canvas = canvas;
-    this.emit("device_created", {
-      device: this,
-      gl,
-      params,
-      canvas,
-      log: {
-        type: "debug",
-        message: "Webgl".concat(version, " context created")
-      }
-    });
+    this.emit("device_created", this, gl, params, canvas);
+    this.msg("debug", "Webgl".concat(version, " context created"));
 
     const returnFalse = () => false,
           returnTrue = () => true;
@@ -54603,26 +54715,43 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
   }
   /**
    * Adds an event log and outputs it to the console
+   * @param {String}    type       - Log type
    * @param {*} log                - The eventLog or error to log
    * @param {String} [defaultName] - Default message name/ title
    * @returns {eventLog} log
    */
 
 
-  Log(log, defaultName) {
-    if (log._logged) return log; // Allow errors as logs
+  Log() {
+    let type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "log";
+    let log = arguments.length > 1 ? arguments[1] : undefined;
+    let defaultName = arguments.length > 2 ? arguments[2] : undefined;
 
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isError"])(log)) {
+    if (!log) {
       log = {
-        err: log,
-        message: log.message
+        message: ""
       };
-    } // Normalize logs
+    } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(log)) {
+      log = {
+        message: log
+      };
+    } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isError"])(log)) {
+      log = {
+        message: log.message,
+        err: log
+      };
+    }
 
+    if (log._logged) return log; // Normalize logs
 
+    log.type = type.toLowerCase();
     log.name = log.name || defaultName || Tw2Logger.constructor.category;
-    log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
-    log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : ""; // Set visibility
+    log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
+
+    if (!Tw2Logger.LogType[log.type.toUpperCase()]) {
+      log.type = "log";
+    } // Set visibility
+
 
     if (!this.display || !this.visible[log.type]) {
       log.hide = true;
@@ -55015,21 +55144,20 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     path = Tw2ResMan.NormalizePath(path);
     const res = this.motherLode.Find(path);
     if (res) return res.OnError(err);
-    this.OnPathEvent(path, "ERROR", err);
+    this.OnPathEvent(path, "error", err);
     return err;
   }
   /**
    * Fires on path events
    * @param {String} path      - Resource path
-   * @param {String} stateName - Resource state name
+   * @param {String} eventName - Resource state name
    * @param {*} [log={}]       - Resource log
    */
 
 
-  OnPathEvent(path, stateName) {
+  OnPathEvent(path, eventName) {
     let log = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    const evt = stateName.toLowerCase(),
-          res = this.motherLode.Find(path),
+    const res = this.motherLode.Find(path),
           err = Object(_util__WEBPACK_IMPORTED_MODULE_4__["isError"])(log) ? log : undefined;
 
     if (err) {
@@ -55040,15 +55168,9 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       };
     }
 
-    log.type = Tw2ResMan.LogType[stateName] || "info";
     log.path = path;
-    log.message = log.message || evt;
-    this.emit(evt, {
-      err,
-      res,
-      evt,
-      log
-    });
+    log.message = log.message || eventName;
+    this.emit(eventName, path, res, err).msg(Tw2ResMan.LogType[eventName.toUpperCase()], log);
   }
   /**
    * IsLoading
@@ -55549,11 +55671,33 @@ class Tw2Store {
 
 }
 /**
+ * Checks if a key is a Tr2 or Tri constructor
+ * @param {String} key
+ * @returns {boolean}
+ */
+
+function isTr2OrTri() {
+  let key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+  return key.indexOf("Tr2") === 0 || key.indexOf("Tri") === 0;
+}
+/**
+ * Converts from a Tr2 or Tri constructor to a Tw2 constructor
+ * @param key
+ * @returns {string}
+ */
+
+
+function toTw2() {
+  let key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+  return key.replace("Tr2", "Tw2").replace("Tri", "Tw2");
+}
+/**
  * Generic variable store
  *
  * @property {string} name
  * @class
  */
+
 
 class Tw2GenericStore extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
   /**
@@ -55583,17 +55727,17 @@ class Tw2GenericStore extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitt
     return this.constructor.__storeType;
   }
   /**
-   *
+   * Checks if a value is valid for the store
    * @param value
    * @returns {*}
    */
 
 
   IsValidValue(value) {
-    return this.constructor.isValue ? this.constructor.isValue : true;
+    return this.constructor.isValue ? this.constructor.isValue(value) : true;
   }
   /**
-   *
+   * Checks if a key is valid for the store
    * @param key
    * @returns {boolean}
    * @constructor
@@ -55670,14 +55814,7 @@ class Tw2GenericStore extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitt
 
     this._values.set(key, value);
 
-    this.emit("registered", {
-      key,
-      value,
-      log: {
-        type: "debug",
-        message: "Registered ".concat(this.name, ": ").concat(key)
-      }
-    });
+    this.emit("registered", key, value).msg("debug", "Registered ".concat(this.name, ": ").concat(key));
     return value;
   }
   /**
@@ -55742,12 +55879,27 @@ class Tw2BlackStore extends Tw2GenericStore {
    * Sets a black
    * @param {String} key
    * @param {Function} func
-   * @param {Boolean} [override]
+   * @param {Boolean} override
    * @returns {Map}
    */
   Set(key, func, override) {
+    if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(func)) {
+      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreValueInvalid"]({
+        store: this.name,
+        key
+      }).emitOn(this);
+    }
+
     const result = func(_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__);
-    return super.Set(key, new Map(result));
+
+    if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(result)) {
+      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreValueInvalid"]({
+        store: this.name,
+        key
+      }).emitOn(this);
+    }
+
+    return super.Set(key, new Map(result), override);
   }
   /**
    * Checks if a black definition exists
@@ -55757,16 +55909,7 @@ class Tw2BlackStore extends Tw2GenericStore {
 
 
   Has(key) {
-    if (super.Has(key)) {
-      return true;
-    } // Fallback to Tw2 version
-
-
-    if (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0) {
-      key = "Tw2" + key.substring(3);
-    }
-
-    return super.Has(key);
+    return super.Has(key) || super.Has(toTw2(key));
   }
   /**
    * Gets a black definition
@@ -55778,31 +55921,21 @@ class Tw2BlackStore extends Tw2GenericStore {
   Get(key) {
     let value = super.Get(key);
 
-    if (!value && (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0)) {
+    if (!value && isTr2OrTri(key)) {
       const originalKey = key;
-      key = "Tw2" + key.substring(3);
+      key = toTw2(key);
       value = super.Get(key);
 
       if (value) {
-        this.emit("substitute", {
-          key,
-          value,
-          originalKey,
-          type: this.name,
-          log: {
-            type: "warning",
-            message: "\"".concat(originalKey, "\" class not found, substituting with \"").concat(key, "\"")
-          }
-        });
+        this.emit("substitute", key, value, originalKey).msg("warning", "\"".concat(originalKey, "\" class not found, substituting with \"").concat(key, "\""));
       }
     }
 
     return value;
   }
   /**
-   * Checks if a passed value is a valid store value
-   * @param {*} a
-   * @returns {boolean}
+   * Store type
+   * @type {string}
    */
 
 
@@ -55811,8 +55944,6 @@ class Tw2BlackStore extends Tw2GenericStore {
  * Dynamic resource path store
  */
 
-
-_defineProperty(Tw2BlackStore, "isValue", _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]);
 
 _defineProperty(Tw2BlackStore, "__storeType", "black");
 
@@ -56011,35 +56142,19 @@ class Tw2ClassStore extends Tw2GenericStore {
     let value;
     value = super.Get(key);
 
-    if (!value && (key.indexOf("Tri") === 0 || key.indexOf("Tr2") === 0)) {
+    if (!value && isTr2OrTri(key)) {
       const originalKey = key;
-      key = "Tw2" + key.substring(3);
+      key = toTw2(key);
       value = super.Get(key);
 
       if (value) {
-        this.emit("substitute", {
-          key,
-          value,
-          originalKey,
-          type: this.name,
-          log: {
-            type: "warning",
-            message: "\"".concat(originalKey, "\" class not found, substituting with \"").concat(key, "\"")
-          }
-        });
+        this.emit("substitute", key, value, originalKey).msg("warning", "\"".concat(originalKey, "\" class not found, substituting with \"").concat(key, "\""));
       }
     } // Create a warning when a partially implemented class is called
 
 
     if (value && value.__isStaging) {
-      this.emit("partial", {
-        key,
-        value,
-        log: {
-          type: "warning",
-          message: "Class partially implemented: ".concat(key)
-        }
-      });
+      this.emit("partial", key, value).msg("warning", "Class partially implemented: ".concat(key));
     }
 
     return value;
@@ -64773,7 +64888,7 @@ function isDNA(a) {
  */
 
 function isError(a) {
-  return !!(a && a instanceof Error || a.constructor.category === "error");
+  return a ? a instanceof Error || a.constructor.__category === "Error" : false;
 }
 /**
  * Checks if a value is a number
@@ -66706,7 +66821,9 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return Tw2ParticleElement; });
+/* harmony import */ var _global_class__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/class */ "./global/class/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 /**
  * Tw2ParticleElement
@@ -66722,10 +66839,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {number} instanceStride
  * @property {number} vertexStride
  * @property {Boolean} dirty
- * @class
  */
-class Tw2ParticleElement {
+
+class Tw2ParticleElement extends _global_class__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor() {
+    super(...arguments);
+
     _defineProperty(this, "elementType", null);
 
     _defineProperty(this, "customName", null);
