@@ -8,7 +8,6 @@
  * @property {Boolean} isPlaying
  * @property {Function} callback - Stores optional callback passed to prototypes
  * @property {Array} trackGroups - Array of {@link Tw2TrackGroup}
- * @class
  */
 export class Tw2Animation
 {

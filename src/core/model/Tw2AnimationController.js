@@ -2,9 +2,11 @@ import {box3, sph3, vec3, quat, mat3, mat4, curve, util, Tw2BaseClass} from "../
 import {Tw2GeometryRes} from "../resource";
 import {Tw2Animation} from "./Tw2Animation";
 import {Tw2Bone} from "./Tw2Bone";
+import {Tw2BoneBinding} from "./Tw2BoneBinding";
 import {Tw2Model} from "./Tw2Model";
 import {Tw2Track} from "./Tw2Track";
 import {Tw2TrackGroup} from "./Tw2TrackGroup";
+import {Tw2MeshBinding} from "./Tw2MeshBinding";
 
 /**
  * Tw2AnimationController
@@ -13,7 +15,7 @@ import {Tw2TrackGroup} from "./Tw2TrackGroup";
  * @property {Array.<Tw2GeometryRes>} geometryResources
  * @property {Array.<Tw2Model>} models
  * @property {Array.<Tw2Animation>} animations
- * @property {Array.<Tw2GeometryMeshBinding>} meshBindings
+ * @property {Array.<Tw2MeshBinding>} meshBindings
  * @property {Boolean} loaded
  * @property {Boolean} update
  * @property _geometryResource
@@ -322,9 +324,9 @@ export class Tw2AnimationController extends Tw2BaseClass
      */
     SetGeometryResource(geometryResource)
     {
-        this.models = [];
-        this.animations = [];
-        this.meshBindings = [];
+        this.models.splice(0);
+        this.animations.splice(0);
+        this.meshBindings.splice(0);
 
         for (let i = 0; i < this.geometryResources.length; ++i)
         {
@@ -332,7 +334,7 @@ export class Tw2AnimationController extends Tw2BaseClass
         }
 
         this.loaded = false;
-        this.geometryResources = [];
+        this.geometryResources.splice(0);
 
         if (geometryResource)
         {
@@ -460,13 +462,13 @@ export class Tw2AnimationController extends Tw2BaseClass
         const id = mat4.identity(Tw2AnimationController.global.mat4_0);
         for (let i = 0; i < this.meshBindings.length; ++i)
         {
-            for (let j = 0; j < this.meshBindings[i].length; ++j)
+            for (let j = 0; j < this.meshBindings[i].meshIndex.length; ++j)
             {
-                for (let k = 0; k * 16 < this.meshBindings[i][j].length; ++k)
+                for (let k = 0; k * 16 < this.meshBindings[i].meshIndex[j].length; ++k)
                 {
                     for (let m = 0; m < 16; ++m)
                     {
-                        this.meshBindings[i][j][k * 16 + m] = id[m];
+                        this.meshBindings[i].meshIndex[j][k * 16 + m] = id[m];
                     }
                 }
             }
@@ -492,9 +494,9 @@ export class Tw2AnimationController extends Tw2BaseClass
         }
 
         const meshBindings = Tw2AnimationController.FindMeshBindings(this, geometryResource);
-        if (meshBindings && meshIndex < meshBindings.length)
+        if (meshBindings && meshBindings.meshIndex[meshIndex] !== undefined)
         {
-            return meshBindings[meshIndex];
+            return meshBindings.meshIndex[meshIndex];
         }
         return new Float32Array();
     }
@@ -692,25 +694,27 @@ export class Tw2AnimationController extends Tw2BaseClass
                     mat4.copy(bone.worldTransform, bone.localTransform);
                 }
                 mat4.multiply(bone.offsetTransform, bone.worldTransform, bone.boneRes.worldTransformInv);
-                if (bone.bindingArrays)
+
+                for (let a = 0; a < bone.bindingArrays.length; ++a)
                 {
-                    for (let a = 0; a < bone.bindingArrays.length; ++a)
-                    {
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 0] = bone.offsetTransform[0];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 1] = bone.offsetTransform[4];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 2] = bone.offsetTransform[8];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 3] = bone.offsetTransform[12];
+                    const
+                        ba = bone.bindingArrays[a],
+                        tr = bone.offsetTransform;
 
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 4] = bone.offsetTransform[1];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 5] = bone.offsetTransform[5];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 6] = bone.offsetTransform[9];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 7] = bone.offsetTransform[13];
+                    ba.array[ba.offset + 0] = tr[0];
+                    ba.array[ba.offset + 1] = tr[4];
+                    ba.array[ba.offset + 2] = tr[8];
+                    ba.array[ba.offset + 3] = tr[12];
 
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 8] = bone.offsetTransform[2];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 9] = bone.offsetTransform[6];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 10] = bone.offsetTransform[10];
-                        bone.bindingArrays[a].array[bone.bindingArrays[a].offset + 11] = bone.offsetTransform[14];
-                    }
+                    ba.array[ba.offset + 4] = tr[1];
+                    ba.array[ba.offset + 5] = tr[5];
+                    ba.array[ba.offset + 6] = tr[9];
+                    ba.array[ba.offset + 7] = tr[13];
+
+                    ba.array[ba.offset + 8] = tr[2];
+                    ba.array[ba.offset + 9] = tr[6];
+                    ba.array[ba.offset + 10] = tr[10];
+                    ba.array[ba.offset + 11] = tr[14];
                 }
             }
         }
@@ -782,7 +786,7 @@ export class Tw2AnimationController extends Tw2BaseClass
     }
 
     /**
-     * Finds a mesh binding for a supplied resource from an animation controller
+     * Finds a mesh binding for a supplied resource
      * @param {Tw2AnimationController} animationController
      * @param {Tw2GeometryRes} resource
      * @returns {Object|null} Returns the mesh binding of a resource if it exists, null if it doesn't
@@ -858,28 +862,23 @@ export class Tw2AnimationController extends Tw2BaseClass
 
                 if (meshBindings === null)
                 {
-                    meshBindings = [];
+                    meshBindings = new Tw2MeshBinding();
                     meshBindings.resource = resource;
                     animationController.meshBindings.push(meshBindings);
                 }
 
-                meshBindings[meshIx] = new Float32Array(resource.models[i].meshBindings[j].bones.length * 12);
+                meshBindings.meshIndex[meshIx] = new Float32Array(resource.models[i].meshBindings[j].bones.length * 12);
                 for (let k = 0; k < resource.models[i].meshBindings[j].bones.length; ++k)
                 {
                     for (let n = 0; n < model.bones.length; ++n)
                     {
                         if (model.bones[n].boneRes.name === resource.models[i].meshBindings[j].bones[k].name)
                         {
-                            if (!model.bones[n].bindingArrays)
-                            {
-                                model.bones[n].bindingArrays = [];
-                            }
-
-                            model.bones[n].bindingArrays[model.bones[n].bindingArrays.length] = {
-                                "array": meshBindings[meshIx],
-                                "offset": k * 12
-                            };
-                            //meshBindings[meshIx][k] = model.bones[n].offsetTransform;
+                            const boneBinding = new Tw2BoneBinding();
+                            boneBinding.array = meshBindings.meshIndex[meshIx];
+                            boneBinding.offset = k * 12;
+                            model.bones[n].bindingArrays.push(boneBinding);
+                            //meshBindings.meshIndex[meshIx][k] = model.bones[n].offsetTransform;
                             break;
                         }
                     }
@@ -909,7 +908,7 @@ export class Tw2AnimationController extends Tw2BaseClass
                     }
                 }
             }
-            animationController.pendingCommands = [];
+            animationController.pendingCommands.splice(0);
             if (animationController.onPendingCleared)
             {
                 animationController.onPendingCleared(animationController);
@@ -925,6 +924,15 @@ export class Tw2AnimationController extends Tw2BaseClass
         quat_0: quat.create(),
         mat3_0: mat3.create(),
         mat4_0: mat4.create()
+    };
+
+    /**
+     * Editable class keys
+     * @type {{primary: [string]}}
+     * @private
+     */
+    static keys = {
+        primary: [ "update" ]
     };
 
 }
