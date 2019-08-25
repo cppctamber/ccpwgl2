@@ -103,7 +103,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
             this.emit("destroy", opt);
         }
 
-        this.kill();
+        this.del("*");
     }
 
     /**
@@ -296,7 +296,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
      *
      * @type {null|String}
      */
-    static category = null;
+    static __category = null;
 
 }
 

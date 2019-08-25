@@ -73,7 +73,7 @@ export class Tw2Error extends Error
      * Class category
      * @type {String}
      */
-    static category = "error";
+    static __category = "error";
 
 }
 

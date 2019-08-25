@@ -1033,10 +1033,10 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
-     * Class category
+     * Logger category
      * @type {String}
      */
-    static category = "device";
+    static __category = "Device";
 
 }
 

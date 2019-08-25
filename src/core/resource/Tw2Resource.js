@@ -1,6 +1,7 @@
 import {resMan} from "../../global";
 import {Tw2Error} from "../Tw2Error";
 import {isError, isFunction} from "../../global/util";
+import {Tw2Notifications} from "../../global/class/Tw2Notifications";
 
 /**
  * Tw2Resource base class
@@ -12,15 +13,13 @@ import {isError, isFunction} from "../../global/util";
  * @property {Number} _state
  * @property {Array<Error>} _errors
  */
-export class Tw2Resource
+export class Tw2Resource extends Tw2Notifications
 {
     path = "";
     activeFrame = 0;
     doNotPurge = 0;
 
-    _notifications = new Set();
     _state = Tw2Resource.State.NO_INIT;
-    //_lastState = Tw2Resource.State.NO_INIT;
     _errors = [];
     _requested = 0;
 
@@ -160,7 +159,8 @@ export class Tw2Resource
      */
     OnWarning(log)
     {
-        this.UpdateNotifications("WARNING", undefined, log);
+        resMan.OnPathEvent(this.path, "warning", log);
+        this.UpdateNotifications(Tw2Resource.Callback.WARNING);
     }
 
     /**
@@ -169,7 +169,8 @@ export class Tw2Resource
      */
     OnDebug(log)
     {
-        this.UpdateNotifications("DEBUG", undefined, log);
+        resMan.OnPathEvent(this.path, "debug", log);
+        this.UpdateNotifications(Tw2Resource.Callback.DEBUG);
     }
 
     /**
@@ -193,7 +194,8 @@ export class Tw2Resource
             this.Unload({hide: true, detail: "errored"});
         }
 
-        this.UpdateNotifications("ERROR", err, err);
+        resMan.OnPathEvent(this.path, "error", err);
+        this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
         return err;
     }
 
@@ -207,7 +209,8 @@ export class Tw2Resource
         if (this._SetState(Tw2Resource.State.REQUESTED))
         {
             this._requested = Date.now();
-            this.UpdateNotifications(stateName, undefined, log);
+            resMan.OnPathEvent(this.path, stateName.toLowerCase(), log);
+            this.UpdateNotifications(Tw2Resource.Callback[stateName]);
         }
     }
 
@@ -220,7 +223,8 @@ export class Tw2Resource
         if (this._SetState(Tw2Resource.State.LOADED))
         {
             log.time = (Date.now() - this._requested) * 0.001;
-            this.UpdateNotifications("LOADED", undefined, log);
+            resMan.OnPathEvent(this.path, "loaded", log);
+            this.UpdateNotifications(Tw2Resource.Callback.LOADED);
         }
     }
 
@@ -233,7 +237,8 @@ export class Tw2Resource
         if (this._SetState(Tw2Resource.State.PREPARED))
         {
             log.time = (Date.now() - this._requested) * 0.001;
-            this.UpdateNotifications("PREPARED", undefined, log);
+            resMan.OnPathEvent(this.path, "prepared", log);
+            this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
         }
     }
 
@@ -245,7 +250,8 @@ export class Tw2Resource
     {
         if (this._SetState(Tw2Resource.State.UNLOADED))
         {
-            this.UpdateNotifications("UNLOADED", undefined, log);
+            resMan.OnPathEvent(this.path, "unloaded", log);
+            this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
         }
     }
 
@@ -256,7 +262,8 @@ export class Tw2Resource
     OnPurged(log)
     {
         this._SetState(Tw2Resource.State.PURGED);
-        this.UpdateNotifications("PURGED", this.GetLastError(), log);
+        resMan.OnPathEvent(this.path, "purged", log);
+        this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());
     }
 
     /**
@@ -289,14 +296,13 @@ export class Tw2Resource
         /**
          * Handles resource events
          * @param {Tw2Resource} res
-         * @param {Error} [err]
+         * @param {Tw2Error} err
          * @returns {Boolean}
          */
         const handler = function(res, err)
         {
             if (res.HasCompleted())
             {
-                err = err || res.GetLastError();
                 if (err)
                 {
                     if (onRejected) onRejected(err);
@@ -314,29 +320,18 @@ export class Tw2Resource
     }
 
     /**
-     * Checks if a notification is registered
-     * @param {*} notification
-     * @returns {boolean}
-     */
-    HasNotification(notification)
-    {
-        return this._notifications.has(notification);
-    }
-
-    /**
      * Registers a notification
+     * @param {Tw2Resource} resource
      * @param {*} notification
      */
-    RegisterNotification(notification)
+    static onNotification(resource, notification)
     {
-        if (this.HasNotification(notification)) return;
-
-        let funcName, argument;
-        switch (this._state)
+        let funcName, err;
+        switch (resource._state)
         {
             case Tw2Resource.State.ERROR:
                 funcName = Tw2Resource.Callback.ERROR;
-                argument = this.GetLastError();
+                err = resource.GetLastError();
                 break;
 
             case Tw2Resource.State.REQUESTED:
@@ -357,70 +352,21 @@ export class Tw2Resource
 
             case Tw2Resource.State.PURGED:
                 funcName = Tw2Resource.Callback.PURGED;
+                err = resource.GetLastError();
                 break;
         }
 
         // Don't add notification if it returns true
         if (isFunction(notification))
         {
-            if (notification(this, argument)) return;
+            return !!notification(resource, err, funcName);
         }
         else if (funcName && funcName in notification)
         {
-            if (notification[funcName](this, argument)) return;
+            return !!notification[funcName](resource, err);
         }
 
-        this._notifications.add(notification);
-    }
-
-    /**
-     * Deregisters a notification
-     * @param {*} notification
-     */
-    UnregisterNotification(notification)
-    {
-        this._notifications.delete(notification);
-    }
-
-    /**
-     * Updates a notification
-     * @param {String} stateName - Event state name
-     * @param {*} [err]          - Event error
-     * @param {*} [log]          - Event log
-     */
-    UpdateNotifications(stateName, err, log)
-    {
-        stateName = stateName.toUpperCase();
-        const funcName = Tw2Resource.Callback[stateName];
-
-        resMan.OnPathEvent(this.path, stateName, log);
-
-        this._notifications.forEach(notification =>
-        {
-            let remove = false;
-
-            if (isFunction(notification))
-            {
-                remove = notification(this, err);
-            }
-            else if (funcName && funcName in notification)
-            {
-                remove = notification[funcName](this, err);
-            }
-
-            if (remove)
-            {
-                this.UnregisterNotification(notification);
-            }
-        });
-    }
-
-    /**
-     * Clears all notifications
-     */
-    ClearNotifications()
-    {
-        this._notifications.clear();
+        return false;
     }
 
     /**

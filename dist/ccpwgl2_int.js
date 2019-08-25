@@ -16995,7 +16995,7 @@ class Tw2Error extends Error {
  * Throws when trying to register a reserved store key
  */
 
-_defineProperty(Tw2Error, "category", "error");
+_defineProperty(Tw2Error, "__category", "error");
 
 class ErrStoreKeyReserved extends Tw2Error {
   constructor(data) {
@@ -27345,7 +27345,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/class/Tw2Notifications */ "./global/class/Tw2Notifications.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -27361,15 +27363,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Array<Error>} _errors
  */
 
-class Tw2Resource {
+class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
   constructor() {
+    super(...arguments);
+
     _defineProperty(this, "path", "");
 
     _defineProperty(this, "activeFrame", 0);
 
     _defineProperty(this, "doNotPurge", 0);
-
-    _defineProperty(this, "_notifications", new Set());
 
     _defineProperty(this, "_state", Tw2Resource.State.NO_INIT);
 
@@ -27517,7 +27519,8 @@ class Tw2Resource {
 
 
   OnWarning(log) {
-    this.UpdateNotifications("WARNING", undefined, log);
+    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "warning", log);
+    this.UpdateNotifications(Tw2Resource.Callback.WARNING);
   }
   /**
    * Fires on debugs
@@ -27526,7 +27529,8 @@ class Tw2Resource {
 
 
   OnDebug(log) {
-    this.UpdateNotifications("DEBUG", undefined, log);
+    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "debug", log);
+    this.UpdateNotifications(Tw2Resource.Callback.DEBUG);
   }
   /**
    * Fires on errors
@@ -27552,7 +27556,8 @@ class Tw2Resource {
       });
     }
 
-    this.UpdateNotifications("ERROR", err, err);
+    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "error", err);
+    this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
     return err;
   }
   /**
@@ -27566,7 +27571,8 @@ class Tw2Resource {
 
     if (this._SetState(Tw2Resource.State.REQUESTED)) {
       this._requested = Date.now();
-      this.UpdateNotifications(stateName, undefined, log);
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, stateName.toLowerCase(), log);
+      this.UpdateNotifications(Tw2Resource.Callback[stateName]);
     }
   }
   /**
@@ -27580,7 +27586,8 @@ class Tw2Resource {
 
     if (this._SetState(Tw2Resource.State.LOADED)) {
       log.time = (Date.now() - this._requested) * 0.001;
-      this.UpdateNotifications("LOADED", undefined, log);
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "loaded", log);
+      this.UpdateNotifications(Tw2Resource.Callback.LOADED);
     }
   }
   /**
@@ -27594,7 +27601,8 @@ class Tw2Resource {
 
     if (this._SetState(Tw2Resource.State.PREPARED)) {
       log.time = (Date.now() - this._requested) * 0.001;
-      this.UpdateNotifications("PREPARED", undefined, log);
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "prepared", log);
+      this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
     }
   }
   /**
@@ -27605,7 +27613,8 @@ class Tw2Resource {
 
   OnUnloaded(log) {
     if (this._SetState(Tw2Resource.State.UNLOADED)) {
-      this.UpdateNotifications("UNLOADED", undefined, log);
+      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "unloaded", log);
+      this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
     }
   }
   /**
@@ -27617,7 +27626,8 @@ class Tw2Resource {
   OnPurged(log) {
     this._SetState(Tw2Resource.State.PURGED);
 
-    this.UpdateNotifications("PURGED", this.GetLastError(), log);
+    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "purged", log);
+    this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());
   }
   /**
    * Sets state
@@ -27649,14 +27659,12 @@ class Tw2Resource {
     /**
      * Handles resource events
      * @param {Tw2Resource} res
-     * @param {Error} [err]
+     * @param {Tw2Error} err
      * @returns {Boolean}
      */
 
     const handler = function handler(res, err) {
       if (res.HasCompleted()) {
-        err = err || res.GetLastError();
-
         if (err) {
           if (onRejected) onRejected(err);
         } else {
@@ -27672,29 +27680,19 @@ class Tw2Resource {
     this.RegisterNotification(handler);
   }
   /**
-   * Checks if a notification is registered
-   * @param {*} notification
-   * @returns {boolean}
-   */
-
-
-  HasNotification(notification) {
-    return this._notifications.has(notification);
-  }
-  /**
    * Registers a notification
+   * @param {Tw2Resource} resource
    * @param {*} notification
    */
 
 
-  RegisterNotification(notification) {
-    if (this.HasNotification(notification)) return;
-    let funcName, argument;
+  static onNotification(resource, notification) {
+    let funcName, err;
 
-    switch (this._state) {
+    switch (resource._state) {
       case Tw2Resource.State.ERROR:
         funcName = Tw2Resource.Callback.ERROR;
-        argument = this.GetLastError();
+        err = resource.GetLastError();
         break;
 
       case Tw2Resource.State.REQUESTED:
@@ -27715,61 +27713,18 @@ class Tw2Resource {
 
       case Tw2Resource.State.PURGED:
         funcName = Tw2Resource.Callback.PURGED;
+        err = resource.GetLastError();
         break;
     } // Don't add notification if it returns true
 
 
     if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
-      if (notification(this, argument)) return;
+      return !!notification(resource, err, funcName);
     } else if (funcName && funcName in notification) {
-      if (notification[funcName](this, argument)) return;
+      return !!notification[funcName](resource, err);
     }
 
-    this._notifications.add(notification);
-  }
-  /**
-   * Deregisters a notification
-   * @param {*} notification
-   */
-
-
-  UnregisterNotification(notification) {
-    this._notifications.delete(notification);
-  }
-  /**
-   * Updates a notification
-   * @param {String} stateName - Event state name
-   * @param {*} [err]          - Event error
-   * @param {*} [log]          - Event log
-   */
-
-
-  UpdateNotifications(stateName, err, log) {
-    stateName = stateName.toUpperCase();
-    const funcName = Tw2Resource.Callback[stateName];
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, stateName, log);
-
-    this._notifications.forEach(notification => {
-      let remove = false;
-
-      if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
-        remove = notification(this, err);
-      } else if (funcName && funcName in notification) {
-        remove = notification[funcName](this, err);
-      }
-
-      if (remove) {
-        this.UnregisterNotification(notification);
-      }
-    });
-  }
-  /**
-   * Clears all notifications
-   */
-
-
-  ClearNotifications() {
-    this._notifications.clear();
+    return false;
   }
   /**
    * Identifies that this object is a resource
@@ -42134,7 +42089,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
+/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42203,12 +42158,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretFiringFX", function() { return _effect__WEBPACK_IMPORTED_MODULE_2__["EveTurretFiringFX"]; });
 
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./item */ "./eve/item/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBanner"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2Batch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet2Batch"]; });
@@ -42270,6 +42219,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSetItem"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterBatch"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSetItem"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveBoosterSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
@@ -47379,7 +47334,7 @@ _defineProperty(EveTurretSet, "__isStaging", 1);
 /*!***************************!*\
   !*** ./eve/item/index.js ***!
   \***************************/
-/*! exports provided: EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet */
+/*! exports provided: EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51431,6 +51386,8 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
 
     _defineProperty(this, "render", null);
 
+    _defineProperty(this, "category", "Library");
+
     this.store.classes.on("registered", e => {
       Tw2Library.prototype[e.key] = e.value;
     });
@@ -51457,13 +51414,14 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
   /**
    * Creates a log
    * @param {*} log
-   * @param {String} [title]
+   * @param {String} [category]
    * @returns {*}
    */
 
 
-  Log(log, title) {
-    return this.logger.Log(log, title);
+  Log(log) {
+    let category = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.constructor.category;
+    return this.logger.Log(log, category);
   }
   /**
    * Per frame tick
@@ -51664,6 +51622,12 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
       });
     }
   }
+  /**
+   * Logger category
+   * @type {string}
+   * @private
+   */
+
 
 }
 /**
@@ -51799,7 +51763,7 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
       this.emit("destroy", opt);
     }
 
-    this.kill();
+    this.del("*");
   }
   /**
    * Traverses the object
@@ -51990,7 +51954,7 @@ _defineProperty(Tw2BaseClass, "keys", null);
 
 _defineProperty(Tw2BaseClass, "black", null);
 
-_defineProperty(Tw2BaseClass, "category", null);
+_defineProperty(Tw2BaseClass, "__category", null);
 
 function cacheKeys(obj) {
   if (obj.constructor.hasOwnProperty("keys")) {
@@ -52053,15 +52017,12 @@ function cacheKeys(obj) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return Tw2EventEmitter; });
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 /**
  * Emitter privates
  * @type {WeakMap<object, *>}
  */
-
 const PRIVATE = new WeakMap();
 /**
  * Tw2EventEmitter
@@ -52071,12 +52032,15 @@ class Tw2EventEmitter {
   /**
    * Emits an event
    * @param {String} eventName
-   * @param {*} args
+   * @param {*} [e={}]
    * @returns {Tw2EventEmitter}
    */
   emit(eventName) {
-    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
+    let e = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    // Logger
+    if (e && e.log) {
+      e.log = this.msg(e.log);
     }
 
     const events = PRIVATE.get(this);
@@ -52084,8 +52048,8 @@ class Tw2EventEmitter {
     eventName = eventName.toLowerCase();
 
     if (eventName in events) {
-      events[eventName].forEach(function (value, key) {
-        key.call(value.context, ...args);
+      events[eventName].forEach((value, key) => {
+        key.call(value.context, e);
         if (value.once) events[eventName].delete(key);
       });
 
@@ -52120,6 +52084,13 @@ class Tw2EventEmitter {
 
     if (!events[eventName]) {
       events[eventName] = new Map();
+    } // Allow intercepting of a listener when its first added
+
+
+    if (!events[eventName].has(listener) && this.constructor.onListener) {
+      if (this.constructor.onListener(eventName, listener, context) && once) {
+        return this;
+      }
     }
 
     events[eventName].set(listener, {
@@ -52240,32 +52211,148 @@ class Tw2EventEmitter {
     return this;
   }
   /**
-   * Logs an event log
-   * @param {eventLog|Error} eventLog
-   * @returns {eventLog}
+   * Logs a message
+   * @param {*} log
+   * @returns {eventLog|*}
    */
 
 
-  msg(eventLog) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(eventLog) && !Object(_util__WEBPACK_IMPORTED_MODULE_0__["isError"])(eventLog)) {
-      throw new Error("Invalid log, must be a plain object or an error");
+  msg(log) {
+    if (this.constructor.defaultLogger) {
+      return this.constructor.defaultLogger.Log(log, this.constructor.__category);
     }
 
-    if (!this.constructor.defaultLogger) {
-      return eventLog;
-    }
-
-    return this.constructor.defaultLogger.Log(eventLog, this.constructor.category || this.constructor.name);
+    return log;
   }
   /**
-   * Global logger
-   * @type {*}
+   * Fires before a listener is added
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} context
+   * @returns {Boolean} true if fired immediately
+   * @type {null|Function}
    */
 
 
 }
 
+_defineProperty(Tw2EventEmitter, "onListener", null);
+
 _defineProperty(Tw2EventEmitter, "defaultLogger", null);
+
+_defineProperty(Tw2EventEmitter, "__category", null);
+
+/***/ }),
+
+/***/ "./global/class/Tw2Notifications.js":
+/*!******************************************!*\
+  !*** ./global/class/Tw2Notifications.js ***!
+  \******************************************/
+/*! exports provided: Tw2Notifications */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return Tw2Notifications; });
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Tw2Notification
+ */
+
+class Tw2Notifications {
+  /**
+   * Registers a notification
+   * @param {*} notification
+   */
+  RegisterNotification(notification) {
+    if (this.HasNotification(notification)) {
+      return;
+    }
+
+    if (this.constructor.onNotification && this.constructor.onNotification(this, notification)) {
+      return;
+    }
+
+    this._notifications = this._notifications || new Set();
+
+    this._notifications.add(notification);
+  }
+  /**
+   * Updates notifications
+   * @param {String} funcName
+   * @param {Error|Tw2Error} [err]
+   */
+
+
+  UpdateNotifications(funcName, err) {
+    if (this._notifications) {
+      this._notifications.forEach(notification => {
+        let remove = false;
+
+        if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(notification)) {
+          remove = notification(this, err, funcName);
+        } else if (funcName && funcName in notification) {
+          remove = notification[funcName](this, err);
+        }
+
+        if (remove) {
+          this.UnregisterNotification(notification);
+        }
+      });
+
+      if (this._notifications.size === 0) {
+        this.ClearNotifications();
+      }
+    }
+  }
+  /**
+   * Checks if a notification exists
+   * @param {*} notification
+   * @returns {boolean}
+   */
+
+
+  HasNotification(notification) {
+    return this._notifications ? this._notifications.has(notification) : false;
+  }
+  /**
+   * Unregisters a notification
+   * @param {*} notification
+   */
+
+
+  UnregisterNotification(notification) {
+    if (this._notifications) {
+      this._notifications.delete(notification);
+    }
+  }
+  /**
+   * Clears notifications
+   */
+
+
+  ClearNotifications() {
+    if (this._notifications) {
+      this._notifications.clear();
+
+      Reflect.deleteProperty(this, "_notifications");
+    }
+  }
+  /**
+   * Fires when a notification is registered
+   * @type {null| Function}
+   * @param {*} target
+   * @param {*} notification
+   * @returns {boolean}
+   */
+
+
+}
+
+_defineProperty(Tw2Notifications, "onNotification", null);
 
 /***/ }),
 
@@ -52291,7 +52378,7 @@ class Tw2Schema {}
 /*!*******************************!*\
   !*** ./global/class/index.js ***!
   \*******************************/
-/*! exports provided: Tw2BaseClass, Tw2EventEmitter, Tw2Schema */
+/*! exports provided: Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -52302,8 +52389,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"]; });
 
-/* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Schema */ "./global/class/Tw2Schema.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _Tw2Schema__WEBPACK_IMPORTED_MODULE_2__["Tw2Schema"]; });
+/* harmony import */ var _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Notifications */ "./global/class/Tw2Notifications.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _Tw2Notifications__WEBPACK_IMPORTED_MODULE_2__["Tw2Notifications"]; });
+
+/* harmony import */ var _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Schema */ "./global/class/Tw2Schema.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _Tw2Schema__WEBPACK_IMPORTED_MODULE_3__["Tw2Schema"]; });
+
 
 
 
@@ -54387,14 +54478,14 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     this._currentRenderMode = renderMode;
   }
   /**
-   * Class category
+   * Logger category
    * @type {String}
    */
 
 
 } // Render Modes
 
-_defineProperty(Tw2Device, "category", "device");
+_defineProperty(Tw2Device, "__category", "Device");
 
 Tw2Device.prototype.RM_ANY = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
 Tw2Device.prototype.RM_OPAQUE = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_OPAQUE"];
@@ -54518,19 +54609,18 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
    */
 
 
-  Log(log) {
-    let defaultName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "Logger";
+  Log(log, defaultName) {
+    if (log._logged) return log; // Allow errors as logs
 
-    // Allow errors as logs
     if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isError"])(log)) {
       log = {
         err: log,
         message: log.message
       };
-    }
+    } // Normalize logs
 
-    if (log._logged) return log;
-    log.name = log.name || defaultName;
+
+    log.name = log.name || defaultName || Tw2Logger.constructor.category;
     log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
     log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : ""; // Set visibility
 
@@ -54605,6 +54695,8 @@ _defineProperty(Tw2Logger, "LogType", {
   LOG: "log",
   DEBUG: "debug"
 });
+
+_defineProperty(Tw2Logger, "__category", "Logger");
 
 /***/ }),
 
@@ -54948,16 +55040,14 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       };
     }
 
-    log.type = Tw2ResMan.LogType[stateName.toUpperCase()] || "info";
+    log.type = Tw2ResMan.LogType[stateName] || "info";
     log.path = path;
     log.message = log.message || evt;
-    log = this.tw2.Log(log, "Resource Manager");
     this.emit(evt, {
       err,
-      log,
       res,
       evt,
-      path
+      log
     });
   }
   /**
@@ -55364,7 +55454,7 @@ _defineProperty(Tw2ResMan, "LogType", {
   DEBUG: "debug"
 });
 
-_defineProperty(Tw2ResMan, "category", "resource_manager");
+_defineProperty(Tw2ResMan, "__category", "Resource Manager");
 
 /***/ }),
 
@@ -56817,7 +56907,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, tw2, store, resMan, device, logger, util, Tw2BaseClass, Tw2EventEmitter, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
+/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, tw2, store, resMan, device, logger, util, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56826,6 +56916,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return _class__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Notifications", function() { return _class__WEBPACK_IMPORTED_MODULE_0__["Tw2Notifications"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _class__WEBPACK_IMPORTED_MODULE_0__["Tw2Schema"]; });
 

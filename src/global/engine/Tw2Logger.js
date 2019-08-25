@@ -90,17 +90,18 @@ export class Tw2Logger extends Tw2EventEmitter
      * @param {String} [defaultName] - Default message name/ title
      * @returns {eventLog} log
      */
-    Log(log, defaultName = "Logger")
+    Log(log, defaultName)
     {
+        if (log._logged) return log;
+
         // Allow errors as logs
         if (isError(log))
         {
             log = {err: log, message: log.message};
         }
 
-        if (log._logged) return log;
-
-        log.name = log.name || defaultName;
+        // Normalize logs
+        log.name = log.name || defaultName || Tw2Logger.constructor.category;
         log.type = Tw2Logger.LogType[log.type ? log.type.toUpperCase() : "LOG"] || "log";
         log.message = log.message ? log.message.charAt(0).toUpperCase() + log.message.substring(1) : "";
 
@@ -186,5 +187,12 @@ export class Tw2Logger extends Tw2EventEmitter
         LOG: "log",
         DEBUG: "debug"
     };
+
+    /**
+     * Logger category
+     * @type {string}
+     * @private
+     */
+    static __category = "Logger";
 
 }

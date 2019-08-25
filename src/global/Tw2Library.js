@@ -66,12 +66,12 @@ class Tw2Library extends Tw2EventEmitter
     /**
      * Creates a log
      * @param {*} log
-     * @param {String} [title]
+     * @param {String} [category]
      * @returns {*}
      */
-    Log(log, title)
+    Log(log, category=this.constructor.category)
     {
-        return this.logger.Log(log, title);
+        return this.logger.Log(log, category);
     }
 
     /**
@@ -286,6 +286,13 @@ class Tw2Library extends Tw2EventEmitter
             });
         }
     }
+
+    /**
+     * Logger category
+     * @type {string}
+     * @private
+     */
+    category = "Library";
 }
 
 /**

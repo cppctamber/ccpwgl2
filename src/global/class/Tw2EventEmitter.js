@@ -12,30 +12,35 @@ export class Tw2EventEmitter
     /**
      * Emits an event
      * @param {String} eventName
-     * @param {*} args
+     * @param {*} [e={}]
      * @returns {Tw2EventEmitter}
      */
-    emit(eventName, ...args)
+    emit(eventName, e = {})
     {
+        // Logger
+        if (e && e.log)
+        {
+            e.log = this.msg(e.log);
+        }
+
         const events = PRIVATE.get(this);
         if (!events) return this;
 
         eventName = eventName.toLowerCase();
         if (eventName in events)
         {
-            events[eventName].forEach(
-                function(value, key)
-                {
-                    key.call(value.context, ...args);
-                    if (value.once) events[eventName].delete(key);
-                }
-            );
+            events[eventName].forEach((value, key) =>
+            {
+                key.call(value.context, e);
+                if (value.once) events[eventName].delete(key);
+            });
 
             if (events[eventName].size === 0)
             {
                 Reflect.deleteProperty(events, eventName);
             }
         }
+
         return this;
     }
 
@@ -62,7 +67,7 @@ export class Tw2EventEmitter
             events[eventName] = new Map();
         }
 
-        // Allow intercepting of a listener when it is first added
+        // Allow intercepting of a listener when its first added
         if (!events[eventName].has(listener) && this.constructor.onListener)
         {
             if (this.constructor.onListener(eventName, listener, context) && once)
@@ -195,6 +200,21 @@ export class Tw2EventEmitter
     }
 
     /**
+     * Logs a message
+     * @param {*} log
+     * @returns {eventLog|*}
+     */
+    msg(log)
+    {
+        if (this.constructor.defaultLogger)
+        {
+            return this.constructor.defaultLogger.Log(log, this.constructor.__category);
+        }
+
+        return log;
+    }
+
+    /**
      * Fires before a listener is added
      * @param {String} eventName
      * @param {Function} listener
@@ -203,5 +223,18 @@ export class Tw2EventEmitter
      * @type {null|Function}
      */
     static onListener = null;
+
+    /**
+     * Default logger
+     * @type {null|Tw2Logger}
+     */
+    static defaultLogger = null;
+
+    /**
+     * Class category
+     * @type {null}
+     * @private
+     */
+    static __category = null;
 
 }

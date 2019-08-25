@@ -106,12 +106,11 @@ export class Tw2ResMan extends Tw2EventEmitter
             log = { err, message: err.message };
         }
 
-        log.type = Tw2ResMan.LogType[stateName.toUpperCase()] || "info";
+        log.type = Tw2ResMan.LogType[stateName] || "info";
         log.path = path;
         log.message = log.message || evt;
-        log = this.tw2.Log(log, "Resource Manager");
 
-        this.emit(evt, {err, log, res, evt, path});
+        this.emit(evt, { err, res, evt, log });
     }
 
     /**
@@ -515,9 +514,9 @@ export class Tw2ResMan extends Tw2EventEmitter
     };
 
     /**
-     * Class category
+     * Logger category
      * @type {String}
      */
-    static category = "resource_manager";
+    static __category = "Resource Manager";
 
 }
