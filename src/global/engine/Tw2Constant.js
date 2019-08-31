@@ -534,31 +534,3 @@ export const VendorWebglPrefixes = [
     "WEBKIT_",
     "WEBGL_"
 ];
-
-/**
- * Webgl context names
- * @type {String[]}
- */
-export const WebglContextNames = [
-    "webgl",
-    "experimental-webgl"
-];
-
-/**
- * Webgl2 context names
- * @type {String[]}
- */
-export const Webgl2ContextNames = [
-    "webgl2",
-    "experimental-webgl2"
-];
-
-/**
- * Webgl version
- * @type {{NONE: number, WEBGL: number, WEBGL2: number}}
- */
-export const WebglVersion = {
-    NONE: 0,
-    WEBGL: 1,
-    WEBGL2: 2
-};

@@ -76,7 +76,7 @@ export class ErrStoreKeyReserved extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "%store% key is reserved: %key%");
+        super(data, "Reserved key for '%store%' store (%key%)");
     }
 }
 
@@ -87,7 +87,7 @@ export class ErrStoreValueInvalid extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "%store% value is invalid for key: %key%");
+        super(data, "Invalid value for '%store%' store key (%key%)");
     }
 }
 
@@ -98,26 +98,18 @@ export class ErrStoreValueMissing extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "%store% value is missing for key: %key%");
+        super(data, "Missing '%store%' store key (%key%)");
     }
 }
 
 /**
- * Throws when trying to create a store variable with an invalid type
+ * Throws when trying to do something with an invalid store
  */
-export class ErrStoreTypeInvalid extends Tw2Error
+export class ErrStoreInvalid extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Invalid variable type for %store%: %type%");
-    }
-}
-
-export class ErrStoreKeyProtected extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "%store% cannot be overwritten: %key%");
+        super(data, "Invalid store");
     }
 }
 
@@ -132,31 +124,6 @@ export class ErrHTTPRequest extends Tw2Error
     }
 }
 
-
-/**
- * Throws on http request send errors
- */
-export class ErrHTTPRequestSend extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Communication send error while requesting resource");
-    }
-}
-
-
-/**
- * Throws when an xml http instance cannot be created
- */
-export class ErrHTTPInstance extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Could not create an XML HTTP instance");
-    }
-}
-
-
 /**
  * Throws on http status errors
  */
@@ -168,18 +135,6 @@ export class ErrHTTPStatus extends Tw2Error
     }
 }
 
-
-/**
- * Throws on http ready state errors
- */
-export class ErrHTTPReadyState extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "Communication ready state error while loading resource");
-    }
-}
-
 /**
  * Throws when xml is not a valid format
  */
@@ -187,7 +142,7 @@ export class ErrBinaryFormat extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Invalid binary format: %formatError=undefined%");
+        super(data, "Invalid binary format (%formatError=undefined%)");
     }
 }
 
@@ -198,7 +153,7 @@ export class ErrBinaryReaderReadError extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Error reading binary: %readError=undefined%");
+        super(data, "Error reading binary (%readError=undefined%)");
     }
 }
 
@@ -209,7 +164,7 @@ export class ErrBinaryObjectTypeNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Binary object type \"%type%\" not found");
+        super(data, "Binary object type not found (%type%)");
     }
 }
 
@@ -423,7 +378,7 @@ export class ErrSingletonInstantiation extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Multiple class instantiations not yet supported");
+        super(data, "Multiple class instantiations not yet supported: (%class%)");
     }
 }
 

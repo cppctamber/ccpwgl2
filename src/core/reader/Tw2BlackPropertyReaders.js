@@ -1,4 +1,4 @@
-import {vec2, vec3, vec4, mat4, store} from "../../global";
+import {vec2, vec3, vec4, mat4, tw2} from "../../global";
 import {ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError} from "../Tw2Error";
 
 /**
@@ -73,7 +73,7 @@ export function object(reader, id)
     const
         context = reader.context,
         givenId = id !== undefined,
-        debugEnabled = store.classes.constructor.DEBUG_ENABLED;
+        debugEnabled = tw2.constructor.DEBUG_ENABLED;
 
     if (!givenId)
     {
@@ -99,12 +99,12 @@ export function object(reader, id)
         reader.references.set(id, result);
     }
 
-    if (!store.blacks.Has(type))
+    if (!tw2.HasBlack(type))
     {
         throw new ErrBinaryObjectTypeNotFound({type});
     }
 
-    let properties = store.blacks.Get(type);
+    let properties = tw2.GetBlack(type);
 
     while (!objectReader.AtEnd())
     {

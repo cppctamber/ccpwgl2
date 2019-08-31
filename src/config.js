@@ -48,13 +48,13 @@ export const config = {
 
     store: {
 
-        paths: {
+        path: {
             "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
             // Set to you local cdn cache server path
             "cdn": "http://localhost:3000/"
         },
 
-        extensions: {
+        extension: {
             "sm_hi": core.Tw2EffectRes,
             "sm_lo": core.Tw2EffectRes,
             "wbg": core.Tw2GeometryRes,
@@ -68,7 +68,7 @@ export const config = {
             "red": core.Tw2LoadingObject
         },
 
-        classes: [
+        class: [
             core,
             curve,
             eve,
@@ -78,7 +78,7 @@ export const config = {
             state
         ],
 
-        types: {
+        type: {
             "float": core.Tw2FloatParameter,
             "number": core.Tw2FloatParameter,
             "texture": core.Tw2TextureParameter,
@@ -88,7 +88,7 @@ export const config = {
             "matrix4": core.Tw2Matrix4Parameter
         },
 
-        variables: {
+        variable: {
             "WorldMat": mat4.create(),
             "ViewMat": mat4.create(),
             "ProjectionMat": mat4.create(),

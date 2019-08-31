@@ -196,6 +196,7 @@ export class Tw2Logger extends Tw2EventEmitter
     static LogType = {
         ERROR: "error",
         WARNING: "warn",
+        WARN: "warn",
         INFO: "info",
         LOG: "log",
         DEBUG: "debug"

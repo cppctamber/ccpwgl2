@@ -1,5 +1,5 @@
 import {num, vec3, vec4, mat4} from "../math";
-import {isString} from "../util";
+import {get, isString} from "../util";
 import {Tw2Effect} from "../../core/mesh/Tw2Effect";
 import {Tw2VertexDeclaration} from "../../core/vertex/Tw2VertexDeclaration";
 import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
@@ -53,19 +53,15 @@ import {
     BlendTable,
     WrapModes,
     VendorWebglPrefixes,
-    WebglVersion,
-    Webgl2ContextNames,
-    WebglContextNames,
+    VendorRequestAnimationFrame,
+    VendorCancelAnimationFrame
 } from "./Tw2Constant";
-
 
 /**
  * Tw2Device
  *
- * @property {WebGLRenderingContext} gl             - The device's gl context
- * @property {?number} glVersion                   - The device's gl version
- * @property {?VRDisplay} vrDisplay                - An optional VRDisplay context
- * @property {?{}} ext                             - An object containing compatibility extensions
+ * @property {WebGLRenderingContext} gl            - The device's gl context
+ * @property {*} xr                                - An optional xr handler
  * @property {vec3} eyePosition                    - The device's current eye position
  * @property {vec4} targetResolution               - The device's current target resolution
  * @property {mat4} world                          - The device's current world matrix
@@ -86,18 +82,21 @@ import {
  * @property {number} mipLevelSkipCount            - Controls what quality ccp texture resource to load (mutates paths)
  * @property {String} shaderModel                  - Controls what quality ccp effect resource to load (mutates paths)
  * @property {Boolean} enableAnisotropicFiltering  - Enables anisotropic filtering
+ * @property {Boolean} enableAntialiasing          - Enables antialiasing
  * @property {Boolean} enableWebgl2                - Enables webgl2
- * @property {Boolean} enableWebvr                 - Enables webvr (Not yet supported)
+ * @property {Boolean} enableWebxr                 - Enables webvr (Not yet supported)
  * @property {Boolean} alphaBlendBackBuffer        - Enables alpha blending (glParams.alpha)
  * @property {Boolean} antialiasing                - Identifies if antialiasing is enabled
  * @property {number} msaaSamples                  - The amount of samples used for antialiasing
  * @property {number[]} wrapModes                  - texture wrap modes
  * @property {*} shadowHandles                     - unused
  * @property {Tw2PerObjectData} perObjectData      - The current frame's per object data
- * @property {?{}} _alphaBlendState                - Alpha states for blending
- * @property {?{}} _alphaTestState                 - Alpha test states
- * @property {?{}} _depthOffsetState               - Depth states
- * @property {?Float32Array} _shadowStateBuffer    - unused
+ * @property {Function} onResize                   - An optional function which is called on resize
+ * @property {{}} _extensions                      - Stores loaded extensions
+ * @property {{}} _alphaBlendState                 - Alpha states for blending
+ * @property {{}} _alphaTestState                  - Alpha test states
+ * @property {{}} _depthOffsetState                - Depth states
+ * @property {Float32Array} _shadowStateBuffer     - unused
  * @property {WebGLBuffer} _quadBuffer             - Webgl buffer for full screen quad
  * @property {Tw2VertexDeclaration} _quadDecl      - Quad vertex declarations
  * @property {WebGLBuffer} _cameraQuadBuffer       - Webgl buffer for camera space quad
@@ -112,9 +111,8 @@ export class Tw2Device extends Tw2EventEmitter
     name = "Device";
 
     gl = null;
-    glVersion = WebglVersion.NONE;
-    vrDisplay = null;
-    ext = null;
+    xr = null;
+    tw2 = null;
 
     dt = 0;
     frameCounter = 0;
@@ -134,7 +132,6 @@ export class Tw2Device extends Tw2EventEmitter
     viewProjection = mat4.create();
     viewProjectionTranspose = mat4.create();
 
-    canvas = null;
     viewportWidth = 0;
     viewportHeight = 0;
     viewportAspect = 0;
@@ -144,8 +141,9 @@ export class Tw2Device extends Tw2EventEmitter
     mipLevelSkipCount = 0;
     shaderModel = "hi";
     enableAnisotropicFiltering = true;
+    enableAntialiasing = true;
     enableWebgl2 = true;
-    enableWebvr = true;
+    enableWebxr = true;
 
     alphaBlendBackBuffer = true;
     antialiasing = true;
@@ -154,6 +152,9 @@ export class Tw2Device extends Tw2EventEmitter
     shadowHandles = null;
     perObjectData = null;
 
+    onResize = null;
+
+    _extensions = {};
     _alphaBlendState = null;
     _alphaTestState = null;
     _depthOffsetState = null;
@@ -167,11 +168,27 @@ export class Tw2Device extends Tw2EventEmitter
     _blitEffect = null;
     _Date = Date;
 
-    tw2 = null;
+    /**
+     * Gets the current gl context version
+     * @returns {number}
+     */
+    get glVersion()
+    {
+        return !this.gl ? 0 : this.gl instanceof WebGLRenderingContext ? 1 : 2;
+    }
 
     /**
-     *
-     * @param tw2
+     * Gets the current gl canvas
+     * @returns {null}
+     */
+    get canvas()
+    {
+        return this.gl ? this.gl.canvas : null;
+    }
+
+    /**
+     * Constructor
+     * @param {Tw2Library} tw2
      */
     constructor(tw2)
     {
@@ -215,9 +232,9 @@ export class Tw2Device extends Tw2EventEmitter
         if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
         if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
         if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
-        if ("antialiasing" in opt) this.antialiasing = opt.antialiasing;
+        if ("antialiasing" in opt) this.enableAntialiasing = opt.antialiasing;
         if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
-        if ("webvr" in opt) this.enableWebvr = opt.webvr;
+        if ("webxr" in opt) this.enableWebxr = opt.webxr;
     }
 
     /**
@@ -227,66 +244,59 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {Boolean} [params.webgl2]  - Optional flag to enable a webgl2 rendering context
      * @returns {number}                 - The webgl rendering context create (0 if failed)
      */
-    CreateDevice(canvas, params)
+    CreateDevice(canvas, params={})
     {
         this.gl = null;
-        this.glVersion = WebglVersion.NONE;
         this.effectDir = "/effect.gles2/";
-        this.canvas = null;
-        this.ext = {};
 
-        // TODO: Handle GlParam Defaults
-        if (!params) params = {};
+        params.alpha = get(params, "alpha", true);
+        params.webgl2 = this.enableWebgl2;
+        params.xrCompatible = this.enableWebxr;
+        params.antialiasing = this.enableAntialiasing ? get(params, "antialiasing", true) : false;
 
-        if (isString(canvas))
+        const gl = this.gl = Tw2Device.CreateContext(params, canvas);
+
+        if (this.glVersion === 0)
         {
-            canvas = document.getElementById(canvas);
+            return this.glVersion;
         }
 
-        let {gl, version} = this.tw2.client.CreateContext(canvas, params, this.enableWebgl2);
-        if (!gl) return this.glVersion;
-
-        this.gl = gl;
-        this.glVersion = version;
-        this.canvas = canvas;
-
-        this.emit("device_created", this, gl, params, canvas)
-            .msg("debug", `Webgl${version} context created`);
+        this.emit("device_created", this, params)
+            .msg("debug", `Webgl${this.glVersion} context created`);
 
         const
             returnFalse = () => false,
             returnTrue = () => true;
 
-        switch (this.glVersion)
+        if (this.glVersion === 1)
         {
-            case WebglVersion.WEBGL2:
-                gl.hasInstancedArrays = returnTrue;
-                break;
-
-            default:
-                this.GetExtension("OES_standard_derivatives");
-                this.GetExtension("OES_element_index_uint");
-                this.GetExtension("OES_texture_float");
-                this.GetExtension("EXT_shader_texture_lod");
-                const iArray = this.GetExtension("ANGLE_instanced_arrays");
-                gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
-                gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
-                gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
-                gl.hasInstancedArrays = iArray ? returnTrue : returnFalse;
+            this.GetExtension("OES_standard_derivatives");
+            this.GetExtension("OES_element_index_uint");
+            this.GetExtension("OES_texture_float");
+            this.GetExtension("EXT_shader_texture_lod");
+            const iArray = this.GetExtension("ANGLE_instanced_arrays");
+            gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
+            gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
+            gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
+            gl.hasInstancedArrays = iArray ? returnTrue : returnFalse;
+        }
+        else
+        {
+            gl.hasInstancedArrays = returnTrue;
         }
 
         // Optional extensions
-        this.ext.CompressedTextureS3TC = this.GetExtension("compressed_texture_s3tc");
-        this.ext.AnisotropicFilter = this.GetExtension("EXT_texture_filter_anisotropic");
-        if (this.ext.AnisotropicFilter)
+        this.GetExtension("compressed_texture_s3tc");
+
+        const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
+        if (anisotropicFilterExt)
         {
-            this.ext.AnisotropicFilter.maxAnisotropy =
-                gl.getParameter(this.ext.AnisotropicFilter["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
+            anisotropicFilterExt.maxAnisotropy = gl.getParameter(anisotropicFilterExt["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
         }
 
         // CCP mobile shader binary (is this depreciated?)
-        const shaderBinary = this.GetExtension("CCP_shader_binary");
-        if (shaderBinary)
+        const ccpShaderBinary = this.GetExtension("CCP_shader_binary");
+        if (ccpShaderBinary)
         {
             const
                 renderer = gl.getParameter(this.gl.RENDERER),
@@ -295,12 +305,11 @@ export class Tw2Device extends Tw2EventEmitter
             if (maliVer)
             {
                 this.effectDir = "/effect.gles2.mali" + maliVer[1] + "/";
-                this.ext.ShaderBinary = shaderBinary;
             }
         }
 
         // Quality
-        this.alphaBlendBackBuffer = !params || params["alpha"] === undefined || params["alpha"];
+        this.alphaBlendBackBuffer = params.alpha;
         this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
         this.antialiasing = this.msaaSamples > 1;
 
@@ -364,16 +373,16 @@ export class Tw2Device extends Tw2EventEmitter
      */
     Resize()
     {
-        const vrEnabled = this.vrDisplay && this.vrDisplay["isPresenting"];
-        if (vrEnabled)
+        if (this.onResize)
         {
-            const
-                leftEye = this.vrDisplay["getEyeParameters"]("left"),
-                rightEye = this.vrDisplay["getEyeParameters"]("right");
-
-            this.canvas.width = Math.max(leftEye["renderWidth"], rightEye["renderWidth"]) * 2;
-            this.canvas.height = Math.max(rightEye["renderHeight"], rightEye["renderHeight"]);
+            this.onResize(this.canvas);
         }
+        /*
+        else if (this.enableWebxr && this.xr && this.xr.isGood)
+        {
+            this.xr.OnResize(this.canvas);
+        }
+        */
         else
         {
             this.canvas.width = this.canvas.offsetWidth * this.viewportPixelRatio;
@@ -384,7 +393,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.viewportHeight = this.canvas.clientHeight;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
 
-        this.tw2.store.variables.SetValue("ViewportSize", [
+        this.tw2.SetVariableValue("ViewportSize", [
             this.viewportWidth,
             this.viewportHeight,
             this.viewportWidth,
@@ -395,7 +404,7 @@ export class Tw2Device extends Tw2EventEmitter
             width: this.viewportWidth,
             height: this.viewportHeight,
             aspect: this.viewportAspect,
-            source: vrEnabled ? this.vrDisplay : this.canvas
+            canvas: this.canvas
         });
     }
 
@@ -409,10 +418,9 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
-     * Per frame tick
-     * @param {Tw2Clock} clock
+     * Fires on the start of a frame
      */
-    Tick()
+    StartFrame()
     {
         if (this.canvas.clientWidth !== this.viewportWidth || this.canvas.clientHeight !== this.viewportHeight)
         {
@@ -427,7 +435,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
         this.previousTime = now;
 
-        this.tw2.store.variables.SetValue("Time", [
+        this.tw2.SetVariableValue("Time", [
             this.currentTime,
             this.currentTime - Math.floor(this.currentTime),
             this.frameCounter,
@@ -438,13 +446,20 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Fires on the end of a frame
+     */
+    EndFrame()
+    {
+
+    }
+
+    /**
      * Sets World transform matrix
      * @param {mat4} matrix
      */
     SetWorld(matrix)
     {
         mat4.copy(this.world, matrix);
-        //mat4.inverse(this.worldInverse, this.world);
     }
 
     /**
@@ -481,7 +496,7 @@ export class Tw2Device extends Tw2EventEmitter
     {
         mat4.multiply(this.viewProjection, this.projection, this.view);
         mat4.transpose(this.viewProjectionTranspose, this.viewProjection);
-        this.tw2.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
+        this.tw2.SetVariableValue("ViewProjectionMat", this.viewProjection);
     }
 
     /**
@@ -535,16 +550,24 @@ export class Tw2Device extends Tw2EventEmitter
     /**
      * Gets a gl extension
      * @param {String} extension - The gl extension name
-     * @returns{*}
+     * @returns {*}
      */
     GetExtension(extension)
     {
-        for (let i = 0; i < VendorWebglPrefixes.length; i++)
+        if (!(extension in this._extensions))
         {
-            const ext = this.gl.getExtension(VendorWebglPrefixes[i] + extension);
-            if (ext) return ext;
+            let ext;
+            for (let i = 0; i < VendorWebglPrefixes.length; i++)
+            {
+                ext = this.gl.getExtension(VendorWebglPrefixes[i] + extension);
+                if (ext) break;
+                ext = null;
+            }
+
+            this._extensions[extension] = ext;
         }
-        return null;
+
+        return this._extensions[extension];
     }
 
     /**
@@ -1026,6 +1049,80 @@ export class Tw2Device extends Tw2EventEmitter
 
         this._currentRenderMode = renderMode;
     }
+
+    /**
+     * Requests an animation frame
+     * @param {Function} callback
+     */
+    RequestAnimationFrame(callback)
+    {
+        return this.xr
+            ? this.xr.RequestAnimationFrame(callback)
+            : this.constructor.RequestAnimationFrame(callback);
+    }
+
+    /**
+     * Cancels an animation frame
+     * @param {Number} id
+     */
+    CancelAnimationFrame(id)
+    {
+        return this.xr
+            ? this.xr.CancelAnimationFrame(id)
+            : this.constructor.CancelAnimationFrame(id);
+    }
+
+
+    /**
+     * Creates a webgl context
+     * @param params
+     * @param canvas
+     * @returns {null|WebGLRenderingContext|WebGL2RenderingContext}
+     * @throws on invalid context
+     */
+    static CreateContext(params={}, canvas)
+    {
+        if (isString(canvas))
+        {
+            canvas = document.getElementById(canvas);
+        }
+
+        if (!canvas)
+        {
+            canvas = document.createElement("canvas");
+        }
+
+        const contextTypes = params.webgl2 ? ["webgl2"] : ["webgl", "experimental-webgl"];
+
+        let context = null;
+        for (let contextType of contextTypes)
+        {
+            context = canvas.getContext(contextType, params);
+            if (context) break;
+        }
+
+        return context;
+    }
+
+    /**
+     * Requests an animation frame
+     * @type {Function}
+     */
+    static RequestAnimationFrame = (function()
+    {
+        const request = get(window, VendorRequestAnimationFrame);
+        return callback => request(callback);
+    })();
+
+    /**
+     * Cancels an animation frame
+     * @type {Function}
+     */
+    static CancelAnimationFrame = (function()
+    {
+        const cancel = get(window, VendorCancelAnimationFrame);
+        return id => cancel(id);
+    })();
 
     /**
      * Logger category

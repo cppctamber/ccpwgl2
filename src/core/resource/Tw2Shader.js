@@ -507,12 +507,13 @@ export class Tw2Shader
     static CompileShader(stageType, prefix, shaderCode, path, skipError)
     {
         const
-            {ext, gl} = device,
-            shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
+            gl = device.gl,
+            shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER),
+            ccpShaderBinary = device.GetExtension("CCP_shader_binary");
 
-        if (ext.ShaderBinary)
+        if (ccpShaderBinary)
         {
-            ext.ShaderBinary["shaderBinary"](shader, shaderCode);
+            ccpShaderBinary["shaderBinary"](shader, shaderCode);
         }
         else
         {

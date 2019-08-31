@@ -1,4 +1,4 @@
-import {store} from "../../global";
+import {tw2} from "../../global";
 import {Tw2Parameter} from "./Tw2Parameter";
 
 /**
@@ -30,7 +30,7 @@ export class Tw2VariableParameter extends Tw2Parameter
      */
     get variable()
     {
-        return store.variables.Get(this.variableName);
+        return tw2.GetVariable(this.variableName);
     }
 
     /**
@@ -44,12 +44,12 @@ export class Tw2VariableParameter extends Tw2Parameter
 
     /**
      * Gets the variable's value
-     * @param {Boolean} [serialize]
+     * @param {*} [out=[]]
      * @returns {?*}
      */
-    GetValue(serialize)
+    GetValue(out=[])
     {
-        return store.variables.Get(this.variableName, serialize);
+        return tw2.GetVariableValue(this.variableName, out);
     }
 
     /**

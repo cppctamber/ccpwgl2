@@ -28,7 +28,6 @@ import {assignIfExists, isError, isFunction} from "../util";
  * @property {Number} _purgeFrameLimit
  * @property {Number} _pendingLoads - a count of how many things are pending load
  * @property {Number} _noLoadFrames
- * @class
  */
 export class Tw2ResMan extends Tw2EventEmitter
 {
@@ -415,8 +414,6 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     GetResourceConstructor(path)
     {
-        const {extensions} = this.tw2.store;
-
         path = Tw2ResMan.NormalizePath(path);
 
         if (path.indexOf("dynamic:/") === 0)
@@ -430,7 +427,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             throw new ErrResourceExtensionUndefined({path});
         }
 
-        const Constructor = extensions.Get(extension);
+        const Constructor = this.tw2.GetExtension(extension);
         if (!Constructor)
         {
             throw new ErrResourceExtensionUnregistered({path, extension});
@@ -449,8 +446,6 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     BuildUrl(path)
     {
-        const {paths} = this.tw2.store;
-
         const prefixIndex = path.indexOf(":/");
         if (prefixIndex === -1)
         {
@@ -463,7 +458,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             return path;
         }
 
-        const fullPrefix = paths.Get(prefix);
+        const fullPrefix = this.tw2.GetPath(prefix);
         if (!fullPrefix)
         {
             throw new ErrResourcePrefixUnregistered({path, prefix});

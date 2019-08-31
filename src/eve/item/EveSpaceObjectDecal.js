@@ -1,4 +1,4 @@
-import {vec3, quat, mat4, util, device, store, Tw2BaseClass} from "../../global";
+import {vec3, quat, mat4, util, device, tw2, Tw2BaseClass} from "../../global";
 import {Tw2PerObjectData, Tw2ForwardingRenderBatch} from "../../core/";
 import {assignIfExists} from "../../global/util";
 import {Tw2Effect} from "../../core/mesh";
@@ -221,8 +221,8 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             bkCount = mesh.areas[0].count,
             bkIndexType = mesh.indexType;
 
-        store.variables.SetValue("u_DecalMatrix", this._transform);
-        store.variables.SetValue("u_InvDecalMatrix", this._transformInv);
+        tw2.SetVariableValue("u_DecalMatrix", this._transform);
+        tw2.SetVariableValue("u_InvDecalMatrix", this._transformInv);
 
         mesh.indexes = this._indexBuffer;
         mesh.areas[0].start = 0;

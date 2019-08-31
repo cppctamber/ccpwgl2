@@ -41,12 +41,12 @@ export class Tw2TransformParameter extends Tw2Parameter
 
     /**
      * Gets the parameter's value
-     * @param {Boolean} [serialize]
-     * @returns {Array|Float32Array|mat4}
+     * @param {TypedArray|Array|mat4} [out=[]]
+     * @returns {TypedArray|Array|mat4} [out=[]]
      */
-    GetValue(serialize)
+    GetValue(out=[])
     {
-        return serialize ? Array.from(this.transform) : new Float32Array(this.transform);
+        return mat4.copy(out, this.transform);
     }
 
     /**

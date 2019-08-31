@@ -1,4 +1,4 @@
-import {vec3, vec4, quat, mat4, util, device, resMan, store, Tw2BaseClass} from "../global";
+import {vec3, vec4, quat, mat4, util, device, resMan, tw2, Tw2BaseClass} from "../global";
 import {Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess} from "../core";
 
 /**
@@ -606,9 +606,9 @@ export class EveSpaceScene extends Tw2BaseClass
             envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
             envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
 
-        store.variables.Get("EveSpaceSceneEnvMap").SetTextureRes(envMap);
-        store.variables.Get("EnvMap1").SetTextureRes(envMap1);
-        store.variables.Get("EnvMap2").SetTextureRes(envMap2);
+        tw2.GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
+        tw2.GetVariable("EnvMap1").SetTextureRes(envMap1);
+        tw2.GetVariable("EnvMap2").SetTextureRes(envMap2);
     }
 
     /**

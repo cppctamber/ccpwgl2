@@ -7,9 +7,9 @@ var ccpwgl = (function (ccpwgl_int)
 
     // Enables debug mode
     Object.defineProperty(ccpwgl, "debug", {
-        set: function (a)
+        set: function (bool)
         {
-            ccpwgl_int.Debug(a);
+            ccpwgl_int.debug = bool;
         }
     });
 
@@ -201,10 +201,12 @@ var ccpwgl = (function (ccpwgl_int)
     
     /**
      * Internal render/update function. Is called every frame.
-     * @param {number} dt Frame time.
+     * @param {{}} frame
      **/
-    var render = function (dt)
+    var render = function (frame)
     {
+        var dt = frame.dt;
+
         var clear = scene && scene.wrappedScene && useSceneClearColor ? scene.wrappedScene.clearColor : clearColor;
 
         if (updateEnabled && camera && camera.update)

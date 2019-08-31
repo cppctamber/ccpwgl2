@@ -119,7 +119,7 @@ export class Tw2TextureRes extends Tw2Resource
             */
             case "dds":
                 const
-                    ext = device.ext.CompressedTextureS3TC,
+                    ext = device.GetExtension("CompressedTextureS3TC"),
                     header = new Int32Array(data, 0, DDS_HEADER_LENGTH_INT),
                     isFourCC = header[DDS_HEADER_OFFSET_PF_FOURCC],
                     isMagic = header[DDS_HEADER_OFFSET_MAGIC] === DDS_MAGIC,

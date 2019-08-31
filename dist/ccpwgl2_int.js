@@ -16474,12 +16474,12 @@ const config = {
     }
   },
   store: {
-    paths: {
+    path: {
       "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
       // Set to you local cdn cache server path
       "cdn": "http://localhost:3000/"
     },
-    extensions: {
+    extension: {
       "sm_hi": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
       "sm_lo": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
       "wbg": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryRes"],
@@ -16492,8 +16492,8 @@ const config = {
       "black": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2LoadingObject"],
       "red": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2LoadingObject"]
     },
-    classes: [_core__WEBPACK_IMPORTED_MODULE_0__, _curve__WEBPACK_IMPORTED_MODULE_1__, _eve__WEBPACK_IMPORTED_MODULE_2__, _interior__WEBPACK_IMPORTED_MODULE_3__, _particle__WEBPACK_IMPORTED_MODULE_4__, _sof__WEBPACK_IMPORTED_MODULE_5__, _state__WEBPACK_IMPORTED_MODULE_6__],
-    types: {
+    class: [_core__WEBPACK_IMPORTED_MODULE_0__, _curve__WEBPACK_IMPORTED_MODULE_1__, _eve__WEBPACK_IMPORTED_MODULE_2__, _interior__WEBPACK_IMPORTED_MODULE_3__, _particle__WEBPACK_IMPORTED_MODULE_4__, _sof__WEBPACK_IMPORTED_MODULE_5__, _state__WEBPACK_IMPORTED_MODULE_6__],
+    type: {
       "float": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2FloatParameter"],
       "number": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2FloatParameter"],
       "texture": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2TextureParameter"],
@@ -16502,7 +16502,7 @@ const config = {
       "vector4": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Vector4Parameter"],
       "matrix4": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Matrix4Parameter"]
     },
-    variables: {
+    variable: {
       "WorldMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
       "ViewMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
       "ProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
@@ -16548,10 +16548,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {vec3} targetPosition
  */
 
-class Tr2DistanceTracker extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2DistanceTracker {
   constructor() {
-    super(...arguments);
-
     _defineProperty(this, "name", "");
 
     _defineProperty(this, "direction", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create());
@@ -16873,7 +16871,7 @@ _defineProperty(TriObserverLocal, "__isStaging", 4);
 /*!**************************!*\
   !*** ./core/Tw2Error.js ***!
   \**************************/
-/*! exports provided: Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
+/*! exports provided: Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16882,13 +16880,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyReserved", function() { return ErrStoreKeyReserved; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueInvalid", function() { return ErrStoreValueInvalid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueMissing", function() { return ErrStoreValueMissing; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreTypeInvalid", function() { return ErrStoreTypeInvalid; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyProtected", function() { return ErrStoreKeyProtected; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreInvalid", function() { return ErrStoreInvalid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequest", function() { return ErrHTTPRequest; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequestSend", function() { return ErrHTTPRequestSend; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPInstance", function() { return ErrHTTPInstance; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return ErrHTTPStatus; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPReadyState", function() { return ErrHTTPReadyState; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryFormat", function() { return ErrBinaryFormat; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryReaderReadError", function() { return ErrBinaryReaderReadError; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryObjectTypeNotFound", function() { return ErrBinaryObjectTypeNotFound; });
@@ -16992,7 +16986,7 @@ _defineProperty(Tw2Error, "__category", "error");
 
 class ErrStoreKeyReserved extends Tw2Error {
   constructor(data) {
-    super(data, "%store% key is reserved: %key%");
+    super(data, "Reserved key for '%store%' store (%key%)");
   }
 
 }
@@ -17002,7 +16996,7 @@ class ErrStoreKeyReserved extends Tw2Error {
 
 class ErrStoreValueInvalid extends Tw2Error {
   constructor(data) {
-    super(data, "%store% value is invalid for key: %key%");
+    super(data, "Invalid value for '%store%' store key (%key%)");
   }
 
 }
@@ -17012,23 +17006,17 @@ class ErrStoreValueInvalid extends Tw2Error {
 
 class ErrStoreValueMissing extends Tw2Error {
   constructor(data) {
-    super(data, "%store% value is missing for key: %key%");
+    super(data, "Missing '%store%' store key (%key%)");
   }
 
 }
 /**
- * Throws when trying to create a store variable with an invalid type
+ * Throws when trying to do something with an invalid store
  */
 
-class ErrStoreTypeInvalid extends Tw2Error {
+class ErrStoreInvalid extends Tw2Error {
   constructor(data) {
-    super(data, "Invalid variable type for %store%: %type%");
-  }
-
-}
-class ErrStoreKeyProtected extends Tw2Error {
-  constructor(data) {
-    super(data, "%store% cannot be overwritten: %key%");
+    super(data, "Invalid store");
   }
 
 }
@@ -17043,26 +17031,6 @@ class ErrHTTPRequest extends Tw2Error {
 
 }
 /**
- * Throws on http request send errors
- */
-
-class ErrHTTPRequestSend extends Tw2Error {
-  constructor(data) {
-    super(data, "Communication send error while requesting resource");
-  }
-
-}
-/**
- * Throws when an xml http instance cannot be created
- */
-
-class ErrHTTPInstance extends Tw2Error {
-  constructor(data) {
-    super(data, "Could not create an XML HTTP instance");
-  }
-
-}
-/**
  * Throws on http status errors
  */
 
@@ -17073,22 +17041,12 @@ class ErrHTTPStatus extends Tw2Error {
 
 }
 /**
- * Throws on http ready state errors
- */
-
-class ErrHTTPReadyState extends Tw2Error {
-  constructor(data) {
-    super(data, "Communication ready state error while loading resource");
-  }
-
-}
-/**
  * Throws when xml is not a valid format
  */
 
 class ErrBinaryFormat extends Tw2Error {
   constructor(data) {
-    super(data, "Invalid binary format: %formatError=undefined%");
+    super(data, "Invalid binary format (%formatError=undefined%)");
   }
 
 }
@@ -17098,7 +17056,7 @@ class ErrBinaryFormat extends Tw2Error {
 
 class ErrBinaryReaderReadError extends Tw2Error {
   constructor(data) {
-    super(data, "Error reading binary: %readError=undefined%");
+    super(data, "Error reading binary (%readError=undefined%)");
   }
 
 }
@@ -17108,7 +17066,7 @@ class ErrBinaryReaderReadError extends Tw2Error {
 
 class ErrBinaryObjectTypeNotFound extends Tw2Error {
   constructor(data) {
-    super(data, "Binary object type \"%type%\" not found");
+    super(data, "Binary object type not found (%type%)");
   }
 
 }
@@ -17288,7 +17246,7 @@ class ErrDeclarationValueType extends Tw2Error {
 
 class ErrSingletonInstantiation extends Tw2Error {
   constructor(data) {
-    super(data, "Multiple class instantiations not yet supported");
+    super(data, "Multiple class instantiations not yet supported: (%class%)");
   }
 
 }
@@ -17519,9 +17477,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @class
  */
 
-class Tw2RenderTarget extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2RenderTarget {
   constructor() {
-    super(...arguments);
+    _defineProperty(this, "_id", _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID());
 
     _defineProperty(this, "name", "");
 
@@ -18891,7 +18849,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreTypeInvalid, ErrStoreKeyProtected, ErrHTTPRequest, ErrHTTPRequestSend, ErrHTTPInstance, ErrHTTPStatus, ErrHTTPReadyState, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19010,6 +18968,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -19021,8 +18981,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -19059,19 +19017,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueMissing", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrStoreValueMissing"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreTypeInvalid", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrStoreTypeInvalid"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyProtected", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrStoreKeyProtected"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreInvalid", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrStoreInvalid"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequest", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrHTTPRequest"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPRequestSend", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrHTTPRequestSend"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPInstance", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrHTTPInstance"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPStatus", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrHTTPStatus"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrHTTPReadyState", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrHTTPReadyState"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBinaryFormat", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrBinaryFormat"]; });
 
@@ -19738,15 +19688,15 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
                     size: constant.size
                   });
                 }
-              } else if (_global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Has(name)) {
+              } else if (_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
                 stage.parameters.push({
-                  parameter: _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get(name),
+                  parameter: _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name),
                   constantBuffer: stage.constantBuffer,
                   offset: constant.offset,
                   size: constant.size
                 });
               } else if (constant.isAutoregister && Type) {
-                const variable = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(name, undefined, Type);
+                const variable = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, Type);
 
                 if (variable) {
                   stage.parameters.push({
@@ -19765,7 +19715,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
                   value = value[0];
                 }
 
-                const param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(name, value, Type);
+                const param = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, value, Type);
 
                 if (param) {
                   this.parameters[name] = param;
@@ -19790,10 +19740,10 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
               if (name in this.parameters) {
                 param = this.parameters[name];
-              } else if (_global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Has(name)) {
-                param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get(name);
+              } else if (_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
+                param = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name);
               } else if (stageRes.textures[k].isAutoregister) {
-                param = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
+                param = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
               } else if (this.autoParameter) {
                 param = this.parameters[name] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](name);
               } else {
@@ -20027,7 +19977,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
             updated = true;
           }
         } else {
-          const parameter = _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Create(key, value);
+          const parameter = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(key, value);
 
           if (parameter) {
             this.parameters[key] = parameter;
@@ -20801,7 +20751,7 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       if (name in src && name in dest) {
         for (let i = 0; i < src[name].length; i++) {
           const type = src[name][i].__type || "Tw2MeshArea",
-                Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["store"].classes.Get(type);
+                Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
           dest[name].push(Constructor.from(src[name][i], {
             index: i
           }));
@@ -22942,13 +22892,14 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["
   }
   /**
    * Gets the parameter's value
-   * @param {Boolean} [serialize]
-   * @returns {Array|Float32Array|mat4}
+   * @param {TypedArray|Array|mat4} [out=[]]
+   * @returns {TypedArray|Array|mat4} [out=[]]
    */
 
 
-  GetValue(serialize) {
-    return serialize ? Array.from(this.transform) : new Float32Array(this.transform);
+  GetValue() {
+    let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    return _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(out, this.transform);
   }
   /**
    * Fire on value changes
@@ -23061,7 +23012,7 @@ class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["T
 
 
   get variable() {
-    return _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get(this.variableName);
+    return _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(this.variableName);
   }
   /**
    * Gets the linked variable's size
@@ -23074,13 +23025,14 @@ class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["T
   }
   /**
    * Gets the variable's value
-   * @param {Boolean} [serialize]
+   * @param {*} [out=[]]
    * @returns {?*}
    */
 
 
-  GetValue(serialize) {
-    return _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get(this.variableName, serialize);
+  GetValue() {
+    let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    return _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariableValue(this.variableName, out);
   }
   /**
    * Apply
@@ -23472,16 +23424,15 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
   /**
    * Sets the parameter's value
    * @param {Float32Array} value   - The value to set
-   * @param {*} [controller]       - The object that is setting the value
-   * @param {Boolean} [skipUpdate] - Skips updating
+   * @param {*} [opt]
    */
 
 
-  SetValue(value, controller, skipUpdate) {
+  SetValue(value, opt) {
     //if (!this.EqualsValue(value))
     //{
     this.value.set(value);
-    this.UpdateValues(controller, skipUpdate); //return true;
+    this.UpdateValues(opt); //return true;
     //}
     //return false;
   }
@@ -23489,17 +23440,16 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
    * Sets a parameter's value at a given index
    * @param {Number} index         - the parameter's value index to change
    * @param {Number} value         - the value to set
-   * @param {*} [controller]       - the object that is setting the value
-   * @param {Boolean} [skipUpdate] -
+   * @param {*} [opt]              - the object that is setting the value
    * @throw Index Error
    */
 
 
-  SetIndexValue(index, value, controller, skipUpdate) {
+  SetIndexValue(index, value, opt) {
     if (this.value[index] !== undefined) {
       if (this.value[index] !== value) {
         this.value[index] = value;
-        this.UpdateValues();
+        this.UpdateValues(opt);
       }
 
       return;
@@ -23509,14 +23459,18 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
   }
   /**
    * Gets the parameter's value
-   * @param {Boolean} [serialize] - An optional parameter to force a serialized result
+   * @param {TypedArray|Array} [out=[]]
    * @returns {Array|Float32Array}
    */
 
 
-  GetValue(serialize) {
+  GetValue() {
+    let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
-    return serialize ? Array.from(value) : new Float32Array(value);
+
+    for (let i = 0; i < value.length; i++) out[0] = value[i];
+
+    return out;
   }
   /**
    * Gets a parameter's value at a given index
@@ -25070,7 +25024,7 @@ function path(reader) {
 function object(reader, id) {
   const context = reader.context,
         givenId = id !== undefined,
-        debugEnabled = _global__WEBPACK_IMPORTED_MODULE_0__["store"].classes.constructor.DEBUG_ENABLED;
+        debugEnabled = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].constructor.DEBUG_ENABLED;
 
   if (!givenId) {
     id = reader.ReadU32();
@@ -25090,13 +25044,13 @@ function object(reader, id) {
     reader.references.set(id, result);
   }
 
-  if (!_global__WEBPACK_IMPORTED_MODULE_0__["store"].blacks.Has(type)) {
+  if (!_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasBlack(type)) {
     throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryObjectTypeNotFound"]({
       type
     });
   }
 
-  let properties = _global__WEBPACK_IMPORTED_MODULE_0__["store"].blacks.Get(type);
+  let properties = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetBlack(type);
 
   while (!objectReader.AtEnd()) {
     let propertyName = objectReader.ReadStringU16();
@@ -25388,7 +25342,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2BlackBinaryReader */ "./core/reader/Tw2BlackBinaryReader.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -25493,9 +25449,8 @@ class Tw2BlackReader {
 
 
   ConstructType(type) {
-    const Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["store"].classes.Get(type);
-
-    if (Constructor) {
+    if (_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(type)) {
+      const Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
       return new Constructor();
     } else if (Tw2BlackReader.DEBUG_ENABLED) {
       return {
@@ -25635,9 +25590,9 @@ class Tw2ObjectReader {
       return data;
     }
 
-    let Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["store"].classes.Get(data.type);
+    let Constructor;
 
-    if (!Constructor) {
+    if (!_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(data.type)) {
       if (Tw2ObjectReader.DEBUG_ENABLED) {
         Constructor = Object;
       } else {
@@ -25645,6 +25600,8 @@ class Tw2ObjectReader {
           type: data.type
         });
       }
+    } else {
+      Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(data.type);
     }
 
     const object = new Constructor();
@@ -27429,11 +27386,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 
 class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
-  /**
-   * Constructor
-   */
   constructor() {
-    super();
+    super(...arguments);
 
     _defineProperty(this, "path", "");
 
@@ -27446,15 +27400,12 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
     _defineProperty(this, "_errors", []);
 
     _defineProperty(this, "_requested", 0);
-
-    _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
   }
+
   /**
    * Checks if the resource is good and keeps it alive
    * @returns {boolean}
    */
-
-
   IsGood() {
     this.KeepAlive();
     return this.IsPrepared() || this.IsLoaded();
@@ -27798,8 +27749,9 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
     return false;
   }
   /**
-   * Resource states
-   * @type {*}
+   * Identifies that this object is a resource
+   * @type {boolean}
+   * @private
    */
 
 
@@ -27810,6 +27762,8 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
  * @type {?Function}
  * @returns {Boolean}
  */
+
+_defineProperty(Tw2Resource, "__isResource", true);
 
 _defineProperty(Tw2Resource, "State", {
   ERROR: -3,
@@ -27831,8 +27785,6 @@ _defineProperty(Tw2Resource, "Callback", {
   WARNING: "OnResWarning",
   DEBUG: "OnResDebug"
 });
-
-_defineProperty(Tw2Resource, "__isResource", true);
 
 Tw2Resource.prototype.DoCustomLoad = null;
 /**
@@ -27889,13 +27841,11 @@ class Tw2Shader {
 
     _defineProperty(this, "annotations", {});
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"].defineID(this);
     /**
      * ReadString
      * @returns {String}
      * @private
      */
-
     function ReadString() {
       const offset = reader.ReadUInt32();
       let end = offset;
@@ -28308,12 +28258,12 @@ class Tw2Shader {
 
 
   static CompileShader(stageType, prefix, shaderCode, path, skipError) {
-    const ext = _global__WEBPACK_IMPORTED_MODULE_0__["device"].ext,
-          gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-          shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER);
+    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+          shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER),
+          ccpShaderBinary = _global__WEBPACK_IMPORTED_MODULE_0__["device"].GetExtension("CCP_shader_binary");
 
-    if (ext.ShaderBinary) {
-      ext.ShaderBinary["shaderBinary"](shader, shaderCode);
+    if (ccpShaderBinary) {
+      ccpShaderBinary["shaderBinary"](shader, shaderCode);
     } else {
       let source = prefix + (_global__WEBPACK_IMPORTED_MODULE_0__["util"].isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
       source = source.substr(0, source.length - 1);
@@ -28565,7 +28515,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
         */
 
       case "dds":
-        const ext = _global__WEBPACK_IMPORTED_MODULE_2__["device"].ext.CompressedTextureS3TC,
+        const ext = _global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("CompressedTextureS3TC"),
               header = new Int32Array(data, 0, _global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_LENGTH_INT"]),
               isFourCC = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
               isMagic = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MAGIC"]] === _global__WEBPACK_IMPORTED_MODULE_2__["DDS_MAGIC"],
@@ -29156,7 +29106,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -29444,15 +29394,15 @@ class Tw2SamplerState {
 
   Apply(device, hasMipMaps) {
     const targetType = this.samplerType,
-          d = device,
-          gl = d.gl;
+          gl = device.gl,
+          ext = device.GetExtension("EXT_texture_filter_anisotropic");
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? this.addressU : gl.CLAMP_TO_EDGE);
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? this.addressV : gl.CLAMP_TO_EDGE);
     gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
     gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
 
-    if (d.ext.AnisotropicFilter && d.enableAnisotropicFiltering) {
-      gl.texParameterf(targetType, d.ext.AnisotropicFilter.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(this.anisotropy, d.ext.AnisotropicFilter.maxAnisotropy));
+    if (ext && device.enableAnisotropicFiltering) {
+      gl.texParameterf(targetType, ext.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(this.anisotropy, ext.maxAnisotropy));
     }
   }
 
@@ -29639,9 +29589,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexDeclaration", function() { return Tw2VertexDeclaration; });
 /* harmony import */ var _Tw2VertexElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2VertexElement */ "./core/vertex/Tw2VertexElement.js");
-/* harmony import */ var _global_class__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/class */ "./global/class/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 /**
@@ -29653,10 +29601,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {?Number} vertexSize
  */
 
-class Tw2VertexDeclaration extends _global_class__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+class Tw2VertexDeclaration {
   constructor() {
-    super(...arguments);
-
     _defineProperty(this, "elements", []);
 
     _defineProperty(this, "elementsSorted", []);
@@ -29919,10 +29865,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Number} usageIndex
  */
 
-class Tw2VertexElement extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2VertexElement {
   constructor() {
-    super(...arguments);
-
     _defineProperty(this, "customSetter", null);
 
     _defineProperty(this, "elements", null);
@@ -38459,9 +38403,9 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     const envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
           envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
           envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get("EveSpaceSceneEnvMap").SetTextureRes(envMap);
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get("EnvMap1").SetTextureRes(envMap1);
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.Get("EnvMap2").SetTextureRes(envMap2);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap1").SetTextureRes(envMap1);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap2").SetTextureRes(envMap2);
   }
   /**
    * Initializes class global and scratch variables
@@ -40628,7 +40572,7 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     }
 
     this.backgroundOcclusionIntensity = this.occlusionIntensity;
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
     g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
   }
   /**
@@ -40687,7 +40631,7 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(scaleMat, scaleMat, [this.occlusionIntensity, this.occlusionIntensity, 1]); //mat4.multiply(scaleMat, scaleMat, this._transform);
 
     const dir = this._direction;
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
     _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(dist, dir[0], dir[1], dir[2], 0);
     _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, _global__WEBPACK_IMPORTED_MODULE_0__["device"].view);
     _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, _global__WEBPACK_IMPORTED_MODULE_0__["device"].projection);
@@ -41050,7 +40994,7 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("OccluderValue", [(1 << index * 2) / 255.0, (2 << index * 2) / 255.0, 0, 0]);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("OccluderValue", [(1 << index * 2) / 255.0, (2 << index * 2) / 255.0, 0, 0]);
     g.accumulator.Render();
     _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldViewProj, d.viewProjection, this.sprites[0].worldTransform);
     _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, [0, 0, 0, 1], worldViewProj);
@@ -44937,8 +44881,8 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
           bkStart = mesh.areas[0].start,
           bkCount = mesh.areas[0].count,
           bkIndexType = mesh.indexType;
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("u_DecalMatrix", this._transform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["store"].variables.SetValue("u_InvDecalMatrix", this._transformInv);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_DecalMatrix", this._transform);
+    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_InvDecalMatrix", this._transformInv);
     mesh.indexes = this._indexBuffer;
     mesh.areas[0].start = 0;
     mesh.areas[0].count = this.indexBuffer.length;
@@ -51431,22 +51375,27 @@ __webpack_require__.r(__webpack_exports__);
 /*!******************************!*\
   !*** ./global/Tw2Library.js ***!
   \******************************/
-/*! exports provided: tw2, store, resMan, device, logger, util */
+/*! exports provided: tw2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return tw2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "store", function() { return store; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return resMan; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "device", function() { return device; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return logger; });
-/* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./engine */ "./global/engine/index.js");
-/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
+/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./class */ "./global/class/index.js");
+/* harmony import */ var _engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./engine */ "./global/engine/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util */ "./global/util/index.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "util", function() { return _util__WEBPACK_IMPORTED_MODULE_2__; });
-/* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
+/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
+/* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../core/Tw2Error */ "./core/Tw2Error.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -51455,262 +51404,79 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
+
+let instanceCount = 0;
 /**
- * Tw2 Library
  *
- * @property {*} consts
- * //@property {Tw2Clock} clock
- * @property {Tw2Store} store
- * @property {Tw2Client} client
- * @property {Tw2Logger} logger
- * @property {Tw2ResMan} resMan
- * @property {Tw2Device} device
- * @property {EveSOF} eveSof
- * @property {Function} render
+ * @param {Tw2ResMan} resMan
+ * @param {Tw2Device} device
+ * @param {Tw2Logger} logger
  */
 
-class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2EventEmitter"] {
-  //clock = new Tw2Clock(this);
-
+class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
+  /**
+   * Gets the current gl context
+   * @returns {*}
+   */
+  get gl() {
+    return this.device.gl;
+  }
   /**
    * Constructor
    */
+
+
   constructor() {
+    instanceCount++;
+
+    if (instanceCount > 1) {
+      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrSingletonInstantiation"]({
+        class: "Tw2Library"
+      });
+    }
+
     super();
 
-    _defineProperty(this, "consts", _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__);
+    _defineProperty(this, "math", _math__WEBPACK_IMPORTED_MODULE_4__);
 
-    _defineProperty(this, "logger", new _engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Logger"](this));
+    _defineProperty(this, "util", _util__WEBPACK_IMPORTED_MODULE_2__);
 
-    _defineProperty(this, "client", new _engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Client"](this));
+    _defineProperty(this, "consts", _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__);
 
-    _defineProperty(this, "store", new _engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Store"](this));
+    _defineProperty(this, "logger", new _engine__WEBPACK_IMPORTED_MODULE_1__["Tw2Logger"](this));
 
-    _defineProperty(this, "device", new _engine__WEBPACK_IMPORTED_MODULE_0__["Tw2Device"](this));
+    _defineProperty(this, "resMan", new _engine__WEBPACK_IMPORTED_MODULE_1__["Tw2ResMan"](this));
 
-    _defineProperty(this, "resMan", new _engine__WEBPACK_IMPORTED_MODULE_0__["Tw2ResMan"](this));
+    _defineProperty(this, "device", new _engine__WEBPACK_IMPORTED_MODULE_1__["Tw2Device"](this));
 
-    _defineProperty(this, "eveSof", null);
-
-    _defineProperty(this, "render", null);
-
-    _defineProperty(this, "category", "Library");
-
-    this.store.classes.on("registered", (key, value) => {
-      Tw2Library.prototype[key] = value;
+    _defineProperty(this, "_store", {
+      black: new Map(),
+      variable: new Map(),
+      extension: new Map(),
+      class: new Map(),
+      path: new Map(),
+      dynamicPath: new Map(),
+      type: new Map()
     });
-    _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2EventEmitter"].defaultLogger = this; // Lazy load the space object factory
 
-    let eveSof;
+    _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"].defaultLogger = this;
+    let debug = false;
+    Object.defineProperty(this, "debug", {
+      get: () => debug,
+      set: bool => {
+        this._store.class.forEach(Constructor => {
+          if ("DEBUG_ENABLED" in Constructor) Constructor.DEBUG_ENABLED = debug;
+        });
 
-    const getSof = () => {
-      if (!eveSof) {
-        const EveSOF = this.GetClass("EveSOF");
-
-        if (EveSOF) {
-          eveSof = new EveSOF(this);
+        if (debug !== bool) {
+          this.logger.Debug(bool);
+          this.emit(bool ? "debug_enabled" : "debug_disabled");
+          this.Log("warn", "Debugging ".concat(bool ? "enabled" : "disabled"));
         }
       }
-
-      return eveSof;
-    };
-
-    Object.defineProperty(this, "eveSof", {
-      get: getSof
     });
-  }
-  /**
-   * Creates a log
-   * @param {String} type
-   * @param {*} log
-   * @param {String} [category]
-   * @returns {*}
-   */
-
-
-  Log(type, log) {
-    let category = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Tw2Library.constructor.__category;
-    return this.logger.Log(type, log, category);
-  }
-  /**
-   * Per frame tick
-   */
-
-
-  Tick() {
-    const d = this.device;
-    d.Tick();
-    this.client.Tick(d);
-    this.emit("tick", {
-      dt: d.dt,
-      previous: d.previousTime,
-      current: d.currentTime,
-      frame: d.frame
-    });
-    this.resMan.Tick(d);
-
-    if (this.render) {
-      this.render(d.dt);
-    }
-  }
-  /**
-   * Initializes the engine
-   * @param {{}} [opt={}]
-   * @param {HTMLCanvasElement} opt.canvas
-   * @param {Function} [opt.render]
-   * @param {Boolean} [opt.autoTick]
-   * @param {*} [opt.glParams]
-   * @param {*} [opt.client]
-   * @param {*} [opt.clock]
-   * @param {*} [opt.device]
-   * @param {*} [opt.resMan]
-   * @param {*} [opt.store]
-   * @param {*} [opt.logger]
-   * @returns {Number} The gl version that was created
-   */
-
-
-  Initialize() {
-    let opt = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    this.Register(opt);
-    const _opt$canvas = opt.canvas,
-          canvas = _opt$canvas === void 0 ? null : _opt$canvas,
-          _opt$render = opt.render,
-          render = _opt$render === void 0 ? null : _opt$render,
-          _opt$autoTick = opt.autoTick,
-          autoTick = _opt$autoTick === void 0 ? true : _opt$autoTick,
-          _opt$glParams = opt.glParams,
-          glParams = _opt$glParams === void 0 ? {} : _opt$glParams;
-
-    if (this.device.CreateDevice(canvas, glParams)) {
-      this.render = render;
-
-      if (autoTick) {
-        const tick = () => {
-          this.client.RequestAnimationFrame(tick);
-          this.Tick();
-        };
-
-        this.client.RequestAnimationFrame(tick);
-      }
-    }
-
-    return this.device.glVersion;
-  }
-  /**
-   * Gets a resource
-   * @param {String} resPath
-   * @returns {Tw2Resource}
-   */
-
-
-  GetResource(resPath) {
-    return this.resMan.GetResource(resPath);
-  }
-  /**
-   * Gets an object
-   * @param {String} resPath
-   * @param {Function} onResolved
-   * @param {Function} onRejected
-   */
-
-
-  GetObject(resPath, onResolved, onRejected) {
-    if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/)) {
-      this.eveSof.GetObject(resPath).then(onResolved).catch(onRejected);
-    } else {
-      this.resMan.GetObject(resPath, onResolved, onRejected);
-    }
-  }
-  /**
-   * Gets an object
-   * @param {String} resPath
-   * @returns {Promise<any>}
-   */
-
-
-  GetObjectAsync(resPath) {
-    if (resPath.match(/(\w|\d|[-_])+:(\w|\d|[-_])+:(\w|\d|[-_])+/)) {
-      return this.eveSof.GetObject(resPath);
-    } else {
-      return this.resMan.GetObjectAsync(resPath);
-    }
-  }
-  /**
-   * Gets a class by it's name
-   * @param {String} name
-   * @returns {*}
-   */
-
-
-  GetClass(name) {
-    return this.store.classes.Get(name);
-  }
-  /**
-   *
-   * @param name
-   * @returns {*}
-   * @constructor
-   */
-
-
-  GetVariable(name) {
-    return this.store.variables.Get(name);
-  }
-  /**
-   * Gets a variable's value
-   * @param name
-   * @param serialize
-   * @returns {*}
-   */
-
-
-  GetVariableValue(name, serialize) {
-    return this.store.variables.GetValue(name, serialize);
-  }
-  /**
-   * Sets a variable's value
-   * @param name
-   * @param value
-   * @returns {*}
-   */
-
-
-  SetVariableValue(name, value) {
-    return this.store.variables.SetValue(name, value);
-  }
-  /**
-   * Registers options from an object
-   * @param {*} opt={}
-   * @param {Boolean} opt.uuid
-   * @param {*} opt.client
-   * @param {*} opt.device
-   * @param {*} opt.logger
-   * @param {*} opt.resMan
-   * @param {*} opt.store
-   */
-
-
-  Register(opt) {
-    if (!opt) return;
-    if (opt.uuid) Object(_util__WEBPACK_IMPORTED_MODULE_2__["enableUUID"])(opt.uuid);
-    this.logger.Register(opt.logger);
-    if (opt.debug) this.Debug(opt.debug);
-    this.client.Register(opt.client);
-    this.device.Register(opt.device);
-    this.resMan.Register(opt.resMan);
-    this.store.Register(opt.store); //this.clock.Register(opt.clock);
-  }
-  /**
-   * Enables debug mode
-   * @param {Boolean} bool
-   */
-
-
-  Debug(bool) {
-    this.store.classes.Debug(bool);
-    this.logger.Debug(bool);
-    this.Log("warning", "Debugging ".concat(bool ? "enabled" : "disabled"));
+    lazyLoadClass(this, "eveSof", "EveSOF", this);
   }
   /**
    * Sets an object's tw2 instantiation
@@ -51728,33 +51494,722 @@ class Tw2Library extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw
     }
   }
   /**
-   * Logger category
-   * @type {string}
-   * @private
+   * Initializes a gl context
+   * @param options
    */
 
 
+  Initialize() {
+    let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.Register(options);
+    const canvas = options.canvas,
+          glParams = options.glParams,
+          _options$render = options.render,
+          render = _options$render === void 0 ? null : _options$render,
+          _options$autoTick = options.autoTick,
+          autoTick = _options$autoTick === void 0 ? true : _options$autoTick;
+
+    if (this.device.CreateDevice(canvas, glParams)) {
+      if (render) {
+        this.on("tick", render);
+      }
+
+      if (autoTick) {
+        const tick = (_, xrFrame) => {
+          this.RequestAnimationFrame(tick);
+          this.Tick(_, xrFrame);
+        };
+
+        this.RequestAnimationFrame(tick);
+      }
+    }
+
+    return this.device.glVersion;
+  }
+  /**
+   * Requests an animation frame
+   * @param callback
+   * @returns {*}
+   */
+
+
+  RequestAnimationFrame(callback) {
+    return this.device.RequestAnimationFrame(callback);
+  }
+  /**
+   * Cancels an animation frame
+   * @param id
+   * @returns {*}
+   */
+
+
+  CancelAnimationFrame(id) {
+    return this.device.CancelAnimationFrame(id);
+  }
+  /**
+   * Start frame
+   * @param {Number} _
+   * @param {*} [xrFrame]
+   */
+
+
+  Tick(_, xrFrame) {
+    this.device.StartFrame();
+    this.resMan.Tick(this.device);
+    const d = this.device;
+    this.emit("tick", {
+      dt: d.dt,
+      previous: d.previousTime * 0.001,
+      current: d.currentTime,
+      frame: d.frameCounter,
+      xrFrame
+    });
+    this.device.EndFrame();
+  }
+  /**
+   * Outputs a log to console
+   * @param {String} logType
+   * @param {String|{}} log
+   * @param {String} [fallbackTitle]
+   * @returns {*}
+   */
+
+
+  Log(logType, log) {
+    let fallbackTitle = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Library";
+    return this.logger.Log(logType, log, fallbackTitle);
+  }
+  /**
+   * Registers library options
+   * @param {*} options
+   * @param {Boolean} options.uuid
+   * @param {Boolean} options.debug
+   * @param {*} options.logger
+   * @param {*} options.client
+   * @param {*} options.resMan
+   * @param {*} options.device
+   * @param {*} options.store
+   */
+
+
+  Register() {
+    let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    if (options.uuid) Object(_util__WEBPACK_IMPORTED_MODULE_2__["enableUUID"])(options.uuid);
+    if (options.logger) this.logger.Register(options.logger);
+    if (options.debug) this.debug = options.debug;
+    if (options.resMan) this.resMan.Register(options.resMan);
+    if (options.device) this.device.Register(options.device);
+    const store = options.store;
+
+    if (store) {
+      // Type must be first
+      if (store.type) {
+        setStoreKeyValues(this, "type", store.type);
+      }
+
+      for (const key in store) {
+        if (store.hasOwnProperty(key) && key !== "type") {
+          setStoreKeyValues(this, key, store[key]);
+        }
+      }
+    }
+  }
+  /**
+   * Sets the device's render state value
+   * @param {Number} state
+   * @param {Number} value
+   */
+
+
+  SetDeviceRenderState(state, value) {
+    this.device.SetRenderState(state, value);
+  }
+  /**
+   * Sets the device's standard states
+   * @param {Number} renderMode
+   */
+
+
+  SetDeviceStandardStates(renderMode) {
+    this.device.SetStandardStates(renderMode);
+  }
+  /**
+   * Gets a device gl extension
+   * @param {String} name
+   * @returns {*}
+   */
+
+
+  GetDeviceExtension(name) {
+    return this.device.GetExtension(name);
+  }
+  /**
+   * Gets a resource
+   * @param path
+   * @param onResolved
+   * @param onRejected
+   * @returns {*}
+   */
+
+
+  GetResource(path, onResolved, onRejected) {
+    return this.resMan.GetResource(path, onResolved, onRejected);
+  }
+  /**
+   * Gets a resource asynchronously
+   * @param path
+   * @returns {Promise<*>}
+   * @constructor
+   */
+
+
+  GetResourceAsync(path) {
+    return this.resMan.GetResourceAsync(path);
+  }
+  /**
+   * Gets an object
+   * @param resPath
+   * @param onResolved
+   * @param onRejected
+   */
+
+
+  GetObject(resPath, onResolved, onRejected) {
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath)) {
+      this.eveSof.GetObject(resPath).then(onResolved).catch(onRejected);
+    } else {
+      this.resMan.GetObject(resPath, onResolved, onRejected);
+    }
+  }
+  /**
+   * Gets an object asynchronously
+   * @param {String} resPath
+   * @returns {Promise<*>}
+   */
+
+
+  GetObjectAsync(resPath) {
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath)) {
+      return this.eveSof.GetObject(resPath);
+    } else {
+      return this.resMan.GetObjectAsync(resPath);
+    }
+  }
+  /**
+   * Creates a variable from values and/or type
+   * @param {String} name
+   * @param {*} [value]
+   * @param {String| Function} [Type]
+   * @returns {*}
+   */
+
+
+  CreateVariable(name, value, Type) {
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(value)) {
+      Type = value["Type"] || value["type"];
+      value = value["value"];
+    }
+
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(Type)) return new Type(name, value);
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(Type)) Type = this.GetType(Type);
+    if (!Type) Type = this.GetTypeByValue(value);
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(Type)) return new Type(name, value);
+    throw new Error("Could not identify variable type");
+  }
+  /**
+   * Checks if a store variable exists
+   * @param name
+   * @returns {*}
+   */
+
+
+  HasVariable(name) {
+    return hasStoreKey(this, "variable", name);
+  }
+  /**
+   * Gets a store variable by it's name
+   * @param name
+   * @returns {*}
+   */
+
+
+  GetVariable(name) {
+    return getStoreKey(this, "variable", name);
+  }
+  /**
+   * Gets a store variable's value
+   * @param name
+   * @param out
+   * @returns {*}
+   */
+
+
+  GetVariableValue(name, out) {
+    const variable = this.GetVariable(name);
+    if (variable.GetValue) return variable.GetValue(out);
+    throw new Error("Variable missing 'GetValue' method");
+  }
+  /**
+   * Sets a store variable
+   * @param {String} name
+   * @param {*} variable
+   * @returns {Function}
+   */
+
+
+  SetVariable(name, variable) {
+    if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isObjectObject"])(variable)) {
+      variable = this.CreateVariable(name, variable);
+    }
+
+    return setStoreKey(this, "variable", name, variable);
+  }
+  /**
+   * Sets a store variable's value
+   * @param name
+   * @param value
+   * @returns {void|*|Boolean}
+   */
+
+
+  SetVariableValue(name, value) {
+    const variable = this.GetVariable(name);
+    if (variable.SetValue) return variable.SetValue(value);
+    throw new Error("Variable missing 'SetValue' method");
+  }
+  /**
+   * Checks if a resource constructor exists for a file extension
+   * @param extension
+   * @returns {*}
+   */
+
+
+  HasExtension(extension) {
+    return hasStoreKey(this, "extension", extension);
+  }
+  /**
+   * Gets a file extension's resource constructor
+   * @param extension
+   * @returns {*}
+   */
+
+
+  GetExtension(extension) {
+    return getStoreKey(this, "extension", extension);
+  }
+  /**
+   * Sets a file extension's resource constructor
+   * @param extension
+   * @param value
+   * @returns {*}
+   */
+
+
+  SetExtension(extension, value) {
+    return setStoreKey(this, "extension", extension, value, {
+      isValue: _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]
+    });
+  }
+  /**
+   * Checks if there is a black definition for a given class/ function name
+   * @param name
+   * @returns {*}
+   */
+
+
+  HasBlack(name) {
+    return hasStoreKey(this, "black", name);
+  }
+  /**
+   * Gets a black definition for a given class/ function name
+   * @param name
+   * @returns {*}
+   */
+
+
+  GetBlack(name) {
+    return getStoreKey(this, "black", name, {
+      isClassName: true
+    });
+  }
+  /**
+   * Sets a black definition for a given class/ function name
+   * @param {String} name
+   * @param {Function|Array} values
+   * @returns {Map}
+   */
+
+
+  SetBlack(name, values) {
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(values)) values = values(_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__);
+    return setStoreKey(this, "black", name, values, {
+      isValue: _util__WEBPACK_IMPORTED_MODULE_2__["isArray"],
+      onBeforeSet: value => new Map(value)
+    });
+  }
+  /**
+   * Checks if a class exists
+   * @param name
+   * @returns {*}
+   */
+
+
+  HasClass(name) {
+    return hasStoreKey(this, "class", name);
+  }
+  /**
+   * Gets a class by it's name
+   * @param name
+   * @returns {*}
+   */
+
+
+  GetClass(name) {
+    return getStoreKey(this, "class", name, {
+      isClassName: true
+    });
+  }
+  /**
+   * Sets a class
+   * @param {String} name
+   * @param {Class|Function} Constructor
+   * @returns {Class|Function}
+   */
+
+
+  SetClass(name, Constructor) {
+    const Value = setStoreKey(this, "class", name, Constructor, {
+      isValue: _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]
+    });
+    Tw2Library.prototype[name] = Value;
+
+    if ("DEBUG_ENABLED" in Value) {
+      Value.DEBUG_ENABLED = this.debug;
+    }
+
+    if (Value.black) {
+      this.SetBlack(name, Value.black);
+    }
+
+    return Value;
+  }
+  /**
+   * Checks if a resource path exists for a prefix
+   * @param {String} prefix
+   * @returns {Boolean}
+   */
+
+
+  HasPath(prefix) {
+    return hasStoreKey(this, "path", prefix);
+  }
+  /**
+   * Gets a resource path from it's prefix
+   * @param {String} prefix
+   * @returns {String}
+   */
+
+
+  GetPath(prefix) {
+    return getStoreKey(this, "path", prefix);
+  }
+  /**
+   * Sets a resource path by it's prefix
+   * @param {String} prefix
+   * @param {String} path
+   * @returns {String}
+   */
+
+
+  SetPath(prefix, path) {
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(path) && path.charAt(path.length - 1) !== "/") path += "/";
+    return setStoreKey(this, "path", prefix, path, {
+      isValue: _util__WEBPACK_IMPORTED_MODULE_2__["isString"],
+      onBeforeSet: value => value.toLowerCase()
+    });
+  }
+  /**
+   * Checks if a dynamic path exists
+   * @param prefix
+   * @returns {*}
+   */
+
+
+  HasDynamicPath(prefix) {
+    return hasStoreKey(this, "dynamicPath", prefix);
+  }
+  /**
+   * Gets a dynamic path by it's prefix
+   * @param {String} prefix
+   * @returns {*}
+   */
+
+
+  GetDynamicPath(prefix) {
+    return getStoreKey(this, "dynamicPath", prefix);
+  }
+  /**
+   * Sets a dynamic path by it's prefix
+   * @param prefix
+   * @param value
+   * @returns {*}
+   */
+
+
+  SetDynamicPath(prefix, value) {
+    return setStoreKey(this, "dynamicPath", prefix, value, {
+      isValue(a) {
+        if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(a)) return false;
+
+        for (let i = 0; i < a.length; i++) {
+          if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(a[i])) return false;
+        }
+
+        return true;
+      },
+
+      onBeforeSet(x) {
+        x.forEach(value => value.toLowerCase());
+      }
+
+    });
+  }
+  /**
+   * Checks if a type exists
+   * @param {String} name
+   * @returns {Boolean}
+   */
+
+
+  HasType(name) {
+    return hasStoreKey(this, "type", name);
+  }
+  /**
+   * Gets a type by name
+   * @param {String} name
+   * @returns {Function}
+   */
+
+
+  GetType(name) {
+    return getStoreKey(this, "type", name);
+  }
+  /**
+   * Gets a type by value
+   * @param {*} value
+   */
+
+
+  GetTypeByValue(value) {
+    const types = this._store.type;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = types[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        let _step$value = _slicedToArray(_step.value, 2),
+            key = _step$value[0],
+            type = _step$value[1];
+
+        if ("isValue" in type && type.isValue(value)) return type;
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    throw new Error("Could not identify a type from the given value");
+  }
+  /**
+   * Sets a type
+   * @param {String} name
+   * @param {Function} Constructor
+   * @returns {Function} Constructor
+   */
+
+
+  SetType(name, Constructor) {
+    return setStoreKey(this, "type", name, Constructor, _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]);
+  }
+
 }
 /**
- * Math functions
- * @type {*}
+ * Lazy loads a class
+ * @param {Tw2Library} library
+ * @param {String} propertyName
+ * @param {String} className
+ * @param args
  */
 
 
-Tw2Library.prototype.math = _math__WEBPACK_IMPORTED_MODULE_1__;
+function lazyLoadClass(library, propertyName, className) {
+  for (var _len = arguments.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+    args[_key - 3] = arguments[_key];
+  }
+
+  let value;
+  Object.defineProperty(library, propertyName, {
+    get: function get() {
+      if (!value) {
+        const Constructor = library.GetClass(className);
+        value = new Constructor(...args);
+      }
+
+      return value;
+    }
+  });
+}
 /**
- * Utils
- * @type {*}
+ * Validates a store
+ * @param library
+ * @param storeType
  */
 
-Tw2Library.prototype.util = _util__WEBPACK_IMPORTED_MODULE_2__;
-const tw2 = new Tw2Library(); // Temporary until instances of Tw2Library are supported
 
-const store = tw2.store,
-      resMan = tw2.resMan,
-      device = tw2.device,
-      logger = tw2.logger;
+function validateStore(library, storeType) {
+  if (!library._store[storeType]) {
+    throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreInvalid"]({
+      store: storeType
+    });
+  }
+}
+/**
+ * Checks if a value exists for a store key
+ * @param library
+ * @param storeType
+ * @param key
+ * @returns {*}
+ */
 
+
+function hasStoreKey(library, storeType, key) {
+  validateStore(library, storeType);
+  return library._store[storeType].has(key);
+}
+/**
+ * Gets a store key's value
+ * @param library
+ * @param storeType
+ * @param key
+ * @param options
+ * @returns {*}
+ */
+
+
+function getStoreKey(library, storeType, key, options) {
+  validateStore(library, storeType);
+  const store = library._store[storeType];
+
+  if (store.has(key)) {
+    return library._store[storeType].get(key);
+  } // Allow substituting of Tr2 and Tri names
+  else if (options && options.isClassName && (key.indexOf("Tr2") === 0 || key.indexOf("Tri") === 0)) {
+      const newKey = key.replace("Tr2", "Tw2").replace("Tri", "Tw2");
+
+      if (store.has(newKey)) {
+        const Substitute = store.get(key);
+        library.emit("store.substituted", storeType, newKey, Substitute, key);
+        return Substitute;
+      }
+    }
+
+  library.emit("store.missing", storeType, key);
+  throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueMissing"]({
+    store: storeType,
+    key
+  });
+}
+/**
+ * Sets a store key's value
+ * @param library
+ * @param storeType
+ * @param key
+ * @param value
+ * @param {*} [options]
+ * @param {Array<String>} [options.reserved]
+ * @param {Function} [options.isValue]
+ * @param {Function} [options.onBeforeSet]
+ * @returns {*}
+ */
+
+
+function setStoreKey(library, storeType, key, value, options) {
+  validateStore(library, storeType);
+
+  if (!value) {
+    throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueInvalid"]({
+      store: storeType,
+      key
+    });
+  }
+
+  if (options) {
+    if (options.reserved && options.reserved.includes(key)) {
+      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreKeyReserved"]({
+        store: storeType,
+        key
+      });
+    }
+
+    if (options.isValue && !options.isValue(value)) {
+      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueInvalid"]({
+        store: storeType,
+        key
+      });
+    }
+
+    if (options.onBeforeSet) {
+      value = options.onBeforeSet(value);
+    }
+  }
+
+  library._store[storeType].set(key, value);
+
+  library.emit("store.set", storeType, key, value).msg("debug", {
+    name: "Store",
+    message: "".concat(storeType, " registered: ").concat(key)
+  });
+  return value;
+}
+/**
+ * Sets store key values from an object or array of objects
+ * @param library
+ * @param storeType
+ * @param values
+ */
+
+
+function setStoreKeyValues(library, storeType, values) {
+  // Use the library method for setting in case of custom stuff(tm)
+  const setFunction = "Set" + storeType.charAt(0).toUpperCase() + storeType.substring(1);
+
+  if (!library[setFunction]) {
+    throw new Error("Invalid store value setter '".concat(setFunction, "'"));
+  }
+
+  values = Object(_util__WEBPACK_IMPORTED_MODULE_2__["toArray"])(values);
+
+  for (let i = 0; i < values.length; i++) {
+    for (const key in values[i]) {
+      if (values[i].hasOwnProperty(key)) {
+        library[setFunction](key, values[i][key]);
+      }
+    }
+  }
+}
+
+const tw2 = new Tw2Library();
 
 /***/ }),
 
@@ -52136,15 +52591,12 @@ function cacheKeys(obj) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return Tw2EventEmitter; });
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 /**
  * Emitter privates
  * @type {WeakMap<object, *>}
  */
-
 const PRIVATE = new WeakMap();
 /**
  * Tw2EventEmitter
@@ -52522,163 +52974,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./global/engine/Tw2Client.js":
-/*!************************************!*\
-  !*** ./global/engine/Tw2Client.js ***!
-  \************************************/
-/*! exports provided: Tw2Client */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Client", function() { return Tw2Client; });
-/* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-/* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-/**
- * Provides client information and compatibility
- *
- * @property {Tw2Library} tw2
- */
-
-class Tw2Client extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
-  /**
-   * Gets the client vr display
-   * @returns {*|VRDisplay|null}
-   */
-  get vrDisplay() {
-    return this.tw2.device.vrDisplay;
-  }
-  /**
-   * Constructor
-   * @param {Tw2Library} tw2
-   */
-
-
-  constructor(tw2) {
-    super();
-
-    _defineProperty(this, "tw2", null);
-
-    tw2.SetLibrary(this);
-  }
-  /**
-   * Registers client options
-   * @param {*} opt
-   */
-
-
-  Register(opt) {}
-  /**
-   * Per frame tick
-   * @param {Tw2Device} device
-   */
-
-
-  Tick(device) {}
-  /**
-   * Requests an animation frame
-   * @param {Function} callback
-   */
-
-
-  RequestAnimationFrame(callback) {
-    return this.vrDisplay ? this.vrDisplay.requestAnimationFrame(callback) : this.constructor.RequestAnimationFrame(callback);
-  }
-  /**
-   * Cancels an animation frame
-   * @param {Number} id
-   */
-
-
-  CancelAnimationFrame(id) {
-    return this.vrDisplay ? this.vrDisplay.cancelAnimationFrame(id) : this.constructor.CancelAnimationFrame(id);
-  }
-  /**
-   * Creates a webgl context
-   * @param {HTMLCanvasElement} canvas
-   * @param {*} params
-   * @param {Boolean} [enableWebgl2]
-   * @returns {{gl: *, version: number}}
-   */
-
-
-  CreateContext(canvas, params, enableWebgl2) {
-    let lastErr;
-    /**
-     * Creates a gl context
-     * @param {HTMLCanvasElement} canvas
-     * @param {*} [params]
-     * @param {*} [contextNames]
-     * @returns {*}
-     */
-
-    function create(canvas, params, contextNames) {
-      contextNames = Array.isArray(contextNames) ? contextNames : [contextNames];
-
-      for (let i = 0; i < contextNames.length; i++) {
-        try {
-          return canvas.getContext(contextNames[i], params);
-        } catch (err) {
-          lastErr = err;
-          /* eslint-disable-line no-empty */
-        }
-      }
-
-      return null;
-    }
-
-    let gl = null,
-        version = _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["WebglVersion"].NONE;
-
-    if (enableWebgl2) {
-      gl = create(canvas, params, _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Webgl2ContextNames"]);
-      if (gl) version = _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["WebglVersion"].WEBGL2;
-    }
-
-    if (!gl) {
-      gl = create(canvas, params, _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["WebglContextNames"]);
-      if (gl) version = _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["WebglVersion"].WEBGL;
-    }
-
-    if (!gl) {//throw lastErr;
-    }
-
-    return {
-      gl,
-      version
-    };
-  }
-  /**
-   * Requests an animation frame
-   * @type {Function}
-   */
-
-
-}
-
-_defineProperty(Tw2Client, "RequestAnimationFrame", function () {
-  const request = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["VendorRequestAnimationFrame"]);
-  return callback => request(callback);
-}());
-
-_defineProperty(Tw2Client, "CancelAnimationFrame", function () {
-  const cancel = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["VendorCancelAnimationFrame"]);
-  return id => cancel(id);
-}());
-
-/***/ }),
-
 /***/ "./global/engine/Tw2Constant.js":
 /*!**************************************!*\
   !*** ./global/engine/Tw2Constant.js ***!
   \**************************************/
-/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion */
+/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -53036,9 +53336,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return VendorExitFullScreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return VendorGetFullScreenElement; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return VendorWebglPrefixes; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WebglContextNames", function() { return WebglContextNames; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Webgl2ContextNames", function() { return Webgl2ContextNames; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WebglVersion", function() { return WebglVersion; });
 /*
 
     Webgl & Webgl2
@@ -53598,28 +53895,6 @@ const VendorGetFullScreenElement = ["fullscreenElement", "webkitFullscreenElemen
  */
 
 const VendorWebglPrefixes = ["", "MOZ_", "WEBKIT_", "WEBGL_"];
-/**
- * Webgl context names
- * @type {String[]}
- */
-
-const WebglContextNames = ["webgl", "experimental-webgl"];
-/**
- * Webgl2 context names
- * @type {String[]}
- */
-
-const Webgl2ContextNames = ["webgl2", "experimental-webgl2"];
-/**
- * Webgl version
- * @type {{NONE: number, WEBGL: number, WEBGL2: number}}
- */
-
-const WebglVersion = {
-  NONE: 0,
-  WEBGL: 1,
-  WEBGL2: 2
-};
 
 /***/ }),
 
@@ -53650,10 +53925,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /**
  * Tw2Device
  *
- * @property {WebGLRenderingContext} gl             - The device's gl context
- * @property {?number} glVersion                   - The device's gl version
- * @property {?VRDisplay} vrDisplay                - An optional VRDisplay context
- * @property {?{}} ext                             - An object containing compatibility extensions
+ * @property {WebGLRenderingContext} gl            - The device's gl context
+ * @property {*} xr                                - An optional xr handler
  * @property {vec3} eyePosition                    - The device's current eye position
  * @property {vec4} targetResolution               - The device's current target resolution
  * @property {mat4} world                          - The device's current world matrix
@@ -53674,18 +53947,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {number} mipLevelSkipCount            - Controls what quality ccp texture resource to load (mutates paths)
  * @property {String} shaderModel                  - Controls what quality ccp effect resource to load (mutates paths)
  * @property {Boolean} enableAnisotropicFiltering  - Enables anisotropic filtering
+ * @property {Boolean} enableAntialiasing          - Enables antialiasing
  * @property {Boolean} enableWebgl2                - Enables webgl2
- * @property {Boolean} enableWebvr                 - Enables webvr (Not yet supported)
+ * @property {Boolean} enableWebxr                 - Enables webvr (Not yet supported)
  * @property {Boolean} alphaBlendBackBuffer        - Enables alpha blending (glParams.alpha)
  * @property {Boolean} antialiasing                - Identifies if antialiasing is enabled
  * @property {number} msaaSamples                  - The amount of samples used for antialiasing
  * @property {number[]} wrapModes                  - texture wrap modes
  * @property {*} shadowHandles                     - unused
  * @property {Tw2PerObjectData} perObjectData      - The current frame's per object data
- * @property {?{}} _alphaBlendState                - Alpha states for blending
- * @property {?{}} _alphaTestState                 - Alpha test states
- * @property {?{}} _depthOffsetState               - Depth states
- * @property {?Float32Array} _shadowStateBuffer    - unused
+ * @property {Function} onResize                   - An optional function which is called on resize
+ * @property {{}} _extensions                      - Stores loaded extensions
+ * @property {{}} _alphaBlendState                 - Alpha states for blending
+ * @property {{}} _alphaTestState                  - Alpha test states
+ * @property {{}} _depthOffsetState                - Depth states
+ * @property {Float32Array} _shadowStateBuffer     - unused
  * @property {WebGLBuffer} _quadBuffer             - Webgl buffer for full screen quad
  * @property {Tw2VertexDeclaration} _quadDecl      - Quad vertex declarations
  * @property {WebGLBuffer} _cameraQuadBuffer       - Webgl buffer for camera space quad
@@ -53698,9 +53974,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2EventEmitter"] {
   /**
-   *
-   * @param tw2
+   * Gets the current gl context version
+   * @returns {number}
    */
+  get glVersion() {
+    return !this.gl ? 0 : this.gl instanceof WebGLRenderingContext ? 1 : 2;
+  }
+  /**
+   * Gets the current gl canvas
+   * @returns {null}
+   */
+
+
+  get canvas() {
+    return this.gl ? this.gl.canvas : null;
+  }
+  /**
+   * Constructor
+   * @param {Tw2Library} tw2
+   */
+
+
   constructor(tw2) {
     super();
 
@@ -53708,11 +54002,9 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
     _defineProperty(this, "gl", null);
 
-    _defineProperty(this, "glVersion", _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WebglVersion"].NONE);
+    _defineProperty(this, "xr", null);
 
-    _defineProperty(this, "vrDisplay", null);
-
-    _defineProperty(this, "ext", null);
+    _defineProperty(this, "tw2", null);
 
     _defineProperty(this, "dt", 0);
 
@@ -53746,8 +54038,6 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
     _defineProperty(this, "viewProjectionTranspose", _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].create());
 
-    _defineProperty(this, "canvas", null);
-
     _defineProperty(this, "viewportWidth", 0);
 
     _defineProperty(this, "viewportHeight", 0);
@@ -53764,9 +54054,11 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
     _defineProperty(this, "enableAnisotropicFiltering", true);
 
+    _defineProperty(this, "enableAntialiasing", true);
+
     _defineProperty(this, "enableWebgl2", true);
 
-    _defineProperty(this, "enableWebvr", true);
+    _defineProperty(this, "enableWebxr", true);
 
     _defineProperty(this, "alphaBlendBackBuffer", true);
 
@@ -53779,6 +54071,10 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     _defineProperty(this, "shadowHandles", null);
 
     _defineProperty(this, "perObjectData", null);
+
+    _defineProperty(this, "onResize", null);
+
+    _defineProperty(this, "_extensions", {});
 
     _defineProperty(this, "_alphaBlendState", null);
 
@@ -53803,8 +54099,6 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     _defineProperty(this, "_blitEffect", null);
 
     _defineProperty(this, "_Date", Date);
-
-    _defineProperty(this, "tw2", null);
 
     tw2.SetLibrary(this);
     this.startTime = this.now;
@@ -53840,9 +54134,9 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     if ("textureQuality" in opt) this.mipLevelSkipCount = opt.textureQuality;
     if ("shaderQuality" in opt) this.shaderModel = opt.shaderQuality;
     if ("anisotropicFilter" in opt) this.enableAnisotropicFiltering = opt.anisotropicFilter;
-    if ("antialiasing" in opt) this.antialiasing = opt.antialiasing;
+    if ("antialiasing" in opt) this.enableAntialiasing = opt.antialiasing;
     if ("webgl2" in opt) this.enableWebgl2 = opt.webgl2;
-    if ("webvr" in opt) this.enableWebvr = opt.webvr;
+    if ("webxr" in opt) this.enableWebxr = opt.webxr;
   }
   /**
    * Creates webgl Device
@@ -53853,73 +54147,61 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
    */
 
 
-  CreateDevice(canvas, params) {
+  CreateDevice(canvas) {
+    let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     this.gl = null;
-    this.glVersion = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WebglVersion"].NONE;
     this.effectDir = "/effect.gles2/";
-    this.canvas = null;
-    this.ext = {}; // TODO: Handle GlParam Defaults
+    params.alpha = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "alpha", true);
+    params.webgl2 = this.enableWebgl2;
+    params.xrCompatible = this.enableWebxr;
+    params.antialiasing = this.enableAntialiasing ? Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "antialiasing", true) : false;
+    const gl = this.gl = Tw2Device.CreateContext(params, canvas);
 
-    if (!params) params = {};
-
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(canvas)) {
-      canvas = document.getElementById(canvas);
+    if (this.glVersion === 0) {
+      return this.glVersion;
     }
 
-    let _this$tw2$client$Crea = this.tw2.client.CreateContext(canvas, params, this.enableWebgl2),
-        gl = _this$tw2$client$Crea.gl,
-        version = _this$tw2$client$Crea.version;
-
-    if (!gl) return this.glVersion;
-    this.gl = gl;
-    this.glVersion = version;
-    this.canvas = canvas;
-    this.emit("device_created", this, gl, params, canvas);
-    this.msg("debug", "Webgl".concat(version, " context created"));
+    this.emit("device_created", this, params).msg("debug", "Webgl".concat(this.glVersion, " context created"));
 
     const returnFalse = () => false,
           returnTrue = () => true;
 
-    switch (this.glVersion) {
-      case _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WebglVersion"].WEBGL2:
-        gl.hasInstancedArrays = returnTrue;
-        break;
-
-      default:
-        this.GetExtension("OES_standard_derivatives");
-        this.GetExtension("OES_element_index_uint");
-        this.GetExtension("OES_texture_float");
-        this.GetExtension("EXT_shader_texture_lod");
-        const iArray = this.GetExtension("ANGLE_instanced_arrays");
-        gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
-        gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
-        gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
-        gl.hasInstancedArrays = iArray ? returnTrue : returnFalse;
+    if (this.glVersion === 1) {
+      this.GetExtension("OES_standard_derivatives");
+      this.GetExtension("OES_element_index_uint");
+      this.GetExtension("OES_texture_float");
+      this.GetExtension("EXT_shader_texture_lod");
+      const iArray = this.GetExtension("ANGLE_instanced_arrays");
+      gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
+      gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
+      gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
+      gl.hasInstancedArrays = iArray ? returnTrue : returnFalse;
+    } else {
+      gl.hasInstancedArrays = returnTrue;
     } // Optional extensions
 
 
-    this.ext.CompressedTextureS3TC = this.GetExtension("compressed_texture_s3tc");
-    this.ext.AnisotropicFilter = this.GetExtension("EXT_texture_filter_anisotropic");
+    this.GetExtension("compressed_texture_s3tc");
+    const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
 
-    if (this.ext.AnisotropicFilter) {
-      this.ext.AnisotropicFilter.maxAnisotropy = gl.getParameter(this.ext.AnisotropicFilter["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
+    if (anisotropicFilterExt) {
+      anisotropicFilterExt.maxAnisotropy = gl.getParameter(anisotropicFilterExt["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
     } // CCP mobile shader binary (is this depreciated?)
 
 
-    const shaderBinary = this.GetExtension("CCP_shader_binary");
+    const ccpShaderBinary = this.GetExtension("CCP_shader_binary");
 
-    if (shaderBinary) {
+    if (ccpShaderBinary) {
       const renderer = gl.getParameter(this.gl.RENDERER),
             maliVer = renderer.match(/Mali-(\w+).*/);
 
       if (maliVer) {
         this.effectDir = "/effect.gles2.mali" + maliVer[1] + "/";
-        this.ext.ShaderBinary = shaderBinary;
       }
     } // Quality
 
 
-    this.alphaBlendBackBuffer = !params || params["alpha"] === undefined || params["alpha"];
+    this.alphaBlendBackBuffer = params.alpha;
     this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
     this.antialiasing = this.msaaSamples > 1;
     this.Resize();
@@ -53976,27 +54258,29 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
 
   Resize() {
-    const vrEnabled = this.vrDisplay && this.vrDisplay["isPresenting"];
-
-    if (vrEnabled) {
-      const leftEye = this.vrDisplay["getEyeParameters"]("left"),
-            rightEye = this.vrDisplay["getEyeParameters"]("right");
-      this.canvas.width = Math.max(leftEye["renderWidth"], rightEye["renderWidth"]) * 2;
-      this.canvas.height = Math.max(rightEye["renderHeight"], rightEye["renderHeight"]);
-    } else {
-      this.canvas.width = this.canvas.offsetWidth * this.viewportPixelRatio;
-      this.canvas.height = this.canvas.offsetHeight * this.viewportPixelRatio;
+    if (this.onResize) {
+      this.onResize(this.canvas);
     }
+    /*
+    else if (this.enableWebxr && this.xr && this.xr.isGood)
+    {
+        this.xr.OnResize(this.canvas);
+    }
+    */
+    else {
+        this.canvas.width = this.canvas.offsetWidth * this.viewportPixelRatio;
+        this.canvas.height = this.canvas.offsetHeight * this.viewportPixelRatio;
+      }
 
     this.viewportWidth = this.canvas.clientWidth;
     this.viewportHeight = this.canvas.clientHeight;
     this.viewportAspect = this.viewportWidth / this.viewportHeight;
-    this.tw2.store.variables.SetValue("ViewportSize", [this.viewportWidth, this.viewportHeight, this.viewportWidth, this.viewportHeight]);
+    this.tw2.SetVariableValue("ViewportSize", [this.viewportWidth, this.viewportHeight, this.viewportWidth, this.viewportHeight]);
     this.emit("resized", {
       width: this.viewportWidth,
       height: this.viewportHeight,
       aspect: this.viewportAspect,
-      source: vrEnabled ? this.vrDisplay : this.canvas
+      canvas: this.canvas
     });
   }
   /**
@@ -54009,12 +54293,11 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     return this._Date.now();
   }
   /**
-   * Per frame tick
-   * @param {Tw2Clock} clock
+   * Fires on the start of a frame
    */
 
 
-  Tick() {
+  StartFrame() {
     if (this.canvas.clientWidth !== this.viewportWidth || this.canvas.clientHeight !== this.viewportHeight) {
       this.Resize();
     }
@@ -54024,9 +54307,15 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     this.currentTime = (now - this.startTime) * 0.001;
     this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
     this.previousTime = now;
-    this.tw2.store.variables.SetValue("Time", [this.currentTime, this.currentTime - Math.floor(this.currentTime), this.frameCounter, previousTime]);
+    this.tw2.SetVariableValue("Time", [this.currentTime, this.currentTime - Math.floor(this.currentTime), this.frameCounter, previousTime]);
     this.frameCounter++;
   }
+  /**
+   * Fires on the end of a frame
+   */
+
+
+  EndFrame() {}
   /**
    * Sets World transform matrix
    * @param {mat4} matrix
@@ -54034,7 +54323,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
 
   SetWorld(matrix) {
-    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.world, matrix); //mat4.inverse(this.worldInverse, this.world);
+    _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.world, matrix);
   }
   /**
    * Sets view matrix
@@ -54071,7 +54360,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
   UpdateViewProjection() {
     _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.viewProjection, this.projection, this.view);
     _math__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this.viewProjectionTranspose, this.viewProjection);
-    this.tw2.store.variables.SetValue("ViewProjectionMat", this.viewProjection);
+    this.tw2.SetVariableValue("ViewProjectionMat", this.viewProjection);
   }
   /**
    * Gets the device's target resolution
@@ -54126,17 +54415,24 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
   /**
    * Gets a gl extension
    * @param {String} extension - The gl extension name
-   * @returns{*}
+   * @returns {*}
    */
 
 
   GetExtension(extension) {
-    for (let i = 0; i < _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"].length; i++) {
-      const ext = this.gl.getExtension(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"][i] + extension);
-      if (ext) return ext;
+    if (!(extension in this._extensions)) {
+      let ext;
+
+      for (let i = 0; i < _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"].length; i++) {
+        ext = this.gl.getExtension(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"][i] + extension);
+        if (ext) break;
+        ext = null;
+      }
+
+      this._extensions[extension] = ext;
     }
 
-    return null;
+    return this._extensions[extension];
   }
   /**
    * Gets a fallback texture
@@ -54590,12 +54886,72 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     this._currentRenderMode = renderMode;
   }
   /**
-   * Logger category
-   * @type {String}
+   * Requests an animation frame
+   * @param {Function} callback
+   */
+
+
+  RequestAnimationFrame(callback) {
+    return this.xr ? this.xr.RequestAnimationFrame(callback) : this.constructor.RequestAnimationFrame(callback);
+  }
+  /**
+   * Cancels an animation frame
+   * @param {Number} id
+   */
+
+
+  CancelAnimationFrame(id) {
+    return this.xr ? this.xr.CancelAnimationFrame(id) : this.constructor.CancelAnimationFrame(id);
+  }
+  /**
+   * Creates a webgl context
+   * @param params
+   * @param canvas
+   * @returns {null|WebGLRenderingContext|WebGL2RenderingContext}
+   * @throws on invalid context
+   */
+
+
+  static CreateContext() {
+    let params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    let canvas = arguments.length > 1 ? arguments[1] : undefined;
+
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(canvas)) {
+      canvas = document.getElementById(canvas);
+    }
+
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+    }
+
+    const contextTypes = params.webgl2 ? ["webgl2"] : ["webgl", "experimental-webgl"];
+    let context = null;
+
+    for (var _i = 0, _contextTypes = contextTypes; _i < _contextTypes.length; _i++) {
+      let contextType = _contextTypes[_i];
+      context = canvas.getContext(contextType, params);
+      if (context) break;
+    }
+
+    return context;
+  }
+  /**
+   * Requests an animation frame
+   * @type {Function}
    */
 
 
 } // Render Modes
+
+_defineProperty(Tw2Device, "RequestAnimationFrame", function () {
+  const request = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorRequestAnimationFrame"]);
+  return callback => request(callback);
+}());
+
+_defineProperty(Tw2Device, "CancelAnimationFrame", function () {
+  const cancel = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorCancelAnimationFrame"]);
+  return id => cancel(id);
+}());
 
 _defineProperty(Tw2Device, "__category", "Device");
 
@@ -54820,6 +55176,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 _defineProperty(Tw2Logger, "LogType", {
   ERROR: "error",
   WARNING: "warn",
+  WARN: "warn",
   INFO: "info",
   LOG: "log",
   DEBUG: "debug"
@@ -55077,7 +55434,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {Number} _purgeFrameLimit
  * @property {Number} _pendingLoads - a count of how many things are pending load
  * @property {Number} _noLoadFrames
- * @class
  */
 
 class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
@@ -55468,7 +55824,6 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   GetResourceConstructor(path) {
-    const extensions = this.tw2.store.extensions;
     path = Tw2ResMan.NormalizePath(path);
 
     if (path.indexOf("dynamic:/") === 0) {
@@ -55485,7 +55840,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       });
     }
 
-    const Constructor = extensions.Get(extension);
+    const Constructor = this.tw2.GetExtension(extension);
 
     if (!Constructor) {
       throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]({
@@ -55506,7 +55861,6 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   BuildUrl(path) {
-    const paths = this.tw2.store.paths;
     const prefixIndex = path.indexOf(":/");
 
     if (prefixIndex === -1) {
@@ -55521,7 +55875,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       return path;
     }
 
-    const fullPrefix = paths.Get(prefix);
+    const fullPrefix = this.tw2.GetPath(prefix);
 
     if (!fullPrefix) {
       throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUnregistered"]({
@@ -55580,1436 +55934,730 @@ _defineProperty(Tw2ResMan, "__category", "Resource Manager");
 
 /***/ }),
 
-/***/ "./global/engine/Tw2Store.js":
-/*!***********************************!*\
-  !*** ./global/engine/Tw2Store.js ***!
-  \***********************************/
-/*! exports provided: Tw2Store */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Store", function() { return Tw2Store; });
-/* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../class */ "./global/class/index.js");
-/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../core */ "./core/index.js");
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-
-
-
-
-/**
- * Value store
- * @ccp N/A
- *
- * @property {Tw2TypeStore} types
- * @property {Tw2PathStore} paths
- * @property {Tw2BlackStore} blacks
- * @property {Tw2ClassStore} classes
- * @property {Tw2SchemaStore} schemas
- * @property {Tw2VariableStore} variables
- * @property {Tw2ExtensionStore} extensions
- * @property {Tw2DynamicPathStore} dynamicPaths
- * @property {Tw2Library} tw2
- */
-
-class Tw2Store {
-  /**
-   * Constructor
-   * @param {Tw2Library} tw2
-   */
-  constructor(tw2) {
-    _defineProperty(this, "types", new Tw2TypeStore());
-
-    _defineProperty(this, "paths", new Tw2PathStore());
-
-    _defineProperty(this, "blacks", new Tw2BlackStore());
-
-    _defineProperty(this, "classes", new Tw2ClassStore(this));
-
-    _defineProperty(this, "schemas", new Tw2SchemaStore());
-
-    _defineProperty(this, "variables", new Tw2VariableStore(this));
-
-    _defineProperty(this, "extensions", new Tw2ExtensionStore());
-
-    _defineProperty(this, "dynamicPaths", new Tw2DynamicPathStore());
-
-    _defineProperty(this, "tw2", null);
-
-    tw2.SetLibrary(this);
-  }
-  /**
-   * Registers options
-   * @param opt
-   */
-
-
-  Register(opt) {
-    if (!opt) return;
-    this.paths.Register(opt.paths);
-    this.dynamicPaths.Register(opt.dynamicPaths);
-    this.types.Register(opt.types);
-    this.classes.Register(opt.classes);
-    this.extensions.Register(opt.extensions);
-    this.variables.Register(opt.variables);
-    this.schemas.Register(opt.schemas);
-    this.blacks.Register(opt.blacks);
-  }
-
-}
-/**
- * Checks if a key is a Tr2 or Tri constructor
- * @param {String} key
- * @returns {boolean}
- */
-
-function isTr2OrTri() {
-  let key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-  return key.indexOf("Tr2") === 0 || key.indexOf("Tri") === 0;
-}
-/**
- * Converts from a Tr2 or Tri constructor to a Tw2 constructor
- * @param key
- * @returns {string}
- */
-
-
-function toTw2() {
-  let key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-  return key.replace("Tr2", "Tw2").replace("Tri", "Tw2");
-}
-/**
- * Generic variable store
- *
- * @property {string} name
- * @class
- */
-
-
-class Tw2GenericStore extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
-  /**
-   * Constructor
-   * @param {Tw2Store} [store]
-   */
-  constructor(store) {
-    super();
-
-    _defineProperty(this, "_values", new Map());
-
-    _defineProperty(this, "_missing", []);
-
-    if (store) {
-      Reflect.defineProperty(this, "_store", {
-        get: () => store
-      });
-    }
-  }
-  /**
-   * Gets the store's name
-   * @returns {string}
-   */
-
-
-  get name() {
-    return this.constructor.__storeType;
-  }
-  /**
-   * Checks if a value is valid for the store
-   * @param value
-   * @returns {*}
-   */
-
-
-  IsValidValue(value) {
-    return this.constructor.isValue ? this.constructor.isValue(value) : true;
-  }
-  /**
-   * Checks if a key is valid for the store
-   * @param key
-   * @returns {boolean}
-   * @constructor
-   */
-
-
-  IsValidKey(key) {
-    const restricted = this.constructor.__storeRestrictions;
-    return Object(_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(restricted) ? !restricted.includes(key) : true;
-  }
-  /**
-   * Checks if a key exists
-   * @param {string} key
-   * @returns {boolean}
-   */
-
-
-  Has(key) {
-    return this._values.has(key);
-  }
-  /**
-   * Gets a store variable
-   * @param {string} key
-   * @returns {*}
-   */
-
-
-  Get(key) {
-    if (this._values.has(key)) {
-      return this._values.get(key);
-    }
-
-    if (!this._missing.includes(key)) {
-      this._missing.push(key);
-
-      this._missing.sort();
-    }
-
-    return null;
-  }
-  /**
-   * Sets a store variable
-   * @param {string} key
-   * @param {*} value
-   * @param {boolean} [override] - Allows a store key to be overridden
-   * @returns {*} value
-   * @throws ErrStoreKeyProtected when trying to set a key that already exists
-   * @throws ErrStoreKeyReserved when trying to register a reserved key
-   * @throws ErrStoreValueInvalid when an invalid key value is passed
-   */
-
-
-  Set(key, value, override) {
-    if (this.Has(key) && !override) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_4__["ErrStoreKeyProtected"]({
-        store: this.name,
-        key
-      }).emitOn(this);
-    }
-
-    if (!this.IsValidKey(key)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreKeyReserved"]({
-        store: this.name,
-        key
-      }).emitOn(this);
-    }
-
-    if (!this.IsValidValue(value)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreValueInvalid"]({
-        store: this.name,
-        key
-      }).emitOn(this);
-    }
-
-    this._values.set(key, value);
-
-    this.emit("registered", key, value).msg("debug", "Registered ".concat(this.name, ": ").concat(key));
-    return value;
-  }
-  /**
-   * Registers variables from an object or array of objects
-   * @param {*} opt
-   */
-
-
-  Register(opt) {
-    if (!opt) return;
-    opt = Object(_util__WEBPACK_IMPORTED_MODULE_2__["toArray"])(opt);
-
-    for (let i = 0; i < opt.length; i++) {
-      for (const key in opt[i]) {
-        if (opt[i].hasOwnProperty(key)) {
-          this.Set(key, opt[i][key]);
-        }
-      }
-    }
-  }
-  /**
-   * Checks if a passed value is a valid store value
-   * @param {*} a
-   * @returns {boolean}
-   */
-
-
-  static isValue(a) {
-    return a != null;
-  }
-  /**
-   * Store restricted keys
-   * @type {null|String[]}
-   * @private
-   */
-
-
-}
-/**
- * Resource extension store
- */
-
-
-_defineProperty(Tw2GenericStore, "__storeRestrictions", null);
-
-_defineProperty(Tw2GenericStore, "__storeType", "generic");
-
-_defineProperty(Tw2GenericStore, "__category", "Variable store");
-
-class Tw2ExtensionStore extends Tw2GenericStore {}
-/**
- * Black store
- */
-
-
-_defineProperty(Tw2ExtensionStore, "isValue", _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]);
-
-_defineProperty(Tw2ExtensionStore, "__storeType", "extension");
-
-class Tw2BlackStore extends Tw2GenericStore {
-  /**
-   * Sets a black
-   * @param {String} key
-   * @param {Function} func
-   * @param {Boolean} override
-   * @returns {Map}
-   */
-  Set(key, func, override) {
-    if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(func)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreValueInvalid"]({
-        store: this.name,
-        key
-      }).emitOn(this);
-    }
-
-    const result = func(_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__);
-
-    if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(result)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreValueInvalid"]({
-        store: this.name,
-        key
-      }).emitOn(this);
-    }
-
-    return super.Set(key, new Map(result), override);
-  }
-  /**
-   * Checks if a black definition exists
-   * @param {String} key
-   * @returns {boolean}
-   */
-
-
-  Has(key) {
-    return super.Has(key) || super.Has(toTw2(key));
-  }
-  /**
-   * Gets a black definition
-   * @param {String} key
-   * @returns {*}
-   */
-
-
-  Get(key) {
-    let value = super.Get(key);
-
-    if (!value && isTr2OrTri(key)) {
-      const originalKey = key;
-      key = toTw2(key);
-      value = super.Get(key);
-
-      if (value) {
-        this.emit("substitute", key, value, originalKey).msg("warning", "\"".concat(originalKey, "\" class not found, substituting with \"").concat(key, "\""));
-      }
-    }
-
-    return value;
-  }
-  /**
-   * Store type
-   * @type {string}
-   */
-
-
-}
-/**
- * Dynamic resource path store
- */
-
-
-_defineProperty(Tw2BlackStore, "__storeType", "black");
-
-class Tw2DynamicPathStore extends Tw2GenericStore {
-  /**
-   * Checks if a passed value is a valid store value
-   * @param {*} a
-   * @returns {boolean}
-   */
-  static isValue(a) {
-    if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isArray"])(a)) return false;
-
-    for (let i = 0; i < a.length; i++) {
-      if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(a[i])) return false;
-    }
-
-    return true;
-  }
-  /**
-   * Store type
-   * @type {string}
-   */
-
-
-}
-/**
- * Resource path store
- */
-
-
-_defineProperty(Tw2DynamicPathStore, "__storeType", "dynamicPath");
-
-class Tw2PathStore extends Tw2GenericStore {
-  /**
-   * Sets a store variable
-   * @param {string} key
-   * @param {*} value
-   * @param {Boolean} [override]
-   * @returns {*} value
-   */
-  Set(key, value, override) {
-    // Fix paths without trailing slash
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(value) && value.charAt(value.length - 1) !== "/") {
-      value += "/";
-    }
-
-    return super.Set(key, value, override);
-  }
-  /**
-   * Checks if a passed value is a valid store value
-   * @param {*} a
-   * @returns {boolean}
-   */
-
-
-}
-/**
- * Type store
- */
-
-
-_defineProperty(Tw2PathStore, "isValue", _util__WEBPACK_IMPORTED_MODULE_2__["isString"]);
-
-_defineProperty(Tw2PathStore, "__storeType", "path");
-
-_defineProperty(Tw2PathStore, "__storeRestrictions", ["rgba", "dynamic"]);
-
-class Tw2TypeStore extends Tw2GenericStore {
-  /**
-   * Gets a type by value
-   * @param {*} value
-   * @returns {?Function}
-   */
-  GetByValue(value) {
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = this._values[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        let _step$value = _slicedToArray(_step.value, 2),
-            key = _step$value[0],
-            type = _step$value[1];
-
-        if ("isValue" in type && type.isValue(value)) return type;
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return != null) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-
-    return null;
-  }
-  /**
-   * Checks if a value is valid
-   * @type {isString}
-   */
-
-
-}
-/**
- * Schema store
- * @class
- */
-
-
-_defineProperty(Tw2TypeStore, "isValue", _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]);
-
-_defineProperty(Tw2TypeStore, "__storeType", "type");
-
-class Tw2SchemaStore extends Tw2GenericStore {
-  /**
-   * Checks if a value is valid
-   * @type {isString}
-   */
-  static isValue(a) {
-    return a instanceof _class__WEBPACK_IMPORTED_MODULE_0__["Tw2Schema"];
-  }
-  /**
-   * Store type
-   * @type {string}
-   */
-
-
-}
-/**
- * Class store
- * @class
- */
-
-
-_defineProperty(Tw2SchemaStore, "__storeType", "schema");
-
-class Tw2ClassStore extends Tw2GenericStore {
-  /**
-   * Enables debugging
-   * @param {Boolean} value
-   */
-  Debug(value) {
-    value = !!value;
-    Tw2ClassStore.DEBUG_ENABLED = !!value;
-
-    this._values.forEach(x => {
-      if ("DEBUG_ENABLED" in x) {
-        x.DEBUG_ENABLED = value;
-      }
-    });
-  }
-  /**
-   * Sets a class
-   * @param {String} key
-   * @param {*} value
-   * @param {Boolean} [override]
-   * @returns {*} value
-   */
-
-
-  Set(key, value, override) {
-    const result = super.Set(key, value, override); // Set debug mode
-
-    if ("DEBUG_ENABLED" in value) {
-      value.DEBUG_ENABLED = Tw2ClassStore.DEBUG_ENABLED;
-    } // Auto add black definitions
-
-
-    if (value.black && (override || !this._store.blacks.Has(key))) {
-      this._store.blacks.Set(key, value.black, override);
-    } // Auto add schemas
-
-
-    if (value.schema && (override || !this._store.schemas.Has(key))) {
-      this._store.schemas.Set(key, value.schema, override);
-    }
-
-    return result;
-  }
-  /**
-   * Gets a store key value
-   * @param {string} key
-   * @returns {*}
-   * @throws ErrStoreValueMissing when a store value can't be found
-   */
-
-
-  Get(key) {
-    let value;
-    value = super.Get(key);
-
-    if (!value && isTr2OrTri(key)) {
-      const originalKey = key;
-      key = toTw2(key);
-      value = super.Get(key);
-
-      if (value) {
-        this.emit("substitute", key, value, originalKey).msg("warning", "\"".concat(originalKey, "\" class not found, substituting with \"").concat(key, "\""));
-      }
-    } // Create a warning when a partially implemented class is called
-
-
-    if (value && value.__isStaging) {
-      this.emit("partial", key, value).msg("warning", "Class partially implemented: ".concat(key));
-    }
-
-    return value;
-  }
-  /**
-   *
-   * @type {isFunction}
-   */
-
-
-}
-/**
- * Variable store
- *
- * @property {Tw2TypeStore} _types
- */
-
-
-_defineProperty(Tw2ClassStore, "isValue", _util__WEBPACK_IMPORTED_MODULE_2__["isFunction"]);
-
-_defineProperty(Tw2ClassStore, "__storeType", "class");
-
-_defineProperty(Tw2ClassStore, "DEBUG_ENABLED", false);
-
-class Tw2VariableStore extends Tw2GenericStore {
-  /**
-   * Sets a variable store's value
-   * @param {String} key
-   * @param {*} value
-   * @returns {*}
-   */
-  SetValue(key, value) {
-    if (!this.Has(key)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreValueMissing"]({
-        store: this.name,
-        key
-      }).emitOn(this);
-    }
-
-    const variable = this.Get(key);
-    return variable.SetValue(value);
-  }
-  /**
-   * Gets a variable store's value
-   * @param {String} key
-   * @param {Boolean} [serialize]
-   * @returns {?*} null if unsuccessful
-   */
-
-
-  GetValue(key, serialize) {
-    if (!this.Has(key)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreValueMissing"]({
-        store: this.name,
-        key
-      }).emitOn(this);
-    }
-
-    const variable = this.Get(key);
-    return variable.GetValue(serialize);
-  }
-  /**
-   * Creates a variable by value or type, without storing it
-   * @param {String} name
-   * @param {*} value
-   * @param {*} [Type]
-   * @returns {*}
-   */
-
-
-  Create(name, value, Type) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(value)) {
-      Type = value["Type"] || value["type"];
-      value = value["value"];
-    }
-
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(Type)) return new Type(name, value);
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(Type)) Type = this._store.types.Get(Type); // Should fail if not found?
-
-    if (!Type) Type = this._store.types.GetByValue(value);
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(Type)) return new Type(name, value);
-    throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrStoreTypeInvalid"]({
-      store: this.name,
-      type: Type
-    }).emitOn(this);
-  }
-  /**
-   * Registers variables from an object or array of objects
-   * @param {*} opt
-   */
-
-
-  Register(opt) {
-    opt = Object(_util__WEBPACK_IMPORTED_MODULE_2__["toArray"])(opt);
-
-    for (let i = 0; i < opt.length; i++) {
-      for (const key in opt[i]) {
-        if (opt[i].hasOwnProperty(key)) {
-          const Constructor = this.Create(key, opt[i][key]);
-          this.Set(key, Constructor);
-        }
-      }
-    }
-  }
-  /**
-   * Store type
-   * @type {string}
-   * @private
-   */
-
-
-}
-
-_defineProperty(Tw2VariableStore, "__storeType", "variable");
-
-/***/ }),
-
 /***/ "./global/engine/index.js":
 /*!********************************!*\
   !*** ./global/engine/index.js ***!
   \********************************/
-/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, Tw2Client, Tw2Device, Tw2ResMan, Tw2Store, Tw2Logger */
+/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, Tw2Device, Tw2ResMan, Tw2Logger */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Tw2Client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Client */ "./global/engine/Tw2Client.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Client", function() { return _Tw2Client__WEBPACK_IMPORTED_MODULE_0__["Tw2Client"]; });
+/* harmony import */ var _Tw2Device__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Device */ "./global/engine/Tw2Device.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_0__["Tw2Device"]; });
 
-/* harmony import */ var _Tw2Device__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Device */ "./global/engine/Tw2Device.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return _Tw2Device__WEBPACK_IMPORTED_MODULE_1__["Tw2Device"]; });
+/* harmony import */ var _Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ResMan */ "./global/engine/Tw2ResMan.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_1__["Tw2ResMan"]; });
 
-/* harmony import */ var _Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ResMan */ "./global/engine/Tw2ResMan.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return _Tw2ResMan__WEBPACK_IMPORTED_MODULE_2__["Tw2ResMan"]; });
+/* harmony import */ var _Tw2Logger__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Logger */ "./global/engine/Tw2Logger.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return _Tw2Logger__WEBPACK_IMPORTED_MODULE_2__["Tw2Logger"]; });
 
-/* harmony import */ var _Tw2Store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Store */ "./global/engine/Tw2Store.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Store", function() { return _Tw2Store__WEBPACK_IMPORTED_MODULE_3__["Tw2Store"]; });
+/* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_COLOR_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_COLOR_BUFFER_BIT"]; });
 
-/* harmony import */ var _Tw2Logger__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2Logger */ "./global/engine/Tw2Logger.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return _Tw2Logger__WEBPACK_IMPORTED_MODULE_4__["Tw2Logger"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_BUFFER_BIT"]; });
 
-/* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_COLOR_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_COLOR_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STENCIL_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_STENCIL_BUFFER_BIT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DEPTH_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STENCIL_BUFFER_BIT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_STENCIL_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_CUBE_MAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_CUBE_MAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TEXTURE_2D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_CUBE_MAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TEXTURE_CUBE_MAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MAG_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_MAG_FILTER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TEXTURE_3D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MIN_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_MIN_FILTER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MAG_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TEXTURE_MAG_FILTER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_S", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_WRAP_S"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MIN_FILTER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TEXTURE_MIN_FILTER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_T", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TEXTURE_WRAP_T"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_S", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TEXTURE_WRAP_S"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_T", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TEXTURE_WRAP_T"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_UNSIGNED_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_UNSIGNED_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_UNSIGNED_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT_OES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_HALF_FLOAT_OES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_HALF_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT_OES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_HALF_FLOAT_OES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT16", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT16"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_HALF_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT24", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT24"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT16", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DEPTH_COMPONENT16"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT24", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DEPTH_COMPONENT24"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DEPTH_COMPONENT32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FLOAT_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FLOAT_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FLOAT_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_INT_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INT_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_INT_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_INT_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_BOOL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_BOOL_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BOOL_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_BOOL_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_MAT2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_BOOL_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_MAT3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FLOAT_MAT2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FLOAT_MAT4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FLOAT_MAT3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TYPE_LENGTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TYPE_LENGTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FLOAT_MAT4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SAMPLER_2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TYPE_LENGTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TYPE_LENGTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SAMPLER_3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_2D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SAMPLER_2D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_CUBE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SAMPLER_CUBE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_3D", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SAMPLER_3D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_COMPONENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_CUBE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SAMPLER_CUBE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DEPTH_COMPONENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LUMINANCE_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_STENCIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_STENCIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LUMINANCE_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT_24_8_WEBGL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_UNSIGNED_INT_24_8_WEBGL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_STENCIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DEPTH_STENCIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT_24_8_WEBGL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_UNSIGNED_INT_24_8_WEBGL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_R8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_R16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_R32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RG8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_R8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RG16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RG8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RG32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RG16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RG32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRGB8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB565", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB565"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRGB8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SRGB8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R11F_G11F_B10F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_R11F_G11F_B10F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB565", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB565"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB9_E5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB9_E5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R11F_G11F_B10F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_R11F_G11F_B10F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB9_E5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB9_E5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB5_A1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGB5_A1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB5_A1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGB5_A1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA16I"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA16UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA16I"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA32I"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA16UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_RGBA32UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32I", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA32I"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32UI", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_RGBA32UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEAREST_MIPMAP_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINEAR_MIPMAP_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_NEAREST_MIPMAP_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEAREST_MIPMAP_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_NEAREST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LINEAR_MIPMAP_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINEAR_MIPMAP_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_NEAREST_MIPMAP_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_REPEAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_LINEAR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LINEAR_MIPMAP_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CLAMP_TO_EDGE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CLAMP_TO_EDGE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_REPEAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_MIRRORED_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_MIRRORED_REPEAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CLAMP_TO_EDGE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_CLAMP_TO_EDGE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ZERO"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_MIRRORED_REPEAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_MIRRORED_REPEAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ZERO"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRC_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_SRC_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SRC_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRC_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ONE_MINUS_SRC_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_SRC_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SRC_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DST_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ONE_MINUS_SRC_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_DST_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DST_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DST_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ONE_MINUS_DST_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_DST_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DST_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA_SATURATE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_SRC_ALPHA_SATURATE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ONE_MINUS_DST_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CONSTANT_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA_SATURATE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_SRC_ALPHA_SATURATE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_CONSTANT_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_CONSTANT_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CONSTANT_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_COLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ONE_MINUS_CONSTANT_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ONE_MINUS_CONSTANT_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_CONSTANT_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_VERTEX_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_VERTEX_SHADER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ONE_MINUS_CONSTANT_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRAGMENT_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FRAGMENT_SHADER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_VERTEX_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_VERTEX_SHADER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FRONT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRAGMENT_SHADER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FRAGMENT_SHADER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BACK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FRONT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT_AND_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_FRONT_AND_BACK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_BACK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NEVER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT_AND_BACK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_FRONT_AND_BACK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LESS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_NEVER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_EQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LESS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_EQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_GREATER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_NOTEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_GREATER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_GEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_NOTEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ALWAYS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_GEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_KEEP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_KEEP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ALWAYS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPLACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_REPLACE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_KEEP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_KEEP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INCR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPLACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_REPLACE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DECR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_INCR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INCR_WRAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DECR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DECR_WRAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_INCR_WRAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INVERT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_INVERT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR_WRAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DECR_WRAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STREAM_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_STREAM_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INVERT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_INVERT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STATIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_STATIC_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STREAM_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_STREAM_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DYNAMIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DYNAMIC_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STATIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_STATIC_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ARRAY_BUFFER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DYNAMIC_DRAW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DYNAMIC_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ELEMENT_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_ELEMENT_ARRAY_BUFFER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ARRAY_BUFFER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_POINTS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_POINTS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ELEMENT_ARRAY_BUFFER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_ELEMENT_ARRAY_BUFFER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_POINTS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_POINTS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_LOOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINE_LOOP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LINES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_LINE_STRIP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_LOOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LINE_LOOP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TRIANGLES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_LINE_STRIP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TRIANGLE_STRIP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLES", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TRIANGLES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_FAN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_TRIANGLE_FAN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_STRIP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TRIANGLE_STRIP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_FAN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_TRIANGLE_FAN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CCW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_CW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CULL_FACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_CULL_FACE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_CCW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_TEST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_DEPTH_TEST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CULL_FACE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_CULL_FACE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["GL_BLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_TEST", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_DEPTH_TEST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ANY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_ANY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["GL_BLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_OPAQUE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_OPAQUE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ANY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DECAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_DECAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_OPAQUE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_OPAQUE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_TRANSPARENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_TRANSPARENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DECAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DECAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ADDITIVE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_ADDITIVE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_TRANSPARENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_TRANSPARENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_DEPTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ADDITIVE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ADDITIVE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_FULLSCREEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_FULLSCREEN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DEPTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_PICKABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_PICKABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_FULLSCREEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_FULLSCREEN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DISTORTION", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RM_DISTORTION"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_PICKABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_PICKABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ZENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DISTORTION", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_DISTORTION"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FILLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FILLMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SHADEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SHADEMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FILLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FILLMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ZWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SHADEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SHADEMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHATESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHATESTENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LASTPIXEL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_LASTPIXEL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHATESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SRCBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LASTPIXEL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_LASTPIXEL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DESTBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CULLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CULLMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ZFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CULLMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CULLMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHAREF"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ZFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHAFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAREF"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DITHERENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DITHERENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ALPHABLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DITHERENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DITHERENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHABLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SPECULARENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FOGENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SPECULARENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGTABLEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGTABLEMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FOGCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGSTART", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGSTART"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGTABLEMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FOGTABLEMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGSTART", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FOGSTART"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGDENSITY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGDENSITY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FOGEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_RANGEFOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_RANGEFOGENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGDENSITY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FOGDENSITY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_RANGEFOGENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_RANGEFOGENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILZFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILPASS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILZFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILPASS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILREF"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILREF", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILREF"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILWRITEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_STENCILWRITEMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TEXTUREFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_TEXTUREFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILWRITEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_STENCILWRITEMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP0", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP0"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TEXTUREFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_TEXTUREFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP0", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP0"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP6", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP6"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP7", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_WRAP7"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP6", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP6"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CLIPPING"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP7", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_WRAP7"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LIGHTING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_LIGHTING"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPING"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_AMBIENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LIGHTING", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_LIGHTING"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGVERTEXMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_FOGVERTEXMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_AMBIENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORVERTEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORVERTEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGVERTEXMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_FOGVERTEXMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LOCALVIEWER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_LOCALVIEWER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORVERTEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORVERTEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALIZENORMALS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_NORMALIZENORMALS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LOCALVIEWER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_LOCALVIEWER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DIFFUSEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DIFFUSEMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALIZENORMALS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_NORMALIZENORMALS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SPECULARMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DIFFUSEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DIFFUSEMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENTMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_AMBIENTMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SPECULARMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_EMISSIVEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_EMISSIVEMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENTMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_AMBIENTMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_VERTEXBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_VERTEXBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_EMISSIVEMATERIALSOURCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_EMISSIVEMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPLANEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CLIPPLANEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_VERTEXBLEND", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_VERTEXBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPLANEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CLIPPLANEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSIZE_MIN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSPRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSPRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSIZE_MIN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSPRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSPRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_A", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALE_A"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSCALEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_B", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALE_B"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_A", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSCALE_A"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_C", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSCALE_C"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_B", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSCALE_B"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEANTIALIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_MULTISAMPLEANTIALIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_C", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSCALE_C"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_MULTISAMPLEMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEANTIALIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_MULTISAMPLEANTIALIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_PATCHEDGESTYLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_PATCHEDGESTYLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEMASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_MULTISAMPLEMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEBUGMONITORTOKEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DEBUGMONITORTOKEN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_PATCHEDGESTYLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_PATCHEDGESTYLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POINTSIZE_MAX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEBUGMONITORTOKEN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEBUGMONITORTOKEN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_INDEXEDVERTEXBLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_INDEXEDVERTEXBLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POINTSIZE_MAX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_INDEXEDVERTEXBLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_INDEXEDVERTEXBLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWEENFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_TWEENFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_BLENDOP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWEENFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_TWEENFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POSITIONDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_POSITIONDEGREE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_NORMALDEGREE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POSITIONDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_POSITIONDEGREE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SCISSORTESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SCISSORTESTENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALDEGREE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_NORMALDEGREE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SLOPESCALEDEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SLOPESCALEDEPTHBIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SCISSORTESTENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SCISSORTESTENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ANTIALIASEDLINEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_ANTIALIASEDLINEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SLOPESCALEDEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SLOPESCALEDEPTHBIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWOSIDEDSTENCILMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_TWOSIDEDSTENCILMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ANTIALIASEDLINEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ANTIALIASEDLINEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWOSIDEDSTENCILMODE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_TWOSIDEDSTENCILMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILZFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CCW_STENCILFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILPASS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILZFAIL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CCW_STENCILZFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_CCW_STENCILFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILPASS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CCW_STENCILPASS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFUNC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_CCW_STENCILFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_COLORWRITEENABLE3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_BLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_COLORWRITEENABLE3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRGBWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SRGBWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DEPTHBIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRGBWRITEENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRGBWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SEPARATEALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SEPARATEALPHABLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEPTHBIAS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DEPTHBIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_SRCBLENDALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SEPARATEALPHABLENDENABLE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_DESTBLENDALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOPALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["RS_BLENDOPALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLENDALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_NONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CULL_NONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOPALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOPALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CULL_CW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_NONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_NONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CULL_CCW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_NEVER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CCW", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CULL_CCW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_LESS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NEVER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_NEVER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_EQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LESS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LESS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_LEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_EQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_EQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_GREATER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_LEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_NOTEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATEREQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_GREATEREQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NOTEQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_NOTEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["CMP_ALWAYS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATEREQUAL", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_GREATEREQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_ZERO"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_ALWAYS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["CMP_ALWAYS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_ONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ZERO", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_ZERO"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_SRCCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ONE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_ONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVSRCCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_SRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_DESTALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVDESTALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_DESTALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_DESTCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVDESTALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVDESTCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_DESTCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHASAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_SRCALPHASAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTCOLOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVDESTCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_BOTHSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHASAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_SRCALPHASAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHINVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_BOTHINVSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_BOTHSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_BLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHINVSRCALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_BOTHINVSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVBLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLEND_INVBLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_BLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_ADD", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_ADD"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVBLENDFACTOR", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLEND_INVBLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_SUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_SUBTRACT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_ADD", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_ADD"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_REVSUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_REVSUBTRACT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_SUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_SUBTRACT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_MIN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_REVSUBTRACT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_REVSUBTRACT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BLENDOP_MAX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MIN", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_MIN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_MAX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_LUMINANCE_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_LUMINANCE_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGBA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RED"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RGBA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_R"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RED"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RG"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_R"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RED_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RG"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_R_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RED_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RG_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_R_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGB_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RG_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TF_RGBA_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RGB_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TF_RGBA_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_HALF_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_HALF_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_HALF_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_BYTE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_4_4_4_4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT_4_4_4_4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INTEGER", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_5_5_1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT_5_5_5_1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_4_4_4_4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_SHORT_4_4_4_4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_6_5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_SHORT_5_6_5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_5_5_1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_SHORT_5_5_5_1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_2_10_10_10_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_2_10_10_10_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_6_5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_SHORT_5_6_5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_24_8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_24_8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_2_10_10_10_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_INT_2_10_10_10_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_10F_11F_11F_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_10F_11F_11F_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_24_8", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_INT_24_8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_5_9_9_9_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_UNSIGNED_INT_5_9_9_9_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_10F_11F_11F_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_INT_10F_11F_11F_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT_32_UNSIGNED_INT_24_8_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TT_FLOAT_32_UNSIGNED_INT_24_8_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_5_9_9_9_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_UNSIGNED_INT_5_9_9_9_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["WrapModes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT_32_UNSIGNED_INT_24_8_REV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["TT_FLOAT_32_UNSIGNED_INT_24_8_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["BlendTable"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WrapModes"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FilterMode"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MipFilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["MipFilterMode"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["FilterMode"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_MAGIC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MipFilterMode", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["MipFilterMode"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_CAPS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_CAPS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_MAGIC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_HEIGHT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_CAPS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_CAPS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_WIDTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_HEIGHT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PITCH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_PITCH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_WIDTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PIXELFORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_PIXELFORMAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PITCH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_PITCH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_MIPMAPCOUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_MIPMAPCOUNT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PIXELFORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_PIXELFORMAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_LINEARSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_LINEARSIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_MIPMAPCOUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_MIPMAPCOUNT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSD_DEPTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_LINEARSIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_LINEARSIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_COMPLEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS_COMPLEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_DEPTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSD_DEPTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_MIPMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS_MIPMAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_COMPLEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS_COMPLEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_TEXTURE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS_TEXTURE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_MIPMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS_MIPMAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_TEXTURE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS_TEXTURE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_POSITIVEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_NEGATIVEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP_POSITIVEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_POSITIVEY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEX", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP_NEGATIVEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_NEGATIVEY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP_POSITIVEY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_POSITIVEZ"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEY", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP_NEGATIVEY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_CUBEMAP_NEGATIVEZ"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP_POSITIVEZ"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_VOLUME", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDSCAPS2_VOLUME"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEZ", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_CUBEMAP_NEGATIVEZ"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHAPIXELS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_ALPHAPIXELS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_VOLUME", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDSCAPS2_VOLUME"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHAPIXELS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_ALPHAPIXELS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_FOURCC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHA", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_FOURCC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_YUV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_YUV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_RGB", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDPF_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_YUV", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_YUV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_LENGTH_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_LENGTH_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_LUMINANCE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDPF_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_MAGIC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_LENGTH_INT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_LENGTH_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_SIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_SIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MAGIC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_MAGIC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_FLAGS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_SIZE", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_SIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_HEIGHT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_FLAGS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_WIDTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_HEIGHT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_HEIGHT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MIPMAP_COUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_WIDTH", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_WIDTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_PF_FLAGS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MIPMAP_COUNT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_PF_FOURCC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FLAGS", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FLAGS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_RGB_BPP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_RGB_BPP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FOURCC", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_PF_FOURCC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_R_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_R_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_RGB_BPP", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_RGB_BPP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_G_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_G_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_R_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_R_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_B_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_B_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_G_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_G_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_A_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_A_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_B_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_B_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_A_MASK", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_A_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS2", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_CAPS4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DDS_HEADER_OFFSET_DXGI_FORMAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS4", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_CAPS4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DDS_HEADER_OFFSET_DXGI_FORMAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT10", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_DXT10"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT3", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R16G16B16A16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_D3DFMT_R16G16B16A16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT10", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_DXT10"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["FOURCC_D3DFMT_R32G32B32A32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R16G16B16A16F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_D3DFMT_R16G16B16A16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DXGI_FORMAT_R16G16B16A16_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["FOURCC_D3DFMT_R32G32B32A32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["DXGI_FORMAT_B8G8R8X8_UNORM"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DXGI_FORMAT_R16G16B16A16_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorRequestAnimationFrame"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["DXGI_FORMAT_B8G8R8X8_UNORM"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorCancelAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorCancelAnimationFrame"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorRequestAnimationFrame"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorRequestFullScreen"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorCancelAnimationFrame", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorCancelAnimationFrame"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorExitFullScreen"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorRequestFullScreen"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorGetFullScreenElement"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorExitFullScreen"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorGetFullScreenElement"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WebglContextNames", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WebglContextNames"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Webgl2ContextNames", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["Webgl2ContextNames"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WebglVersion", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["WebglVersion"]; });
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["VendorWebglPrefixes"]; });
 
 
 
@@ -57022,11 +56670,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, WebglContextNames, Webgl2ContextNames, WebglVersion, tw2, store, resMan, device, logger, util, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
+/*! exports provided: resMan, device, util, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, tw2, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return resMan; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "device", function() { return device; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "util", function() { return util; });
 /* harmony import */ var _class__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./class */ "./global/class/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BaseClass", function() { return _class__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]; });
 
@@ -57036,767 +56687,755 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _class__WEBPACK_IMPORTED_MODULE_0__["Tw2Schema"]; });
 
-/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "num", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["num"]; });
+/* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_COLOR_BUFFER_BIT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_COLOR_BUFFER_BIT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["vec2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_BUFFER_BIT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_BUFFER_BIT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["vec3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STENCIL_BUFFER_BIT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_STENCIL_BUFFER_BIT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["vec4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_2D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["quat"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_CUBE_MAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_CUBE_MAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["mat3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_3D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["mat4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MAG_FILTER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_MAG_FILTER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "noise", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["noise"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MIN_FILTER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_MIN_FILTER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "curve", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["curve"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_S", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_WRAP_S"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "box3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["box3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_T", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TEXTURE_WRAP_T"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tri3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["tri3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "lne3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["lne3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "pln", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["pln"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ray3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["ray3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sph3", function() { return _math__WEBPACK_IMPORTED_MODULE_1__["sph3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT"]; });
 
-/* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_COLOR_BUFFER_BIT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_COLOR_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_BUFFER_BIT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DEPTH_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STENCIL_BUFFER_BIT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_STENCIL_BUFFER_BIT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT_OES", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_HALF_FLOAT_OES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_2D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TEXTURE_2D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_HALF_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_CUBE_MAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TEXTURE_CUBE_MAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT16", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT16"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_3D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TEXTURE_3D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT24", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT24"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MAG_FILTER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TEXTURE_MAG_FILTER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_MIN_FILTER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TEXTURE_MIN_FILTER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_S", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TEXTURE_WRAP_S"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TEXTURE_WRAP_T", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TEXTURE_WRAP_T"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_UNSIGNED_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INT_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_UNSIGNED_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL_VEC2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_UNSIGNED_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL_VEC3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BOOL_VEC4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT_OES", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_HALF_FLOAT_OES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_MAT2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_HALF_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_HALF_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_MAT3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT16", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DEPTH_COMPONENT16"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT_MAT4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT24", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DEPTH_COMPONENT24"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TYPE_LENGTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TYPE_LENGTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DEPTH_COMPONENT32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_2D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SAMPLER_2D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FLOAT_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_3D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SAMPLER_3D"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FLOAT_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_CUBE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SAMPLER_CUBE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_VEC4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FLOAT_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_COMPONENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_INT_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_INT_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INT_VEC4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_INT_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_BOOL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_BOOL_VEC2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LUMINANCE_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_BOOL_VEC3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_STENCIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_STENCIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BOOL_VEC4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_BOOL_VEC4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT_24_8_WEBGL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_UNSIGNED_INT_24_8_WEBGL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FLOAT_MAT2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FLOAT_MAT3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FLOAT_MAT4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FLOAT_MAT4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TYPE_LENGTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TYPE_LENGTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_2D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SAMPLER_2D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RG8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_3D", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SAMPLER_3D"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RG16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SAMPLER_CUBE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SAMPLER_CUBE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RG32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_COMPONENT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DEPTH_COMPONENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRGB8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRGB8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB565", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB565"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R11F_G11F_B10F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_R11F_G11F_B10F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB9_E5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB9_E5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LUMINANCE_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LUMINANCE_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_STENCIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DEPTH_STENCIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_UNSIGNED_INT_24_8_WEBGL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_UNSIGNED_INT_24_8_WEBGL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_R8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_R16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB5_A1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGB5_A1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_R32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R8UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_R8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RG8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA8UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RG16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16I", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA16I"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RG32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RG32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA16UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32I", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA32I"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRGB8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SRGB8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_RGBA32UI"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB565", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB565"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_R11F_G11F_B10F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_R11F_G11F_B10F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB9_E5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB9_E5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_NEAREST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_NEAREST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_NEAREST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_LINEAR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEAREST_MIPMAP_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB8UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_LINEAR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINEAR_MIPMAP_LINEAR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPEAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_REPEAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGB5_A1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGB5_A1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CLAMP_TO_EDGE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CLAMP_TO_EDGE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_MIRRORED_REPEAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_MIRRORED_REPEAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ZERO", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ZERO"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA8UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA8UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16I", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA16I"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRC_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA16UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA16UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_SRC_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32I", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA32I"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRC_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_RGBA32UI", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_RGBA32UI"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_SRC_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DST_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_DST_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_NEAREST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_NEAREST_MIPMAP_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DST_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_NEAREST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LINEAR_MIPMAP_NEAREST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_DST_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEAREST_MIPMAP_LINEAR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_NEAREST_MIPMAP_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA_SATURATE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_SRC_ALPHA_SATURATE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINEAR_MIPMAP_LINEAR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LINEAR_MIPMAP_LINEAR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CONSTANT_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPEAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_REPEAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_CONSTANT_COLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CLAMP_TO_EDGE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_CLAMP_TO_EDGE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CONSTANT_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_MIRRORED_REPEAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_MIRRORED_REPEAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ONE_MINUS_CONSTANT_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ZERO", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ZERO"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_VERTEX_SHADER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_VERTEX_SHADER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRAGMENT_SHADER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FRAGMENT_SHADER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SRC_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FRONT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ONE_MINUS_SRC_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BACK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BACK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SRC_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT_AND_BACK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_FRONT_AND_BACK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_SRC_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ONE_MINUS_SRC_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEVER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NEVER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DST_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LESS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LESS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ONE_MINUS_DST_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_EQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_EQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DST_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DST_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_DST_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ONE_MINUS_DST_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GREATER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_GREATER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_SRC_ALPHA_SATURATE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_SRC_ALPHA_SATURATE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NOTEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_NOTEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_CONSTANT_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_GEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_COLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ONE_MINUS_CONSTANT_COLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALWAYS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ALWAYS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CONSTANT_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_CONSTANT_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_KEEP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_KEEP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ONE_MINUS_CONSTANT_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ONE_MINUS_CONSTANT_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPLACE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_REPLACE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_VERTEX_SHADER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_VERTEX_SHADER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INCR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRAGMENT_SHADER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FRAGMENT_SHADER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DECR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FRONT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR_WRAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INCR_WRAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BACK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_BACK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR_WRAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DECR_WRAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_FRONT_AND_BACK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_FRONT_AND_BACK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INVERT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_INVERT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NEVER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_NEVER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STREAM_DRAW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_STREAM_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LESS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LESS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STATIC_DRAW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_STATIC_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_EQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_EQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DYNAMIC_DRAW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DYNAMIC_DRAW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ARRAY_BUFFER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ARRAY_BUFFER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GREATER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_GREATER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ELEMENT_ARRAY_BUFFER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_ELEMENT_ARRAY_BUFFER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_NOTEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_NOTEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_POINTS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_POINTS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_GEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_GEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINES", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ALWAYS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ALWAYS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_LOOP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINE_LOOP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_KEEP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_KEEP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_STRIP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_LINE_STRIP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_REPLACE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_REPLACE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLES", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TRIANGLES"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_INCR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_STRIP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TRIANGLE_STRIP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DECR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_FAN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_TRIANGLE_FAN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INCR_WRAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_INCR_WRAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DECR_WRAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DECR_WRAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CCW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CCW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_INVERT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_INVERT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CULL_FACE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_CULL_FACE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STREAM_DRAW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_STREAM_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_TEST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_DEPTH_TEST"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_STATIC_DRAW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_STATIC_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["GL_BLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DYNAMIC_DRAW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DYNAMIC_DRAW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ANY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_ANY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ARRAY_BUFFER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ARRAY_BUFFER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_OPAQUE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_ELEMENT_ARRAY_BUFFER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_ELEMENT_ARRAY_BUFFER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DECAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_POINTS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_POINTS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_TRANSPARENT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINES", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LINES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ADDITIVE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_LOOP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LINE_LOOP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DEPTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_LINE_STRIP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_LINE_STRIP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_FULLSCREEN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_FULLSCREEN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLES", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TRIANGLES"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_PICKABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_STRIP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TRIANGLE_STRIP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DISTORTION", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_TRIANGLE_FAN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_TRIANGLE_FAN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ZENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_CW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FILLMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FILLMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CCW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_CCW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SHADEMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SHADEMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_CULL_FACE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_CULL_FACE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZWRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ZWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_TEST", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_DEPTH_TEST"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHATESTENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHATESTENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GL_BLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["GL_BLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LASTPIXEL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_LASTPIXEL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ANY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_ANY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SRCBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_OPAQUE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_OPAQUE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DESTBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DECAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_DECAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CULLMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CULLMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_TRANSPARENT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_TRANSPARENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ZFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_ADDITIVE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_ADDITIVE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAREF", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHAREF"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DEPTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_DEPTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHAFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_FULLSCREEN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_FULLSCREEN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DITHERENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DITHERENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_PICKABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_PICKABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHABLENDENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ALPHABLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RM_DISTORTION", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RM_DISTORTION"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ZENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SPECULARENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FILLMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FILLMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SHADEMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SHADEMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGTABLEMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGTABLEMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZWRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ZWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGSTART", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGSTART"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHATESTENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ALPHATESTENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LASTPIXEL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_LASTPIXEL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGDENSITY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGDENSITY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SRCBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_RANGEFOGENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_RANGEFOGENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_DESTBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CULLMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_CULLMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ZFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ZFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILZFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILZFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAREF", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ALPHAREF"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILPASS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILPASS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHAFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ALPHAFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DITHERENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_DITHERENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILREF", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILREF"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ALPHABLENDENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ALPHABLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILMASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FOGENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILWRITEMASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_STENCILWRITEMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SPECULARENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TEXTUREFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_TEXTUREFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FOGCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP0", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP0"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGTABLEMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FOGTABLEMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGSTART", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FOGSTART"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FOGEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGDENSITY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FOGDENSITY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_RANGEFOGENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_RANGEFOGENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP6", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP6"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP7", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_WRAP7"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILZFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILZFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPING", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CLIPPING"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILPASS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILPASS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LIGHTING", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_LIGHTING"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_AMBIENT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILREF", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILREF"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGVERTEXMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_FOGVERTEXMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILMASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORVERTEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORVERTEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_STENCILWRITEMASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_STENCILWRITEMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LOCALVIEWER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_LOCALVIEWER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TEXTUREFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_TEXTUREFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALIZENORMALS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_NORMALIZENORMALS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP0", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP0"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DIFFUSEMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DIFFUSEMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SPECULARMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENTMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_AMBIENTMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_EMISSIVEMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_EMISSIVEMATERIALSOURCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_VERTEXBLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_VERTEXBLEND"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPLANEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CLIPPLANEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP6", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP6"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_WRAP7", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_WRAP7"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MIN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSIZE_MIN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPING", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_CLIPPING"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSPRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSPRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LIGHTING", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_LIGHTING"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_AMBIENT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_A", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALE_A"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_FOGVERTEXMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_FOGVERTEXMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_B", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALE_B"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORVERTEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_COLORVERTEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_C", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSCALE_C"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_LOCALVIEWER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_LOCALVIEWER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEANTIALIAS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_MULTISAMPLEANTIALIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALIZENORMALS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_NORMALIZENORMALS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEMASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_MULTISAMPLEMASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DIFFUSEMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_DIFFUSEMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_PATCHEDGESTYLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_PATCHEDGESTYLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SPECULARMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SPECULARMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEBUGMONITORTOKEN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DEBUGMONITORTOKEN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_AMBIENTMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_AMBIENTMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MAX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POINTSIZE_MAX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_EMISSIVEMATERIALSOURCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_EMISSIVEMATERIALSOURCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_INDEXEDVERTEXBLENDENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_INDEXEDVERTEXBLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_VERTEXBLEND", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_VERTEXBLEND"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CLIPPLANEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_CLIPPLANEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWEENFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_TWEENFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_BLENDOP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MIN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSIZE_MIN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POSITIONDEGREE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_POSITIONDEGREE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSPRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSPRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALDEGREE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_NORMALDEGREE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSCALEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SCISSORTESTENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SCISSORTESTENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_A", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSCALE_A"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SLOPESCALEDEPTHBIAS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SLOPESCALEDEPTHBIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_B", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSCALE_B"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ANTIALIASEDLINEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_ANTIALIASEDLINEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSCALE_C", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSCALE_C"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWOSIDEDSTENCILMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_TWOSIDEDSTENCILMODE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEANTIALIAS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_MULTISAMPLEANTIALIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_MULTISAMPLEMASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_MULTISAMPLEMASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILZFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILZFAIL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_PATCHEDGESTYLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_PATCHEDGESTYLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILPASS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILPASS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEBUGMONITORTOKEN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_DEBUGMONITORTOKEN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_CCW_STENCILFUNC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POINTSIZE_MAX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POINTSIZE_MAX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_INDEXEDVERTEXBLENDENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_INDEXEDVERTEXBLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_COLORWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_COLORWRITEENABLE3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWEENFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_TWEENFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_BLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_BLENDOP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRGBWRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SRGBWRITEENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_POSITIONDEGREE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_POSITIONDEGREE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEPTHBIAS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DEPTHBIAS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_NORMALDEGREE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_NORMALDEGREE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SEPARATEALPHABLENDENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SEPARATEALPHABLENDENABLE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SCISSORTESTENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SCISSORTESTENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLENDALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_SRCBLENDALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SLOPESCALEDEPTHBIAS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SLOPESCALEDEPTHBIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLENDALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_DESTBLENDALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_ANTIALIASEDLINEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_ANTIALIASEDLINEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOPALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["RS_BLENDOPALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_TWOSIDEDSTENCILMODE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_TWOSIDEDSTENCILMODE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_NONE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CULL_NONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_CCW_STENCILFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CULL_CW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILZFAIL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_CCW_STENCILZFAIL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CCW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CULL_CCW"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILPASS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_CCW_STENCILPASS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NEVER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_NEVER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_CCW_STENCILFUNC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_CCW_STENCILFUNC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LESS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_LESS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_COLORWRITEENABLE1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_EQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_EQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_COLORWRITEENABLE2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_LEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_COLORWRITEENABLE3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_COLORWRITEENABLE3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_GREATER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_BLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NOTEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_NOTEQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRGBWRITEENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SRGBWRITEENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATEREQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_GREATEREQUAL"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DEPTHBIAS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_DEPTHBIAS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_ALWAYS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["CMP_ALWAYS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SEPARATEALPHABLENDENABLE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SEPARATEALPHABLENDENABLE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ZERO", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_ZERO"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_SRCBLENDALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_SRCBLENDALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ONE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_ONE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_DESTBLENDALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_DESTBLENDALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_SRCCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RS_BLENDOPALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["RS_BLENDOPALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVSRCCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_NONE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CULL_NONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_SRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CULL_CW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CULL_CCW", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CULL_CCW"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_DESTALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NEVER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_NEVER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVDESTALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LESS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_LESS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_DESTCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_EQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_EQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVDESTCOLOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_LEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_LEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHASAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_SRCALPHASAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_GREATER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHSRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_BOTHSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_NOTEQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_NOTEQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHINVSRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_BOTHINVSRCALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_GREATEREQUAL", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_GREATEREQUAL"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BLENDFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_BLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CMP_ALWAYS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["CMP_ALWAYS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVBLENDFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLEND_INVBLENDFACTOR"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ZERO", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_ZERO"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_ADD", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_ADD"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_ONE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_ONE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_SUBTRACT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_SUBTRACT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_SRCCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_REVSUBTRACT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_REVSUBTRACT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_INVSRCCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MIN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_MIN"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_SRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BLENDOP_MAX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVSRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_INVSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_DESTALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_INVDESTALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_LUMINANCE_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_DESTCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_DESTCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVDESTCOLOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_INVDESTCOLOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGBA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_SRCALPHASAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_SRCALPHASAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RED"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHSRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_BOTHSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_R"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BOTHINVSRCALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_BOTHINVSRCALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RG"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_BLENDFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_BLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RED_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLEND_INVBLENDFACTOR", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLEND_INVBLENDFACTOR"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_R_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_ADD", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLENDOP_ADD"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RG_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_SUBTRACT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLENDOP_SUBTRACT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGB_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_REVSUBTRACT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLENDOP_REVSUBTRACT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TF_RGBA_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MIN", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLENDOP_MIN"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BLENDOP_MAX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BLENDOP_MAX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_HALF_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_HALF_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_LUMINANCE_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_LUMINANCE_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_BYTE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RGBA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RED"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_R"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INTEGER"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RG"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_4_4_4_4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT_4_4_4_4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RED_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RED_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_5_5_1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT_5_5_5_1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_R_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_R_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_6_5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_SHORT_5_6_5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RG_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RG_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_2_10_10_10_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_2_10_10_10_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGB_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RGB_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_24_8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_24_8"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TF_RGBA_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TF_RGBA_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_10F_11F_11F_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_10F_11F_11F_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_5_9_9_9_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_UNSIGNED_INT_5_9_9_9_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT_32_UNSIGNED_INT_24_8_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["TT_FLOAT_32_UNSIGNED_INT_24_8_REV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["WrapModes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_HALF_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_HALF_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["BlendTable"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_BYTE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_BYTE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FilterMode"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MipFilterMode", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["MipFilterMode"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_SHORT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_MAGIC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_MAGIC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_CAPS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_CAPS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INTEGER", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_INTEGER"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_HEIGHT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_HEIGHT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_4_4_4_4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_SHORT_4_4_4_4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_WIDTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_WIDTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_5_5_1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_SHORT_5_5_5_1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PITCH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_PITCH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_SHORT_5_6_5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_SHORT_5_6_5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PIXELFORMAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_PIXELFORMAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_2_10_10_10_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_INT_2_10_10_10_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_MIPMAPCOUNT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_MIPMAPCOUNT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_24_8", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_INT_24_8"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_LINEARSIZE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_LINEARSIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_10F_11F_11F_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_INT_10F_11F_11F_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_DEPTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSD_DEPTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_UNSIGNED_INT_5_9_9_9_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_UNSIGNED_INT_5_9_9_9_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_COMPLEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS_COMPLEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TT_FLOAT_32_UNSIGNED_INT_24_8_REV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["TT_FLOAT_32_UNSIGNED_INT_24_8_REV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_MIPMAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS_MIPMAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapModes", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["WrapModes"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_TEXTURE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS_TEXTURE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "BlendTable", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["BlendTable"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FilterMode", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["FilterMode"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_POSITIVEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MipFilterMode", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["MipFilterMode"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_NEGATIVEX"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_MAGIC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_MAGIC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_POSITIVEY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_CAPS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_CAPS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_NEGATIVEY"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_HEIGHT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_HEIGHT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEZ", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_POSITIVEZ"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_WIDTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_WIDTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEZ", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_CUBEMAP_NEGATIVEZ"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PITCH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_PITCH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_VOLUME", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDSCAPS2_VOLUME"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_PIXELFORMAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_PIXELFORMAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHAPIXELS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_ALPHAPIXELS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_MIPMAPCOUNT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_MIPMAPCOUNT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_ALPHA"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_LINEARSIZE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_LINEARSIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_FOURCC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_FOURCC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSD_DEPTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSD_DEPTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_RGB", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_RGB"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_COMPLEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS_COMPLEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_YUV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_YUV"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_MIPMAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS_MIPMAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_LUMINANCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDPF_LUMINANCE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS_TEXTURE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS_TEXTURE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_LENGTH_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_LENGTH_INT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MAGIC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_MAGIC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP_POSITIVEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_SIZE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_SIZE"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEX", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP_NEGATIVEX"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_FLAGS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_FLAGS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP_POSITIVEY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_HEIGHT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_HEIGHT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEY", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP_NEGATIVEY"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_WIDTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_WIDTH"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_POSITIVEZ", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP_POSITIVEZ"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MIPMAP_COUNT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_CUBEMAP_NEGATIVEZ", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP_NEGATIVEZ"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FLAGS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_PF_FLAGS"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDSCAPS2_VOLUME", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_VOLUME"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FOURCC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_PF_FOURCC"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHAPIXELS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDPF_ALPHAPIXELS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_RGB_BPP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_RGB_BPP"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_ALPHA", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDPF_ALPHA"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_R_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_R_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_FOURCC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDPF_FOURCC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_G_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_G_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_RGB", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDPF_RGB"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_B_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_B_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_YUV", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDPF_YUV"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_A_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_A_MASK"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDPF_LUMINANCE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDPF_LUMINANCE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_LENGTH_INT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_LENGTH_INT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MAGIC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MAGIC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_SIZE", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_SIZE"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_CAPS4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_FLAGS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_FLAGS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DDS_HEADER_OFFSET_DXGI_FORMAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_HEIGHT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_HEIGHT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT1"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_WIDTH", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_WIDTH"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT5"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_MIPMAP_COUNT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MIPMAP_COUNT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FLAGS", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FLAGS"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT10", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_DXT10"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_PF_FOURCC", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R16G16B16A16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_D3DFMT_R16G16B16A16F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_RGB_BPP", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_RGB_BPP"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["FOURCC_D3DFMT_R32G32B32A32F"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_R_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_R_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DXGI_FORMAT_R16G16B16A16_FLOAT"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_G_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_G_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["DXGI_FORMAT_B8G8R8X8_UNORM"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_B_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_B_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestAnimationFrame", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorRequestAnimationFrame"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_A_MASK", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_A_MASK"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorCancelAnimationFrame", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorCancelAnimationFrame"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS1"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestFullScreen", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorRequestFullScreen"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS2", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorExitFullScreen"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorGetFullScreenElement"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_CAPS4", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["VendorWebglPrefixes"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DDS_HEADER_OFFSET_DXGI_FORMAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_DXGI_FORMAT"]; });
+/* harmony import */ var _Tw2Library__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Library */ "./global/Tw2Library.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_2__["tw2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT1", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT1"]; });
+/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "num", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["num"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT5", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT5"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec2", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["vec2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT3", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["vec3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_DXT10", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT10"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["vec4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R16G16B16A16F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["FOURCC_D3DFMT_R16G16B16A16F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quat", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["quat"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "FOURCC_D3DFMT_R32G32B32A32F", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["FOURCC_D3DFMT_R32G32B32A32F"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["mat3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_R16G16B16A16_FLOAT", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DXGI_FORMAT_R16G16B16A16_FLOAT"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "mat4", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["mat4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DXGI_FORMAT_B8G8R8X8_UNORM", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["DXGI_FORMAT_B8G8R8X8_UNORM"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "noise", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["noise"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestAnimationFrame", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["VendorRequestAnimationFrame"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "curve", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["curve"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorCancelAnimationFrame", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["VendorCancelAnimationFrame"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "box3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["box3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorRequestFullScreen", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["VendorRequestFullScreen"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tri3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["tri3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["VendorExitFullScreen"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "lne3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["lne3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["VendorGetFullScreenElement"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "pln", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["pln"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["VendorWebglPrefixes"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ray3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["ray3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WebglContextNames", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["WebglContextNames"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sph3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["sph3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Webgl2ContextNames", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["Webgl2ContextNames"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WebglVersion", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_2__["WebglVersion"]; });
 
-/* harmony import */ var _Tw2Library__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Library */ "./global/Tw2Library.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["tw2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "store", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["store"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["resMan"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["device"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "logger", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["logger"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "util", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_3__["util"]; });
-
-
-
-
-
+const resMan = _Tw2Library__WEBPACK_IMPORTED_MODULE_2__["tw2"].resMan;
+const device = _Tw2Library__WEBPACK_IMPORTED_MODULE_2__["tw2"].device;
+const util = _Tw2Library__WEBPACK_IMPORTED_MODULE_2__["tw2"].util;
 
 /***/ }),
 
@@ -66821,9 +66460,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return Tw2ParticleElement; });
-/* harmony import */ var _global_class__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/class */ "./global/class/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 /**
  * Tw2ParticleElement
@@ -66839,12 +66476,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @property {number} instanceStride
  * @property {number} vertexStride
  * @property {Boolean} dirty
+ * @class
  */
-
-class Tw2ParticleElement extends _global_class__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2ParticleElement {
   constructor() {
-    super(...arguments);
-
     _defineProperty(this, "elementType", null);
 
     _defineProperty(this, "customName", null);

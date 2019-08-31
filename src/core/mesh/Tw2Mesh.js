@@ -1,4 +1,4 @@
-import {util, resMan, device, store, Tw2BaseClass} from "../../global";
+import {util, resMan, tw2, Tw2BaseClass} from "../../global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -228,7 +228,7 @@ export class Tw2Mesh extends Tw2BaseClass
                 {
                     const
                         type = src[name][i].__type || "Tw2MeshArea",
-                        Constructor = store.classes.Get(type);
+                        Constructor = tw2.GetClass(type);
 
                     dest[name].push(Constructor.from(src[name][i], {index: i}));
                 }

@@ -87,18 +87,17 @@ export class Tw2SamplerState
     {
         const
             targetType = this.samplerType,
-            d = device,
-            gl = d.gl;
+            gl = device.gl,
+            ext = device.GetExtension("EXT_texture_filter_anisotropic");
 
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? this.addressU : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? this.addressV : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
         gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
-        if (d.ext.AnisotropicFilter && d.enableAnisotropicFiltering)
+
+        if (ext && device.enableAnisotropicFiltering)
         {
-            gl.texParameterf(targetType,
-                d.ext.AnisotropicFilter.TEXTURE_MAX_ANISOTROPY_EXT,
-                Math.min(this.anisotropy, d.ext.AnisotropicFilter.maxAnisotropy));
+            gl.texParameterf(targetType, ext.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(this.anisotropy, ext.maxAnisotropy));
         }
     }
 

@@ -42,15 +42,14 @@ export class Tw2VectorParameter extends Tw2BaseClass
     /**
      * Sets the parameter's value
      * @param {Float32Array} value   - The value to set
-     * @param {*} [controller]       - The object that is setting the value
-     * @param {Boolean} [skipUpdate] - Skips updating
+     * @param {*} [opt]
      */
-    SetValue(value, controller, skipUpdate)
+    SetValue(value, opt)
     {
         //if (!this.EqualsValue(value))
         //{
         this.value.set(value);
-        this.UpdateValues(controller, skipUpdate);
+        this.UpdateValues(opt);
         //return true;
         //}
         //return false;
@@ -60,18 +59,17 @@ export class Tw2VectorParameter extends Tw2BaseClass
      * Sets a parameter's value at a given index
      * @param {Number} index         - the parameter's value index to change
      * @param {Number} value         - the value to set
-     * @param {*} [controller]       - the object that is setting the value
-     * @param {Boolean} [skipUpdate] -
+     * @param {*} [opt]              - the object that is setting the value
      * @throw Index Error
      */
-    SetIndexValue(index, value, controller, skipUpdate)
+    SetIndexValue(index, value, opt)
     {
         if (this.value[index] !== undefined)
         {
             if (this.value[index] !== value)
             {
                 this.value[index] = value;
-                this.UpdateValues();
+                this.UpdateValues(opt);
             }
             return;
         }
@@ -80,13 +78,14 @@ export class Tw2VectorParameter extends Tw2BaseClass
 
     /**
      * Gets the parameter's value
-     * @param {Boolean} [serialize] - An optional parameter to force a serialized result
+     * @param {TypedArray|Array} [out=[]]
      * @returns {Array|Float32Array}
      */
-    GetValue(serialize)
+    GetValue(out=[])
     {
         const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
-        return serialize ? Array.from(value) : new Float32Array(value);
+        for (let i = 0; i < value.length; i++) out[0] = value[i];
+        return out;
     }
 
     /**
