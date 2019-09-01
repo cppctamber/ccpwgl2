@@ -70,6 +70,61 @@ export class Tw2Error extends Error
 }
 
 /**
+ * Throws when unable to create a webgl context
+ */
+export class ErrWebglContext extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Unable to create webgl context (%version%)");
+    }
+}
+
+/**
+ * Throws when webxr is not supported
+ */
+export class ErrWebxrNotSupported extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr not supported");
+    }
+}
+
+/**
+ * Throws when a webxr device is not found
+ */
+export class ErrWebxrDeviceNotFound extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr device not found");
+    }
+}
+
+/**
+ * Throws when there is an error requesting a webxr device
+ */
+export class ErrWebxrRequestFailed extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr request failed (%err%)");
+    }
+}
+
+/**
+ * Throws when a webxr session type is not supported
+ */
+export class ErrWebxrSessionNotSupported extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Webxr session not supported (%err%)");
+    }
+}
+
+/**
  * Throws when trying to register a reserved store key
  */
 export class ErrStoreKeyReserved extends Tw2Error

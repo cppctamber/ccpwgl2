@@ -82,18 +82,6 @@ var ccpwgl = (function (ccpwgl_int)
     };
 
     /**
-     * Exception class for objects that can be thrown by ccpwgl.initialize function if
-     * WebGL context is not available.
-     */
-    ccpwgl.NoWebGLError = function ()
-    {
-        this.name = "NoWebGLError";
-        this.message = "WebGL context is not available";
-    };
-    ccpwgl.NoWebGLError.prototype = Object.create(Error.prototype);
-    ccpwgl.NoWebGLError.prototype.constructor = ccpwgl.NoWebGLError;
-
-    /**
      * Exception that is thrown by some methods when their object .red files is not yet loaded.
      */
     ccpwgl.IsStillLoadingError = function ()
@@ -306,28 +294,24 @@ var ccpwgl = (function (ccpwgl_int)
      *   https://www.khronos.org/registry/webgl/specs/1.0/#2.2. Defaults to none.
      *
      * @param {HTMLCanvasElement|String} canvas  - Canvas
-     * @param {{}} options                       - params Optional parameters.
-     * @returns {number} webgl version (0: none, 1: webgl, 2: webgl2)
-     * @throws {NoWebGLError} If WebGL context is not available (IE or older browsers for example).
+     * @param {{}} [params]                      - optional gl parameters
+     * @throws {ErrWebglContext} If WebGL context is not available (IE or older browsers for example).
      */
     ccpwgl.initialize = function (canvas, params)
     {
-        var webglVersion = ccpwgl_int.Initialize({
+        params = params || {};
+
+        ccpwgl_int.Initialize({
             canvas: canvas,
-            glParams: params ? params.glParams : {},
+            glParams: params.glParams,
             device: params,
             render: render
         });
 
-        if (!webglVersion) throw new ccpwgl.NoWebGLError();
-
-        var doPost = params.postprocessing || params.postprocess;
-        if (doPost)
+        if (params.postprocessing || params.postprocess)
         {
-            ccpwgl.enablePostprocessing(doPost);
+            ccpwgl.enablePostprocessing(true);
         }
-
-        return webglVersion;
     };
 
     /**

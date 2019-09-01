@@ -56,6 +56,13 @@ import {
     VendorRequestAnimationFrame,
     VendorCancelAnimationFrame
 } from "./Tw2Constant";
+import {
+    ErrWebglContext,
+    ErrWebxrDeviceNotFound,
+    ErrWebxrNotSupported,
+    ErrWebxrRequestFailed,
+    ErrWebxrSessionNotSupported
+} from "../../core";
 
 /**
  * Tw2Device
@@ -242,7 +249,7 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {HTMLCanvasElement} canvas - The html canvas to create a webgl rendering context from
      * @param {{}} [params]              - Optional gl parameters
      * @param {Boolean} [params.webgl2]  - Optional flag to enable a webgl2 rendering context
-     * @returns {number}                 - The webgl rendering context create (0 if failed)
+     * @throws ErrWebglContext           - When unable to create a webgl context
      */
     CreateDevice(canvas, params={})
     {
@@ -255,14 +262,7 @@ export class Tw2Device extends Tw2EventEmitter
         params.antialiasing = this.enableAntialiasing ? get(params, "antialiasing", true) : false;
 
         const gl = this.gl = Tw2Device.CreateContext(params, canvas);
-
-        if (this.glVersion === 0)
-        {
-            return this.glVersion;
-        }
-
-        this.emit("device_created", this, params)
-            .msg("debug", `Webgl${this.glVersion} context created`);
+        this.msg("debug", `Webgl${this.glVersion} context created`);
 
         const
             returnFalse = () => false,
@@ -364,8 +364,6 @@ export class Tw2Device extends Tw2EventEmitter
         };
 
         this._shadowStateBuffer = new Float32Array(24);
-
-        return this.glVersion;
     }
 
     /**
@@ -1101,6 +1099,11 @@ export class Tw2Device extends Tw2EventEmitter
             if (context) break;
         }
 
+        if (!context)
+        {
+            throw new ErrWebglContext({ version: params.webgl2 ? 2 : 1 });
+        }
+
         return context;
     }
 
@@ -1123,6 +1126,49 @@ export class Tw2Device extends Tw2EventEmitter
         const cancel = get(window, VendorCancelAnimationFrame);
         return id => cancel(id);
     })();
+
+    /**
+     * Finds an XR Device
+     * @param {{}} [sessionOptions]
+     * @returns {Promise<XRDevice>}
+     */
+    static async FindXRDevice(sessionOptions)
+    {
+        if (!navigator.xr)
+        {
+            throw new ErrWebxrNotSupported();
+        }
+
+        let device;
+        try
+        {
+            device = await navigator.xr["requestDevice"]();
+        }
+        catch (err)
+        {
+            if (err.name === "NotFoundError" || err.message === "NotFoundError")
+            {
+                throw new ErrWebxrDeviceNotFound({err: err.message});
+            }
+
+            throw new ErrWebxrRequestFailed({err: err.message});
+        }
+        
+        // Optionally pass session requirements
+        if (sessionOptions)
+        {
+            try
+            {
+                await device["supportsSession"](sessionOptions);
+            }
+            catch (err)
+            {
+                throw new ErrWebxrSessionNotSupported({err: err.message});
+            }
+        }
+
+        return device;
+    }
 
     /**
      * Logger category

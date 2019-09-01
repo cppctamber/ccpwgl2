@@ -16871,12 +16871,17 @@ _defineProperty(TriObserverLocal, "__isStaging", 4);
 /*!**************************!*\
   !*** ./core/Tw2Error.js ***!
   \**************************/
-/*! exports provided: Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
+/*! exports provided: Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return Tw2Error; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebglContext", function() { return ErrWebglContext; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrNotSupported", function() { return ErrWebxrNotSupported; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrDeviceNotFound", function() { return ErrWebxrDeviceNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrRequestFailed", function() { return ErrWebxrRequestFailed; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return ErrWebxrSessionNotSupported; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyReserved", function() { return ErrStoreKeyReserved; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueInvalid", function() { return ErrStoreValueInvalid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrStoreValueMissing", function() { return ErrStoreValueMissing; });
@@ -16979,10 +16984,60 @@ class Tw2Error extends Error {
 
 }
 /**
- * Throws when trying to register a reserved store key
+ * Throws when unable to create a webgl context
  */
 
 _defineProperty(Tw2Error, "__category", "error");
+
+class ErrWebglContext extends Tw2Error {
+  constructor(data) {
+    super(data, "Unable to create webgl context (%version%)");
+  }
+
+}
+/**
+ * Throws when webxr is not supported
+ */
+
+class ErrWebxrNotSupported extends Tw2Error {
+  constructor(data) {
+    super(data, "Webxr not supported");
+  }
+
+}
+/**
+ * Throws when a webxr device is not found
+ */
+
+class ErrWebxrDeviceNotFound extends Tw2Error {
+  constructor(data) {
+    super(data, "Webxr device not found");
+  }
+
+}
+/**
+ * Throws when there is an error requesting a webxr device
+ */
+
+class ErrWebxrRequestFailed extends Tw2Error {
+  constructor(data) {
+    super(data, "Webxr request failed (%err%)");
+  }
+
+}
+/**
+ * Throws when a webxr session type is not supported
+ */
+
+class ErrWebxrSessionNotSupported extends Tw2Error {
+  constructor(data) {
+    super(data, "Webxr session not supported (%err%)");
+  }
+
+}
+/**
+ * Throws when trying to register a reserved store key
+ */
 
 class ErrStoreKeyReserved extends Tw2Error {
   constructor(data) {
@@ -18849,7 +18904,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19010,6 +19065,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./Tw2Error */ "./core/Tw2Error.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Error", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["Tw2Error"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebglContext", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWebglContext"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrNotSupported", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWebxrNotSupported"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrDeviceNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWebxrDeviceNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrRequestFailed", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWebxrRequestFailed"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWebxrSessionNotSupported", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWebxrSessionNotSupported"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrStoreKeyReserved", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrStoreKeyReserved"]; });
 
@@ -53914,7 +53979,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core/vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
 /* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
 /* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -54143,7 +54214,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
    * @param {HTMLCanvasElement} canvas - The html canvas to create a webgl rendering context from
    * @param {{}} [params]              - Optional gl parameters
    * @param {Boolean} [params.webgl2]  - Optional flag to enable a webgl2 rendering context
-   * @returns {number}                 - The webgl rendering context create (0 if failed)
+   * @throws ErrWebglContext           - When unable to create a webgl context
    */
 
 
@@ -54156,12 +54227,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     params.xrCompatible = this.enableWebxr;
     params.antialiasing = this.enableAntialiasing ? Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "antialiasing", true) : false;
     const gl = this.gl = Tw2Device.CreateContext(params, canvas);
-
-    if (this.glVersion === 0) {
-      return this.glVersion;
-    }
-
-    this.emit("device_created", this, params).msg("debug", "Webgl".concat(this.glVersion, " context created"));
+    this.msg("debug", "Webgl".concat(this.glVersion, " context created"));
 
     const returnFalse = () => false,
           returnTrue = () => true;
@@ -54250,7 +54316,6 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
       }
     };
     this._shadowStateBuffer = new Float32Array(24);
-    return this.glVersion;
   }
   /**
    * Handles resize events
@@ -54933,11 +54998,102 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
       if (context) break;
     }
 
+    if (!context) {
+      throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebglContext"]({
+        version: params.webgl2 ? 2 : 1
+      });
+    }
+
     return context;
   }
   /**
    * Requests an animation frame
    * @type {Function}
+   */
+
+
+  /**
+   * Finds an XR Device
+   * @param {{}} [sessionOptions]
+   * @returns {Promise<XRDevice>}
+   */
+  static FindXRDevice(sessionOptions) {
+    return _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee() {
+      var device;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            if (navigator.xr) {
+              _context.next = 2;
+              break;
+            }
+
+            throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrNotSupported"]();
+
+          case 2:
+            _context.prev = 2;
+            _context.next = 5;
+            return navigator.xr["requestDevice"]();
+
+          case 5:
+            device = _context.sent;
+            _context.next = 13;
+            break;
+
+          case 8:
+            _context.prev = 8;
+            _context.t0 = _context["catch"](2);
+
+            if (!(_context.t0.name === "NotFoundError" || _context.t0.message === "NotFoundError")) {
+              _context.next = 12;
+              break;
+            }
+
+            throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrDeviceNotFound"]({
+              err: _context.t0.message
+            });
+
+          case 12:
+            throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrRequestFailed"]({
+              err: _context.t0.message
+            });
+
+          case 13:
+            if (!sessionOptions) {
+              _context.next = 22;
+              break;
+            }
+
+            _context.prev = 14;
+            _context.next = 17;
+            return device["supportsSession"](sessionOptions);
+
+          case 17:
+            _context.next = 22;
+            break;
+
+          case 19:
+            _context.prev = 19;
+            _context.t1 = _context["catch"](14);
+            throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrSessionNotSupported"]({
+              err: _context.t1.message
+            });
+
+          case 22:
+            return _context.abrupt("return", device);
+
+          case 23:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, null, [[2, 8], [14, 19]]);
+    }))();
+  }
+  /**
+   * Logger category
+   * @type {String}
    */
 
 
