@@ -10,7 +10,7 @@ import {
     ErrResourcePrefixUndefined,
     ErrResourcePrefixUnregistered
 } from "../../core";
-import {assignIfExists, isError, isFunction} from "../util";
+import {assignIfExists, getPathExtension, isError, isFunction} from "../util";
 
 /**
  * Resource Manager
@@ -324,7 +324,7 @@ export class Tw2ResMan extends Tw2EventEmitter
 
             res.OnRequested(eventLog);
 
-            if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url)))
+            if (res.DoCustomLoad && res.DoCustomLoad(url, getPathExtension(url)))
             {
                 return res;
             }
@@ -421,7 +421,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             throw new ErrFeatureNotImplemented({feature: "Dynamic resources"});
         }
 
-        const extension = Tw2ResMan.GetPathExt(path);
+        const extension = getPathExtension(path);
         if (extension === null)
         {
             throw new ErrResourceExtensionUndefined({path});
@@ -477,18 +477,6 @@ export class Tw2ResMan extends Tw2EventEmitter
         path = path.toLowerCase();
         path = path.replace("\\", "/");
         return path;
-    }
-
-    /**
-     * Gets a path's extension
-     * @param {String} path
-     * @returns {?String}
-     */
-    static GetPathExt(path)
-    {
-        const dot = path.lastIndexOf(".");
-        if (dot === -1) return null;
-        return path.substr(dot + 1);
     }
 
     /**

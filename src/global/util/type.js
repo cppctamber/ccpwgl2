@@ -252,6 +252,16 @@ export function isTag(a, tag)
 }
 
 /**
+ * Gets an object's type in uppercase
+ * @param {*} a
+ * @returns {string}
+ */
+export function getTypeUpper(a)
+{
+    return Object.prototype.toString.call(a).slice(8, -1).toUpperCase();
+}
+
+/**
  * Checks if a value is a typed array
  * @param {*} a
  * @returns {Boolean}

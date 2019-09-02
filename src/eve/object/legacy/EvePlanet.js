@@ -135,7 +135,7 @@ export class EvePlanet extends EveObject
         if (visited.includes(obj)) return;
         visited.push(obj);
 
-        if (obj && !util.isUndefined(obj["doNotPurge"]))
+        if (obj && obj.constructor.__isResource)
         {
             result.push(obj);
             return;
@@ -203,7 +203,7 @@ export class EvePlanet extends EveObject
             this.heightDirty = false;
             for (let i = 0; i < this.lockedResources.length; ++i)
             {
-                this.lockedResources[i].doNotPurge--;
+                this.lockedResources[i].UnWatch(this);
             }
 
             const mainMesh = this.highDetail.children[0].mesh;
@@ -251,7 +251,7 @@ export class EvePlanet extends EveObject
     static MeshLoaded(planet, obj)
     {
         planet.highDetail.children.unshift(obj);
-        planet.lockedResources = [];
+        planet.lockedResources.splice(0);
         planet.GetPlanetResources(planet.highDetail, [], planet.lockedResources);
 
         let mainMesh = planet.highDetail.children[0].mesh,
@@ -274,7 +274,7 @@ export class EvePlanet extends EveObject
         }
         resPath = resPath.replace(".fx", "BlitHeight.fx");
 
-        planet.watchedResources = [];
+        planet.watchedResources.splice(0);
         for (let param in originalEffect.parameters)
         {
             if (originalEffect.parameters.hasOwnProperty(param))
@@ -342,7 +342,7 @@ export class EvePlanet extends EveObject
 
         for (let i = 0; i < planet.lockedResources.length; ++i)
         {
-            planet.lockedResources[i].doNotPurge++;
+            planet.lockedResources[i].Watch(this);
             if (planet.lockedResources[i].IsPurged())
             {
                 planet.lockedResources[i].Reload();
