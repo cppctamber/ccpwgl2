@@ -189,12 +189,10 @@ var ccpwgl = (function (ccpwgl_int)
     
     /**
      * Internal render/update function. Is called every frame.
-     * @param {{}} frame
+     * @param {Number} deltaTime
      **/
-    var render = function (frame)
+    var render = function (dt)
     {
-        var dt = frame.dt;
-
         var clear = scene && scene.wrappedScene && useSceneClearColor ? scene.wrappedScene.clearColor : clearColor;
 
         if (updateEnabled && camera && camera.update)

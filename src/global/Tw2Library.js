@@ -43,13 +43,41 @@ class Tw2Library extends Tw2EventEmitter
     };
 
     /**
-     * Gets the current gl context
+     * Alias for device.gl
      * @returns {*}
      */
     get gl()
     {
         return this.device.gl;
     }
+
+    /**
+     * Alias for device.now
+     * @returns {number}
+     */
+    get now()
+    {
+        return this.device.now;
+    }
+
+    /**
+     * Alias for device.canvas
+     * @returns {*}
+     */
+    get canvas()
+    {
+        return this.device.canvas;
+    }
+
+    /**
+     * Alias for device.dt
+     * @returns {number}
+     */
+    get dt()
+    {
+        return this.device.dt;
+    }
+
 
     /**
      * Constructor
@@ -78,7 +106,7 @@ class Tw2Library extends Tw2EventEmitter
                 if (debug !== bool)
                 {
                     this.logger.Debug(bool);
-                    this.emit(bool ? "debug_enabled" : "debug_disabled");
+                    this.emit("debug_mode", bool);
                     this.Log("warn", `Debugging ${bool ? "enabled" : "disabled"}`);
                 }
             }
@@ -100,35 +128,51 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Initializes a gl context
-     * @param options
+     * Initializes the library
+     * @param {{}} [options]
+     * @param {String|HTMLCanvasElement} [options.canvas] - Canvas element or id
+     * @param {{}} [options.device]                       - Optional device parameters
+     * @param {{}} [options.resMan]                       - Optional resMan parameters
+     * @param {{}} [options.store]                        - Optional store parameters
+     * @param {{}} [options.glParams]                     - Optional gl parameters
+     * @param {Function} [options.render]                 - Optional render function
      */
-    Initialize(options = {})
+    Initialize(options={})
     {
         this.Register(options);
+        this.device.CreateDevice(options.canvas, options.glParams);
 
-        const {canvas, glParams, render = null, autoTick = true} = options;
-
-        if (this.device.CreateDevice(canvas, glParams))
+        if (options.render)
         {
-            if (render)
-            {
-                this.on("tick", render);
-            }
+            this.on("tick", options.render);
 
-            if (autoTick)
+            const tick = () =>
             {
-                const tick = (_, xrFrame) =>
-                {
-                    this.RequestAnimationFrame(tick);
-                    this.Tick(_, xrFrame);
-                };
-
                 this.RequestAnimationFrame(tick);
-            }
-        }
+                this.StartFrame();
+                this.EndFrame();
+            };
 
-        return this.device.glVersion;
+            this.RequestAnimationFrame(tick);
+        }
+    }
+
+    /**
+     * Start frame
+     */
+    StartFrame()
+    {
+        this.device.StartFrame();
+        this.resMan.Tick(this.device);
+    }
+
+    /**
+     * End frame
+     */
+    EndFrame()
+    {
+        this.emit("tick", this.device.dt);
+        this.device.EndFrame();
     }
 
     /**
@@ -149,28 +193,6 @@ class Tw2Library extends Tw2EventEmitter
     CancelAnimationFrame(id)
     {
         return this.device.CancelAnimationFrame(id);
-    }
-
-    /**
-     * Start frame
-     * @param {Number} _
-     * @param {*} [xrFrame]
-     */
-    Tick(_, xrFrame)
-    {
-        this.device.StartFrame();
-        this.resMan.Tick(this.device);
-
-        const d = this.device;
-        this.emit("tick", {
-            dt: d.dt,
-            previous: d.previousTime * 0.001,
-            current: d.currentTime,
-            frame: d.frameCounter,
-            xrFrame
-        });
-
-        this.device.EndFrame();
     }
 
     /**
