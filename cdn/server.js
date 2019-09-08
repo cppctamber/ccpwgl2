@@ -145,9 +145,17 @@ const AffectedByQuality = [ "dds", "png", "gr2" ];
  * @param {String} fileName
  * @returns {String}
  */
-function fromCCPWGLQuality(fileName)
+function fromCCPWGL(fileName)
 {
     const ext = getExtension(fileName);
+
+    // No red files anymore...
+    if (ext === "red")
+    {
+        fileName = fileName.replace(".red", ".black");
+        log(fileName, `Remapping red file to: ${fileName}`);
+    }
+
     if (AffectedByQuality.indexOf(ext) === -1) return fileName;
 
     let newFileName = fileName;
@@ -208,7 +216,7 @@ function getHash(fileName)
 
 /**
  * Gets a file from the ccp cdn and then stores locally
- * @param {String} hashFileName
+ * @param {String} fileName
  * @param {Function} cb
  */
 function getFromCDN(fileName, cb)
@@ -384,14 +392,16 @@ function addCors(res)
  */
 function getFile(fileName, req, res)
 {
+    fileName = fileName.toLowerCase();
+
     // Remove backslash
     if (fileName.indexOf("/") === 0)
     {
         fileName = fileName.substring(1);
     }
 
-    // Handle ccpwgl texture quality suffixes
-    fileName = fromCCPWGLQuality(fileName);
+    // Convert from ccpwgl formats
+    fileName = fromCCPWGL(fileName);
 
     // Ensure valid file name
     if (!resMapping[fileName])
