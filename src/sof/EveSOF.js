@@ -1,5 +1,5 @@
 import {vec3, vec4, quat} from "../global";
-import {get, assignIfExists} from "../global/util";
+import {get, assignIfExists, isArray, isDNA} from "../global/util";
 import {
     Tw2ScalarCurve2,
     Tw2ScalarKey2,
@@ -13,6 +13,11 @@ import {
     Tw2Mesh,
     Tw2MeshArea,
     Tw2InstancedMesh,
+    ErrSOFRaceNotFound,
+    ErrSOFFactionNotFound,
+    ErrSOFMaterialNotFound,
+    ErrSOFPatternNotFound,
+    ErrSOFHullNotFound,
 } from "../core";
 import {
     EveBoosterSet,
@@ -125,6 +130,7 @@ export function EveSOF(tw2)
                 }
             }
         }
+
         prefixes = data.generic.patternMaterialPrefixes;
         materialIndex = FindPrefix(prefixes, name);
         if ("pattern" in commands)
@@ -172,8 +178,7 @@ export function EveSOF(tw2)
             var area = hullAreas[i];
             var effect = new Tw2Effect();
             effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
-            var names = get(get(data["generic"]["areaShaders"], area.shader,
-                {}), "parameters", []);
+            var names = get(get(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
             for (var j = 0; j < names.length; ++j)
             {
                 var name = names[j];
@@ -629,7 +634,7 @@ export function EveSOF(tw2)
                 item.maskAtlasID = src.maskMapAtlasIndex;   // 0
                 assignIfExists(item, src, [
                     "position", "rotation", "scaling",
-                    "layer1Transform", "layer1Scroll", 
+                    "layer1Transform", "layer1Scroll",
                     "layer2Transform", "layer2Scroll"
                 ]);
                 */
@@ -834,7 +839,7 @@ export function EveSOF(tw2)
             const resPath = children[i]["redFilePath"];
             if (resPath)
             {
-                tw2.GetObject(resPath, onChildLoaded(children[i]));
+                tw2.resMan.GetObject(resPath, onChildLoaded(children[i]));
             }
             else
             {
@@ -877,39 +882,6 @@ export function EveSOF(tw2)
             curveSet.Initialize();
         }
         return [curveSet, id_curves];
-    }
-
-    var dataLoading = false;
-    var pendingLoads = [];
-
-    function Build(dna)
-    {
-        var parts = dna.split(":");
-        var commands = {};
-        for (var i = 3; i < parts.length; ++i)
-        {
-            var subparts = parts[i].split("?");
-            commands[subparts[0]] = subparts[1].split(";");
-        }
-        var hull = data["hull"][parts[0]];
-        var faction = data["faction"][parts[1]];
-        var race = data["race"][parts[2]];
-        var ship = new (get(hull, "buildClass", 0) === 2 ? EveSpaceObject : EveShip)();
-        var pattern = SetupPattern(hull, race, commands);
-        SetupMesh(ship, hull, faction, race, commands, pattern);
-        SetupCustomMasks(ship, pattern);
-        SetupDecals(ship, hull, faction);
-        SetupSpriteSets(ship, hull, faction);
-        SetupSpotlightSets(ship, hull, faction);
-        SetupPlaneSets(ship, hull, faction);
-        SetupBoosters(ship, hull, race);
-        SetupLocators(ship, hull);
-        var curves = SetupAnimations(ship, hull);
-        SetupChildren(ship, hull, curves[0], curves[1]);
-        SetupInstancedMeshes(ship, hull, faction, race, commands, pattern);
-
-        ship.Initialize();
-        return ship;
     }
 
     function GetTurretMaterialParameter(name, parentFaction, areaData)
@@ -1004,95 +976,76 @@ export function EveSOF(tw2)
         }
     }
 
-    this.SetupTurretMaterialAsync = function(turretSet, parentFactionName, turretFactionName)
-    {
-        return this.GetData().then(() =>
-        {
-            SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
-            return turretSet;
-        });
-    };
-
     this.SetupTurretMaterial = function(turretSet, parentFactionName, turretFactionName, onResolved, onRejected)
     {
-        return this.SetupTurretMaterialAsync(turretSet, parentFactionName, turretFactionName)
+        return this.FetchTurretMaterial(turretSet, parentFactionName, turretFactionName)
             .then(onResolved)
             .catch(onRejected);
     };
 
-    function setupSpriteEffect()
+    this.FetchTurretMaterial = async function(turretSet, parentFactionName, turretFactionName)
     {
-        if (!spriteEffect)
-        {
-            spriteEffect = Tw2Effect.from({
-                effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
-                parameters: {
-                    MainIntensity: 1,
-                    GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
-                }
-            });
-        }
-    }
-
-    let dataPromise = null;
+        await this.FetchSOF();
+        SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
+        return turretSet;
+    };
 
     /**
-     * Gets sof data asynchronously
-     * @returns {Promise}
+     * Fetches sof data
      */
-    this.GetData = function()
+    this.FetchSOF = (function()
     {
-        if (!dataPromise)
-        {
-            setupSpriteEffect();
+        let sofPromise = null;
 
-            dataPromise = new Promise((resolve, reject) =>
+        /**
+         * Gets sof data asynchronously
+         * @returns {Promise}
+         */
+        return async function()
+        {
+            if (!sofPromise)
             {
-                tw2.GetObject(
-                    "res:/dx9/model/spaceobjectfactory/data.red",
-                    obj =>
-                    {
-                        data = obj;
-                        resolve(data);
-                    },
-                    err =>
+                spriteEffect = Tw2Effect.from({
+                    effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+                    parameters: {
+                        MainIntensity: 1,
+                        GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
+                    }
+                });
+
+                sofPromise = tw2.FetchObject("res:/dx9/model/spaceobjectfactory/data.red")
+                    .then(sof => data = sof)
+                    .catch(err =>
                     {
                         tw2.Log({
                             type: "error",
                             name: "Space object factory",
                             message: "Could not load data"
                         });
-
-                        reject(err);
                     });
-            });
-        }
+            }
 
-        return dataPromise;
-    };
+            return sofPromise;
+        };
+    })();
 
     /**
      * Extends the sof data object with patterns from a space object factory file
      * @param {String} [resPath] - The resource path to a source space object factory file
      * @returns {Promise}
      */
-    this.ExtendPatternsFrom = function(resPath)
+    this.ExtendPatternsFrom = async function(resPath)
     {
         if (!resPath)
         {
             return Promise.reject(new Error("Invalid respath: undefined"));
         }
 
-        return this.GetData()
-            .then(data =>
-            {
-                return tw2.GetObjectAsync(resPath)
-                    .then(sof =>
-                    {
-                        data.pattern = data.pattern.concat(sof.pattern);
-                        return data;
-                    });
-            });
+        const
+            currentSof = await this.FetchSOF(),
+            extendSof = await tw2.FetchObject(resPath);
+
+        currentSof.pattern = currentSof.pattern.concat(extendSof.pattern);
     };
 
     /**
@@ -1100,240 +1053,352 @@ export function EveSOF(tw2)
      * @param {String} [resPath] - The resource path to a source space object factory file
      * @returns {Promise}
      */
-    this.ExtendMaterialsFrom = function(resPath)
+    this.ExtendMaterialsFrom = async function(resPath)
     {
         if (!resPath)
         {
             return Promise.reject(new Error("Invalid respath: undefined"));
         }
 
-        return this.GetData()
-            .then(data =>
-            {
-                return tw2.GetObjectAsync(resPath)
-                    .then(sof =>
-                    {
-                        const materials = sof.material;
+        const
+            currentSof = await this.FetchSOF(),
+            extendSof = await tw2.FetchObject(resPath);
 
-                        if (resPath.includes(".black"))
-                        {
-                            materials.forEach(material =>
-                            {
-                                data.material[material.name] = material.Assign();
-                            });
-                        }
-                        else
-                        {
-                            for (const key in materials)
-                            {
-                                if (materials.hasOwnProperty(key))
-                                {
-                                    data[materials[key].name] = materials[key];
-                                }
-                            }
-                        }
+        const materials = extendSof.material;
 
-                        return data;
-                    });
-            });
-    };
-
-    /**
-     * Internal handler for loading sof objects asynchronously
-     * @param {String} root   - Root sof object name
-     * @param {String} [name] - Root sof object child name (* for all)
-     * @returns {Promise}
-     */
-    function getSofRoot(root, name)
-    {
-        root = root.toLowerCase();
-
-        return self.GetData().then(data =>
+        if (resPath.includes(".black"))
         {
-            if (!data[root])
+            extendSof.material.forEach(material =>
             {
-                throw new Error(`Invalid sof root: ${root}`);
-            }
-
-            // Select all children
-            if (name === "*")
-            {
-                return data[root];
-            }
-
-            if (name)
-            {
-                name = name.toLowerCase();
-
-                if (Array.isArray(data[root]))
-                {
-                    for (let i = 0; i < data[root].length; i++)
-                    {
-                        if (data[root][i].name === name)
-                        {
-                            return data[root][i];
-                        }
-                    }
-                }
-                else if (data[root][name])
-                {
-                    return data[root][name];
-                }
-            }
-
-            throw new Error(`Invalid sof ${root} child: ${name}`);
-        });
-    }
-
-    /**
-     * Gets the names and descriptions of a sof root object asynchronously
-     * @param {String} root - The root sof object name
-     * @returns {Promise}
-     */
-    function getSofRootNames(root)
-    {
-        return getSofRoot(root, "*")
-            .then(obj =>
-            {
-                const names = {};
-
-                if (Array.isArray(obj))
-                {
-                    for (let i = 0; i < obj.length; i++)
-                    {
-                        names[obj[i].name] = obj[i].description || "";
-                    }
-                }
-                else
-                {
-                    for (const key in obj)
-                    {
-                        if (obj.hasOwnProperty(key))
-                        {
-                            names[key] = obj[key].description || "";
-                        }
-                    }
-                }
-                return names;
+                currentSof.material[material.name] = material.Assign();
             });
-    }
-
-    this.GetObject = function(dna)
-    {
-        return this.GetData().then(() => Build(dna));
-    };
-
-    this.GetHull = function(name)
-    {
-        return getSofRoot("hull", name);
-    };
-
-    this.GetHulls = function()
-    {
-        return getSofRoot("hull", "*");
-    };
-
-    this.GetHullNames = function()
-    {
-        return getSofRootNames("hull");
-    };
-
-    this.GetFaction = function(name)
-    {
-        return getSofRoot("faction", name);
-    };
-
-    this.GetFactions = function()
-    {
-        return getSofRoot("faction", "*");
-    };
-
-    this.GetFactionNames = function()
-    {
-        return getSofRootNames("faction");
-    };
-
-    this.GetRace = function(name)
-    {
-        return getSofRoot("race", name);
-    };
-
-    this.GetRaces = function()
-    {
-        return getSofRoot("race", "*");
-    };
-
-    this.GetRaceNames = function()
-    {
-        return getSofRootNames("race");
-    };
-
-    this.GetMaterial = function(name)
-    {
-        return getSofRoot("material", name);
-    };
-
-    this.GetMaterials = function()
-    {
-        return getSofRoot("material", "*");
-    };
-
-    this.GetMaterialNames = function()
-    {
-        return getSofRootNames("material");
-    };
-
-    this.GetPattern = function(name)
-    {
-        return getSofRoot("pattern", name);
-    };
-
-    this.GetPatterns = function(name)
-    {
-        return getSofRoot("pattern", "*");
-    };
-
-    this.GetPatternNames = function()
-    {
-        return getSofRootNames("pattern");
+        }
+        else
+        {
+            Object.assign(currentSof.material, extendSof.material);
+        }
     };
 
     /**
-     * Gets a hull's pattern names
+     * Gets a sof object
      * @param {String} name
-     * @returns {Promise<Array>}
+     * @returns {Promise<{}>}
      */
-    this.GetHullPatternNames = function(name)
+    const getSofObject = async (name) =>
     {
-        return this.GetHull(name)
-            .then(x =>
-            {
-                return this.GetPatterns()
-                    .then(patterns =>
-                    {
-                        const result = {};
-                        for (let i = 0; i < patterns.length; i++)
-                        {
-                            const pattern = patterns[i];
-                            const found = pattern.projections.filter(x => x.name === name).length;
-                            if (found) result[pattern.name] = pattern.description || "";
-                        }
-                        return result;
-                    });
-            });
-
+        const sof = await this.FetchSOF();
+        if (sof[name]) return sof[name];
+        throw new Error(`Invalid sof object (${name})`);
     };
 
     /**
-     * Gets a hull's build class
+     * Gets a sof object's key's value
      * @param {String} name
+     * @param {String} key
+     * @param {Tw2Error} ErrorConstructor
+     * @returns {Promise<{}>}
+     */
+    const getSofObjectKey = async (name, key, ErrorConstructor) =>
+    {
+        const sofObject = await getSofObject(name);
+
+        if (isArray(sofObject))
+        {
+            for (let i = 0; i < sofObject.length; i++)
+            {
+                if (sofObject[key].name === name)
+                {
+                    return sofObject[key];
+                }
+            }
+        }
+        else if (sofObject[key])
+        {
+            return sofObject[key];
+        }
+
+        if (ErrorConstructor)
+        {
+            throw new ErrorConstructor({ name: key });
+        }
+
+        throw new Error(`Invalid sof object key (${name}:${key})`);
+    };
+
+    /**
+     * Gets a sof object's value's and descriptions
+     * @param {String} name
+     * @returns {Promise<{}>}
+     */
+    const getSofObjectValueDescriptions = async (name) =>
+    {
+        const
+            sofObject = await getSofObject(name),
+            out = {};
+
+        if (isArray(sofObject))
+        {
+            for (let i = 0; i < sofObject.length; i++)
+            {
+                out[sofObject[i].name] = sofObject[i].description || "";
+            }
+            return out;
+        }
+
+        for (const key in sofObject)
+        {
+            if (sofObject.hasOwnProperty(key))
+            {
+                out[key] = sofObject[key].description || "";
+            }
+        }
+
+        return out;
+    };
+
+    /**
+     * Helper to get a hull's projection data from a pattern
+     * @param {String} hull
+     * @param {*} patternData
+     */
+    const getHullProjection = async (hull, patternData) =>
+    {
+        await this.FetchHull(hull);
+
+        const {projections = []} = patternData;
+        for (let i = 0; i < projections.length; i++)
+        {
+            if (projections[i].name === hull)
+            {
+                const out = {};
+                out.name = patternData.name;
+                out.layer1 = patternData.layer1;
+                out.layer2 = patternData.layer2;
+                out.transformLayer1 = projections[i].transformLayer1;
+                out.transformLayer2 = projections[i].transformLayer2;
+                return out;
+            }
+        }
+    };
+
+    /**
+     * Gets a sof object from dna
+     * @param {String} dna
+     * @returns {Promise<*>}
+     */
+    this.FetchObject = async (dna) =>
+    {
+        if (!isDNA(dna))
+        {
+            throw new Error(`Invalid DNA (${dna})`);
+        }
+
+        const
+            parts = dna.split(":"),
+            commands = {};
+
+        for (let i = 3; i < parts.length; ++i)
+        {
+            const subParts = parts[i].split("?");
+            commands[subParts[0]] = subParts[1].split(";");
+        }
+
+        const
+            hull = await this.FetchHull(parts[0]),
+            faction = await this.FetchFaction(parts[1]),
+            race = await this.FetchRace(parts[2]);
+
+        // Ensure we have valid materials
+        if (commands.mesh)
+        {
+            for (let i = 0; i < commands.mesh.length; i++)
+            {
+                await this.FetchMaterial(commands.mesh[i]);
+            }
+        }
+
+        // Ensure we have valid materials
+        if (commands.pattern && commands.pattern.length > 1)
+        {
+            for (let i = 1; i < commands.pattern.length; i++)
+            {
+                await this.FetchMaterial(commands.pattern[i]);
+            }
+        }
+
+        const
+            ship = new (get(hull, "buildClass", 0) === 2 ? EveSpaceObject : EveShip)(),
+            pattern = SetupPattern(hull, race, commands);
+
+        SetupMesh(ship, hull, faction, race, commands, pattern);
+        SetupCustomMasks(ship, pattern);
+        SetupDecals(ship, hull, faction);
+        SetupSpriteSets(ship, hull, faction);
+        SetupSpotlightSets(ship, hull, faction);
+        SetupPlaneSets(ship, hull, faction);
+        SetupBoosters(ship, hull, race);
+        SetupLocators(ship, hull);
+
+        const curves = SetupAnimations(ship, hull);
+        SetupChildren(ship, hull, curves[0], curves[1]);
+        SetupInstancedMeshes(ship, hull, faction, race, commands, pattern);
+
+        ship.Initialize();
+        return ship;
+    };
+
+    /**
+     * Gets a sof hull
+     * @param {String} hull
+     * @returns {Promise<EveSOFDataHull>}
+     */
+    this.FetchHull = async (hull) =>
+    {
+        return getSofObjectKey("hull", hull, ErrSOFHullNotFound);
+    };
+
+    /**
+     * Gets sof hull names and descriptions
+     * @returns {Promise<{}>}
+     */
+    this.FetchHullNames = async () =>
+    {
+        return getSofObjectValueDescriptions("hull");
+    };
+
+    /**
+     * Gets a sof hull projection
+     * @param {String} hull
+     * @param {String} pattern
+     * @returns {Promise<*>}
+     */
+    this.FetchHullPattern = async (hull, pattern) =>
+    {
+        const
+            patternData = await this.FetchPattern(pattern),
+            found = getHullProjection(hull, patternData);
+
+        if (found) return found;
+
+        throw new Error(`Invalid pattern for hull (${hull}:${pattern})`);
+    };
+
+    /**
+     * Gets all hull projections
+     * @param {String} hull
+     * @param {{}} [out={}]
+     * @returns {Promise<{}>}
+     */
+    this.FetchHullPatternNames = async (hull, out = {}) =>
+    {
+        const patternsData = await getSofObject("pattern");
+
+        out[hull] = [];
+
+        for (let i = 0; i < patternsData.length; i++)
+        {
+            for (let x = 0; x < patternsData[i].projections.length; i++)
+            {
+                if (patternsData[i].projections[i].name === hull)
+                {
+                    out[hull].push(patternsData[i].name);
+                    break;
+                }
+            }
+        }
+
+        out[hull].sort();
+        return out;
+    };
+
+    /**
+     * Gets a sof hull's build class
+     * @param {String} dna
      * @returns {Promise<number>}
      */
-    this.GetHullBuildClass = function(name)
+    this.FetchHullBuildClass = async (dna) =>
     {
-        const c = name.indexOf(":");
-        if (c > 0) name = name.substr(0, c);
-        return getSofRoot("hull", name).then(obj => obj.buildClass === 2 ? 2 : 1);
+        const
+            hull = dna.split(":")[0],
+            data = await this.FetchHull(hull);
+
+        return data.buildClass === 2 ? 2 : 1;
+    };
+
+    /**
+     * Gets a sof race
+     * @param race
+     * @returns {Promise<EveSOFDataRace>}
+     */
+    this.FetchRace = async (race) =>
+    {
+        return getSofObjectKey("race", race, ErrSOFRaceNotFound);
+    };
+
+    /**
+     * Get all sof race names and descriptions
+     * @returns {Promise<{}>}
+     */
+    this.FetchRaceNames = async () =>
+    {
+        return getSofObjectValueDescriptions("race");
+    };
+
+    /**
+     * Gets a sof faction
+     * @param faction
+     * @returns {Promise<EveSOFDataFaction>}
+     */
+    this.FetchFaction = async (faction) =>
+    {
+        return getSofObjectKey("faction", faction, ErrSOFFactionNotFound);
+    };
+
+    /**
+     * Gets all sof faction names and descriptions
+     * @returns {Promise<{}>}
+     */
+    this.FetchFactionNames = async () =>
+    {
+        return getSofObjectValueDescriptions("faction");
+    };
+
+    /**
+     * Gets a sof material
+     * @param material
+     * @returns {Promise<EveSOFDataMaterial>}
+     */
+    this.FetchMaterial = async (material) =>
+    {
+        return getSofObjectKey("material", material, ErrSOFMaterialNotFound);
+    };
+
+    /**
+     * Gets all material names and descriptions
+     * @returns {Promise<{}>}
+     */
+    this.FetchMaterialNames = async () =>
+    {
+        return getSofObjectValueDescriptions("material");
+    };
+
+    /**
+     * Gets a sof pattern
+     * @param pattern
+     * @returns {Promise<EveSOFDataPattern>}
+     */
+    this.FetchPattern = async (pattern) =>
+    {
+        return getSofObjectKey("pattern", pattern, ErrSOFPatternNotFound);
+    };
+
+    /**
+     * Gets all pattern names and descriptions
+     * @returns {Promise<{}>}
+     */
+    this.FetchPatternNames = async () =>
+    {
+        return getSofObjectValueDescriptions("pattern");
     };
 
 }

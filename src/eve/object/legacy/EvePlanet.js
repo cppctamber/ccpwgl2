@@ -178,6 +178,20 @@ export class EvePlanet extends EveObject
     }
 
     /**
+     * Creates the planet's height map
+     * TODO: Figure out why this doesn't always work
+     */
+    CreateHeightMap()
+    {
+        this.heightMap.Set();
+        device.SetStandardStates(device.RM_FULLSCREEN);
+        device.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        device.gl.clear(device.gl.COLOR_BUFFER_BIT);
+        device.RenderFullScreenQuad(this.effectHeight);
+        this.heightMap.Unset();
+    }
+
+    /**
      * Gets render batches
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
@@ -192,18 +206,12 @@ export class EvePlanet extends EveObject
             }
 
             this.watchedResources = [];
-
-            this.heightMap.Set();
-            device.SetStandardStates(device.RM_FULLSCREEN);
-            device.gl.clearColor(0.0, 0.0, 0.0, 0.0);
-            device.gl.clear(device.gl.COLOR_BUFFER_BIT);
-            device.RenderFullScreenQuad(this.effectHeight);
-            this.heightMap.Unset();
+            this.CreateHeightMap();
 
             this.heightDirty = false;
             for (let i = 0; i < this.lockedResources.length; ++i)
             {
-                this.lockedResources[i].UnWatch(this);
+                this.lockedResources[i].doNotPurge--;
             }
 
             const mainMesh = this.highDetail.children[0].mesh;
@@ -342,12 +350,19 @@ export class EvePlanet extends EveObject
 
         for (let i = 0; i < planet.lockedResources.length; ++i)
         {
-            planet.lockedResources[i].Watch(this);
+            planet.lockedResources[i].doNotPurge++;
             if (planet.lockedResources[i].IsPurged())
             {
                 planet.lockedResources[i].Reload();
             }
         }
     }
+
+    /**
+     * Identifies the object is a planet
+     * @type {boolean}
+     * @private
+     */
+    static __isPlanet = true;
 
 }

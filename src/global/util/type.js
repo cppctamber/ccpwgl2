@@ -18,6 +18,17 @@ export function isArrayLike(a)
 }
 
 /**
+ * Checks if a function is async
+ * @param {*} a
+ * @returns {boolean}
+ */
+export function isAsyncFunction(a)
+{
+    return !!(isFunction(a) && a.constructor.name === "AsyncFunction");
+}
+
+
+/**
  * Checks if a value is a boolean
  * @param {*} a
  * @returns {Boolean}
@@ -250,6 +261,27 @@ export function isTag(a, tag)
 {
     return toString.call(a) === tag;
 }
+
+/**
+ * Checks if a string is preceded with 'Tr2' or 'Tri'
+ * @param {String} string
+ * @returns {boolean}
+ */
+export function isTr2OrTri(string)
+{
+    return string && string.indexOf("Tr2") === 0 || string.indexOf("Tri") === 0;
+}
+
+/**
+ * Converts a string that is preceeded with a 'Tr2' or 'Tri' to 'Tw2'
+ * @param string
+ * @returns {void|*|string}
+ */
+export function toTw2(string)
+{
+    return isTr2OrTri(string) ? string.replace("Tr2", "Tw2").replace("Tri", "Tw2") : string;
+}
+
 
 /**
  * Gets an object's type in uppercase

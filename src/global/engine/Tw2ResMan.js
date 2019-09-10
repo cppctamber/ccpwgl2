@@ -253,11 +253,11 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Gets a promise that will resolve into a resource
+     * Fetches a resource
      * @param {String} path
-     * @returns {Promise<Tw2Resource>}
+     * @returns {Promise<Tw2Resource|null>}
      */
-    async GetResourceAsync(path)
+    async FetchResource(path)
     {
         return new Promise((resolve, reject) =>
         {
@@ -290,11 +290,11 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
-     * Gets a promise that will resolve into an object
+     * Fetches an object
      * @param {String} path
      * @returns {Promise<any>}
      */
-    async GetObjectAsync(path)
+    async FetchObject(path)
     {
         return new Promise((resolve, reject) =>
         {

@@ -189,4 +189,12 @@ export class EveShip extends EveSpaceObject
         }
     }
 
+    /**
+     * Identifies the object is a ship
+     * @type {boolean}
+     * @private
+     */
+    static __isShip = true;
+
+
 }

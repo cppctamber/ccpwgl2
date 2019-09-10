@@ -33,20 +33,20 @@
 
             scene = ccpwgl.loadScene(stationPath, function()
             {
-                hangar = scene.wrappedObjects[0];
+                var backgroundObjects = this.wrappedScene.backgroundObjects;
 
                 // Hide glaring lights on caldari hangar
                 if (stationPath === hangars[1])
                 {
-                    scene.wrappedObjects[0].display = false;
+                    backgroundObjects[0].display = false;
                 }
 
                 // Hide station ships
-                for (var i = 1; i < scene.wrappedObjects.length; i++)
+                for (var i = 1; i < backgroundObjects.length; i++)
                 {
-                    if (scene.wrappedObjects[i] instanceof ccpwgl_int.EveShip)
+                    if (backgroundObjects[i] instanceof ccpwgl_int.EveShip)
                     {
-                        scene.wrappedObjects[i].display = false;
+                        backgroundObjects[i].display = false;
                     }
                 }
             });

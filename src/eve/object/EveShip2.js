@@ -78,4 +78,11 @@ export class EveShip2 extends EveObject
      */
     static __isStaging = 4;
 
+    /**
+     * Identifies the object is a ship
+     * @type {boolean}
+     * @private
+     */
+    static __isShip = true;
+
 }

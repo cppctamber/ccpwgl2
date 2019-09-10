@@ -165,6 +165,28 @@ export class EveSpaceScene extends Tw2BaseClass
         this.SetEnvMapDiffuse(this.envMap1ResPath);
         this.SetEnvMapBlur(this.envMap2ResPath);
         this.SetPostProcess(this.postProcessPath);
+
+        // Shift own objects to the background objects array
+        // This is to stop wrapped scenes from accidentally purging the scene's own objects
+        // during scene rebuilds
+        if (this.objects.length)
+        {
+            for (let i = 0; i < this.objects.length; i++)
+            {
+                this.backgroundObjects.push(this.objects[i]);
+            }
+            this.objects.splice(0);
+        }
+
+    }
+
+    /**
+     * Sets the scene's local transform
+     * @param {mat4} m
+     */
+    SetLocalTransform(m)
+    {
+        mat4.copy(this._localTransform, m);
     }
 
     /**
@@ -723,5 +745,12 @@ export class EveSpaceScene extends Tw2BaseClass
      * @property {null|Number}
      */
     static __isStaging = 2;
+
+    /**
+     * Identifies the object is a scene
+     * @type {boolean}
+     * @private
+     */
+    static __isScene = true;
 
 }

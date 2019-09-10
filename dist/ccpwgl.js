@@ -230,15 +230,16 @@ var ccpwgl = (function(ccpwgl_int)
         }
         if (renderingEnabled)
         {
-            var d = ccpwgl_int.device;
-            d.SetStandardStates(d.RM_OPAQUE);
-            d.gl.clearColor(clear[0], clear[1], clear[2], clear[3]);
-            d.gl.clearDepth(1.0);
-            d.gl.viewport(0, 0, d.viewportWidth, d.viewportHeight);
-            d.gl.clear(d.gl.COLOR_BUFFER_BIT | d.gl.DEPTH_BUFFER_BIT);
+            var tw2 = ccpwgl_int;
 
-            d.SetProjection(camera.getProjection(d.viewportWidth / d.viewportHeight));
-            d.SetView(camera.getView());
+            tw2
+                .SetStandardStates(tw2.consts.RM_OPAQUE)
+                .GLClearColor(clear)
+                .GLClearDepth(1.0)
+                .GLViewport([0,0,tw2.width, tw2.height])
+                .GLClear(tw2.gl.COLOR_BUFFER_BIT | tw2.gl.DEPTH_BUFFER_BIT)
+                .SetProjectionMatrix(camera.getProjection(tw2.aspect))
+                .SetViewMatrix(camera.getView());
 
             if (ccpwgl.onPreRender)
             {
@@ -255,10 +256,11 @@ var ccpwgl = (function(ccpwgl_int)
             if (!ccpwgl.post || !ccpwgl.post.Render())
             {
                 // We have crap in back buffer alpha channel, so clear it
-                d.gl.colorMask(false, false, false, true);
-                d.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-                d.gl.clear(d.gl.COLOR_BUFFER_BIT);
-                d.gl.colorMask(true, true, true, true);
+                tw2
+                    .GLColorMask([false, false, false, false])
+                    .GLClearColor([0,0,0,1])
+                    .GLClear(tw2.gl.COLOR_BUFFER_BIT)
+                    .GLColorMask([true, true, true, true]);
             }
         }
 
@@ -430,12 +432,6 @@ var ccpwgl = (function(ccpwgl_int)
         throw err;
     };
 
-    // Store the sof locally for testing
-    ccpwgl_int.eveSof.GetData().then(function(data)
-    {
-        ccpwgl.sof = data;
-    })
-
     /**
      * Returns the whole Space Object Factory file.
      * Provides a callback that is called once SOF data has been loaded.
@@ -444,7 +440,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofData = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetData()
+        ccpwgl_int.eveSof.FetchSOF()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
@@ -460,7 +456,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofHullNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetHullNames()
+        ccpwgl_int.eveSof.FetchHullNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
@@ -476,7 +472,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofFactionNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetFactionNames()
+        ccpwgl_int.eveSof.FetchFactionNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
@@ -492,28 +488,28 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofRaceNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetRaceNames()
+        ccpwgl_int.eveSof.FetchRaceNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
 
     ccpwgl.getMaterialNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetMaterialNames()
+        ccpwgl_int.eveSof.FetchMaterialNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     }
 
     ccpwgl.getPatternNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetPatternNames()
+        ccpwgl_int.eveSof.FetchPatternNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     }
 
     ccpwgl.getHullPatternNames = function(hull, onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetHullPatternNames(hull)
+        ccpwgl_int.eveSof.FetchHullPatternNames(hull)
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     }
@@ -528,13 +524,27 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofHullConstructor = function(hull, onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.GetHullBuildClass(hull)
+        ccpwgl_int.eveSof.FetchHullBuildClass(hull)
             .then(function(buildClass)
             {
                 onResolved(buildClass === 2 ? "loadObject" : "loadShip");
             })
             .catch(onRejected || defaultErrorHandler);
     };
+
+    /**
+     * Loads an object
+     * @param {String} resPath
+     * @param {Function} [onResolved]
+     * @param {Function} [onRejected]
+     */
+    ccpwgl.GetObject = function(resPath, onResolved, onRejected)
+    {
+        ccpwgl_int.FetchObject(resPath)
+            .then(onResolved)
+            .catch(onRejected || defaultErrorHandler);
+    }
+
 
     /**
      * Wrapper for static objects (stations, gates, asteroids, clouds, etc.).
@@ -694,7 +704,7 @@ var ccpwgl = (function(ccpwgl_int)
                 overlay: null
             };
             this.overlays.push(overlay);
-            ccpwgl_int.GetObject(resPath, function(obj)
+            ccpwgl.GetObject(resPath, function(obj)
             {
                 overlay.overlay = obj;
                 rebuildOverlays();
@@ -727,7 +737,7 @@ var ccpwgl = (function(ccpwgl_int)
             this.dna = resPath;
         }
 
-        ccpwgl_int.GetObject(resPath, onObjectLoaded);
+        ccpwgl.GetObject(resPath, onObjectLoaded);
     }
 
     /**
@@ -918,7 +928,7 @@ var ccpwgl = (function(ccpwgl_int)
                 overlay: null
             };
             this.overlays.push(overlay);
-            ccpwgl_int.GetObject(resPath, function(obj)
+            ccpwgl.GetObject(resPath, function(obj)
             {
                 overlay.overlay = obj;
                 rebuildOverlays();
@@ -1104,7 +1114,7 @@ var ccpwgl = (function(ccpwgl_int)
 
             for (var i = 0; i < self.wrappedObjects.length; ++i)
             {
-                ccpwgl_int.GetObject(resPath, loaded(i));
+                ccpwgl.GetObject(resPath, loaded(i));
             }
         };
 
@@ -1359,7 +1369,7 @@ var ccpwgl = (function(ccpwgl_int)
 
 
             ship.RebuildTurretPositions();
-            ccpwgl_int.GetObject(
+            ccpwgl.GetObject(
                 resPath,
                 function(object)
                 {
@@ -1557,7 +1567,7 @@ var ccpwgl = (function(ccpwgl_int)
                 }
             }
 
-            ccpwgl_int.GetObject(resPath[i], OnShipPartLoaded(i));
+            ccpwgl.GetObject(resPath[i], OnShipPartLoaded(i));
         }
     }
 
@@ -1674,8 +1684,6 @@ var ccpwgl = (function(ccpwgl_int)
     {
         /** Wrapped ccpwgl_int scene object @type {ccpwgl_int.EveSpaceScene} **/
         this.wrappedScene = null;
-        /** Scene objects that were loaded with the scene **/
-        this.wrappedObjects = [];
         /** Array of rendered objects: SpaceObject, Ship or Planet **/
         this.objects = [];
         /** Current wrapped ccpwgl_int lensflare @type {ccpwgl_int.EveLensflare} **/
@@ -1746,30 +1754,25 @@ var ccpwgl = (function(ccpwgl_int)
             {
                 return;
             }
-            self.wrappedScene.planets.splice(0, self.wrappedScene.planets.length);
-            self.wrappedScene.objects.splice(0, self.wrappedScene.objects.length);
+            self.wrappedScene.planets.splice(0);
+            self.wrappedScene.objects.splice(0);
             for (var i = 0; i < self.objects.length; ++i)
             {
                 for (var j = 0; j < self.objects[i].wrappedObjects.length; ++j)
                 {
-                    if (self.objects[i].wrappedObjects[j])
+                    var wrapped = self.objects[i].wrappedObjects[j];
+                    if (wrapped)
                     {
                         if (self.objects[i] instanceof Planet)
                         {
-                            self.wrappedScene.planets.push(self.objects[i].wrappedObjects[j]);
+                            self.wrappedScene.planets.push(wrapped);
                         }
                         else
                         {
-                            self.wrappedScene.objects.push(self.objects[i].wrappedObjects[j]);
+                            self.wrappedScene.objects.push(wrapped);
                         }
                     }
                 }
-            }
-
-            // Add objects that were loaded with the scene back
-            for (var i = 0; i < self.wrappedObjects.length; i++)
-            {
-                self.wrappedScene.objects.push(self.wrappedObjects[i]);
             }
         }
 
@@ -1828,7 +1831,7 @@ var ccpwgl = (function(ccpwgl_int)
         this.load = function(resPath, onload)
         {
             var self = this;
-            ccpwgl_int.GetObject(
+            ccpwgl.GetObject(
                 resPath,
                 function(obj)
                 {
@@ -2019,7 +2022,7 @@ var ccpwgl = (function(ccpwgl_int)
         this.loadSun = function(resPath, onload)
         {
             var self = this;
-            ccpwgl_int.GetObject(
+            ccpwgl.GetObject(
                 resPath,
                 function(obj)
                 {
@@ -2610,7 +2613,7 @@ var ccpwgl = (function(ccpwgl_int)
 
         if (background && typeof background == "string")
         {
-            ccpwgl_int.GetObject("res:/dx9/scene/starfield/starfieldNebula.red", function(obj)
+            ccpwgl.GetObject("res:/dx9/scene/starfield/starfieldNebula.red", function(obj)
             {
                 scene.wrappedScene.backgroundEffect = obj;
                 if ("NebulaMap" in obj.parameters)

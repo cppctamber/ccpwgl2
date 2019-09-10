@@ -1,6 +1,6 @@
 import {resMan} from "../../global";
 import {Tw2Error} from "../Tw2Error";
-import {isError, isFunction} from "../../global/util";
+import {isFunction} from "../../global/util";
 import {Tw2Notifications} from "../../global/class/Tw2Notifications";
 
 /**
@@ -8,6 +8,7 @@ import {Tw2Notifications} from "../../global/class/Tw2Notifications";
  *
  * @property {Number} activeFrame
  * @property {String} path
+ * @property {Number} doNotPurge
  * @property {Set} _notifications
  * @property {Number} _state
  * @property {Array<Error>} _errors
@@ -17,38 +18,11 @@ export class Tw2Resource extends Tw2Notifications
 {
     path = "";
     activeFrame = 0;
+    doNotPurge = 0;
 
     _state = Tw2Resource.State.NO_INIT;
     _errors = [];
     _requested = 0;
-    _watchers = new Set();
-
-    /**
-     * Checks if the resource should be kept alive
-     * @returns {number}
-     */
-    get doNotPurge()
-    {
-        return this._watchers.size;
-    }
-
-    /**
-     * Adds a watcher which keeps the resource alive
-     * @param {*} watcher
-     */
-    Watch(watcher)
-    {
-        this._watchers.add(watcher);
-    }
-
-    /**
-     * Removes a watcher from keeping the resource alive
-     * @param {*} watcher
-     */
-    UnWatch(watcher)
-    {
-        this._watchers.delete(watcher);
-    }
 
     /**
      * Checks if the resource is good and keeps it alive

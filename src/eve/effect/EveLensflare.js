@@ -357,4 +357,11 @@ export class EveLensflare extends Tw2BaseClass
      */
     static __isStaging = 1;
 
+    /**
+     * Identifies the object is a lensflare
+     * @type {boolean}
+     * @private
+     */
+    static __isLensflare = true;
+
 }

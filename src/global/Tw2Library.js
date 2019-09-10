@@ -1,6 +1,17 @@
 import {Tw2EventEmitter} from "./class";
 import {Tw2ResMan, Tw2Device, Tw2Logger} from "./engine";
-import {isArray, isFunction, isPlain, isString, toArray, isDNA, enableUUID, isObjectObject} from "./util";
+import {
+    isArray,
+    isFunction,
+    isPlain,
+    isString,
+    toArray,
+    isDNA,
+    enableUUID,
+    isObjectObject,
+    isTr2OrTri,
+    toTw2
+} from "./util";
 import * as readers from "../core/reader/Tw2BlackPropertyReaders";
 import * as math from "./math";
 import * as util from "./util";
@@ -78,6 +89,32 @@ class Tw2Library extends Tw2EventEmitter
         return this.device.dt;
     }
 
+    /**
+     * Alias for device.viewportWidth
+     * @returns {number}
+     */
+    get width()
+    {
+        return this.device.viewportWidth;
+    }
+
+    /**
+     * Alias for device.viewportHeight
+     * @returns {number}
+     */
+    get height()
+    {
+        return this.device.viewportHeight;
+    }
+
+    /**
+     * Alias for device.viewportAspect
+     * @returns {number}
+     */
+    get aspect()
+    {
+        return this.device.viewportAspect;
+    }
 
     /**
      * Constructor
@@ -92,26 +129,7 @@ class Tw2Library extends Tw2EventEmitter
         
         super();
         Tw2EventEmitter.defaultLogger = this;
-
-        let debug = false;
-        Object.defineProperty(this, "debug", {
-            get: () => debug,
-            set: (bool) =>
-            {
-                this._store.class.forEach(Constructor =>
-                {
-                    if ("DEBUG_ENABLED" in Constructor) Constructor.DEBUG_ENABLED = debug;
-                });
-
-                if (debug !== bool)
-                {
-                    this.logger.Debug(bool);
-                    this.emit("debug_mode", bool);
-                    this.Log("warn", `Debugging ${bool ? "enabled" : "disabled"}`);
-                }
-            }
-        });
-
+        createDebugProperty(this);
         lazyLoadClass(this, "eveSof", "EveSOF", this);
     }
 
@@ -246,22 +264,90 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Sets the device's render state value
-     * @param {Number} state
-     * @param {Number} value
-     */
-    SetDeviceRenderState(state, value)
-    {
-        this.device.SetRenderState(state, value);
-    }
-
-    /**
      * Sets the device's standard states
      * @param {Number} renderMode
      */
-    SetDeviceStandardStates(renderMode)
+    SetStandardStates(renderMode)
     {
         this.device.SetStandardStates(renderMode);
+        return this;
+    }
+
+    /**
+     * Sets the gl color mask
+     * @param colorMask
+     * @returns {Tw2Library}
+     */
+    GLColorMask(colorMask)
+    {
+        this.device.gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
+        return this;
+    }
+
+    /**
+     * Sets the gl clear color
+     * @param clearColor
+     * @returns {Tw2Library}
+     */
+    GLClearColor(clearColor)
+    {
+        this.device.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        return this;
+    }
+
+    /**
+     * Sets gl clear depth
+     * @param value
+     * @returns {Tw2Library}
+     */
+    GLClearDepth(value)
+    {
+        this.device.gl.clearDepth(value);
+        return this;
+    }
+
+    /**
+     * Sets the gl viewport
+     * @param viewport
+     * @returns {Tw2Library}
+     */
+    GLViewport(viewport)
+    {
+        this.device.gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+        return this;
+    }
+
+    /**
+     * Clears gl
+     * @param value
+     * @returns {Tw2Library}
+     */
+    GLClear(value)
+    {
+        this.device.gl.clear(value);
+        return this;
+    }
+
+    /**
+     * Sets the device projection matrix
+     * @param {mat4} m
+     * @returns {Tw2Library}
+     */
+    SetProjectionMatrix(m)
+    {
+        this.device.SetProjection(m);
+        return this;
+    }
+
+    /**
+     * Sets the device view matrix
+     * @param {mat4} m
+     * @returns {Tw2Library}
+     */
+    SetViewMatrix(m)
+    {
+        this.device.SetView(m);
+        return this;
     }
 
     /**
@@ -275,63 +361,93 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Gets a resource
-     * @param path
-     * @param onResolved
-     * @param onRejected
-     * @returns {*}
-     */
-    GetResource(path, onResolved, onRejected)
-    {
-        return this.resMan.GetResource(path, onResolved, onRejected);
-    }
-
-    /**
      * Gets a resource asynchronously
-     * @param path
-     * @returns {Promise<*>}
-     * @constructor
+     * @param {String} resPath
+     * @returns {Promise<Tw2Resource>}
      */
-    GetResourceAsync(path)
+    async FetchResource(resPath)
     {
-        return this.resMan.GetResourceAsync(path);
-    }
-
-    /**
-     * Gets an object
-     * @param resPath
-     * @param onResolved
-     * @param onRejected
-     */
-    GetObject(resPath, onResolved, onRejected)
-    {
-        if (isDNA(resPath))
-        {
-            this.eveSof.GetObject(resPath)
-                .then(onResolved)
-                .catch(onRejected);
-        }
-        else
-        {
-            this.resMan.GetObject(resPath, onResolved, onRejected);
-        }
+        return this.resMan.GetResourceAsync(resPath);
     }
 
     /**
      * Gets an object asynchronously
      * @param {String} resPath
+     * @param {String|Class|Function|Array<String|Class|Function>} [expectedConstructor]
      * @returns {Promise<*>}
      */
-    GetObjectAsync(resPath)
+    async FetchObject(resPath, expectedConstructor)
     {
+        let result;
         if (isDNA(resPath))
         {
-            return this.eveSof.GetObject(resPath);
+            result = await this.eveSof.FetchObject(resPath);
         }
         else
         {
-            return this.resMan.GetObjectAsync(resPath);
+            result = await this.resMan.FetchObject(resPath);
         }
+
+        if (!this.IsClass(result, expectedConstructor))
+        {
+            throw new Error("Unexpected constructor");
+        }
+
+        return result;
+    }
+
+    /**
+     * Fetches a resPath's build constructor
+     * TODO: Add planets, moons and scenes?
+     * @param {String} resPath
+     * @returns {Promise<number>}
+     */
+    async FetchBuildClass(resPath)
+    {
+        return isDNA(resPath) ? await this.eveSof.FetchHullBuildClass(resPath) : 2;
+    }
+
+    /**
+     * Checks if an object is a valid class
+     * @param {*} object
+     * @param {String|Class|Function|Array<String|Class|Function>}expectedConstructor
+     * @returns {boolean}
+     */
+    IsClass(object, expectedConstructor)
+    {
+        if (!expectedConstructor)
+        {
+            return true;
+        }
+
+        expectedConstructor = toArray(expectedConstructor);
+
+        let isGood;
+        for (let i = 0; i < expectedConstructor.length; i++)
+        {
+            let Constructor = expectedConstructor[i],
+                exclude = false;
+
+            if (isString(Constructor))
+            {
+                if (Constructor.charAt(0) === "!")
+                {
+                    exclude = true;
+                    Constructor = Constructor.substring(1);
+                }
+                if (Constructor === "Array") Constructor = Array;
+                else if (Constructor === "Object") Constructor = Object;
+                else Constructor = this.GetClass(Constructor);
+            }
+
+            if (object instanceof Constructor)
+            {
+                isGood = !exclude;
+                break;
+            }
+        }
+
+        return isGood;
     }
 
     /**
@@ -456,7 +572,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasBlack(name)
     {
-        return hasStoreKey(this, "black", name);
+        return hasStoreKey(this, "black", name, { isClassName: true });
     }
 
     /**
@@ -492,7 +608,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     HasClass(name)
     {
-        return hasStoreKey(this, "class", name);
+        return hasStoreKey(this, "class", name, { isClassName: true });
     }
 
     /**
@@ -699,12 +815,14 @@ function validateStore(library, storeType)
  * @param library
  * @param storeType
  * @param key
+ * @param options
  * @returns {*}
  */
-function hasStoreKey(library, storeType, key)
+function hasStoreKey(library, storeType, key, options)
 {
     validateStore(library, storeType);
-    return library._store[storeType].has(key);
+    const store = library._store[storeType];
+    return store.has(key) || (options && options.isClassName && isTr2OrTri(key) && store.has(toTw2(key)));
 }
 
 /**
@@ -726,12 +844,12 @@ function getStoreKey(library, storeType, key, options)
         return library._store[storeType].get(key);
     }
     // Allow substituting of Tr2 and Tri names
-    else if (options && options.isClassName && (key.indexOf("Tr2") === 0 || key.indexOf("Tri") === 0))
+    else if (options && options.isClassName && isTr2OrTri(key))
     {
-        const newKey = key.replace("Tr2", "Tw2").replace("Tri", "Tw2");
+        const newKey = toTw2(key);
         if (store.has(newKey))
         {
-            const Substitute = store.get(key);
+            const Substitute = store.get(newKey);
             library.emit("store.substituted", storeType, newKey, Substitute, key);
             return Substitute;
         }
@@ -815,6 +933,29 @@ function setStoreKeyValues(library, storeType, values)
             }
         }
     }
+}
+
+function createDebugProperty(library)
+{
+    let debug = false;
+
+    Object.defineProperty(library, "debug", {
+        get: () => debug,
+        set: (bool) =>
+        {
+            library._store.class.forEach(Constructor =>
+            {
+                if ("DEBUG_ENABLED" in Constructor) Constructor.DEBUG_ENABLED = debug;
+            });
+
+            if (debug !== bool)
+            {
+                library.logger.Debug(bool);
+                library.emit("debug_mode", bool);
+                library.Log("warn", `Debugging ${bool ? "enabled" : "disabled"}`);
+            }
+        }
+    });
 }
 
 export const tw2 = new Tw2Library();

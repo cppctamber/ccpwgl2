@@ -1,5 +1,11 @@
 import {isArray, findElementByProperty} from "../global/util";
-import {Tw2Error} from "../core";
+import {
+    ErrSOFFactionNotFound,
+    ErrSOFHullNotFound,
+    ErrSOFMaterialNotFound,
+    ErrSOFPatternNotFound,
+    ErrSOFRaceNotFound
+} from "../core";
 
 /**
  * EveSOFData
@@ -285,60 +291,5 @@ export class EveSOFData
             ["pattern", r.array],
             ["race", r.array]
         ];
-    }
-}
-
-/**
- * Fires when a sof hull is not found
- */
-export class ErrSOFHullNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Hull not found: '%name%'");
-    }
-}
-
-/**
- * Fires when a sof faction is not found
- */
-export class ErrSOFFactionNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Faction not found: '%name%'");
-    }
-}
-
-/**
- * Fires when a sof race is not found
- */
-export class ErrSOFRaceNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Race not found: '%name%'");
-    }
-}
-
-/**
- * Fires when a sof material is not found
- */
-export class ErrSOFMaterialNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Material not found: '%name%'");
-    }
-}
-
-/**
- * Fires when a sof pattern is not found
- */
-export class ErrSOFPatternNotFound extends Tw2Error
-{
-    constructor(data)
-    {
-        super(data, "SOF Pattern not found: '%name%'");
     }
 }

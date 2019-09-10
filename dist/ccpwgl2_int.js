@@ -16451,7 +16451,7 @@ const config = {
     "antialiasing": true,
     "anisotropicFiltering": true,
     "webgl2": true,
-    "webvr": true,
+    "webvr": false,
     "performanceClock": true
   },
   resMan: {
@@ -16871,7 +16871,7 @@ _defineProperty(TriObserverLocal, "__isStaging", 4);
 /*!**************************!*\
   !*** ./core/Tw2Error.js ***!
   \**************************/
-/*! exports provided: Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference */
+/*! exports provided: Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -16915,6 +16915,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingValueUndefined", function() { return ErrBindingValueUndefined; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingType", function() { return ErrBindingType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrBindingReference", function() { return ErrBindingReference; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return ErrSOFHullNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return ErrSOFFactionNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return ErrSOFRaceNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return ErrSOFMaterialNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return ErrSOFPatternNotFound; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return ErrWrapped; });
 /* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/util */ "./global/util/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -17362,6 +17368,66 @@ class ErrBindingType extends Tw2Error {
 class ErrBindingReference extends Tw2Error {
   constructor(data) {
     super(data, "Error binding '%name=unknown%', could not find %object% object reference");
+  }
+
+}
+/**
+ * Fires when a sof hull is not found
+ */
+
+class ErrSOFHullNotFound extends Tw2Error {
+  constructor(data) {
+    super(data, "SOF Hull not found: '%name%'");
+  }
+
+}
+/**
+ * Fires when a sof faction is not found
+ */
+
+class ErrSOFFactionNotFound extends Tw2Error {
+  constructor(data) {
+    super(data, "SOF Faction not found: '%name%'");
+  }
+
+}
+/**
+ * Fires when a sof race is not found
+ */
+
+class ErrSOFRaceNotFound extends Tw2Error {
+  constructor(data) {
+    super(data, "SOF Race not found: '%name%'");
+  }
+
+}
+/**
+ * Fires when a sof material is not found
+ */
+
+class ErrSOFMaterialNotFound extends Tw2Error {
+  constructor(data) {
+    super(data, "SOF Material not found: '%name%'");
+  }
+
+}
+/**
+ * Fires when a sof pattern is not found
+ */
+
+class ErrSOFPatternNotFound extends Tw2Error {
+  constructor(data) {
+    super(data, "SOF Pattern not found: '%name%'");
+  }
+
+}
+/**
+ * Throws when invalid wrapped objects are passed as arguments
+ */
+
+class ErrWrapped extends Tw2Error {
+  constructor(data) {
+    super(data, "Invalid wrapped object(s) (%reason%)");
   }
 
 }
@@ -18904,7 +18970,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19141,6 +19207,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingType", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrBindingType"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrBindingReference", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrBindingReference"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrSOFHullNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrSOFFactionNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrSOFRaceNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrSOFMaterialNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrSOFPatternNotFound"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return _Tw2Error__WEBPACK_IMPORTED_MODULE_16__["ErrWrapped"]; });
 
 /* harmony import */ var _Tw2Frustum__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./Tw2Frustum */ "./core/Tw2Frustum.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Frustum", function() { return _Tw2Frustum__WEBPACK_IMPORTED_MODULE_17__["Tw2Frustum"]; });
@@ -27444,6 +27522,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *
  * @property {Number} activeFrame
  * @property {String} path
+ * @property {Number} doNotPurge
  * @property {Set} _notifications
  * @property {Number} _state
  * @property {Array<Error>} _errors
@@ -27458,46 +27537,19 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
 
     _defineProperty(this, "activeFrame", 0);
 
+    _defineProperty(this, "doNotPurge", 0);
+
     _defineProperty(this, "_state", Tw2Resource.State.NO_INIT);
 
     _defineProperty(this, "_errors", []);
 
     _defineProperty(this, "_requested", 0);
-
-    _defineProperty(this, "_watchers", new Set());
   }
 
-  /**
-   * Checks if the resource should be kept alive
-   * @returns {number}
-   */
-  get doNotPurge() {
-    return this._watchers.size;
-  }
-  /**
-   * Adds a watcher which keeps the resource alive
-   * @param {*} watcher
-   */
-
-
-  Watch(watcher) {
-    this._watchers.add(watcher);
-  }
-  /**
-   * Removes a watcher from keeping the resource alive
-   * @param {*} watcher
-   */
-
-
-  UnWatch(watcher) {
-    this._watchers.delete(watcher);
-  }
   /**
    * Checks if the resource is good and keeps it alive
    * @returns {boolean}
    */
-
-
   IsGood() {
     this.KeepAlive();
     return this.IsPrepared() || this.IsLoaded();
@@ -38106,7 +38158,26 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     this.SetEnvMapReflection(this.envMapPath);
     this.SetEnvMapDiffuse(this.envMap1ResPath);
     this.SetEnvMapBlur(this.envMap2ResPath);
-    this.SetPostProcess(this.postProcessPath);
+    this.SetPostProcess(this.postProcessPath); // Shift own objects to the background objects array
+    // This is to stop wrapped scenes from accidentally purging the scene's own objects
+    // during scene rebuilds
+
+    if (this.objects.length) {
+      for (let i = 0; i < this.objects.length; i++) {
+        this.backgroundObjects.push(this.objects[i]);
+      }
+
+      this.objects.splice(0);
+    }
+  }
+  /**
+   * Sets the scene's local transform
+   * @param {mat4} m
+   */
+
+
+  SetLocalTransform(m) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._localTransform, m);
   }
   /**
    * Sets the post processing path
@@ -38547,6 +38618,8 @@ _defineProperty(EveSpaceScene, "global", null);
 _defineProperty(EveSpaceScene, "DebugRenderer", window["Tw2DebugRenderer"] || null);
 
 _defineProperty(EveSpaceScene, "__isStaging", 2);
+
+_defineProperty(EveSpaceScene, "__isScene", true);
 
 /***/ }),
 
@@ -40809,6 +40882,8 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 _defineProperty(EveLensflare, "global", null);
 
 _defineProperty(EveLensflare, "__isStaging", 1);
+
+_defineProperty(EveLensflare, "__isLensflare", true);
 
 /***/ }),
 
@@ -49047,6 +49122,8 @@ class EveShip2 extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject
 
 _defineProperty(EveShip2, "__isStaging", 4);
 
+_defineProperty(EveShip2, "__isShip", true);
+
 /***/ }),
 
 /***/ "./eve/object/EveStation2.js":
@@ -50038,6 +50115,20 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     this.highDetail.Update(dt);
   }
   /**
+   * Creates the planet's height map
+   * TODO: Figure out why this doesn't always work
+   */
+
+
+  CreateHeightMap() {
+    this.heightMap.Set();
+    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].SetStandardStates(_global_index__WEBPACK_IMPORTED_MODULE_0__["device"].RM_FULLSCREEN);
+    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clear(_global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.COLOR_BUFFER_BIT);
+    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].RenderFullScreenQuad(this.effectHeight);
+    this.heightMap.Unset();
+  }
+  /**
    * Gets render batches
    * @param {number} mode
    * @param {Tw2BatchAccumulator} accumulator
@@ -50051,16 +50142,11 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
       }
 
       this.watchedResources = [];
-      this.heightMap.Set();
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].SetStandardStates(_global_index__WEBPACK_IMPORTED_MODULE_0__["device"].RM_FULLSCREEN);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clearColor(0.0, 0.0, 0.0, 0.0);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clear(_global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.COLOR_BUFFER_BIT);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].RenderFullScreenQuad(this.effectHeight);
-      this.heightMap.Unset();
+      this.CreateHeightMap();
       this.heightDirty = false;
 
       for (let i = 0; i < this.lockedResources.length; ++i) {
-        this.lockedResources[i].UnWatch(this);
+        this.lockedResources[i].doNotPurge--;
       }
 
       const mainMesh = this.highDetail.children[0].mesh;
@@ -50174,15 +50260,23 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     planet.watchedResources.push(planet.effectHeight.effectRes);
 
     for (let i = 0; i < planet.lockedResources.length; ++i) {
-      planet.lockedResources[i].Watch(this);
+      planet.lockedResources[i].doNotPurge++;
 
       if (planet.lockedResources[i].IsPurged()) {
         planet.lockedResources[i].Reload();
       }
     }
   }
+  /**
+   * Identifies the object is a planet
+   * @type {boolean}
+   * @private
+   */
+
 
 }
+
+_defineProperty(EvePlanet, "__isPlanet", true);
 
 /***/ }),
 
@@ -50368,8 +50462,16 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
       }
     }
   }
+  /**
+   * Identifies the object is a ship
+   * @type {boolean}
+   * @private
+   */
+
 
 }
+
+_defineProperty(EveShip, "__isShip", true);
 
 /***/ }),
 
@@ -51488,6 +51590,10 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -51542,6 +51648,33 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     return this.device.dt;
   }
   /**
+   * Alias for device.viewportWidth
+   * @returns {number}
+   */
+
+
+  get width() {
+    return this.device.viewportWidth;
+  }
+  /**
+   * Alias for device.viewportHeight
+   * @returns {number}
+   */
+
+
+  get height() {
+    return this.device.viewportHeight;
+  }
+  /**
+   * Alias for device.viewportAspect
+   * @returns {number}
+   */
+
+
+  get aspect() {
+    return this.device.viewportAspect;
+  }
+  /**
    * Constructor
    */
 
@@ -51580,21 +51713,7 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     });
 
     _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"].defaultLogger = this;
-    let debug = false;
-    Object.defineProperty(this, "debug", {
-      get: () => debug,
-      set: bool => {
-        this._store.class.forEach(Constructor => {
-          if ("DEBUG_ENABLED" in Constructor) Constructor.DEBUG_ENABLED = debug;
-        });
-
-        if (debug !== bool) {
-          this.logger.Debug(bool);
-          this.emit("debug", bool);
-          this.Log("warn", "Debugging ".concat(bool ? "enabled" : "disabled"));
-        }
-      }
-    });
+    createDebugProperty(this);
     lazyLoadClass(this, "eveSof", "EveSOF", this);
   }
   /**
@@ -51728,23 +51847,91 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     }
   }
   /**
-   * Sets the device's render state value
-   * @param {Number} state
-   * @param {Number} value
-   */
-
-
-  SetDeviceRenderState(state, value) {
-    this.device.SetRenderState(state, value);
-  }
-  /**
    * Sets the device's standard states
    * @param {Number} renderMode
    */
 
 
-  SetDeviceStandardStates(renderMode) {
+  SetStandardStates(renderMode) {
     this.device.SetStandardStates(renderMode);
+    return this;
+  }
+  /**
+   * Sets the gl color mask
+   * @param colorMask
+   * @returns {Tw2Library}
+   */
+
+
+  GLColorMask(colorMask) {
+    this.device.gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
+    return this;
+  }
+  /**
+   * Sets the gl clear color
+   * @param clearColor
+   * @returns {Tw2Library}
+   */
+
+
+  GLClearColor(clearColor) {
+    this.device.gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+    return this;
+  }
+  /**
+   * Sets gl clear depth
+   * @param value
+   * @returns {Tw2Library}
+   */
+
+
+  GLClearDepth(value) {
+    this.device.gl.clearDepth(value);
+    return this;
+  }
+  /**
+   * Sets the gl viewport
+   * @param viewport
+   * @returns {Tw2Library}
+   */
+
+
+  GLViewport(viewport) {
+    this.device.gl.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    return this;
+  }
+  /**
+   * Clears gl
+   * @param value
+   * @returns {Tw2Library}
+   */
+
+
+  GLClear(value) {
+    this.device.gl.clear(value);
+    return this;
+  }
+  /**
+   * Sets the device projection matrix
+   * @param {mat4} m
+   * @returns {Tw2Library}
+   */
+
+
+  SetProjectionMatrix(m) {
+    this.device.SetProjection(m);
+    return this;
+  }
+  /**
+   * Sets the device view matrix
+   * @param {mat4} m
+   * @returns {Tw2Library}
+   */
+
+
+  SetViewMatrix(m) {
+    this.device.SetView(m);
+    return this;
   }
   /**
    * Gets a device gl extension
@@ -51757,56 +51944,165 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     return this.device.GetExtension(name);
   }
   /**
-   * Gets a resource
-   * @param path
-   * @param onResolved
-   * @param onRejected
-   * @returns {*}
-   */
-
-
-  GetResource(path, onResolved, onRejected) {
-    return this.resMan.GetResource(path, onResolved, onRejected);
-  }
-  /**
    * Gets a resource asynchronously
-   * @param path
-   * @returns {Promise<*>}
-   * @constructor
+   * @param {String} resPath
+   * @returns {Promise<Tw2Resource>}
    */
 
 
-  GetResourceAsync(path) {
-    return this.resMan.GetResourceAsync(path);
-  }
-  /**
-   * Gets an object
-   * @param resPath
-   * @param onResolved
-   * @param onRejected
-   */
+  FetchResource(resPath) {
+    var _this = this;
 
+    return _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee() {
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            return _context.abrupt("return", _this.resMan.GetResourceAsync(resPath));
 
-  GetObject(resPath, onResolved, onRejected) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath)) {
-      this.eveSof.GetObject(resPath).then(onResolved).catch(onRejected);
-    } else {
-      this.resMan.GetObject(resPath, onResolved, onRejected);
-    }
+          case 1:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee);
+    }))();
   }
   /**
    * Gets an object asynchronously
    * @param {String} resPath
+   * @param {String|Class|Function|Array<String|Class|Function>} [expectedConstructor]
    * @returns {Promise<*>}
    */
 
 
-  GetObjectAsync(resPath) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath)) {
-      return this.eveSof.GetObject(resPath);
-    } else {
-      return this.resMan.GetObjectAsync(resPath);
+  FetchObject(resPath, expectedConstructor) {
+    var _this2 = this;
+
+    return _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee2() {
+      var result;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath)) {
+              _context2.next = 6;
+              break;
+            }
+
+            _context2.next = 3;
+            return _this2.eveSof.FetchObject(resPath);
+
+          case 3:
+            result = _context2.sent;
+            _context2.next = 9;
+            break;
+
+          case 6:
+            _context2.next = 8;
+            return _this2.resMan.FetchObject(resPath);
+
+          case 8:
+            result = _context2.sent;
+
+          case 9:
+            if (_this2.IsClass(result, expectedConstructor)) {
+              _context2.next = 11;
+              break;
+            }
+
+            throw new Error("Unexpected constructor");
+
+          case 11:
+            return _context2.abrupt("return", result);
+
+          case 12:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    }))();
+  }
+  /**
+   * Fetches a resPath's build constructor
+   * TODO: Add planets, moons and scenes?
+   * @param {String} resPath
+   * @returns {Promise<number>}
+   */
+
+
+  FetchBuildClass(resPath) {
+    var _this3 = this;
+
+    return _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee3() {
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath)) {
+              _context3.next = 6;
+              break;
+            }
+
+            _context3.next = 3;
+            return _this3.eveSof.FetchHullBuildClass(resPath);
+
+          case 3:
+            _context3.t0 = _context3.sent;
+            _context3.next = 7;
+            break;
+
+          case 6:
+            _context3.t0 = 2;
+
+          case 7:
+            return _context3.abrupt("return", _context3.t0);
+
+          case 8:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3);
+    }))();
+  }
+  /**
+   * Checks if an object is a valid class
+   * @param {*} object
+   * @param {String|Class|Function|Array<String|Class|Function>}expectedConstructor
+   * @returns {boolean}
+   */
+
+
+  IsClass(object, expectedConstructor) {
+    if (!expectedConstructor) {
+      return true;
     }
+
+    expectedConstructor = Object(_util__WEBPACK_IMPORTED_MODULE_2__["toArray"])(expectedConstructor);
+    let isGood;
+
+    for (let i = 0; i < expectedConstructor.length; i++) {
+      let Constructor = expectedConstructor[i],
+          exclude = false;
+
+      if (Object(_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(Constructor)) {
+        if (Constructor.charAt(0) === "!") {
+          exclude = true;
+          Constructor = Constructor.substring(1);
+        }
+
+        if (Constructor === "Array") Constructor = Array;else if (Constructor === "Object") Constructor = Object;else Constructor = this.GetClass(Constructor);
+      }
+
+      if (object instanceof Constructor) {
+        isGood = !exclude;
+        break;
+      }
+    }
+
+    return isGood;
   }
   /**
    * Creates a variable from values and/or type
@@ -51931,7 +52227,9 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
 
 
   HasBlack(name) {
-    return hasStoreKey(this, "black", name);
+    return hasStoreKey(this, "black", name, {
+      isClassName: true
+    });
   }
   /**
    * Gets a black definition for a given class/ function name
@@ -51968,7 +52266,9 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
 
 
   HasClass(name) {
-    return hasStoreKey(this, "class", name);
+    return hasStoreKey(this, "class", name, {
+      isClassName: true
+    });
   }
   /**
    * Gets a class by it's name
@@ -52202,13 +52502,15 @@ function validateStore(library, storeType) {
  * @param library
  * @param storeType
  * @param key
+ * @param options
  * @returns {*}
  */
 
 
-function hasStoreKey(library, storeType, key) {
+function hasStoreKey(library, storeType, key, options) {
   validateStore(library, storeType);
-  return library._store[storeType].has(key);
+  const store = library._store[storeType];
+  return store.has(key) || options && options.isClassName && Object(_util__WEBPACK_IMPORTED_MODULE_2__["isTr2OrTri"])(key) && store.has(Object(_util__WEBPACK_IMPORTED_MODULE_2__["toTw2"])(key));
 }
 /**
  * Gets a store key's value
@@ -52227,11 +52529,11 @@ function getStoreKey(library, storeType, key, options) {
   if (store.has(key)) {
     return library._store[storeType].get(key);
   } // Allow substituting of Tr2 and Tri names
-  else if (options && options.isClassName && (key.indexOf("Tr2") === 0 || key.indexOf("Tri") === 0)) {
-      const newKey = key.replace("Tr2", "Tw2").replace("Tri", "Tw2");
+  else if (options && options.isClassName && Object(_util__WEBPACK_IMPORTED_MODULE_2__["isTr2OrTri"])(key)) {
+      const newKey = Object(_util__WEBPACK_IMPORTED_MODULE_2__["toTw2"])(key);
 
       if (store.has(newKey)) {
-        const Substitute = store.get(key);
+        const Substitute = store.get(newKey);
         library.emit("store.substituted", storeType, newKey, Substitute, key);
         return Substitute;
       }
@@ -52320,6 +52622,24 @@ function setStoreKeyValues(library, storeType, values) {
       }
     }
   }
+}
+
+function createDebugProperty(library) {
+  let debug = false;
+  Object.defineProperty(library, "debug", {
+    get: () => debug,
+    set: bool => {
+      library._store.class.forEach(Constructor => {
+        if ("DEBUG_ENABLED" in Constructor) Constructor.DEBUG_ENABLED = debug;
+      });
+
+      if (debug !== bool) {
+        library.logger.Debug(bool);
+        library.emit("debug_mode", bool);
+        library.Log("warn", "Debugging ".concat(bool ? "enabled" : "disabled"));
+      }
+    }
+  });
 }
 
 const tw2 = new Tw2Library();
@@ -55858,13 +56178,13 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     return this.LoadResource(res);
   }
   /**
-   * Gets a promise that will resolve into a resource
+   * Fetches a resource
    * @param {String} path
-   * @returns {Promise<Tw2Resource>}
+   * @returns {Promise<Tw2Resource|null>}
    */
 
 
-  GetResourceAsync(path) {
+  FetchResource(path) {
     var _this = this;
 
     return _asyncToGenerator(
@@ -55908,13 +56228,13 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     this.LoadResource(res);
   }
   /**
-   * Gets a promise that will resolve into an object
+   * Fetches an object
    * @param {String} path
    * @returns {Promise<any>}
    */
 
 
-  GetObjectAsync(path) {
+  FetchObject(path) {
     var _this2 = this;
 
     return _asyncToGenerator(
@@ -55953,7 +56273,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       const url = this.BuildUrl(res.path);
       res.OnRequested(eventLog);
 
-      if (res.DoCustomLoad && res.DoCustomLoad(url, Tw2ResMan.GetPathExt(url))) {
+      if (res.DoCustomLoad && res.DoCustomLoad(url, Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(url))) {
         return res;
       }
 
@@ -56036,7 +56356,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       });
     }
 
-    const extension = Tw2ResMan.GetPathExt(path);
+    const extension = Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(path);
 
     if (extension === null) {
       throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUndefined"]({
@@ -56101,18 +56421,6 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     path = path.toLowerCase();
     path = path.replace("\\", "/");
     return path;
-  }
-  /**
-   * Gets a path's extension
-   * @param {String} path
-   * @returns {?String}
-   */
-
-
-  static GetPathExt(path) {
-    const dot = path.lastIndexOf(".");
-    if (dot === -1) return null;
-    return path.substr(dot + 1);
   }
   /**
    * Log type
@@ -56874,7 +57182,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: type, resMan, device, util, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, tw2, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
+/*! exports provided: resMan, device, util, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, tw2, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57631,10 +57939,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ray3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["ray3"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "sph3", function() { return _math__WEBPACK_IMPORTED_MODULE_3__["sph3"]; });
-
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./global/util/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "type", function() { return _util__WEBPACK_IMPORTED_MODULE_4__["type"]; });
-
 
 
 
@@ -64398,12 +64702,12 @@ function toUniqueArray(a) {
 /*!******************************!*\
   !*** ./global/util/index.js ***!
   \******************************/
-/*! exports provided: type, getExtension, addToArray, findElementByProperty, perArrayChild, removeFromArray, toArray, toUniqueArray, assignIfExists, get, template, isEquivalent, isArray, isArrayLike, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, getType, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4, enableUUID, generateID, getURL, getURLString, getURLInteger, getURLFloat, getURLBoolean */
+/*! exports provided: getPathExtension, addToArray, findElementByProperty, perArrayChild, removeFromArray, toArray, toUniqueArray, assignIfExists, get, template, isArray, isArrayLike, isAsyncFunction, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, isTr2OrTri, toTw2, getTypeUpper, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4, enableUUID, generateID, getURL, getURLString, getURLInteger, getURLFloat, getURLBoolean */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getExtension", function() { return getExtension; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPathExtension", function() { return getPathExtension; });
 /* harmony import */ var _arr__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./arr */ "./global/util/arr.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "addToArray", function() { return _arr__WEBPACK_IMPORTED_MODULE_0__["addToArray"]; });
 
@@ -64424,12 +64728,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "template", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["template"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isEquivalent", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["isEquivalent"]; });
-
 /* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./type */ "./global/util/type.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isArray", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isArray"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isArrayLike", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isAsyncFunction", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isAsyncFunction"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isBoolean", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isBoolean"]; });
 
@@ -64469,7 +64773,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTag", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isTag"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getType", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["getType"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTr2OrTri", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isTr2OrTri"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "toTw2", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["toTw2"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getTypeUpper", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["getTypeUpper"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isTyped", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isTyped"]; });
 
@@ -64503,9 +64811,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLBoolean", function() { return _url__WEBPACK_IMPORTED_MODULE_4__["getURLBoolean"]; });
 
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "type", function() { return _type__WEBPACK_IMPORTED_MODULE_2__; });
-
-
 
 
 
@@ -64517,7 +64822,7 @@ __webpack_require__.r(__webpack_exports__);
  * @returns {string|null}
  */
 
-function getExtension(path) {
+function getPathExtension(path) {
   const dot = path.lastIndexOf(".");
   if (dot === -1) return null;
   return path.substr(dot + 1);
@@ -64529,7 +64834,7 @@ function getExtension(path) {
 /*!****************************!*\
   !*** ./global/util/obj.js ***!
   \****************************/
-/*! exports provided: assignIfExists, get, template, isEquivalent */
+/*! exports provided: assignIfExists, get, template */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -64537,11 +64842,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "assignIfExists", function() { return assignIfExists; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "template", function() { return template; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEquivalent", function() { return isEquivalent; });
 /* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./type */ "./global/util/type.js");
 /* harmony import */ var _arr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./arr */ "./global/util/arr.js");
-/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../math */ "./global/math/index.js");
-
 
 
 /**
@@ -64644,71 +64946,6 @@ function template(str) {
 
   return str;
 }
-/**
- * Only for use on standard ccpwgl values
- * - strings
- * - numbers
- * - arrays
- * - typed arrays
- * - single depth object
- *
- * @param {null|undefined|String|Boolean|Number|Array|TypedArray} a
- * @param {null|undefined|String|Boolean|Number|Array|TypedArray} b
- * @param [useEpsilon]
- * @returns {boolean}
- */
-
-function isEquivalent(a, b, useEpsilon) {
-  if (a === b) return true;
-
-  if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isPrimary"])(a)) {
-    if (!Object(_type__WEBPACK_IMPORTED_MODULE_0__["isPrimary"])(b)) return false;
-
-    if (useEpsilon && Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(a) && Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(b)) {
-      return Math.abs(a - b) <= _math__WEBPACK_IMPORTED_MODULE_2__["num"].EPSILON * Math.max(1.0, Math.abs(a), Math.abs(b));
-    }
-
-    return false;
-  }
-
-  if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(a)) {
-    if (!Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(b)) return false;
-
-    if (a.length !== b.length) {
-      return false;
-    }
-
-    for (let i = 0; i < a.length; i++) {
-      if (!isEquivalent(a[i], b[i], useEpsilon)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(a)) {
-    if (!Object(_type__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(b)) return false;
-    const aProps = Object.getOwnPropertyNames(a),
-          bProps = Object.getOwnPropertyNames(b);
-
-    if (aProps.length !== bProps.length) {
-      return false;
-    }
-
-    for (let i = 0; i < aProps.length; i++) {
-      const prop = aProps[i];
-
-      if (!isEquivalent(a[prop], b[prop], useEpsilon)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  return false;
-}
 
 /***/ }),
 
@@ -64716,13 +64953,14 @@ function isEquivalent(a, b, useEpsilon) {
 /*!*****************************!*\
   !*** ./global/util/type.js ***!
   \*****************************/
-/*! exports provided: isArray, isArrayLike, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, getType, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4 */
+/*! exports provided: isArray, isArrayLike, isAsyncFunction, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, isTr2OrTri, toTw2, getTypeUpper, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isArray", function() { return isArray; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isArrayLike", function() { return isArrayLike; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isAsyncFunction", function() { return isAsyncFunction; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isBoolean", function() { return isBoolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isCanvas", function() { return isCanvas; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isDescriptor", function() { return isDescriptor; });
@@ -64742,7 +64980,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isSymbol", function() { return isSymbol; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isSubclassOf", function() { return isSubclassOf; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isTag", function() { return isTag; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getType", function() { return getType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isTr2OrTri", function() { return isTr2OrTri; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "toTw2", function() { return toTw2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTypeUpper", function() { return getTypeUpper; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isTyped", function() { return isTyped; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isUndefined", function() { return isUndefined; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isVector", function() { return isVector; });
@@ -64767,6 +65007,15 @@ const isArray = Array.isArray;
 
 function isArrayLike(a) {
   return a ? isArray(a) || isTyped(a) : false;
+}
+/**
+ * Checks if a function is async
+ * @param {*} a
+ * @returns {boolean}
+ */
+
+function isAsyncFunction(a) {
+  return !!(isFunction(a) && a.constructor.name === "AsyncFunction");
 }
 /**
  * Checks if a value is a boolean
@@ -64977,12 +65226,30 @@ function isTag(a, tag) {
   return toString.call(a) === tag;
 }
 /**
- * Gets an object's type
+ * Checks if a string is preceded with 'Tr2' or 'Tri'
+ * @param {String} string
+ * @returns {boolean}
+ */
+
+function isTr2OrTri(string) {
+  return string && string.indexOf("Tr2") === 0 || string.indexOf("Tri") === 0;
+}
+/**
+ * Converts a string that is preceeded with a 'Tr2' or 'Tri' to 'Tw2'
+ * @param string
+ * @returns {void|*|string}
+ */
+
+function toTw2(string) {
+  return isTr2OrTri(string) ? string.replace("Tr2", "Tw2").replace("Tri", "Tw2") : string;
+}
+/**
+ * Gets an object's type in uppercase
  * @param {*} a
  * @returns {string}
  */
 
-function getType(a) {
+function getTypeUpper(a) {
   return Object.prototype.toString.call(a).slice(8, -1).toUpperCase();
 }
 /**
@@ -68853,12 +69120,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../curve */ "./curve/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../core */ "./core/index.js");
 /* harmony import */ var _eve__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../eve */ "./eve/index.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
 
 
 
 function EveSOF(tw2) {
+  var _this = this;
+
   const self = this;
   var data = null;
   var spriteEffect = null;
@@ -69398,7 +69671,7 @@ function EveSOF(tw2) {
         item.maskAtlasID = src.maskMapAtlasIndex;   // 0
         assignIfExists(item, src, [
             "position", "rotation", "scaling",
-            "layer1Transform", "layer1Scroll", 
+            "layer1Transform", "layer1Scroll",
             "layer2Transform", "layer2Scroll"
         ]);
         */
@@ -69585,7 +69858,7 @@ function EveSOF(tw2) {
       const resPath = children[i]["redFilePath"];
 
       if (resPath) {
-        tw2.GetObject(resPath, onChildLoaded(children[i]));
+        tw2.resMan.GetObject(resPath, onChildLoaded(children[i]));
       } else {
         tw2.Log({
           type: "warning",
@@ -69625,38 +69898,6 @@ function EveSOF(tw2) {
     }
 
     return [curveSet, id_curves];
-  }
-
-  var dataLoading = false;
-  var pendingLoads = [];
-
-  function Build(dna) {
-    var parts = dna.split(":");
-    var commands = {};
-
-    for (var i = 3; i < parts.length; ++i) {
-      var subparts = parts[i].split("?");
-      commands[subparts[0]] = subparts[1].split(";");
-    }
-
-    var hull = data["hull"][parts[0]];
-    var faction = data["faction"][parts[1]];
-    var race = data["race"][parts[2]];
-    var ship = new (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"])();
-    var pattern = SetupPattern(hull, race, commands);
-    SetupMesh(ship, hull, faction, race, commands, pattern);
-    SetupCustomMasks(ship, pattern);
-    SetupDecals(ship, hull, faction);
-    SetupSpriteSets(ship, hull, faction);
-    SetupSpotlightSets(ship, hull, faction);
-    SetupPlaneSets(ship, hull, faction);
-    SetupBoosters(ship, hull, race);
-    SetupLocators(ship, hull);
-    var curves = SetupAnimations(ship, hull);
-    SetupChildren(ship, hull, curves[0], curves[1]);
-    SetupInstancedMeshes(ship, hull, faction, race, commands, pattern);
-    ship.Initialize();
-    return ship;
   }
 
   function GetTurretMaterialParameter(name, parentFaction, areaData) {
@@ -69751,55 +69992,84 @@ function EveSOF(tw2) {
     }
   }
 
-  this.SetupTurretMaterialAsync = function (turretSet, parentFactionName, turretFactionName) {
-    return this.GetData().then(() => {
-      SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
-      return turretSet;
-    });
-  };
-
   this.SetupTurretMaterial = function (turretSet, parentFactionName, turretFactionName, onResolved, onRejected) {
-    return this.SetupTurretMaterialAsync(turretSet, parentFactionName, turretFactionName).then(onResolved).catch(onRejected);
+    return this.FetchTurretMaterial(turretSet, parentFactionName, turretFactionName).then(onResolved).catch(onRejected);
   };
 
-  function setupSpriteEffect() {
-    if (!spriteEffect) {
-      spriteEffect = _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
-        effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
-        parameters: {
-          MainIntensity: 1,
-          GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
-        }
-      });
-    }
-  }
+  this.FetchTurretMaterial =
+  /*#__PURE__*/
+  function () {
+    var _ref = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(turretSet, parentFactionName, turretFactionName) {
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return this.FetchSOF();
 
-  let dataPromise = null;
+          case 2:
+            SetupTurretMaterial(turretSet, parentFactionName, turretFactionName);
+            return _context.abrupt("return", turretSet);
+
+          case 4:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, this);
+    }));
+
+    return function (_x, _x2, _x3) {
+      return _ref.apply(this, arguments);
+    };
+  }();
   /**
-   * Gets sof data asynchronously
-   * @returns {Promise}
+   * Fetches sof data
    */
 
-  this.GetData = function () {
-    if (!dataPromise) {
-      setupSpriteEffect();
-      dataPromise = new Promise((resolve, reject) => {
-        tw2.GetObject("res:/dx9/model/spaceobjectfactory/data.red", obj => {
-          data = obj;
-          resolve(data);
-        }, err => {
-          tw2.Log({
-            type: "error",
-            name: "Space object factory",
-            message: "Could not load data"
-          });
-          reject(err);
-        });
-      });
-    }
 
-    return dataPromise;
-  };
+  this.FetchSOF = function () {
+    let sofPromise = null;
+    /**
+     * Gets sof data asynchronously
+     * @returns {Promise}
+     */
+
+    return (
+      /*#__PURE__*/
+      _asyncToGenerator(
+      /*#__PURE__*/
+      regeneratorRuntime.mark(function _callee2() {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              if (!sofPromise) {
+                spriteEffect = _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+                  effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
+                  parameters: {
+                    MainIntensity: 1,
+                    GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
+                  }
+                });
+                sofPromise = tw2.FetchObject("res:/dx9/model/spaceobjectfactory/data.red").then(sof => data = sof).catch(err => {
+                  tw2.Log({
+                    type: "error",
+                    name: "Space object factory",
+                    message: "Could not load data"
+                  });
+                });
+              }
+
+              return _context2.abrupt("return", sofPromise);
+
+            case 2:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2);
+      }))
+    );
+  }();
   /**
    * Extends the sof data object with patterns from a space object factory file
    * @param {String} [resPath] - The resource path to a source space object factory file
@@ -69807,18 +70077,47 @@ function EveSOF(tw2) {
    */
 
 
-  this.ExtendPatternsFrom = function (resPath) {
-    if (!resPath) {
-      return Promise.reject(new Error("Invalid respath: undefined"));
-    }
+  this.ExtendPatternsFrom =
+  /*#__PURE__*/
+  function () {
+    var _ref3 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee3(resPath) {
+      var currentSof, extendSof;
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            if (resPath) {
+              _context3.next = 2;
+              break;
+            }
 
-    return this.GetData().then(data => {
-      return tw2.GetObjectAsync(resPath).then(sof => {
-        data.pattern = data.pattern.concat(sof.pattern);
-        return data;
-      });
-    });
-  };
+            return _context3.abrupt("return", Promise.reject(new Error("Invalid respath: undefined")));
+
+          case 2:
+            _context3.next = 4;
+            return this.FetchSOF();
+
+          case 4:
+            currentSof = _context3.sent;
+            _context3.next = 7;
+            return tw2.FetchObject(resPath);
+
+          case 7:
+            extendSof = _context3.sent;
+            currentSof.pattern = currentSof.pattern.concat(extendSof.pattern);
+
+          case 9:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3, this);
+    }));
+
+    return function (_x4) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
   /**
    * Extends the sof data object with materials from a space object factory file
    * @param {String} [resPath] - The resource path to a source space object factory file
@@ -69826,192 +70125,829 @@ function EveSOF(tw2) {
    */
 
 
-  this.ExtendMaterialsFrom = function (resPath) {
-    if (!resPath) {
-      return Promise.reject(new Error("Invalid respath: undefined"));
-    }
-
-    return this.GetData().then(data => {
-      return tw2.GetObjectAsync(resPath).then(sof => {
-        const materials = sof.material;
-
-        if (resPath.includes(".black")) {
-          materials.forEach(material => {
-            data.material[material.name] = material.Assign();
-          });
-        } else {
-          for (const key in materials) {
-            if (materials.hasOwnProperty(key)) {
-              data[materials[key].name] = materials[key];
+  this.ExtendMaterialsFrom =
+  /*#__PURE__*/
+  function () {
+    var _ref4 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee4(resPath) {
+      var currentSof, extendSof, materials;
+      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        while (1) switch (_context4.prev = _context4.next) {
+          case 0:
+            if (resPath) {
+              _context4.next = 2;
+              break;
             }
-          }
-        }
 
-        return data;
-      });
-    });
-  };
-  /**
-   * Internal handler for loading sof objects asynchronously
-   * @param {String} root   - Root sof object name
-   * @param {String} [name] - Root sof object child name (* for all)
-   * @returns {Promise}
-   */
+            return _context4.abrupt("return", Promise.reject(new Error("Invalid respath: undefined")));
 
+          case 2:
+            _context4.next = 4;
+            return this.FetchSOF();
 
-  function getSofRoot(root, name) {
-    root = root.toLowerCase();
-    return self.GetData().then(data => {
-      if (!data[root]) {
-        throw new Error("Invalid sof root: ".concat(root));
-      } // Select all children
+          case 4:
+            currentSof = _context4.sent;
+            _context4.next = 7;
+            return tw2.FetchObject(resPath);
 
+          case 7:
+            extendSof = _context4.sent;
+            materials = extendSof.material;
 
-      if (name === "*") {
-        return data[root];
-      }
-
-      if (name) {
-        name = name.toLowerCase();
-
-        if (Array.isArray(data[root])) {
-          for (let i = 0; i < data[root].length; i++) {
-            if (data[root][i].name === name) {
-              return data[root][i];
+            if (resPath.includes(".black")) {
+              extendSof.material.forEach(material => {
+                currentSof.material[material.name] = material.Assign();
+              });
+            } else {
+              Object.assign(currentSof.material, extendSof.material);
             }
-          }
-        } else if (data[root][name]) {
-          return data[root][name];
-        }
-      }
 
-      throw new Error("Invalid sof ".concat(root, " child: ").concat(name));
-    });
-  }
+          case 10:
+          case "end":
+            return _context4.stop();
+        }
+      }, _callee4, this);
+    }));
+
+    return function (_x5) {
+      return _ref4.apply(this, arguments);
+    };
+  }();
   /**
-   * Gets the names and descriptions of a sof root object asynchronously
-   * @param {String} root - The root sof object name
-   * @returns {Promise}
+   * Gets a sof object
+   * @param {String} name
+   * @returns {Promise<{}>}
    */
 
 
-  function getSofRootNames(root) {
-    return getSofRoot(root, "*").then(obj => {
-      const names = {};
+  const getSofObject =
+  /*#__PURE__*/
+  function () {
+    var _ref5 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee5(name) {
+      var sof;
+      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        while (1) switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.next = 2;
+            return _this.FetchSOF();
 
-      if (Array.isArray(obj)) {
-        for (let i = 0; i < obj.length; i++) {
-          names[obj[i].name] = obj[i].description || "";
+          case 2:
+            sof = _context5.sent;
+
+            if (!sof[name]) {
+              _context5.next = 5;
+              break;
+            }
+
+            return _context5.abrupt("return", sof[name]);
+
+          case 5:
+            throw new Error("Invalid sof object (".concat(name, ")"));
+
+          case 6:
+          case "end":
+            return _context5.stop();
         }
-      } else {
-        for (const key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            names[key] = obj[key].description || "";
-          }
-        }
-      }
+      }, _callee5);
+    }));
 
-      return names;
-    });
-  }
-
-  this.GetObject = function (dna) {
-    return this.GetData().then(() => Build(dna));
-  };
-
-  this.GetHull = function (name) {
-    return getSofRoot("hull", name);
-  };
-
-  this.GetHulls = function () {
-    return getSofRoot("hull", "*");
-  };
-
-  this.GetHullNames = function () {
-    return getSofRootNames("hull");
-  };
-
-  this.GetFaction = function (name) {
-    return getSofRoot("faction", name);
-  };
-
-  this.GetFactions = function () {
-    return getSofRoot("faction", "*");
-  };
-
-  this.GetFactionNames = function () {
-    return getSofRootNames("faction");
-  };
-
-  this.GetRace = function (name) {
-    return getSofRoot("race", name);
-  };
-
-  this.GetRaces = function () {
-    return getSofRoot("race", "*");
-  };
-
-  this.GetRaceNames = function () {
-    return getSofRootNames("race");
-  };
-
-  this.GetMaterial = function (name) {
-    return getSofRoot("material", name);
-  };
-
-  this.GetMaterials = function () {
-    return getSofRoot("material", "*");
-  };
-
-  this.GetMaterialNames = function () {
-    return getSofRootNames("material");
-  };
-
-  this.GetPattern = function (name) {
-    return getSofRoot("pattern", name);
-  };
-
-  this.GetPatterns = function (name) {
-    return getSofRoot("pattern", "*");
-  };
-
-  this.GetPatternNames = function () {
-    return getSofRootNames("pattern");
-  };
+    return function getSofObject(_x6) {
+      return _ref5.apply(this, arguments);
+    };
+  }();
   /**
-   * Gets a hull's pattern names
+   * Gets a sof object's key's value
    * @param {String} name
-   * @returns {Promise<Array>}
+   * @param {String} key
+   * @param {Tw2Error} ErrorConstructor
+   * @returns {Promise<{}>}
    */
 
 
-  this.GetHullPatternNames = function (name) {
-    return this.GetHull(name).then(x => {
-      return this.GetPatterns().then(patterns => {
-        const result = {};
+  const getSofObjectKey =
+  /*#__PURE__*/
+  function () {
+    var _ref6 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee6(name, key, ErrorConstructor) {
+      var sofObject, i;
+      return regeneratorRuntime.wrap(function _callee6$(_context6) {
+        while (1) switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.next = 2;
+            return getSofObject(name);
 
-        for (let i = 0; i < patterns.length; i++) {
-          const pattern = patterns[i];
-          const found = pattern.projections.filter(x => x.name === name).length;
-          if (found) result[pattern.name] = pattern.description || "";
+          case 2:
+            sofObject = _context6.sent;
+
+            if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
+              _context6.next = 13;
+              break;
+            }
+
+            i = 0;
+
+          case 5:
+            if (!(i < sofObject.length)) {
+              _context6.next = 11;
+              break;
+            }
+
+            if (!(sofObject[key].name === name)) {
+              _context6.next = 8;
+              break;
+            }
+
+            return _context6.abrupt("return", sofObject[key]);
+
+          case 8:
+            i++;
+            _context6.next = 5;
+            break;
+
+          case 11:
+            _context6.next = 15;
+            break;
+
+          case 13:
+            if (!sofObject[key]) {
+              _context6.next = 15;
+              break;
+            }
+
+            return _context6.abrupt("return", sofObject[key]);
+
+          case 15:
+            if (!ErrorConstructor) {
+              _context6.next = 17;
+              break;
+            }
+
+            throw new ErrorConstructor({
+              name: key
+            });
+
+          case 17:
+            throw new Error("Invalid sof object key (".concat(name, ":").concat(key, ")"));
+
+          case 18:
+          case "end":
+            return _context6.stop();
         }
+      }, _callee6);
+    }));
 
-        return result;
-      });
-    });
-  };
+    return function getSofObjectKey(_x7, _x8, _x9) {
+      return _ref6.apply(this, arguments);
+    };
+  }();
   /**
-   * Gets a hull's build class
+   * Gets a sof object's value's and descriptions
    * @param {String} name
+   * @returns {Promise<{}>}
+   */
+
+
+  const getSofObjectValueDescriptions =
+  /*#__PURE__*/
+  function () {
+    var _ref7 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee7(name) {
+      var sofObject, out, i, key;
+      return regeneratorRuntime.wrap(function _callee7$(_context7) {
+        while (1) switch (_context7.prev = _context7.next) {
+          case 0:
+            _context7.next = 2;
+            return getSofObject(name);
+
+          case 2:
+            sofObject = _context7.sent;
+            out = {};
+
+            if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
+              _context7.next = 7;
+              break;
+            }
+
+            for (i = 0; i < sofObject.length; i++) {
+              out[sofObject[i].name] = sofObject[i].description || "";
+            }
+
+            return _context7.abrupt("return", out);
+
+          case 7:
+            for (key in sofObject) {
+              if (sofObject.hasOwnProperty(key)) {
+                out[key] = sofObject[key].description || "";
+              }
+            }
+
+            return _context7.abrupt("return", out);
+
+          case 9:
+          case "end":
+            return _context7.stop();
+        }
+      }, _callee7);
+    }));
+
+    return function getSofObjectValueDescriptions(_x10) {
+      return _ref7.apply(this, arguments);
+    };
+  }();
+  /**
+   * Helper to get a hull's projection data from a pattern
+   * @param {String} hull
+   * @param {*} patternData
+   */
+
+
+  const getHullProjection =
+  /*#__PURE__*/
+  function () {
+    var _ref8 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee8(hull, patternData) {
+      var _patternData$projecti, projections, i, out;
+
+      return regeneratorRuntime.wrap(function _callee8$(_context8) {
+        while (1) switch (_context8.prev = _context8.next) {
+          case 0:
+            _context8.next = 2;
+            return _this.FetchHull(hull);
+
+          case 2:
+            _patternData$projecti = patternData.projections, projections = _patternData$projecti === void 0 ? [] : _patternData$projecti;
+            i = 0;
+
+          case 4:
+            if (!(i < projections.length)) {
+              _context8.next = 16;
+              break;
+            }
+
+            if (!(projections[i].name === hull)) {
+              _context8.next = 13;
+              break;
+            }
+
+            out = {};
+            out.name = patternData.name;
+            out.layer1 = patternData.layer1;
+            out.layer2 = patternData.layer2;
+            out.transformLayer1 = projections[i].transformLayer1;
+            out.transformLayer2 = projections[i].transformLayer2;
+            return _context8.abrupt("return", out);
+
+          case 13:
+            i++;
+            _context8.next = 4;
+            break;
+
+          case 16:
+          case "end":
+            return _context8.stop();
+        }
+      }, _callee8);
+    }));
+
+    return function getHullProjection(_x11, _x12) {
+      return _ref8.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets a sof object from dna
+   * @param {String} dna
+   * @returns {Promise<*>}
+   */
+
+
+  this.FetchObject =
+  /*#__PURE__*/
+  function () {
+    var _ref9 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee9(dna) {
+      var parts, commands, i, subParts, hull, faction, race, ship, pattern, curves;
+      return regeneratorRuntime.wrap(function _callee9$(_context9) {
+        while (1) switch (_context9.prev = _context9.next) {
+          case 0:
+            if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isDNA"])(dna)) {
+              _context9.next = 2;
+              break;
+            }
+
+            throw new Error("Invalid DNA (".concat(dna, ")"));
+
+          case 2:
+            parts = dna.split(":"), commands = {};
+
+            for (i = 3; i < parts.length; ++i) {
+              subParts = parts[i].split("?");
+              commands[subParts[0]] = subParts[1].split(";");
+            }
+
+            _context9.next = 6;
+            return _this.FetchHull(parts[0]);
+
+          case 6:
+            hull = _context9.sent;
+            _context9.next = 9;
+            return _this.FetchFaction(parts[1]);
+
+          case 9:
+            faction = _context9.sent;
+            _context9.next = 12;
+            return _this.FetchRace(parts[2]);
+
+          case 12:
+            race = _context9.sent;
+
+            if (!commands.mesh) {
+              _context9.next = 21;
+              break;
+            }
+
+            i = 0;
+
+          case 15:
+            if (!(i < commands.mesh.length)) {
+              _context9.next = 21;
+              break;
+            }
+
+            _context9.next = 18;
+            return _this.FetchMaterial(commands.mesh[i]);
+
+          case 18:
+            i++;
+            _context9.next = 15;
+            break;
+
+          case 21:
+            if (!(commands.pattern && commands.pattern.length > 1)) {
+              _context9.next = 29;
+              break;
+            }
+
+            i = 1;
+
+          case 23:
+            if (!(i < commands.pattern.length)) {
+              _context9.next = 29;
+              break;
+            }
+
+            _context9.next = 26;
+            return _this.FetchMaterial(commands.pattern[i]);
+
+          case 26:
+            i++;
+            _context9.next = 23;
+            break;
+
+          case 29:
+            ship = new (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"])(), pattern = SetupPattern(hull, race, commands);
+            SetupMesh(ship, hull, faction, race, commands, pattern);
+            SetupCustomMasks(ship, pattern);
+            SetupDecals(ship, hull, faction);
+            SetupSpriteSets(ship, hull, faction);
+            SetupSpotlightSets(ship, hull, faction);
+            SetupPlaneSets(ship, hull, faction);
+            SetupBoosters(ship, hull, race);
+            SetupLocators(ship, hull);
+            curves = SetupAnimations(ship, hull);
+            SetupChildren(ship, hull, curves[0], curves[1]);
+            SetupInstancedMeshes(ship, hull, faction, race, commands, pattern);
+            ship.Initialize();
+            return _context9.abrupt("return", ship);
+
+          case 43:
+          case "end":
+            return _context9.stop();
+        }
+      }, _callee9);
+    }));
+
+    return function (_x13) {
+      return _ref9.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets a sof hull
+   * @param {String} hull
+   * @returns {Promise<EveSOFDataHull>}
+   */
+
+
+  this.FetchHull =
+  /*#__PURE__*/
+  function () {
+    var _ref10 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee10(hull) {
+      return regeneratorRuntime.wrap(function _callee10$(_context10) {
+        while (1) switch (_context10.prev = _context10.next) {
+          case 0:
+            return _context10.abrupt("return", getSofObjectKey("hull", hull, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFHullNotFound"]));
+
+          case 1:
+          case "end":
+            return _context10.stop();
+        }
+      }, _callee10);
+    }));
+
+    return function (_x14) {
+      return _ref10.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets sof hull names and descriptions
+   * @returns {Promise<{}>}
+   */
+
+
+  this.FetchHullNames =
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee11() {
+    return regeneratorRuntime.wrap(function _callee11$(_context11) {
+      while (1) switch (_context11.prev = _context11.next) {
+        case 0:
+          return _context11.abrupt("return", getSofObjectValueDescriptions("hull"));
+
+        case 1:
+        case "end":
+          return _context11.stop();
+      }
+    }, _callee11);
+  }));
+  /**
+   * Gets a sof hull projection
+   * @param {String} hull
+   * @param {String} pattern
+   * @returns {Promise<*>}
+   */
+
+  this.FetchHullPattern =
+  /*#__PURE__*/
+  function () {
+    var _ref12 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee12(hull, pattern) {
+      var patternData, found;
+      return regeneratorRuntime.wrap(function _callee12$(_context12) {
+        while (1) switch (_context12.prev = _context12.next) {
+          case 0:
+            _context12.next = 2;
+            return _this.FetchPattern(pattern);
+
+          case 2:
+            patternData = _context12.sent;
+            found = getHullProjection(hull, patternData);
+
+            if (!found) {
+              _context12.next = 6;
+              break;
+            }
+
+            return _context12.abrupt("return", found);
+
+          case 6:
+            throw new Error("Invalid pattern for hull (".concat(hull, ":").concat(pattern, ")"));
+
+          case 7:
+          case "end":
+            return _context12.stop();
+        }
+      }, _callee12);
+    }));
+
+    return function (_x15, _x16) {
+      return _ref12.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets all hull projections
+   * @param {String} hull
+   * @param {{}} [out={}]
+   * @returns {Promise<{}>}
+   */
+
+
+  this.FetchHullPatternNames =
+  /*#__PURE__*/
+  function () {
+    var _ref13 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee13(hull) {
+      var out,
+          patternsData,
+          i,
+          x,
+          _args13 = arguments;
+      return regeneratorRuntime.wrap(function _callee13$(_context13) {
+        while (1) switch (_context13.prev = _context13.next) {
+          case 0:
+            out = _args13.length > 1 && _args13[1] !== undefined ? _args13[1] : {};
+            _context13.next = 3;
+            return getSofObject("pattern");
+
+          case 3:
+            patternsData = _context13.sent;
+            out[hull] = [];
+            i = 0;
+
+          case 6:
+            if (!(i < patternsData.length)) {
+              _context13.next = 18;
+              break;
+            }
+
+            x = 0;
+
+          case 8:
+            if (!(x < patternsData[i].projections.length)) {
+              _context13.next = 15;
+              break;
+            }
+
+            if (!(patternsData[i].projections[i].name === hull)) {
+              _context13.next = 12;
+              break;
+            }
+
+            out[hull].push(patternsData[i].name);
+            return _context13.abrupt("break", 15);
+
+          case 12:
+            i++;
+            _context13.next = 8;
+            break;
+
+          case 15:
+            i++;
+            _context13.next = 6;
+            break;
+
+          case 18:
+            out[hull].sort();
+            return _context13.abrupt("return", out);
+
+          case 20:
+          case "end":
+            return _context13.stop();
+        }
+      }, _callee13);
+    }));
+
+    return function (_x17) {
+      return _ref13.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets a sof hull's build class
+   * @param {String} dna
    * @returns {Promise<number>}
    */
 
 
-  this.GetHullBuildClass = function (name) {
-    const c = name.indexOf(":");
-    if (c > 0) name = name.substr(0, c);
-    return getSofRoot("hull", name).then(obj => obj.buildClass === 2 ? 2 : 1);
-  };
+  this.FetchHullBuildClass =
+  /*#__PURE__*/
+  function () {
+    var _ref14 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee14(dna) {
+      var hull, data;
+      return regeneratorRuntime.wrap(function _callee14$(_context14) {
+        while (1) switch (_context14.prev = _context14.next) {
+          case 0:
+            hull = dna.split(":")[0];
+            _context14.next = 3;
+            return _this.FetchHull(hull);
+
+          case 3:
+            data = _context14.sent;
+            return _context14.abrupt("return", data.buildClass === 2 ? 2 : 1);
+
+          case 5:
+          case "end":
+            return _context14.stop();
+        }
+      }, _callee14);
+    }));
+
+    return function (_x18) {
+      return _ref14.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets a sof race
+   * @param race
+   * @returns {Promise<EveSOFDataRace>}
+   */
+
+
+  this.FetchRace =
+  /*#__PURE__*/
+  function () {
+    var _ref15 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee15(race) {
+      return regeneratorRuntime.wrap(function _callee15$(_context15) {
+        while (1) switch (_context15.prev = _context15.next) {
+          case 0:
+            return _context15.abrupt("return", getSofObjectKey("race", race, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFRaceNotFound"]));
+
+          case 1:
+          case "end":
+            return _context15.stop();
+        }
+      }, _callee15);
+    }));
+
+    return function (_x19) {
+      return _ref15.apply(this, arguments);
+    };
+  }();
+  /**
+   * Get all sof race names and descriptions
+   * @returns {Promise<{}>}
+   */
+
+
+  this.FetchRaceNames =
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee16() {
+    return regeneratorRuntime.wrap(function _callee16$(_context16) {
+      while (1) switch (_context16.prev = _context16.next) {
+        case 0:
+          return _context16.abrupt("return", getSofObjectValueDescriptions("race"));
+
+        case 1:
+        case "end":
+          return _context16.stop();
+      }
+    }, _callee16);
+  }));
+  /**
+   * Gets a sof faction
+   * @param faction
+   * @returns {Promise<EveSOFDataFaction>}
+   */
+
+  this.FetchFaction =
+  /*#__PURE__*/
+  function () {
+    var _ref17 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee17(faction) {
+      return regeneratorRuntime.wrap(function _callee17$(_context17) {
+        while (1) switch (_context17.prev = _context17.next) {
+          case 0:
+            return _context17.abrupt("return", getSofObjectKey("faction", faction, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFFactionNotFound"]));
+
+          case 1:
+          case "end":
+            return _context17.stop();
+        }
+      }, _callee17);
+    }));
+
+    return function (_x20) {
+      return _ref17.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets all sof faction names and descriptions
+   * @returns {Promise<{}>}
+   */
+
+
+  this.FetchFactionNames =
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee18() {
+    return regeneratorRuntime.wrap(function _callee18$(_context18) {
+      while (1) switch (_context18.prev = _context18.next) {
+        case 0:
+          return _context18.abrupt("return", getSofObjectValueDescriptions("faction"));
+
+        case 1:
+        case "end":
+          return _context18.stop();
+      }
+    }, _callee18);
+  }));
+  /**
+   * Gets a sof material
+   * @param material
+   * @returns {Promise<EveSOFDataMaterial>}
+   */
+
+  this.FetchMaterial =
+  /*#__PURE__*/
+  function () {
+    var _ref19 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee19(material) {
+      return regeneratorRuntime.wrap(function _callee19$(_context19) {
+        while (1) switch (_context19.prev = _context19.next) {
+          case 0:
+            return _context19.abrupt("return", getSofObjectKey("material", material, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFMaterialNotFound"]));
+
+          case 1:
+          case "end":
+            return _context19.stop();
+        }
+      }, _callee19);
+    }));
+
+    return function (_x21) {
+      return _ref19.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets all material names and descriptions
+   * @returns {Promise<{}>}
+   */
+
+
+  this.FetchMaterialNames =
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee20() {
+    return regeneratorRuntime.wrap(function _callee20$(_context20) {
+      while (1) switch (_context20.prev = _context20.next) {
+        case 0:
+          return _context20.abrupt("return", getSofObjectValueDescriptions("material"));
+
+        case 1:
+        case "end":
+          return _context20.stop();
+      }
+    }, _callee20);
+  }));
+  /**
+   * Gets a sof pattern
+   * @param pattern
+   * @returns {Promise<EveSOFDataPattern>}
+   */
+
+  this.FetchPattern =
+  /*#__PURE__*/
+  function () {
+    var _ref21 = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee21(pattern) {
+      return regeneratorRuntime.wrap(function _callee21$(_context21) {
+        while (1) switch (_context21.prev = _context21.next) {
+          case 0:
+            return _context21.abrupt("return", getSofObjectKey("pattern", pattern, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFPatternNotFound"]));
+
+          case 1:
+          case "end":
+            return _context21.stop();
+        }
+      }, _callee21);
+    }));
+
+    return function (_x22) {
+      return _ref21.apply(this, arguments);
+    };
+  }();
+  /**
+   * Gets all pattern names and descriptions
+   * @returns {Promise<{}>}
+   */
+
+
+  this.FetchPatternNames =
+  /*#__PURE__*/
+  _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee22() {
+    return regeneratorRuntime.wrap(function _callee22$(_context22) {
+      while (1) switch (_context22.prev = _context22.next) {
+        case 0:
+          return _context22.abrupt("return", getSofObjectValueDescriptions("pattern"));
+
+        case 1:
+        case "end":
+          return _context22.stop();
+      }
+    }, _callee22);
+  }));
 }
 
 /***/ }),
@@ -70020,17 +70956,12 @@ function EveSOF(tw2) {
 /*!***************************!*\
   !*** ./sof/EveSOFData.js ***!
   \***************************/
-/*! exports provided: EveSOFData, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound */
+/*! exports provided: EveSOFData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return EveSOFData; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return ErrSOFHullNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return ErrSOFFactionNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return ErrSOFRaceNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return ErrSOFMaterialNotFound; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return ErrSOFPatternNotFound; });
 /* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/util */ "./global/util/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -70086,7 +71017,7 @@ class EveSOFData {
 
 
   GetHull(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.hull, "name", name, ErrSOFHullNotFound);
+    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.hull, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFHullNotFound"]);
   }
   /**
    * Gets hull names
@@ -70168,7 +71099,7 @@ class EveSOFData {
 
 
   GetFaction(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.faction, "name", name, ErrSOFFactionNotFound);
+    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.faction, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFFactionNotFound"]);
   }
   /**
    * Gets faction names
@@ -70198,7 +71129,7 @@ class EveSOFData {
 
 
   GetRace(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.race, "name", name, ErrSOFRaceNotFound);
+    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.race, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFRaceNotFound"]);
   }
   /**
    * Gets race names
@@ -70228,7 +71159,7 @@ class EveSOFData {
 
 
   GetMaterial(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.material, "name", name, ErrSOFMaterialNotFound);
+    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.material, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFMaterialNotFound"]);
   }
   /**
    * Gets material names
@@ -70258,7 +71189,7 @@ class EveSOFData {
 
 
   GetPattern(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.pattern, "name", name, ErrSOFPatternNotFound);
+    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByProperty"])(this.pattern, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFPatternNotFound"]);
   }
   /**
    * Gets pattern names
@@ -70315,56 +71246,6 @@ class EveSOFData {
 
   static black(r) {
     return [["faction", r.array], ["generic", r.object], ["hull", r.array], ["material", r.array], ["pattern", r.array], ["race", r.array]];
-  }
-
-}
-/**
- * Fires when a sof hull is not found
- */
-
-class ErrSOFHullNotFound extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
-  constructor(data) {
-    super(data, "SOF Hull not found: '%name%'");
-  }
-
-}
-/**
- * Fires when a sof faction is not found
- */
-
-class ErrSOFFactionNotFound extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
-  constructor(data) {
-    super(data, "SOF Faction not found: '%name%'");
-  }
-
-}
-/**
- * Fires when a sof race is not found
- */
-
-class ErrSOFRaceNotFound extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
-  constructor(data) {
-    super(data, "SOF Race not found: '%name%'");
-  }
-
-}
-/**
- * Fires when a sof material is not found
- */
-
-class ErrSOFMaterialNotFound extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
-  constructor(data) {
-    super(data, "SOF Material not found: '%name%'");
-  }
-
-}
-/**
- * Fires when a sof pattern is not found
- */
-
-class ErrSOFPatternNotFound extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
-  constructor(data) {
-    super(data, "SOF Pattern not found: '%name%'");
   }
 
 }
@@ -73181,7 +74062,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./sof/index.js ***!
   \**********************/
-/*! exports provided: EveSOFData, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, EveSOF, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
+/*! exports provided: EveSOFData, EveSOF, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -73320,16 +74201,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _EveSOFData__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFData */ "./sof/EveSOFData.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["EveSOFData"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFHullNotFound", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFHullNotFound"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFFactionNotFound", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFFactionNotFound"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFRaceNotFound", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFRaceNotFound"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFMaterialNotFound"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return _EveSOFData__WEBPACK_IMPORTED_MODULE_6__["ErrSOFPatternNotFound"]; });
 
 /* harmony import */ var _EveSOF__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOF */ "./sof/EveSOF.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return _EveSOF__WEBPACK_IMPORTED_MODULE_7__["EveSOF"]; });
