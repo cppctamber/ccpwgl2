@@ -1,8 +1,29 @@
     ==============================================================================================================
 
+    i) Provides static json files which contain information missing in ESI.
+       This is a temporary service until this data is added to ESI and isn't cached or optimised in any way.
+        
+       USAGE:
+           
+            cdn:/static/moons/{moonID}
+                 - height_map_1  - Graphic id for the moon's 1st height map
+                 - height_map_2  - Graphic id for the moon's 2nd height map
+                 - shader_preset - Graphic id for the moon's shader
+                 - radius        - Radius of the moon
+                 
+            cdn:/static/planets/{planetsID}
+                  - height_map_1  - Graphic id for the planet's 1st height map
+                  - height_map_2  - Graphic id for the planet's 2nd height map
+                  - shader_preset - Graphic id for the planet's shader
+                  - radius        - Radius of the planet
+                 
+            cdn:/static/regions/{regionID}
+                  - nebula        - Graphic id for the region
+                  
 
-    A proxy server for retrieving ccp files using their human readable file path as an input
+    ==============================================================================================================
 
+    ii) A proxy server for retrieving ccp files using their human readable file path as an input
 
         Services:
              - Provides cors headers (cdn doesn't and webgl needs them)
@@ -26,8 +47,6 @@
         Support:
             The ccpwgl library is tested with the supplied `resfileindex.txt`, other versions may not work
          
-
-    ==============================================================================================================
 
     USAGE:
 
@@ -58,7 +77,6 @@
 
 
 
-
         ccpwgl_int:     set the "cdn" path in "./src/config.js" object to match your localhost path
         -----------
                         example:
@@ -80,5 +98,4 @@
                                  onLoaded, 
                                  onError
                             );
-                            
                             

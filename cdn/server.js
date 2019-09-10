@@ -384,6 +384,52 @@ function addCors(res)
     return res;
 }
 
+function pretty(obj)
+{
+    return JSON.stringify(obj, null, 4);
+}
+
+/**
+ * Temporary method to get static files
+ * @param {String} fileName
+ * @param {Response} res
+ */
+function getStaticJSONFile(fileName, res)
+{
+    const
+        paths = fileName.split("/"),
+        type = paths[1],
+        id = String(paths.pop());
+
+    fileName = "./" + paths.join("/") + ".json";
+    log(fileName, `Retrieving from local: ${fileName} (id: ${id})`);
+
+    let err;
+    if (fs.existsSync(fileName))
+    {
+        const data = JSON.parse(fs.readFileSync(fileName));
+
+        if (id in data)
+        {
+            res.setHeader("Context-type", getContentType("json"));
+            addCors(res);
+            res.end(pretty(data[id]));
+            log(fileName, "Success");
+            return;
+        }
+        err = `Invalid id for ${type}: ${id}`;
+    }
+    else
+    {
+        err = `Invalid static type: ${type}`;
+    }
+
+    res.statusCode = 404;
+    res.end(pretty({error: true, message: err}));
+    log(fileName, err, true);
+    cookies(fileName);
+}
+
 /**
  * Gets a file
  * @param {String} fileName
@@ -400,8 +446,15 @@ function getFile(fileName, req, res)
         fileName = fileName.substring(1);
     }
 
+    // Temporary method to get static json files
+    if (fileName.indexOf("static/") === 0)
+    {
+        return getStaticJSONFile(fileName, res);
+    }
+
     // Convert from ccpwgl formats
     fileName = fromCCPWGL(fileName);
+
 
     // Ensure valid file name
     if (!resMapping[fileName])
@@ -423,7 +476,7 @@ function getFile(fileName, req, res)
         {
             cookies(fileName);
             res.statusCode = 500;
-            res.end(err);
+            res.end(pretty({error: true, message: err}));
             log(fileName, err, true);
         }
         else
