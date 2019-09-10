@@ -130,7 +130,7 @@ export class Tw2EventEmitter
     /**
      * Checks if a listener exists on an event, or on any event by passing "*"
      * @param {String} eventName
-     * @param {Function} listener
+     * @param {String|Function} listener
      * @returns {boolean}
      */
     has(eventName, listener)
@@ -154,8 +154,12 @@ export class Tw2EventEmitter
             return false;
         }
 
-        eventName = eventName.toLowerCase();
-        return !!(eventName in events && events[eventName].has(listener));
+        if (listener && eventName in events)
+        {
+            return listener === "*" ? !!events[eventName].size : events[eventName].has(listener);
+        }
+
+        return false;
     }
 
     /**

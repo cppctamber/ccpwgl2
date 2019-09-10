@@ -15,12 +15,11 @@
 
         function OnDocLoad()
         {
-            var vec4 = ccpwgl_int.math.vec4,
-                quat = ccpwgl_int.math.quat,
-                mat4 = ccpwgl_int.math.mat4;
+            var vec4 = tw2.math.vec4,
+                quat = tw2.math.quat,
+                mat4 = tw2.math.mat4;
 
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
+            ccpwgl.initialize("mainCanvas", demos.options);
 
             camera = {
                 getView: function()
@@ -44,11 +43,12 @@
             ship.mountTurret(2, 'res:/dx9/model/turret/Hybrid/Rail/M/Rail_250mm_T1.red');
             ship.setBoosterStrength(0.3);
 
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
+            });
 
+            canvas = ccpwgl.canvas;
             canvas.addEventListener('mousedown', function(event)
             {
                 var x = event.x / canvas.clientWidth * 2 - 1;

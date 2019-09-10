@@ -11,16 +11,15 @@
 
     <script type="text/javascript">
 
-        var camera, scene, canvas;
+        var camera, scene;
 
         function OnDocLoad()
         {
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
-            camera = ccpwgl.createCamera(canvas);
+            ccpwgl.initialize("mainCanvas", demos.options);
+            camera = ccpwgl.createCamera();
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
 
-            var mat4 = ccpwgl_int.math.mat4;
+            var mat4 = tw2.math.mat4;
             var shipCount = 200;
             var spacing = 1500;
             var sofData = {hull: null, faction: null, race: null};
@@ -78,10 +77,10 @@
             ccpwgl.getSofFactionNames(sofDataReceived('faction'));
             ccpwgl.getSofRaceNames(sofDataReceived('race'));
 
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
+            });
 
         }
     </script>

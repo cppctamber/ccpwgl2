@@ -11,13 +11,12 @@
 
     <script type="text/javascript">
 
-        var canvas, camera, scene, ship, filmEffect;
+        var camera, scene, ship, filmEffect;
 
         function OnDocLoad()
         {
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
-            camera = ccpwgl.createCamera(canvas, undefined, true);
+            ccpwgl.initialize("mainCanvas", demos.options);
+            camera = ccpwgl.createCamera();
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/c04_cube.red');
             ship = scene.loadShip('cf4_t1:caldaribase:caldari', function() {camera.focus(this, 4)});
 
@@ -58,10 +57,10 @@
                 ]
             });
 
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
+            });
 
         }
     </script>

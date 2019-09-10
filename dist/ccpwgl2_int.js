@@ -16430,7 +16430,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./particle */ "./particle/index.js");
 /* harmony import */ var _sof__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./sof */ "./sof/index.js");
 /* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./state */ "./state/index.js");
-/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
+/* harmony import */ var _global_class__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./global/class */ "./global/class/index.js");
+/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
+
 
 
 
@@ -16492,7 +16494,10 @@ const config = {
       "black": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2LoadingObject"],
       "red": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2LoadingObject"]
     },
-    class: [_core__WEBPACK_IMPORTED_MODULE_0__, _curve__WEBPACK_IMPORTED_MODULE_1__, _eve__WEBPACK_IMPORTED_MODULE_2__, _interior__WEBPACK_IMPORTED_MODULE_3__, _particle__WEBPACK_IMPORTED_MODULE_4__, _sof__WEBPACK_IMPORTED_MODULE_5__, _state__WEBPACK_IMPORTED_MODULE_6__],
+    class: [_core__WEBPACK_IMPORTED_MODULE_0__, _curve__WEBPACK_IMPORTED_MODULE_1__, _eve__WEBPACK_IMPORTED_MODULE_2__, _interior__WEBPACK_IMPORTED_MODULE_3__, _particle__WEBPACK_IMPORTED_MODULE_4__, _sof__WEBPACK_IMPORTED_MODULE_5__, _state__WEBPACK_IMPORTED_MODULE_6__, {
+      Tw2EventEmitter: _global_class__WEBPACK_IMPORTED_MODULE_7__["Tw2EventEmitter"],
+      Tw2Notifications: _global_class__WEBPACK_IMPORTED_MODULE_7__["Tw2Notifications"]
+    }],
     type: {
       "float": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2FloatParameter"],
       "number": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2FloatParameter"],
@@ -16503,22 +16508,22 @@ const config = {
       "matrix4": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Matrix4Parameter"]
     },
     variable: {
-      "WorldMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewportSize": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
-      "Time": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
-      "u_DecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "u_InvDecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "WorldMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ViewMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ViewProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ViewportSize": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create(),
+      "Time": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create(),
+      "u_DecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "u_InvDecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
       "EveSpaceSceneEnvMap": "",
       "EnvMap1": "",
       "EnvMap2": "",
       "EnvMap3": "",
       "ShadowLightness": 0,
-      "OccluderValue": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxOccScale": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxDirectionScale": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create()
+      "OccluderValue": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxOccScale": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxDirectionScale": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create()
     }
   }
 };
@@ -18970,7 +18975,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19089,6 +19094,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -19100,8 +19107,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -29250,7 +29255,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51847,6 +51852,16 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     }
   }
   /**
+   * Gets a res path's full url
+   * @param {String} resPath
+   * @returns {String}
+   */
+
+
+  GetFullURL(resPath) {
+    return this.resMan.BuildUrl(resPath);
+  }
+  /**
    * Sets the device's standard states
    * @param {Number} renderMode
    */
@@ -52041,26 +52056,9 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
       return regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
-            if (!Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath)) {
-              _context3.next = 6;
-              break;
-            }
+            return _context3.abrupt("return", Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath) ? _this3.eveSof.FetchHullBuildClass(resPath) : 2);
 
-            _context3.next = 3;
-            return _this3.eveSof.FetchHullBuildClass(resPath);
-
-          case 3:
-            _context3.t0 = _context3.sent;
-            _context3.next = 7;
-            break;
-
-          case 6:
-            _context3.t0 = 2;
-
-          case 7:
-            return _context3.abrupt("return", _context3.t0);
-
-          case 8:
+          case 1:
           case "end":
             return _context3.stop();
         }
@@ -53156,7 +53154,7 @@ class Tw2EventEmitter {
   /**
    * Checks if a listener exists on an event, or on any event by passing "*"
    * @param {String} eventName
-   * @param {Function} listener
+   * @param {String|Function} listener
    * @returns {boolean}
    */
 
@@ -53177,8 +53175,11 @@ class Tw2EventEmitter {
       return false;
     }
 
-    eventName = eventName.toLowerCase();
-    return !!(eventName in events && events[eventName].has(listener));
+    if (listener && eventName in events) {
+      return listener === "*" ? !!events[eventName].size : events[eventName].has(listener);
+    }
+
+    return false;
   }
   /**
    * Clears an event and it's listeners, or all events by passing "*"
@@ -65512,11 +65513,12 @@ function generateID() {
 /*!******************!*\
   !*** ./index.js ***!
   \******************/
-/*! exports provided: ccpwgl_int */
+/*! exports provided: tw2, ccpwgl_int */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ccpwgl_int", function() { return ccpwgl_int; });
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.symbol.description */ "../node_modules/core-js/modules/es.symbol.description.js");
 /* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var core_js_modules_es_symbol_async_iterator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.symbol.async-iterator */ "../node_modules/core-js/modules/es.symbol.async-iterator.js");
@@ -65617,7 +65619,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_48___default = /*#__PURE__*/__webpack_require__.n(regenerator_runtime_runtime__WEBPACK_IMPORTED_MODULE_48__);
 /* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! ./config */ "./config.js");
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! ./global */ "./global/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ccpwgl_int", function() { return _global__WEBPACK_IMPORTED_MODULE_50__["tw2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _global__WEBPACK_IMPORTED_MODULE_50__["tw2"]; });
 
 
 
@@ -65671,6 +65673,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 _global__WEBPACK_IMPORTED_MODULE_50__["tw2"].Register(_config__WEBPACK_IMPORTED_MODULE_49__["config"]);
+const ccpwgl_int = _global__WEBPACK_IMPORTED_MODULE_50__["tw2"];
 
 
 /***/ }),

@@ -264,6 +264,16 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Gets a res path's full url
+     * @param {String} resPath
+     * @returns {String}
+     */
+    GetFullURL(resPath)
+    {
+        return this.resMan.BuildUrl(resPath);
+    }
+
+    /**
      * Sets the device's standard states
      * @param {Number} renderMode
      */
@@ -404,7 +414,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     async FetchBuildClass(resPath)
     {
-        return isDNA(resPath) ? await this.eveSof.FetchHullBuildClass(resPath) : 2;
+        return isDNA(resPath) ? this.eveSof.FetchHullBuildClass(resPath) : 2;
     }
 
     /**

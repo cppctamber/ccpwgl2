@@ -15,9 +15,8 @@
 
         $(document).ready(function()
         {
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
-            camera = ccpwgl.createCamera(canvas, {distance: 100});
+            ccpwgl.initialize("mainCanvas", demos.options);
+            camera = ccpwgl.createCamera({distance: 100});
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
 
             var lastHull = null;
@@ -67,9 +66,9 @@
             }
 
             $.when(
-                $.getJSON(ccpwgl_int.resMan.BuildUrl('res:/staticdata/typeids.json')),
-                $.getJSON(ccpwgl_int.resMan.BuildUrl('res:/staticdata/graphicids.json')),
-                $.getJSON(ccpwgl_int.resMan.BuildUrl('res:/staticdata/categories.json'))
+                $.getJSON(tw2.resMan.BuildUrl('res:/staticdata/typeids.json')),
+                $.getJSON(tw2.resMan.BuildUrl('res:/staticdata/graphicids.json')),
+                $.getJSON(tw2.resMan.BuildUrl('res:/staticdata/categories.json'))
             ).done(function(v1, v2, v3)
             {
                 var typeids = v1[0];
@@ -156,10 +155,10 @@
                 scene.getObject(0).setBoosterStrength($(this).val() / 50)
             });
 
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
+            });
         });
     </script>
 

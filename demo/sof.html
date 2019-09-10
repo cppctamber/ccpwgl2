@@ -12,13 +12,12 @@
 
     <script type="text/javascript">
 
-        var canvas,  camera, scene, ship;
+        var camera, scene, ship;
 
         $(document).ready(function()
         {
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
-            camera = ccpwgl.createCamera(canvas);
+            ccpwgl.initialize("mainCanvas", demos.options);
+            camera = ccpwgl.createCamera();
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
 
             var lastHull = null;
@@ -82,10 +81,10 @@
                 scene.getObject(0).setKillCount(parseInt($(this).val()));
             });
 
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
+            });
         });
     </script>
 

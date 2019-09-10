@@ -26,10 +26,9 @@
             var stationPath = hangars[Math.floor(Math.random() * 4)];
             var shipHeightFromLandingPad = 500;
 
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
+            ccpwgl.initialize("mainCanvas", demos.options);
             ccpwgl.debug = true;
-            camera = ccpwgl.createCamera(canvas, {poi: [ 0, shipHeightFromLandingPad, 0]});
+            camera = ccpwgl.createCamera({poi: [ 0, shipHeightFromLandingPad, 0]});
 
             scene = ccpwgl.loadScene(stationPath, function()
             {
@@ -44,7 +43,7 @@
                 // Hide station ships
                 for (var i = 1; i < backgroundObjects.length; i++)
                 {
-                    if (backgroundObjects[i] instanceof ccpwgl_int.EveShip)
+                    if (backgroundObjects[i] instanceof tw2.EveShip)
                     {
                         backgroundObjects[i].display = false;
                     }
@@ -124,10 +123,10 @@
                 scene.getObject(0).setKillCount(parseInt($(this).val()));
             });
 
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
+            });
         });
     </script>
 

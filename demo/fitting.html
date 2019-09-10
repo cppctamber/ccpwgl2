@@ -11,13 +11,12 @@
 
     <script type="text/javascript">
 
-        var canvas, camera, scene, ship;
+        var camera, scene, ship;
 
         $(document).ready(function()
         {
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
-            camera = ccpwgl.createCamera(canvas, {distance: 100}, true);
+            ccpwgl.initialize("mainCanvas", demos.options);
+            camera = ccpwgl.createCamera({distance: 100});
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
 
             function fitTurret(ship, select, slot)
@@ -110,10 +109,10 @@
                 scene.objects[0].setTurretState(1, ccpwgl.TurretState.IDLE);
             });
 
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
+            });
 
         });
     </script>

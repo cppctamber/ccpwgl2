@@ -6,4 +6,6 @@ import {tw2} from "./global";
 
 tw2.Register(config);
 
-export {tw2 as ccpwgl_int};
+const ccpwgl_int = tw2;
+
+export {tw2, ccpwgl_int};

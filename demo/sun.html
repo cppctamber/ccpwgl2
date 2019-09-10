@@ -11,26 +11,21 @@
 
     <script type="text/javascript">
 
-        var canvas, ship, camera, scene;
+        var ship, camera, scene;
 
         function OnDocLoad()
         {
-            canvas = document.getElementById('mainCanvas');
-            ccpwgl.initialize(canvas, demos.options);
-            camera = ccpwgl.createCamera(canvas);
+            ccpwgl.initialize("mainCanvas", demos.options);
+            camera = ccpwgl.createCamera();
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
             scene.loadShip('ab1_t1:amarrbase:amarr', function() { camera.focus(this, 4)});
             scene.loadSun('res:/fisfx/lensflare/orange_sun.red');
-            scene.setSunDirection([1, 0, 0.7]);
+            //scene.setSunDirection([1, 0, 0.7]);
 
-            if (demos.options.postprocess)
-                ccpwgl.enablePostprocessing(true);
-
-            ccpwgl.onPreRender = function()
+            ccpwgl.on("pre_render", function()
             {
                 document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
-            };
-
+            });
         }
     </script>
 

@@ -1,20 +1,22 @@
-var ccpwgl = (function(ccpwgl_int)
+var ccpwgl = (function(tw2)
 {
-    var ccpwgl = {};
-    var vec3 = ccpwgl_int.math.vec3;
-    var vec4 = ccpwgl_int.math.vec4;
-    var mat4 = ccpwgl_int.math.mat4;
+    var ccpwgl = new tw2.Tw2EventEmitter();
+
+    const {vec3, vec4, mat4} = tw2.math;
 
     // Enables debug mode
     Object.defineProperty(ccpwgl, "debug", {
-        set: function(bool)
-        {
-            ccpwgl_int.debug = bool;
-        }
+        set: (bool) => tw2.debug = bool,
+        get: () => tw2.debug
+    });
+
+    // The current canvas
+    Object.defineProperty(ccpwgl, "canvas", {
+        get: () => tw2.canvas
     });
 
     // Allow debug to be set from the browser
-    if (ccpwgl_int.util.getURLBoolean("debug", false))
+    if (tw2.util.getURLBoolean("debug", false))
     {
         ccpwgl.debug = true;
     }
@@ -131,11 +133,11 @@ var ccpwgl = (function(ccpwgl_int)
      * @param {number} width
      * @param {number} height
      * @param {boolean} depth
-     * @returns {ccpwgl_int.Tw2RenderTarget}
+     * @returns {tw2.Tw2RenderTarget}
      */
     ccpwgl.createRenderTarget = function(width, height, depth)
     {
-        var renderTarget = new ccpwgl_int.Tw2RenderTarget();
+        var renderTarget = new tw2.Tw2RenderTarget();
         renderTarget.Create(width, height, depth);
         return renderTarget;
     };
@@ -148,44 +150,9 @@ var ccpwgl = (function(ccpwgl_int)
 
     /**
      * Post effect manager
-     * @type {ccpwgl_int.Tw2PostEffectManager}
+     * @type {tw2.Tw2PostEffectManager}
      */
-    ccpwgl.post = new ccpwgl_int.Tw2PostEffectManager();
-
-    /**
-     * Callback that is fired before updating scene state and before any rendering occurs. The dt parameter passed to the
-     * function is frame time in seconds.
-     * If there is no current scene set this callback is not called.
-     * @type {!function(dt): void}
-     */
-    ccpwgl.onUpdate = null;
-
-    /**
-     * Callback that is fired before rendering a scene, but after setting view/projection
-     * matrices and clearing the back buffer. Can be used for per-frame update or for
-     * rendering something on the background. The dt parameter passed to the function is
-     * frame time in seconds.
-     * If there is no current scene set this callback is not called.
-     * @type {!function(dt): void}
-     */
-    ccpwgl.onPreRender = null;
-
-    /**
-     * Callback that is fired after the scene is rendered, but before postprocessing. Can be used
-     * for rendering additional 3D geometry.
-     * If there is no current scene set this callback is not called. The dt parameter passed to the function is
-     * frame time in seconds.
-     * @type {!function(dt): void}
-     */
-    ccpwgl.onPostSceneRender = null;
-
-    /**
-     * Callback that is fired after the scene is rendered and postprocessing is applied. Can be
-     * used for rendering something in front of the scene (UI, etc.). The dt parameter passed to the function is
-     * frame time in seconds.
-     * @type {!function(dt): void}
-     */
-    ccpwgl.onPostRender = null;
+    ccpwgl.post = new tw2.Tw2PostEffectManager();
 
     /**
      * Internal render/update function. Is called every frame.
@@ -193,84 +160,87 @@ var ccpwgl = (function(ccpwgl_int)
      **/
     var render = function(dt)
     {
-        var clear = scene && scene.wrappedScene && useSceneClearColor ? scene.wrappedScene.clearColor : clearColor;
-
         if (updateEnabled && camera && camera.update)
         {
             camera.update(dt);
         }
-        if (!scene || !scene.wrappedScene)
+
+        if (scene && scene.wrappedScene)
         {
-            if (ccpwgl.onPostRender)
+            if (updateEnabled)
             {
-                ccpwgl.onPostRender(dt);
-            }
-            return true;
-        }
-        if (updateEnabled)
-        {
-            if (ccpwgl.onUpdate)
-            {
-                ccpwgl.onUpdate(dt);
-            }
-            for (var i = 0; i < scene.objects.length; ++i)
-            {
-                if (scene.objects[i].onUpdate)
+                ccpwgl.emit("update", dt);
+
+                for (var i = 0; i < scene.objects.length; ++i)
                 {
-                    scene.objects[i].onUpdate.call(scene.objects[i], dt);
+                    if (scene.objects[i].onUpdate)
+                    {
+                        scene.objects[i].onUpdate.call(scene.objects[i], dt);
+                    }
+                }
+
+                if (ccpwgl.post)
+                {
+                    ccpwgl.post.Update(dt);
+                }
+
+                scene.wrappedScene.Update(dt);
+            }
+
+            if (renderingEnabled)
+            {
+                var clear = scene && scene.wrappedScene && useSceneClearColor ? scene.wrappedScene.clearColor : clearColor;
+
+                tw2
+                    .SetStandardStates(tw2.consts.RM_OPAQUE)
+                    .SetProjectionMatrix(camera.getProjection(tw2.aspect))
+                    .SetViewMatrix(camera.getView())
+                    .GLClearColor(clear)
+                    .GLClearDepth(1.0)
+                    .GLViewport([0, 0, tw2.width, tw2.height])
+                    .GLClear(tw2.gl.COLOR_BUFFER_BIT | tw2.gl.DEPTH_BUFFER_BIT);
+
+                ccpwgl.emit("pre_render", dt);
+                scene.wrappedScene.Render(dt);
+                ccpwgl.emit("post_scene_render", dt);
+
+                if (!ccpwgl.post || !ccpwgl.post.Render())
+                {
+                    // We have crap in back buffer alpha channel, so clear it
+                    tw2
+                        .GLColorMask([false, false, false, false])
+                        .GLClearColor([0, 0, 0, 1])
+                        .GLClear(tw2.gl.COLOR_BUFFER_BIT)
+                        .GLColorMask([true, true, true, true]);
                 }
             }
-
-            if (ccpwgl.post)
-            {
-                ccpwgl.post.Update(dt);
-            }
-
-            scene.wrappedScene.Update(dt);
-        }
-        if (renderingEnabled)
-        {
-            var tw2 = ccpwgl_int;
-
-            tw2
-                .SetStandardStates(tw2.consts.RM_OPAQUE)
-                .GLClearColor(clear)
-                .GLClearDepth(1.0)
-                .GLViewport([0,0,tw2.width, tw2.height])
-                .GLClear(tw2.gl.COLOR_BUFFER_BIT | tw2.gl.DEPTH_BUFFER_BIT)
-                .SetProjectionMatrix(camera.getProjection(tw2.aspect))
-                .SetViewMatrix(camera.getView());
-
-            if (ccpwgl.onPreRender)
-            {
-                ccpwgl.onPreRender(dt);
-            }
-
-            scene.wrappedScene.Render(dt);
-
-            if (ccpwgl.onPostSceneRender)
-            {
-                ccpwgl.onPostSceneRender(dt);
-            }
-
-            if (!ccpwgl.post || !ccpwgl.post.Render())
-            {
-                // We have crap in back buffer alpha channel, so clear it
-                tw2
-                    .GLColorMask([false, false, false, false])
-                    .GLClearColor([0,0,0,1])
-                    .GLClear(tw2.gl.COLOR_BUFFER_BIT)
-                    .GLColorMask([true, true, true, true]);
-            }
         }
 
-        if (ccpwgl.onPostRender)
-        {
-            ccpwgl.onPostRender(dt);
-        }
-
+        ccpwgl.emit("post_render", dt);
         return true;
     };
+
+    // Provide backwards compatibility for old render callbacks
+    function oldEvents(name)
+    {
+        let hasNotifiedDeveloper = false;
+        return function(dt)
+        {
+            if (ccpwgl[name] && !hasNotifiedDeveloper)
+            {
+                hasNotifiedDeveloper = true;
+                tw2.Log("error", `'ccpwgl.${name}' method is now deprecated and has been replaced with an emitted event`)
+                ccpwgl[name](dt);
+            }
+        }
+    }
+
+    ccpwgl
+        .on("update", oldEvents("onUpdate"))
+        .on("pre_render", oldEvents("onPreRender"))
+        .on("post_render", oldEvents("onPostRender"))
+        .on("post_scene_render", oldEvents("onPostSceneRender"))
+
 
     /**
      * Initializes WebGL library. This function needs to be called before most of other
@@ -297,11 +267,9 @@ var ccpwgl = (function(ccpwgl_int)
      * @param {{}} [params]                      - optional gl parameters
      * @throws {ErrWebglContext} If WebGL context is not available (IE or older browsers for example).
      */
-    ccpwgl.initialize = function(canvas, params)
+    ccpwgl.initialize = function(canvas, params = {})
     {
-        params = params || {};
-
-        ccpwgl_int.Initialize({
+        tw2.Initialize({
             canvas: canvas,
             glParams: params.glParams,
             device: params,
@@ -331,7 +299,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.setResourcePath = function(namespace, path)
     {
-        ccpwgl_int.store.path.Set(namespace, path);
+        tw2.store.path.Set(namespace, path);
     };
 
     /**
@@ -347,7 +315,7 @@ var ccpwgl = (function(ccpwgl_int)
         {
             if (!ccpwgl.post)
             {
-                ccpwgl.post = new ccpwgl_int.Tw2PostEffectManager();
+                ccpwgl.post = new tw2.Tw2PostEffectManager();
             }
 
             if (!bloomEffect)
@@ -440,7 +408,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofData = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchSOF()
+        tw2.eveSof.FetchSOF()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
@@ -456,7 +424,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofHullNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchHullNames()
+        tw2.eveSof.FetchHullNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
@@ -472,7 +440,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofFactionNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchFactionNames()
+        tw2.eveSof.FetchFactionNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
@@ -488,28 +456,28 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofRaceNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchRaceNames()
+        tw2.eveSof.FetchRaceNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     };
 
     ccpwgl.getMaterialNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchMaterialNames()
+        tw2.eveSof.FetchMaterialNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     }
 
     ccpwgl.getPatternNames = function(onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchPatternNames()
+        tw2.eveSof.FetchPatternNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     }
 
     ccpwgl.getHullPatternNames = function(hull, onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchHullPatternNames(hull)
+        tw2.eveSof.FetchHullPatternNames(hull)
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     }
@@ -524,7 +492,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getSofHullConstructor = function(hull, onResolved, onRejected)
     {
-        ccpwgl_int.eveSof.FetchHullBuildClass(hull)
+        tw2.eveSof.FetchHullBuildClass(hull)
             .then(function(buildClass)
             {
                 onResolved(buildClass === 2 ? "loadObject" : "loadShip");
@@ -537,10 +505,11 @@ var ccpwgl = (function(ccpwgl_int)
      * @param {String} resPath
      * @param {Function} [onResolved]
      * @param {Function} [onRejected]
+     * @param {String|Function|Class|Array<String|Function|Class>} expectedConstructor
      */
-    ccpwgl.GetObject = function(resPath, onResolved, onRejected)
+    ccpwgl.GetObject = function(resPath, onResolved, onRejected, expectedConstructor)
     {
-        ccpwgl_int.FetchObject(resPath)
+        tw2.FetchObject(resPath)
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
     }
@@ -557,7 +526,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     function SpaceObject(resPath, onload)
     {
-        /** Wrapped ccpwgl_int object **/
+        /** Wrapped tw2 object **/
         this.wrappedObjects = [null];
         /** Local to world space transform matrix @type {mat4} **/
         this.transform = mat4.create();
@@ -737,7 +706,7 @@ var ccpwgl = (function(ccpwgl_int)
             this.dna = resPath;
         }
 
-        ccpwgl.GetObject(resPath, onObjectLoaded);
+        ccpwgl.GetObject(resPath, onObjectLoaded, defaultErrorHandler, ["!EveShip", "!EveShip2"]);
     }
 
     /**
@@ -751,11 +720,11 @@ var ccpwgl = (function(ccpwgl_int)
      */
     function Ship(resPath, onload)
     {
-        /** Wrapped ccpwgl_int ship object @type {ccpwgl_int.EveShip} **/
+        /** Wrapped tw2 ship object @type {tw2.EveShip} **/
         this.wrappedObjects = [null];
         /** Local to world space transform matrix @type {mat4} **/
         this.transform = mat4.create();
-        /** Internal boosters object @type {ccpwgl_int.EveBoosterSet} **/
+        /** Internal boosters object @type {tw2.EveBoosterSet} **/
         this.boosters = [null];
         /** Current siege state @type {ccpwgl.ShipSiegeState} **/
         this.siegeState = ccpwgl.ShipSiegeState.NORMAL;
@@ -821,12 +790,6 @@ var ccpwgl = (function(ccpwgl_int)
             {
                 obj.display = display;
                 self.wrappedObjects[index] = obj;
-                if (!(obj instanceof ccpwgl_int.EveShip))
-                {
-                    self.wrappedObjects[index] = null;
-                    console.error("Object loaded with scene.loadShip is not a ship");
-                    return;
-                }
                 self.wrappedObjects[index].SetLocalTransform(self.transform);
                 if (self.boosters[index])
                 {
@@ -1376,7 +1339,7 @@ var ccpwgl = (function(ccpwgl_int)
                     object.locatorName = name;
                     if (faction)
                     {
-                        ccpwgl_int.eveSof.SetupTurretMaterial(object, faction, faction);
+                        tw2.eveSof.SetupTurretMaterial(object, faction, faction);
                     }
                     ship.turretSets.push(object);
                     ship.RebuildTurretPositions();
@@ -1567,7 +1530,7 @@ var ccpwgl = (function(ccpwgl_int)
                 }
             }
 
-            ccpwgl.GetObject(resPath[i], OnShipPartLoaded(i));
+            ccpwgl.GetObject(resPath[i], OnShipPartLoaded(i), defaultErrorHandler, ["EveShip", "EveShip2"]);
         }
     }
 
@@ -1585,8 +1548,8 @@ var ccpwgl = (function(ccpwgl_int)
      */
     function Planet(options, onLoad)
     {
-        /** Wrapped ccpwgl_int planet object @type {ccpwgl_int.EvePlanet} **/
-        this.wrappedObjects = [new ccpwgl_int.EvePlanet()];
+        /** Wrapped tw2 planet object @type {tw2.EvePlanet} **/
+        this.wrappedObjects = [new tw2.EvePlanet()];
 
         /** Local transform **/
         this.transform = mat4.create();
@@ -1682,11 +1645,11 @@ var ccpwgl = (function(ccpwgl_int)
      */
     function Scene()
     {
-        /** Wrapped ccpwgl_int scene object @type {ccpwgl_int.EveSpaceScene} **/
+        /** Wrapped tw2 scene object @type {tw2.EveSpaceScene} **/
         this.wrappedScene = null;
         /** Array of rendered objects: SpaceObject, Ship or Planet **/
         this.objects = [];
-        /** Current wrapped ccpwgl_int lensflare @type {ccpwgl_int.EveLensflare} **/
+        /** Current wrapped tw2 lensflare @type {tw2.EveLensflare} **/
         this.sun = null;
         /** Current sun direction (if null, the value is taked from scene .red file) @type {vec3} **/
         this.sunDirection = null;
@@ -1818,7 +1781,7 @@ var ccpwgl = (function(ccpwgl_int)
          */
         this.create = function()
         {
-            onSceneLoaded(this, new ccpwgl_int.EveSpaceScene());
+            onSceneLoaded(this, new tw2.EveSpaceScene());
         };
 
         /**
@@ -2026,6 +1989,7 @@ var ccpwgl = (function(ccpwgl_int)
                 resPath,
                 function(obj)
                 {
+                    console.dir(obj);
                     self.sun = obj;
                     if (self.wrappedScene)
                     {
@@ -2358,7 +2322,7 @@ var ccpwgl = (function(ccpwgl_int)
          */
         this._DragMove = function(event)
         {
-            var device = ccpwgl_int.device;
+            var device = tw2.device;
 
             if (this.onShift && (event.touches && event.touches.length > 2 || !event.touches && event.button != 0))
             {
@@ -2528,19 +2492,14 @@ var ccpwgl = (function(ccpwgl_int)
 
     /**
      * Creates a camera
-     *
-     * @param {HTMLCanvasElement|Element} canvas
      * @param {*} [options]
      * @returns {Camera}
      */
-    ccpwgl.createCamera = function(canvas, options)
+    ccpwgl.createCamera = function(options = {})
     {
-        function get(src, srcAttr, defaultValue)
-        {
-            return src && src[srcAttr] !== undefined ? src[srcAttr] : defaultValue;
-        }
+        var get = tw2.util.get;
 
-        var camera = new Camera(canvas);
+        var camera = new Camera(get(options, "canvas", ccpwgl.canvas));
         camera.fov = get(options, "fov", 30);
         camera.distance = get(options, "distance", 1000);
         camera.maxDistance = get(options, "maxDistance", 1000000);
@@ -2634,7 +2593,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.isLoading = function()
     {
-        return ccpwgl_int.resMan.IsLoading();
+        return tw2.resMan.IsLoading();
     };
 
     /**
@@ -2644,7 +2603,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.getPendingLoads = function()
     {
-        return ccpwgl_int.resMan._pendingLoads;
+        return tw2.resMan._pendingLoads;
     };
 
     /**
@@ -2688,10 +2647,10 @@ var ccpwgl = (function(ccpwgl_int)
     ccpwgl.setResourceUnloadPolicy = function(policy, timeout)
     {
         resourceUnloadPolicy = policy;
-        ccpwgl_int.resMan.autoPurgeResources = policy == ccpwgl.ResourceUnloadPolicy.USAGE_BASED;
+        tw2.resMan.autoPurgeResources = policy == ccpwgl.ResourceUnloadPolicy.USAGE_BASED;
         if (timeout != undefined)
         {
-            ccpwgl_int.resMan.purgeTime = timeout;
+            tw2.resMan.purgeTime = timeout;
         }
     };
 
@@ -2700,7 +2659,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.clearCachedResources = function()
     {
-        ccpwgl_int.resMan.Clear();
+        tw2.resMan.Clear();
     };
 
     /**
@@ -2710,7 +2669,7 @@ var ccpwgl = (function(ccpwgl_int)
      */
     ccpwgl.loadWrappedScene = async function(options)
     {
-        return await ccpwgl_int.Scene.create(options, ccpwgl);
+        return await tw2.Scene.create(options, ccpwgl);
     }
 
     /**
@@ -2765,7 +2724,7 @@ var ccpwgl = (function(ccpwgl_int)
         }, opt)
 
         const url = new URL(`${opt.path}/${opt.version}/${route}/${id}/?datasource=${opt.source}&language=${opt.language}`);
-        return await ccpwgl_int.resMan.Fetch(url, "json");
+        return await tw2.resMan.Fetch(url, "json");
     }
 
     /**
@@ -2814,4 +2773,4 @@ var ccpwgl = (function(ccpwgl_int)
 
     return ccpwgl;
 
-}(ccpwgl_int || window));
+}(tw2 || window));
