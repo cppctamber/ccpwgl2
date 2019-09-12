@@ -26,7 +26,7 @@ import {assignIfExists, getPathExtension, isError, isFunction} from "../util";
  * @property {Number} _purgeTime
  * @property {Number} _purgeFrame
  * @property {Number} _purgeFrameLimit
- * @property {Number} _pendingLoads - a count of how many things are pending load
+ * @property {Array<String>} _pendingLoads - an array of pending loads
  * @property {Number} _noLoadFrames
  */
 export class Tw2ResMan extends Tw2EventEmitter
@@ -44,10 +44,19 @@ export class Tw2ResMan extends Tw2EventEmitter
     _purgeTime = 0;
     _purgeFrame = 0;
     _purgeFrameLimit = 1000;
-    _pendingLoads = 0;
+    _pendingLoads = [];
     _noLoadFrames = 0;
 
     tw2 = null;
+
+    /**
+     * Gets a count of pending loads
+     * @returns {number}
+     */
+    get pendingLoads()
+    {
+        return this._pendingLoads.length;
+    }
 
     /**
      * Constructor
@@ -147,7 +156,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     Tick(device)
     {
-        if (this._prepareQueue.length === 0 && this._pendingLoads === 0)
+        if (this._prepareQueue.length === 0 && this._pendingLoads.length === 0)
         {
             if (this._noLoadFrames < 2)
             {
@@ -352,6 +361,28 @@ export class Tw2ResMan extends Tw2EventEmitter
     }
 
     /**
+     * Adds a pending url
+     * @param {String} url
+     */
+    AddPendingLoad(url)
+    {
+        this._pendingLoads.push(url);
+    }
+
+    /**
+     * Removes a pending url
+     * @param {String} url
+     */
+    RemovePendingLoad(url)
+    {
+        const index = this._pendingLoads.indexOf(url);
+        if (index !== -1)
+        {
+            this._pendingLoads.splice(index, 1);
+        }
+    }
+
+    /**
      * Fetches cache
      * @param {String} url
      * @param {String|Function} responseType
@@ -359,7 +390,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     Fetch(url, responseType)
     {
-        this._pendingLoads++;
+        this.AddPendingLoad(url);
 
         return fetch(url)
             .then(response =>
@@ -394,12 +425,12 @@ export class Tw2ResMan extends Tw2EventEmitter
             })
             .then(response =>
             {
-                this._pendingLoads--;
+                this.RemovePendingLoad(url);
                 return response;
             })
             .catch(err =>
             {
-                this._pendingLoads--;
+                this.RemovePendingLoad(url);
                 throw err;
             });
     }

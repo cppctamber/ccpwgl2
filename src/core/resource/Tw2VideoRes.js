@@ -146,6 +146,7 @@ export class Tw2VideoRes extends Tw2Resource
                 throw new ErrResourceExtensionUnregistered({path, extension});
         }
 
+        resMan.AddPendingLoad(path);
         this.video = document.createElement("video");
         this.video.crossOrigin = "anonymous";
         this.video.muted = true;
@@ -155,7 +156,7 @@ export class Tw2VideoRes extends Tw2Resource
          */
         this.video.onerror = () =>
         {
-            resMan._pendingLoads--;
+            resMan.RemovePendingLoad(path);
             this.video = null;
             this.OnError(new ErrHTTPRequest({path}));
         };
@@ -167,7 +168,7 @@ export class Tw2VideoRes extends Tw2Resource
         {
             this._playable = true;
             this.video.oncanplay = null;
-            resMan._pendingLoads--;
+            resMan.RemovePendingLoad(path);
             resMan.Queue(this, undefined, extension);
             this.OnLoaded();
         };

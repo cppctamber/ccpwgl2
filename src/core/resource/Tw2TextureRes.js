@@ -238,8 +238,7 @@ export class Tw2TextureRes extends Tw2Resource
                 throw new ErrResourceExtensionUnregistered({path, extension});
         }
 
-        resMan._pendingLoads++;
-
+        resMan.AddPendingLoad(path);
         const image = new Image();
         image.crossOrigin = "anonymous";
 
@@ -248,7 +247,7 @@ export class Tw2TextureRes extends Tw2Resource
          */
         image.onerror = () =>
         {
-            resMan._pendingLoads--;
+            resMan.RemovePendingLoad(path);
             this.OnError(new ErrHTTPRequest({path}));
         };
 
@@ -257,7 +256,7 @@ export class Tw2TextureRes extends Tw2Resource
          */
         image.onload = () =>
         {
-            resMan._pendingLoads--;
+            resMan.RemovePendingLoad(path);
             resMan.Queue(this, image);
             this.OnLoaded();
         };
