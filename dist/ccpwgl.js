@@ -1632,6 +1632,14 @@ var ccpwgl = (function(tw2)
 
         this.wrappedObjects[0].Create(options, function()
         {
+            // Temporary fix to decal area z-buffer issue
+            var mesh = self.wrappedObjects[0]._planet.mesh;
+            if (mesh.decalAreas[0])
+            {
+                mesh.opaqueAreas.push(mesh.decalAreas[0]);
+                mesh.decalAreas.splice(0);
+            }
+
             if (onLoad) onLoad.call(self);
         });
     }
@@ -1835,6 +1843,7 @@ var ccpwgl = (function(tw2)
         this.loadShip = function(resPath, onload)
         {
             var self = this;
+
             var ship = new Ship(
                 resPath,
                 function()
@@ -1846,10 +1855,12 @@ var ccpwgl = (function(tw2)
                     }
                 });
             this.objects.push(ship);
+
             if (ship.wrappedObjects[0])
             {
                 rebuildSceneObjects(this);
             }
+
             return ship;
         };
 
@@ -2673,102 +2684,352 @@ var ccpwgl = (function(tw2)
     }
 
     /**
-     * API route path
-     * @type {string}
+     * ESI Helpers
+     * @type {{path: string}}
      */
-    ccpwgl.API_PATH = "https://esi.evetech.net";
+    const esi = ccpwgl.esi = {
 
-    /**
-     * API version
-     * @type {string}
-     */
-    ccpwgl.API_VERSION = "latest";
+        /**
+         * API route path
+         * @type {string}
+         */
+        _root: "https://esi.evetech.net",
 
-    /**
-     * API source
-     * @type {string}
-     */
-    ccpwgl.API_SOURCE = "tranquility";
+        /**
+         * API version
+         * @type {string}
+         */
+        _version: "latest",
 
-    /**
-     * API Language
-     * @type {string}
-     */
-    ccpwgl.API_LANGUAGE = "en-us";
+        /**
+         * API source
+         * @type {string}
+         */
+        _dataSource: "tranquility",
+
+        /**
+         * API Language
+         * @type {string}
+         */
+        _language: "en-us"
+
+    };
 
     /**
      * API routes
      * @type {{TYPES: string, GROUPS: string, GRAPHICS: string, CATEGORIES: string}}
      */
-    var ApiRoute = {
+    const Universe = {
         TYPES: "universe/types",
         GRAPHICS: "universe/graphics",
         GROUPS: "universe/groups",
-        CATEGORIES: "universe/categories"
+        CATEGORIES: "universe/categories",
+        MOONS: "universe/moons",
+        PLANETS: "universe/planets",
+        REGIONS: "universe/regions",
+        SOLARSYSTEMS: "universe/solarsystems",
+        CONSTELLATIONS: "universe/constellations",
+        STARGATES: "universe/stargates",
+        STATIONS: "universe/stations",
     }
+
+    /**
+     * Paths to extended data
+     * @type {{MOONS: string, PLANETS: string, REGIONS: string}}
+     */
+    const ExtendApiData = {
+        [Universe.MOONS]: "cdn:/static/moons",
+        [Universe.PLANETS]: "cdn:/static/planets",
+        [Universe.REGIONS]: "cdn:/static/regions"
+    }
+
+    /**
+     * Builds an esi url
+     * @param {String} endpoint
+     * @param {*} [params]
+     * @returns {URL}
+     */
+    esi.buildUrl = function(endpoint, params)
+    {
+        params = Object.assign({ language: esi._language, datasource: esi._dataSource}, params);
+
+        let param_keys = Object.keys(params).sort(),
+            params_string = "",
+            url_string = `${esi._root}/${esi._version}/${endpoint}/`;
+
+        for (let i = 0; i < param_keys.length; i++)
+        {
+            let prefix = i === 0 ? "?" : "&",
+                key = param_keys[i].toLowerCase();
+
+            params_string += `${prefix}${key}=${params[key].toLowerCase()}`
+        }
+
+        return url_string + params_string;
+    }
+
+    // Cache esi data for the current session
+    const cache = new Map();
+
+    /**
+     * Temporary function that extends esi results with data that it is missing
+     * - requires the cdn server included with ccpwgl to be running
+     * @param {String} url
+     * @returns {Promise<Object>}
+     */
+    async function tempExtendESI(url, urlExtend, id)
+    {
+        const json = await tw2.resMan.Fetch(url, "json");
+        if (urlExtend)
+        {
+            const
+                builtUrl = tw2.resMan.BuildUrl(`${urlExtend}/${id}`),
+                jsonExtend = await tw2.resMan.Fetch(builtUrl, "json");
+
+            Object.assign(json, jsonExtend);
+        }
+        return json;
+    };
 
     /**
      * Gets an id'd data from an api route
      * @param {String} route
      * @param {Number} id
-     * @param {*} [opt]
+     * @param {*} [params]
      * @returns {Promise<Object>}
      */
-    async function getIDFromESIRoute(route, id, opt)
+    async function getIDFromESIRoute(route, id, params)
     {
-        opt = Object.assign({
-            language: ccpwgl.API_LANGUAGE,
-            source: ccpwgl.API_SOURCE,
-            version: ccpwgl.API_VERSION,
-            path: ccpwgl.API_PATH
-        }, opt)
-
-        const url = new URL(`${opt.path}/${opt.version}/${route}/${id}/?datasource=${opt.source}&language=${opt.language}`);
-        return await tw2.resMan.Fetch(url, "json");
+        const url = esi.buildUrl(`${route}/${id}`, params);
+        if (!cache.has(url))
+        {
+            cache.set(url, tempExtendESI(url, ExtendApiData[route], id));
+        }
+        return await cache.get(url);
     }
 
     /**
      * Gets type from it's id
      * @param {Number} typeID
-     * @param {*} [opt]
+     * @param {*} [params]
      * @returns {Promise<Object>}
      */
-    ccpwgl.getTypeID = async function(typeID, opt)
+    esi.getType = async function(typeID, params)
     {
-        return await getIDFromESIRoute(ApiRoute.TYPES, typeID, opt);
-    }
+        return await getIDFromESIRoute(Universe.TYPES, typeID, params);
+    };
 
     /**
      * Gets graphic by it's id
      * @param {Number} graphicID
-     * @param {*} [opt]
+     * @param {*} [params]
      * @returns {Promise<Object>}
      */
-    ccpwgl.getGraphicID = async function(graphicID, opt)
+    esi.getGraphic = async function(graphicID, params)
     {
-        return await getIDFromESIRoute(ApiRoute.GRAPHICS, graphicID, opt)
-    }
+        return await getIDFromESIRoute(Universe.GRAPHICS, graphicID, params)
+    };
 
     /**
      * Gets a group by a it's id
      * @param {Number} groupID
-     * @param {*} [opt]
+     * @param {*} [params]
      * @returns {Promise<Object>}
      */
-    ccpwgl.getGroupID = async function(groupID, opt)
+    esi.getGroup = async function(groupID, params)
     {
-        return await getIDFromESIRoute(ApiRoute.GROUPS, groupID, opt)
-    }
+        return await getIDFromESIRoute(Universe.GROUPS, groupID, params)
+    };
 
     /**
      * Gets a category by it's id
      * @param {Number} categoryID
-     * @param {*} [opt]
+     * @param {*} [params]
      * @returns {Promise<Object>}
      */
-    ccpwgl.getCategoryID = async function(categoryID, opt)
+    esi.getCategory = async function(categoryID, params)
     {
-        return await getIDFromESIRoute(ApiRoute.CATEGORIES, categoryID, opt)
+        return await getIDFromESIRoute(Universe.CATEGORIES, categoryID, params)
+    };
+
+    /**
+     * Gets a solar system by it's id
+     * @param {Number} solarSystemID
+     * @param {*} [params]
+     * @returns {Promise<Object>}
+     */
+    esi.getSolarSystem = async  function(solarSystemID, params)
+    {
+        return await getIDFromESIRoute(Universe.SOLARSYSTEMS, solarSystemID, params);
+    };
+
+    /**
+     * Gets a constellation by it's id
+     * @param {Number} constellationID
+     * @param {*} [params]
+     * @returns {Promise<Object>}
+     */
+    esi.getConstellation = async function(constellationID, params)
+    {
+        return await getIDFromESIRoute(Universe.CONSTELLATIONS, constellationID, params);
+    };
+
+    /**
+     * Gets a region by it's id
+     * @param {Number} regionID
+     * @param {*} [params]
+     * @returns {Promise<Object>}
+     */
+    esi.getRegion = async function(regionID, params)
+    {
+        return await getIDFromESIRoute(Universe.REGIONS, regionID, params);
+    };
+
+    /**
+     * Gets a station by it's id
+     * TODO: Add rotation and docking data
+     * @param {Number} stationID
+     * @param {*} [params]
+     * @returns {Promise<Object>}
+     */
+    esi.getStation = async function(stationID, params)
+    {
+        return await getIDFromESIRoute(Universe.CATEGORIES, categoryID, params)
+    };
+
+    /**
+     * Gets a stargate by it's id
+     * TODO: Add rotation
+     * @param {Number} stationID
+     * @param {*} [params]
+     * @returns {Promise<Object>}
+     */
+    esi.getStargate = async function(stationID, params)
+    {
+        return await getIDFromESIRoute(Universe.CATEGORIES, categoryID, params);
+    };
+
+    /**
+     * Gets a moon by it's id
+     * @param {Number} moonID
+     * @param {*} params
+     * @returns {Promise<Object>}
+     */
+    esi.getMoon = async function(moonID, params)
+    {
+        return await getIDFromESIRoute(Universe.MOONS, moonID, params);
+    };
+
+    /**
+     * Gets a planet by it's id
+     * @param {Number} planetID
+     * @param {*} params
+     * @returns {Promise<Object>}
+     */
+    esi.getPlanet = async function(planetID, params)
+    {
+        return await getIDFromESIRoute(Universe.PLANETS, planetID, params);
+    };
+
+    /**
+     * Gets a star by id's id
+     * @param {Number| }starID
+     * @param {*} params
+     * @returns {Promise<Object>}
+     */
+    esi.getStar = async function(starID, params)
+    {
+        return await getIDFromESIRoute(Universe.STARS, starID, params);
+    };
+
+    /**
+     * Gets a resPath from a type id
+     * @param {Number} typeID
+     * @returns {Promise<String>}
+     */
+    esi.getResPathFromTypeID = async function(typeID)
+    {
+        const {graphic_id} = await getIDFromESIRoute(Universe.TYPES, typeID);
+        return ccpwgl.getResPathFromGraphicID(graphic_id);
+    };
+
+    /**
+     * Gets a resPath from a graphic id
+     * @param {Number} raphicID
+     * @returns {Promise<String>}
+     */
+    esi.getResPathFromGraphicID = async function(graphicID)
+    {
+        const {sof_dna, graphic_file} = await getIDFromESIRoute(Universe.GRAPHICS, graphicID);
+        return sof_dna || graphic_file;
+    };
+
+    /**
+     * Gets a region's nebula respath
+     * @param {Number} regionID
+     * @returns {Promise<String>}
+     */
+    esi.getResPathFromRegionID = async function(regionID)
+    {
+        const { graphic_id } = await getIDFromESIRoute(Universe.REGIONS, regionID);
+        return await getResPathFromGraphicsID(graphic_id);
+    }
+
+    /**
+     *  Gets graphcs data for a planetary body
+     * @param {String} endpoint
+     * @param {Number} id
+     * @returns {Promise<{planetPath: String, radius: Number, heightMap1: String, heightMap2: String}>}
+     */
+    async function getGraphicDataFromPlanetaryBody(endpoint, id)
+    {
+        const { shader_preset, height_map_1, height_map_2, radius, name } = await getIDFromESIRoute(endpoint, id);
+
+        const result = await Promise.all([
+            esi.getResPathFromGraphicID(shader_preset),
+            esi.getResPathFromGraphicID(height_map_1),
+            esi.getResPathFromGraphicID(height_map_2)
+        ]);
+
+        /**
+         * Chrome doesn't support ATI1 and ATI2 dds formats, so use pngs from the ccpwgl server
+         * - It is possible that some pngs will be missing
+         * @param {String} path
+         * @returns {String}
+         */
+        function fromDDS(path)
+        {
+            path = path.toLowerCase();
+            //path = path.replace("res:/", "cdn:/");
+            return path.replace(".dds", ".dds.0.png");
+        }
+
+        return {
+            path: fromDDS(result[0]),
+            heightMap1: fromDDS(result[1]),
+            heightMap2: fromDDS(result[2]),
+            id, name, radius
+        };
+    }
+
+    /**
+     * Gets graphics data for a moon by it's moon id
+     * @param {Number} moonID
+     * @returns {Promise<{ planetPath: String, heightMap1: String, heightMap2: String, radius: Number}>}
+     */
+    esi.getGraphicDataFromMoonID = async function(moonID)
+    {
+        return await getGraphicDataFromPlanetaryBody(Universe.MOONS, moonID);
+    };
+
+    /**
+     * Gets graphics data for a moon by it's moon id
+     * @param {Number} planetID
+     * @returns {Promise<{ planetPath: String, heightMap1: String, heightMap2: String, radius: Number}>}
+     */
+    esi.getGraphicDataFromPlanetID = async function(planetID)
+    {
+        return await getGraphicDataFromPlanetaryBody(Universe.PLANETS, planetID);
     }
 
     return ccpwgl;

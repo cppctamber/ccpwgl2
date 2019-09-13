@@ -396,6 +396,8 @@ function pretty(obj)
  */
 function getStaticJSONFile(fileName, res)
 {
+    addCors(res);
+
     const
         paths = fileName.split("/"),
         type = paths[1],
@@ -412,7 +414,6 @@ function getStaticJSONFile(fileName, res)
         if (id in data)
         {
             res.setHeader("Context-type", getContentType("json"));
-            addCors(res);
             res.end(pretty(data[id]));
             log(fileName, "Success");
             return;

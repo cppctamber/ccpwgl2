@@ -11,17 +11,18 @@
 
     <script type="text/javascript">
 
-        var canvas, camera, scene, planets = [];
+        let canvas, camera, scene, planets = [];
 
         function OnDocLoad()
         {
-            var mat4 = tw2.math.mat4;
+            let mat4 = tw2.math.mat4;
 
             ccpwgl.initialize("mainCanvas", demos.options);
             camera = ccpwgl.createCamera();
             scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
 
-            var planetsData = [
+
+            let planetsData = [
                 [40000004,
                     'res:/dx9/model/WorldObject/Planet/Template/Moon/p_moon_51.red',
                     undefined,
@@ -75,8 +76,7 @@
                     undefined,
                     'res:/dx9/model/worldobject/planet/Gasgiant/GasGiant01_D.dds.0.png',
                     'res:/dx9/model/worldobject/planet/Gasgiant/GasGiant03_D.dds.0.png',
-                    function() { console.warn('Loaded: Gas giant 2')}
-                ],
+                    function() { console.warn('Loaded: Gas giant 2')}],
                 [40000123,
                     'res:/dx9/model/WorldObject/Planet/Template/Ice/P_Ice_61.red',
                     undefined,
@@ -85,9 +85,9 @@
                     function() { console.warn('Loaded: Terrestrial planet 3')}],
             ];
 
-            for (var i = 0; i < planetsData.length; ++i)
+            for (let i = 0; i < planetsData.length; ++i)
             {
-                var planet = scene.loadPlanet(
+                let planet = scene.loadPlanet(
                     planetsData[i][0],
                     planetsData[i][1],
                     planetsData[i][2],
@@ -96,7 +96,7 @@
                     planetsData[i][5]
                 );
 
-                var angle = Math.PI * 2 * i / planetsData.length;
+                let angle = Math.PI * 2 * i / planetsData.length;
                 planet.setTransform(mat4.fromValues(
                     10000, 0, 0, 0,
                     0, 10000, 0, 0,

@@ -1,4 +1,4 @@
-import {isTyped, isArrayLike, isArray} from "./type";
+import {isTyped, isArrayLike, isArray, isObjectObject} from "./type";
 import {toArray} from "./arr";
 
 /**
@@ -117,4 +117,54 @@ export function template(str, obj = {})
     }
 
     return str;
+}
+
+function onPath(obj, path, func)
+{
+    const route = path.split(".");
+    let current = obj;
+    for (let i = 0; i < route.length; i++)
+    {
+        let prop = route[i],
+            next = current[route[i]],
+            isObject = isArray(next) || isObjectObject(next),
+            isLast = i === route.length - 1;
+
+        const result = func(current, prop, isObject, isLast);
+        if (result) return result;
+        else if (result === null) return null;
+        current = next;
+    }
+    return false;
+}
+
+export function hasPath(obj, path)
+{
+    return onPath(obj, path, (current, nextProp, isObject, isLast) =>
+    {
+        if (isLast)
+        {
+            return true;
+        }
+        else if (!isObject)
+        {
+            return null;
+        }
+    });
+}
+
+export function getPath(obj, path)
+{
+    return onPath(obj, path, (current, nextProp, isObject, isLast) =>
+    {
+        if (isLast && isObject)
+        {
+            return current[nextProp];
+        }
+    });
+}
+
+export function setPath(obj, path)
+{
+
 }

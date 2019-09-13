@@ -55,6 +55,20 @@ vec3.degreesUnwrapped = function(out, a)
 };
 
 /**
+ * Gets normalized direction between two points
+ * @param {vec3} out
+ * @param {vec3} a
+ * @param {vec3} b
+ * @returns {vec3}
+ */
+vec3.direction = function(out, a, b)
+{
+    vec3.subtract(out, a, b);
+    vec3.normalize(out, out);
+    return out;
+};
+
+/**
  * Gets the direction from a quat
  * @param {vec3} axis
  * @param {vec3} up
