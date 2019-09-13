@@ -285,9 +285,6 @@ export class Tw2Device extends Tw2EventEmitter
             gl.hasInstancedArrays = returnTrue;
         }
 
-        // Optional extensions
-        this.GetExtension("compressed_texture_s3tc");
-
         const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
         if (anisotropicFilterExt)
         {
