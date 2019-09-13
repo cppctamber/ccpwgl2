@@ -1812,7 +1812,8 @@ var ccpwgl = (function(tw2)
                 resPath,
                 function(obj)
                 {
-                    obj.visible.fog = !ccpwgl.disableFogOnSceneLoaded;
+                    self.showFog(!ccpwgl.disableFogOnSceneLoaded);
+
                     onSceneLoaded(self, obj);
 
                     if (onload)
