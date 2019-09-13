@@ -22,6 +22,12 @@ var ccpwgl = (function(tw2)
     }
 
     /**
+     * Distables scene fog effects (they look terrible)
+     * @type {boolean}
+     */
+    ccpwgl.disableFogOnSceneLoaded = true;
+
+    /**
      * Values for textureQuality option that can be passed to ccpwgl.initialize.
      */
     ccpwgl.TextureQuality = {
@@ -1806,13 +1812,7 @@ var ccpwgl = (function(tw2)
                 resPath,
                 function(obj)
                 {
-                    // Cache scene objects
-                    for (var i = 0; i < obj.objects.length; i++)
-                    {
-                        self.wrappedObjects.push(obj.objects[i]);
-                    }
-                    obj.objects = [];
-
+                    obj.visible.fog = !ccpwgl.disableFogOnSceneLoaded;
                     onSceneLoaded(self, obj);
 
                     if (onload)
