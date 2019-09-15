@@ -545,7 +545,7 @@ sph3.setPoints = (function()
         out[3] = Math.sqrt(maxSquaredRadius);
         return out;
     };
-});
+})();
 
 /**
  * Returns the squared distance between two sph3s

@@ -71,7 +71,7 @@ lne3.closestPointToPointParameter = (function()
         if (clampToLine) t = Math.max(0, Math.min(1, t));
         return t;
     };
-});
+})();
 
 /**
  * Copies the values from one lne3 into another

@@ -184,6 +184,33 @@ mat4.perspectiveGL = function(out, fovY, aspect, near, far)
 };
 
 /**
+ * Projects a vector from 3d to 2d space, returning normalized screen space value
+ * m should be a projection matrix (or a VP or MVP)
+ * @author https://github.com/hughsk/from-3d-to-2d/blob/master/index.js
+ * @param {vec3} out   - receiving vec3
+ * @param {mat4} m     - Projection / View Projection
+ * @param {vec3} a     - the point to project
+ * @returns {vec3} out - receiving vec3
+ */
+mat4.projectVec3 = function(out, m, a)
+{
+    var ix = a[0];
+    var iy = a[1];
+    var iz = a[2];
+
+    var ox = m[0] * ix + m[4] * iy + m[8] * iz + m[12];
+    var oy = m[1] * ix + m[5] * iy + m[9] * iz + m[13];
+    var oz = m[2] * ix + m[6] * iy + m[10] * iz + m[14];
+    var ow = m[3] * ix + m[7] * iy + m[11] * iz + m[15];
+
+    out[0] = (ox / ow + 1) / 2;
+    out[1] = (oy / ow + 1) / 2;
+    out[2] = (oz / ow + 1) / 2;
+    return out;
+};
+
+
+/**
  * Sets the translation component of a mat4 from a vec3
  * @param {mat4} out
  * @param {vec3} v

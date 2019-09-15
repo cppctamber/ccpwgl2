@@ -360,7 +360,7 @@ pln.getIntersectStartEnd = (function()
         box3.from(vec6_0, lineStart, lineEnd);
         return pln.getIntersectLne3(out, a, vec6_0);
     };
-});
+})();
 
 /**
  * Sets a vec3 with the normal component of the pln
@@ -431,7 +431,7 @@ pln.intersectsBounds = (function()
         box3.from(vec6_0, min, max);
         return box3.intersectsPln(vec6_0, a);
     };
-});
+})();
 
 /**
  * Checks if a plane intersects a Float32Array(6) bounding box
@@ -652,7 +652,7 @@ pln.transformMat4 = (function()
         out[3] = -(rX * out[0] + rY * out[1] + rZ * out[2]);
         return out;
     };
-});
+})();
 
 /**
  * Translates a plane with the given vector

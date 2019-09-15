@@ -187,6 +187,25 @@ ray3.from = box3.from;
 ray3.fromArray = box3.fromArray;
 
 /**
+ * Sets a ray 3 from start and end vectors
+ *
+ * @param {ray3} out
+ * @param {vec3} start
+ * @param {vec3} end
+ * @returns {ray3}
+ */
+ray3.fromStartEnd = function(out, start, end)
+{
+    out[0] = start[0];
+    out[1] = start[1];
+    out[2] = start[2];
+    out[3] = end[0] - start[0];
+    out[4] = end[1] - start[1];
+    out[5] = end[2] - start[2];
+    return ray3.normalize(out, out);
+};
+
+/**
  * Sets a ray3 from a screen coordinates and an inverse view projection matrix
  *
  * @param {vec3} out              - receiving ray3
@@ -218,6 +237,25 @@ ray3.fromPerspective = function(out, coords, m, viewport)
 
     // Normalize direction
     return ray3.normalize(out, out);
+};
+
+/**
+ * Alternative to ray3.fromPerspective
+ * @param {ray3} out         - receiving ray3
+ * @param {vec2} mouse       - event.ClientX, canvasHeight - event.clientY
+ * @param {vec4} viewport    - x, y, width, height
+ * @param {mat4} invProjView - inverse projection view matrix
+ */
+ray3.fromPerspective2 = function(out, mouse, viewport, invProjView)
+{
+    const
+        origin = [ mouse[0], mouse[1], 0],
+        direction = [ mouse[0], mouse[1], 1];
+
+    vec3.unproject(origin, origin, viewport, invProjView);
+    vec3.unproject(direction, direction, viewport, invProjView);
+
+    ray3.fromStartEnd(out, origin, direction);
 };
 
 /**
@@ -369,7 +407,7 @@ ray3.getIntersectBox3 = (function()
 
         return box3.getIntersectBounds(out, a, vec3_0, vec3_1);
     };
-});
+})();
 
 /**
  * Sets a vec3 with the intersection point of a ray3 and a triangle"s components
@@ -401,7 +439,7 @@ ray3.getIntersectTri3 = (function()
 
         return ray3.getIntersectVertices(out, a, vec3_0, vec3_1, vec3_2, bfc);
     };
-});
+})();
 
 
 /**
@@ -469,7 +507,7 @@ ray3.getIntersectVertices = (function()
 
         return ray3.get(out, a, QdN / DdN);
     };
-});
+})();
 
 /**
  * Sets a vec3 with the intersection point of a ray3 and a plane"s components
@@ -523,7 +561,7 @@ ray3.getIntersectPositionRadius = (function()
         sph3.from(sph3_0, p, r);
         return ray3.getIntersectSph3(out, a, sph3_0);
     };
-});
+})();
 
 /**
  * Sets a vec3 with the intersection point of a ray3 and a Float32Array(4) sphere
@@ -581,7 +619,7 @@ ray3.intersectsBox3 = (function()
         if (!vec3_0) vec3_0 = vec3.create();
         return ray3.vec3_0 = ray3.getIntersectBox3(vec3_0, a, b) !== null;
     };
-});
+})();
 
 /**
  * Checks for ray3 intersection with bounds
@@ -599,7 +637,7 @@ ray3.intersectsBounds = (function()
         if (!vec3_0) vec3_0 = vec3.create();
         return ray3.getIntersectBounds(vec3_0, a, min, max) !== null;
     };
-});
+})();
 
 /**
  * Checks for ray3 intersection with a plane"s components
@@ -785,7 +823,7 @@ ray3.squaredDistance = (function()
         ray3.get(vec3_0, a, dirDist);
         return vec3.squaredDistance(vec3_0, p);
     };
-});
+})();
 
 /**
  * Sets an array at at optional offset from a ray3

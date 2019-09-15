@@ -438,6 +438,22 @@ vec3.multiplyScalar = function(out, a, s)
 };
 
 /**
+ * Converts from long, lat and radius to a vector
+ * @param {vec3} out
+ * @param {Number} radius
+ * @param {Number} latitude
+ * @param {Number} longitude
+ * @returns {vec3} out
+ */
+vec3.polarToCartesian = function(out, radius, latitude, longitude)
+{
+    out[0] = radius * Math.cos(latitude) * Math.sin(longitude);
+    out[1] = radius * Math.sin(latitude);
+    out[2] = radius * Math.cos(latitude) * Math.cos(longitude);
+    return out;
+};
+
+/**
  * Projects a local vec3 to screen space with viewport settings
  * @param {vec3} out           - receiving vec3
  * @param {vec3} a             - local vec3

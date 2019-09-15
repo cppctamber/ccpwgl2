@@ -104,7 +104,7 @@ tri3.contains = (function()
         tri3.getBaryCentricCoordinates(vec3_0, a, point);
         return (vec3_0[0] >= 0) && (vec3_0[1] >= 0) && ((vec3_0[0] + vec3_0[1]) <= 1);
     };
-});
+})();
 
 /**
  * Copies a tri3
@@ -247,7 +247,7 @@ tri3.getClosestEdgeToPoint = (function()
 
         return out;
     };
-});
+})();
 
 /**
  * Gets the closest point on a triangle to another point
@@ -315,7 +315,7 @@ tri3.getClosestPointToPoint = (function()
         }
         return out;
     };
-});
+})();
 
 /**
  * Gets the closest vertex to a given point
@@ -368,7 +368,7 @@ tri3.getClosestVertexToPoint = (function()
         out[2] = z;
         return out;
     };
-});
+})();
 
 /**
  * Sets a vec3 as the midpoint of a triangle
