@@ -215,6 +215,7 @@ ray3.fromPerspective = function(out, coords, m, viewport)
     out[3] = ((m[0] * x + m[4] * y + m[8] * 1 + m[12]) / dW) - out[0];
     out[4] = ((m[1] * x + m[5] * y + m[9] * 1 + m[13]) / dW) - out[1];
     out[5] = ((m[2] * x + m[6] * y + m[10] * 1 + m[14]) / dW) - out[2];
+
     // Normalize direction
     return ray3.normalize(out, out);
 };
@@ -665,29 +666,10 @@ ray3.lookAt = function(out, a, p)
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
-
-    let x = p[0] - a[0],
-        y = p[1] - a[1],
-        z = p[2] - a[2];
-
-    // Normalize the direction
-    let len = x * x + y * y + z * z;
-    if (len > 0)
-    {
-        len = 1 / Math.sqrt(len);
-        out[3] = a[0] * len;
-        out[4] = a[1] * len;
-        out[5] = a[2] * len;
-    }
-    else
-    {
-        out[3] = 0;
-        out[4] = 0;
-        out[5] = 0;
-        throw new Error("Normalization error");
-    }
-
-    return out;
+    out[3] = p[0] - a[0];
+    out[4] = p[1] - a[1];
+    out[5] = p[2] - a[2];
+    return ray3.normalize(out, out);
 };
 
 /**
