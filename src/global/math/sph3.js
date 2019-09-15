@@ -305,7 +305,7 @@ sph3.fromMat4 = function(out, m)
     out[0] = m[12];
     out[1] = m[13];
     out[2] = m[14];
-    out[4] = mat4.maxScaleOnAxis(m);
+    out[3] = mat4.maxScaleOnAxis(m);
     return out;
 };
 

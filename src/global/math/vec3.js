@@ -570,7 +570,7 @@ vec3.unproject = (function()
         out[2] = vec4_0[2] / vec4_0[3];
         return out;
     };
-});
+})();
 
 /**
  * Unwraps degrees
