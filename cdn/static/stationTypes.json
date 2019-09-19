@@ -1,0 +1,940 @@
+[
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": 11158.4707031,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1926
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": -21316.4511719,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1928
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -13,
+      "y": -5689.26806641,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1931
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 9264.68457031,
+      "y": 884,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0.999999940395,
+      "y": 0.999999940395,
+      "z": 0.999999940395
+    },
+    "station_type_id": 3866
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 9956.19238281,
+      "y": 1058.91113281,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0.999796926975,
+      "y": 0.999796926975,
+      "z": 0.999796926975
+    },
+    "station_type_id": 3868
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": 11158.4707031,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 29387
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": -21946.9589844,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 29388
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 9956.19238281,
+      "y": 1058.91113281,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0.999796926975,
+      "y": 0.999796926975,
+      "z": 0.999796926975
+    },
+    "station_type_id": 2071
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 9956.19238281,
+      "y": 1058.91113281,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0.999796926975,
+      "y": 0.999796926975,
+      "z": 0.999796926975
+    },
+    "station_type_id": 2252
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 101,
+      "y": 0,
+      "z": 1498
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 16
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": 0,
+      "z": 2300
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 17
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 36,
+      "y": 6854.26220703,
+      "z": 7948.46679688
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 54
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": -5000,
+      "z": -4800
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 56
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -4.19215595571e-9,
+      "y": 6143.52929688,
+      "z": 3100.00708008
+    },
+    "dock_orientation": {
+      "x": 0.0000107482665044,
+      "y": 0.0000107482665044,
+      "z": 0.0000107482665044
+    },
+    "station_type_id": 57
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 58
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 59
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -170,
+      "y": 3217,
+      "z": 12112.1542969
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1529
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 11384.4287109,
+      "y": 7499.12792969,
+      "z": 270.25189209
+    },
+    "dock_orientation": {
+      "x": 0.981180846691,
+      "y": 0.981180846691,
+      "z": 0.981180846691
+    },
+    "station_type_id": 1530
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 2447.21484375,
+      "y": -3841,
+      "z": 2988
+    },
+    "dock_orientation": {
+      "x": 0.95105612278,
+      "y": 0.95105612278,
+      "z": 0.95105612278
+    },
+    "station_type_id": 1531
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -10709,
+      "y": -9721,
+      "z": 2069
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1930
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -1749.89038086,
+      "y": -9967.82910156,
+      "z": -27
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1932
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 17,
+      "y": 3115,
+      "z": -18255.1972656
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 2501
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 17,
+      "y": 10096,
+      "z": -12607.2060547
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 2502
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 370.617919922,
+      "y": 8566,
+      "z": 390
+    },
+    "dock_orientation": {
+      "x": -1,
+      "y": -1,
+      "z": -1
+    },
+    "station_type_id": 3864
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 7933.66796875,
+      "y": 208.236450195,
+      "z": 18212.3496094
+    },
+    "dock_orientation": {
+      "x": 0.280802875757,
+      "y": 0.280802875757,
+      "z": 0.280802875757
+    },
+    "station_type_id": 3867
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 9788.60546875,
+      "y": 938,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0.999713182449,
+      "y": 0.999713182449,
+      "z": 0.999713182449
+    },
+    "station_type_id": 3870
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 123.39453125,
+      "y": -4043.97363281,
+      "z": -17010.3242188
+    },
+    "dock_orientation": {
+      "x": -0.00000231896729019,
+      "y": -0.00000231896729019,
+      "z": -0.00000231896729019
+    },
+    "station_type_id": 3871
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -28557.8710938,
+      "y": -1158.93261719,
+      "z": -2436.08154297
+    },
+    "dock_orientation": {
+      "x": -1,
+      "y": -1,
+      "z": -1
+    },
+    "station_type_id": 3872
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -6,
+      "y": -335,
+      "z": -3201
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 3873
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": -33,
+      "z": -2923
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 3874
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": 0,
+      "z": 47
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 3876
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 3877
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -27844.5488281,
+      "y": -1354.30688477,
+      "z": -2399
+    },
+    "dock_orientation": {
+      "x": -1,
+      "y": -1,
+      "z": -1
+    },
+    "station_type_id": 4023
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -33431.2070313,
+      "y": -2574,
+      "z": -2477
+    },
+    "dock_orientation": {
+      "x": -1,
+      "y": -1,
+      "z": -1
+    },
+    "station_type_id": 4024
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -176,
+      "y": -11789.0810547,
+      "z": -4116.49902344
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 9856
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 2804,
+      "y": 8566,
+      "z": 390
+    },
+    "dock_orientation": {
+      "x": -5178,
+      "y": -5178,
+      "z": -5178
+    },
+    "station_type_id": 9857
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -896,
+      "y": -26555,
+      "z": -4800
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 9867
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -1449,
+      "y": -10148,
+      "z": -24
+    },
+    "dock_orientation": {
+      "x": -1645,
+      "y": -1645,
+      "z": -1645
+    },
+    "station_type_id": 9873
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -1203,
+      "y": -18300,
+      "z": -5400
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 10795
+  },
+  {
+    "conquerable": true,
+    "dock_entry": {
+      "x": 0,
+      "y": 5079.0859375,
+      "z": 5337.78466797
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 12242
+  },
+  {
+    "conquerable": true,
+    "dock_entry": {
+      "x": 0,
+      "y": -6001.50634766,
+      "z": -4509.06787109
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 12294
+  },
+  {
+    "conquerable": true,
+    "dock_entry": {
+      "x": -1297.71374512,
+      "y": 4860.29541016,
+      "z": -6949.29296875
+    },
+    "dock_orientation": {
+      "x": 0.110589414835,
+      "y": 0.110589414835,
+      "z": 0.110589414835
+    },
+    "station_type_id": 12295
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 3454.38549805,
+      "y": -103,
+      "z": -1666.26000977
+    },
+    "dock_orientation": {
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "station_type_id": 19757
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 4674,
+      "y": 14278,
+      "z": 650
+    },
+    "dock_orientation": {
+      "x": -3327,
+      "y": -3327,
+      "z": -3327
+    },
+    "station_type_id": 22296
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 64,
+      "y": -1249,
+      "z": -1261
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 22297
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -294,
+      "y": -20500,
+      "z": -2504
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 22298
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 370.617919922,
+      "y": 8566,
+      "z": 390
+    },
+    "dock_orientation": {
+      "x": -1,
+      "y": -1,
+      "z": -1
+    },
+    "station_type_id": 29286
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -1749.89038086,
+      "y": -9967.82910156,
+      "z": -27
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 29389
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -3078.81445313,
+      "y": -39928.6796875,
+      "z": 8394.49511719
+    },
+    "dock_orientation": {
+      "x": -0.00000187754687886,
+      "y": -0.00000187754687886,
+      "z": -0.00000187754687886
+    },
+    "station_type_id": 29390
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -3152.70874023,
+      "y": -39840.2539063,
+      "z": 8244.79785156
+    },
+    "dock_orientation": {
+      "x": -0.00000218674836105,
+      "y": -0.00000218674836105,
+      "z": -0.00000218674836105
+    },
+    "station_type_id": 9868
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -1004.37133789,
+      "y": 4872.74853516,
+      "z": -5903.59863281
+    },
+    "dock_orientation": {
+      "x": 0.350109219551,
+      "y": 0.350109219551,
+      "z": 0.350109219551
+    },
+    "station_type_id": 3865
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 10679.8837891,
+      "y": 1006.77294922,
+      "z": -14350.2353516
+    },
+    "dock_orientation": {
+      "x": 0.999426364899,
+      "y": 0.999426364899,
+      "z": 0.999426364899
+    },
+    "station_type_id": 3869
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 1390.30151367,
+      "y": 27,
+      "z": -28047.0371094
+    },
+    "dock_orientation": {
+      "x": 0.0313382260501,
+      "y": 0.0313382260501,
+      "z": 0.0313382260501
+    },
+    "station_type_id": 2500
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": -32,
+      "z": 276
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 3875
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -170,
+      "y": 3217,
+      "z": 12112.1542969
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 29323
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 11903.6494141,
+      "y": 8452.42285156,
+      "z": 9744.41503906
+    },
+    "dock_orientation": {
+      "x": 0.999980449677,
+      "y": 0.999980449677,
+      "z": 0.999980449677
+    },
+    "station_type_id": 2499
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 6299,
+      "y": 2654.04418945,
+      "z": 11165.6542969
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 2497
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": -2909,
+      "y": -1437.88049316,
+      "z": -20657
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 2496
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 30416.3066406,
+      "y": -1172,
+      "z": -3099.96264648
+    },
+    "dock_orientation": {
+      "x": 0.999999940395,
+      "y": 0.999999940395,
+      "z": 0.999999940395
+    },
+    "station_type_id": 2498
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 199.788482666,
+      "y": -12936.9394531,
+      "z": -51.9939537048
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1929
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 0,
+      "y": -21987.5253906,
+      "z": 0
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 1927
+  },
+  {
+    "conquerable": true,
+    "dock_entry": {
+      "x": -13208.5742188,
+      "y": 88,
+      "z": -237
+    },
+    "dock_orientation": {
+      "x": -0.999999940395,
+      "y": -0.999999940395,
+      "z": -0.999999940395
+    },
+    "station_type_id": 21644
+  },
+  {
+    "conquerable": true,
+    "dock_entry": {
+      "x": 330.967285156,
+      "y": -837.971984863,
+      "z": -12616.8886719
+    },
+    "dock_orientation": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "station_type_id": 21642
+  },
+  {
+    "conquerable": true,
+    "dock_entry": {
+      "x": 68.9013824463,
+      "y": -15087.7041016,
+      "z": -2996.0324707
+    },
+    "dock_orientation": {
+      "x": 0.000366347376257,
+      "y": 0.000366347376257,
+      "z": 0.000366347376257
+    },
+    "station_type_id": 21645
+  },
+  {
+    "conquerable": true,
+    "dock_entry": {
+      "x": 3454.38549805,
+      "y": -103,
+      "z": -1666.26000977
+    },
+    "dock_orientation": {
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "station_type_id": 21646
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 10679.8837891,
+      "y": 1006.77294922,
+      "z": -14350.2353516
+    },
+    "dock_orientation": {
+      "x": 0.999426364899,
+      "y": 0.999426364899,
+      "z": 0.999426364899
+    },
+    "station_type_id": 34325
+  },
+  {
+    "conquerable": false,
+    "dock_entry": {
+      "x": 7933.66796875,
+      "y": 208.236450195,
+      "z": 18212.3496094
+    },
+    "dock_orientation": {
+      "x": 0.280802875757,
+      "y": 0.280802875757,
+      "z": 0.280802875757
+    },
+    "station_type_id": 34326
+  }
+]
