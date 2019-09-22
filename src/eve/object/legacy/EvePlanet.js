@@ -1,26 +1,24 @@
-import {util, device, resMan} from "../../../global/index";
+import {mat4, util, device, resMan} from "../../../global/index";
 import {Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter} from "../../../core/index";
 import {EveTransform} from "../EveTransform";
 import {EveObject} from "./EveObject";
-import {mat4} from "gl-matrix";
 
 /**
  * EvePlanet
- * TODO: Implement LOD
  *
- * @property {String} name
- * @property {Boolean} display
- * @property {EveTransform} highDetail
- * @property {Tw2Effect} effectHeight
- * @property {Tw2RenderTarget} heightMap
- * @property {*} zOnlyModel
- * @property {number} itemID
- * @property {String} heightMapResPath1
- * @property {String} heightMapResPath2
- * @property {Boolean} heightDirty
- * @property {Array} lockedResources
- * @property {Array.<Tw2Resource>} watchedResources
- * @class
+ * @property {EveTransform} highDetail               - The planet's model
+ * @property {Tw2Effect} effectHeight                - The effect used to create the planet's height maps
+ * @property {Tw2RenderTarget} heightMap             - A render target for the height map
+ * @property {EveTransform} zOnlyModel               - The planet's z-only model
+ * @property {number} itemID                         - The planet's item id, used for randomisation
+ * @property {String} heightMapResPath1              - The res path for the planet's 1st height map
+ * @property {String} heightMapResPath2              - The res path for the planet's 2nd height map
+ * @property {Boolean} heightDirty                   - Identifies if the planet needs it's height map rebuilt
+ * @property {Array} lockedResources                 - Resources which are keep alive until the height map is built
+ * @property {Array.<Tw2Resource>} watchedResources  - Resources which are watched until the height map is built
+ * @property {Number} _lod                           - The current lod level
+ * @property {Boolean} _useLOD                       - Identifies if lod is being used
+ * @property {EveTransform} _atmosphere              - A reference to the atmosphere used when creating the planet
  */
 export class EvePlanet extends EveObject
 {
@@ -36,29 +34,10 @@ export class EvePlanet extends EveObject
     lockedResources = [];
     watchedResources = [];
 
+    _lod = 3;
+    _useLOD = true;
     _atmosphere = null;
     _planet = null;
-
-    /**
-     * Sets the object's local transform
-     * @param {mat4} m
-     */
-    SetLocalTransform(m)
-    {
-        this.highDetail.SetLocalTransform(m);
-    }
-
-    /**
-     * Gets object resources
-     * @param {Array} [out=[]] - Optional receiving array
-     * @returns {Array.<Tw2Resource>} [out]
-     */
-    GetResources(out = [])
-    {
-        if (this.highDetail) this.highDetail.GetResources(out);
-        if (this.effectHeight) this.effectHeight.GetResources(out);
-        return out;
-    }
 
     /**
      * Creates the planet from an options object
@@ -124,6 +103,54 @@ export class EvePlanet extends EveObject
     }
 
     /**
+     * Resets LOD
+     */
+    ResetLod()
+    {
+        this._lod = 3;
+    }
+
+    /**
+     * Updates LOD
+     * @param {Tw2Frustum}frustum
+     */
+    UpdateLod(frustum)
+    {
+        const {scaling, translation} = this.highDetail;
+        this._lod = !this._useLOD || !frustum.IsSphereVisible(translation, scaling[0]) ? 0 : 3;
+    }
+
+    /**
+     * Toggles LOD calculations
+     * @param {Boolean} bool
+     */
+    UseLOD(bool)
+    {
+        this._useLOD = bool;
+    }
+
+    /**
+     * Sets the object's local transform
+     * @param {mat4} m
+     */
+    SetLocalTransform(m)
+    {
+        this.highDetail.SetLocalTransform(m);
+    }
+
+    /**
+     * Gets object resources
+     * @param {Array} [out=[]] - Optional receiving array
+     * @returns {Array.<Tw2Resource>} [out]
+     */
+    GetResources(out = [])
+    {
+        if (this.highDetail) this.highDetail.GetResources(out);
+        if (this.effectHeight) this.effectHeight.GetResources(out);
+        return out;
+    }
+
+    /**
      * GetPlanetResources
      * Todo: Replace this, using this.GetResources();
      * @param obj
@@ -174,7 +201,10 @@ export class EvePlanet extends EveObject
      */
     Update(dt)
     {
-        this.highDetail.Update(dt);
+        if (this.display && this._useLOD)
+        {
+            this.highDetail.Update(dt);
+        }
     }
 
     /**
@@ -232,7 +262,7 @@ export class EvePlanet extends EveObject
             }
         }
 
-        if (this.display)
+        if (this.display && this._lod)
         {
             this.highDetail.GetBatches(mode, accumulator);
         }
@@ -245,7 +275,7 @@ export class EvePlanet extends EveObject
      */
     GetZOnlyBatches(mode, accumulator)
     {
-        if (this.display && this.zOnlyModel)
+        if (this.display && this._lod && this.zOnlyModel)
         {
             this.zOnlyModel.GetBatches(mode, accumulator);
         }

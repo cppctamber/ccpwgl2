@@ -717,11 +717,11 @@ export class Tw2Effect extends Tw2BaseClass
             })],
             ["options", (reader) =>
             {
-                throw ErrFeatureNotImplemented({feature: "Tr2Effect options"});
+                throw ErrFeatureNotImplemented({feature: "Tw2Effect options"});
             }],
             ["samplerOverrides", (reader) =>
             {
-                throw ErrFeatureNotImplemented({feature: "Tr2Effect samplerOverrides"});
+                throw ErrFeatureNotImplemented({feature: "Tw2Effect samplerOverrides"});
             }]
         ];
     }

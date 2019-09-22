@@ -128,14 +128,19 @@ mat4.lookAtGL = (function()
         out[0] = vec3_0[0];
         out[1] = vec3_0[1];
         out[2] = vec3_0[2];
-
+        out[3] = 0;
         out[4] = vec3_1[0];
         out[5] = vec3_1[1];
         out[6] = vec3_1[2];
-
+        out[7] = 0;
         out[8] = vec3_2[0];
         out[9] = vec3_2[1];
         out[10] = vec3_2[2];
+        out[11] = 0;
+        out[12] = 0;
+        out[13] = 0;
+        out[14] = 0;
+        out[15] = 1;
 
         return out;
     };

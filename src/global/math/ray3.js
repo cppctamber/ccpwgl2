@@ -246,16 +246,16 @@ ray3.fromPerspective = function(out, coords, m, viewport)
  * @param {vec4} viewport    - x, y, width, height
  * @param {mat4} invProjView - inverse projection view matrix
  */
-ray3.fromPerspective2 = function(out, mouse, viewport, invProjView)
+ray3.unproject = function(out, mouse, viewport, invProjView)
 {
     const
-        origin = [ mouse[0], mouse[1], 0],
-        direction = [ mouse[0], mouse[1], 1];
+        start = [ mouse[0], mouse[1], 0],
+        end = [ mouse[0], mouse[1], 1];
 
-    vec3.unproject(origin, origin, viewport, invProjView);
-    vec3.unproject(direction, direction, viewport, invProjView);
+    vec3.unproject(start, start, viewport, invProjView);
+    vec3.unproject(end, end, viewport, invProjView);
 
-    ray3.fromStartEnd(out, origin, direction);
+    ray3.fromStartEnd(out, start, end);
 };
 
 /**

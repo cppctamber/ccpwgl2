@@ -75,7 +75,6 @@ export class EveChildContainer extends EveChild
     {
         if (this.useSRT)
         {
-            quat.normalize(this.rotation, this.rotation);
             mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         }
 

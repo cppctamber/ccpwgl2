@@ -159,41 +159,54 @@ export class EveSpaceObject extends EveObject
      */
     UpdateLod(frustum)
     {
-        const center = vec3.transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
-
-        if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
+        if(!this._useLOD)
         {
-            const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
-
-            if (size <= EveSpaceObject.LOD_THRESHOLD_NONE)
-            {
-                this.lod = 0;
-            }
-            else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW)
-            {
-                this.lod = 1;
-            }
-            else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM)
-            {
-                this.lod = 2;
-            }
-            else
-            {
-                this.lod = 3;
-            }
-
-            this._pixels = size;
+            this.lod = 3;
         }
         else
         {
-            this.lod = 0;
-            this._pixels = 0;
+            const center = vec3.transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
+
+            if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
+            {
+                const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
+
+                if (size <= EveSpaceObject.LOD_THRESHOLD_NONE)
+                {
+                    this.lod = 0;
+                }
+                else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW)
+                {
+                    this.lod = 1;
+                }
+                else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM)
+                {
+                    this.lod = 2;
+                }
+                else
+                {
+                    this.lod = 3;
+                }
+            }
+            else
+            {
+                this.lod = 0;
+            }
         }
 
         if (this.mesh && "SetQuality" in this.mesh)
         {
             this.mesh.SetQuality(3 - this.lod);
         }
+    }
+
+    /**
+     * Toggles LOD calculations
+     * @param {Boolean} bool
+     */
+    UseLOD(bool)
+    {
+        this._useLOD = bool;
     }
 
     /**

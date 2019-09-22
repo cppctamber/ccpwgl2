@@ -1,4 +1,4 @@
-import {vec3, vec4, quat, mat4, util, device, Tw2BaseClass} from "../../global";
+import {vec3, vec4, quat, mat4, ray3, util, device} from "../../global";
 import {Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch} from "../../core";
 import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
 
@@ -37,6 +37,18 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     type = EveCurveLineSetItem.Type.INVALID;
     width = 1;
 
+    /**
+     * Changes the lines position from a ray3
+     * @param {vec3} origin
+     * @param {vec3} direction
+     * @param {Number} [length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH]
+     */
+    ChangePositionFromRay(origin, direction, length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH)
+    {
+        vec3.copy(this.position1, origin);
+        vec3.scaleAndAdd(this.position2, origin, direction, length);
+        this.UpdateValues();
+    }
 
     /**
      * Changes the line's colors
@@ -203,6 +215,12 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     };
 
     /**
+     * Default length of a line created from a ray
+     * @type {number}
+     */
+    static DEFAULT_RAY_LENGTH = 1000;
+
+    /**
      * Default curved line segmentation
      * @type {Number}
      */
@@ -336,6 +354,23 @@ export class EveCurveLineSet extends EveObjectSet
     {
         if (this.lineEffect) this.lineEffect.GetResources(out);
         return out;
+    }
+
+    /**
+     * Creates a straight line from a ray
+     * @param {vec3} origin
+     * @param {vec3} direction
+     * @param {Number} length
+     * @param {Number} width
+     * @param {vec4} startColor
+     * @param {vec4} endColor
+     * @returns {EveCurveLineSetItem}
+     */
+    AddStraightLineFromRay(origin, direction, length, width, startColor, endColor)
+    {
+        const line = this.AddStraightLine([0,0,0], [0,0,0], width, startColor, endColor);
+        line.ChangePositionFromRay(origin, direction, length);
+        return line;
     }
 
     /**
@@ -495,7 +530,7 @@ export class EveCurveLineSet extends EveObjectSet
      */
     Rebuild()
     {
-        this.Unload(true);
+        //this.Unload(true);
         this.RebuildItems();
         this._vbSize = this.lineCount;
         this._dirty = false;
@@ -618,9 +653,8 @@ export class EveCurveLineSet extends EveObjectSet
      * Gets render batches
      * @param {Number} mode
      * @param {Tw2BatchAccumulator} accumulator
-     * @param {Tw2PerObjectData} [perObjectData]
      */
-    GetBatches(mode, accumulator, perObjectData)
+    GetBatches(mode, accumulator)
     {
         if (!this.display || !this._vb) return;
 

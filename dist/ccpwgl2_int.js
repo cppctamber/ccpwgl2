@@ -20293,11 +20293,11 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       }
     })], ["options", reader => {
       throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"])({
-        feature: "Tr2Effect options"
+        feature: "Tw2Effect options"
       });
     }], ["samplerOverrides", reader => {
       throw Object(_Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"])({
-        feature: "Tr2Effect samplerOverrides"
+        feature: "Tw2Effect samplerOverrides"
       });
     }]];
   }
@@ -38104,6 +38104,8 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
     _defineProperty(this, "planets", []);
 
+    _defineProperty(this, "lineSets", []);
+
     _defineProperty(this, "postProcess", null);
 
     _defineProperty(this, "visible", {
@@ -38116,6 +38118,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       environmentBlur: true,
       fog: true,
       lensflares: true,
+      lineSets: true,
       objects: true,
       planets: true,
       post: true,
@@ -38314,26 +38317,36 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
   /**
    * Calls a function on each planet, object and background object if it exists
    * @param {String} funcName
-   * @param {*} [argument]
+   * @param args
    */
 
 
-  PerChildObject(funcName, argument) {
+  PerChildObject(funcName) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
     for (let i = 0; i < this.planets.length; i++) {
       if (funcName in this.planets[i]) {
-        this.planets[i][funcName](argument);
+        this.planets[i][funcName](...args);
       }
     }
 
     for (let i = 0; i < this.objects.length; i++) {
       if (funcName in this.objects[i]) {
-        this.objects[i][funcName](argument);
+        this.objects[i][funcName](...args);
       }
     }
 
     for (let i = 0; i < this.backgroundObjects.length; i++) {
       if (funcName in this.backgroundObjects[i]) {
-        this.backgroundObjects[i][funcName](argument);
+        this.backgroundObjects[i][funcName](...args);
+      }
+    }
+
+    for (let i = 0; i < this.lineSets.length; i++) {
+      if (funcName in this.lineSets[i]) {
+        this.lineSets[i][funcName](...args);
       }
     }
   }
@@ -38457,6 +38470,12 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       }
     }
 
+    if (show.lineSets) {
+      for (let i = 0; i < this.lineSets.length; i++) {
+        this.lineSets[i].UpdateViewDependentData(tr);
+      }
+    }
+
     if (show.lensflares) {
       for (let i = 0; i < this.lensflares.length; ++i) {
         this.lensflares[i].PrepareRender();
@@ -38485,10 +38504,21 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       this.RenderBatches(d.RM_ADDITIVE, this.backgroundObjects); //this.RenderBatched(d.RM_DISTORTION, this.backgroundObjects);
     }
 
+    if (show.lineSets) {
+      this.RenderBatches(d.RM_TRANSPARENT, this.lineSets);
+      this.RenderBatches(d.RM_ADDITIVE, this.lineSets);
+    }
+
     if (show.lensflares) {
       for (let i = 0; i < this.lensflares.length; ++i) {
         this.lensflares[i].GetBatches(d.RM_ADDITIVE, this._batches);
       }
+    }
+
+    if (this.starfield) {// TODO: Implement starfield
+    }
+
+    if (this.postProcess) {// TODO: Implement post processing
     }
 
     this._batches.Render();
@@ -38497,12 +38527,6 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       for (let i = 0; i < this.lensflares.length; ++i) {
         this.lensflares[i].UpdateOccluders();
       }
-    }
-
-    if (this.starfield) {// TODO: Implement starfield
-    }
-
-    if (this.postProcess) {// TODO: Implement post processing
     }
 
     if (show.debug) {
@@ -39274,7 +39298,6 @@ class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild
 
   Update(dt, parentTransform) {
     if (this.useSRT) {
-      _global__WEBPACK_IMPORTED_MODULE_1__["quat"].normalize(this.rotation, this.rotation);
       _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     }
     /*
@@ -42284,7 +42307,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./eve/index.js ***!
   \**********************/
-/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
+/*! exports provided: EveCamera, EveLineContainer, EveSpaceScene, EveAnimation, EveAnimationCommand, EveAnimationCurve, EveAnimationState, EveAnimationStateMachine, EveChildBulletStorm, EveChildCloud, EveChildContainer, EveChildExplosion, EveChildInheritProperties, EveChildLink, EveChildMesh, EveChildParticleSphere, EveChildParticleSystem, EveChildQuad, EveLensflare, EveMeshOverlayEffect, EveOccluder, EveStarfield, EveStretch, EveStretch2, EvePerMuzzleData, EveTurretFiringFX, EveBoosterBatch, EveBoosterSetItem, EveBoosterSet, EveBanner, EveBoosterSet2Batch, EveBoosterSet2Item, EveBoosterSet2, EveCurveLineSetItem, EveCurveLineSet, EveCustomMask, EveHazeSetBatch, EveHazeSetItem, EveHazeSet, EveLocator2, EveLocator, EveObjectSetItem, EveObjectSet, EvePlaneSetBatch, EvePlaneSetItem, EvePlaneSet, EveSpaceObjectDecal, EveSpotlightSetBatch, EveSpotlightSetItem, EveSpotlightSet, EveSpriteLineSetBatch, EveSpriteLineSetItem, EveSpriteLineSet, EveSpriteSetBatch, EveSpriteSetItem, EveSpriteSet, EveTrailSetRenderBatch, EveTrailsSet, EveTurretSetItem, EveTurretSet, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveParticleDirectForce, EveParticleDragForce, EveConnector, EveLocalPositionCurve, EveSpherePin, EveTacticalOverlay, EveUiObject, EveChildBillboard, EveChildModifierAttachToBone, EveChildModifierBillboard2D, EveChildModifierBillboard3D, EveChildModifierCameraOrientedRotationConstrained, EveChildModifierSRT, EveChildModifierTranslateWithCamera */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -42422,6 +42445,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return _item__WEBPACK_IMPORTED_MODULE_3__["EveTurretSet"]; });
 
 /* harmony import */ var _object__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./object */ "./eve/object/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveMissileWarhead"]; });
@@ -42437,16 +42470,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation2"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveTransform"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveEffectRoot"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EvePlanet"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveShip"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return _object__WEBPACK_IMPORTED_MODULE_4__["EveStation"]; });
 
 /* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./particle */ "./eve/particle/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return _particle__WEBPACK_IMPORTED_MODULE_5__["EveParticleDirectForce"]; });
@@ -42761,10 +42784,24 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
   }
 
   /**
+   * Changes the lines position from a ray3
+   * @param {vec3} origin
+   * @param {vec3} direction
+   * @param {Number} [length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH]
+   */
+  ChangePositionFromRay(origin, direction) {
+    let length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : EveCurveLineSetItem.DEFAULT_RAY_LENGTH;
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position1, origin);
+    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(this.position2, origin, direction, length);
+    this.UpdateValues();
+  }
+  /**
    * Changes the line's colors
    * @param {vec3} startColor
    * @param {vec3} endColor
    */
+
+
   ChangeColor(startColor, endColor) {
     _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.color1, startColor);
     _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.color2, endColor);
@@ -42949,6 +42986,8 @@ _defineProperty(EveCurveLineSetItem, "Type", {
   CURVED: 3
 });
 
+_defineProperty(EveCurveLineSetItem, "DEFAULT_RAY_LENGTH", 1000);
+
 _defineProperty(EveCurveLineSetItem, "DEFAULT_CURVED_SEGMENTS", 20);
 
 _defineProperty(EveCurveLineSetItem, "DEFAULT_SPHERED_SEGMENTS", 20);
@@ -43058,6 +43097,23 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
     if (this.lineEffect) this.lineEffect.GetResources(out);
     return out;
+  }
+  /**
+   * Creates a straight line from a ray
+   * @param {vec3} origin
+   * @param {vec3} direction
+   * @param {Number} length
+   * @param {Number} width
+   * @param {vec4} startColor
+   * @param {vec4} endColor
+   * @returns {EveCurveLineSetItem}
+   */
+
+
+  AddStraightLineFromRay(origin, direction, length, width, startColor, endColor) {
+    const line = this.AddStraightLine([0, 0, 0], [0, 0, 0], width, startColor, endColor);
+    line.ChangePositionFromRay(origin, direction, length);
+    return line;
   }
   /**
    * Creates a straight line
@@ -43217,7 +43273,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   Rebuild() {
-    this.Unload(true);
+    //this.Unload(true);
     this.RebuildItems();
     this._vbSize = this.lineCount;
     this._dirty = false;
@@ -43330,11 +43386,10 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
    * Gets render batches
    * @param {Number} mode
    * @param {Tw2BatchAccumulator} accumulator
-   * @param {Tw2PerObjectData} [perObjectData]
    */
 
 
-  GetBatches(mode, accumulator, perObjectData) {
+  GetBatches(mode, accumulator) {
     if (!this.display || !this._vb) return;
     let effect;
 
@@ -49632,7 +49687,7 @@ _defineProperty(EveTransform, "__isStaging", 1);
 /*!*****************************!*\
   !*** ./eve/object/index.js ***!
   \*****************************/
-/*! exports provided: EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform, EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation */
+/*! exports provided: EveEffectRoot, EvePlanet, EveShip, EveSpaceObject, EveStation, EveEffectRoot2, EveMissileWarhead, EveMissile, EveMobile, EveRootTransform, EveShip2, EveStation2, EveTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49932,9 +49987,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/index */ "./core/index.js");
 /* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../EveTransform */ "./eve/object/EveTransform.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveObject */ "./eve/object/legacy/EveObject.js");
-/* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! gl-matrix */ "../node_modules/gl-matrix/lib/gl-matrix.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -49942,21 +49995,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * EvePlanet
- * TODO: Implement LOD
  *
- * @property {String} name
- * @property {Boolean} display
- * @property {EveTransform} highDetail
- * @property {Tw2Effect} effectHeight
- * @property {Tw2RenderTarget} heightMap
- * @property {*} zOnlyModel
- * @property {number} itemID
- * @property {String} heightMapResPath1
- * @property {String} heightMapResPath2
- * @property {Boolean} heightDirty
- * @property {Array} lockedResources
- * @property {Array.<Tw2Resource>} watchedResources
- * @class
+ * @property {EveTransform} highDetail               - The planet's model
+ * @property {Tw2Effect} effectHeight                - The effect used to create the planet's height maps
+ * @property {Tw2RenderTarget} heightMap             - A render target for the height map
+ * @property {EveTransform} zOnlyModel               - The planet's z-only model
+ * @property {number} itemID                         - The planet's item id, used for randomisation
+ * @property {String} heightMapResPath1              - The res path for the planet's 1st height map
+ * @property {String} heightMapResPath2              - The res path for the planet's 2nd height map
+ * @property {Boolean} heightDirty                   - Identifies if the planet needs it's height map rebuilt
+ * @property {Array} lockedResources                 - Resources which are keep alive until the height map is built
+ * @property {Array.<Tw2Resource>} watchedResources  - Resources which are watched until the height map is built
+ * @property {Number} _lod                           - The current lod level
+ * @property {Boolean} _useLOD                       - Identifies if lod is being used
+ * @property {EveTransform} _atmosphere              - A reference to the atmosphere used when creating the planet
  */
 
 class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
@@ -49983,31 +50035,15 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
 
     _defineProperty(this, "watchedResources", []);
 
+    _defineProperty(this, "_lod", 3);
+
+    _defineProperty(this, "_useLOD", true);
+
     _defineProperty(this, "_atmosphere", null);
 
     _defineProperty(this, "_planet", null);
   }
 
-  /**
-   * Sets the object's local transform
-   * @param {mat4} m
-   */
-  SetLocalTransform(m) {
-    this.highDetail.SetLocalTransform(m);
-  }
-  /**
-   * Gets object resources
-   * @param {Array} [out=[]] - Optional receiving array
-   * @returns {Array.<Tw2Resource>} [out]
-   */
-
-
-  GetResources() {
-    let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    if (this.highDetail) this.highDetail.GetResources(out);
-    if (this.effectHeight) this.effectHeight.GetResources(out);
-    return out;
-  }
   /**
    * Creates the planet from an options object
    * @param {{}} options={}                   - an object containing the planet's options
@@ -50018,8 +50054,6 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
    * @param {String} options.heightMap2       - the planet's second height map
    * @param {function} [onLoaded]             - an optional callback which is fired when the planet has loaded
    */
-
-
   Create() {
     let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     let onLoaded = arguments.length > 1 ? arguments[1] : undefined;
@@ -50071,6 +50105,57 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     });
   }
   /**
+   * Resets LOD
+   */
+
+
+  ResetLod() {
+    this._lod = 3;
+  }
+  /**
+   * Updates LOD
+   * @param {Tw2Frustum}frustum
+   */
+
+
+  UpdateLod(frustum) {
+    const _this$highDetail = this.highDetail,
+          scaling = _this$highDetail.scaling,
+          translation = _this$highDetail.translation;
+    this._lod = !this._useLOD || !frustum.IsSphereVisible(translation, scaling[0]) ? 0 : 3;
+  }
+  /**
+   * Toggles LOD calculations
+   * @param {Boolean} bool
+   */
+
+
+  UseLOD(bool) {
+    this._useLOD = bool;
+  }
+  /**
+   * Sets the object's local transform
+   * @param {mat4} m
+   */
+
+
+  SetLocalTransform(m) {
+    this.highDetail.SetLocalTransform(m);
+  }
+  /**
+   * Gets object resources
+   * @param {Array} [out=[]] - Optional receiving array
+   * @returns {Array.<Tw2Resource>} [out]
+   */
+
+
+  GetResources() {
+    let out = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    if (this.highDetail) this.highDetail.GetResources(out);
+    if (this.effectHeight) this.effectHeight.GetResources(out);
+    return out;
+  }
+  /**
    * GetPlanetResources
    * Todo: Replace this, using this.GetResources();
    * @param obj
@@ -50118,7 +50203,9 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
 
 
   Update(dt) {
-    this.highDetail.Update(dt);
+    if (this.display && this._useLOD) {
+      this.highDetail.Update(dt);
+    }
   }
   /**
    * Creates the planet's height map
@@ -50169,7 +50256,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
       }
     }
 
-    if (this.display) {
+    if (this.display && this._lod) {
       this.highDetail.GetBatches(mode, accumulator);
     }
   }
@@ -50181,7 +50268,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
 
 
   GetZOnlyBatches(mode, accumulator) {
-    if (this.display && this.zOnlyModel) {
+    if (this.display && this._lod && this.zOnlyModel) {
       this.zOnlyModel.GetBatches(mode, accumulator);
     }
   }
@@ -50676,30 +50763,40 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   UpdateLod(frustum) {
-    const center = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
-
-    if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
-      const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
-
-      if (size <= EveSpaceObject.LOD_THRESHOLD_NONE) {
-        this.lod = 0;
-      } else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW) {
-        this.lod = 1;
-      } else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM) {
-        this.lod = 2;
-      } else {
-        this.lod = 3;
-      }
-
-      this._pixels = size;
+    if (!this._useLOD) {
+      this.lod = 3;
     } else {
-      this.lod = 0;
-      this._pixels = 0;
+      const center = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
+
+      if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
+        const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
+
+        if (size <= EveSpaceObject.LOD_THRESHOLD_NONE) {
+          this.lod = 0;
+        } else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW) {
+          this.lod = 1;
+        } else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM) {
+          this.lod = 2;
+        } else {
+          this.lod = 3;
+        }
+      } else {
+        this.lod = 0;
+      }
     }
 
     if (this.mesh && "SetQuality" in this.mesh) {
       this.mesh.SetQuality(3 - this.lod);
     }
+  }
+  /**
+   * Toggles LOD calculations
+   * @param {Boolean} bool
+   */
+
+
+  UseLOD(bool) {
+    this._useLOD = bool;
   }
   /**
    * Adds a custom mask
@@ -59725,7 +59822,7 @@ lne3.closestPointToPointParameter = function () {
     if (clampToLine) t = Math.max(0, Math.min(1, t));
     return t;
   };
-};
+}();
 /**
  * Copies the values from one lne3 into another
  *
@@ -60243,12 +60340,19 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAtGL = function () {
     out[0] = vec3_0[0];
     out[1] = vec3_0[1];
     out[2] = vec3_0[2];
+    out[3] = 0;
     out[4] = vec3_1[0];
     out[5] = vec3_1[1];
     out[6] = vec3_1[2];
+    out[7] = 0;
     out[8] = vec3_2[0];
     out[9] = vec3_2[1];
     out[10] = vec3_2[2];
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 1;
     return out;
   };
 }();
@@ -60290,6 +60394,30 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].perspectiveGL = function (out, fo
   let fH = Math.tan(fovY / 360 * Math.PI) * near;
   let fW = fH * aspect;
   gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].frustum(out, -fW, fW, -fH, fH, near, far);
+  return out;
+};
+/**
+ * Projects a vector from 3d to 2d space, returning normalized screen space value
+ * m should be a projection matrix (or a VP or MVP)
+ * @author https://github.com/hughsk/from-3d-to-2d/blob/master/index.js
+ * @param {vec3} out   - receiving vec3
+ * @param {mat4} m     - Projection / View Projection
+ * @param {vec3} a     - the point to project
+ * @returns {vec3} out - receiving vec3
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].projectVec3 = function (out, m, a) {
+  var ix = a[0];
+  var iy = a[1];
+  var iz = a[2];
+  var ox = m[0] * ix + m[4] * iy + m[8] * iz + m[12];
+  var oy = m[1] * ix + m[5] * iy + m[9] * iz + m[13];
+  var oz = m[2] * ix + m[6] * iy + m[10] * iz + m[14];
+  var ow = m[3] * ix + m[7] * iy + m[11] * iz + m[15];
+  out[0] = (ox / ow + 1) / 2;
+  out[1] = (oy / ow + 1) / 2;
+  out[2] = (oz / ow + 1) / 2;
   return out;
 };
 /**
@@ -60437,7 +60565,7 @@ noise.turbulence = function () {
     out[2] += r[2] * power;
     return out;
   };
-};
+}();
 /**
  * Perlin_noise1
  *
@@ -60495,7 +60623,7 @@ noise.perlin1 = function () {
         v = rx1 * p_g1[p_p[bx1]];
     return u + sx * (v - u);
   };
-};
+}();
 /**
  * PerlinNoise1D
  *
@@ -61468,7 +61596,7 @@ pln.getIntersectStartEnd = function () {
     _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].from(vec6_0, lineStart, lineEnd);
     return pln.getIntersectLne3(out, a, vec6_0);
   };
-};
+}();
 /**
  * Sets a vec3 with the normal component of the pln
  *
@@ -61536,7 +61664,7 @@ pln.intersectsBounds = function () {
     _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].from(vec6_0, min, max);
     return _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].intersectsPln(vec6_0, a);
   };
-};
+}();
 /**
  * Checks if a plane intersects a Float32Array(6) bounding box
  *
@@ -61746,7 +61874,7 @@ pln.transformMat4 = function () {
     out[3] = -(rX * out[0] + rY * out[1] + rZ * out[2]);
     return out;
   };
-};
+}();
 /**
  * Translates a plane with the given vector
  *
@@ -62068,6 +62196,24 @@ ray3.from = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].from;
 
 ray3.fromArray = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].fromArray;
 /**
+ * Sets a ray 3 from start and end vectors
+ *
+ * @param {ray3} out
+ * @param {vec3} start
+ * @param {vec3} end
+ * @returns {ray3}
+ */
+
+ray3.fromStartEnd = function (out, start, end) {
+  out[0] = start[0];
+  out[1] = start[1];
+  out[2] = start[2];
+  out[3] = end[0] - start[0];
+  out[4] = end[1] - start[1];
+  out[5] = end[2] - start[2];
+  return ray3.normalize(out, out);
+};
+/**
  * Sets a ray3 from a screen coordinates and an inverse view projection matrix
  *
  * @param {vec3} out              - receiving ray3
@@ -62075,6 +62221,7 @@ ray3.fromArray = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].fromArray;
  * @param {mat4} m         -      - inverse view projection matrix
  * @param {mat4} viewport         - viewport settings (x, y, width, height)
  */
+
 
 ray3.fromPerspective = function (out, coords, m, viewport) {
   // Convert view port co-ordinates
@@ -62098,6 +62245,22 @@ ray3.fromPerspective = function (out, coords, m, viewport) {
   out[5] = (m[2] * x + m[6] * y + m[10] * 1 + m[14]) / dW - out[2]; // Normalize direction
 
   return ray3.normalize(out, out);
+};
+/**
+ * Alternative to ray3.fromPerspective
+ * @param {ray3} out         - receiving ray3
+ * @param {vec2} mouse       - event.ClientX, canvasHeight - event.clientY
+ * @param {vec4} viewport    - x, y, width, height
+ * @param {mat4} invProjView - inverse projection view matrix
+ */
+
+
+ray3.unproject = function (out, mouse, viewport, invProjView) {
+  const start = [mouse[0], mouse[1], 0],
+        end = [mouse[0], mouse[1], 1];
+  _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject(start, start, viewport, invProjView);
+  _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject(end, end, viewport, invProjView);
+  ray3.fromStartEnd(out, start, end);
 };
 /**
  * Sets a vec3 with the position on a ray3 at a given distance from it"s origin
@@ -62228,7 +62391,7 @@ ray3.getIntersectBox3 = function () {
     _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMax(vec3_1, b);
     return _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getIntersectBounds(out, a, vec3_0, vec3_1);
   };
-};
+}();
 /**
  * Sets a vec3 with the intersection point of a ray3 and a triangle"s components
  * - Returns null if there was no intersection, or the receiving vec3 if there was
@@ -62256,7 +62419,7 @@ ray3.getIntersectTri3 = function () {
     _tri3__WEBPACK_IMPORTED_MODULE_5__["tri3"].getV3(vec3_2, f);
     return ray3.getIntersectVertices(out, a, vec3_0, vec3_1, vec3_2, bfc);
   };
-};
+}();
 /**
  * Sets a vec3 with the intersection point of a ray3 and a triangle"s components
  * - Returns null if there was no intersection, or the receiving vec3 if there was
@@ -62312,7 +62475,7 @@ ray3.getIntersectVertices = function () {
     if (QdN < 0) return null;
     return ray3.get(out, a, QdN / DdN);
   };
-};
+}();
 /**
  * Sets a vec3 with the intersection point of a ray3 and a plane"s components
  * - Returns null if there was no intersection, or the receiving vec3 if there was
@@ -62364,7 +62527,7 @@ ray3.getIntersectPositionRadius = function () {
     _sph3__WEBPACK_IMPORTED_MODULE_3__["sph3"].from(sph3_0, p, r);
     return ray3.getIntersectSph3(out, a, sph3_0);
   };
-};
+}();
 /**
  * Sets a vec3 with the intersection point of a ray3 and a Float32Array(4) sphere
  * - Returns null if there was no intersection, or the receiving vec3 if there was
@@ -62416,7 +62579,7 @@ ray3.intersectsBox3 = function () {
     if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     return ray3.vec3_0 = ray3.getIntersectBox3(vec3_0, a, b) !== null;
   };
-};
+}();
 /**
  * Checks for ray3 intersection with bounds
  *
@@ -62433,7 +62596,7 @@ ray3.intersectsBounds = function () {
     if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     return ray3.getIntersectBounds(vec3_0, a, min, max) !== null;
   };
-};
+}();
 /**
  * Checks for ray3 intersection with a plane"s components
  *
@@ -62500,25 +62663,10 @@ ray3.lookAt = function (out, a, p) {
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
-  let x = p[0] - a[0],
-      y = p[1] - a[1],
-      z = p[2] - a[2]; // Normalize the direction
-
-  let len = x * x + y * y + z * z;
-
-  if (len > 0) {
-    len = 1 / Math.sqrt(len);
-    out[3] = a[0] * len;
-    out[4] = a[1] * len;
-    out[5] = a[2] * len;
-  } else {
-    out[3] = 0;
-    out[4] = 0;
-    out[5] = 0;
-    throw new Error("Normalization error");
-  }
-
-  return out;
+  out[3] = p[0] - a[0];
+  out[4] = p[1] - a[1];
+  out[5] = p[2] - a[2];
+  return ray3.normalize(out, out);
 };
 /**
  * Sets a ray3 from the results of normalizing another
@@ -62627,7 +62775,7 @@ ray3.squaredDistance = function () {
     ray3.get(vec3_0, a, dirDist);
     return _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(vec3_0, p);
   };
-};
+}();
 /**
  * Sets an array at at optional offset from a ray3
  *
@@ -63006,7 +63154,7 @@ sph3.fromMat4 = function (out, m) {
   out[0] = m[12];
   out[1] = m[13];
   out[2] = m[14];
-  out[4] = _mat4__WEBPACK_IMPORTED_MODULE_2__["mat4"].maxScaleOnAxis(m);
+  out[3] = _mat4__WEBPACK_IMPORTED_MODULE_2__["mat4"].maxScaleOnAxis(m);
   return out;
 };
 /**
@@ -63232,7 +63380,7 @@ sph3.setPoints = function () {
     out[3] = Math.sqrt(maxSquaredRadius);
     return out;
   };
-};
+}();
 /**
  * Returns the squared distance between two sph3s
  *
@@ -63490,7 +63638,7 @@ tri3.contains = function () {
     tri3.getBaryCentricCoordinates(vec3_0, a, point);
     return vec3_0[0] >= 0 && vec3_0[1] >= 0 && vec3_0[0] + vec3_0[1] <= 1;
   };
-};
+}();
 /**
  * Copies a tri3
  *
@@ -63625,7 +63773,7 @@ tri3.getClosestEdgeToPoint = function () {
 
     return out;
   };
-};
+}();
 /**
  * Gets the closest point on a triangle to another point
  *
@@ -63685,7 +63833,7 @@ tri3.getClosestPointToPoint = function () {
 
     return out;
   };
-};
+}();
 /**
  * Gets the closest vertex to a given point
  *
@@ -63730,7 +63878,7 @@ tri3.getClosestVertexToPoint = function () {
     out[2] = z;
     return out;
   };
-};
+}();
 /**
  * Sets a vec3 as the midpoint of a triangle
  *
@@ -64357,6 +64505,22 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiplyScalar = function (out, a
   return out;
 };
 /**
+ * Converts from long, lat and radius to a vector
+ * @param {vec3} out
+ * @param {Number} radius
+ * @param {Number} latitude
+ * @param {Number} longitude
+ * @returns {vec3} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].polarToCartesian = function (out, radius, latitude, longitude) {
+  out[0] = radius * Math.cos(latitude) * Math.sin(longitude);
+  out[1] = radius * Math.sin(latitude);
+  out[2] = radius * Math.cos(latitude) * Math.cos(longitude);
+  return out;
+};
+/**
  * Projects a local vec3 to screen space with viewport settings
  * @param {vec3} out           - receiving vec3
  * @param {vec3} a             - local vec3
@@ -64481,7 +64645,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject = function () {
     out[2] = vec4_0[2] / vec4_0[3];
     return out;
   };
-};
+}();
 /**
  * Unwraps degrees
  *

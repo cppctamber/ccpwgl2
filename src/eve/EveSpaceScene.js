@@ -106,6 +106,7 @@ export class EveSpaceScene extends Tw2BaseClass
     lensflares = [];
     localTransform = mat4.create();
     planets = [];
+    lineSets = [];
     postProcess = null;
     //shadowEffect = null;
     visible = {
@@ -118,6 +119,7 @@ export class EveSpaceScene extends Tw2BaseClass
         environmentBlur: true,
         fog: true,
         lensflares: true,
+        lineSets: true,
         objects: true,
         planets: true,
         post: true,
@@ -321,15 +323,15 @@ export class EveSpaceScene extends Tw2BaseClass
     /**
      * Calls a function on each planet, object and background object if it exists
      * @param {String} funcName
-     * @param {*} [argument]
+     * @param args
      */
-    PerChildObject(funcName, argument)
+    PerChildObject(funcName, ...args)
     {
         for (let i = 0; i < this.planets.length; i++)
         {
             if (funcName in this.planets[i])
             {
-                this.planets[i][funcName](argument);
+                this.planets[i][funcName](...args);
             }
         }
 
@@ -337,7 +339,7 @@ export class EveSpaceScene extends Tw2BaseClass
         {
             if (funcName in this.objects[i])
             {
-                this.objects[i][funcName](argument);
+                this.objects[i][funcName](...args);
             }
         }
 
@@ -345,7 +347,15 @@ export class EveSpaceScene extends Tw2BaseClass
         {
             if (funcName in this.backgroundObjects[i])
             {
-                this.backgroundObjects[i][funcName](argument);
+                this.backgroundObjects[i][funcName](...args);
+            }
+        }
+
+        for (let i = 0; i < this.lineSets.length; i++)
+        {
+            if (funcName in this.lineSets[i])
+            {
+                this.lineSets[i][funcName](...args);
             }
         }
     }
@@ -487,6 +497,14 @@ export class EveSpaceScene extends Tw2BaseClass
             }
         }
 
+        if (show.lineSets)
+        {
+            for (let i = 0; i < this.lineSets.length; i++)
+            {
+                this.lineSets[i].UpdateViewDependentData(tr);
+            }
+        }
+
         if (show.lensflares)
         {
             for (let i = 0; i < this.lensflares.length; ++i)
@@ -523,21 +541,18 @@ export class EveSpaceScene extends Tw2BaseClass
             //this.RenderBatched(d.RM_DISTORTION, this.backgroundObjects);
         }
 
+        if (show.lineSets)
+        {
+            this.RenderBatches(d.RM_TRANSPARENT, this.lineSets);
+            this.RenderBatches(d.RM_ADDITIVE, this.lineSets);
+        }
+
+
         if (show.lensflares)
         {
             for (let i = 0; i < this.lensflares.length; ++i)
             {
                 this.lensflares[i].GetBatches(d.RM_ADDITIVE, this._batches);
-            }
-        }
-
-        this._batches.Render();
-
-        if (show.lensflares)
-        {
-            for (let i = 0; i < this.lensflares.length; ++i)
-            {
-                this.lensflares[i].UpdateOccluders();
             }
         }
 
@@ -550,6 +565,17 @@ export class EveSpaceScene extends Tw2BaseClass
         {
             // TODO: Implement post processing
         }
+
+        this._batches.Render();
+
+        if (show.lensflares)
+        {
+            for (let i = 0; i < this.lensflares.length; ++i)
+            {
+                this.lensflares[i].UpdateOccluders();
+            }
+        }
+
 
         if (show.debug)
         {
