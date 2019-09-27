@@ -2895,19 +2895,19 @@ var ccpwgl = (function(tw2)
      */
     esi.getStation = async function(stationID, params)
     {
-        return await getIDFromESIRoute(Universe.CATEGORIES, categoryID, params)
+        return await getIDFromESIRoute(Universe.STATIONS, stationID, params)
     };
 
     /**
      * Gets a stargate by it's id
      * TODO: Add rotation
-     * @param {Number} stationID
+     * @param {Number} stargateID
      * @param {*} [params]
      * @returns {Promise<Object>}
      */
-    esi.getStargate = async function(stationID, params)
+    esi.getStargate = async function(stargateID, params)
     {
-        return await getIDFromESIRoute(Universe.CATEGORIES, categoryID, params);
+        return await getIDFromESIRoute(Universe.STARGATES, stargateID, params);
     };
 
     /**
@@ -2998,7 +2998,7 @@ var ccpwgl = (function(tw2)
          * @param {String} path
          * @returns {String}
          */
-        function fromDDS(path)
+        function fromPath(path)
         {
             path = path.toLowerCase();
             //path = path.replace("res:/", "cdn:/");
@@ -3006,9 +3006,9 @@ var ccpwgl = (function(tw2)
         }
 
         return {
-            path: fromDDS(result[0]),
-            heightMap1: fromDDS(result[1]),
-            heightMap2: fromDDS(result[2]),
+            path: fromPath(result[0]),
+            heightMap1: fromPath(result[1]),
+            heightMap2: fromPath(result[2]),
             id, name, radius
         };
     }
