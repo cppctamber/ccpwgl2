@@ -1,4 +1,4 @@
-import {isFunction, template} from "../global/util";
+import {isFunction, isPlain, template} from "../global/util";
 
 const HAS_CAPTURE_STACK_TRACE = isFunction(Error["captureStackTrace"]);
 
@@ -186,7 +186,7 @@ export class ErrHTTPStatus extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Communication status error while loading resource (%status%)");
+        super(data, "%statusText=Communication status error while loading resource% (%status%)");
     }
 }
 

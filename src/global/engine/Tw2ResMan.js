@@ -10,7 +10,7 @@ import {
     ErrResourcePrefixUndefined,
     ErrResourcePrefixUnregistered
 } from "../../core";
-import {assignIfExists, getPathExtension, isError, isFunction} from "../util";
+import {assignIfExists, getPathExtension, isBoolean, isError, isFunction} from "../util";
 
 /**
  * Resource Manager
@@ -101,7 +101,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      * @param {String} eventName - Resource state name
      * @param {*} [log={}]       - Resource log
      */
-    OnPathEvent(path, eventName, log={})
+    OnPathEvent(path, eventName, log = {})
     {
         const
             res = this.motherLode.Find(path),
@@ -110,7 +110,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         if (err)
         {
             this.motherLode.AddError(path, err);
-            log = { err, message: err.message };
+            log = {err, message: err.message};
         }
 
         log.path = path;
@@ -388,7 +388,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      * @param {String|Function} responseType
      * @returns {Promise}
      */
-    Fetch(url, responseType)
+    async Fetch(url, responseType)
     {
         this.AddPendingLoad(url);
 
@@ -397,7 +397,7 @@ export class Tw2ResMan extends Tw2EventEmitter
             {
                 if (!response.ok)
                 {
-                    throw new ErrHTTPStatus({status: response.status, url});
+                    throw response;
                 }
 
                 if (isFunction(responseType))
@@ -423,15 +423,41 @@ export class Tw2ResMan extends Tw2EventEmitter
                         throw new Error("Invalid fetch type: " + responseType);
                 }
             })
-            .then(response =>
+            .then(result =>
             {
                 this.RemovePendingLoad(url);
-                return response;
+                return result;
             })
             .catch(err =>
             {
                 this.RemovePendingLoad(url);
-                throw err;
+
+                if (err.text)
+                {
+                    return err.text()
+                        .then(text =>
+                        {
+                            let {status, statusText} = err;
+                            let json;
+
+                            try
+                            {
+                                json = JSON.parse(text);
+                                statusText = json.message || json.msg || json.error || json.err;
+                                if (isBoolean(statusText)) statusText = undefined;
+                            }
+                            catch (err)
+                            {
+                                statusText = text;
+                            }
+
+                            throw new ErrHTTPStatus({status, statusText, json});
+                        });
+                }
+                else
+                {
+                    throw err;
+                }
             });
     }
 
