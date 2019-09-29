@@ -1,147 +1,147 @@
 {
   "6": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/yellow.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/yellow.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/yellow.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/yellow.red",
     "lensflare_graphic_id": 1015
   },
   "7": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange.red",
     "lensflare_graphic_id": 1012
   },
   "8": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/red.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/red.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/red.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/red.red",
     "lensflare_graphic_id": 1013
   },
   "9": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/blue.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/blue.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/blue.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/blue.red",
     "lensflare_graphic_id": 1011
   },
   "10": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/white.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/white.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/white.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/white.red",
     "lensflare_graphic_id": 1014
   },
   "3796": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/blue_sun.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/blue_sun.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/blue_sun.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/blue_sun.red",
     "lensflare_graphic_id": 1241
   },
   "3797": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/pink_hazy.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/pink_hazy.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/pink_hazy.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/pink_hazy.red",
     "lensflare_graphic_id": 1242
   },
   "3798": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange_sun.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange_sun.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange_sun.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange_sun.red",
     "lensflare_graphic_id": 1243
   },
   "3799": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/pink_sun_small.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/pink_sun_small.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/pink_sun_small.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/pink_sun_small.red",
     "lensflare_graphic_id": 1244
   },
   "3800": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange_radiating.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange_radiating.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange_radiating.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange_radiating.red",
     "lensflare_graphic_id": 1245
   },
   "3801": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/blue_small.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/blue_small.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/blue_small.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/blue_small.red",
     "lensflare_graphic_id": 1246
   },
   "3802": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/yellow_small.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/yellow_small.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/yellow_small.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/yellow_small.red",
     "lensflare_graphic_id": 1247
   },
   "3803": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/white_tiny.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/white_tiny.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/white_tiny.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/white_tiny.red",
     "lensflare_graphic_id": 1248
   },
   "34331": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/purple_sun.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/purple_sun.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/purple_sun.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/purple_sun.red",
     "lensflare_graphic_id": 20983
   },
   "45030": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/yellow.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/yellow.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/yellow.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/yellow.red",
     "lensflare_graphic_id": 1015
   },
   "45031": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange.red",
     "lensflare_graphic_id": 1012
   },
   "45032": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange.red",
     "lensflare_graphic_id": 1012
   },
   "45033": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/red.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/red.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/red.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/red.red",
     "lensflare_graphic_id": 1013
   },
   "45034": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/blue.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/blue.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/blue.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/blue.red",
     "lensflare_graphic_id": 1011
   },
   "45035": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/white.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/white.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/white.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/white.red",
     "lensflare_graphic_id": 1014
   },
   "45036": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/pink_hazy.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/pink_hazy.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/pink_hazy.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/pink_hazy.red",
     "lensflare_graphic_id": 1242
   },
   "45037": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange_sun.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange_sun.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange_sun.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange_sun.red",
     "lensflare_graphic_id": 1243
   },
   "45038": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/pink_sun_small.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/pink_sun_small.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/pink_sun_small.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/pink_sun_small.red",
     "lensflare_graphic_id": 1244
   },
   "45039": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange_radiating.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange_radiating.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange_radiating.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange_radiating.red",
     "lensflare_graphic_id": 1245
   },
   "45040": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/orange_radiating.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/orange_radiating.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/orange_radiating.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/orange_radiating.red",
     "lensflare_graphic_id": 1245
   },
   "45041": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/yellow_small.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/yellow_small.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/yellow_small.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/yellow_small.red",
     "lensflare_graphic_id": 1247
   },
   "45042": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/white_tiny.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/white_tiny.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/white_tiny.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/white_tiny.red",
     "lensflare_graphic_id": 1248
   },
   "45046": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/blue_sun.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/blue_sun.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/blue_sun.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/blue_sun.red",
     "lensflare_graphic_id": 1241
   },
   "45047": {
-    "graphic_file": "res:/dx9/model/worldobject/sun/yellow.red",
-    "lensflare_graphic_file": "res:/fisfx/lensflare/yellow.red",
+    "resource_file": "res:/dx9/model/worldobject/sun/yellow.red",
+    "lensflare_resource_file": "res:/fisfx/lensflare/yellow.red",
     "lensflare_graphic_id": 1015
   },
   "sun_models": [

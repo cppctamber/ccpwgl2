@@ -42,8 +42,9 @@ export class EvePlanet extends EveObject
     /**
      * Creates the planet from an options object
      * @param {{}} options={}                   - an object containing the planet's options
+     * @param {String} options.name             - the planet's name
      * @param {number} options.itemID           - the item id is used for randomization
-     * @param {String} options.planetPath       - .red file for a planet, or planet template
+     * @param {String} options.resPath          - .red file for a planet, or planet template
      * @param {String} [options.atmospherePath] - optional .red file for a planet's atmosphere
      * @param {String} options.heightMap1       - the planet's first height map
      * @param {String} options.heightMap2       - the planet's second height map
@@ -51,8 +52,9 @@ export class EvePlanet extends EveObject
      */
     Create(options = {}, onLoaded)
     {
-        const {itemID = 0, planetPath, atmospherePath, heightMap1, heightMap2} = options;
+        const {name="", itemID = 0, resPath, atmospherePath, heightMap1, heightMap2} = options;
 
+        this.name = name;
         this.itemID = itemID;
         this.heightMapResPath1 = heightMap1;
         this.heightMapResPath2 = heightMap2;
@@ -60,7 +62,7 @@ export class EvePlanet extends EveObject
         this.heightDirty = true;
 
         let loadingParts = 1;
-        if (planetPath) loadingParts++;
+        if (resPath) loadingParts++;
         if (atmospherePath) loadingParts++;
 
         /**
@@ -75,9 +77,9 @@ export class EvePlanet extends EveObject
             }
         }
 
-        if (planetPath)
+        if (resPath)
         {
-            resMan.GetObject(planetPath, obj =>
+            resMan.GetObject(resPath, obj =>
             {
                 this._planet = obj;
                 EvePlanet.MeshLoaded(this, obj);
@@ -241,6 +243,7 @@ export class EvePlanet extends EveObject
             this.heightDirty = false;
             for (let i = 0; i < this.lockedResources.length; ++i)
             {
+                if (!this.lockedResources[i]) continue;
                 this.lockedResources[i].doNotPurge--;
             }
 
@@ -380,6 +383,8 @@ export class EvePlanet extends EveObject
 
         for (let i = 0; i < planet.lockedResources.length; ++i)
         {
+            if (!planet.lockedResources[i]) continue;
+
             planet.lockedResources[i].doNotPurge++;
             if (planet.lockedResources[i].IsPurged())
             {

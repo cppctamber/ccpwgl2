@@ -88,11 +88,13 @@
             for (let i = 0; i < planetsData.length; ++i)
             {
                 let planet = scene.loadPlanet(
-                    planetsData[i][0],
-                    planetsData[i][1],
-                    planetsData[i][2],
-                    planetsData[i][3],
-                    planetsData[i][4],
+                    {
+                        itemID: planetsData[i][0],
+                        resPath: planetsData[i][1],
+                        atmospherePath: planetsData[i][2],
+                        heightMap1: planetsData[i][3],
+                        heightMap2: planetsData[i][4]
+                    },
                     planetsData[i][5]
                 );
 

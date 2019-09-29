@@ -15,59 +15,126 @@
 
         async function OnDocLoad()
         {
-            const {mat4} = tw2.math;
+            const {esi} = ccpwgl;
+            const {mat4, vec2, vec3, vec4, ray3, sph3} = tw2.math;
 
+            // Load system
+            const systemID = tw2.util.getURLInteger("system", 30002053);
+            const system = await esi.getSystem(systemID);
+            const {nebulaPath, lensflarePath} = await esi.getSystemGraphicData(systemID);
+
+            // Create scene
             ccpwgl.initialize("mainCanvas", demos.options);
-            camera = ccpwgl.createCamera();
-            scene = ccpwgl.loadScene('res:/dx9/scene/universe/g01_cube.red');
+            canvas = ccpwgl.canvas;
+            camera = ccpwgl.createCamera({fov: 50});
+            scene = ccpwgl.loadScene(nebulaPath);
+            scene.loadSun(lensflarePath);
 
-            const
-                getMoon = ccpwgl.esi.getGraphicDataFromMoonID,
-                getPlanet = ccpwgl.esi.getGraphicDataFromPlanetID,
-                planetsData = await Promise.all([
-                    getPlanet(40000002),
-                    getPlanet(40000005),
-                    getPlanet(40000007),
-                    getPlanet(40000008),
-                    getPlanet(40000024),
-                    getPlanet(40000011),
-                    getMoon(40000010),
-                    getPlanet(40000100),
-                    getMoon(40000004),
-                    getPlanet(40000123)
-                ]),
-                planetCount = planetsData.length;
+            let planetsData = [],
+                maxRadius = 0;
 
-            let maxRadius = 0;
-            planetsData.forEach(p =>
+            // Get raw data for each planet and identify biggest radius
+            system.planets.forEach(planet =>
             {
-                p.radius /= 1000;
-                maxRadius = Math.max(maxRadius, p.radius * 3)
+                if (planet && planet.planet_id)
+                {
+                    planetsData.push(esi.getPlanetGraphicData(planet.planet_id)
+                        .then(data =>
+                        {
+                            // Scale planets down to reduce floating point errors when ray casting
+                            data.radius /= 1000;
+                            maxRadius = Math.max(maxRadius, data.radius * 6);
+                            return data;
+                        }));
+                }
             });
 
-            for (let i = 0; i < planetCount; i++)
-            {
-                const {id, name, path, heightMap1, heightMap2, radius} = planetsData[i];
+            // Wait until all planets are loaded
+            planetsData = await Promise.all(planetsData);
 
-                const planet = scene.loadPlanet(id, path, undefined, heightMap1, heightMap2, function()
+            // Sort planets by biggest to smallest
+            planetsData.sort((a, b) => a.radius > b.radius ? 1 : -1);
+
+            // Build planets
+            planetsData.forEach(planet =>
+            {
+                planets.push(scene.loadPlanet(planet, function()
                 {
-                    const angle = Math.PI * 2 * i / planetCount;
-                    planet.setTransform(mat4.fromValues(
+                    const
+                        angle = Math.PI * 2 * planetsData.indexOf(planet) / planetsData.length,
+                        {radius, name} = planet;
+
+                    this.setTransform(mat4.fromValues(
                         radius, 0, 0, 0,
                         0, radius, 0, 0,
                         0, 0, radius, 0,
                         maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle), 1
                     ));
-                    console.log(`Loaded ${name}`);
-                });
-                planets.push(planet);
-            }
 
-            ccpwgl.on("pre_render", () =>
-            {
-                document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
+                    console.log(`Loaded ${name}`);
+                }));
             });
 
+            const
+                mousePosition = vec2.create(),
+                closestPoint = vec3.create(),
+                viewport = vec4.create(),
+                rayCast = ray3.create(),
+                boundingSphere = sph3.create(),
+                viewProjectionInverse = mat4.create();
+
+            // Updates mouse coordinates
+            canvas.addEventListener('mousemove', function(event)
+            {
+                mousePosition[0] = event.clientX;
+                mousePosition[1] = tw2.height - event.clientY;
+            });
+
+            // Ray intersection test for planets
+            canvas.addEventListener('mousedown', function(event)
+            {
+                vec4.set(viewport, 0, 0, tw2.width, tw2.height);
+                mat4.invert(viewProjectionInverse, tw2.device.viewProjection);
+                ray3.unproject(rayCast, mousePosition, viewProjectionInverse, viewport);
+
+                const closest = {
+                    planet: null,
+                    distance: Infinity,
+                    point: null
+                };
+
+                planets.forEach(planet =>
+                {
+                    sph3.fromMat4(boundingSphere, planet.transform);
+                    if (ray3.getIntersectSph3(closestPoint, rayCast, boundingSphere))
+                    {
+                        const distance = ray3.squaredDistance(rayCast, closestPoint);
+                        if (distance < closest.distance)
+                        {
+                            closest.distance = distance;
+                            closest.planet = planet;
+                            closest.point = Array.from(closestPoint);
+                        }
+                    }
+                });
+
+                console.dir(closest);
+
+                if (closest.planet)
+                {
+                    const {transform} = closest.planet;
+                    mat4.getTranslation(camera.poi, transform);
+                    camera.distance = mat4.maxScaleOnAxis(transform) * 5;
+                }
+
+                event.preventDefault();
+            });
+
+            // Show when stuff is loading
+            ccpwgl.on("pre_render", () =>
+            {
+                document.getElementById('loading').innerHTML = ccpwgl.isLoading() ? "loading" : system.name;
+            });
         }
     </script>
 
