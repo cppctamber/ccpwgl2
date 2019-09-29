@@ -11,7 +11,7 @@
 
     <script type="text/javascript">
 
-        let canvas, camera, scene, planets = [];
+        let canvas, camera, scene, planets = [], selectionText = "Alt + left click planet to zoom";
 
         async function OnDocLoad()
         {
@@ -26,9 +26,11 @@
             // Create scene
             ccpwgl.initialize("mainCanvas", demos.options);
             canvas = ccpwgl.canvas;
-            camera = ccpwgl.createCamera({fov: 50});
+            camera = ccpwgl.createCamera();
             scene = ccpwgl.loadScene(nebulaPath);
+            scene.treatPlanetsAsObjects(true);
             scene.loadSun(lensflarePath);
+
 
             let planetsData = [],
                 maxRadius = 0;
@@ -43,7 +45,7 @@
                         {
                             // Scale planets down to reduce floating point errors when ray casting
                             data.radius /= 1000;
-                            maxRadius = Math.max(maxRadius, data.radius * 6);
+                            maxRadius = Math.max(maxRadius, data.radius * 3);
                             return data;
                         }));
                 }
@@ -93,6 +95,8 @@
             // Ray intersection test for planets
             canvas.addEventListener('mousedown', function(event)
             {
+                if (!event.altKey) return;
+
                 vec4.set(viewport, 0, 0, tw2.width, tw2.height);
                 mat4.invert(viewProjectionInverse, tw2.device.viewProjection);
                 ray3.unproject(rayCast, mousePosition, viewProjectionInverse, viewport);
@@ -118,13 +122,13 @@
                     }
                 });
 
-                console.dir(closest);
-
                 if (closest.planet)
                 {
                     const {transform} = closest.planet;
                     mat4.getTranslation(camera.poi, transform);
-                    camera.distance = mat4.maxScaleOnAxis(transform) * 5;
+                    //vec3.copy(camera.poi, closest.point);
+                    camera.distance = mat4.maxScaleOnAxis(transform) * 4;
+                    selectionText = closest.planet.name;
                 }
 
                 event.preventDefault();
@@ -133,7 +137,7 @@
             // Show when stuff is loading
             ccpwgl.on("pre_render", () =>
             {
-                document.getElementById('loading').innerHTML = ccpwgl.isLoading() ? "loading" : system.name;
+                document.getElementById('loading').innerHTML = ccpwgl.isLoading() ? "loading" : `<b>${selectionText}</b>`;
             });
         }
     </script>

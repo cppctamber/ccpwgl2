@@ -1554,6 +1554,8 @@ var ccpwgl = (function(tw2)
      */
     function Planet(options, onLoad)
     {
+        this.name = options && options.name ? options.name : "";
+
         /** Wrapped tw2 planet object @type {tw2.EvePlanet} **/
         this.wrappedObjects = [new tw2.EvePlanet()];
 
@@ -1721,6 +1723,21 @@ var ccpwgl = (function(tw2)
             }
         };
 
+        let treatPlanetsAsObjects = false;
+
+        /**
+         * Allows planets to be treated as objects
+         * @param {Boolean} bool
+         */
+        this.treatPlanetsAsObjects = function(bool)
+        {
+            if (treatPlanetsAsObjects !== bool)
+            {
+                treatPlanetsAsObjects = bool;
+                rebuildSceneObjects(self)
+            }
+        }
+
         /**
          * Internal helper function that rebuilds a list of object in the wrapped
          * scene with alread loaded objects from Scene.objects array.
@@ -1740,7 +1757,7 @@ var ccpwgl = (function(tw2)
                     var wrapped = self.objects[i].wrappedObjects[j];
                     if (wrapped)
                     {
-                        if (self.objects[i] instanceof Planet)
+                        if (self.objects[i] instanceof Planet && !treatPlanetsAsObjects)
                         {
                             self.wrappedScene.planets.push(wrapped);
                         }
