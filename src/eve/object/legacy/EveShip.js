@@ -106,15 +106,14 @@ export class EveShip extends EveSpaceObject
      * Updates view dependant data
      * @param {mat4} parentTransform
      * @param {Number} dt
-     * @param {Number} worldSpriteScale
      */
-    UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
+    UpdateViewDependentData(parentTransform, dt)
     {
-        super.UpdateViewDependentData(parentTransform, dt, worldSpriteScale);
+        super.UpdateViewDependentData(parentTransform, dt);
 
         for (let i = 0; i < this.turretSets.length; ++i)
         {
-            this.turretSets[i].UpdateViewDependentData(parentTransform);
+            this.turretSets[i].UpdateViewDependentData(this._worldTransform);
         }
     }
 

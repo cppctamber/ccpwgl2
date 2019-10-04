@@ -51,7 +51,6 @@ import {Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess} 
  * @property {Number} fogBlur
  * @property {Number} fogType
  * @property {Array.<EveLensflare>} lensflares
- * @property {mat4} localTransform
  * @property {Array.<EvePlanet>} planets
  * @property {Tr2PostProcess} postProcess
  * @property {*} visible
@@ -104,7 +103,6 @@ export class EveSpaceScene extends Tw2BaseClass
     fogBlur = 0;
     fogType = 0;
     lensflares = [];
-    localTransform = mat4.create();
     planets = [];
     lineSets = [];
     postProcess = null;
@@ -180,15 +178,6 @@ export class EveSpaceScene extends Tw2BaseClass
             this.objects.splice(0);
         }
 
-    }
-
-    /**
-     * Sets the scene's local transform
-     * @param {mat4} m
-     */
-    SetTransform(m)
-    {
-        mat4.copy(this._localTransform, m);
     }
 
     /**
@@ -413,8 +402,6 @@ export class EveSpaceScene extends Tw2BaseClass
         }
     }
 
-    spriteScale = 1;
-
     /**
      * Updates children's view dependent data and renders them
      * @param {Number} dt - deltaTime
@@ -426,8 +413,7 @@ export class EveSpaceScene extends Tw2BaseClass
         const
             d = device,
             g = EveSpaceScene.global,
-            tr = this.localTransform,
-            spriteScale = mat4.maxScaleOnAxis(tr) * this.spriteScale,
+            tr = g.MAT_ID,
             show = this.visible;
 
         if (show["environment"] && this.backgroundEffect)
@@ -481,7 +467,7 @@ export class EveSpaceScene extends Tw2BaseClass
             {
                 if (this.objects[i].UpdateViewDependentData)
                 {
-                    this.objects[i].UpdateViewDependentData(tr, dt, spriteScale);
+                    this.objects[i].UpdateViewDependentData(tr, dt);
                 }
             }
         }
@@ -492,7 +478,7 @@ export class EveSpaceScene extends Tw2BaseClass
             {
                 if (this.backgroundObjects[i].UpdateViewDependentData)
                 {
-                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt, spriteScale);
+                    this.backgroundObjects[i].UpdateViewDependentData(tr, dt);
                 }
             }
         }
@@ -501,7 +487,7 @@ export class EveSpaceScene extends Tw2BaseClass
         {
             for (let i = 0; i < this.lineSets.length; i++)
             {
-                this.lineSets[i].UpdateViewDependentData(tr);
+                this.lineSets[i].UpdateViewDependentData(tr, dt);
             }
         }
 
@@ -672,6 +658,7 @@ export class EveSpaceScene extends Tw2BaseClass
                 mat4_0: mat4.create(),
                 mat4_1: mat4.create(),
                 mat4_2: mat4.create(),
+                MAT_ID: mat4.create()
             };
         }
     }

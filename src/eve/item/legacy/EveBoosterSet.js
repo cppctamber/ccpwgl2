@@ -189,7 +189,6 @@ export class EveBoosterSet extends EveObjectSet
     _decl = Tw2VertexDeclaration.from(EveBoosterSet.vertexDeclarations);
     _perObjectData = Tw2PerObjectData.from(EveBoosterSet.perObjectData);
     _locatorDirty = true;
-    _worldSpriteScale = 1;
 
     /**
      * Gets object resources
@@ -366,16 +365,11 @@ export class EveBoosterSet extends EveObjectSet
      * Per frame update
      * @param {Number} dt - DeltaTime
      * @param {mat4} parentMatrix
-     * @param {Number} worldSpriteScale
+     * @param {Number} [worldSpriteScale]
      */
     Update(dt, parentMatrix, worldSpriteScale)
     {
         mat4.copy(this._parentTransform, parentMatrix);
-
-        if (this._worldSpriteScale !== worldSpriteScale)
-        {
-            this._dirty = true;
-        }
 
         super.Update(dt);
 

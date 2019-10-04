@@ -150,6 +150,7 @@ export class EveSpriteSet extends EveObjectSet
     _instanceBuffer = null;
     _decl = null;
     _vdecl = Tw2VertexDeclaration.from([{usage: "TEXCOORD", usageType: 5, elements: 1}]);
+    _worldSpriteScale = 1;
 
     /**
      * Alias for this.items
@@ -203,12 +204,18 @@ export class EveSpriteSet extends EveObjectSet
     /**
      * Per frame update
      * @param {Number} dt - Delta time
-     * @param {Number} [worldSpriteScale=1]
+     * @param {Number} [worldSpriteScale]
      */
     Update(dt, worldSpriteScale)
     {
         this._time += dt;
-        this._worldSpriteScale = worldSpriteScale === undefined ? 1 : worldSpriteScale;
+
+        if (this._worldSpriteScale !== undefined && this._worldSpriteScale !== worldSpriteScale)
+        {
+            this._worldSpriteScale = worldSpriteScale;
+            this._dirty = true;
+        }
+
         super.Update(dt);
     }
 

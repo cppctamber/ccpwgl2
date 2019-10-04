@@ -355,12 +355,12 @@ export class EveSpaceObject extends EveObject
      * A Per frame function that updates view dependent data
      * @param {mat4} parentTransform
      * @param {Number} dt
-     * @param {Number} worldSpriteScale
      */
-    UpdateViewDependentData(parentTransform, dt, worldSpriteScale)
+    UpdateViewDependentData(parentTransform, dt)
     {
         mat4.multiply(this._worldTransform, parentTransform, this.transform);
-        this._worldSpriteScale = worldSpriteScale;
+
+        this._worldSpriteScale = mat4.maxScaleOnAxis(this._worldTransform);
 
         for (let i = 0; i < this.children.length; ++i)
         {
