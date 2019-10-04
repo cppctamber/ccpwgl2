@@ -3,6 +3,12 @@ const url = require("url");
 const fs = require("fs");
 const path = require("path");
 
+/*
+const yaml = require("js-yaml");
+const json = yaml.safeLoad(fs.readFileSync('./static/staStationTypes.yaml', 'utf8'));
+fs.writeFileSync("./static/stationTypes.json", JSON.stringify(json));
+*/
+
 /**
  * Gets terminal arguments
  * @param {{}} CommandList - Allowed commands and their default values
@@ -384,10 +390,12 @@ function addCors(res)
     return res;
 }
 
-function pretty(obj)
+function stringify(obj)
 {
     return JSON.stringify(obj, null, 4);
 }
+
+const staticData = {};
 
 /**
  * Temporary method to get static files
@@ -404,17 +412,26 @@ function getStaticJSONFile(fileName, res)
         id = String(paths.pop());
 
     fileName = "./" + paths.join("/") + ".json";
-    log(fileName, `Retrieving from local: ${fileName} (id: ${id})`);
 
-    let err;
-    if (fs.existsSync(fileName))
+    let err,
+        inMemory = staticData[fileName];
+
+    if (inMemory || fs.existsSync(fileName))
     {
-        const data = JSON.parse(fs.readFileSync(fileName));
+        if (!inMemory)
+        {
+            log(fileName, `Retrieving from local: ${fileName} (id: ${id})`);
+            inMemory = staticData[fileName] = JSON.parse(fs.readFileSync(fileName));
+        }
+        else
+        {
+            log(fileName, `Retrieving from memory: ${fileName} (id: ${id})`);
+        }
 
-        if (id in data)
+        if (id in inMemory)
         {
             res.setHeader("Context-type", getContentType("json"));
-            res.end(pretty(data[id]));
+            res.end(stringify(inMemory[id]));
             log(fileName, "Success");
             return;
         }
@@ -426,7 +443,7 @@ function getStaticJSONFile(fileName, res)
     }
 
     res.statusCode = 404;
-    res.end(pretty({error: true, message: err}));
+    res.end(stringify({error: err}));
     log(fileName, err, true);
     cookies(fileName);
 }
@@ -461,7 +478,7 @@ function getFile(fileName, req, res)
     if (!resMapping[fileName])
     {
         res.statusCode = 404;
-        res.end(`Invalid file name: ${fileName}`);
+        res.end(stringify({error:`Invalid file name: ${fileName}`}));
         log(fileName, "Invalid file name", true);
         cookies(fileName);
         return;
@@ -477,7 +494,7 @@ function getFile(fileName, req, res)
         {
             cookies(fileName);
             res.statusCode = 500;
-            res.end(pretty({error: true, message: err}));
+            res.end(stringify({error: err}));
             log(fileName, err, true);
         }
         else

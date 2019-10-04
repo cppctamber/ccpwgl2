@@ -18,8 +18,15 @@
             const {esi} = ccpwgl;
             const {mat4, vec2, vec3, vec4, ray3, sph3} = tw2.math;
 
+            const randomSystems = [
+                30000142,
+                30002053,
+                30002659,
+                30005029
+            ];
+
             // Load system
-            const systemID = tw2.util.getURLInteger("system", 30002053);
+            const systemID = tw2.util.getURLInteger("system", randomSystems[tw2.math.num.randomInt(0, 3)]);
             const system = await esi.getSystem(systemID);
             const {nebulaPath, lensflarePath} = await esi.getSystemGraphicData(systemID);
 
