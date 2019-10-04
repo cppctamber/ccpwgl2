@@ -18,24 +18,24 @@
         {
             ccpwgl.initialize("mainCanvas", demos.options);
             camera = ccpwgl.createCamera({distance: 100});
-            scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
+            scene = ccpwgl.loadScene("res:/dx9/scene/universe/m10_cube.red");
 
-            document.getElementById('create').addEventListener('click', function()
+            document.getElementById("create").addEventListener("click", function()
             {
-                var race = document.getElementById('race').value.split('/');
-                var s1 = race[1] + '_t3_' + document.getElementById('system1').value;
-                var s2 = race[1] + '_t3_' + document.getElementById('system2').value;
-                var s3 = race[1] + '_t3_' + document.getElementById('system3').value;
-                var s4 = race[1] + '_t3_' + document.getElementById('system4').value;
-                var s5 = race[1] + '_t3_' + document.getElementById('system5').value;
+                var race = document.getElementById("race").value.split("/");
+                var s1 = race[1] + "_t3_" + document.getElementById("system1").value;
+                var s2 = race[1] + "_t3_" + document.getElementById("system2").value;
+                var s3 = race[1] + "_t3_" + document.getElementById("system3").value;
+                var s4 = race[1] + "_t3_" + document.getElementById("system4").value;
+                var s5 = race[1] + "_t3_" + document.getElementById("system5").value;
 
-                var prefix = 'res:/dx9/model/ship/' + race[0] + '/strategiccruiser/' + race[1] + '/';
+                var prefix = "res:/dx9/model/ship/" + race[0] + "/strategiccruiser/" + race[1] + "/";
                 var paths = [
-                    prefix + s1 + '/' + s1 + '.red',
-                    prefix + s2 + '/' + s2 + '.red',
-                    prefix + s3 + '/' + s3 + '.red',
-                    prefix + s4 + '/' + s4 + '.red',
-                    prefix + s5 + '/' + s5 + '.red'
+                    prefix + s1 + "/" + s1 + ".red",
+                    prefix + s2 + "/" + s2 + ".red",
+                    prefix + s3 + "/" + s3 + ".red",
+                    prefix + s4 + "/" + s4 + ".red",
+                    prefix + s5 + "/" + s5 + ".red"
                 ];
 
                 try
@@ -47,12 +47,12 @@
 
                 }
 
-                ship = scene.loadShip(paths, function() { camera.focus(this, 10, 600)});
+                ship = scene.loadShip(paths, function() { camera.focus(this, 10, 600);});
             });
 
             ccpwgl.on("pre_render", function()
             {
-                document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
+                document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });
 
         }

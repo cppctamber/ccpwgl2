@@ -66,12 +66,10 @@
                         angle = Math.PI * 2 * planetsData.indexOf(planet) / planetsData.length,
                         {radius, name} = planet;
 
-                    this.setTransform(mat4.fromValues(
-                        radius, 0, 0, 0,
-                        0, radius, 0, 0,
-                        0, 0, radius, 0,
-                        maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle), 1
-                    ));
+                    this.transform.From({
+                        scale: radius,
+                        translation: [maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle)]
+                    });
 
                     console.log(`Loaded ${name}`);
                 }));
@@ -83,17 +81,18 @@
                 viewport = vec4.create(),
                 rayCast = ray3.create(),
                 boundingSphere = sph3.create(),
-                viewProjectionInverse = mat4.create();
+                viewProjectionInverse = mat4.create(),
+                transform = mat4.create();
 
             // Updates mouse coordinates
-            canvas.addEventListener('mousemove', function(event)
+            canvas.addEventListener("mousemove", function(event)
             {
                 mousePosition[0] = event.clientX;
                 mousePosition[1] = tw2.height - event.clientY;
             });
 
             // Ray intersection test for planets
-            canvas.addEventListener('mousedown', function(event)
+            canvas.addEventListener("mousedown", function(event)
             {
                 if (!event.altKey) return;
 
@@ -109,7 +108,8 @@
 
                 planets.forEach(planet =>
                 {
-                    sph3.fromMat4(boundingSphere, planet.transform);
+                    planet.transform.GetWorldTransform(transform);
+                    sph3.fromMat4(boundingSphere, transform);
                     if (ray3.getIntersectSph3(closestPoint, rayCast, boundingSphere))
                     {
                         const distance = ray3.squaredDistance(rayCast, closestPoint);
@@ -124,10 +124,8 @@
 
                 if (closest.planet)
                 {
-                    const {transform} = closest.planet;
-                    mat4.getTranslation(camera.poi, transform);
-                    //vec3.copy(camera.poi, closest.point);
-                    camera.distance = mat4.maxScaleOnAxis(transform) * 4;
+                    closest.planet.transform.GetWorldTranslation(camera.poi);
+                    camera.distance = closest.planet.transform.GetWorldMaxScale() * 4;
                     selectionText = closest.planet.name;
                 }
 
@@ -137,7 +135,7 @@
             // Show when stuff is loading
             ccpwgl.on("pre_render", () =>
             {
-                document.getElementById('loading').innerHTML = ccpwgl.isLoading() ? "loading" : `<b>${selectionText}</b>`;
+                document.getElementById("loading").innerHTML = ccpwgl.isLoading() ? "loading" : `<b>${selectionText}</b>`;
             });
         }
     </script>

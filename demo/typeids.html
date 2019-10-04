@@ -17,7 +17,7 @@
         {
             ccpwgl.initialize("mainCanvas", demos.options);
             camera = ccpwgl.createCamera({distance: 100});
-            scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
+            scene = ccpwgl.loadScene("res:/dx9/scene/universe/m10_cube.red");
 
             var lastHull = null;
 
@@ -30,7 +30,7 @@
                 catch (e)
                 {
                 }
-                if (dna.split(':').length > 2)
+                if (dna.split(":").length > 2)
                 {
                     ccpwgl.getSofHullConstructor(dna, function(constructor)
                     {
@@ -38,16 +38,16 @@
                         {
                             ship = scene[constructor](dna, function()
                             {
-                                var hull = dna.split(':')[0];
+                                var hull = dna.split(":")[0];
                                 if (lastHull !== hull)
                                 {
                                     camera.focus(this, 3, 50, true);
                                     lastHull = hull;
                                 }
                             });
-                            if ('setBoosterStrength' in ship)
+                            if ("setBoosterStrength" in ship)
                             {
-                                ship.setBoosterStrength($('#booster-intensity').val() / 50);
+                                ship.setBoosterStrength($("#booster-intensity").val() / 50);
                             }
                         }
                     });
@@ -66,98 +66,98 @@
             }
 
             $.when(
-                $.getJSON(tw2.resMan.BuildUrl('res:/staticdata/typeids.json')),
-                $.getJSON(tw2.resMan.BuildUrl('res:/staticdata/graphicids.json')),
-                $.getJSON(tw2.resMan.BuildUrl('res:/staticdata/categories.json'))
+                $.getJSON(tw2.resMan.BuildUrl("res:/staticdata/typeids.json")),
+                $.getJSON(tw2.resMan.BuildUrl("res:/staticdata/graphicids.json")),
+                $.getJSON(tw2.resMan.BuildUrl("res:/staticdata/categories.json"))
             ).done(function(v1, v2, v3)
             {
                 var typeids = v1[0];
                 var graphicids = v2[0];
                 var categories = v3[0];
 
-                var $categories = $('#categories');
-                var $groups = $('#groups');
-                var $types = $('#types');
+                var $categories = $("#categories");
+                var $groups = $("#groups");
+                var $types = $("#types");
 
                 function typeSelected(type)
                 {
                     return function(evt)
                     {
-                        $types.find('a').removeClass('selected');
-                        $(evt.target).addClass('selected');
+                        $types.find("a").removeClass("selected");
+                        $(evt.target).addClass("selected");
                         var path = graphicids[type.graphicID].graphicFile;
-                        if ('material' in type)
+                        if ("material" in type)
                         {
                             path += type.material;
                         }
-                        $('#dna').val(path);
-                    }
+                        $("#dna").val(path);
+                    };
                 }
 
                 function groupSelected(group)
                 {
                     return function(evt)
                     {
-                        $groups.find('a').removeClass('selected');
-                        $(evt.target).addClass('selected');
+                        $groups.find("a").removeClass("selected");
+                        $(evt.target).addClass("selected");
                         $types.empty();
                         $.each(typeids, function(id, type)
                         {
                             if (type.group == group)
                             {
-                                $types.append($('<li>').append($('<a>').text(type.name || 'N/A').click(typeSelected(type))));
+                                $types.append($("<li>").append($("<a>").text(type.name || "N/A").click(typeSelected(type))));
                             }
-                        })
-                    }
+                        });
+                    };
                 }
 
                 function categorySelected(category)
                 {
                     return function(evt)
                     {
-                        $categories.find('a').removeClass('selected');
-                        $(evt.target).addClass('selected');
+                        $categories.find("a").removeClass("selected");
+                        $(evt.target).addClass("selected");
                         $groups.empty();
                         $types.empty();
                         $.each(categories[category].groups, function(id, group)
                         {
-                            $groups.append($('<li>').append($('<a>').text(group || 'N/A').click(groupSelected(id))));
-                        })
-                    }
+                            $groups.append($("<li>").append($("<a>").text(group || "N/A").click(groupSelected(id))));
+                        });
+                    };
                 }
 
                 $.each(categories, function(id, category)
                 {
-                    $categories.append($('<li>').append($('<a>').text(category.name || 'N/A').click(categorySelected(id))));
-                })
+                    $categories.append($("<li>").append($("<a>").text(category.name || "N/A").click(categorySelected(id))));
+                });
             });
 
 
-            $('#create').click(function()
+            $("#create").click(function()
             {
-                var dna = $('#dna').val();
+                var dna = $("#dna").val();
                 loadDna(dna);
-                history.pushState({'dna': dna}, 'SOF ' + dna);
+                history.pushState({"dna": dna}, "SOF " + dna);
             });
 
-            $('#normal').click(function()
+            $("#normal").click(function()
             {
                 scene.getObject(0).setSiegeState(ccpwgl.ShipSiegeState.NORMAL);
             });
 
-            $('#siege').click(function()
+            $("#siege").click(function()
             {
                 scene.getObject(0).setSiegeState(ccpwgl.ShipSiegeState.SIEGE);
             });
 
-            $('#booster-intensity').change(function()
+            $("#booster-intensity").change(function()
             {
-                scene.getObject(0).setBoosterStrength($(this).val() / 50)
+                scene.getObject(0).setBoosterStrength($(this).val() / 50);
             });
 
             ccpwgl.on("pre_render", function()
             {
-                document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
+                document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });
         });
     </script>

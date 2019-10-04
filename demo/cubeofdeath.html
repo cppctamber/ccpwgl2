@@ -17,7 +17,7 @@
         {
             ccpwgl.initialize("mainCanvas", demos.options);
             camera = ccpwgl.createCamera();
-            scene = ccpwgl.loadScene('res:/dx9/scene/universe/m10_cube.red');
+            scene = ccpwgl.loadScene("res:/dx9/scene/universe/m10_cube.red");
 
             var mat4 = tw2.math.mat4;
             var shipCount = 200;
@@ -33,7 +33,7 @@
                     {
                         if (data.hasOwnProperty(i))
                         {
-                            if (member !== 'hull' || (data[i].substr(0, 4) === 'ship' && data[i].indexOf('titan') < 0 && data[i].indexOf('wreck') < 0))
+                            if (member !== "hull" || (data[i].substr(0, 4) === "ship" && data[i].indexOf("titan") < 0 && data[i].indexOf("wreck") < 0))
                                 sofData[member].push(i);
                         }
                     }
@@ -47,16 +47,19 @@
 
                         for (i = 0; i < shipCount; ++i)
                         {
-                            var dna = sofData.hull[Math.floor(Math.random() * sofData.hull.length)] + ':' +
-                                sofData.faction[Math.floor(Math.random() * sofData.faction.length)] + ':' +
+                            var dna = sofData.hull[Math.floor(Math.random() * sofData.hull.length)] + ":" +
+                                sofData.faction[Math.floor(Math.random() * sofData.faction.length)] + ":" +
                                 sofData.race[Math.floor(Math.random() * sofData.race.length)];
                             var ship = scene.loadShip(dna);
-                            ship.setTransform(mat4.fromValues(
-                                1, 0, 0, 0,
-                                0, 1, 0, 0,
-                                0, 0, 1, 0,
-                                x * spacing - radius, y * spacing - radius, z * spacing - radius, 1
-                            ));
+
+                            ship.transform.From({
+                                translation: [
+                                    x * spacing - radius,
+                                    y * spacing - radius,
+                                    z * spacing - radius
+                                ]
+                            });
+
                             x += 1;
                             if (x === cubeDimension)
                             {
@@ -70,16 +73,16 @@
                             }
                         }
                     }
-                }
+                };
             }
 
-            ccpwgl.getSofHullNames(sofDataReceived('hull'));
-            ccpwgl.getSofFactionNames(sofDataReceived('faction'));
-            ccpwgl.getSofRaceNames(sofDataReceived('race'));
+            ccpwgl.getSofHullNames(sofDataReceived("hull"));
+            ccpwgl.getSofFactionNames(sofDataReceived("faction"));
+            ccpwgl.getSofRaceNames(sofDataReceived("race"));
 
             ccpwgl.on("pre_render", function()
             {
-                document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
+                document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });
 
         }

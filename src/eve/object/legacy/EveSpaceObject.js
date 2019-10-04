@@ -112,7 +112,7 @@ export class EveSpaceObject extends EveObject
      * @param {mat4} m
      * @param {mat4} offset
      */
-    SetLocalTransform(m, offset)
+    SetTransform(m, offset)
     {
         if (offset)
         {

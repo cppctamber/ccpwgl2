@@ -17,8 +17,8 @@
         {
             ccpwgl.initialize("mainCanvas", demos.options);
             camera = ccpwgl.createCamera();
-            scene = ccpwgl.loadScene('res:/dx9/scene/universe/c04_cube.red');
-            ship = scene.loadShip('cf4_t1:caldaribase:caldari', function() {camera.focus(this, 4)});
+            scene = ccpwgl.loadScene("res:/dx9/scene/universe/c04_cube.red");
+            ship = scene.loadShip("cf4_t1:caldaribase:caldari", function() {camera.focus(this, 4);});
 
             filmEffect = ccpwgl.post.CreateItem({
                 name: "Example Film effect",
@@ -59,7 +59,7 @@
 
             ccpwgl.on("pre_render", function()
             {
-                document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
+                document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });
 
         }

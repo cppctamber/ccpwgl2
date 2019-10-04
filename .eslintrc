@@ -2,13 +2,17 @@
   "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion" : 2017
+    "ecmaVersion" : 2017,
+    "ecmaFeatures": {
+      "legacyDecorators": true
+    }
   },
   "env": {
     "browser": true,
     "commonjs": true,
     "es6": true
   },
+
   "extends": "eslint:recommended",
   "rules": {
     "no-unused-vars": "off",

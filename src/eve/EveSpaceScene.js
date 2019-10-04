@@ -186,7 +186,7 @@ export class EveSpaceScene extends Tw2BaseClass
      * Sets the scene's local transform
      * @param {mat4} m
      */
-    SetLocalTransform(m)
+    SetTransform(m)
     {
         mat4.copy(this._localTransform, m);
     }

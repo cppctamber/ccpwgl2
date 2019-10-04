@@ -135,9 +135,9 @@ export class EvePlanet extends EveObject
      * Sets the object's local transform
      * @param {mat4} m
      */
-    SetLocalTransform(m)
+    SetTransform(m)
     {
-        this.highDetail.SetLocalTransform(m);
+        this.highDetail.SetTransform(m);
     }
 
     /**

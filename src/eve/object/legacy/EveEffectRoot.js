@@ -41,7 +41,7 @@ export class EveEffectRoot extends EveObject
      * Sets the object's local transform
      * @param {mat4} m
      */
-    SetLocalTransform(m)
+    SetTransform(m)
     {
         mat4.getRotation(this.rotation, m);
         mat4.getScaling(this.scaling, m);

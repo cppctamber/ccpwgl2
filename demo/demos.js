@@ -1,4 +1,4 @@
-var demos = new function ()
+var demos = new function()
 {
     var self = this;
 
@@ -16,7 +16,7 @@ var demos = new function ()
         var match,
             pl = /\+/g,  // Regex for replacing addition symbol with a space
             search = /([^&=]+)=?([^&]*)/g,
-            decode = function (s)
+            decode = function(s)
             {
                 return decodeURIComponent(s.replace(pl, " "));
             },
@@ -44,7 +44,7 @@ var demos = new function ()
         saveOptions();
     }
 
-    $(window).bind("popstate", function (event)
+    $(window).bind("popstate", function(event)
     {
         onPopState(event.originalEvent.state);
     });
@@ -56,7 +56,7 @@ var demos = new function ()
         //this.options.resUrl = 'http://developers.eveonline.com/ccpwgl/assetpath/860161/';// window.location.protocol + '//' + window.location.host + ':8880/';
     }
 
-    window.addEventListener("load", function ()
+    window.addEventListener("load", function()
     {
         var settings = [
             {
@@ -106,7 +106,7 @@ var demos = new function ()
                 .append($("<label for=\"setting-field-" + i + "\">").text(settings[i].label))
                 .append($select));
         }
-        $pane.append($("<div>").append($("<button class=\"default\">Apply</button>").click(function ()
+        $pane.append($("<div>").append($("<button class=\"default\">Apply</button>").click(function()
         {
             for (var i = 0; i < settings.length; ++i)
             {
@@ -117,10 +117,10 @@ var demos = new function ()
         })));
         $(document.body).append($pane);
 
-        $toolbox.find("button").click(function ()
+        $toolbox.find("button").click(function()
         {
             var id = $(this).data("pane");
-            $(".pane").each(function ()
+            $(".pane").each(function()
             {
                 var $this = $(this);
                 if ($this.attr("id") == id)
@@ -140,14 +140,14 @@ var demos = new function ()
 
 function softree($root, $dnaInput, loadDna, filter)
 {
-    filter = filter || function ()
+    filter = filter || function()
     {
         return true;
     };
 
     function selectDnaPart(part)
     {
-        return function ()
+        return function()
         {
             var dna = $dnaInput.val();
             var components = dna.split(":");
@@ -176,7 +176,7 @@ function softree($root, $dnaInput, loadDna, filter)
     function findDnaPart(part, $tree)
     {
         var dna = getDnaPart(part);
-        $tree.find("a").each(function ()
+        $tree.find("a").each(function()
         {
             var $link = $(this);
             if ($link.data("value") == dna)
@@ -198,7 +198,7 @@ function softree($root, $dnaInput, loadDna, filter)
 
     function populateTree($tree, treeName, partIndex)
     {
-        return function (data)
+        return function(data)
         {
             var tree = {};
             for (var k in data)
@@ -297,14 +297,14 @@ function softree($root, $dnaInput, loadDna, filter)
         }
     }
 
-    $dnaInput.change(function ()
+    $dnaInput.change(function()
     {
         findDnaPart(0, $hull);
         findDnaPart(1, $faction);
         findDnaPart(2, $race);
     });
 
-    $(window).bind("popstate", function (event)
+    $(window).bind("popstate", function(event)
     {
         updateState(event.originalEvent.state);
     });
@@ -333,12 +333,12 @@ else
 // Create Toasts object
 var Toasts = {
     // In case toast creation is attempted before dom has finished loading!
-    create: function ()
+    create: function()
     {
         console.error("DOM has not finished loading.");
     },
     //function to manually set timeout after create
-    setTimeout: function ()
+    setTimeout: function()
     {
         console.error("DOM has not finished loading.");
     },
@@ -357,7 +357,7 @@ function init()
 
     // @Override
     // Replace create method when DOM has finished loading
-    Toasts.create = function (options)
+    Toasts.create = function(options)
     {
         var toast = document.createElement("div");
         toast.id = ++autoincrement;
@@ -398,7 +398,7 @@ function init()
         }
 
         // toast api
-        toast.hide = function ()
+        toast.hide = function()
         {
             toast.className += " toasts-fadeOut";
             toast.addEventListener("animationend", removeToast, false);
@@ -432,7 +432,7 @@ function init()
         return toast;
     };
 
-    Toasts.setTimeout = function (toastid, val)
+    Toasts.setTimeout = function(toastid, val)
     {
         if (Toasts.toasts[toastid])
         {
@@ -440,7 +440,7 @@ function init()
         }
     };
 
-    tw2.logger.on("error", function (e)
+    tw2.logger.on("error", function(e)
     {
         if (!e.hide)
         {
@@ -454,7 +454,7 @@ function init()
         }
     });
 
-    tw2.logger.on("warn", function (e)
+    tw2.logger.on("warn", function(e)
     {
         if (!e.hide)
         {
@@ -468,7 +468,7 @@ function init()
         }
     });
 
-    tw2.logger.on("debug", function (e)
+    tw2.logger.on("debug", function(e)
     {
         Toasts.create({
             type: "warning",

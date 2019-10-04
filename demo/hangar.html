@@ -28,7 +28,7 @@
 
             ccpwgl.initialize("mainCanvas", demos.options);
             ccpwgl.debug = true;
-            camera = ccpwgl.createCamera({poi: [ 0, shipHeightFromLandingPad, 0]});
+            camera = ccpwgl.createCamera({poi: [0, shipHeightFromLandingPad, 0]});
 
             scene = ccpwgl.loadScene(stationPath, function()
             {
@@ -70,12 +70,9 @@
                         {
                             // Position the ship above the landing pad
                             // This probably should be calculated from bounding sphere...
-                            this.setTransform([
-                                1, 0, 0, 0,
-                                0, 1, 0, 0,
-                                0, 0, 1, 0,
-                                0, shipHeightFromLandingPad, 0, 1
-                            ]);
+                            this.transform.From({
+                                translation: [0, shipHeightFromLandingPad, 0]
+                            });
 
                             // Turn boosters down
                             if (this.setBoosterStrength)
@@ -83,7 +80,7 @@
                                 this.setBoosterStrength(0.1);
                             }
 
-                            var hull = dna.split(':')[0];
+                            var hull = dna.split(":")[0];
                             if (lastHull !== hull)
                             {
                                 camera.focus(this, 3, 50, true);
@@ -94,38 +91,38 @@
                 });
             }
 
-            softree($('.sof-tree'), $('#dna'), loadDna);
+            softree($(".sof-tree"), $("#dna"), loadDna);
 
-            $('#create').click(function()
+            $("#create").click(function()
             {
-                var dna = $('#dna').val();
+                var dna = $("#dna").val();
                 loadDna(dna);
-                history.pushState({'dna': dna}, 'SOF ' + dna);
+                history.pushState({"dna": dna}, "SOF " + dna);
             });
 
-            $('#normal').click(function()
+            $("#normal").click(function()
             {
                 scene.getObject(0).setSiegeState(ccpwgl.ShipSiegeState.NORMAL);
             });
 
-            $('#siege').click(function()
+            $("#siege").click(function()
             {
                 scene.getObject(0).setSiegeState(ccpwgl.ShipSiegeState.SIEGE);
             });
 
-            $('#booster-intensity').change(function()
+            $("#booster-intensity").change(function()
             {
-                scene.getObject(0).setBoosterStrength($(this).val() / 50)
+                scene.getObject(0).setBoosterStrength($(this).val() / 50);
             });
 
-            $('#kills').change(function()
+            $("#kills").change(function()
             {
                 scene.getObject(0).setKillCount(parseInt($(this).val()));
             });
 
             ccpwgl.on("pre_render", function()
             {
-                document.getElementById('loading').style.display = ccpwgl.isLoading() ? 'block' : 'none';
+                document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
             });
         });
     </script>

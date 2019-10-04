@@ -520,6 +520,7 @@ var ccpwgl = (function(tw2)
             .catch(onRejected || defaultErrorHandler);
     }
 
+    const mat4_0 = mat4.create();
 
     /**
      * Wrapper for static objects (stations, gates, asteroids, clouds, etc.).
@@ -534,8 +535,14 @@ var ccpwgl = (function(tw2)
     {
         /** Wrapped tw2 object **/
         this.wrappedObjects = [null];
-        /** Local to world space transform matrix @type {mat4} **/
-        this.transform = mat4.create();
+        /** Transforms @type {Tw2Transform} **/
+        this.transform = new tw2.Tw2TransformParameter("transform")
+            .on("modified", () =>
+            {
+                if (!this.isLoaded()) return;
+                this.wrappedObjects[0].SetTransform(this.transform._worldTransform)
+            });
+
         /** Per-frame on update callback @type {!function(dt): void} **/
         this.onUpdate = null;
         /** SOF DNA for objects constructed from SOF **/
@@ -569,7 +576,7 @@ var ccpwgl = (function(tw2)
         {
             obj.display = display;
             self.wrappedObjects[0] = obj;
-            obj.SetLocalTransform(self.transform);
+            obj.SetTransform(self.transform._worldTransform);
             rebuildOverlays();
             if (onload)
             {
@@ -624,30 +631,6 @@ var ccpwgl = (function(tw2)
                 throw new TypeError("Object does not have bounding sphere information");
             }
             return [this.wrappedObjects[0].boundingSphereCenter, this.wrappedObjects[0].boundingSphereRadius];
-        };
-
-        /**
-         * Sets transform matrix from local coordinate space to world.
-         *
-         * @param {mat4} newTransform Transform matrix.
-         */
-        this.setTransform = function(newTransform)
-        {
-            this.transform.set(newTransform);
-            if (this.wrappedObjects[0])
-            {
-                this.wrappedObjects[0].SetLocalTransform(this.transform);
-            }
-        };
-
-        /**
-         * Returns transform matrix from local coordinate space to world.
-         *
-         * @returns {mat4} Transform matrix.
-         */
-        this.getTransform = function()
-        {
-            return this.transform;
         };
 
         function rebuildOverlays()
@@ -728,8 +711,28 @@ var ccpwgl = (function(tw2)
     {
         /** Wrapped tw2 ship object @type {tw2.EveShip} **/
         this.wrappedObjects = [null];
-        /** Local to world space transform matrix @type {mat4} **/
-        this.transform = mat4.create();
+        /** Object transform @type {Tw2TransformParameter} **/
+        this.transform = new tw2.Tw2TransformParameter("transform")
+            .on("modified", () =>
+            {
+                if (this.isLoaded())
+                {
+                    const { _worldTransform } = this.transform;
+
+                    const len = this.wrappedObjects.length;
+                    for (let i = 0; i < len; i++)
+                    {
+                        if (len === 1)
+                        {
+                            this.wrappedObjects[i].SetTransform(_worldTransform);
+                        }
+                        else
+                        {
+                            this.wrappedObjects[i].SetTransform(_worldTransform, this.partTransforms[i]);
+                        }
+                    }
+                }
+            });
         /** Internal boosters object @type {tw2.EveBoosterSet} **/
         this.boosters = [null];
         /** Current siege state @type {ccpwgl.ShipSiegeState} **/
@@ -796,7 +799,10 @@ var ccpwgl = (function(tw2)
             {
                 obj.display = display;
                 self.wrappedObjects[index] = obj;
-                self.wrappedObjects[index].SetLocalTransform(self.transform);
+
+                const { _worldTransform } = self.transform;
+                self.wrappedObjects[index].SetTransform(_worldTransform);
+
                 if (self.boosters[index])
                 {
                     self.wrappedObjects[index].boosters = self.boosters[index];
@@ -974,7 +980,9 @@ var ccpwgl = (function(tw2)
                 self.partTransforms[index] = mat4.create();
                 mat4.translate(self.partTransforms[index], self.partTransforms[index], offset);
                 vec3.add(offset, offset, systems[i][1]);
-                self.wrappedObjects[index].SetLocalTransform(self.transform, self.partTransforms[index]);
+
+                const { _worldTransform } = self.transform;
+                self.wrappedObjects[index].SetTransform(_worldTransform, self.partTransforms[index]);
             }
         }
 
@@ -1009,41 +1017,6 @@ var ccpwgl = (function(tw2)
                 throw new ccpwgl.IsStillLoadingError();
             }
             return [this.wrappedObjects[0].boundingSphereCenter, this.wrappedObjects[0].boundingSphereRadius];
-        };
-
-        /**
-         * Sets transform matrix from local coordinate space to world.
-         *
-         * @param {mat4} newTransform Transform matrix.
-         */
-        this.setTransform = function(newTransform)
-        {
-            this.transform.set(newTransform);
-            var i;
-            if (this.wrappedObjects.length < 2 || !this.isLoaded())
-            {
-                if (this.wrappedObjects[0])
-                {
-                    this.wrappedObjects[0].SetLocalTransform(this.transform);
-                }
-            }
-            else
-            {
-                for (i = 0; i < this.wrappedObjects.length; ++i)
-                {
-                    this.wrappedObjects[i].SetLocalTransform(self.transform, self.partTransforms[i]);
-                }
-            }
-        };
-
-        /**
-         * Returns transform matrix from local coordinate space to world.
-         *
-         * @returns {mat4} Transform matrix.
-         */
-        this.getTransform = function()
-        {
-            return this.transform;
         };
 
         /**
@@ -1560,7 +1533,11 @@ var ccpwgl = (function(tw2)
         this.wrappedObjects = [new tw2.EvePlanet()];
 
         /** Local transform **/
-        this.transform = mat4.create();
+        this.transform = new tw2.Tw2TransformParameter("transform")
+            .on("modified", ()=>
+            {
+                this.wrappedObjects[0].SetTransform(this.transform._worldTransform);
+            });
 
         var self = this;
 
@@ -1613,29 +1590,6 @@ var ccpwgl = (function(tw2)
         {
             var tr = this.wrappedObjects[0].highDetail;
             return [vec3.clone(tr.translation), Math.max(tr.scaling[0], tr.scaling[1], tr.scaling[2])];
-        };
-
-        /**
-         * Sets transform matrix from local coordinate space to world.
-         *
-         * @param {mat4} newTransform Transform matrix.
-         */
-        this.setTransform = function(newTransform)
-        {
-            mat4.copy(this.transform, newTransform);
-            this.wrappedObjects[0].SetLocalTransform(this.transform);
-        };
-
-        /**
-         * Returns transform matrix from local coordinate space to world.
-         *
-         * @param {mat4} out
-         * @returns {mat4} Transform matrix.
-         */
-        this.getTransform = function(out)
-        {
-            out = out || mat4.create();
-            return mat4.clone(this.wrappedObjects[0].highDetail.localTransform);
         };
 
         this.wrappedObjects[0].Create(options, function()
@@ -2197,7 +2151,7 @@ var ccpwgl = (function(tw2)
             try
             {
                 const radius = obj.getBoundingSphere()[1];
-                mat4.getTranslation(this.poi, obj.getTransform());
+                obj.transform.GetWorldTranslation(this.poi);
                 this.distance = Math.max(radius * (distanceMultiplier || 1.5), (minDistance || 0));
                 if (autoPlane) this.nearPlane = Math.max(radius / 100, 0.1);
                 return true;

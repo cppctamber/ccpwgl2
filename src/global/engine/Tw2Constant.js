@@ -463,15 +463,6 @@ export const DXGI_FORMAT_B8G8R8X8_UNORM = 88;
 
 /*
 
-    Vectors
-
- */
-export const X_AXIS = new Float32Array([1, 0, 0]);
-export const Y_AXIS = new Float32Array([0, 1, 0]);
-export const Z_AXIS = new Float32Array([0, 0, 1]);
-
-/*
-
     Browser and Vendors
 
  */

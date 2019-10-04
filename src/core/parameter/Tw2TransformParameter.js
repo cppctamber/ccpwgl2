@@ -48,11 +48,11 @@ export class Tw2TransformParameter extends Tw2Parameter
     }
 
     /**
-     * Sets the parameter from an object
+     * Sets the parameter from an object and updates immediately
      * @param {*} [values={}]
      * @returns {Boolean} true if updated
      */
-    SetFromObject(values = {})
+    From(values = {})
     {
         let rotation, translation, scaling, transform;
 
@@ -246,7 +246,7 @@ export class Tw2TransformParameter extends Tw2Parameter
         if (!this._worldTranspose)
         {
             this._worldTranspose = mat4.create();
-            mat4.tranpose(this._worldTranspose, this._worldTransform);
+            mat4.transpose(this._worldTranspose, this._worldTransform);
         }
 
         return mat4.copy(out, this._worldTranspose);
@@ -264,13 +264,14 @@ export class Tw2TransformParameter extends Tw2Parameter
     }
 
     /**
-     * Gets the world transform (alias for GetValue)
+     * Gets the world transform
      * @param {mat4} out
      * @returns {mat4}
      */
     GetWorldTransform(out)
     {
-        return this.GetValue(out);
+        this.Rebuild();
+        return mat4.copy(out, this._worldTransform);
     }
 
     /**
@@ -356,6 +357,16 @@ export class Tw2TransformParameter extends Tw2Parameter
     {
         this.Rebuild();
         return mat4.getScaling(out, this._worldTransform);
+    }
+
+    /**
+     * Gets the world max scale
+     * @returns {number}
+     */
+    GetWorldMaxScale()
+    {
+        this.GetWorldScaling(vec3_0);
+        return Math.max(vec3_0[0], vec3_0[1], vec3_0[2]);
     }
 
     /**
@@ -784,10 +795,9 @@ export class Tw2TransformParameter extends Tw2Parameter
      * Gets the maximum local scale
      * @returns {Number}
      */
-    GetMaxScaleOnAxis()
+    GetMaxScale()
     {
-        this.Rebuild();
-        return mat4.maxScaleOnAxis(this.scaling);
+        return Math.max(this.scaling[0], this.scaling[1], this.scaling[2]);
     }
 
     /**

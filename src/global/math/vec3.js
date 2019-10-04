@@ -4,6 +4,24 @@ import {num} from "./num";
 export {vec3};
 
 /**
+ * X_AXIS
+ * @type {vec3}
+ */
+vec3.X_AXIS = vec3.fromValues(1, 0, 0);
+
+/**
+ * Y Axis
+ * @type {vec3}
+ */
+vec3.Y_AXIS = vec3.fromValues(0, 1, 0);
+
+/**
+ * Z Axis
+ * @type {vec3}
+ */
+vec3.Z_AXIS = vec3.fromValues(0, 0, 1);
+
+/**
  * Vector 3
  * @typedef {Float32Array} vec3
  */
