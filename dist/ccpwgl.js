@@ -3027,7 +3027,7 @@ var ccpwgl = (function(tw2)
                     destinationPosition = arrayFromObject(results[1].position),
                     {graphic_id} = results[2];
 
-                mat4.lookAt(mat4_0, sourcePosition, destinationPosition, vec3_0);
+                mat4.lookAtGL(mat4_0, sourcePosition, destinationPosition, vec3_0);
                 mat4.getRotation(quat_0, mat4_0);
 
                 return {graphic_id, rotation: {x: quat_0[0], y: quat_0[1], z: quat_0[2], w: quat_0[3]}};
