@@ -4,6 +4,7 @@ import {isNumber, isTyped} from "../../global/util";
 
 const
     vec3_0 = vec3.create(),
+    vec3_1 = vec3.create(),
     quat_0 = quat.create(),
     mat4_0 = mat4.create();
 
@@ -23,7 +24,7 @@ const
  */
 export class Tw2TransformParameter extends Tw2Parameter
 {
-
+    // ccp
     rotation = quat.create();
 
     // ccpwgl
@@ -45,78 +46,6 @@ export class Tw2TransformParameter extends Tw2Parameter
     Initialize()
     {
         this.UpdateValues();
-    }
-
-    /**
-     * Sets the parameter from an object and updates immediately
-     * @param {*} [values={}]
-     * @returns {Boolean} true if updated
-     */
-    From(values = {})
-    {
-        let rotation, translation, scaling, transform;
-
-        if (isTyped(values))
-        {
-            transform = values;
-        }
-        else
-        {
-            rotation = values.rotation || values.orientation;
-            translation = values.position || values.translation;
-            scaling = values.scale || values.scaling || values.radius;
-            transform = values.transform || values.localTransform || values.matrix;
-        }
-
-        if (transform)
-        {
-            mat4.getRotation(this.rotation, transform);
-            mat4.getTranslation(this.translation, transform);
-            mat4.getScaling(this.scaling, transform);
-        }
-
-        if (rotation)
-        {
-            if (transform) console.warn("Overwriting rotation in original transform");
-
-            if (rotation.length === 3)
-            {
-                vec3.euler.getQuat(this.rotation, rotation);
-            }
-            else
-            {
-                quat.copy(this.rotation, rotation);
-            }
-        }
-
-        if (translation)
-        {
-            if (transform) console.warn("Overwriting translation in original transform");
-
-            vec3.copy(this.translation, translation);
-        }
-
-        if (scaling)
-        {
-            if (transform) console.warn("Overwriting scaling in original transform");
-
-            if (isNumber(scaling))
-            {
-                vec3.set(this.scaling, scaling, scaling, scaling);
-            }
-            else
-            {
-                vec3.copy(this.scaling, scaling);
-            }
-        }
-
-        if (rotation || translation || transform || scaling !== undefined)
-        {
-            this.Rebuild({force: true});
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -957,6 +886,100 @@ export class Tw2TransformParameter extends Tw2Parameter
      * @type {Number}
      */
     static constantBufferSize = 16;
+
+    /**
+     * Sets the parameter's values from a plain object
+     * @param {Tw2TransformParameter} a
+     * @param {Object} [values]
+     * @param {Object} [opt]
+     */
+    static set(a, values, opt={})
+    {
+        if (!values)
+        {
+            return false;
+        }
+
+        let rotation, translation, scaling, updated = false;
+
+        // Transform has precedence to any other property
+        if (values.transform)
+        {
+            rotation = mat4.getRotation(quat_0, values.transform);
+            translation = mat4.getTranslation(vec3_0, values.transform);
+            scaling = mat4.getScaling(vec3_1, values.transform);
+        }
+        else
+        {
+            rotation = values.rotation || values.orientation;
+            translation = values.position || values.translation;
+            scaling = values.scale || values.scaling || values.radius;
+        }
+
+        if (rotation || translation || scaling !== undefined)
+        {
+            if (rotation)
+            {
+                if (rotation.length === 3)
+                {
+                    rotation = vec3.euler.getQuat(quat_0, rotation);
+                }
+
+                if (!quat.equals(a.rotation, rotation))
+                {
+                    quat.copy(a.rotation, rotation);
+                    updated = true;
+                }
+            }
+
+            if (translation && !vec3.equals(a.translation, translation))
+            {
+                vec3.copy(a.translation, translation);
+                updated = true;
+            }
+
+            if (scaling !== undefined)
+            {
+                if (isNumber(scaling))
+                {
+                    scaling = vec3.set(vec3_1, scaling, scaling, scaling);
+                }
+
+                if (!vec3.equals(a.scaling, scaling))
+                {
+                    vec3.copy(a.scaling, scaling);
+                    updated = true;
+                }
+            }
+
+            if (updated && !opt.skipUpdate)
+            {
+                a.Rebuild({force: true});
+            }
+        }
+
+        if (values.name && a.name !== values.name)
+        {
+            a.name = values.name;
+            updated = true;
+        }
+
+        return updated;
+    }
+
+    /**
+     * Gets the object's values as a plain object
+     * @param {Tw2TransformParameter} a
+     * @param {Object} [out={}]
+     */
+    static get(a, out={})
+    {
+        out.rotation = a.GetRotation([]);
+        out.translation = a.GetTranslation([]);
+        out.scaling = a.GetScale([]);
+        return out;
+    }
+
 
     /**
      * Black definition

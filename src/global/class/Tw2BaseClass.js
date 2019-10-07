@@ -33,7 +33,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
      */
     Clone(opt)
     {
-        this.constructor.clone(this, opt);
+        return this.constructor.clone(this, opt);
     }
 
     /**
@@ -175,12 +175,14 @@ export class Tw2BaseClass extends Tw2EventEmitter
         }
 
         const item = new this();
+        let hasInitialize = "Initialize" in item;
+
         if (values)
         {
-            this.set(item, values, {skipUpdate: true, verb: "create"});
+            this.set(item, values, {skipUpdate: hasInitialize, verb: "create"});
         }
 
-        if ((!opt || !opt.skipUpdate) && "Initialize" in item)
+        if ((!opt || !opt.skipUpdate) && hasInitialize)
         {
             item.Initialize();
         }
@@ -236,12 +238,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
 
         visited.add(obj);
 
-        if (!obj.constructor.keys)
-        {
-            cacheKeys(obj);
-        }
-
-        const {list, type} = obj.constructor.keys;
+        const {list, type} = getKeys(obj);
 
         if (list)
         {
@@ -283,6 +280,10 @@ export class Tw2BaseClass extends Tw2EventEmitter
         }
     }
 
+    /**
+     * Defines an unwritable unique id property on an object
+     * @param {*} target
+     */
     static defineID(target)
     {
         Reflect.defineProperty(target, "_id", {
@@ -291,13 +292,6 @@ export class Tw2BaseClass extends Tw2EventEmitter
             configurable: true
         });
     }
-
-    /**
-     *
-     * @type {*}
-     * @private
-     */
-    static keys = null;
 
     /**
      *
@@ -311,32 +305,39 @@ export class Tw2BaseClass extends Tw2EventEmitter
      */
     static __category = null;
 
+    /**
+     *
+     * @type {*}
+     * @private
+     */
+    static __keys = null;
+
 }
 
 /**
- * Caches the classes keys
- * -- Fallback if schema not present
+ * Temporary method for getting an object's keys
+ * TODO: Replace with schemas
  * @param {*} obj
  */
-function cacheKeys(obj)
+function getKeys(obj)
 {
-    if (obj.constructor.hasOwnProperty("keys"))
+    if (obj.constructor.hasOwnProperty("__keys") && obj.constructor.__keys !== null)
     {
-        return;
+        return obj.constructor.__keys;
     }
 
-    const cache = {};
+    const keys = obj.constructor.__keys = {};
 
     function add(name, key)
     {
-        if (!cache[name])
+        if (!keys[name])
         {
-            cache[name] = [];
+            keys[name] = [];
         }
 
-        if (!cache[name].includes(key))
+        if (!keys[name].includes(key))
         {
-            cache[name].push(key);
+            keys[name].push(key);
         }
     }
 
@@ -383,5 +384,5 @@ function cacheKeys(obj)
         }
     }
 
-    obj.constructor.keys = cache;
+    return obj.constructor.__keys;
 }

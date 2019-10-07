@@ -73,7 +73,7 @@
                         angle = Math.PI * 2 * planetsData.indexOf(planet) / planetsData.length,
                         {radius, name} = planet;
 
-                    this.transform.From({
+                    this.transform.Set({
                         scale: radius,
                         translation: [maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle)]
                     });

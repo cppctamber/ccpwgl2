@@ -717,7 +717,7 @@ var ccpwgl = (function(tw2)
             {
                 if (this.isLoaded())
                 {
-                    const { _worldTransform } = this.transform;
+                    const {_worldTransform} = this.transform;
 
                     const len = this.wrappedObjects.length;
                     for (let i = 0; i < len; i++)
@@ -800,7 +800,7 @@ var ccpwgl = (function(tw2)
                 obj.display = display;
                 self.wrappedObjects[index] = obj;
 
-                const { _worldTransform } = self.transform;
+                const {_worldTransform} = self.transform;
                 self.wrappedObjects[index].SetTransform(_worldTransform);
 
                 if (self.boosters[index])
@@ -981,7 +981,7 @@ var ccpwgl = (function(tw2)
                 mat4.translate(self.partTransforms[index], self.partTransforms[index], offset);
                 vec3.add(offset, offset, systems[i][1]);
 
-                const { _worldTransform } = self.transform;
+                const {_worldTransform} = self.transform;
                 self.wrappedObjects[index].SetTransform(_worldTransform, self.partTransforms[index]);
             }
         }
@@ -1534,7 +1534,7 @@ var ccpwgl = (function(tw2)
 
         /** Local transform **/
         this.transform = new tw2.Tw2TransformParameter("transform")
-            .on("modified", ()=>
+            .on("modified", () =>
             {
                 this.wrappedObjects[0].SetTransform(this.transform._worldTransform);
             });
@@ -2702,7 +2702,7 @@ var ccpwgl = (function(tw2)
         SYSTEM_KILLS: "universe/system_kills",
         SYSTEMS: "universe/systems",
         TYPES: "universe/types"
-    }
+    };
 
     /**
      * Paths to extended data
@@ -2714,7 +2714,7 @@ var ccpwgl = (function(tw2)
         REGIONS: "cdn:/static/regions",
         SUN_TYPES: "cdn:/static/sunTypes",
         STATION_TYPES: "cdn:/static/stationTypes"
-    }
+    };
 
     // Cache esi data for the current session
     const cache = new Map();
@@ -2826,13 +2826,13 @@ var ccpwgl = (function(tw2)
      * @param {Array|Object|Number} [scaling=1]
      * @returns {Array}
      */
-    function createMatrix(rotation=[0,0,0,1], translation=[0,0,0], scaling=1)
+    function createMatrix(rotation = [0, 0, 0, 1], translation = [0, 0, 0], scaling = 1)
     {
-        const { isPlain, isNumber } = tw2.util;
+        const {isPlain, isNumber} = tw2.util;
 
         if (isPlain(rotation)) rotation = arrayFromObject(rotation);
         if (isPlain(translation)) translation = arrayFromObject(translation);
-        if (isNumber(scaling)) scaling = [ scaling, scaling, scaling ];
+        if (isNumber(scaling)) scaling = [scaling, scaling, scaling];
         else if (isPlain(scaling)) scaling = arrayFromObject(scaling);
 
         return mat4.fromRotationTranslationScale([], rotation, translation, scaling);

@@ -17375,7 +17375,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17494,8 +17494,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -17507,6 +17505,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -21201,6 +21201,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const vec3_0 = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
+      vec3_1 = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
       quat_0 = _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
       mat4_0 = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
 /**
@@ -21238,65 +21239,6 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
    */
   Initialize() {
     this.UpdateValues();
-  }
-  /**
-   * Sets the parameter from an object and updates immediately
-   * @param {*} [values={}]
-   * @returns {Boolean} true if updated
-   */
-
-
-  From(values = {}) {
-    let rotation, translation, scaling, transform;
-
-    if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isTyped"])(values)) {
-      transform = values;
-    } else {
-      rotation = values.rotation || values.orientation;
-      translation = values.position || values.translation;
-      scaling = values.scale || values.scaling || values.radius;
-      transform = values.transform || values.localTransform || values.matrix;
-    }
-
-    if (transform) {
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, transform);
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, transform);
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, transform);
-    }
-
-    if (rotation) {
-      if (transform) console.warn("Overwriting rotation in original transform");
-
-      if (rotation.length === 3) {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat(this.rotation, rotation);
-      } else {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(this.rotation, rotation);
-      }
-    }
-
-    if (translation) {
-      if (transform) console.warn("Overwriting translation in original transform");
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.translation, translation);
-    }
-
-    if (scaling) {
-      if (transform) console.warn("Overwriting scaling in original transform");
-
-      if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(scaling)) {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(this.scaling, scaling, scaling, scaling);
-      } else {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.scaling, scaling);
-      }
-    }
-
-    if (rotation || translation || transform || scaling !== undefined) {
-      this.Rebuild({
-        force: true
-      });
-      return true;
-    }
-
-    return false;
   }
   /**
    * Fires on value changes
@@ -22121,10 +22063,93 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   /**
+   * Sets the parameter's values from a plain object
+   * @param {Tw2TransformParameter} a
+   * @param {Object} [values]
+   * @param {Object} [opt]
+   */
+  static set(a, values, opt = {}) {
+    if (!values) {
+      return false;
+    }
+
+    let rotation,
+        translation,
+        scaling,
+        updated = false; // Transform has precedence to any other property
+
+    if (values.transform) {
+      rotation = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, values.transform);
+      translation = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(vec3_0, values.transform);
+      scaling = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_1, values.transform);
+    } else {
+      rotation = values.rotation || values.orientation;
+      translation = values.position || values.translation;
+      scaling = values.scale || values.scaling || values.radius;
+    }
+
+    if (rotation || translation || scaling !== undefined) {
+      if (rotation) {
+        if (rotation.length === 3) {
+          rotation = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat(quat_0, rotation);
+        }
+
+        if (!_global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].equals(a.rotation, rotation)) {
+          _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(a.rotation, rotation);
+          updated = true;
+        }
+      }
+
+      if (translation && !_global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals(a.translation, translation)) {
+        _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(a.translation, translation);
+        updated = true;
+      }
+
+      if (scaling !== undefined) {
+        if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(scaling)) {
+          scaling = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_1, scaling, scaling, scaling);
+        }
+
+        if (!_global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals(a.scaling, scaling)) {
+          _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(a.scaling, scaling);
+          updated = true;
+        }
+      }
+
+      if (updated && !opt.skipUpdate) {
+        a.Rebuild({
+          force: true
+        });
+      }
+    }
+
+    if (values.name && a.name !== values.name) {
+      a.name = values.name;
+      updated = true;
+    }
+
+    return updated;
+  }
+  /**
+   * Gets the object's values as a plain object
+   * @param {Tw2TransformParameter} a
+   * @param {Object} [out={}]
+   */
+
+
+  static get(a, out = {}) {
+    out.rotation = a.GetRotation([]);
+    out.translation = a.GetTranslation([]);
+    out.scaling = a.GetScale([]);
+    return out;
+  }
+  /**
    * Black definition
    * @param {*} r
    * @returns {*[]}
    */
+
+
   static black(r) {
     return [["name", r.string], ["rotation", r.vector4]];
   }
@@ -28076,7 +28101,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49689,7 +49714,7 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
 
 
   Clone(opt) {
-    this.constructor.clone(this, opt);
+    return this.constructor.clone(this, opt);
   }
   /**
    * Sets the object's values from a plain object
@@ -49826,15 +49851,16 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     }
 
     const item = new this();
+    let hasInitialize = "Initialize" in item;
 
     if (values) {
       this.set(item, values, {
-        skipUpdate: true,
+        skipUpdate: hasInitialize,
         verb: "create"
       });
     }
 
-    if ((!opt || !opt.skipUpdate) && "Initialize" in item) {
+    if ((!opt || !opt.skipUpdate) && hasInitialize) {
       item.Initialize();
     }
 
@@ -49885,15 +49911,10 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     }
 
     visited.add(obj);
-
-    if (!obj.constructor.keys) {
-      cacheKeys(obj);
-    }
-
     const {
       list,
       type
-    } = obj.constructor.keys;
+    } = getKeys(obj);
 
     if (list) {
       for (let i = 0; i < list.length; i++) {
@@ -49925,6 +49946,11 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
       }
     }
   }
+  /**
+   * Defines an unwritable unique id property on an object
+   * @param {*} target
+   */
+
 
   static defineID(target) {
     Reflect.defineProperty(target, "_id", {
@@ -49936,35 +49962,34 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
   /**
    *
    * @type {*}
-   * @private
    */
 
 
 }
 /**
- * Caches the classes keys
- * -- Fallback if schema not present
+ * Temporary method for getting an object's keys
+ * TODO: Replace with schemas
  * @param {*} obj
  */
 
-Tw2BaseClass.keys = null;
 Tw2BaseClass.black = null;
 Tw2BaseClass.__category = null;
+Tw2BaseClass.__keys = null;
 
-function cacheKeys(obj) {
-  if (obj.constructor.hasOwnProperty("keys")) {
-    return;
+function getKeys(obj) {
+  if (obj.constructor.hasOwnProperty("__keys") && obj.constructor.__keys !== null) {
+    return obj.constructor.__keys;
   }
 
-  const cache = {};
+  const keys = obj.constructor.__keys = {};
 
   function add(name, key) {
-    if (!cache[name]) {
-      cache[name] = [];
+    if (!keys[name]) {
+      keys[name] = [];
     }
 
-    if (!cache[name].includes(key)) {
-      cache[name].push(key);
+    if (!keys[name].includes(key)) {
+      keys[name].push(key);
     }
   }
 
@@ -49997,7 +50022,7 @@ function cacheKeys(obj) {
     }
   }
 
-  obj.constructor.keys = cache;
+  return obj.constructor.__keys;
 }
 
 /***/ }),
