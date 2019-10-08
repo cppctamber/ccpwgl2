@@ -1,4 +1,4 @@
-import {vec3, Tw2BaseClass} from "../../global";
+import { vec3, Tw2BaseClass } from "../../global";
 
 /**
  * EveLocalPositionCurve
@@ -20,7 +20,7 @@ export class EveLocalPositionCurve extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["value", r.vector3]
+            [ "value", r.vector3 ]
         ];
     }
 

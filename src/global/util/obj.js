@@ -1,5 +1,5 @@
-import {isTyped, isArrayLike, isArray, isObjectObject} from "./type";
-import {toArray} from "./arr";
+import { isTyped, isArrayLike, isArray, isObjectObject } from "./type";
+import { toArray } from "./arr";
 
 /**
  * Assigns property values if they exist in a source object

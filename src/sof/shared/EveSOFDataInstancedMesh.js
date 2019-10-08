@@ -57,12 +57,12 @@ export class EveSOFDataInstancedMesh
     static black(r)
     {
         return [
-            ["geometryResPath", r.path],
-            ["instances", r.structList(EveSOFDataInstancedMeshInstanceReader)],
-            ["lowestLodVisible", r.uint],
-            ["name", r.string],
-            ["shader", r.string],
-            ["textures", r.array]
+            [ "geometryResPath", r.path ],
+            [ "instances", r.structList(EveSOFDataInstancedMeshInstanceReader) ],
+            [ "lowestLodVisible", r.uint ],
+            [ "name", r.string ],
+            [ "shader", r.string ],
+            [ "textures", r.array ]
         ];
     }
 }

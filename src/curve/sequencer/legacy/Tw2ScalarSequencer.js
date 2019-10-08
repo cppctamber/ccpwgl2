@@ -1,4 +1,4 @@
-import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
+import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
  * Tw2ScalarSequencer

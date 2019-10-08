@@ -1,4 +1,4 @@
-import {vec4} from "../../global";
+import { vec4 } from "../../global";
 
 
 /**
@@ -29,12 +29,12 @@ export class EveSOFDataBoosterShape
     static black(r)
     {
         return [
-            ["color", r.vector4],
-            ["noiseFunction", r.float],
-            ["noiseSpeed", r.float],
-            ["noiseAmplitureStart", r.vector4],
-            ["noiseAmplitureEnd", r.vector4],
-            ["noiseFrequency", r.vector4]
+            [ "color", r.vector4 ],
+            [ "noiseFunction", r.float ],
+            [ "noiseSpeed", r.float ],
+            [ "noiseAmplitureStart", r.vector4 ],
+            [ "noiseAmplitureEnd", r.vector4 ],
+            [ "noiseFrequency", r.vector4 ]
         ];
     }
 }

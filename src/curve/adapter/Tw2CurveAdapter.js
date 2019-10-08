@@ -1,4 +1,4 @@
-import {Tw2Curve} from "../curve/Tw2Curve";
+import { Tw2Curve } from "../curve/Tw2Curve";
 
 /**
  * Tw2CurveAdapter

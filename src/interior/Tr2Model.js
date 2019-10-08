@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../global";
+import { Tw2BaseClass } from "../global";
 
 /**
  * Tr2Model
@@ -20,7 +20,7 @@ export class Tr2Model extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["meshes", r.array],
+            [ "meshes", r.array ],
         ];
     }
 

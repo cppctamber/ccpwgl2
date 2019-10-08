@@ -1,4 +1,4 @@
-import {mat4, vec3} from "../../global";
+import { mat4, vec3 } from "../../global";
 
 
 /**
@@ -33,14 +33,14 @@ export class EveSOFDataHullSpotlightSetItem
     static black(r)
     {
         return [
-            ["boneIndex", r.uint],
-            ["boosterGainInfluence", r.boolean],
-            ["coneIntensity", r.float],
-            ["flareIntensity", r.float],
-            ["groupIndex", r.uint],
-            ["spriteScale", r.vector3],
-            ["spriteIntensity", r.float],
-            ["transform", r.matrix]
+            [ "boneIndex", r.uint ],
+            [ "boosterGainInfluence", r.boolean ],
+            [ "coneIntensity", r.float ],
+            [ "flareIntensity", r.float ],
+            [ "groupIndex", r.uint ],
+            [ "spriteScale", r.vector3 ],
+            [ "spriteIntensity", r.float ],
+            [ "transform", r.matrix ]
         ];
     }
 }

@@ -1,6 +1,6 @@
-import {vec4, Tw2BaseClass} from "../../global";
-import {Tw2RenderBatch} from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
+import { vec4, Tw2BaseClass } from "../../global";
+import { Tw2RenderBatch } from "../../core";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**
  * Eve booster set 2 render batch
@@ -95,27 +95,27 @@ export class EveBoosterSet2 extends EveObjectSet
     static black(r)
     {
         return [
-            ["alwaysOn", r.boolean],
-            ["alwaysOnIntensity", r.float],
-            ["effect", r.object],
-            ["glows", r.object],
-            ["glowColor", r.color],
-            ["glowScale", r.float],
-            ["haloColor", r.color],
-            ["haloScaleX", r.float],
-            ["haloScaleY", r.float],
-            ["lightFlickerAmplitude", r.float],
-            ["lightFlickerColor", r.color],
-            ["lightFlickerFrequency", r.float],
-            ["lightFlickerRadius", r.float],
-            ["lightColor", r.color],
-            ["lightRadius", r.float],
-            ["lightWarpColor", r.color],
-            ["lightWarpRadius", r.float],
-            ["symHaloScale", r.float],
-            ["trails", r.object],
-            ["warpGlowColor", r.color],
-            ["warpHaloColor", r.color]
+            [ "alwaysOn", r.boolean ],
+            [ "alwaysOnIntensity", r.float ],
+            [ "effect", r.object ],
+            [ "glows", r.object ],
+            [ "glowColor", r.color ],
+            [ "glowScale", r.float ],
+            [ "haloColor", r.color ],
+            [ "haloScaleX", r.float ],
+            [ "haloScaleY", r.float ],
+            [ "lightFlickerAmplitude", r.float ],
+            [ "lightFlickerColor", r.color ],
+            [ "lightFlickerFrequency", r.float ],
+            [ "lightFlickerRadius", r.float ],
+            [ "lightColor", r.color ],
+            [ "lightRadius", r.float ],
+            [ "lightWarpColor", r.color ],
+            [ "lightWarpRadius", r.float ],
+            [ "symHaloScale", r.float ],
+            [ "trails", r.object ],
+            [ "warpGlowColor", r.color ],
+            [ "warpHaloColor", r.color ]
         ];
     }
 

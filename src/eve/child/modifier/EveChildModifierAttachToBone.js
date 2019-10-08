@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../../global";
+import { Tw2BaseClass } from "../../../global";
 
 /**
  * EveChildModifierAttachToBone
@@ -18,7 +18,7 @@ export class EveChildModifierAttachToBone extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["boneIndex", r.uint]
+            [ "boneIndex", r.uint ]
         ];
     }
 

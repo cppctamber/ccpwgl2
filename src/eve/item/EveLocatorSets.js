@@ -1,4 +1,4 @@
-import {vec3, quat, Tw2BaseClass} from "../../global";
+import { vec3, quat, Tw2BaseClass } from "../../global";
 
 /**
  * Locator
@@ -57,8 +57,8 @@ export class EveLocatorSets extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["locators", r.structList(EveLocatorSetItem)],
-            ["name", r.string]
+            [ "locators", r.structList(EveLocatorSetItem) ],
+            [ "name", r.string ]
         ];
     }
 

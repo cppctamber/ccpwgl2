@@ -1,5 +1,5 @@
-import {vec3, vec4, noise} from "../../global";
-import {Tw2ParticleForce} from "./Tw2ParticleForce";
+import { vec3, vec4, noise } from "../../global";
+import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleTurbulenceForce
@@ -78,10 +78,10 @@ export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
     static black(r)
     {
         return [
-            ["amplitude", r.vector3],
-            ["frequency", r.vector4],
-            ["noiseLevel", r.float],
-            ["noiseRatio", r.float]
+            [ "amplitude", r.vector3 ],
+            [ "frequency", r.vector4 ],
+            [ "noiseLevel", r.float ],
+            [ "noiseRatio", r.float ]
         ];
     }
 

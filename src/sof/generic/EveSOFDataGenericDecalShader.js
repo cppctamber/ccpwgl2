@@ -23,10 +23,10 @@ export class EveSOFDataGenericDecalShader
     static black(r)
     {
         return [
-            ["defaultTextures", r.array],
-            ["parameters", r.array],
-            ["parentTextures", r.array],
-            ["shader", r.string],
+            [ "defaultTextures", r.array ],
+            [ "parameters", r.array ],
+            [ "parentTextures", r.array ],
+            [ "shader", r.string ],
         ];
     }
 }

@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ActionPlayCurveSet
@@ -24,9 +24,9 @@ export class Tr2ActionPlayCurveSet extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["curveSetName", r.string],
-            ["rangeName", r.string],
-            ["syncToRange", r.boolean]
+            [ "curveSetName", r.string ],
+            [ "rangeName", r.string ],
+            [ "syncToRange", r.boolean ]
         ];
     }
 

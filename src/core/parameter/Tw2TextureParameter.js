@@ -1,7 +1,7 @@
-import {resMan, device, util} from "../../global";
-import {Tw2SamplerState} from "../sampler";
-import {Tw2Parameter} from "./Tw2Parameter";
-import {Tw2TextureRes} from "../resource/Tw2TextureRes";
+import { resMan, device, util } from "../../global";
+import { Tw2SamplerState } from "../sampler";
+import { Tw2Parameter } from "./Tw2Parameter";
+import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 
 /**
  * Tw2TextureParameter
@@ -203,7 +203,7 @@ export class Tw2TextureParameter extends Tw2Parameter
             this._sampler = this._sampler || new Tw2SamplerState();
 
             const
-                {wrapModes, gl} = device,
+                { wrapModes, gl } = device,
                 sampler = this._sampler;
 
             if (this.filterMode === 1)
@@ -312,8 +312,8 @@ export class Tw2TextureParameter extends Tw2Parameter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["resourcePath", r.path]
+            [ "name", r.string ],
+            [ "resourcePath", r.path ]
         ];
     }
 

@@ -1,5 +1,5 @@
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
-import {vec4} from "../../global";
+import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
+import { vec4 } from "../../global";
 
 /**
  * Tw2CurveColor
@@ -89,7 +89,7 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {?Array.<string>}
      */
-    static childProperties = ["r", "g", "b", "a"];
+    static childProperties = [ "r", "g", "b", "a" ];
 
     /**
      * Black definition
@@ -99,11 +99,11 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["r", r.rawObject],
-            ["g", r.rawObject],
-            ["b", r.rawObject],
-            ["a", r.rawObject]
+            [ "name", r.string ],
+            [ "r", r.rawObject ],
+            [ "g", r.rawObject ],
+            [ "b", r.rawObject ],
+            [ "a", r.rawObject ]
         ];
     }
 

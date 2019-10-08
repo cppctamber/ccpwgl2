@@ -1,6 +1,6 @@
-import {vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE} from "../../global";
-import {Tw2TextureRes, Tw2RenderTarget} from "../../core";
-import {EveOccluder} from "./EveOccluder";
+import { vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE } from "../../global";
+import { Tw2TextureRes, Tw2RenderTarget } from "../../core";
+import { EveOccluder } from "./EveOccluder";
 
 /**
  * EveLensFlare
@@ -171,7 +171,7 @@ export class EveLensflare extends Tw2BaseClass
 
         this.backgroundOcclusionIntensity = this.occlusionIntensity;
 
-        tw2.SetVariableValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
+        tw2.SetVariableValue("LensflareFxOccScale", [ this.occlusionIntensity, this.occlusionIntensity, 0, 0 ]);
         g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
     }
 
@@ -219,7 +219,7 @@ export class EveLensflare extends Tw2BaseClass
             negPos = g.vec3_1,
             dist = g.vec4_1;
 
-        vec3.transformMat4(cameraPos, [0, 0, 0], device.viewInverse);
+        vec3.transformMat4(cameraPos, [ 0, 0, 0 ], device.viewInverse);
 
         if (vec3.length(this.position) === 0)
         {
@@ -233,17 +233,17 @@ export class EveLensflare extends Tw2BaseClass
             vec3.normalize(this._direction, negPos);
         }
 
-        vec4.transformMat4(viewDir, [0, 0, 1, 0], device.viewInverse);
+        vec4.transformMat4(viewDir, [ 0, 0, 1, 0 ], device.viewInverse);
         vec3.scaleAndAdd(cameraSpacePos, cameraPos, viewDir, -this.cameraFactor);
         vec3.negate(negDirVec, this._direction);
         mat4.arcFromForward(this._transform, negDirVec);
         mat4.setTranslation(this._transform, cameraSpacePos);
-        mat4.scale(scaleMat, scaleMat, [this.occlusionIntensity, this.occlusionIntensity, 1]);
+        mat4.scale(scaleMat, scaleMat, [ this.occlusionIntensity, this.occlusionIntensity, 1 ]);
         //mat4.multiply(scaleMat, scaleMat, this._transform);
 
         const dir = this._direction;
 
-        tw2.SetVariableValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
+        tw2.SetVariableValue("LensflareFxDirectionScale", [ dir[0], dir[1], dir[2], 1 ]);
 
         vec4.set(dist, dir[0], dir[1], dir[2], 0);
         vec4.transformMat4(dist, dist, device.view);
@@ -336,18 +336,18 @@ export class EveLensflare extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["backgroundOccluders", r.array],
-            ["bindings", r.array],
-            ["distanceToCenterCurves", r.array],
-            ["distanceToEdgeCurves", r.array],
-            ["mesh", r.object],
-            ["name", r.string],
-            ["occluders", r.array],
-            ["position", r.vector3],
-            ["radialAngleCurves", r.array],
-            ["xDistanceToCenter", r.array],
-            ["yDistanceToCenter", r.array],
-            ["zDistanceToCenter", r.array],
+            [ "backgroundOccluders", r.array ],
+            [ "bindings", r.array ],
+            [ "distanceToCenterCurves", r.array ],
+            [ "distanceToEdgeCurves", r.array ],
+            [ "mesh", r.object ],
+            [ "name", r.string ],
+            [ "occluders", r.array ],
+            [ "position", r.vector3 ],
+            [ "radialAngleCurves", r.array ],
+            [ "xDistanceToCenter", r.array ],
+            [ "yDistanceToCenter", r.array ],
+            [ "zDistanceToCenter", r.array ],
         ];
     }
 

@@ -30,14 +30,14 @@ export class EveSOFDataHullArea
     static black(r)
     {
         return [
-            ["areaType", r.uint],
-            ["blockedMaterials", r.uint],
-            ["count", r.uint],
-            ["index", r.uint],
-            ["name", r.string],
-            ["parameters", r.array],
-            ["shader", r.string],
-            ["textures", r.array]
+            [ "areaType", r.uint ],
+            [ "blockedMaterials", r.uint ],
+            [ "count", r.uint ],
+            [ "index", r.uint ],
+            [ "name", r.string ],
+            [ "parameters", r.array ],
+            [ "shader", r.string ],
+            [ "textures", r.array ]
         ];
     }
 }

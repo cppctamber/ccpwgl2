@@ -1,4 +1,4 @@
-import {EveChild} from "./EveChild";
+import { EveChild } from "./EveChild";
 
 /**
  * EveChildParticleSphere
@@ -56,18 +56,18 @@ export class EveChildParticleSphere extends EveChild
     static black(r)
     {
         return [
-            ["generators", r.array],
-            ["maxSpeed", r.float],
-            ["mesh", r.object],
-            ["movementScale", r.float],
-            ["name", r.string],
-            ["particleSystem", r.object],
-            ["positionShiftDecreaseSpeed", r.float],
-            ["positionShiftIncreaseSpeed", r.float],
-            ["positionShiftMax", r.float],
-            ["positionShiftMin", r.float],
-            ["radius", r.float],
-            ["useSpaceObjectData", r.boolean]
+            [ "generators", r.array ],
+            [ "maxSpeed", r.float ],
+            [ "mesh", r.object ],
+            [ "movementScale", r.float ],
+            [ "name", r.string ],
+            [ "particleSystem", r.object ],
+            [ "positionShiftDecreaseSpeed", r.float ],
+            [ "positionShiftIncreaseSpeed", r.float ],
+            [ "positionShiftMax", r.float ],
+            [ "positionShiftMin", r.float ],
+            [ "radius", r.float ],
+            [ "useSpaceObjectData", r.boolean ]
         ];
     }
 

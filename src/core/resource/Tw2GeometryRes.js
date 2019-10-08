@@ -1,7 +1,7 @@
-import {box3, sph3, vec3, quat, mat3, mat4, resMan, device} from "../../global";
-import {Tw2BinaryReader} from "../reader";
-import {Tw2VertexElement} from "../vertex";
-import {Tw2Resource} from "./Tw2Resource";
+import { box3, sph3, vec3, quat, mat3, mat4, resMan, device } from "../../global";
+import { Tw2BinaryReader } from "../reader";
+import { Tw2VertexElement } from "../vertex";
+import { Tw2Resource } from "./Tw2Resource";
 import {
     ErrGeometryFileType,
     ErrGeometryMeshEffectBinding,
@@ -670,9 +670,9 @@ export class Tw2GeometryRes extends Tw2Resource
                     {
                         const b1 = this.models[i].skeleton.bones[b0.parentIndex];
                         debugHelper["AddLine"](
-                            [b0.worldTransform[12], b0.worldTransform[13], b0.worldTransform[14]],
-                            [b1.worldTransform[12], b1.worldTransform[13], b1.worldTransform[14]],
-                            [0, 0.7, 0, 1], [0, 0.7, 0, 1]);
+                            [ b0.worldTransform[12], b0.worldTransform[13], b0.worldTransform[14] ],
+                            [ b1.worldTransform[12], b1.worldTransform[13], b1.worldTransform[14] ],
+                            [ 0, 0.7, 0, 1 ], [ 0, 0.7, 0, 1 ]);
                     }
                 }
             }
@@ -842,7 +842,7 @@ export class Tw2GeometryRes extends Tw2Resource
                         break;
 
                     default:
-                        throw new ErrGeometryFileType({path: path, key: "fileType", value: el.fileType & 0xf});
+                        throw new ErrGeometryFileType({ path: path, key: "fileType", value: el.fileType & 0xf });
                 }
             }
         }

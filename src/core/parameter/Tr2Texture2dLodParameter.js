@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import { Tw2BaseClass } from "../../global/index";
 
 /**
  * Tr2Texture2dLodParameter
@@ -21,8 +21,8 @@ export class Tr2Texture2dLodParameter extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["lodResource", r.object],
+            [ "name", r.string ],
+            [ "lodResource", r.object ],
         ];
     }
 

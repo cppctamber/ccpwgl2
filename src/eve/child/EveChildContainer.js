@@ -1,5 +1,5 @@
-import {EveChild} from "./EveChild";
-import {mat4, quat, vec3} from "../../global";
+import { EveChild } from "./EveChild";
+import { mat4, quat, vec3 } from "../../global";
 
 /**
  * Container for other child effects
@@ -138,22 +138,22 @@ export class EveChildContainer extends EveChild
     static black(r)
     {
         return [
-            ["boneIndex", r.uint],
-            ["controllers", r.array],
-            ["display", r.boolean],
-            ["localTransform", r.matrix],
-            ["name", r.string],
-            ["curveSets", r.array],
-            ["hideOnLowQuality", r.boolean],
-            ["inheritProperties", r.object],
-            ["lights", r.array],
-            ["observers", r.array],
-            ["objects", r.array],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["staticTransform", r.boolean],
-            ["transformModifiers", r.array],
-            ["translation", r.vector3]
+            [ "boneIndex", r.uint ],
+            [ "controllers", r.array ],
+            [ "display", r.boolean ],
+            [ "localTransform", r.matrix ],
+            [ "name", r.string ],
+            [ "curveSets", r.array ],
+            [ "hideOnLowQuality", r.boolean ],
+            [ "inheritProperties", r.object ],
+            [ "lights", r.array ],
+            [ "observers", r.array ],
+            [ "objects", r.array ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "staticTransform", r.boolean ],
+            [ "transformModifiers", r.array ],
+            [ "translation", r.vector3 ]
         ];
     }
 

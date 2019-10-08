@@ -68,27 +68,27 @@ export class EveSOFDataArea
     static black(r)
     {
         return [
-            ["Black", r.object],
-            ["Blue", r.object],
-            ["Booster", r.object],
-            ["Cyan", r.object],
-            ["Darkhull", r.object],
-            ["Fire", r.object],
-            ["Glass", r.object],
-            ["Green", r.object],
-            ["Hull", r.object],
-            ["Killmark", r.object],
-            ["Monument", r.object],
-            ["Orange", r.object],
-            ["Primary", r.object],
-            ["Reactor", r.object],
-            ["Red", r.object],
-            ["Rock", r.object],
-            ["Sails", r.object],
-            ["Secondary", r.object],
-            ["Tertiary", r.object],
-            ["White", r.object],
-            ["Yellow", r.object]
+            [ "Black", r.object ],
+            [ "Blue", r.object ],
+            [ "Booster", r.object ],
+            [ "Cyan", r.object ],
+            [ "Darkhull", r.object ],
+            [ "Fire", r.object ],
+            [ "Glass", r.object ],
+            [ "Green", r.object ],
+            [ "Hull", r.object ],
+            [ "Killmark", r.object ],
+            [ "Monument", r.object ],
+            [ "Orange", r.object ],
+            [ "Primary", r.object ],
+            [ "Reactor", r.object ],
+            [ "Red", r.object ],
+            [ "Rock", r.object ],
+            [ "Sails", r.object ],
+            [ "Secondary", r.object ],
+            [ "Tertiary", r.object ],
+            [ "White", r.object ],
+            [ "Yellow", r.object ]
         ];
     }
 }

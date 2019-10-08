@@ -1,4 +1,4 @@
-import {vec3, vec4, Tw2BaseClass} from "../../global";
+import { vec3, vec4, Tw2BaseClass } from "../../global";
 
 /**
  * EveSpherePin
@@ -42,18 +42,18 @@ export class EveSpherePin extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["centerNormal", r.vector3],
-            ["color", r.color],
-            ["curveSets", r.array],
-            ["enablePicking", r.boolean],
-            ["geometryResPath", r.path],
-            ["name", r.string],
-            ["pinColor", r.color],
-            ["pinEffect", r.object],
-            ["pinMaxRadius", r.float],
-            ["pinRadius", r.float],
-            ["pinRotation", r.float],
-            ["sortValueMultiplier", r.float]
+            [ "centerNormal", r.vector3 ],
+            [ "color", r.color ],
+            [ "curveSets", r.array ],
+            [ "enablePicking", r.boolean ],
+            [ "geometryResPath", r.path ],
+            [ "name", r.string ],
+            [ "pinColor", r.color ],
+            [ "pinEffect", r.object ],
+            [ "pinMaxRadius", r.float ],
+            [ "pinRadius", r.float ],
+            [ "pinRotation", r.float ],
+            [ "sortValueMultiplier", r.float ]
         ];
     }
 

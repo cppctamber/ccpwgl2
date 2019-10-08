@@ -1,4 +1,4 @@
-import {vec3, vec4, Tw2BaseClass} from "../../global";
+import { vec3, vec4, Tw2BaseClass } from "../../global";
 
 /**
  * EveConnector
@@ -38,17 +38,17 @@ export class EveConnector extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["animationColor", r.color],
-            ["animationScale", r.float],
-            ["animationSpeed", r.float],
-            ["color", r.color],
-            ["destObject", r.object],
-            ["destPosition", r.vector3],
-            ["isAnimated", r.boolean],
-            ["lineWidth", r.float],
-            ["sourceObject", r.object],
-            ["sourcePosition", r.vector3],
-            ["type", r.uint],
+            [ "animationColor", r.color ],
+            [ "animationScale", r.float ],
+            [ "animationSpeed", r.float ],
+            [ "color", r.color ],
+            [ "destObject", r.object ],
+            [ "destPosition", r.vector3 ],
+            [ "isAnimated", r.boolean ],
+            [ "lineWidth", r.float ],
+            [ "sourceObject", r.object ],
+            [ "sourcePosition", r.vector3 ],
+            [ "type", r.uint ],
         ];
     }
 

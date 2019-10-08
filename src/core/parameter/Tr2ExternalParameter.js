@@ -1,4 +1,4 @@
-import {Tw2Parameter} from "./Tw2Parameter";
+import { Tw2Parameter } from "./Tw2Parameter";
 
 /**
  * Tr2ExternalParameter
@@ -24,9 +24,9 @@ export class Tr2ExternalParameter extends Tw2Parameter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["destinationObject", r.object],
-            ["destinationAttribute", r.string],
+            [ "name", r.string ],
+            [ "destinationObject", r.object ],
+            [ "destinationAttribute", r.string ],
         ];
     }
 

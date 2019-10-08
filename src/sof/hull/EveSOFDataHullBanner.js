@@ -1,4 +1,4 @@
-import {quat, vec3} from "../../global";
+import { quat, vec3 } from "../../global";
 
 
 /**
@@ -33,15 +33,15 @@ export class EveSOFDataHullBanner
     static black(r)
     {
         return [
-            ["angleX", r.float],
-            ["angleY", r.float],
-            ["angleZ", r.float],
-            ["boneIndex", r.uint],
-            ["name", r.string],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["usage", r.uint]
+            [ "angleX", r.float ],
+            [ "angleY", r.float ],
+            [ "angleZ", r.float ],
+            [ "boneIndex", r.uint ],
+            [ "name", r.string ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "usage", r.uint ]
         ];
     }
 }

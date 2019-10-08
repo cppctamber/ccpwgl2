@@ -1,7 +1,7 @@
-import {quat, util, vec4, Tw2BaseClass} from "../global";
-import {Tw2Vector4Parameter} from "../core/parameter";
-import {isArrayLike, isBoolean, isNumber} from "../global/util";
-import {ErrBindingType, ErrBindingValueUndefined, ErrBindingReference} from "../core/Tw2Error";
+import { quat, util, vec4, Tw2BaseClass } from "../global";
+import { Tw2Vector4Parameter } from "../core/parameter";
+import { isArrayLike, isBoolean, isNumber } from "../global/util";
+import { ErrBindingType, ErrBindingValueUndefined, ErrBindingReference } from "../core/Tw2Error";
 
 
 /**
@@ -202,7 +202,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
         // Targets must be defined
         if (src === undefined)
         {
-            throw new ErrBindingValueUndefined({name: this.name, object: "source", property: this.sourceAttribute});
+            throw new ErrBindingValueUndefined({ name: this.name, object: "source", property: this.sourceAttribute });
         }
 
         if (dest === undefined)
@@ -258,7 +258,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
 
         if (!copyFunc)
         {
-            throw new ErrBindingType({name: this.name});
+            throw new ErrBindingType({ name: this.name });
         }
 
         this._copyFunc = copyFunc;
@@ -276,11 +276,11 @@ export class Tw2ValueBinding extends Tw2BaseClass
 
             if ("UpdateValues" in this.destinationObject)
             {
-                this.destinationObject.UpdateValues({controller});
+                this.destinationObject.UpdateValues({ controller });
             }
             else if ("OnValueChanged" in this.destinationObject)
             {
-                this.destinationObject.OnValueChanged({controller});
+                this.destinationObject.OnValueChanged({ controller });
             }
         }
     }
@@ -326,7 +326,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
      */
     SetSource(obj, attr, element, isRGBA)
     {
-        const {object, attribute} = this.constructor.GetTargets(obj, attr, element, isRGBA);
+        const { object, attribute } = this.constructor.GetTargets(obj, attr, element, isRGBA);
         this.sourceObject = object;
         this.sourceAttribute = attribute;
         this._copyFunc = null;
@@ -342,7 +342,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
      */
     SetDestination(obj, attr, element, isRGBA)
     {
-        const {object, attribute} = this.constructor.GetTargets(obj, attr, element, isRGBA);
+        const { object, attribute } = this.constructor.GetTargets(obj, attr, element, isRGBA);
         this.destinationObject = object;
         this.destinationAttribute = attribute;
         this._copyFunc = null;
@@ -460,7 +460,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
             }
         }
 
-        return {object, attribute};
+        return { object, attribute };
     }
 
     /**
@@ -574,13 +574,13 @@ export class Tw2ValueBinding extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["destinationObject", r.object],
-            ["destinationAttribute", r.string],
-            ["name", r.string],
-            ["offset", r.vector4],
-            ["scale", r.float],
-            ["sourceObject", r.object],
-            ["sourceAttribute", r.string]
+            [ "destinationObject", r.object ],
+            [ "destinationAttribute", r.string ],
+            [ "name", r.string ],
+            [ "offset", r.vector4 ],
+            [ "scale", r.float ],
+            [ "sourceObject", r.object ],
+            [ "sourceAttribute", r.string ]
         ];
     }
 }

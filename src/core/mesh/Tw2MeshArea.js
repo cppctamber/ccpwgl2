@@ -1,7 +1,7 @@
-import {Tw2GeometryBatch} from "../batch";
-import {util, Tw2BaseClass} from "../../global";
-import {assignIfExists} from "../../global/util";
-import {Tw2Effect} from "./Tw2Effect";
+import { Tw2GeometryBatch } from "../batch";
+import { util, Tw2BaseClass } from "../../global";
+import { assignIfExists } from "../../global/util";
+import { Tw2Effect } from "./Tw2Effect";
 
 /**
  * Tw2MeshArea
@@ -88,12 +88,12 @@ export class Tw2MeshArea extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["count", r.uint],
-            ["effect", r.object],
-            ["index", r.uint],
-            ["name", r.string],
-            ["reversed", r.boolean],
-            ["useSHLighting", r.boolean],
+            [ "count", r.uint ],
+            [ "effect", r.object ],
+            [ "index", r.uint ],
+            [ "name", r.string ],
+            [ "reversed", r.boolean ],
+            [ "useSHLighting", r.boolean ],
         ];
     }
 

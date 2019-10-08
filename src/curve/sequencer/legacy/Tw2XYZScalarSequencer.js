@@ -1,5 +1,5 @@
-import {vec3} from "../../../global";
-import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
+import { vec3 } from "../../../global";
+import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
  * Tw2XYZScalarSequencer
@@ -88,6 +88,6 @@ export class Tw2XYZScalarSequencer extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {String[]}
      */
-    static childProperties = ["XCurve", "YCurve", "ZCurve"];
+    static childProperties = [ "XCurve", "YCurve", "ZCurve" ];
 
 }

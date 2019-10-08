@@ -16,7 +16,7 @@ export class EveSOFDataFactionVisibilityGroupSet
     static black(r)
     {
         return [
-            ["visibilityGroups", r.array],
+            [ "visibilityGroups", r.array ],
         ];
     }
 }

@@ -18,8 +18,8 @@ export class EveSOFDataHullLocatorSet
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["locators", r.array]
+            [ "name", r.string ],
+            [ "locators", r.array ]
         ];
     }
 }

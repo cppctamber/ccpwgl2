@@ -1,4 +1,4 @@
-import {mat4, vec4} from "../../global";
+import { mat4, vec4 } from "../../global";
 
 
 /**
@@ -27,11 +27,11 @@ export class EveSOFDataHullBoosterItem
     static black(r)
     {
         return [
-            ["atlasIndex0", r.uint],
-            ["atlasIndex1", r.uint],
-            ["functionality", r.vector4],
-            ["hasTrail", r.boolean],
-            ["transform", r.matrix],
+            [ "atlasIndex0", r.uint ],
+            [ "atlasIndex1", r.uint ],
+            [ "functionality", r.vector4 ],
+            [ "hasTrail", r.boolean ],
+            [ "transform", r.matrix ],
         ];
     }
 }

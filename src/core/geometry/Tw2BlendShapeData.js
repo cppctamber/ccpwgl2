@@ -1,4 +1,4 @@
-import {Tw2VertexDeclaration} from "../vertex";
+import { Tw2VertexDeclaration } from "../vertex";
 
 /**
  * Tw2BlendShapeData

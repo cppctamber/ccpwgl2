@@ -22,10 +22,10 @@ export class EveSOFDataHullSpriteSet
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["items", r.array],
-            ["skinned", r.boolean],
-            ["visibilityGroup", r.string]
+            [ "name", r.string ],
+            [ "items", r.array ],
+            [ "skinned", r.boolean ],
+            [ "visibilityGroup", r.string ]
         ];
     }
 }

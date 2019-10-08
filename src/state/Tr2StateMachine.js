@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../global";
+import { Tw2BaseClass } from "../global";
 
 /**
  * Tr2StateMachine
@@ -23,9 +23,9 @@ export class Tr2StateMachine extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["states", r.array],
-            ["startState", r.uint],
+            [ "name", r.string ],
+            [ "states", r.array ],
+            [ "startState", r.uint ],
         ];
     }
 

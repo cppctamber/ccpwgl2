@@ -1,4 +1,4 @@
-import {vec4} from "../../global";
+import { vec4 } from "../../global";
 
 
 /**
@@ -27,11 +27,11 @@ export class EveSOFDataFactionSpotlightSet
     static black(r)
     {
         return [
-            ["coneColor", r.vector4],
-            ["flareColor", r.vector4],
-            ["groupIndex", r.uint],
-            ["name", r.string],
-            ["spriteColor", r.vector4],
+            [ "coneColor", r.vector4 ],
+            [ "flareColor", r.vector4 ],
+            [ "groupIndex", r.uint ],
+            [ "name", r.string ],
+            [ "spriteColor", r.vector4 ],
         ];
     }
 }

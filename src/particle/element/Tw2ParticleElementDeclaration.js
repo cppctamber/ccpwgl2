@@ -1,6 +1,6 @@
-import {Tw2VertexElement} from "../../core";
-import {Tw2ParticleElement} from "./Tw2ParticleElement";
-import {Tw2BaseClass} from "../../global";
+import { Tw2VertexElement } from "../../core";
+import { Tw2ParticleElement } from "./Tw2ParticleElement";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tw2ParticleElementDeclaration
@@ -91,11 +91,11 @@ export class Tw2ParticleElementDeclaration extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["customName", r.string],
-            ["dimension", r.uint],
-            ["elementType", r.uint],
-            ["usageIndex", r.uint],
-            ["usedByGPU", r.boolean]
+            [ "customName", r.string ],
+            [ "dimension", r.uint ],
+            [ "elementType", r.uint ],
+            [ "usageIndex", r.uint ],
+            [ "usedByGPU", r.boolean ]
         ];
     }
 

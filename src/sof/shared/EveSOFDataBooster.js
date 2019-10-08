@@ -1,4 +1,4 @@
-import {vec4} from "../../global";
+import { vec4 } from "../../global";
 
 
 /**
@@ -85,35 +85,35 @@ export class EveSOFDataBooster
     static black(r)
     {
         return [
-            ["glowColor", r.vector4],
-            ["glowScale", r.float],
-            ["gradient0ResPath", r.path],
-            ["gradient1ResPath", r.path],
-            ["haloColor", r.vector4],
-            ["haloScaleX", r.float],
-            ["haloScaleY", r.float],
-            ["lightFlickerAmplitude", r.float],
-            ["lightFlickerColor", r.vector4],
-            ["lightFlickerFrequency", r.float],
-            ["lightFlickerRadius", r.float],
-            ["lightColor", r.vector4],
-            ["lightRadius", r.float],
-            ["lightWarpColor", r.vector4],
-            ["lightWarpRadius", r.float],
-            ["shape0", r.object],
-            ["shape1", r.object],
-            ["shapeAtlasCount", r.uint],
-            ["shapeAtlasHeight", r.uint],
-            ["shapeAtlasResPath", r.path],
-            ["shapeAtlasWidth", r.uint],
-            ["symHaloScale", r.float],
-            ["trailColor", r.vector4],
-            ["trailSize", r.vector4],
-            ["volumetric", r.boolean],
-            ["warpGlowColor", r.vector4],
-            ["warpHalpColor", r.vector4],
-            ["warpShape0", r.object],
-            ["warpShape1", r.object]
+            [ "glowColor", r.vector4 ],
+            [ "glowScale", r.float ],
+            [ "gradient0ResPath", r.path ],
+            [ "gradient1ResPath", r.path ],
+            [ "haloColor", r.vector4 ],
+            [ "haloScaleX", r.float ],
+            [ "haloScaleY", r.float ],
+            [ "lightFlickerAmplitude", r.float ],
+            [ "lightFlickerColor", r.vector4 ],
+            [ "lightFlickerFrequency", r.float ],
+            [ "lightFlickerRadius", r.float ],
+            [ "lightColor", r.vector4 ],
+            [ "lightRadius", r.float ],
+            [ "lightWarpColor", r.vector4 ],
+            [ "lightWarpRadius", r.float ],
+            [ "shape0", r.object ],
+            [ "shape1", r.object ],
+            [ "shapeAtlasCount", r.uint ],
+            [ "shapeAtlasHeight", r.uint ],
+            [ "shapeAtlasResPath", r.path ],
+            [ "shapeAtlasWidth", r.uint ],
+            [ "symHaloScale", r.float ],
+            [ "trailColor", r.vector4 ],
+            [ "trailSize", r.vector4 ],
+            [ "volumetric", r.boolean ],
+            [ "warpGlowColor", r.vector4 ],
+            [ "warpHalpColor", r.vector4 ],
+            [ "warpShape0", r.object ],
+            [ "warpShape1", r.object ]
         ];
     }
 }

@@ -18,8 +18,8 @@ export class EveSOFDataHullSoundEmitter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["prefix", r.string]
+            [ "name", r.string ],
+            [ "prefix", r.string ]
         ];
     }
 }

@@ -1,4 +1,4 @@
-import {EveAnimationStateTransition} from "./EveAnimationStateTransition";
+import { EveAnimationStateTransition } from "./EveAnimationStateTransition";
 
 /**
  * EveAnimationState
@@ -29,12 +29,12 @@ export class EveAnimationState
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["animation", r.object],
-            ["curves", r.array],
-            ["commands", r.array],
-            ["initCommands", r.array],
-            ["transitions", r.structList(EveAnimationStateTransition)],
+            [ "name", r.string ],
+            [ "animation", r.object ],
+            [ "curves", r.array ],
+            [ "commands", r.array ],
+            [ "initCommands", r.array ],
+            [ "transitions", r.structList(EveAnimationStateTransition) ],
         ];
     }
 

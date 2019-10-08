@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../global";
+import { Tw2BaseClass } from "../global";
 
 /**
  * EveLineContainer
@@ -21,7 +21,7 @@ export class EveLineContainer extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["lineSet", r.object]
+            [ "lineSet", r.object ]
         ];
     }
 

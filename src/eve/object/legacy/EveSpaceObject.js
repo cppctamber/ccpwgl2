@@ -1,6 +1,6 @@
-import {vec3, vec4, quat, mat4, util} from "../../../global";
-import {Tw2AnimationController, Tw2PerObjectData} from "../../../core";
-import {EveObject} from "./EveObject";
+import { vec3, vec4, quat, mat4, util } from "../../../global";
+import { Tw2AnimationController, Tw2PerObjectData } from "../../../core";
+import { EveObject } from "./EveObject";
 
 /**
  * EveSpaceObject
@@ -159,7 +159,7 @@ export class EveSpaceObject extends EveObject
      */
     UpdateLod(frustum)
     {
-        if(!this._useLOD)
+        if (!this._useLOD)
         {
             this.lod = 3;
         }
@@ -393,7 +393,7 @@ export class EveSpaceObject extends EveObject
 
         for (let i = 0; i < this.customMasks.length; ++i)
         {
-            const targets = this.visible.customMasks ? this.customMasks[i].targets : [0, 0, 0, 0];
+            const targets = this.visible.customMasks ? this.customMasks[i].targets : [ 0, 0, 0, 0 ];
             this._perObjectData.vs.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
             this._perObjectData.vs.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
             this._perObjectData.ps.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
@@ -591,30 +591,30 @@ export class EveSpaceObject extends EveObject
      */
     static perObjectData = {
         vs: [
-            ["WorldMat", 16],
-            ["WorldMatLast", 16],
-            ["Shipdata", [0, 1, 0, -10]],
-            ["Clipdata1", 4],
-            ["EllipsoidRadii", 4],
-            ["EllipsoidCenter", 4],
-            ["CustomMaskMatrix0", mat4.identity([])],
-            ["CustomMaskMatrix1", mat4.identity([])],
-            ["CustomMaskData0", 4],
-            ["CustomMaskData1", 4],
-            ["JointMat", 696]
+            [ "WorldMat", 16 ],
+            [ "WorldMatLast", 16 ],
+            [ "Shipdata", [ 0, 1, 0, -10 ] ],
+            [ "Clipdata1", 4 ],
+            [ "EllipsoidRadii", 4 ],
+            [ "EllipsoidCenter", 4 ],
+            [ "CustomMaskMatrix0", mat4.identity([]) ],
+            [ "CustomMaskMatrix1", mat4.identity([]) ],
+            [ "CustomMaskData0", 4 ],
+            [ "CustomMaskData1", 4 ],
+            [ "JointMat", 696 ]
         ],
         ps: [
-            ["Shipdata", [0, 1, 0, 1]],
-            ["Clipdata1", 4],
-            ["Clipdata2", 4],
-            ["ShLighting", 4 * 7],
-            ["CustomMaskMaterialID0", 4],
-            ["CustomMaskMaterialID1", 4],
-            ["CustomMaskTarget0", 4],
-            ["CustomMaskTarget1", 4]
+            [ "Shipdata", [ 0, 1, 0, 1 ] ],
+            [ "Clipdata1", 4 ],
+            [ "Clipdata2", 4 ],
+            [ "ShLighting", 4 * 7 ],
+            [ "CustomMaskMaterialID0", 4 ],
+            [ "CustomMaskMaterialID1", 4 ],
+            [ "CustomMaskTarget0", 4 ],
+            [ "CustomMaskTarget1", 4 ]
         ]
     };
 
 }
 
-export {EveSpaceObject as EveStation};
+export { EveSpaceObject as EveStation };

@@ -1,4 +1,4 @@
-import {Tw2RenderBatch} from "./Tw2RenderBatch";
+import { Tw2RenderBatch } from "./Tw2RenderBatch";
 
 /**
  * A render batch that uses geometry provided from an external source

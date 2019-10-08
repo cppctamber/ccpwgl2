@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2SkinnedModel
@@ -26,10 +26,10 @@ export class Tr2SkinnedModel extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["geometryResPath", r.string],
-            ["meshes", r.array],
-            ["name", r.string],
-            ["skeletonName", r.string]
+            [ "geometryResPath", r.string ],
+            [ "meshes", r.array ],
+            [ "name", r.string ],
+            [ "skeletonName", r.string ]
         ];
     }
 

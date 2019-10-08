@@ -1,5 +1,5 @@
-import {vec2, vec3, vec4, mat4, tw2} from "../../global";
-import {ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError} from "../Tw2Error";
+import { vec2, vec3, vec4, mat4, tw2 } from "../../global";
+import { ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError } from "../Tw2Error";
 
 /**
  * Reads a path
@@ -101,7 +101,7 @@ export function object(reader, id)
 
     if (!tw2.HasBlack(type))
     {
-        throw new ErrBinaryObjectTypeNotFound({type});
+        throw new ErrBinaryObjectTypeNotFound({ type });
     }
 
     let properties = tw2.GetBlack(type);
@@ -142,7 +142,7 @@ export function object(reader, id)
                     console.dir(result);
                 }
 
-                throw new ErrBinaryReaderReadError({readError: `${propertyName} > ` + err.message});
+                throw new ErrBinaryReaderReadError({ readError: `${propertyName} > ` + err.message });
             }
         }
         else
@@ -152,7 +152,7 @@ export function object(reader, id)
                 console.dir(result);
             }
 
-            throw new ErrBinaryReaderReadError({readError: `Unknown property "${propertyName}" for "${type}"`});
+            throw new ErrBinaryReaderReadError({ readError: `Unknown property "${propertyName}" for "${type}"` });
         }
     }
 

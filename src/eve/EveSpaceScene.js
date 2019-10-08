@@ -1,5 +1,5 @@
-import {vec3, vec4, quat, mat4, util, device, resMan, tw2, Tw2BaseClass} from "../global";
-import {Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess} from "../core";
+import { vec3, vec4, quat, mat4, util, device, resMan, tw2, Tw2BaseClass } from "../global";
+import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess } from "../core";
 
 /**
  * EveSpaceScene
@@ -602,9 +602,9 @@ export class EveSpaceScene extends Tw2BaseClass
         const f = 1.0 / distance;
 
         const vs = this._perFrameVS;
-        vs.Set("FogFactors", [this.fogEnd * f, f, this.visible.fog ? this.fogMax : 0, 1]);
-        vs.Set("ViewportAdjustment", [1, 1, 1, 1]);
-        vs.Set("MiscSettings", [d.currentTime, 0, d.viewportWidth, d.viewportHeight]);
+        vs.Set("FogFactors", [ this.fogEnd * f, f, this.visible.fog ? this.fogMax : 0, 1 ]);
+        vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
+        vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);
         vs.Set("SunData.DirWorld", sunDir);
         vs.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         vs.Set("TargetResolution", d.targetResolution);
@@ -622,10 +622,10 @@ export class EveSpaceScene extends Tw2BaseClass
         ps.Set("SunData.DirWorld", sunDir);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
-        ps.Set("MiscSettings", [d.currentTime, this.fogType, this.fogBlur, 1]);
+        ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, 1 ]);
         ps.Set("SceneData.FogColor", this.fogColor);
-        ps.Set("FovXY", [d.targetResolution[3], d.targetResolution[2]]);
-        ps.Set("ShadowMapSettings", [1, 1, 0, 0]);
+        ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
+        ps.Set("ShadowMapSettings", [ 1, 1, 0, 0 ]);
         ps.Set("TargetResolution", d.targetResolution);
         ps.Get("SceneData.NebulaIntensity")[0] = this.nebulaIntensity;
         ps.Get("ViewportSize")[0] = d.viewportWidth;
@@ -669,37 +669,37 @@ export class EveSpaceScene extends Tw2BaseClass
      */
     static perFrameData = {
         ps: [
-            ["ViewInverseTransposeMat", 16],
-            ["ViewMat", 16],
-            ["EnvMapRotationMat", 16],
-            ["SunData.DirWorld", 4],
-            ["SunData.DiffuseColor", 4],
-            ["SceneData.AmbientColor", 3],
-            ["SceneData.NebulaIntensity", 1],
-            ["SceneData.FogColor", 4],
-            ["ViewportOffset", 2],
-            ["ViewportSize", 2],
-            ["TargetResolution", 4],
-            ["ShadowMapSettings", 4],
-            ["ShadowCameraRange", 4],
-            ["ProjectionToView", 2],
-            ["FovXY", 2],
-            ["MiscSettings", 4],
+            [ "ViewInverseTransposeMat", 16 ],
+            [ "ViewMat", 16 ],
+            [ "EnvMapRotationMat", 16 ],
+            [ "SunData.DirWorld", 4 ],
+            [ "SunData.DiffuseColor", 4 ],
+            [ "SceneData.AmbientColor", 3 ],
+            [ "SceneData.NebulaIntensity", 1 ],
+            [ "SceneData.FogColor", 4 ],
+            [ "ViewportOffset", 2 ],
+            [ "ViewportSize", 2 ],
+            [ "TargetResolution", 4 ],
+            [ "ShadowMapSettings", 4 ],
+            [ "ShadowCameraRange", 4 ],
+            [ "ProjectionToView", 2 ],
+            [ "FovXY", 2 ],
+            [ "MiscSettings", 4 ],
         ],
         vs: [
-            ["ViewInverseTransposeMat", 16],
-            ["ViewProjectionMat", 16],
-            ["ViewMat", 16],
-            ["ProjectionMat", 16],
-            ["ShadowViewMat", 16],
-            ["ShadowViewProjectionMat", 16],
-            ["EnvMapRotationMat", 16],
-            ["SunData.DirWorld", 4],
-            ["SunData.DiffuseColor", 4],
-            ["FogFactors", 4],
-            ["TargetResolution", 4],
-            ["ViewportAdjustment", 4],
-            ["MiscSettings", 4]
+            [ "ViewInverseTransposeMat", 16 ],
+            [ "ViewProjectionMat", 16 ],
+            [ "ViewMat", 16 ],
+            [ "ProjectionMat", 16 ],
+            [ "ShadowViewMat", 16 ],
+            [ "ShadowViewProjectionMat", 16 ],
+            [ "EnvMapRotationMat", 16 ],
+            [ "SunData.DirWorld", 4 ],
+            [ "SunData.DiffuseColor", 4 ],
+            [ "FogFactors", 4 ],
+            [ "TargetResolution", 4 ],
+            [ "ViewportAdjustment", 4 ],
+            [ "MiscSettings", 4 ]
         ]
     };
 
@@ -723,33 +723,33 @@ export class EveSpaceScene extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["ambientColor", r.color],
-            ["backgroundEffect", r.object],
-            ["backgroundObjects", r.array],
-            ["backgroundRenderingEnabled", r.boolean],
-            ["curveSets", r.array],
-            ["enableShadows", r.boolean],
-            ["envMapResPath", r.path],
-            ["envMap1ResPath", r.path],
-            ["envMap2ResPath", r.path],
-            ["envMapRotation", r.vector4],
-            ["externalParameters", r.array],
-            ["fogColor", r.color],
-            ["fogStart", r.float],
-            ["fogEnd", r.float],
-            ["fogMax", r.float],
-            ["nebulaIntensity", r.float],
-            ["objects", r.array],
-            ["postProcessPath", r.path],
-            ["selfShadowOnly", r.boolean],
-            ["starfield", r.object],
-            ["shadowFadeThreshold", r.float],
-            ["shadowThreshold", r.float],
-            ["shLightingManager", r.object],
-            ["sunDiffuseColor", r.color],
-            ["sunDiffuseColorWithDynamicLights", r.vector4],
-            ["sunDirection", r.vector3],
-            ["useSunDiffuseColorWithDynamicLights", r.boolean]
+            [ "ambientColor", r.color ],
+            [ "backgroundEffect", r.object ],
+            [ "backgroundObjects", r.array ],
+            [ "backgroundRenderingEnabled", r.boolean ],
+            [ "curveSets", r.array ],
+            [ "enableShadows", r.boolean ],
+            [ "envMapResPath", r.path ],
+            [ "envMap1ResPath", r.path ],
+            [ "envMap2ResPath", r.path ],
+            [ "envMapRotation", r.vector4 ],
+            [ "externalParameters", r.array ],
+            [ "fogColor", r.color ],
+            [ "fogStart", r.float ],
+            [ "fogEnd", r.float ],
+            [ "fogMax", r.float ],
+            [ "nebulaIntensity", r.float ],
+            [ "objects", r.array ],
+            [ "postProcessPath", r.path ],
+            [ "selfShadowOnly", r.boolean ],
+            [ "starfield", r.object ],
+            [ "shadowFadeThreshold", r.float ],
+            [ "shadowThreshold", r.float ],
+            [ "shLightingManager", r.object ],
+            [ "sunDiffuseColor", r.color ],
+            [ "sunDiffuseColorWithDynamicLights", r.vector4 ],
+            [ "sunDirection", r.vector3 ],
+            [ "useSunDiffuseColorWithDynamicLights", r.boolean ]
         ];
     }
 

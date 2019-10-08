@@ -1,5 +1,5 @@
-import {num, vec4, quat} from "../../../global";
-import {Tw2CurveKey, Tw2Curve} from "../Tw2Curve";
+import { num, vec4, quat } from "../../../global";
+import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
  * Tw2QuaternionKey
@@ -141,7 +141,7 @@ export class Tw2RotationCurve extends Tw2Curve
             case Tw2RotationCurve.Interpolation.HERMITE:
                 const
                     collect = quat.identity(scratch.quat_0),
-                    arr = [ck_1.value, ck_1.right, ck.left, ck.value];
+                    arr = [ ck_1.value, ck_1.right, ck.left, ck.value ];
 
                 for (let i = 3; i > 0; i--)
                 {

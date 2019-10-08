@@ -62,28 +62,28 @@ var demos = new function()
             {
                 label: "Shader Quality",
                 member: "shaderQuality",
-                options: [{label: "High", value: ccpwgl.ShaderQuality.HIGH}, {
+                options: [ { label: "High", value: ccpwgl.ShaderQuality.HIGH }, {
                     label: "Low",
                     value: ccpwgl.ShaderQuality.LOW
-                }]
+                } ]
             },
             {
                 label: "Texture Quality",
                 member: "textureQuality",
-                options: [{label: "High", value: ccpwgl.TextureQuality.HIGH}, {
+                options: [ { label: "High", value: ccpwgl.TextureQuality.HIGH }, {
                     label: "Medium",
                     value: ccpwgl.TextureQuality.MEDIUM
-                }, {label: "Low", value: ccpwgl.TextureQuality.LOW}]
+                }, { label: "Low", value: ccpwgl.TextureQuality.LOW } ]
             },
             {
                 label: "Texture Filtering",
                 member: "anisotropicFilter",
-                options: [{label: "Anisotropic", value: "1"}, {label: "Linear", value: ""}]
+                options: [ { label: "Anisotropic", value: "1" }, { label: "Linear", value: "" } ]
             },
             {
                 label: "Post-processing",
                 member: "postprocess",
-                options: [{label: "On", value: "1"}, {label: "Off", value: ""}]
+                options: [ { label: "On", value: "1" }, { label: "Off", value: "" } ]
             }
         ];
 

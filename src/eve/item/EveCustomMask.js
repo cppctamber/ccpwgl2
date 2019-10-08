@@ -1,4 +1,4 @@
-import {quat, vec3, vec4, mat4, Tw2BaseClass} from "../../global";
+import { quat, vec3, vec4, mat4, Tw2BaseClass } from "../../global";
 
 /**
  * Custom mask for patterns
@@ -71,10 +71,10 @@ export class EveCustomMask extends Tw2BaseClass
             this._dirty = false;
         }
 
-        const targets = this.display && visible ? this.targetMaterials : [0, 0, 0, 0];
+        const targets = this.display && visible ? this.targetMaterials : [ 0, 0, 0, 0 ];
         perObjectData.vs.Set("CustomMaskMatrix" + index, this._maskMatrix);
-        perObjectData.vs.Set("CustomMaskData" + index, [1, this.isMirrored ? 1 : 0, 0, 0]);
-        perObjectData.ps.Set("CustomMaskMaterialID" + index, [this.materialIndex, 0, 0, 0]);
+        perObjectData.vs.Set("CustomMaskData" + index, [ 1, this.isMirrored ? 1 : 0, 0, 0 ]);
+        perObjectData.ps.Set("CustomMaskMaterialID" + index, [ this.materialIndex, 0, 0, 0 ]);
         perObjectData.ps.Set("CustomMaskTarget" + index, targets);
     }
 
@@ -86,11 +86,11 @@ export class EveCustomMask extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["materialIndex", r.byte],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["targetMaterials", r.vector4],
+            [ "materialIndex", r.byte ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "targetMaterials", r.vector4 ],
         ];
     }
 

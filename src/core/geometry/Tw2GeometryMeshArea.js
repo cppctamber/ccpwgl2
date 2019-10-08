@@ -1,4 +1,4 @@
-import {box3, sph3, vec3} from "../../global";
+import { box3, sph3, vec3 } from "../../global";
 
 /**
  * Tw2GeometryMeshArea

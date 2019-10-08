@@ -1,8 +1,8 @@
-import {vec3, quat, mat4, tw2} from "../../../global";
-import {Tw2PerObjectData} from "../../../core";
-import {EveChild} from "../EveChild";
+import { vec3, quat, mat4, tw2 } from "../../../global";
+import { Tw2PerObjectData } from "../../../core";
+import { EveChild } from "../EveChild";
 
-const {device} = tw2;
+const { device } = tw2;
 
 /**
  * Mesh attachment to space object and oriented towards the camera
@@ -70,7 +70,7 @@ export class EveChildBillboard extends EveChild
             viewInverse = EveChild.global.mat4_0,
             finalScale = EveChild.global.vec3_0;
 
-        mat4.lookAt(viewInverse, device.eyePosition, this._worldTransform.subarray(12), [0, 1, 0]);
+        mat4.lookAt(viewInverse, device.eyePosition, this._worldTransform.subarray(12), [ 0, 1, 0 ]);
         mat4.transpose(viewInverse, viewInverse);
         mat4.getScaling(finalScale, parentTransform);
         vec3.multiply(finalScale, finalScale, this.scaling);

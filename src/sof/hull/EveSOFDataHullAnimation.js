@@ -1,4 +1,4 @@
-import {quat} from "../../global";
+import { quat } from "../../global";
 
 
 /**
@@ -33,14 +33,14 @@ export class EveSOFDataHullAnimation
     static black(r)
     {
         return [
-            ["endRate", r.float],
-            ["endRotationTime", r.float],
-            ["endRotationValue", r.vector4],
-            ["id", r.uint],
-            ["name", r.string],
-            ["startRate", r.float],
-            ["startRotationTime", r.float],
-            ["startRotationValue", r.vector4]
+            [ "endRate", r.float ],
+            [ "endRotationTime", r.float ],
+            [ "endRotationValue", r.vector4 ],
+            [ "id", r.uint ],
+            [ "name", r.string ],
+            [ "startRate", r.float ],
+            [ "startRotationTime", r.float ],
+            [ "startRotationValue", r.vector4 ]
         ];
     }
 }

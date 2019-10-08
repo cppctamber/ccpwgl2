@@ -1,5 +1,5 @@
-import {mat4, quat, vec3, vec4} from "../../global/index";
-import {EveChild} from "./EveChild";
+import { mat4, quat, vec3, vec4 } from "../../global/index";
+import { EveChild } from "./EveChild";
 
 /**
  * EveChildQuad
@@ -47,15 +47,15 @@ export class EveChildQuad extends EveChild
     static black(r)
     {
         return [
-            ["brightness", r.float],
-            ["color", r.color],
-            ["effect", r.object],
-            ["localTransform", r.matrix],
-            ["minScreenSize", r.float],
-            ["name", r.string],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["translation", r.vector3],
+            [ "brightness", r.float ],
+            [ "color", r.color ],
+            [ "effect", r.object ],
+            [ "localTransform", r.matrix ],
+            [ "minScreenSize", r.float ],
+            [ "name", r.string ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "translation", r.vector3 ],
         ];
     }
 

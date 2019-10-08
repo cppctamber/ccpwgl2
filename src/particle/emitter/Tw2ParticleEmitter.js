@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
-import {Tw2BaseClass} from "../../global";
-import {ErrAbstractClassMethod} from "../../core";
+import { Tw2BaseClass } from "../../global";
+import { ErrAbstractClassMethod } from "../../core";
 
 /**
  * Particle Emitter base class

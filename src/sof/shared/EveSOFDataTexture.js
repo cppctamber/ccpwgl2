@@ -29,8 +29,8 @@ export class EveSOFDataTexture
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["resFilePath", r.path]
+            [ "name", r.string ],
+            [ "resFilePath", r.path ]
         ];
     }
 }

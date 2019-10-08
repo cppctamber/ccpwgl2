@@ -59,7 +59,7 @@ export class Tw2RawData
             size = isValue ? data.length : data,
             value = isValue ? data : null;
 
-        this.elements[name] = {offset: this._nextOffset, array: null, size, value};
+        this.elements[name] = { offset: this._nextOffset, array: null, size, value };
         this._nextOffset += size;
     }
 

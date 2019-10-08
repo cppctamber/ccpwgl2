@@ -1,9 +1,9 @@
-import {vec3, vec4, mat4, util, device} from "../../../global";
-import {Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch} from "../../../core";
-import {EveObjectSet, EveObjectSetItem} from "./../EveObjectSet";
-import {assignIfExists, get} from "../../../global/util";
-import {Tw2Effect} from "../../../core/mesh";
-import {EveSpriteSet} from "../EveSpriteSet";
+import { vec3, vec4, mat4, util, device } from "../../../global";
+import { Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch } from "../../../core";
+import { EveObjectSet, EveObjectSetItem } from "./../EveObjectSet";
+import { assignIfExists, get } from "../../../global/util";
+import { Tw2Effect } from "../../../core/mesh";
+import { EveSpriteSet } from "../EveSpriteSet";
 
 /**
  * Booster render batch
@@ -98,7 +98,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
     GetScale()
     {
         const tr = this.transform;
-        return Math.max(vec3.length([tr[0], tr[1], tr[2]]), vec3.length([tr[4], tr[5], tr[6]]));
+        return Math.max(vec3.length([ tr[0], tr[1], tr[2] ]), vec3.length([ tr[4], tr[5], tr[6] ]));
     }
 
     /**
@@ -111,7 +111,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
         const item = new this();
         if (values)
         {
-            util.assignIfExists(item.visible, values.visible, ["glow", "symHalo", "halo", "trail"]);
+            util.assignIfExists(item.visible, values.visible, [ "glow", "symHalo", "halo", "trail" ]);
             util.assignIfExists(item, values, [
                 "name", "display", "seed", "wavePhase", "transform",
                 "locatorName", "updateFromLocator", "atlas0", "atlas1"
@@ -308,7 +308,7 @@ export class EveBoosterSet extends EveObjectSet
 
         for (let i = 0; i < locators.length; i++)
         {
-            const {name, transform, atlasIndex0, atlasIndex1} = locators[i];
+            const { name, transform, atlasIndex0, atlasIndex1 } = locators[i];
 
             let item = this.FindItemByLocatorName(name);
             if (!item)
@@ -417,7 +417,7 @@ export class EveBoosterSet extends EveObjectSet
             d = device,
             box = EveBoosterSet._box,
             data = new Float32Array(itemCount * box.length * 6 * 28),
-            order = [0, 3, 1, 3, 2, 1];
+            order = [ 0, 3, 1, 3, 2, 1 ];
 
         let index = 0;
         for (let i = 0; i < itemCount; ++i)
@@ -539,7 +539,7 @@ export class EveBoosterSet extends EveObjectSet
 
             if (values.visible)
             {
-                assignIfExists(item.visible, values.visible, ["glows", "symHalos", "halos", "trails"]);
+                assignIfExists(item.visible, values.visible, [ "glows", "symHalos", "halos", "trails" ]);
             }
 
             if (values.effect)
@@ -582,8 +582,8 @@ export class EveBoosterSet extends EveObjectSet
      */
     static perObjectData = {
         vs: [
-            ["WorldMat", 16],
-            ["Shipdata", 4]
+            [ "WorldMat", 16 ],
+            [ "Shipdata", 4 ]
         ]
     };
 
@@ -592,15 +592,15 @@ export class EveBoosterSet extends EveObjectSet
      * @type {*}
      */
     static vertexDeclarations = [
-        {usage: "POSITION", usageIndex: 0, elements: 3},
-        {usage: "TEXCOORD", usageIndex: 0, elements: 2},
-        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 2, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 3, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 4, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 5, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 6, elements: 1},
-        {usage: "TEXCOORD", usageIndex: 7, elements: 2}
+        { usage: "POSITION", usageIndex: 0, elements: 3 },
+        { usage: "TEXCOORD", usageIndex: 0, elements: 2 },
+        { usage: "TEXCOORD", usageIndex: 1, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 2, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 3, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 4, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 5, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 6, elements: 1 },
+        { usage: "TEXCOORD", usageIndex: 7, elements: 2 }
     ];
 
     /**
@@ -609,40 +609,40 @@ export class EveBoosterSet extends EveObjectSet
      */
     static _box = [
         [
-            [-1.0, -1.0, 0.0],
-            [1.0, -1.0, 0.0],
-            [1.0, 1.0, 0.0],
-            [-1.0, 1.0, 0.0]
+            [ -1.0, -1.0, 0.0 ],
+            [ 1.0, -1.0, 0.0 ],
+            [ 1.0, 1.0, 0.0 ],
+            [ -1.0, 1.0, 0.0 ]
         ],
         [
-            [-1.0, -1.0, -1.0],
-            [-1.0, 1.0, -1.0],
-            [1.0, 1.0, -1.0],
-            [1.0, -1.0, -1.0]
+            [ -1.0, -1.0, -1.0 ],
+            [ -1.0, 1.0, -1.0 ],
+            [ 1.0, 1.0, -1.0 ],
+            [ 1.0, -1.0, -1.0 ]
         ],
         [
-            [-1.0, -1.0, 0.0],
-            [-1.0, 1.0, 0.0],
-            [-1.0, 1.0, -1.0],
-            [-1.0, -1.0, -1.0]
+            [ -1.0, -1.0, 0.0 ],
+            [ -1.0, 1.0, 0.0 ],
+            [ -1.0, 1.0, -1.0 ],
+            [ -1.0, -1.0, -1.0 ]
         ],
         [
-            [1.0, -1.0, 0.0],
-            [1.0, -1.0, -1.0],
-            [1.0, 1.0, -1.0],
-            [1.0, 1.0, 0.0]
+            [ 1.0, -1.0, 0.0 ],
+            [ 1.0, -1.0, -1.0 ],
+            [ 1.0, 1.0, -1.0 ],
+            [ 1.0, 1.0, 0.0 ]
         ],
         [
-            [-1.0, -1.0, 0.0],
-            [-1.0, -1.0, -1.0],
-            [1.0, -1.0, -1.0],
-            [1.0, -1.0, 0.0]
+            [ -1.0, -1.0, 0.0 ],
+            [ -1.0, -1.0, -1.0 ],
+            [ 1.0, -1.0, -1.0 ],
+            [ 1.0, -1.0, 0.0 ]
         ],
         [
-            [-1.0, 1.0, 0.0],
-            [1.0, 1.0, 0.0],
-            [1.0, 1.0, -1.0],
-            [-1.0, 1.0, -1.0]
+            [ -1.0, 1.0, 0.0 ],
+            [ 1.0, 1.0, 0.0 ],
+            [ 1.0, 1.0, -1.0 ],
+            [ -1.0, 1.0, -1.0 ]
         ]
     ];
 

@@ -1,4 +1,4 @@
-import {vec3} from "../../global";
+import { vec3 } from "../../global";
 
 /**
  * EveSOFDataHullLightSetTexturedPointLight
@@ -28,12 +28,12 @@ export class EveSOFDataHullLightSetTexturedPointLight
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["brightness", r.float],
-            ["innerRadius", r.float],
-            ["position", r.vector3],
-            ["radius", r.float],
-            ["texturePath", r.path]
+            [ "name", r.string ],
+            [ "brightness", r.float ],
+            [ "innerRadius", r.float ],
+            [ "position", r.vector3 ],
+            [ "radius", r.float ],
+            [ "texturePath", r.path ]
         ];
     }
 }

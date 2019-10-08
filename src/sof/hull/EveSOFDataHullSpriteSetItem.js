@@ -1,4 +1,4 @@
-import {vec3} from "../../global";
+import { vec3 } from "../../global";
 
 
 /**
@@ -35,16 +35,16 @@ export class EveSOFDataHullSpriteSetItem
     static black(r)
     {
         return [
-            ["blinkRate", r.float],
-            ["blinkPhase", r.float],
-            ["boneIndex", r.uint],
-            ["colorType", r.uint],
-            ["falloff", r.float],
-            ["groupIndex", r.uint],
-            ["intensity", r.float],
-            ["maxScale", r.float],
-            ["minScale", r.float],
-            ["position", r.vector3]
+            [ "blinkRate", r.float ],
+            [ "blinkPhase", r.float ],
+            [ "boneIndex", r.uint ],
+            [ "colorType", r.uint ],
+            [ "falloff", r.float ],
+            [ "groupIndex", r.uint ],
+            [ "intensity", r.float ],
+            [ "maxScale", r.float ],
+            [ "minScale", r.float ],
+            [ "position", r.vector3 ]
         ];
     }
 }

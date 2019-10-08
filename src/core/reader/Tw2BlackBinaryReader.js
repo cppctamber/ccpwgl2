@@ -1,4 +1,4 @@
-import {ErrBinaryReaderReadError} from "../Tw2Error";
+import { ErrBinaryReaderReadError } from "../Tw2Error";
 
 /**
  * Tw2BlackBinaryReader

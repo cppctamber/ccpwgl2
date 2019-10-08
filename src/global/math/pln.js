@@ -1,8 +1,8 @@
-import {num} from "./num";
-import {vec3} from "./vec3";
-import {vec4} from "./vec4";
-import {mat3} from "./mat3";
-import {box3} from "./box3";
+import { num } from "./num";
+import { vec3 } from "./vec3";
+import { vec4 } from "./vec4";
+import { mat3 } from "./mat3";
+import { box3 } from "./box3";
 
 /**
  * Plane

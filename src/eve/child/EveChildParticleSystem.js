@@ -1,6 +1,6 @@
-import {mat4, quat, vec3} from "../../global";
-import {Tw2PerObjectData} from "../../core";
-import {EveChild} from "./EveChild";
+import { mat4, quat, vec3 } from "../../global";
+import { Tw2PerObjectData } from "../../core";
+import { EveChild } from "./EveChild";
 
 
 /**
@@ -120,18 +120,18 @@ export class EveChildParticleSystem extends EveChild
     static black(r)
     {
         return [
-            ["display", r.boolean],
-            ["localTransform", r.matrix],
-            ["lodSphereRadius", r.float],
-            ["mesh", r.object],
-            ["minScreenSize", r.float],
-            ["name", r.string],
-            ["particleEmitters", r.array],
-            ["particleSystems", r.array],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["translation", r.vector3],
-            ["useDynamicLod", r.boolean]
+            [ "display", r.boolean ],
+            [ "localTransform", r.matrix ],
+            [ "lodSphereRadius", r.float ],
+            [ "mesh", r.object ],
+            [ "minScreenSize", r.float ],
+            [ "name", r.string ],
+            [ "particleEmitters", r.array ],
+            [ "particleSystems", r.array ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "translation", r.vector3 ],
+            [ "useDynamicLod", r.boolean ]
         ];
     }
 

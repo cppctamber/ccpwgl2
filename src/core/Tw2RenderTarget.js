@@ -1,5 +1,5 @@
-import {util, device} from "../global";
-import {Tw2TextureRes} from "./resource/Tw2TextureRes";
+import { util, device } from "../global";
+import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 /**
  * Tw2RenderTarget

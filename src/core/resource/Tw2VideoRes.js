@@ -1,6 +1,6 @@
-import {device, resMan} from "../../global";
-import {Tw2Resource} from "./Tw2Resource";
-import {ErrHTTPRequest, ErrResourceExtensionUnregistered} from "../Tw2Error";
+import { device, resMan } from "../../global";
+import { Tw2Resource } from "./Tw2Resource";
+import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../Tw2Error";
 
 /**
  * Tw2VideoRes
@@ -119,7 +119,7 @@ export class Tw2VideoRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceExtensionUnregistered({path: this.path, extension: this._extension});
+                throw new ErrResourceExtensionUnregistered({ path: this.path, extension: this._extension });
         }
 
         this.OnPrepared();
@@ -143,7 +143,7 @@ export class Tw2VideoRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceExtensionUnregistered({path, extension});
+                throw new ErrResourceExtensionUnregistered({ path, extension });
         }
 
         resMan.AddPendingLoad(path);
@@ -158,7 +158,7 @@ export class Tw2VideoRes extends Tw2Resource
         {
             resMan.RemovePendingLoad(path);
             this.video = null;
-            this.OnError(new ErrHTTPRequest({path}));
+            this.OnError(new ErrHTTPRequest({ path }));
         };
 
         /**

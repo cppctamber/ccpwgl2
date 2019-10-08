@@ -1,5 +1,5 @@
-import {ErrIndexBounds} from "../Tw2Error";
-import {util, Tw2BaseClass} from "../../global";
+import { ErrIndexBounds } from "../Tw2Error";
+import { util, Tw2BaseClass } from "../../global";
 
 /**
  * Tw2VectorParameter base class
@@ -81,7 +81,7 @@ export class Tw2VectorParameter extends Tw2BaseClass
      * @param {TypedArray|Array} [out=[]]
      * @returns {Array|Float32Array}
      */
-    GetValue(out=[])
+    GetValue(out = [])
     {
         const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
         for (let i = 0; i < value.length; i++) out[0] = value[i];

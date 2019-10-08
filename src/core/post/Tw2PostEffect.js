@@ -1,9 +1,9 @@
-import {device, Tw2BaseClass} from "../../global";
-import {Tw2RenderTarget} from "../Tw2RenderTarget";
-import {Tw2TextureRes} from "../resource/Tw2TextureRes";
-import {Tw2TextureParameter, Tw2Vector4Parameter} from "../parameter";
-import {Tw2PostEffectStep} from "./Tw2PostEffectStep";
-import {assignIfExists} from "../../global/util";
+import { device, Tw2BaseClass } from "../../global";
+import { Tw2RenderTarget } from "../Tw2RenderTarget";
+import { Tw2TextureRes } from "../resource/Tw2TextureRes";
+import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
+import { Tw2PostEffectStep } from "./Tw2PostEffectStep";
+import { assignIfExists } from "../../global/util";
 
 /**
  * Tw2PostEffect
@@ -33,7 +33,7 @@ export class Tw2PostEffect extends Tw2BaseClass
     _texture = null;
     _visibleSteps = [];
     _dirty = true;
-    _onChildModified = item => this.UpdateValues({controller: item});
+    _onChildModified = item => this.UpdateValues({ controller: item });
 
     /**
      * Fires on value changes
@@ -303,7 +303,7 @@ export class Tw2PostEffect extends Tw2BaseClass
                     // Auto create parameter if required
                     if (!parameters["g_texelSize"])
                     {
-                        parameters["g_texelSize"] = new Tw2Vector4Parameter("g_texelSize", [1, 1, 1, 1]);
+                        parameters["g_texelSize"] = new Tw2Vector4Parameter("g_texelSize", [ 1, 1, 1, 1 ]);
                     }
 
                     const
@@ -378,7 +378,7 @@ export class Tw2PostEffect extends Tw2BaseClass
     {
         const postEffect = new this();
 
-        assignIfExists(postEffect, opt, ["name", "display", "index"]);
+        assignIfExists(postEffect, opt, [ "name", "display", "index" ]);
 
         if (opt.steps)
         {

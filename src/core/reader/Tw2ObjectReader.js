@@ -1,6 +1,6 @@
-import {tw2} from "../../global";
-import {Tw2BinaryReader} from "./Tw2BinaryReader";
-import {ErrFeatureNotImplemented, ErrBinaryFormat, ErrBinaryObjectTypeNotFound} from "../Tw2Error";
+import { tw2 } from "../../global";
+import { Tw2BinaryReader } from "./Tw2BinaryReader";
+import { ErrFeatureNotImplemented, ErrBinaryFormat, ErrBinaryObjectTypeNotFound } from "../Tw2Error";
 
 /**
  * Tw2ObjectReader
@@ -46,7 +46,7 @@ export class Tw2ObjectReader
     {
         if (!Tw2ObjectReader.IsValidXML(this.xmlNode))
         {
-            throw new ErrBinaryFormat({formatError: "Invalid binary, expected binred"});
+            throw new ErrBinaryFormat({ formatError: "Invalid binary, expected binred" });
         }
 
         this._reader = new Tw2BinaryReader(new Uint8Array(this.xmlNode));
@@ -105,7 +105,7 @@ export class Tw2ObjectReader
             }
             else
             {
-                throw new ErrBinaryObjectTypeNotFound({type: data.type});
+                throw new ErrBinaryObjectTypeNotFound({ type: data.type });
             }
         }
         else
@@ -225,7 +225,7 @@ export class Tw2ObjectReader
                         return objReader._reader.ReadFloat32();
 
                     default:
-                        throw new ErrFeatureNotImplemented({feature: "Element raw type Float64"});
+                        throw new ErrFeatureNotImplemented({ feature: "Element raw type Float64" });
                 }
 
             case this.ElementRawType.STRING:

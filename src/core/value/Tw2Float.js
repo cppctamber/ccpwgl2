@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tw2Float
@@ -19,7 +19,7 @@ export class Tw2Float extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["value", r.float]
+            [ "value", r.float ]
         ];
     }
 

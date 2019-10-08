@@ -15,8 +15,8 @@
 
         async function OnDocLoad()
         {
-            const {esi} = ccpwgl;
-            const {mat4, vec2, vec3, vec4, ray3, sph3} = tw2.math;
+            const { esi } = ccpwgl;
+            const { mat4, vec2, vec3, vec4, ray3, sph3 } = tw2.math;
 
             const randomSystems = [
                 30000142,
@@ -28,7 +28,7 @@
             // Load system
             const systemID = tw2.util.getURLInteger("system", randomSystems[tw2.math.num.randomInt(0, 3)]);
             const system = await esi.getSystem(systemID);
-            const {nebulaPath, lensflarePath} = await esi.getSystemGraphicData(systemID);
+            const { nebulaPath, lensflarePath } = await esi.getSystemGraphicData(systemID);
 
             // Create scene
             ccpwgl.initialize("mainCanvas", demos.options);
@@ -71,11 +71,11 @@
                 {
                     const
                         angle = Math.PI * 2 * planetsData.indexOf(planet) / planetsData.length,
-                        {radius, name} = planet;
+                        { radius, name } = planet;
 
                     this.transform.Set({
                         scale: radius,
-                        translation: [maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle)]
+                        translation: [ maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle) ]
                     });
 
                     console.log(`Loaded ${name}`);

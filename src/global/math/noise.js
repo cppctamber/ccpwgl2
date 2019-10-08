@@ -1,5 +1,5 @@
-import {vec3} from "./vec3";
-import {vec4} from "./vec4";
+import { vec3 } from "./vec3";
+import { vec4 } from "./vec4";
 
 export const noise = {};
 

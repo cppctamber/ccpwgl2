@@ -27,12 +27,12 @@ export class EveAnimationStateMachine
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["autoPlayDefault", r.boolean],
-            ["states", r.array],
-            ["transitions", r.array],
-            ["trackMask", r.string],
-            ["defaultAnimation", r.string]
+            [ "name", r.string ],
+            [ "autoPlayDefault", r.boolean ],
+            [ "states", r.array ],
+            [ "transitions", r.array ],
+            [ "trackMask", r.string ],
+            [ "defaultAnimation", r.string ]
         ];
     }
 

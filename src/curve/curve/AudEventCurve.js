@@ -1,4 +1,4 @@
-import {Tw2CurveKey, Tw2Curve} from "./Tw2Curve";
+import { Tw2CurveKey, Tw2Curve } from "./Tw2Curve";
 
 /**
  * AudEventKey
@@ -21,8 +21,8 @@ export class AudEventKey extends Tw2CurveKey
     static black(r)
     {
         return [
-            ["time", r.float],
-            ["value", r.ushort]
+            [ "time", r.float ],
+            [ "value", r.ushort ]
         ];
     }
 }
@@ -48,9 +48,9 @@ export class AudEventCurve extends Tw2Curve
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["keys", r.array],
-            ["sourceTriObserver, r.object"]
+            [ "name", r.string ],
+            [ "keys", r.array ],
+            [ "sourceTriObserver, r.object" ]
         ];
     }
 

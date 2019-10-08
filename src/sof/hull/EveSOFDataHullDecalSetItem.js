@@ -1,4 +1,4 @@
-import {vec3, quat} from "../../global";
+import { vec3, quat } from "../../global";
 
 
 /**
@@ -43,19 +43,19 @@ export class EveSOFDataHullDecalSetItem
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["boneIndex", r.uint],
-            ["indexBuffer", r.indexBuffer],
-            ["glowColorType", r.uint],
-            ["logoType", r.uint],
-            ["meshIndex", r.uint],
-            ["parameters", r.array],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["textures", r.array],
-            ["usage", r.uint],
-            ["visibilityGroup", r.string],
+            [ "name", r.string ],
+            [ "boneIndex", r.uint ],
+            [ "indexBuffer", r.indexBuffer ],
+            [ "glowColorType", r.uint ],
+            [ "logoType", r.uint ],
+            [ "meshIndex", r.uint ],
+            [ "parameters", r.array ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "textures", r.array ],
+            [ "usage", r.uint ],
+            [ "visibilityGroup", r.string ],
         ];
     }
 }

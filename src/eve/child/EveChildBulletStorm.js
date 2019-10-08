@@ -1,4 +1,4 @@
-import {EveChild} from "./EveChild";
+import { EveChild } from "./EveChild";
 
 /**
  * EveChildBulletStorm
@@ -38,11 +38,11 @@ export class EveChildBulletStorm extends EveChild
     static black(r)
     {
         return [
-            ["effect", r.object],
-            ["multiplier", r.uint],
-            ["range", r.float],
-            ["speed", r.float],
-            ["sourceLocatorSet", r.string]
+            [ "effect", r.object ],
+            [ "multiplier", r.uint ],
+            [ "range", r.float ],
+            [ "speed", r.float ],
+            [ "sourceLocatorSet", r.string ]
         ];
     }
 

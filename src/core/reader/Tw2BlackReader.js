@@ -1,8 +1,8 @@
-import {tw2} from "../../global";
-import {Tw2BlackBinaryReader} from "./Tw2BlackBinaryReader";
-import {ErrBinaryFormat, ErrBinaryObjectTypeNotFound,} from "../Tw2Error";
-import {object} from "./Tw2BlackPropertyReaders";
-import {isFunction} from "../../global/util";
+import { tw2 } from "../../global";
+import { Tw2BlackBinaryReader } from "./Tw2BlackBinaryReader";
+import { ErrBinaryFormat, ErrBinaryObjectTypeNotFound, } from "../Tw2Error";
+import { object } from "./Tw2BlackPropertyReaders";
+import { isFunction } from "../../global/util";
 
 /**
  * Tw2BlackReader
@@ -48,12 +48,12 @@ export class Tw2BlackReader
 
         if (!this.data || !(this.data instanceof DataView))
         {
-            throw new ErrBinaryFormat({formatError: "expected DataView"});
+            throw new ErrBinaryFormat({ formatError: "expected DataView" });
         }
 
         const reader = new Tw2BlackBinaryReader(this.data, this);
-        if (reader.ReadU32() !== 0xB1ACF11E) throw new ErrBinaryFormat({formatError: "wrong FOURCC"});
-        if (reader.ReadU32() !== 1) throw new ErrBinaryFormat({formatError: "wrong version"});
+        if (reader.ReadU32() !== 0xB1ACF11E) throw new ErrBinaryFormat({ formatError: "wrong FOURCC" });
+        if (reader.ReadU32() !== 1) throw new ErrBinaryFormat({ formatError: "wrong version" });
 
         // String table
         const
@@ -109,11 +109,11 @@ export class Tw2BlackReader
         }
         else if (Tw2BlackReader.DEBUG_ENABLED)
         {
-            return {_type: type};
+            return { _type: type };
         }
         else
         {
-            throw new ErrBinaryObjectTypeNotFound({type});
+            throw new ErrBinaryObjectTypeNotFound({ type });
         }
     }
 

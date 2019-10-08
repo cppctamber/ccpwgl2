@@ -1,4 +1,4 @@
-import {vec3, mat4, util, Tw2BaseClass} from "../../global";
+import { vec3, mat4, util, Tw2BaseClass } from "../../global";
 
 /**
  * EvePerMuzzleData
@@ -364,26 +364,26 @@ export class EveTurretFiringFX extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["boneName", r.string],
-            ["destinationObserver", r.object],
-            ["firingDelay1", r.float],
-            ["firingDelay2", r.float],
-            ["firingDelay3", r.float],
-            ["firingDelay4", r.float],
-            ["firingDurationOverride", r.float],
-            ["firingPeakTime", r.float],
-            ["isLoopFiring", r.boolean],
-            ["maxRadius", r.float],
-            ["maxScale", r.float],
-            ["minRadius", r.float],
-            ["minScale", r.float],
-            ["name", r.string],
-            ["scaleEffectTarget", r.boolean],
-            ["sourceObserver", r.object],
-            ["startCurveSet", r.object],
-            ["stopCurveSet", r.object],
-            ["stretch", r.array],
-            ["useMuzzleTransform", r.boolean]
+            [ "boneName", r.string ],
+            [ "destinationObserver", r.object ],
+            [ "firingDelay1", r.float ],
+            [ "firingDelay2", r.float ],
+            [ "firingDelay3", r.float ],
+            [ "firingDelay4", r.float ],
+            [ "firingDurationOverride", r.float ],
+            [ "firingPeakTime", r.float ],
+            [ "isLoopFiring", r.boolean ],
+            [ "maxRadius", r.float ],
+            [ "maxScale", r.float ],
+            [ "minRadius", r.float ],
+            [ "minScale", r.float ],
+            [ "name", r.string ],
+            [ "scaleEffectTarget", r.boolean ],
+            [ "sourceObserver", r.object ],
+            [ "startCurveSet", r.object ],
+            [ "stopCurveSet", r.object ],
+            [ "stretch", r.array ],
+            [ "useMuzzleTransform", r.boolean ]
         ];
     }
 

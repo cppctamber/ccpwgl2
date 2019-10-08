@@ -1,5 +1,5 @@
-import {mat4, Tw2BaseClass} from "../../global";
-import {assignIfExists} from "../../global/util";
+import { mat4, Tw2BaseClass } from "../../global";
+import { assignIfExists } from "../../global/util";
 
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
@@ -59,7 +59,7 @@ export class EveLocator2 extends Tw2BaseClass
         const item = new EveLocator2();
         if (values)
         {
-            assignIfExists(item, values, ["transform", "name", "atlasIndex0", "atlasIndex1"]);
+            assignIfExists(item, values, [ "transform", "name", "atlasIndex0", "atlasIndex1" ]);
         }
         return item;
     }
@@ -84,8 +84,8 @@ export class EveLocator2 extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["transform", r.matrix]
+            [ "name", r.string ],
+            [ "transform", r.matrix ]
         ];
     }
 
@@ -97,4 +97,4 @@ export class EveLocator2 extends Tw2BaseClass
 
 }
 
-export {EveLocator2 as EveLocator};
+export { EveLocator2 as EveLocator };

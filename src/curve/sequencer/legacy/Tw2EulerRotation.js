@@ -1,5 +1,5 @@
-import {quat} from "../../../global";
-import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
+import { quat } from "../../../global";
+import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
  * Tw2EulerRotation
@@ -103,6 +103,6 @@ export class Tw2EulerRotation extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {Array<String>}
      */
-    static childProperties = ["yawCurve", "pitchCurve", "rollCurve"];
+    static childProperties = [ "yawCurve", "pitchCurve", "rollCurve" ];
 
 }

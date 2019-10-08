@@ -1,4 +1,4 @@
-import {quat, vec3} from "../../global";
+import { quat, vec3 } from "../../global";
 
 
 /**
@@ -35,15 +35,15 @@ export class EveSOFDataHullHazeSetItem
     static black(r)
     {
         return [
-            ["boosterGainInfluence", r.boolean],
-            ["colorType", r.uint],
-            ["hazeBrightness", r.float],
-            ["hazeFalloff", r.float],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["sourceBrightness", r.float],
-            ["sourceSize", r.float],
+            [ "boosterGainInfluence", r.boolean ],
+            [ "colorType", r.uint ],
+            [ "hazeBrightness", r.float ],
+            [ "hazeFalloff", r.float ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "sourceBrightness", r.float ],
+            [ "sourceSize", r.float ],
         ];
     }
 }

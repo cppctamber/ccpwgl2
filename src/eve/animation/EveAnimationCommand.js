@@ -17,7 +17,7 @@ export class EveAnimationCommand
     static black(r)
     {
         return [
-            ["command", r.uint]
+            [ "command", r.uint ]
         ];
     }
 

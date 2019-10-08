@@ -1,5 +1,5 @@
-import {vec3, vec4, quat} from "../global";
-import {get, assignIfExists, isArray, isDNA} from "../global/util";
+import { vec3, vec4, quat } from "../global";
+import { get, assignIfExists, isArray, isDNA } from "../global/util";
 import {
     Tw2ScalarCurve2,
     Tw2ScalarKey2,
@@ -472,7 +472,7 @@ export function EveSOF(tw2)
             for (let j = 0; j < hullSetItems.length; j++)
             {
                 const
-                    item = Object.assign({blinkRate: 0.1, maxScale: 10, minScale: 1}, hullSetItems[j]),
+                    item = Object.assign({ blinkRate: 0.1, maxScale: 10, minScale: 1 }, hullSetItems[j]),
                     factionSet = getGroupIndex(factionSets, item.groupIndex);
 
                 /*
@@ -565,7 +565,7 @@ export function EveSOF(tw2)
 
                 if (factionSet)
                 {
-                    assignIfExists(item, factionSet, ["coneColor", "spriteColor", "flareColor"]); // [0,0,0,0]
+                    assignIfExists(item, factionSet, [ "coneColor", "spriteColor", "flareColor" ]); // [0,0,0,0]
                 }
 
                 if (!self.SKIP_EMPTY_ITEMS || factionSet)
@@ -623,7 +623,7 @@ export function EveSOF(tw2)
             for (let j = 0; j < hullSetItems.length; ++j)
             {
                 const
-                    item = Object.assign({boneIndex: -1}, hullSetItems[j]),
+                    item = Object.assign({ boneIndex: -1 }, hullSetItems[j]),
                     factionSet = getGroupIndex(factionSets, item.groupIndex);
 
                 /*
@@ -661,7 +661,7 @@ export function EveSOF(tw2)
                             Layer1Map: hullSet.layer1MapResPath,
                             Layer2Map: hullSet.layer2MapResPath,
                             MaskMap: hullSet.maskMapResPath,
-                            PlaneData: get(hullSet, "planeData", [1, 0, 0, 0])
+                            PlaneData: get(hullSet, "planeData", [ 1, 0, 0, 0 ])
                         }
                     }
                 }));
@@ -686,7 +686,7 @@ export function EveSOF(tw2)
         if (!hull.booster) return;
 
         const
-            zero = [0, 0, 0, 0],
+            zero = [ 0, 0, 0, 0 ],
             raceBooster = get(race, "booster", {}),
             hullBooster = hull["booster"],
             hullBoosterItems = get(hullBooster, "items", []);
@@ -739,8 +739,8 @@ export function EveSOF(tw2)
                     WarpNoiseAmplitudeEnd1: get(raceBooster.warpShape1, "noiseAmplitureEnd", zero),
                     WarpNoiseFrequency1: get(raceBooster.warpShape1, "noiseFrequency", zero),
                     WarpColor1: get(raceBooster.warpShape1, "color", zero),
-                    ShapeAtlasSize: [get(raceBooster, "shapeAtlasHeight", 0), get(raceBooster, "shapeAtlasCount", 0), 0, 0],
-                    BoosterScale: get(raceBooster, "scale", [1, 1, 1, 1]),
+                    ShapeAtlasSize: [ get(raceBooster, "shapeAtlasHeight", 0), get(raceBooster, "shapeAtlasCount", 0), 0, 0 ],
+                    BoosterScale: get(raceBooster, "scale", [ 1, 1, 1, 1 ]),
                 },
                 textures: {
                     ShapeMap: raceBooster.shapeAtlasResPath,
@@ -822,9 +822,9 @@ export function EveSOF(tw2)
                 {
                     ship.children.push(obj);
                 }
-                vec3.copy(obj.translation, get(child, "translation", [0, 0, 0]));
-                quat.copy(obj.rotation, get(child, "rotation", [0, 0, 0, 1]));
-                vec3.copy(obj.scaling, get(child, "scaling", [1, 1, 1]));
+                vec3.copy(obj.translation, get(child, "translation", [ 0, 0, 0 ]));
+                quat.copy(obj.rotation, get(child, "rotation", [ 0, 0, 0, 1 ]));
+                vec3.copy(obj.scaling, get(child, "scaling", [ 1, 1, 1 ]));
                 var id = get(child, "id", -1);
                 if (id !== -1 && curves[id])
                 {
@@ -881,7 +881,7 @@ export function EveSOF(tw2)
         {
             curveSet.Initialize();
         }
-        return [curveSet, id_curves];
+        return [ curveSet, id_curves ];
     }
 
     function GetTurretMaterialParameter(name, parentFaction, areaData)
@@ -909,7 +909,7 @@ export function EveSOF(tw2)
         }
     }
 
-    var zeroColor = [0, 0, 0, 0];
+    var zeroColor = [ 0, 0, 0, 0 ];
 
     function CombineTurretMaterial(name, parentValue, turretValue, overrideMethod)
     {
@@ -1165,7 +1165,7 @@ export function EveSOF(tw2)
     {
         await this.FetchHull(hull);
 
-        const {projections = []} = patternData;
+        const { projections = [] } = patternData;
         for (let i = 0; i < projections.length; i++)
         {
             if (projections[i].name === hull)

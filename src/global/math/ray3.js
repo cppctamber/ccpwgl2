@@ -1,9 +1,9 @@
-import {vec3} from "./vec3";
-import {mat4} from "./mat4";
-import {pln} from "./pln";
-import {sph3} from "./sph3";
-import {box3} from "./box3";
-import {tri3} from "./tri3";
+import { vec3 } from "./vec3";
+import { mat4 } from "./mat4";
+import { pln } from "./pln";
+import { sph3 } from "./sph3";
+import { box3 } from "./box3";
+import { tri3 } from "./tri3";
 
 /**
  * 3D Ray
@@ -249,8 +249,8 @@ ray3.fromPerspective = function(out, coords, m, viewport)
 ray3.unproject = function(out, mouse, viewport, invProjView)
 {
     const
-        start = [ mouse[0], mouse[1], 0],
-        end = [ mouse[0], mouse[1], 1];
+        start = [ mouse[0], mouse[1], 0 ],
+        end = [ mouse[0], mouse[1], 1 ];
 
     vec3.unproject(start, start, viewport, invProjView);
     vec3.unproject(end, end, viewport, invProjView);

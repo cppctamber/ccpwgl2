@@ -1,4 +1,4 @@
-import {isArray} from "./type";
+import { isArray } from "./type";
 
 /**
  * Adds arguments to an array if they don't already exist in it
@@ -43,7 +43,7 @@ export function findElementByProperty(arr, property, value, err)
 
     if (err)
     {
-        throw new err({[property]: value});
+        throw new err({ [property]: value });
     }
 
     return null;
@@ -94,7 +94,7 @@ export function removeFromArray(arr, ...args)
  */
 export function toArray(a)
 {
-    return isArray(a) ? a : [a];
+    return isArray(a) ? a : [ a ];
 }
 
 /**

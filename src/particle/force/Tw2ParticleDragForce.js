@@ -1,4 +1,4 @@
-import {Tw2ParticleForce} from "./Tw2ParticleForce";
+import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleDragForce
@@ -35,7 +35,7 @@ export class Tw2ParticleDragForce extends Tw2ParticleForce
     static black(r)
     {
         return [
-            ["drag", r.float],
+            [ "drag", r.float ],
         ];
     }
 

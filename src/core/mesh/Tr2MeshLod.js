@@ -1,4 +1,4 @@
-import {Tw2BaseClass, util, resMan} from "../../global";
+import { Tw2BaseClass, util, resMan } from "../../global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -212,15 +212,15 @@ export class Tr2MeshLod extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["additiveAreas", r.array],
-            ["associatedResources", r.array],
-            ["decalAreas", r.array],
-            ["depthAreas", r.array],
-            ["distortionAreas", r.array],
-            ["geometryRes", r.object],
-            ["opaqueAreas", r.array],
-            ["pickableAreas", r.array],
-            ["transparentAreas", r.array],
+            [ "additiveAreas", r.array ],
+            [ "associatedResources", r.array ],
+            [ "decalAreas", r.array ],
+            [ "depthAreas", r.array ],
+            [ "distortionAreas", r.array ],
+            [ "geometryRes", r.object ],
+            [ "opaqueAreas", r.array ],
+            [ "pickableAreas", r.array ],
+            [ "transparentAreas", r.array ],
         ];
     }
 

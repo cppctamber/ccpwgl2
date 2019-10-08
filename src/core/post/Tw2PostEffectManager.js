@@ -1,5 +1,5 @@
-import {Tw2PostEffect} from "./Tw2PostEffect";
-import {Tw2BaseClass} from "../../global/class/Tw2BaseClass";
+import { Tw2PostEffect } from "./Tw2PostEffect";
+import { Tw2BaseClass } from "../../global/class/Tw2BaseClass";
 
 /**
  * Tw2PostEffectManager
@@ -16,7 +16,7 @@ export class Tw2PostEffectManager extends Tw2BaseClass
     effects = [];
 
     _dirty = true;
-    _onChildValueChanged = item => this.UpdateValues({controller: item});
+    _onChildValueChanged = item => this.UpdateValues({ controller: item });
     _visibleEffects = [];
 
     /**

@@ -1,4 +1,4 @@
-import {quat, vec3, Tw2BaseClass} from "../global";
+import { quat, vec3, Tw2BaseClass } from "../global";
 
 /**
  * EveCamera
@@ -50,22 +50,22 @@ export class EveCamera extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["fieldOfView", r.float],
-            ["friction", r.float],
-            ["frontClip", r.float],
-            ["idleMove", r.boolean],
-            ["idleScale", r.float],
-            ["idleSpeed", r.float],
-            ["intr", r.vector3],
-            ["pitch", r.float],
-            ["pos", r.vector3],
-            ["maxSpeed", r.float],
-            ["noiseScale", r.float],
-            ["noiseScaleCurve", r.object],
-            ["rotationAroundParent", r.vector4],
-            ["translationFromParent", r.float],
-            ["yaw", r.float],
-            ["zoomCurve", r.object]
+            [ "fieldOfView", r.float ],
+            [ "friction", r.float ],
+            [ "frontClip", r.float ],
+            [ "idleMove", r.boolean ],
+            [ "idleScale", r.float ],
+            [ "idleSpeed", r.float ],
+            [ "intr", r.vector3 ],
+            [ "pitch", r.float ],
+            [ "pos", r.vector3 ],
+            [ "maxSpeed", r.float ],
+            [ "noiseScale", r.float ],
+            [ "noiseScaleCurve", r.object ],
+            [ "rotationAroundParent", r.vector4 ],
+            [ "translationFromParent", r.float ],
+            [ "yaw", r.float ],
+            [ "zoomCurve", r.object ]
         ];
     }
 

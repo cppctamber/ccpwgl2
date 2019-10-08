@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global/index";
+import { Tw2BaseClass } from "../../global/index";
 
 /**
  * EveStarfield
@@ -33,14 +33,14 @@ export class EveStarfield extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["effect", r.object],
-            ["maxDist", r.float],
-            ["maxFlashRate", r.float],
-            ["minDist", r.float],
-            ["minFlashIntensity", r.float],
-            ["minFlashRate", r.float],
-            ["numStars", r.uint],
-            ["seed", r.uint]
+            [ "effect", r.object ],
+            [ "maxDist", r.float ],
+            [ "maxFlashRate", r.float ],
+            [ "minDist", r.float ],
+            [ "minFlashIntensity", r.float ],
+            [ "minFlashRate", r.float ],
+            [ "numStars", r.uint ],
+            [ "seed", r.uint ]
         ];
     }
 

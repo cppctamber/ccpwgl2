@@ -1,6 +1,6 @@
-import {Tw2Parameter} from "./Tw2Parameter";
-import {vec3, quat, mat4} from "../../global/math";
-import {isNumber, isTyped} from "../../global/util";
+import { Tw2Parameter } from "./Tw2Parameter";
+import { vec3, quat, mat4 } from "../../global/math";
+import { isNumber, isTyped } from "../../global/util";
 
 const
     vec3_0 = vec3.create(),
@@ -56,7 +56,7 @@ export class Tw2TransformParameter extends Tw2Parameter
     {
         if (!opt || !opt.skipRebuild)
         {
-            this.Rebuild({force: true, skipUpdate: true});
+            this.Rebuild({ force: true, skipUpdate: true });
         }
     }
 
@@ -110,7 +110,7 @@ export class Tw2TransformParameter extends Tw2Parameter
 
             if (!skipUpdate)
             {
-                this.UpdateValues({skipRebuild: true});
+                this.UpdateValues({ skipRebuild: true });
             }
 
             force = true;
@@ -750,7 +750,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     SetScaleFromValues(x, y, z)
     {
-        return this.SetScale([x, y, z]);
+        return this.SetScale([ x, y, z ]);
     }
 
     /**
@@ -893,7 +893,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      * @param {Object} [values]
      * @param {Object} [opt]
      */
-    static set(a, values, opt={})
+    static set(a, values, opt = {})
     {
         if (!values)
         {
@@ -954,7 +954,7 @@ export class Tw2TransformParameter extends Tw2Parameter
 
             if (updated && !opt.skipUpdate)
             {
-                a.Rebuild({force: true});
+                a.Rebuild({ force: true });
             }
         }
 
@@ -972,7 +972,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      * @param {Tw2TransformParameter} a
      * @param {Object} [out={}]
      */
-    static get(a, out={})
+    static get(a, out = {})
     {
         out.rotation = a.GetRotation([]);
         out.translation = a.GetTranslation([]);
@@ -989,8 +989,8 @@ export class Tw2TransformParameter extends Tw2Parameter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["rotation", r.vector4]
+            [ "name", r.string ],
+            [ "rotation", r.vector4 ]
         ];
     }
 }

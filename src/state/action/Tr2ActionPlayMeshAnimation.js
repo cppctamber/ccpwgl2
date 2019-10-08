@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ActionPlayMeshAnimation
@@ -23,9 +23,9 @@ export class Tr2ActionPlayMeshAnimation extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["animation", r.string],
-            ["loops", r.uint],
-            ["mask", r.string],
+            [ "animation", r.string ],
+            [ "loops", r.uint ],
+            [ "mask", r.string ],
         ];
     }
 

@@ -1,8 +1,8 @@
-import {vec3, vec4, quat, mat4, util, device} from "../../global";
-import {Tw2VertexDeclaration, Tw2RenderBatch} from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
-import {assignIfExists, get} from "../../global/util";
-import {Tw2Effect} from "../../core/mesh";
+import { vec3, vec4, quat, mat4, util, device } from "../../global";
+import { Tw2VertexDeclaration, Tw2RenderBatch } from "../../core";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { assignIfExists, get } from "../../global/util";
+import { Tw2Effect } from "../../core/mesh";
 
 /**
  * Plane set render batch
@@ -112,16 +112,16 @@ export class EvePlaneSetItem extends EveObjectSetItem
     static black(r)
     {
         return [
-            ["color", r.color],
-            ["layer1Scroll", r.vector4],
-            ["layer1Transform", r.vector4],
-            ["layer2Scroll", r.vector4],
-            ["layer2Transform", r.vector4],
-            ["maskAtlasID", r.uint],
-            ["name", r.string],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
+            [ "color", r.color ],
+            [ "layer1Scroll", r.vector4 ],
+            [ "layer1Transform", r.vector4 ],
+            [ "layer2Scroll", r.vector4 ],
+            [ "layer2Transform", r.vector4 ],
+            [ "maskAtlasID", r.uint ],
+            [ "name", r.string ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
         ];
     }
 
@@ -383,7 +383,7 @@ export class EvePlaneSet extends EveObjectSet
         const item = new EvePlaneSet();
         if (values)
         {
-            assignIfExists(item, values, ["name", "display", "hideOnLowQuality"]);
+            assignIfExists(item, values, [ "name", "display", "hideOnLowQuality" ]);
 
             if (values.effect)
             {
@@ -417,15 +417,15 @@ export class EvePlaneSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 2, elements: 4},
-        {usage: "COLOR", usageIndex: 0, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 3, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 4, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 5, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 6, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 7, elements: 3}
+        { usage: "TEXCOORD", usageIndex: 0, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 1, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 2, elements: 4 },
+        { usage: "COLOR", usageIndex: 0, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 3, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 4, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 5, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 6, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 7, elements: 3 }
     ];
 
     /**
@@ -436,11 +436,11 @@ export class EvePlaneSet extends EveObjectSet
     static black(r)
     {
         return [
-            ["effect", r.object],
-            ["hideOnLowQuality", r.boolean],
-            ["name", r.string],
-            ["pickBufferID", r.byte],
-            ["planes", r.array]
+            [ "effect", r.object ],
+            [ "hideOnLowQuality", r.boolean ],
+            [ "name", r.string ],
+            [ "pickBufferID", r.byte ],
+            [ "planes", r.array ]
         ];
     }
 

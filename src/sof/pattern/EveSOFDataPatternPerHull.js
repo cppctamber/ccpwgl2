@@ -32,9 +32,9 @@ export class EveSOFDataPatternPerHull
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["transformLayer1", r.object],
-            ["transformLayer2", r.object]
+            [ "name", r.string ],
+            [ "transformLayer1", r.object ],
+            [ "transformLayer2", r.object ]
         ];
     }
 }

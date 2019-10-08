@@ -1,4 +1,4 @@
-import {vec2, vec4} from "../../global";
+import { vec2, vec4 } from "../../global";
 
 
 /**
@@ -61,28 +61,28 @@ export class EveSOFDataGenericDamage
     static black(r)
     {
         return [
-            ["armorParticleAngle", r.float],
-            ["armorParticleColor0", r.vector4],
-            ["armorParticleColor1", r.vector4],
-            ["armorParticleColor2", r.vector4],
-            ["armorParticleColor3", r.vector4],
-            ["armorParticleDrag", r.float],
-            ["armorParticleMinMaxLifeTime", r.vector2],
-            ["armorParticleMinMaxSpeed", r.vector2],
-            ["armorParticleRate", r.float],
-            ["armorParticleSizes", r.vector4],
-            ["armorParticleTurbulenceAmplitude", r.float],
-            ["armorParticleTurbulenceFrequency", r.float],
-            ["armorParticleVelocityStretchRotation", r.float],
-            ["armorParticleTextureIndex", r.uint],
-            ["armorShader", r.string],
-            ["flickerPerlinAlpha", r.float],
-            ["flickerPerlinBeta", r.float],
-            ["flickerPerlinSpeed", r.float],
-            ["flickerPerlinN", r.uint],
-            ["shieldGeometryResFilePath", r.path],
-            ["shieldShaderEllipsoid", r.string],
-            ["shieldShaderHull", r.string],
+            [ "armorParticleAngle", r.float ],
+            [ "armorParticleColor0", r.vector4 ],
+            [ "armorParticleColor1", r.vector4 ],
+            [ "armorParticleColor2", r.vector4 ],
+            [ "armorParticleColor3", r.vector4 ],
+            [ "armorParticleDrag", r.float ],
+            [ "armorParticleMinMaxLifeTime", r.vector2 ],
+            [ "armorParticleMinMaxSpeed", r.vector2 ],
+            [ "armorParticleRate", r.float ],
+            [ "armorParticleSizes", r.vector4 ],
+            [ "armorParticleTurbulenceAmplitude", r.float ],
+            [ "armorParticleTurbulenceFrequency", r.float ],
+            [ "armorParticleVelocityStretchRotation", r.float ],
+            [ "armorParticleTextureIndex", r.uint ],
+            [ "armorShader", r.string ],
+            [ "flickerPerlinAlpha", r.float ],
+            [ "flickerPerlinBeta", r.float ],
+            [ "flickerPerlinSpeed", r.float ],
+            [ "flickerPerlinN", r.uint ],
+            [ "shieldGeometryResFilePath", r.path ],
+            [ "shieldShaderEllipsoid", r.string ],
+            [ "shieldShaderHull", r.string ],
         ];
     }
 }

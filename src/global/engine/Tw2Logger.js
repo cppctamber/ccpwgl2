@@ -1,5 +1,5 @@
-import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
-import {assignIfExists, isError, isString} from "../util";
+import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
+import { assignIfExists, isError, isString } from "../util";
 
 /**
  * eventLog
@@ -80,8 +80,8 @@ export class Tw2Logger extends Tw2EventEmitter
     Register(opt)
     {
         if (!opt) return;
-        assignIfExists(this, opt, ["name", "display", "history", "throttle"]);
-        assignIfExists(this.visible, opt.visible, ["log", "info", "debug", "warn", "error"]);
+        assignIfExists(this, opt, [ "name", "display", "history", "throttle" ]);
+        assignIfExists(this.visible, opt.visible, [ "log", "info", "debug", "warn", "error" ]);
     }
 
     /**
@@ -91,7 +91,7 @@ export class Tw2Logger extends Tw2EventEmitter
      * @param {String} [defaultName] - Default message name/ title
      * @returns {eventLog} log
      */
-    Log(type="log", log, defaultName)
+    Log(type = "log", log, defaultName)
     {
         if (!log)
         {
@@ -99,7 +99,7 @@ export class Tw2Logger extends Tw2EventEmitter
         }
         else if (isString(log))
         {
-            log = { message : log };
+            log = { message: log };
         }
         else if (isError(log))
         {

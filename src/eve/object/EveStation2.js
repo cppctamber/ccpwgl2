@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {EveObject} from "./legacy/EveObject";
+import { vec3 } from "../../global";
+import { EveObject } from "./legacy/EveObject";
 
 /**
  * EveStation2
@@ -55,25 +55,25 @@ export class EveStation2 extends EveObject
     static black(r)
     {
         return [
-            ["attachments", r.array],
-            ["boundingSphereCenter", r.vector3],
-            ["boundingSphereRadius", r.float],
-            ["children", r.array],
-            ["curveSets", r.array],
-            ["decals", r.array],
-            ["effectChildren", r.array],
-            ["lights", r.array],
-            ["locatorSets", r.array],
-            ["locators", r.array],
-            ["name", r.string],
-            ["mesh", r.object],
-            ["meshLod", r.object],
-            ["modelScale", r.float],
-            ["observers", r.array],
-            ["rotationCurve", r.object],
-            ["modelRotationCurve", r.object],
-            ["shadowEffect", r.object],
-            ["translationCurve", r.object]
+            [ "attachments", r.array ],
+            [ "boundingSphereCenter", r.vector3 ],
+            [ "boundingSphereRadius", r.float ],
+            [ "children", r.array ],
+            [ "curveSets", r.array ],
+            [ "decals", r.array ],
+            [ "effectChildren", r.array ],
+            [ "lights", r.array ],
+            [ "locatorSets", r.array ],
+            [ "locators", r.array ],
+            [ "name", r.string ],
+            [ "mesh", r.object ],
+            [ "meshLod", r.object ],
+            [ "modelScale", r.float ],
+            [ "observers", r.array ],
+            [ "rotationCurve", r.object ],
+            [ "modelRotationCurve", r.object ],
+            [ "shadowEffect", r.object ],
+            [ "translationCurve", r.object ]
         ];
     }
 

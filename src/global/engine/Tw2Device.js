@@ -1,8 +1,8 @@
-import {num, vec3, vec4, mat4} from "../math";
-import {get, isString} from "../util";
-import {Tw2Effect} from "../../core/mesh/Tw2Effect";
-import {Tw2VertexDeclaration} from "../../core/vertex/Tw2VertexDeclaration";
-import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
+import { num, vec3, vec4, mat4 } from "../math";
+import { get, isString } from "../util";
+import { Tw2Effect } from "../../core/mesh/Tw2Effect";
+import { Tw2VertexDeclaration } from "../../core/vertex/Tw2VertexDeclaration";
+import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
 import {
     RM_ANY,
     RM_OPAQUE,
@@ -251,7 +251,7 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {Boolean} [params.webgl2]  - Optional flag to enable a webgl2 rendering context
      * @throws ErrWebglContext           - When unable to create a webgl context
      */
-    CreateDevice(canvas, params={})
+    CreateDevice(canvas, params = {})
     {
         this.gl = null;
         this.effectDir = "/effect.gles2/";
@@ -322,8 +322,8 @@ export class Tw2Device extends Tw2EventEmitter
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         this._cameraQuadBuffer = gl.createBuffer();
         this._quadDecl = Tw2VertexDeclaration.from([
-            {usage: "POSITION", usageIndex: 0, elements: 4},
-            {usage: "TEXCOORD", usageIndex: 0, elements: 2}
+            { usage: "POSITION", usageIndex: 0, elements: 4 },
+            { usage: "TEXCOORD", usageIndex: 0, elements: 2 }
         ]);
 
         this.wrapModes = Array.from(WrapModes);
@@ -596,7 +596,7 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {vec4|Array} [rgba] - The colour to create, if omitted defaults to completely transparent
      * @returns {WebGLTexture}
      */
-    CreateSolidTexture(rgba = [0, 0, 0, 0])
+    CreateSolidTexture(rgba = [ 0, 0, 0, 0 ])
     {
         const
             gl = this.gl,
@@ -617,7 +617,7 @@ export class Tw2Device extends Tw2EventEmitter
      * @param {vec4|Array} rgba
      * @returns {WebGLTexture}
      */
-    CreateSolidCube(rgba = [0, 0, 0, 0])
+    CreateSolidCube(rgba = [ 0, 0, 0, 0 ])
     {
         const
             gl = this.gl,
@@ -916,12 +916,12 @@ export class Tw2Device extends Tw2EventEmitter
                     break;
 
                     /*
-        case CMP_NOTEQUAL:
-            var alphaTestFunc = 1;
-            var invertedAlphaTest = 1;
-            var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
-            break;
-            */
+    case CMP_NOTEQUAL:
+        var alphaTestFunc = 1;
+        var invertedAlphaTest = 1;
+        var alphaTestRef = this._alphaTestState.states[RS_ALPHAREF];
+        break;
+        */
 
                 case CMP_GREATEREQUAL:
                     alphaTestFunc = 0;
@@ -1075,7 +1075,7 @@ export class Tw2Device extends Tw2EventEmitter
      * @returns {null|WebGLRenderingContext|WebGL2RenderingContext}
      * @throws on invalid context
      */
-    static CreateContext(params={}, canvas)
+    static CreateContext(params = {}, canvas)
     {
         if (isString(canvas))
         {
@@ -1087,7 +1087,7 @@ export class Tw2Device extends Tw2EventEmitter
             canvas = document.createElement("canvas");
         }
 
-        const contextTypes = params.webgl2 ? ["webgl2"] : ["webgl", "experimental-webgl"];
+        const contextTypes = params.webgl2 ? [ "webgl2" ] : [ "webgl", "experimental-webgl" ];
 
         let context = null;
         for (let contextType of contextTypes)
@@ -1145,12 +1145,12 @@ export class Tw2Device extends Tw2EventEmitter
         {
             if (err.name === "NotFoundError" || err.message === "NotFoundError")
             {
-                throw new ErrWebxrDeviceNotFound({err: err.message});
+                throw new ErrWebxrDeviceNotFound({ err: err.message });
             }
 
-            throw new ErrWebxrRequestFailed({err: err.message});
+            throw new ErrWebxrRequestFailed({ err: err.message });
         }
-        
+
         // Optionally pass session requirements
         if (sessionOptions)
         {
@@ -1160,7 +1160,7 @@ export class Tw2Device extends Tw2EventEmitter
             }
             catch (err)
             {
-                throw new ErrWebxrSessionNotSupported({err: err.message});
+                throw new ErrWebxrSessionNotSupported({ err: err.message });
             }
         }
 

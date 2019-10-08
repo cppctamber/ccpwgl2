@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {Tw2CurveExpression} from "./Tw2CurveExpression";
+import { vec3 } from "../../global";
+import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveVector3Expression
@@ -40,7 +40,7 @@ export class Tr2CurveVector3Expression extends Tw2CurveExpression
      * The sequencer's curve property names
      * @type {?Array.<string>}
      */
-    static childProperties = ["expressionX", "expressionY", "expressionZ"];
+    static childProperties = [ "expressionX", "expressionY", "expressionZ" ];
 
     /**
      * Black definition
@@ -50,11 +50,11 @@ export class Tr2CurveVector3Expression extends Tw2CurveExpression
     static black(r)
     {
         return [
-            ["inputs", r.array],
-            ["name", r.string],
-            ["expressionX", r.string],
-            ["expressionY", r.string],
-            ["expressionZ", r.string]
+            [ "inputs", r.array ],
+            [ "name", r.string ],
+            [ "expressionX", r.string ],
+            [ "expressionY", r.string ],
+            [ "expressionZ", r.string ]
         ];
     }
 

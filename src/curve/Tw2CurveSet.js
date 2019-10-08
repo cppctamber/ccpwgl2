@@ -1,4 +1,4 @@
-import {util, Tw2BaseClass} from "../global";
+import { util, Tw2BaseClass } from "../global";
 
 /**
  * Curve set
@@ -132,13 +132,13 @@ export class Tw2CurveSet extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["bindings", r.array],
-            ["curves", r.array],
-            ["name", r.string],
-            ["playOnLoad", r.boolean],
-            ["ranges", r.array],
-            ["scale", r.float],
-            ["useSimTimeRebase", r.boolean]
+            [ "bindings", r.array ],
+            [ "curves", r.array ],
+            [ "name", r.string ],
+            [ "playOnLoad", r.boolean ],
+            [ "ranges", r.array ],
+            [ "scale", r.float ],
+            [ "useSimTimeRebase", r.boolean ]
         ];
     }
 

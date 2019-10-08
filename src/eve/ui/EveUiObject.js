@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * EveUiObject
@@ -26,10 +26,10 @@ export class EveUiObject extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["boundingSphereRadius", r.float],
-            ["name", r.string],
-            ["mesh", r.object],
-            ["modelScale", r.float]
+            [ "boundingSphereRadius", r.float ],
+            [ "name", r.string ],
+            [ "mesh", r.object ],
+            [ "modelScale", r.float ]
         ];
     }
 

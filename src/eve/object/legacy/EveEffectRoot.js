@@ -1,7 +1,7 @@
-import {vec3, quat, mat4} from "../../../global/index";
-import {Tw2PerObjectData} from "../../../core/index";
-import {EveObject} from "./EveObject";
-import {EveSpaceObject} from "./EveSpaceObject";
+import { vec3, quat, mat4 } from "../../../global/index";
+import { Tw2PerObjectData } from "../../../core/index";
+import { EveObject } from "./EveObject";
+import { EveSpaceObject } from "./EveSpaceObject";
 
 /**
  * EveEffectRoot root objects for FX, can be put into scene's objects array

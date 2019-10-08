@@ -1,4 +1,4 @@
-import {Tw2Curve} from "./Tw2Curve";
+import { Tw2Curve } from "./Tw2Curve";
 
 /**
  * Tr2BoneMatrixCurve
@@ -17,7 +17,7 @@ export class Tr2BoneMatrixCurve extends Tw2Curve
     static black(r)
     {
         return [
-            ["name", r.string]
+            [ "name", r.string ]
         ];
     }
 

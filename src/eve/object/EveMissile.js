@@ -1,6 +1,6 @@
-import {vec3, mat4, util} from "../../global";
-import {Tw2PerObjectData} from "../../core";
-import {EveObject} from "./legacy/EveObject";
+import { vec3, mat4, util } from "../../global";
+import { Tw2PerObjectData } from "../../core";
+import { EveObject } from "./legacy/EveObject";
 
 /**
  * EveMissileWarhead
@@ -142,11 +142,11 @@ export class EveMissileWarhead extends EveObject
 
             if (Math.abs(z[0]) < 0.99)
             {
-                vec3.cross(x, z, [1, 0, 0]);
+                vec3.cross(x, z, [ 1, 0, 0 ]);
             }
             else
             {
-                vec3.cross(x, z, [0, 1, 0]);
+                vec3.cross(x, z, [ 0, 1, 0 ]);
             }
 
             vec3.normalize(x, x);
@@ -195,16 +195,16 @@ export class EveMissileWarhead extends EveObject
      */
     static perObjectData = {
         vs: [
-            ["WorldMat", 16],
-            ["WorldMatLast", 16],
-            ["Shipdata", [0, 1, 0, -10]],
-            ["Clipdata1", 4],
-            ["JointMat", 696]
+            [ "WorldMat", 16 ],
+            [ "WorldMatLast", 16 ],
+            [ "Shipdata", [ 0, 1, 0, -10 ] ],
+            [ "Clipdata1", 4 ],
+            [ "JointMat", 696 ]
         ],
         ps: [
-            ["Shipdata", [0, 1, 0, 1]],
-            ["Clipdata1", 4],
-            ["Clipdata2", 4],
+            [ "Shipdata", [ 0, 1, 0, 1 ] ],
+            [ "Clipdata1", 4 ],
+            [ "Clipdata2", 4 ],
         ]
     };
 
@@ -226,19 +226,19 @@ export class EveMissileWarhead extends EveObject
     static black(r)
     {
         return [
-            ["acceleration", r.float],
-            ["durationEjectPhase", r.float],
-            ["impactDuration", r.float],
-            ["impactSize", r.float],
-            ["maxExplosionDistance", r.float],
-            ["mesh", r.object],
-            ["particleEmitters", r.array],
-            ["pathOffsetNoiseScale", r.float],
-            ["pathOffsetNoiseSpeed", r.float],
-            ["spriteSet", r.object],
-            ["startEjectVelocity", r.float],
-            ["warheadLength", r.float],
-            ["warheadRadius", r.float],
+            [ "acceleration", r.float ],
+            [ "durationEjectPhase", r.float ],
+            [ "impactDuration", r.float ],
+            [ "impactSize", r.float ],
+            [ "maxExplosionDistance", r.float ],
+            [ "mesh", r.object ],
+            [ "particleEmitters", r.array ],
+            [ "pathOffsetNoiseScale", r.float ],
+            [ "pathOffsetNoiseSpeed", r.float ],
+            [ "spriteSet", r.object ],
+            [ "startEjectVelocity", r.float ],
+            [ "warheadLength", r.float ],
+            [ "warheadRadius", r.float ],
         ];
     }
 
@@ -446,11 +446,11 @@ export class EveMissile extends EveObject
     static black(r)
     {
         return [
-            ["boundingSphereCenter", r.vector3],
-            ["boundingSphereRadius", r.float],
-            ["modelTranslationCurve", r.object],
-            ["name", r.string],
-            ["warheads", r.array]
+            [ "boundingSphereCenter", r.vector3 ],
+            [ "boundingSphereRadius", r.float ],
+            [ "modelTranslationCurve", r.object ],
+            [ "name", r.string ],
+            [ "warheads", r.array ]
         ];
     }
 

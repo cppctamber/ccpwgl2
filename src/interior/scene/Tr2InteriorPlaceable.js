@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2InteriorPlaceable
@@ -22,8 +22,8 @@ export class Tr2InteriorPlaceable extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["placeableResPath", r.path],
-            ["transform", r.object]
+            [ "placeableResPath", r.path ],
+            [ "transform", r.object ]
         ];
     }
 

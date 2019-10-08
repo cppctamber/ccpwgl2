@@ -1,5 +1,5 @@
-import {Tw2Curve} from "./Tw2Curve";
-import {noise} from "../../global/math";
+import { Tw2Curve } from "./Tw2Curve";
+import { noise } from "../../global/math";
 
 /**
  * Perlin curve
@@ -87,14 +87,14 @@ export class Tw2PerlinCurve extends Tw2Curve
     static black(r)
     {
         return [
-            ["alpha", r.float],
-            ["beta", r.float],
-            ["N", r.uint],
-            ["name", r.string],
-            ["offset", r.float],
-            ["scale", r.float],
-            ["speed", r.float],
-            ["value", r.float]
+            [ "alpha", r.float ],
+            [ "beta", r.float ],
+            [ "N", r.uint ],
+            [ "name", r.string ],
+            [ "offset", r.float ],
+            [ "scale", r.float ],
+            [ "speed", r.float ],
+            [ "value", r.float ]
         ];
     }
 

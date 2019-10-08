@@ -1,5 +1,5 @@
-import {Tw2Parameter} from "./Tw2Parameter";
-import {util} from "../../global";
+import { Tw2Parameter } from "./Tw2Parameter";
+import { util } from "../../global";
 
 /**
  * Tw2FloatParameter
@@ -123,8 +123,8 @@ export class Tw2FloatParameter extends Tw2Parameter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["value", r.float]
+            [ "name", r.string ],
+            [ "value", r.float ]
         ];
     }
 

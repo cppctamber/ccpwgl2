@@ -40,19 +40,19 @@ export class EveSOFDataGenericSwarm
     static black(r)
     {
         return [
-            ["formationDistance", r.float],
-            ["maxDistance0", r.float],
-            ["maxDeceleration", r.float],
-            ["separationDistance", r.float],
-            ["wanderDistance", r.float],
-            ["wanderFluctuation", r.float],
-            ["wanderRadius", r.float],
-            ["weightAlign", r.float],
-            ["weightAnchor", r.float],
-            ["weightCohesion", r.float],
-            ["weightDeceleration", r.float],
-            ["weightFormation", r.float],
-            ["weightSeparation", r.float],
+            [ "formationDistance", r.float ],
+            [ "maxDistance0", r.float ],
+            [ "maxDeceleration", r.float ],
+            [ "separationDistance", r.float ],
+            [ "wanderDistance", r.float ],
+            [ "wanderFluctuation", r.float ],
+            [ "wanderRadius", r.float ],
+            [ "weightAlign", r.float ],
+            [ "weightAnchor", r.float ],
+            [ "weightCohesion", r.float ],
+            [ "weightDeceleration", r.float ],
+            [ "weightFormation", r.float ],
+            [ "weightSeparation", r.float ],
         ];
     }
 }

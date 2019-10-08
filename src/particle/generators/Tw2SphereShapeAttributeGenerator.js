@@ -1,6 +1,6 @@
-import {vec3, quat} from "../../global";
-import {Tw2ParticleElement} from "../element/Tw2ParticleElement";
-import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
+import { vec3, quat } from "../../global";
+import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
+import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 /**
  * Tw2SphereShapeAttributeGenerator
@@ -139,19 +139,19 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
     static black(r)
     {
         return [
-            ["customName", r.string],
-            ["distributionExponent", r.float],
-            ["maxPhi", r.float],
-            ["maxRadius", r.float],
-            ["maxSpeed", r.float],
-            ["maxTheta", r.float],
-            ["minPhi", r.float],
-            ["minRadius", r.float],
-            ["minSpeed", r.float],
-            ["minTheta", r.float],
-            ["parentVelocityFactor", r.float],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
+            [ "customName", r.string ],
+            [ "distributionExponent", r.float ],
+            [ "maxPhi", r.float ],
+            [ "maxRadius", r.float ],
+            [ "maxSpeed", r.float ],
+            [ "maxTheta", r.float ],
+            [ "minPhi", r.float ],
+            [ "minRadius", r.float ],
+            [ "minSpeed", r.float ],
+            [ "minTheta", r.float ],
+            [ "parentVelocityFactor", r.float ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
         ];
     }
 

@@ -1,5 +1,5 @@
-import {vec2} from "../../../global";
-import {Tw2CurveKey, Tw2Curve} from "../Tw2Curve";
+import { vec2 } from "../../../global";
+import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
  * Tw2Vector2Key

@@ -1,5 +1,5 @@
-import {Tw2Error, Tw2Effect} from "../../core";
-import {isArray, isPlain, findElementByProperty} from "../../global/util";
+import { Tw2Error, Tw2Effect } from "../../core";
+import { isArray, isPlain, findElementByProperty } from "../../global/util";
 
 /**
  * EveSOFDataGeneric
@@ -81,7 +81,7 @@ export class EveSOFDataGeneric
             assignObject(overrides, assignable.overrides);
         }
 
-        return Tw2Effect.from({effectFilePath, parameters, textures, overrides});
+        return Tw2Effect.from({ effectFilePath, parameters, textures, overrides });
     }
 
     /**
@@ -186,7 +186,7 @@ export class EveSOFDataGeneric
         let offByOne = index - 1;
         if (this.materialPrefixes[offByOne] === undefined)
         {
-            throw new ErrSOFMaterialPrefixNotFound({index});
+            throw new ErrSOFMaterialPrefixNotFound({ index });
         }
         return this.materialPrefixes[offByOne].str;
     }
@@ -201,7 +201,7 @@ export class EveSOFDataGeneric
         let offByOne = index - 1;
         if (this.patternMaterialPrefixes[offByOne] === undefined)
         {
-            throw new ErrSOFPatternMaterialPrefixNotFound({index});
+            throw new ErrSOFPatternMaterialPrefixNotFound({ index });
         }
         return this.patternMaterialPrefixes[offByOne].str;
     }
@@ -214,23 +214,23 @@ export class EveSOFDataGeneric
     static black(r)
     {
         return [
-            ["areaShaderLocation", r.path],
-            ["areaShaders", r.array],
-            ["bannerShader", r.rawObject],
-            ["decalShaderLocation", r.path],
-            ["decalShaders", r.array],
-            ["damage", r.object],
-            ["genericWreckMaterial", r.object],
-            ["hullAreas", r.array],
-            ["hullDamage", r.object],
-            ["materialPrefixes", r.array],
-            ["patternMaterialPrefixes", r.array],
-            ["resPathDefaultAlliance", r.path],
-            ["resPathDefaultCeo", r.path],
-            ["resPathDefaultCorp", r.path],
-            ["shaderPrefixAnimated", r.string],
-            ["swarm", r.object],
-            ["variants", r.array],
+            [ "areaShaderLocation", r.path ],
+            [ "areaShaders", r.array ],
+            [ "bannerShader", r.rawObject ],
+            [ "decalShaderLocation", r.path ],
+            [ "decalShaders", r.array ],
+            [ "damage", r.object ],
+            [ "genericWreckMaterial", r.object ],
+            [ "hullAreas", r.array ],
+            [ "hullDamage", r.object ],
+            [ "materialPrefixes", r.array ],
+            [ "patternMaterialPrefixes", r.array ],
+            [ "resPathDefaultAlliance", r.path ],
+            [ "resPathDefaultCeo", r.path ],
+            [ "resPathDefaultCorp", r.path ],
+            [ "shaderPrefixAnimated", r.string ],
+            [ "swarm", r.object ],
+            [ "variants", r.array ],
         ];
     }
 }

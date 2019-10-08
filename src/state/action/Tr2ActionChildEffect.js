@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ActionChildEffect
@@ -23,9 +23,9 @@ export class Tr2ActionChildEffect extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["childName", r.string],
-            ["path", r.path],
-            ["removeOnStop", r.boolean]
+            [ "childName", r.string ],
+            [ "path", r.path ],
+            [ "removeOnStop", r.boolean ]
         ];
     }
 

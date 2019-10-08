@@ -1,4 +1,4 @@
-import {quat, vec3} from "../../global";
+import { quat, vec3 } from "../../global";
 
 
 /**
@@ -24,10 +24,10 @@ export class EveSOFDataTransform
     static black(r)
     {
         return [
-            ["boneIndex", r.uint],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
+            [ "boneIndex", r.uint ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
         ];
     }
 }

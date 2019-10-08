@@ -41,10 +41,10 @@ export class Tr2ControllerFloatVariable
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["defaultValue", r.float],
-            ["enumValues", r.enums],
-            ["variableType", r.uint],
+            [ "name", r.string ],
+            [ "defaultValue", r.float ],
+            [ "enumValues", r.enums ],
+            [ "variableType", r.uint ],
         ];
     }
 

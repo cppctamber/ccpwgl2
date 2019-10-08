@@ -1,4 +1,4 @@
-import {Tw2Curve, Tw2CurveKey} from "./Tw2Curve";
+import { Tw2Curve, Tw2CurveKey } from "./Tw2Curve";
 
 /**
  * Tw2CurveScalarKey
@@ -143,12 +143,12 @@ export class Tr2CurveScalar extends Tw2Curve
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["timeOffset", r.float],
-            ["timeScale", r.float],
-            ["extrapolationAfter", r.uint],
-            ["extrapolationBefore", r.uint],
-            ["keys", r.structList(Tw2CurveScalarKey)]
+            [ "name", r.string ],
+            [ "timeOffset", r.float ],
+            [ "timeScale", r.float ],
+            [ "extrapolationAfter", r.uint ],
+            [ "extrapolationBefore", r.uint ],
+            [ "keys", r.structList(Tw2CurveScalarKey) ]
         ];
     }
 

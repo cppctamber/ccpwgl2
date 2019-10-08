@@ -1,4 +1,4 @@
-import {vec4} from "../../global";
+import { vec4 } from "../../global";
 
 
 /**
@@ -33,8 +33,8 @@ export class EveSOFDataParameter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["value", r.vector4]
+            [ "name", r.string ],
+            [ "value", r.vector4 ]
         ];
     }
 }

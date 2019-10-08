@@ -1,5 +1,5 @@
-import {Tw2ParticleForce} from "./Tw2ParticleForce";
-import {ErrFeatureNotImplemented} from "../../core";
+import { Tw2ParticleForce } from "./Tw2ParticleForce";
+import { ErrFeatureNotImplemented } from "../../core";
 import * as r from "../../core/reader/Tw2BlackPropertyReaders";
 
 /**
@@ -53,8 +53,8 @@ export class Tr2ForceSphereVolume extends Tw2ParticleForce
     static black(r)
     {
         return [
-            ["forces", r.array],
-            ["radius", r.float],
+            [ "forces", r.array ],
+            [ "radius", r.float ],
         ];
     }
 

@@ -1,4 +1,4 @@
-import {vec3, vec4, quat} from "../../global";
+import { vec3, vec4, quat } from "../../global";
 
 /**
  * EveSOFDataHullLightSetSpotLight
@@ -35,15 +35,15 @@ export class EveSOFDataHullLightSetSpotLight
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["brightness", r.float],
-            ["innerAngle", r.float],
-            ["innerRadius", r.float],
-            ["lightColor", r.color],
-            ["outerAngle", r.float],
-            ["position", r.vector3],
-            ["radius", r.uint],
-            ["rotation", r.vector4]
+            [ "name", r.string ],
+            [ "brightness", r.float ],
+            [ "innerAngle", r.float ],
+            [ "innerRadius", r.float ],
+            [ "lightColor", r.color ],
+            [ "outerAngle", r.float ],
+            [ "position", r.vector3 ],
+            [ "radius", r.uint ],
+            [ "rotation", r.vector4 ]
         ];
     }
 }

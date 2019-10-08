@@ -1,4 +1,4 @@
-import {mat4} from "../../global";
+import { mat4 } from "../../global";
 
 
 /**
@@ -21,8 +21,8 @@ export class EveSOFDataHullLocator
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["transform", r.matrix]
+            [ "name", r.string ],
+            [ "transform", r.matrix ]
         ];
     }
 }

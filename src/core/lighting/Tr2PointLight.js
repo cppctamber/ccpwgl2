@@ -1,4 +1,4 @@
-import {vec3, vec4, Tw2BaseClass} from "../../global";
+import { vec3, vec4, Tw2BaseClass } from "../../global";
 
 /**
  * Tr2PointLight
@@ -34,15 +34,15 @@ export class Tr2PointLight extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["brightness", r.float],
-            ["color", r.vector4],
-            ["innerRadius", r.float],
-            ["noiseAmplitude", r.float],
-            ["noiseFrequency", r.float],
-            ["noiseOctaves", r.float],
-            ["position", r.vector3],
-            ["radius", r.float],
+            [ "name", r.string ],
+            [ "brightness", r.float ],
+            [ "color", r.vector4 ],
+            [ "innerRadius", r.float ],
+            [ "noiseAmplitude", r.float ],
+            [ "noiseFrequency", r.float ],
+            [ "noiseOctaves", r.float ],
+            [ "position", r.vector3 ],
+            [ "radius", r.float ],
         ];
     }
 

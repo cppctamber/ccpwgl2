@@ -1,5 +1,5 @@
-import {tw2} from "../../global";
-import {Tw2Parameter} from "./Tw2Parameter";
+import { tw2 } from "../../global";
+import { Tw2Parameter } from "./Tw2Parameter";
 
 /**
  * Tw2VariableParameter
@@ -47,7 +47,7 @@ export class Tw2VariableParameter extends Tw2Parameter
      * @param {*} [out=[]]
      * @returns {?*}
      */
-    GetValue(out=[])
+    GetValue(out = [])
     {
         return tw2.GetVariableValue(this.variableName, out);
     }
@@ -74,8 +74,8 @@ export class Tw2VariableParameter extends Tw2Parameter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["variableName", r.string]
+            [ "name", r.string ],
+            [ "variableName", r.string ]
         ];
     }
 

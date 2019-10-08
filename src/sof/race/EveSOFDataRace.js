@@ -20,9 +20,9 @@ export class EveSOFDataRace
     static black(r)
     {
         return [
-            ["booster", r.object],
-            ["damage", r.object],
-            ["name", r.string],
+            [ "booster", r.object ],
+            [ "damage", r.object ],
+            [ "name", r.string ],
         ];
     }
 }

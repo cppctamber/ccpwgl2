@@ -1,8 +1,8 @@
-import {vec3, vec4, util, device} from "../../global";
-import {Tw2VertexDeclaration, Tw2RenderBatch} from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
-import {assignIfExists} from "../../global/util";
-import {Tw2Effect} from "../../core/mesh";
+import { vec3, vec4, util, device } from "../../global";
+import { Tw2VertexDeclaration, Tw2RenderBatch } from "../../core";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { assignIfExists } from "../../global/util";
+import { Tw2Effect } from "../../core/mesh";
 
 /**
  * Sprite set render batch
@@ -103,16 +103,16 @@ export class EveSpriteSetItem extends EveObjectSetItem
     static black(r)
     {
         return [
-            ["blinkPhase", r.float],
-            ["blinkRate", r.float],
-            ["boneIndex", r.uint],
-            ["color", r.color],
-            ["falloff", r.float],
-            ["maxScale", r.float],
-            ["minScale", r.float],
-            ["name", r.string],
-            ["position", r.vector3],
-            ["warpColor", r.color]
+            [ "blinkPhase", r.float ],
+            [ "blinkRate", r.float ],
+            [ "boneIndex", r.uint ],
+            [ "color", r.color ],
+            [ "falloff", r.float ],
+            [ "maxScale", r.float ],
+            [ "minScale", r.float ],
+            [ "name", r.string ],
+            [ "position", r.vector3 ],
+            [ "warpColor", r.color ]
         ];
     }
 
@@ -149,7 +149,7 @@ export class EveSpriteSet extends EveObjectSet
     _indexBuffer = null;
     _instanceBuffer = null;
     _decl = null;
-    _vdecl = Tw2VertexDeclaration.from([{usage: "TEXCOORD", usageType: 5, elements: 1}]);
+    _vdecl = Tw2VertexDeclaration.from([ { usage: "TEXCOORD", usageType: 5, elements: 1 } ]);
     _worldSpriteScale = 1;
 
     /**
@@ -270,7 +270,7 @@ export class EveSpriteSet extends EveObjectSet
         {
             this._vertexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 2, 2, 3, 0]), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ 0, 1, 2, 2, 3, 0 ]), gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
             this._instanceBuffer = gl.createBuffer();
             return;
@@ -569,7 +569,7 @@ export class EveSpriteSet extends EveObjectSet
 
         if (values)
         {
-            assignIfExists(item, values, ["name", "intensity", "skinned", "useQuads"]);
+            assignIfExists(item, values, [ "name", "intensity", "skinned", "useQuads" ]);
 
             if (values.effect)
             {
@@ -605,14 +605,14 @@ export class EveSpriteSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        {usage: "TEXCOORD", usageIndex: 5, elements: 2},
-        {usage: "POSITION", usageIndex: 0, elements: 3},
-        {usage: "COLOR", usageIndex: 0, elements: 3},
-        {usage: "TEXCOORD", usageIndex: 0, elements: 1},
-        {usage: "TEXCOORD", usageIndex: 1, elements: 1},
-        {usage: "TEXCOORD", usageIndex: 2, elements: 1},
-        {usage: "TEXCOORD", usageIndex: 3, elements: 1},
-        {usage: "TEXCOORD", usageIndex: 4, elements: 1}
+        { usage: "TEXCOORD", usageIndex: 5, elements: 2 },
+        { usage: "POSITION", usageIndex: 0, elements: 3 },
+        { usage: "COLOR", usageIndex: 0, elements: 3 },
+        { usage: "TEXCOORD", usageIndex: 0, elements: 1 },
+        { usage: "TEXCOORD", usageIndex: 1, elements: 1 },
+        { usage: "TEXCOORD", usageIndex: 2, elements: 1 },
+        { usage: "TEXCOORD", usageIndex: 3, elements: 1 },
+        { usage: "TEXCOORD", usageIndex: 4, elements: 1 }
     ];
 
     /**
@@ -620,11 +620,11 @@ export class EveSpriteSet extends EveObjectSet
      * @type {*[]}
      */
     static quadVertexDeclarations = [
-        {usage: "POSITION", usageIndex: 0, elements: 3},
-        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 1, elements: 2},
-        {usage: "COLOR", usageIndex: 0, elements: 4},
-        {usage: "COLOR", usageIndex: 1, elements: 4}
+        { usage: "POSITION", usageIndex: 0, elements: 3 },
+        { usage: "TEXCOORD", usageIndex: 0, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 1, elements: 2 },
+        { usage: "COLOR", usageIndex: 0, elements: 4 },
+        { usage: "COLOR", usageIndex: 1, elements: 4 }
     ];
 
     /**
@@ -635,11 +635,11 @@ export class EveSpriteSet extends EveObjectSet
     static black(r)
     {
         return [
-            ["effect", r.object],
-            ["name", r.string],
-            ["intensity", r.float],
-            ["skinned", r.boolean],
-            ["sprites", r.array]
+            [ "effect", r.object ],
+            [ "name", r.string ],
+            [ "intensity", r.float ],
+            [ "skinned", r.boolean ],
+            [ "sprites", r.array ]
         ];
     }
 

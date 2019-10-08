@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ActionSetValue
@@ -23,9 +23,9 @@ export class Tr2ActionSetValue extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["attribute", r.string],
-            ["path", r.path],
-            ["value", r.string]
+            [ "attribute", r.string ],
+            [ "path", r.path ],
+            [ "value", r.string ]
         ];
     }
 

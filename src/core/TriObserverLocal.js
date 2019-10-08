@@ -1,5 +1,5 @@
-import {vec3} from "../global/index";
-import {Tw2BaseClass} from "../global/index";
+import { vec3 } from "../global/index";
+import { Tw2BaseClass } from "../global/index";
 
 /**
  * TriObserverLocal
@@ -20,7 +20,7 @@ export class TriObserverLocal extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["front", r.vector3]
+            [ "front", r.vector3 ]
         ];
     }
 

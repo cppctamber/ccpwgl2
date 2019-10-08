@@ -1,6 +1,6 @@
-import {vec3, vec4, quat, mat4, ray3, util, device} from "../../global";
-import {Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch} from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
+import { vec3, vec4, quat, mat4, ray3, util, device } from "../../global";
+import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "../../core";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**
  * Curve line set item
@@ -43,7 +43,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
      * @param {vec3} direction
      * @param {Number} [length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH]
      */
-    ChangePositionFromRay(origin, direction, length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH)
+    ChangePositionFromRay(origin, direction, length = EveCurveLineSetItem.DEFAULT_RAY_LENGTH)
     {
         vec3.copy(this.position1, origin);
         vec3.scaleAndAdd(this.position2, origin, direction, length);
@@ -368,7 +368,7 @@ export class EveCurveLineSet extends EveObjectSet
      */
     AddStraightLineFromRay(origin, direction, length, width, startColor, endColor)
     {
-        const line = this.AddStraightLine([0,0,0], [0,0,0], width, startColor, endColor);
+        const line = this.AddStraightLine([ 0, 0, 0 ], [ 0, 0, 0 ], width, startColor, endColor);
         line.ChangePositionFromRay(origin, direction, length);
         return line;
     }
@@ -918,8 +918,8 @@ export class EveCurveLineSet extends EveObjectSet
      * @type {*}
      */
     static perObjectData = {
-        vs: [["WorldMat", 16]],
-        ps: [["WorldMat", 16]]
+        vs: [ [ "WorldMat", 16 ] ],
+        ps: [ [ "WorldMat", 16 ] ]
     };
 
     /**
@@ -927,13 +927,13 @@ export class EveCurveLineSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        {usage: "POSITION", usageIndex: 0, elements: 3},
-        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 2, elements: 3},
-        {usage: "COLOR", usageIndex: 0, elements: 4},
-        {usage: "COLOR", usageIndex: 1, elements: 4},
-        {usage: "COLOR", usageIndex: 2, elements: 4}
+        { usage: "POSITION", usageIndex: 0, elements: 3 },
+        { usage: "TEXCOORD", usageIndex: 0, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 1, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 2, elements: 3 },
+        { usage: "COLOR", usageIndex: 0, elements: 4 },
+        { usage: "COLOR", usageIndex: 1, elements: 4 },
+        { usage: "COLOR", usageIndex: 2, elements: 4 }
     ];
 
     /**
@@ -944,8 +944,8 @@ export class EveCurveLineSet extends EveObjectSet
     static black(r)
     {
         return [
-            ["lineEffect", r.object],
-            ["pickEffect", r.object],
+            [ "lineEffect", r.object ],
+            [ "pickEffect", r.object ],
         ];
     }
 

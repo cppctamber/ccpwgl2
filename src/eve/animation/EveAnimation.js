@@ -19,8 +19,8 @@ export class EveAnimation
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["loops", r.uint]
+            [ "name", r.string ],
+            [ "loops", r.uint ]
         ];
     }
 

@@ -1,6 +1,6 @@
-import {quat} from "gl-matrix";
+import { quat } from "gl-matrix";
 
-export {quat};
+export { quat };
 
 /**
  * QuaternionExp

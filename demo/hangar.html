@@ -28,7 +28,7 @@
 
             ccpwgl.initialize("mainCanvas", demos.options);
             ccpwgl.debug = true;
-            camera = ccpwgl.createCamera({poi: [0, shipHeightFromLandingPad, 0]});
+            camera = ccpwgl.createCamera({ poi: [ 0, shipHeightFromLandingPad, 0 ] });
 
             scene = ccpwgl.loadScene(stationPath, function()
             {
@@ -71,7 +71,7 @@
                             // Position the ship above the landing pad
                             // This probably should be calculated from bounding sphere...
                             this.transform.Set({
-                                translation: [0, shipHeightFromLandingPad, 0]
+                                translation: [ 0, shipHeightFromLandingPad, 0 ]
                             });
 
                             // Turn boosters down
@@ -97,7 +97,7 @@
             {
                 var dna = $("#dna").val();
                 loadDna(dna);
-                history.pushState({"dna": dna}, "SOF " + dna);
+                history.pushState({ "dna": dna }, "SOF " + dna);
             });
 
             $("#normal").click(function()

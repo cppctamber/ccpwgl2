@@ -1,4 +1,4 @@
-import {FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D} from "../../global";
+import { FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D } from "../../global";
 
 /**
  * Tw2SamplerState

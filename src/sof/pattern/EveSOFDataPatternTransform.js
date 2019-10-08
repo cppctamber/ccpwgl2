@@ -1,4 +1,4 @@
-import {quat, vec3} from "../../global";
+import { quat, vec3 } from "../../global";
 
 
 /**
@@ -25,10 +25,10 @@ export class EveSOFDataPatternTransform
     static black(r)
     {
         return [
-            ["isMirrored", r.boolean],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3]
+            [ "isMirrored", r.boolean ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ]
         ];
     }
 }

@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {EveObject} from "./legacy/EveObject";
+import { vec3 } from "../../global";
+import { EveObject } from "./legacy/EveObject";
 
 /**
  * EveShip2
@@ -51,24 +51,24 @@ export class EveShip2 extends EveObject
     static black(r)
     {
         return [
-            ["attachments", r.array],
-            ["boosters", r.object],
-            ["boundingSphereCenter", r.vector3],
-            ["boundingSphereRadius", r.float],
-            ["children", r.array],
-            ["customMasks", r.array],
-            ["decals", r.array],
-            ["dna", r.string],
-            ["locatorSets", r.array],
-            ["locators", r.array],
-            ["mesh", r.object],
-            ["name", r.string],
-            ["meshLod", r.object],
-            ["rotationCurve", r.object],
-            ["shadowEffect", r.object],
-            ["shapeEllipsoidCenter", r.vector3],
-            ["shapeEllipsoidRadius", r.vector3],
-            ["translationCurve", r.object],
+            [ "attachments", r.array ],
+            [ "boosters", r.object ],
+            [ "boundingSphereCenter", r.vector3 ],
+            [ "boundingSphereRadius", r.float ],
+            [ "children", r.array ],
+            [ "customMasks", r.array ],
+            [ "decals", r.array ],
+            [ "dna", r.string ],
+            [ "locatorSets", r.array ],
+            [ "locators", r.array ],
+            [ "mesh", r.object ],
+            [ "name", r.string ],
+            [ "meshLod", r.object ],
+            [ "rotationCurve", r.object ],
+            [ "shadowEffect", r.object ],
+            [ "shapeEllipsoidCenter", r.vector3 ],
+            [ "shapeEllipsoidRadius", r.vector3 ],
+            [ "translationCurve", r.object ],
         ];
     }
 

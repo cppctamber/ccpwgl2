@@ -1,4 +1,4 @@
-import {EveSpaceObject} from "./EveSpaceObject";
+import { EveSpaceObject } from "./EveSpaceObject";
 
 /**
  * EveShip

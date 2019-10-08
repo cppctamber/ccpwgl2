@@ -1,5 +1,5 @@
-import {quat, vec3} from "../../../global";
-import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
+import { quat, vec3 } from "../../../global";
+import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
  * Tw2YPRSequencer
@@ -104,6 +104,6 @@ export class Tw2YPRSequencer extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {String[]}
      */
-    static childProperties = ["YawCurve", "PitchCurve", "RollCurve"];
+    static childProperties = [ "YawCurve", "PitchCurve", "RollCurve" ];
 
 }

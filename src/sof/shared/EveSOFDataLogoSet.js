@@ -24,11 +24,11 @@ export class EveSOFDataLogoSet
     static black(r)
     {
         return [
-            ["Marking_01", r.object],
-            ["Marking_02", r.object],
-            ["Primary", r.object],
-            ["Secondary", r.object],
-            ["Tertiary", r.object]
+            [ "Marking_01", r.object ],
+            [ "Marking_02", r.object ],
+            [ "Primary", r.object ],
+            [ "Secondary", r.object ],
+            [ "Tertiary", r.object ]
         ];
     }
 }

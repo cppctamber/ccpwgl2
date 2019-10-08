@@ -22,10 +22,10 @@ export class EveSOFDataRaceDamage
     static black(r)
     {
         return [
-            ["armorImpactParameters", r.array],
-            ["armorImpactTextures", r.array],
-            ["shieldImpactParameters", r.array],
-            ["shieldImpactTextures", r.array]
+            [ "armorImpactParameters", r.array ],
+            [ "armorImpactTextures", r.array ],
+            [ "shieldImpactParameters", r.array ],
+            [ "shieldImpactTextures", r.array ]
         ];
     }
 }

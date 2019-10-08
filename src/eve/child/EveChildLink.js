@@ -1,5 +1,5 @@
-import {quat} from "../../global";
-import {EveChild} from "./EveChild";
+import { quat } from "../../global";
+import { EveChild } from "./EveChild";
 
 /**
  * EveChildLink
@@ -39,11 +39,11 @@ export class EveChildLink extends EveChild
     static black(r)
     {
         return [
-            ["linkStrengthBindings", r.array],
-            ["linkStrengthCurves", r.array],
-            ["mesh", r.object],
-            ["name", r.string],
-            ["rotation", r.vector4]
+            [ "linkStrengthBindings", r.array ],
+            [ "linkStrengthCurves", r.array ],
+            [ "mesh", r.object ],
+            [ "name", r.string ],
+            [ "rotation", r.vector4 ]
         ];
     }
 

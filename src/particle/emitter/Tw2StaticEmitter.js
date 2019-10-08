@@ -1,6 +1,6 @@
-import {resMan,} from "../../global";
-import {ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement} from "../../core";
-import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
+import { resMan, } from "../../global";
+import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement } from "../../core";
+import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
 /**
@@ -166,10 +166,10 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["particleSystem", r.object],
-            ["geometryResourcePath", r.string],
-            ["meshIndex", r.uint],
+            [ "name", r.string ],
+            [ "particleSystem", r.object ],
+            [ "geometryResourcePath", r.string ],
+            [ "meshIndex", r.uint ],
         ];
     }
 

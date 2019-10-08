@@ -16,7 +16,7 @@ export class EveAnimationCurve
     static black(r)
     {
         return [
-            ["name", r.string]
+            [ "name", r.string ]
         ];
     }
 

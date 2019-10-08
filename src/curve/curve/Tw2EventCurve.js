@@ -1,4 +1,4 @@
-import {Tw2CurveKey, Tw2Curve} from "./Tw2Curve";
+import { Tw2CurveKey, Tw2Curve } from "./Tw2Curve";
 
 /**
  * Event curve key
@@ -19,8 +19,8 @@ export class Tw2EventKey extends Tw2CurveKey
     static black(r)
     {
         return [
-            ["time", r.float],
-            ["value", r.ushort]
+            [ "time", r.float ],
+            [ "value", r.ushort ]
         ];
     }
 
@@ -145,10 +145,10 @@ export class Tw2EventCurve extends Tw2Curve
     static black(r)
     {
         return [
-            ["extrapolation", r.uint],
-            ["name", r.string],
-            ["keys", r.array],
-            ["value", r.ushort]
+            [ "extrapolation", r.uint ],
+            [ "name", r.string ],
+            [ "keys", r.array ],
+            [ "value", r.ushort ]
         ];
     }
 

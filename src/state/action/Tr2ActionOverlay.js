@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ActionOverlay
@@ -19,7 +19,7 @@ export class Tr2ActionOverlay extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["path", r.path]
+            [ "path", r.path ]
         ];
     }
 

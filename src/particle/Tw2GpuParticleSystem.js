@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../global";
+import { Tw2BaseClass } from "../global";
 
 /**
  * Tr2GpuParticleSystem
@@ -55,15 +55,15 @@ export class Tr2GpuParticleSystem extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["clear", r.object],
-            ["emit", r.object],
-            ["render", r.object],
-            ["setDrawParameters", r.object],
-            ["setSortParameters", r.object],
-            ["sort", r.object],
-            ["sortInner", r.object],
-            ["sortStep", r.object],
-            ["update", r.object],
+            [ "clear", r.object ],
+            [ "emit", r.object ],
+            [ "render", r.object ],
+            [ "setDrawParameters", r.object ],
+            [ "setSortParameters", r.object ],
+            [ "sort", r.object ],
+            [ "sortInner", r.object ],
+            [ "sortStep", r.object ],
+            [ "update", r.object ],
         ];
     }
 

@@ -1,4 +1,4 @@
-import {util, resMan, tw2, Tw2BaseClass} from "../../global";
+import { util, resMan, tw2, Tw2BaseClass } from "../../global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -8,7 +8,7 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "../../global/engine";
-import {assignIfExists, get, toArray} from "../../global/util";
+import { assignIfExists, get, toArray } from "../../global/util";
 
 /**
  * Tw2Mesh
@@ -230,7 +230,7 @@ export class Tw2Mesh extends Tw2BaseClass
                         type = src[name][i].__type || "Tw2MeshArea",
                         Constructor = tw2.GetClass(type);
 
-                    dest[name].push(Constructor.from(src[name][i], {index: i}));
+                    dest[name].push(Constructor.from(src[name][i], { index: i }));
                 }
             }
         }
@@ -280,19 +280,19 @@ export class Tw2Mesh extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["additiveAreas", r.array],
-            ["decalAreas", r.array],
-            ["deferGeometryLoad", r.boolean],
-            ["depthAreas", r.array],
-            ["depthNormalAreas", r.array],
-            ["distortionAreas", r.array],
-            ["geometryResPath", r.path],
-            ["meshIndex", r.uint],
-            ["name", r.string],
-            ["opaqueAreas", r.array],
-            ["opaquePrepassAreas", r.array],
-            ["pickableAreas", r.array],
-            ["transparentAreas", r.array],
+            [ "additiveAreas", r.array ],
+            [ "decalAreas", r.array ],
+            [ "deferGeometryLoad", r.boolean ],
+            [ "depthAreas", r.array ],
+            [ "depthNormalAreas", r.array ],
+            [ "distortionAreas", r.array ],
+            [ "geometryResPath", r.path ],
+            [ "meshIndex", r.uint ],
+            [ "name", r.string ],
+            [ "opaqueAreas", r.array ],
+            [ "opaquePrepassAreas", r.array ],
+            [ "pickableAreas", r.array ],
+            [ "transparentAreas", r.array ],
         ];
     }
 

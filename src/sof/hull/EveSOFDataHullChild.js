@@ -1,4 +1,4 @@
-import {quat, vec3} from "../../global";
+import { quat, vec3 } from "../../global";
 
 
 /**
@@ -33,14 +33,14 @@ export class EveSOFDataHullChild
     static black(r)
     {
         return [
-            ["groupIndex", r.uint],
-            ["id", r.uint],
-            ["lowestLodVisible", r.uint],
-            ["name", r.string],
-            ["redFilePath", r.path],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["translation", r.vector3]
+            [ "groupIndex", r.uint ],
+            [ "id", r.uint ],
+            [ "lowestLodVisible", r.uint ],
+            [ "name", r.string ],
+            [ "redFilePath", r.path ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "translation", r.vector3 ]
         ];
     }
 }

@@ -1,8 +1,8 @@
-import {vec3, vec4, mat4, util, device, Tw2BaseClass} from "../../global";
-import {Tw2VertexDeclaration, Tw2RenderBatch} from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
-import {assignIfExists, isFunction} from "../../global/util";
-import {Tw2Effect} from "../../core/mesh";
+import { vec3, vec4, mat4, util, device, Tw2BaseClass } from "../../global";
+import { Tw2VertexDeclaration, Tw2RenderBatch } from "../../core";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { assignIfExists, isFunction } from "../../global/util";
+import { Tw2Effect } from "../../core/mesh";
 
 /**
  * Spotlight set render batch
@@ -88,12 +88,12 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     static black(r)
     {
         return [
-            ["coneColor", r.color],
-            ["flareColor", r.color],
-            ["name", r.string],
-            ["spriteColor", r.color],
-            ["spriteScale", r.vector3],
-            ["transform", r.matrix]
+            [ "coneColor", r.color ],
+            [ "flareColor", r.color ],
+            [ "name", r.string ],
+            [ "spriteColor", r.color ],
+            [ "spriteScale", r.vector3 ],
+            [ "transform", r.matrix ]
         ];
     }
 
@@ -207,7 +207,7 @@ export class EveSpotlightSet extends EveObjectSet
             coneQuadCount = 4,
             coneVertexCount = itemCount * coneQuadCount * vertCount,
             vertexSize = 22,
-            coneIndices = [1, 0, 2, 3],
+            coneIndices = [ 1, 0, 2, 3 ],
             coneArray = new Float32Array(coneVertexCount * vertexSize);
 
         for (let i = 0; i < itemCount; ++i)
@@ -258,7 +258,7 @@ export class EveSpotlightSet extends EveObjectSet
             spriteQuadCount = 2,
             spriteVertexCount = itemCount * spriteQuadCount * vertCount,
             spriteArray = new Float32Array(spriteVertexCount * vertexSize),
-            spriteIndexes = [1, 0, 2, 3];
+            spriteIndexes = [ 1, 0, 2, 3 ];
 
         for (let i = 0; i < itemCount; ++i)
         {
@@ -424,7 +424,7 @@ export class EveSpotlightSet extends EveObjectSet
 
         if (values)
         {
-            assignIfExists(item, values, ["name", "display", "intensity"]);
+            assignIfExists(item, values, [ "name", "display", "intensity" ]);
 
             if (values.coneEffect)
             {
@@ -478,12 +478,12 @@ export class EveSpotlightSet extends EveObjectSet
      * @type {*[]}
      */
     static vertexDeclarations = [
-        {usage: "COLOR", usageIndex: 0, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 0, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 1, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 2, elements: 4},
-        {usage: "TEXCOORD", usageIndex: 3, elements: 3},
-        {usage: "TEXCOORD", usageIndex: 4, elements: 3}
+        { usage: "COLOR", usageIndex: 0, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 0, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 1, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 2, elements: 4 },
+        { usage: "TEXCOORD", usageIndex: 3, elements: 3 },
+        { usage: "TEXCOORD", usageIndex: 4, elements: 3 }
     ];
 
     /**
@@ -494,11 +494,11 @@ export class EveSpotlightSet extends EveObjectSet
     static black(r)
     {
         return [
-            ["coneEffect", r.object],
-            ["glowEffect", r.object],
-            ["intensity", r.float],
-            ["name", r.string],
-            ["spotlightItems", r.array]
+            [ "coneEffect", r.object ],
+            [ "glowEffect", r.object ],
+            [ "intensity", r.float ],
+            [ "name", r.string ],
+            [ "spotlightItems", r.array ]
         ];
     }
 

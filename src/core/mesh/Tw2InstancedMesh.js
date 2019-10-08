@@ -1,5 +1,5 @@
-import {vec3, util, resMan, Tw2BaseClass} from "../../global";
-import {Tw2InstancedMeshBatch} from "../batch";
+import { vec3, util, resMan, Tw2BaseClass } from "../../global";
+import { Tw2InstancedMeshBatch } from "../batch";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -9,9 +9,9 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "../../global/engine";
-import {assignIfExists, get} from "../../global/util";
-import {Tw2MeshArea} from "./Tw2MeshArea";
-import {Tw2Mesh} from "./Tw2Mesh";
+import { assignIfExists, get } from "../../global/util";
+import { Tw2MeshArea } from "./Tw2MeshArea";
+import { Tw2Mesh } from "./Tw2Mesh";
 
 /**
  * Tw2InstancedMesh
@@ -296,18 +296,18 @@ export class Tw2InstancedMesh extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["additiveAreas", r.array],
-            ["decalAreas", r.array],
-            ["depthAreas", r.array],
-            ["distortionAreas", r.array],
-            ["geometryResPath", r.path],
-            ["instanceGeometryResPath", r.path],
-            ["instanceGeometryResource", r.object],
-            ["instanceMeshIndex", r.uint],
-            ["minBounds", r.vector3],
-            ["maxBounds", r.vector3],
-            ["opaqueAreas", r.array],
-            ["transparentAreas", r.array],
+            [ "additiveAreas", r.array ],
+            [ "decalAreas", r.array ],
+            [ "depthAreas", r.array ],
+            [ "distortionAreas", r.array ],
+            [ "geometryResPath", r.path ],
+            [ "instanceGeometryResPath", r.path ],
+            [ "instanceGeometryResource", r.object ],
+            [ "instanceMeshIndex", r.uint ],
+            [ "minBounds", r.vector3 ],
+            [ "maxBounds", r.vector3 ],
+            [ "opaqueAreas", r.array ],
+            [ "transparentAreas", r.array ],
         ];
     }
 

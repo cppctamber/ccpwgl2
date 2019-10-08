@@ -1,5 +1,5 @@
-import {quat, vec3} from "../../global";
-import {EveObject} from "./legacy/EveObject";
+import { quat, vec3 } from "../../global";
+import { EveObject } from "./legacy/EveObject";
 
 /**
  * EveRootTransform
@@ -47,22 +47,22 @@ export class EveRootTransform extends EveObject
     static black(r)
     {
         return [
-            ["boundingSphereRadius", r.float],
-            ["children", r.array],
-            ["curveSets", r.array],
-            ["display", r.boolean],
-            ["mesh", r.object],
-            ["modifier", r.uint],
-            ["name", r.string],
-            ["observers", r.array],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["rotationCurve", r.object],
-            ["scaling", r.vector3],
-            ["sortValueMultiplier", r.float],
-            ["translation", r.vector3],
-            ["translationCurve", r.object],
-            ["useDistanceBasedScale", r.boolean],
+            [ "boundingSphereRadius", r.float ],
+            [ "children", r.array ],
+            [ "curveSets", r.array ],
+            [ "display", r.boolean ],
+            [ "mesh", r.object ],
+            [ "modifier", r.uint ],
+            [ "name", r.string ],
+            [ "observers", r.array ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "rotationCurve", r.object ],
+            [ "scaling", r.vector3 ],
+            [ "sortValueMultiplier", r.float ],
+            [ "translation", r.vector3 ],
+            [ "translationCurve", r.object ],
+            [ "useDistanceBasedScale", r.boolean ],
         ];
     }
 

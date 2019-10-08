@@ -16,7 +16,7 @@ export class EveSOFDataLogo
     static black(r)
     {
         return [
-            ["textures", r.array]
+            [ "textures", r.array ]
         ];
     }
 }

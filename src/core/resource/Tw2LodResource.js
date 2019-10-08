@@ -1,4 +1,4 @@
-import {Tw2BaseClass, resMan} from "../../global";
+import { Tw2BaseClass, resMan } from "../../global";
 
 /**
  * Tr2LodResource
@@ -147,10 +147,10 @@ export class Tw2LodResource extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["highDetailResPath", r.path],
-            ["lowDetailResPath", r.path],
-            ["mediumDetailResPath", r.path],
+            [ "name", r.string ],
+            [ "highDetailResPath", r.path ],
+            [ "lowDetailResPath", r.path ],
+            [ "mediumDetailResPath", r.path ],
         ];
     }
 

@@ -20,9 +20,9 @@ export class EveSOFDataHullHazeSet
     static black(r)
     {
         return [
-            ["items", r.array],
-            ["name", r.string],
-            ["visibilityGroup", r.string]
+            [ "items", r.array ],
+            [ "name", r.string ],
+            [ "visibilityGroup", r.string ]
         ];
     }
 }

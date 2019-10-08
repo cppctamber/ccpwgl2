@@ -1,5 +1,5 @@
-import {quat} from "../../global";
-import {Tw2CurveExpression} from "./Tw2CurveExpression";
+import { quat } from "../../global";
+import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveEulerRotationExpression
@@ -40,7 +40,7 @@ export class Tr2CurveEulerRotationExpression extends Tw2CurveExpression
      * The sequencer's curve property names
      * @type {?Array.<string>}
      */
-    static childProperties = ["expressionPitch", "expressionRoll", "expressionYaw"];
+    static childProperties = [ "expressionPitch", "expressionRoll", "expressionYaw" ];
 
 
     /**
@@ -51,11 +51,11 @@ export class Tr2CurveEulerRotationExpression extends Tw2CurveExpression
     static black(r)
     {
         return [
-            ["inputs", r.array],
-            ["name", r.string],
-            ["expressionYaw", r.string],
-            ["expressionPitch", r.string],
-            ["expressionRoll", r.string],
+            [ "inputs", r.array ],
+            [ "name", r.string ],
+            [ "expressionYaw", r.string ],
+            [ "expressionPitch", r.string ],
+            [ "expressionRoll", r.string ],
         ];
     }
 

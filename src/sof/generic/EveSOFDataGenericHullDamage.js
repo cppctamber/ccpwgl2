@@ -1,4 +1,4 @@
-import {vec2, vec4} from "../../global";
+import { vec2, vec4 } from "../../global";
 
 
 /**
@@ -44,19 +44,19 @@ export class EveSOFDataGenericHullDamage
     static black(r)
     {
         return [
-            ["hullParticleAngle", r.float],
-            ["hullParticleColor0", r.vector4],
-            ["hullParticleColor1", r.vector4],
-            ["hullParticleColor2", r.vector4],
-            ["hullParticleColorMidpoint", r.float],
-            ["hullParticleDrag", r.float],
-            ["hullParticleMinMaxLifeTime", r.vector2],
-            ["hullParticleMinMaxSpeed", r.vector2],
-            ["hullParticleRate", r.float],
-            ["hullParticleSizes", r.vector4],
-            ["hullParticleTurbulenceAmplitude", r.float],
-            ["hullParticleTurbulenceFrequency", r.float],
-            ["hullParticleTextureIndex", r.uint],
+            [ "hullParticleAngle", r.float ],
+            [ "hullParticleColor0", r.vector4 ],
+            [ "hullParticleColor1", r.vector4 ],
+            [ "hullParticleColor2", r.vector4 ],
+            [ "hullParticleColorMidpoint", r.float ],
+            [ "hullParticleDrag", r.float ],
+            [ "hullParticleMinMaxLifeTime", r.vector2 ],
+            [ "hullParticleMinMaxSpeed", r.vector2 ],
+            [ "hullParticleRate", r.float ],
+            [ "hullParticleSizes", r.vector4 ],
+            [ "hullParticleTurbulenceAmplitude", r.float ],
+            [ "hullParticleTurbulenceFrequency", r.float ],
+            [ "hullParticleTextureIndex", r.uint ],
         ];
     }
 }

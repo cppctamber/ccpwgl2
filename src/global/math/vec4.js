@@ -1,6 +1,6 @@
-import {vec4} from "gl-matrix";
+import { vec4 } from "gl-matrix";
 
-export {vec4};
+export { vec4 };
 
 
 /**

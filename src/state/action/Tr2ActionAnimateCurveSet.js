@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ActionAnimateCurveSet
@@ -21,8 +21,8 @@ export class Tr2ActionAnimateCurveSet extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["curveSet", r.object],
-            ["value", r.string]
+            [ "curveSet", r.object ],
+            [ "value", r.string ]
         ];
     }
 

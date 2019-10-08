@@ -1,6 +1,6 @@
-import {mat3} from "gl-matrix";
+import { mat3 } from "gl-matrix";
 
-export {mat3};
+export { mat3 };
 
 /**
  * Sets a mat3 from an array at an option offset

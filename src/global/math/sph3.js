@@ -1,8 +1,8 @@
-import {vec3} from "./vec3";
-import {vec4} from "./vec4";
-import {mat4} from "./mat4";
-import {pln} from "./pln";
-import {box3} from "./box3";
+import { vec3 } from "./vec3";
+import { vec4 } from "./vec4";
+import { mat4 } from "./mat4";
+import { pln } from "./pln";
+import { box3 } from "./box3";
 
 /**
  * 3D Sphere

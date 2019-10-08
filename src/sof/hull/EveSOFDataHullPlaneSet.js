@@ -30,15 +30,15 @@ export class EveSOFDataHullPlaneSet
     static black(r)
     {
         return [
-            ["atlasSize", r.uint],
-            ["items", r.array],
-            ["layer1MapResPath", r.path],
-            ["layer2MapResPath", r.path],
-            ["maskMapResPath", r.path],
-            ["name", r.string],
-            ["planeData", r.vector4],
-            ["skinned", r.boolean],
-            ["usage", r.uint]
+            [ "atlasSize", r.uint ],
+            [ "items", r.array ],
+            [ "layer1MapResPath", r.path ],
+            [ "layer2MapResPath", r.path ],
+            [ "maskMapResPath", r.path ],
+            [ "name", r.string ],
+            [ "planeData", r.vector4 ],
+            [ "skinned", r.boolean ],
+            [ "usage", r.uint ]
         ];
     }
 }

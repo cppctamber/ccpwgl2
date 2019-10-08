@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ShLightingManager
@@ -21,8 +21,8 @@ export class Tr2ShLightingManager extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["primaryIntensity", r.float],
-            ["secondaryIntensity", r.float]
+            [ "primaryIntensity", r.float ],
+            [ "secondaryIntensity", r.float ]
         ];
     }
 

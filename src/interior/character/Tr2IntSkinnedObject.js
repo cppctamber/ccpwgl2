@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2IntSkinnedObject
@@ -24,9 +24,9 @@ export class Tr2IntSkinnedObject extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["curveSets", r.array],
-            ["transform", r.object],
-            ["visualModel", r.object],
+            [ "curveSets", r.array ],
+            [ "transform", r.object ],
+            [ "visualModel", r.object ],
         ];
     }
 

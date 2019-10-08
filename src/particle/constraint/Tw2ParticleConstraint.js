@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
-import {util, Tw2BaseClass} from "../../global";
-import {ErrAbstractClassMethod} from "../../core";
+import { util, Tw2BaseClass } from "../../global";
+import { ErrAbstractClassMethod } from "../../core";
 
 /**
  * Tw2ParticleConstraint base class

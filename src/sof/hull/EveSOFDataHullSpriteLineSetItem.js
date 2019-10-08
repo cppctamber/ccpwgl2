@@ -1,4 +1,4 @@
-import {quat, vec3} from "../../global";
+import { quat, vec3 } from "../../global";
 
 
 /**
@@ -45,21 +45,21 @@ export class EveSOFDataHullSpriteLineSetItem
     static black(r)
     {
         return [
-            ["blinkRate", r.float],
-            ["blinkPhase", r.float],
-            ["blinkPhaseShift", r.float],
-            ["boneIndex", r.uint],
-            ["colorType", r.uint],
-            ["falloff", r.float],
-            ["groupIndex", r.uint],
-            ["intensity", r.float],
-            ["isCircle", r.boolean],
-            ["maxScale", r.float],
-            ["minScale", r.float],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["spacing", r.float]
+            [ "blinkRate", r.float ],
+            [ "blinkPhase", r.float ],
+            [ "blinkPhaseShift", r.float ],
+            [ "boneIndex", r.uint ],
+            [ "colorType", r.uint ],
+            [ "falloff", r.float ],
+            [ "groupIndex", r.uint ],
+            [ "intensity", r.float ],
+            [ "isCircle", r.boolean ],
+            [ "maxScale", r.float ],
+            [ "minScale", r.float ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "spacing", r.float ]
         ];
     }
 }

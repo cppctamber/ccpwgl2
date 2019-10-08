@@ -1,5 +1,5 @@
-import {vec3, quat, mat4} from "../../global";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
+import { vec3, quat, mat4 } from "../../global";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**
  * Eve sprite line set render batch

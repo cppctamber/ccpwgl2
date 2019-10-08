@@ -1,8 +1,8 @@
-import {resMan} from "../../global";
-import {Tw2Resource} from "./Tw2Resource";
-import {Tw2ObjectReader} from "../reader/Tw2ObjectReader";
-import {Tw2BlackReader} from "../reader/Tw2BlackReader";
-import {ErrResourceExtensionUnregistered} from "../Tw2Error";
+import { resMan } from "../../global";
+import { Tw2Resource } from "./Tw2Resource";
+import { Tw2ObjectReader } from "../reader/Tw2ObjectReader";
+import { Tw2BlackReader } from "../reader/Tw2BlackReader";
+import { ErrResourceExtensionUnregistered } from "../Tw2Error";
 
 /**
  * Tw2LoadingObject
@@ -42,7 +42,7 @@ export class Tw2LoadingObject extends Tw2Resource
         }
         else
         {
-            this._objects.push({onResolved, onRejected});
+            this._objects.push({ onResolved, onRejected });
         }
     }
 
@@ -72,7 +72,7 @@ export class Tw2LoadingObject extends Tw2Resource
                     break;
 
                 default:
-                    throw new ErrResourceExtensionUnregistered({extension: ext});
+                    throw new ErrResourceExtensionUnregistered({ extension: ext });
             }
 
             this._inPrepare = 0;
@@ -104,7 +104,7 @@ export class Tw2LoadingObject extends Tw2Resource
                     object.onRejected = null; // Only fire once
                 }
 
-                this.OnWarning({err, message: "Error preparing child object"});
+                this.OnWarning({ err, message: "Error preparing child object" });
             }
 
             this._inPrepare++;

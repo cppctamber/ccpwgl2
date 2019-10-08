@@ -20,9 +20,9 @@ export class EveSOFDataFactionChild
     static black(r)
     {
         return [
-            ["groupIndex", r.uint],
-            ["name", r.string],
-            ["isVisible", r.boolean]
+            [ "groupIndex", r.uint ],
+            [ "name", r.string ],
+            [ "isVisible", r.boolean ]
         ];
     }
 }

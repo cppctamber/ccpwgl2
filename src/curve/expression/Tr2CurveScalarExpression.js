@@ -1,4 +1,4 @@
-import {Tw2CurveExpression} from "./Tw2CurveExpression";
+import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveScalarExpression
@@ -41,7 +41,7 @@ export class Tr2CurveScalarExpression extends Tw2CurveExpression
      * The sequencer's curve property names
      * @type {?Array.<string>}
      */
-    static childProperties = ["expression"];
+    static childProperties = [ "expression" ];
 
     /**
      * Black definition
@@ -51,12 +51,12 @@ export class Tr2CurveScalarExpression extends Tw2CurveExpression
     static black(r)
     {
         return [
-            ["inputs", r.array],
-            ["name", r.string],
-            ["expression", r.string],
-            ["input1", r.float],
-            ["input2", r.float],
-            ["input3", r.float],
+            [ "inputs", r.array ],
+            [ "name", r.string ],
+            [ "expression", r.string ],
+            [ "input1", r.float ],
+            [ "input2", r.float ],
+            [ "input3", r.float ],
         ];
     }
 

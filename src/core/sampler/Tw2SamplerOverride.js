@@ -1,4 +1,4 @@
-import {Tw2SamplerState} from "./Tw2SamplerState";
+import { Tw2SamplerState } from "./Tw2SamplerState";
 
 /**
  * Tw2SamplerOverride
@@ -47,7 +47,7 @@ export class Tw2SamplerOverride
         sampler.registerIndex = originalSampler.registerIndex;
         sampler.name = originalSampler.name;
 
-        const {wrapModes, gl} = device;
+        const { wrapModes, gl } = device;
 
         if (this.filter === 1)
         {

@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
-import {vec3, mat4, Tw2BaseClass} from "../../global";
-import {ErrAbstractClassMethod} from "../../core";
+import { vec3, mat4, Tw2BaseClass } from "../../global";
+import { ErrAbstractClassMethod } from "../../core";
 
 /**
  * Root EveChild class
@@ -54,8 +54,8 @@ export class EveChild extends Tw2BaseClass
      */
     static perObjectData = {
         ffe: [
-            ["world", 16],
-            ["worldInverseTranspose", 16]
+            [ "world", 16 ],
+            [ "worldInverseTranspose", 16 ]
         ]
     }
 

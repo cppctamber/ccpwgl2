@@ -1,5 +1,5 @@
-import {Tw2ParticleConstraint} from "./Tw2ParticleConstraint";
-import {ErrAbstractClassMethod} from "../../core";
+import { Tw2ParticleConstraint } from "./Tw2ParticleConstraint";
+import { ErrAbstractClassMethod } from "../../core";
 
 /**
  * Tr2PlaneConstraint
@@ -35,8 +35,8 @@ export class Tr2PlaneConstraint extends Tw2ParticleConstraint
     static black(r)
     {
         return [
-            ["reflectionNoise", r.float],
-            ["generators", r.array]
+            [ "reflectionNoise", r.float ],
+            [ "generators", r.array ]
         ];
     }
 

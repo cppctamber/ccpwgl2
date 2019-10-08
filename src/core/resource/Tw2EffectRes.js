@@ -1,7 +1,7 @@
-import {Tw2BinaryReader} from "../reader";
-import {Tw2Resource} from "./Tw2Resource";
-import {Tw2Shader} from "./Tw2Shader";
-import {ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderVersion} from "../Tw2Error";
+import { Tw2BinaryReader } from "../reader";
+import { Tw2Resource } from "./Tw2Resource";
+import { Tw2Shader } from "./Tw2Shader";
+import { ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderVersion } from "../Tw2Error";
 
 /**
  * Tw2EffectRes
@@ -69,7 +69,7 @@ export class Tw2EffectRes extends Tw2Resource
         const version = reader.ReadUInt32();
         if (version < 2 || version > 8)
         {
-            this.OnError(new ErrShaderVersion({path: this.path, version}));
+            this.OnError(new ErrShaderVersion({ path: this.path, version }));
             return;
         }
 
@@ -81,7 +81,7 @@ export class Tw2EffectRes extends Tw2Resource
             headerSize = reader.ReadUInt32();
             if (headerSize === 0)
             {
-                this.OnError(new ErrShaderHeaderSize({path: this.path}));
+                this.OnError(new ErrShaderHeaderSize({ path: this.path }));
                 return;
             }
 
@@ -121,7 +121,7 @@ export class Tw2EffectRes extends Tw2Resource
             headerSize = reader.ReadUInt32();
             if (headerSize === 0)
             {
-                this.OnError(new ErrShaderHeaderSize({path: this.path}));
+                this.OnError(new ErrShaderHeaderSize({ path: this.path }));
                 return;
             }
 

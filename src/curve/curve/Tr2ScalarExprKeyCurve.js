@@ -1,4 +1,4 @@
-import {Tw2Curve, Tw2CurveKey} from "./Tw2Curve";
+import { Tw2Curve, Tw2CurveKey } from "./Tw2Curve";
 
 /**
  * Tr2ScalarExprKey
@@ -36,15 +36,15 @@ export class Tr2ScalarExprKey extends Tw2CurveKey
     static black(r)
     {
         return [
-            ["input1", r.float],
-            ["input2", r.float],
-            ["input3", r.float],
-            ["interpolation", r.uint],
-            ["left", r.float],
-            ["right", r.float],
-            ["time", r.float],
-            ["timeExpression", r.string],
-            ["value", r.float],
+            [ "input1", r.float ],
+            [ "input2", r.float ],
+            [ "input3", r.float ],
+            [ "interpolation", r.uint ],
+            [ "left", r.float ],
+            [ "right", r.float ],
+            [ "time", r.float ],
+            [ "timeExpression", r.string ],
+            [ "value", r.float ],
         ];
     }
 
@@ -80,9 +80,9 @@ export class Tr2ScalarExprKeyCurve extends Tw2Curve
     static black(r)
     {
         return [
-            ["interpolation", r.uint],
-            ["keys", r.array],
-            ["name", r.string],
+            [ "interpolation", r.uint ],
+            [ "keys", r.array ],
+            [ "name", r.string ],
         ];
     }
 

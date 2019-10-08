@@ -1,5 +1,5 @@
-import {findElementByProperty} from "../../global/util";
-import {Tw2Error} from "../../core";
+import { findElementByProperty } from "../../global/util";
+import { Tw2Error } from "../../core";
 
 /**
  * EveSOFDataPattern
@@ -59,7 +59,7 @@ export class EveSOFDataPattern
                 return this.projections[i];
             }
         }
-        throw new ErrSOFProjectionNotFound({pattern: this.name, projection: name});
+        throw new ErrSOFProjectionNotFound({ pattern: this.name, projection: name });
     }
 
     /**
@@ -70,10 +70,10 @@ export class EveSOFDataPattern
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["layer1", r.object],
-            ["layer2", r.object],
-            ["projections", r.array]
+            [ "name", r.string ],
+            [ "layer1", r.object ],
+            [ "layer2", r.object ],
+            [ "projections", r.array ]
         ];
     }
 }

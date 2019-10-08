@@ -1,5 +1,5 @@
-import {Tw2GeometryLineBatch} from "../batch";
-import {Tw2MeshArea} from "./Tw2MeshArea";
+import { Tw2GeometryLineBatch } from "../batch";
+import { Tw2MeshArea } from "./Tw2MeshArea";
 
 /**
  * Tw2MeshLineArea

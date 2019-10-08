@@ -20,8 +20,8 @@ export class Tr2ActionPlaySound
     static black(r)
     {
         return [
-            ["emitter", r.string],
-            ["event", r.string]
+            [ "emitter", r.string ],
+            [ "event", r.string ]
         ];
     }
 

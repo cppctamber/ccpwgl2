@@ -1,5 +1,5 @@
-import {quat} from "../../../global";
-import {Tw2CurveSequencer} from "../Tw2CurveSequencer";
+import { quat } from "../../../global";
+import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
  * Tw2QuaternionSequencer

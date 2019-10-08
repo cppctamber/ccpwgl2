@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2KelvinColor
@@ -22,8 +22,8 @@ export class Tr2KelvinColor extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["temperature", r.float],
-            ["tint", r.float],
+            [ "temperature", r.float ],
+            [ "tint", r.float ],
         ];
     }
 

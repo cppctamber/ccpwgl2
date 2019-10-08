@@ -1,6 +1,6 @@
-import {assignIfExists} from "../../global/util";
-import {Tw2Effect} from "../mesh/Tw2Effect";
-import {Tw2BaseClass} from "../../global/class/Tw2BaseClass";
+import { assignIfExists } from "../../global/util";
+import { Tw2Effect } from "../mesh/Tw2Effect";
+import { Tw2BaseClass } from "../../global/class/Tw2BaseClass";
 
 /**
  * Post effect step
@@ -77,7 +77,7 @@ export class Tw2PostEffectStep extends Tw2BaseClass
     static from(opt = {})
     {
         const item = new this();
-        assignIfExists(item, opt, ["name", "display", "target", "index"]);
+        assignIfExists(item, opt, [ "name", "display", "target", "index" ]);
 
         if (opt.inputs)
         {

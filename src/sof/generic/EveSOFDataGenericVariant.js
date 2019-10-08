@@ -20,9 +20,9 @@ export class EveSOFDataGenericVariant
     static black(r)
     {
         return [
-            ["hullArea", r.object],
-            ["isTransparent", r.boolean],
-            ["name", r.string],
+            [ "hullArea", r.object ],
+            [ "isTransparent", r.boolean ],
+            [ "name", r.string ],
         ];
     }
 }

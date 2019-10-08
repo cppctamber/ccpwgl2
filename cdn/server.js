@@ -443,7 +443,7 @@ function getStaticJSONFile(fileName, res)
     }
 
     res.statusCode = 404;
-    res.end(stringify({error: err}));
+    res.end(stringify({ error: err }));
     log(fileName, err, true);
     cookies(fileName);
 }
@@ -478,7 +478,7 @@ function getFile(fileName, req, res)
     if (!resMapping[fileName])
     {
         res.statusCode = 404;
-        res.end(stringify({error:`Invalid file name: ${fileName}`}));
+        res.end(stringify({ error: `Invalid file name: ${fileName}` }));
         log(fileName, "Invalid file name", true);
         cookies(fileName);
         return;
@@ -494,7 +494,7 @@ function getFile(fileName, req, res)
         {
             cookies(fileName);
             res.statusCode = 500;
-            res.end(stringify({error: err}));
+            res.end(stringify({ error: err }));
             log(fileName, err, true);
         }
         else

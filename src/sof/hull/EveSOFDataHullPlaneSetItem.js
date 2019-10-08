@@ -1,4 +1,4 @@
-import {quat, vec3, vec4} from "../../global";
+import { quat, vec3, vec4 } from "../../global";
 
 
 /**
@@ -39,17 +39,17 @@ export class EveSOFDataHullPlaneSetItem
     static black(r)
     {
         return [
-            ["boneIndex", r.uint],
-            ["color", r.vector4],
-            ["groupIndex", r.uint],
-            ["layer1Scroll", r.vector4],
-            ["layer1Transform", r.vector4],
-            ["layer2Scroll", r.vector4],
-            ["layer2Transform", r.vector4],
-            ["maskMapAtlasIndex", r.uint],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3]
+            [ "boneIndex", r.uint ],
+            [ "color", r.vector4 ],
+            [ "groupIndex", r.uint ],
+            [ "layer1Scroll", r.vector4 ],
+            [ "layer1Transform", r.vector4 ],
+            [ "layer2Scroll", r.vector4 ],
+            [ "layer2Transform", r.vector4 ],
+            [ "maskMapAtlasIndex", r.uint ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ]
         ];
     }
 }

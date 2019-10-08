@@ -16,7 +16,7 @@ export class EveSOFDataGenericString
     static black(r)
     {
         return [
-            ["str", r.string],
+            [ "str", r.string ],
         ];
     }
 }

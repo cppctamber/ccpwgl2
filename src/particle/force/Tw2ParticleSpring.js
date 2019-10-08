@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {Tw2ParticleForce} from "./Tw2ParticleForce";
+import { vec3 } from "../../global";
+import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleSpring
@@ -38,8 +38,8 @@ export class Tw2ParticleSpring extends Tw2ParticleForce
     static black(r)
     {
         return [
-            ["position", r.vector3],
-            ["springConstant", r.float]
+            [ "position", r.vector3 ],
+            [ "springConstant", r.float ]
         ];
     }
 

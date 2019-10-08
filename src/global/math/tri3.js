@@ -1,7 +1,7 @@
-import {vec3} from "./vec3";
-import {mat3} from "./mat3";
-import {pln} from "./pln";
-import {lne3} from "./lne3";
+import { vec3 } from "./vec3";
+import { mat3 } from "./mat3";
+import { pln } from "./pln";
+import { lne3 } from "./lne3";
 
 /**
  * 3d Triangle
@@ -216,7 +216,7 @@ tri3.getClosestEdgeToPoint = (function()
         {
             v0 = vec3.create();
             v1 = vec3.create();
-            edgeList = [lne3.create(), lne3.create(), lne3.create()];
+            edgeList = [ lne3.create(), lne3.create(), lne3.create() ];
         }
 
         // Get the closest point on the triangle to the supplied point
@@ -267,7 +267,7 @@ tri3.getClosestPointToPoint = (function()
         if (!plane)
         {
             plane = pln.create();
-            edgeList = [lne3.create(), lne3.create(), lne3.create()];
+            edgeList = [ lne3.create(), lne3.create(), lne3.create() ];
             projectedPoint = vec3.create();
             closestPoint = vec3.create();
             vec3_0 = vec3.create();

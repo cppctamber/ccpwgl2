@@ -1,5 +1,5 @@
-import {Tw2EventEmitter} from "./class";
-import {Tw2ResMan, Tw2Device, Tw2Logger} from "./engine";
+import { Tw2EventEmitter } from "./class";
+import { Tw2ResMan, Tw2Device, Tw2Logger } from "./engine";
 import {
     isArray,
     isFunction,
@@ -16,7 +16,7 @@ import * as readers from "../core/reader/Tw2BlackPropertyReaders";
 import * as math from "./math";
 import * as util from "./util";
 import * as consts from "./engine/Tw2Constant";
-import { 
+import {
     ErrSingletonInstantiation,
     ErrStoreValueInvalid,
     ErrStoreValueMissing,
@@ -124,9 +124,9 @@ class Tw2Library extends Tw2EventEmitter
         instanceCount++;
         if (instanceCount > 1)
         {
-            throw new ErrSingletonInstantiation({class: "Tw2Library"});
+            throw new ErrSingletonInstantiation({ class: "Tw2Library" });
         }
-        
+
         super();
         Tw2EventEmitter.defaultLogger = this;
         createDebugProperty(this);
@@ -141,7 +141,7 @@ class Tw2Library extends Tw2EventEmitter
     {
         if ("tw2" in target)
         {
-            Reflect.defineProperty(target, "tw2", {value: this, writable: false, configurable: false});
+            Reflect.defineProperty(target, "tw2", { value: this, writable: false, configurable: false });
         }
     }
 
@@ -155,7 +155,7 @@ class Tw2Library extends Tw2EventEmitter
      * @param {{}} [options.glParams]                     - Optional gl parameters
      * @param {Function} [options.render]                 - Optional render function
      */
-    Initialize(options={})
+    Initialize(options = {})
     {
         this.Register(options);
         this.device.CreateDevice(options.canvas, options.glParams);
@@ -220,7 +220,7 @@ class Tw2Library extends Tw2EventEmitter
      * @param {String} [fallbackTitle]
      * @returns {*}
      */
-    Log(logType, log, fallbackTitle="Library")
+    Log(logType, log, fallbackTitle = "Library")
     {
         return this.logger.Log(logType, log, fallbackTitle);
     }
@@ -244,7 +244,7 @@ class Tw2Library extends Tw2EventEmitter
         if (options.resMan) this.resMan.Register(options.resMan);
         if (options.device) this.device.Register(options.device);
 
-        const {store} = options;
+        const { store } = options;
         if (store)
         {
             // Type must be first
@@ -572,7 +572,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetExtension(extension, value)
     {
-        return setStoreKey(this, "extension", extension, value, {isValue: isFunction});
+        return setStoreKey(this, "extension", extension, value, { isValue: isFunction });
     }
 
     /**
@@ -592,7 +592,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetBlack(name)
     {
-        return getStoreKey(this, "black", name, {isClassName: true});
+        return getStoreKey(this, "black", name, { isClassName: true });
     }
 
     /**
@@ -628,7 +628,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     GetClass(name)
     {
-        return getStoreKey(this, "class", name, {isClassName: true});
+        return getStoreKey(this, "class", name, { isClassName: true });
     }
 
     /**
@@ -639,7 +639,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     SetClass(name, Constructor)
     {
-        const Value = setStoreKey(this, "class", name, Constructor, {isValue: isFunction});
+        const Value = setStoreKey(this, "class", name, Constructor, { isValue: isFunction });
 
         Tw2Library.prototype[name] = Value;
 
@@ -764,7 +764,7 @@ class Tw2Library extends Tw2EventEmitter
     GetTypeByValue(value)
     {
         const types = this._store.type;
-        for (let [key, type] of types)
+        for (let [ key, type ] of types)
         {
             if ("isValue" in type && type.isValue(value)) return type;
         }
@@ -816,7 +816,7 @@ function validateStore(library, storeType)
 {
     if (!library._store[storeType])
     {
-        throw new ErrStoreInvalid({ store: storeType});
+        throw new ErrStoreInvalid({ store: storeType });
     }
 }
 
@@ -866,7 +866,7 @@ function getStoreKey(library, storeType, key, options)
     }
 
     library.emit("store.missing", storeType, key);
-    throw new ErrStoreValueMissing({ store: storeType, key});
+    throw new ErrStoreValueMissing({ store: storeType, key });
 }
 
 /**
@@ -887,19 +887,19 @@ function setStoreKey(library, storeType, key, value, options)
 
     if (!value)
     {
-        throw new ErrStoreValueInvalid({ store: storeType, key});
+        throw new ErrStoreValueInvalid({ store: storeType, key });
     }
 
     if (options)
     {
         if (options.reserved && options.reserved.includes(key))
         {
-            throw new ErrStoreKeyReserved({ store: storeType, key});
+            throw new ErrStoreKeyReserved({ store: storeType, key });
         }
 
         if (options.isValue && !options.isValue(value))
         {
-            throw new ErrStoreValueInvalid({ store: storeType, key});
+            throw new ErrStoreValueInvalid({ store: storeType, key });
         }
 
         if (options.onBeforeSet)
@@ -912,7 +912,7 @@ function setStoreKey(library, storeType, key, value, options)
 
     library
         .emit("store.set", storeType, key, value)
-        .msg("debug", {name: "Store", message: `${storeType} registered: ${key}`});
+        .msg("debug", { name: "Store", message: `${storeType} registered: ${key}` });
 
     return value;
 }

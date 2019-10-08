@@ -27,12 +27,12 @@ export class EveSOFDataGenericShader
     static black(r)
     {
         return [
-            ["defaultParameters", r.array],
-            ["defaultTextures", r.array],
-            ["doGenerateDepthArea", r.boolean],
-            ["parameters", r.array],
-            ["shader", r.path],
-            ["transparencyTextureName", r.string],
+            [ "defaultParameters", r.array ],
+            [ "defaultTextures", r.array ],
+            [ "doGenerateDepthArea", r.boolean ],
+            [ "parameters", r.array ],
+            [ "shader", r.path ],
+            [ "transparencyTextureName", r.string ],
         ];
     }
 }

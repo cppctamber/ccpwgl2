@@ -1,6 +1,6 @@
-import {vec3, mat4, util, device, Tw2BaseClass} from "../global";
-import {Tw2VertexDeclaration} from "../core";
-import {Tw2ParticleElement} from "./element";
+import { vec3, mat4, util, device, Tw2BaseClass } from "../global";
+import { Tw2VertexDeclaration } from "../core";
+import { Tw2ParticleElement } from "./element";
 
 /**
  * Tw2ParticleSystem
@@ -67,17 +67,17 @@ export class Tw2ParticleSystem extends Tw2BaseClass
     _aabbMax = vec3.create();
     _aliveCount = 0;
     _bufferDirty = false;
-    _buffers = [null, null];
+    _buffers = [ null, null ];
     _declaration = null;
     _elements = [];
-    _instanceStride = [null, null];
+    _instanceStride = [ null, null ];
     _isValid = false;
     _distancesBuffer = null; //Float32Array
     _sortedBuffer = null; //Float32Array
     _sortedIndexes = null; // Array
-    _stdElements = [null, null, null, null];
+    _stdElements = [ null, null, null, null ];
     _vb = null;
-    _vertexStride = [null, null];
+    _vertexStride = [ null, null ];
 
     /**
      * Constructor
@@ -125,12 +125,12 @@ export class Tw2ParticleSystem extends Tw2BaseClass
 
         if (this.elements.length === 0) return;
 
-        this._stdElements = [null, null, null, null];
+        this._stdElements = [ null, null, null, null ];
         this._elements = [];
-        this._instanceStride = [0, 0];
-        this._vertexStride = [0, 0];
+        this._instanceStride = [ 0, 0 ];
+        this._vertexStride = [ 0, 0 ];
         this._declaration = new Tw2VertexDeclaration();
-        this._buffers = [null, null];
+        this._buffers = [ null, null ];
 
         for (let i = 0; i < this.elements.length; ++i)
         {
@@ -181,7 +181,7 @@ export class Tw2ParticleSystem extends Tw2BaseClass
             this._elements[i].instanceStride = this._instanceStride[bufferIndex];
         }
 
-        this._buffers = [null, null];
+        this._buffers = [ null, null ];
         if (this._instanceStride[0] && this.maxParticleCount)
         {
             this._buffers[0] = new Float32Array(this._instanceStride[0] * this.maxParticleCount);
@@ -586,19 +586,19 @@ export class Tw2ParticleSystem extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["constraints", r.array],
-            ["name", r.string],
-            ["applyAging", r.boolean],
-            ["applyForce", r.boolean],
-            ["elements", r.array],
-            ["emitParticleDuringLifeEmitter", r.object],
-            ["emitParticleOnDeathEmitter", r.object],
-            ["forces", r.array],
-            ["maxParticleCount", r.uint],
-            ["requiresSorting", r.boolean],
-            ["updateBoundingBox", r.boolean],
-            ["updateSimulation", r.boolean],
-            ["useSimTimeRebase", r.boolean]
+            [ "constraints", r.array ],
+            [ "name", r.string ],
+            [ "applyAging", r.boolean ],
+            [ "applyForce", r.boolean ],
+            [ "elements", r.array ],
+            [ "emitParticleDuringLifeEmitter", r.object ],
+            [ "emitParticleOnDeathEmitter", r.object ],
+            [ "forces", r.array ],
+            [ "maxParticleCount", r.uint ],
+            [ "requiresSorting", r.boolean ],
+            [ "updateBoundingBox", r.boolean ],
+            [ "updateSimulation", r.boolean ],
+            [ "useSimTimeRebase", r.boolean ]
         ];
     }
 

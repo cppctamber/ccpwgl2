@@ -1,5 +1,5 @@
-import {vec4} from "../../global";
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
+import { vec4 } from "../../global";
+import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
 /**
  * Color sequencer
@@ -100,9 +100,9 @@ export class TriColorSequencer extends Tw2CurveSequencer
     static black(r)
     {
         return [
-            ["functions", r.array],
-            ["name", r.string],
-            ["value", r.vector4]
+            [ "functions", r.array ],
+            [ "name", r.string ],
+            [ "value", r.vector4 ]
         ];
     }
 

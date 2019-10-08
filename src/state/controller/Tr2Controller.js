@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2Controller
@@ -25,10 +25,10 @@ export class Tr2Controller extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["isShared", r.boolean],
-            ["stateMachines", r.array],
-            ["name", r.string],
-            ["variables", r.array]
+            [ "isShared", r.boolean ],
+            [ "stateMachines", r.array ],
+            [ "name", r.string ],
+            [ "variables", r.array ]
         ];
     }
 

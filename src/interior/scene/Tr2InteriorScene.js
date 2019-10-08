@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2InteriorScene
@@ -22,8 +22,8 @@ export class Tr2InteriorScene extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["dynamics", r.array],
-            ["lights", r.array]
+            [ "dynamics", r.array ],
+            [ "lights", r.array ]
         ];
     }
 

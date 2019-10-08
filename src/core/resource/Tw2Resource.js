@@ -1,7 +1,7 @@
-import {resMan} from "../../global";
-import {Tw2Error} from "../Tw2Error";
-import {isFunction} from "../../global/util";
-import {Tw2Notifications} from "../../global/class/Tw2Notifications";
+import { resMan } from "../../global";
+import { Tw2Error } from "../Tw2Error";
+import { isFunction } from "../../global/util";
+import { Tw2Notifications } from "../../global/class/Tw2Notifications";
 
 /**
  * Tw2Resource base class
@@ -115,7 +115,7 @@ export class Tw2Resource extends Tw2Notifications
     {
         if (this.IsLoaded() || this.IsPrepared())
         {
-            this.Unload({hide: true, detail: "reloading"});
+            this.Unload({ hide: true, detail: "reloading" });
         }
 
         if (this.IsPurged() || this.IsUnloaded())
@@ -132,7 +132,7 @@ export class Tw2Resource extends Tw2Notifications
         this.activeFrame = resMan.activeFrame;
         if (this.IsPurged() || this.IsUnloaded())
         {
-            this.Reload({hide: true, detail: "inuse"});
+            this.Reload({ hide: true, detail: "inuse" });
         }
     }
 
@@ -192,7 +192,7 @@ export class Tw2Resource extends Tw2Notifications
 
         if (wasGood)
         {
-            this.Unload({hide: true, detail: "errored"});
+            this.Unload({ hide: true, detail: "errored" });
         }
 
         resMan.OnPathEvent(this.path, "error", err);

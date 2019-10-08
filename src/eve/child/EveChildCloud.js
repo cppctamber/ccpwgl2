@@ -1,5 +1,5 @@
-import {mat4, quat, vec3} from "../../global";
-import {EveChild} from "./EveChild";
+import { mat4, quat, vec3 } from "../../global";
+import { EveChild } from "./EveChild";
 
 
 /**
@@ -46,14 +46,14 @@ export class EveChildCloud extends EveChild
     static black(r)
     {
         return [
-            ["cellScreenSize", r.float],
-            ["sortingModifier", r.float],
-            ["effect", r.object],
-            ["name", r.string],
-            ["preTesselationLevel", r.uint],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["translation", r.vector3]
+            [ "cellScreenSize", r.float ],
+            [ "sortingModifier", r.float ],
+            [ "effect", r.object ],
+            [ "name", r.string ],
+            [ "preTesselationLevel", r.uint ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "translation", r.vector3 ]
         ];
     }
 

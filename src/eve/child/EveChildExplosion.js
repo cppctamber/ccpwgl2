@@ -1,5 +1,5 @@
-import {mat4, quat, vec3} from "../../global";
-import {EveChild} from "./EveChild";
+import { mat4, quat, vec3 } from "../../global";
+import { EveChild } from "./EveChild";
 
 /**
  * EveChildExplosion
@@ -62,21 +62,21 @@ export class EveChildExplosion extends EveChild
     static black(r)
     {
         return [
-            ["globalDuration", r.float],
-            ["globalExplosion", r.object],
-            ["globalExplosionDelay", r.float],
-            ["globalExplosions", r.array],
-            ["globalScaling", r.vector3],
-            ["localDuration", r.float],
-            ["localExplosion", r.object],
-            ["localExplosions", r.array],
-            ["localExplosionInterval", r.float],
-            ["localExplosionIntervalFactor", r.float],
-            ["localExplosionShared", r.object],
-            ["localTransform", r.matrix],
-            ["name", r.string],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3]
+            [ "globalDuration", r.float ],
+            [ "globalExplosion", r.object ],
+            [ "globalExplosionDelay", r.float ],
+            [ "globalExplosions", r.array ],
+            [ "globalScaling", r.vector3 ],
+            [ "localDuration", r.float ],
+            [ "localExplosion", r.object ],
+            [ "localExplosions", r.array ],
+            [ "localExplosionInterval", r.float ],
+            [ "localExplosionIntervalFactor", r.float ],
+            [ "localExplosionShared", r.object ],
+            [ "localTransform", r.matrix ],
+            [ "name", r.string ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ]
         ];
     }
 

@@ -1,4 +1,4 @@
-import {Tw2ParticleEmitter} from "./Tw2ParticleEmitter";
+import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 /**
  * Tw2DynamicEmitter
@@ -95,11 +95,11 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["particleSystem", r.object],
-            ["generators", r.array],
-            ["maxParticles", r.uint],
-            ["rate", r.float],
+            [ "name", r.string ],
+            [ "particleSystem", r.object ],
+            [ "generators", r.array ],
+            [ "maxParticles", r.uint ],
+            [ "rate", r.float ],
         ];
     }
 

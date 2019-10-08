@@ -1,5 +1,5 @@
-import {mat4} from "../../global";
-import {Tw2VectorParameter} from "./Tw2VectorParameter";
+import { mat4 } from "../../global";
+import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 /**
  * Tw2Matrix4Parameter
@@ -118,8 +118,8 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["value", r.matrix]
+            [ "name", r.string ],
+            [ "value", r.matrix ]
         ];
     }
 

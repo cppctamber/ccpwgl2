@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * EveTacticalOverlay
@@ -34,14 +34,14 @@ export class EveTacticalOverlay extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["anchorEffect", r.object],
-            ["arcSegmentMultiplier", r.float],
-            ["connectorEffect", r.object],
-            ["segmentsLow", r.float],
-            ["segmentsMedium", r.float],
-            ["segmentsHigh", r.float],
-            ["targetMaxSegments", r.float],
-            ["velocityEffect", r.object]
+            [ "anchorEffect", r.object ],
+            [ "arcSegmentMultiplier", r.float ],
+            [ "connectorEffect", r.object ],
+            [ "segmentsLow", r.float ],
+            [ "segmentsMedium", r.float ],
+            [ "segmentsHigh", r.float ],
+            [ "targetMaxSegments", r.float ],
+            [ "velocityEffect", r.object ]
         ];
     }
 

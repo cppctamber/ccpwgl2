@@ -1,4 +1,4 @@
-import {vec4} from "../../global";
+import { vec4 } from "../../global";
 
 
 /**
@@ -23,9 +23,9 @@ export class EveSOFDataFactionPlaneSet
     static black(r)
     {
         return [
-            ["color", r.vector4],
-            ["groupIndex", r.uint],
-            ["name", r.string],
+            [ "color", r.vector4 ],
+            [ "groupIndex", r.uint ],
+            [ "name", r.string ],
         ];
     }
 }

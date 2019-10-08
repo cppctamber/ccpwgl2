@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
-import {util, vec3, Tw2BaseClass} from "../../global";
-import {ErrAbstractClassMethod} from "../../core";
+import { util, vec3, Tw2BaseClass } from "../../global";
+import { ErrAbstractClassMethod } from "../../core";
 
 /**
  * Tw2ParticleAttributeGenerator base class

@@ -1,4 +1,4 @@
-import {Tw2Resource} from "./Tw2Resource";
+import { Tw2Resource } from "./Tw2Resource";
 import {
     ErrResourceFormat,
     ErrHTTPRequest,
@@ -170,7 +170,7 @@ export class Tw2TextureRes extends Tw2Resource
                 if (this.isCube)
                 {
                     // TODO: Add dds cube map support
-                    throw new ErrFeatureNotImplemented({feature: "DDS cube maps"});
+                    throw new ErrFeatureNotImplemented({ feature: "DDS cube maps" });
                 }
                 else
                 {
@@ -235,7 +235,7 @@ export class Tw2TextureRes extends Tw2Resource
                 return true;
 
             default:
-                throw new ErrResourceExtensionUnregistered({path, extension});
+                throw new ErrResourceExtensionUnregistered({ path, extension });
         }
 
         resMan.AddPendingLoad(path);
@@ -248,7 +248,7 @@ export class Tw2TextureRes extends Tw2Resource
         image.onerror = () =>
         {
             resMan.RemovePendingLoad(path);
-            this.OnError(new ErrHTTPRequest({path}));
+            this.OnError(new ErrHTTPRequest({ path }));
         };
 
         /**
@@ -293,8 +293,8 @@ export class Tw2TextureRes extends Tw2Resource
         this.texture = texture;
         this._extension = null;
         this._isAttached = true;
-        this.OnLoaded({hide: true, path: "attachment"});
-        this.OnPrepared({hide: true, path: "attachment"});
+        this.OnLoaded({ hide: true, path: "attachment" });
+        this.OnPrepared({ hide: true, path: "attachment" });
     }
 
     /**

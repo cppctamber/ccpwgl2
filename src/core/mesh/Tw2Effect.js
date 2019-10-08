@@ -1,7 +1,7 @@
-import {util, resMan, device, tw2, Tw2BaseClass} from "../../global";
-import {Tw2TextureParameter} from "../parameter/Tw2TextureParameter";
-import {ErrFeatureNotImplemented} from "../Tw2Error";
-import {Tw2Vector4Parameter} from "../parameter";
+import { util, resMan, device, tw2, Tw2BaseClass } from "../../global";
+import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
+import { ErrFeatureNotImplemented } from "../Tw2Error";
+import { Tw2Vector4Parameter } from "../parameter";
 
 /**
  * Tw2Effect
@@ -654,7 +654,7 @@ export class Tw2Effect extends Tw2BaseClass
 
         if (values)
         {
-            util.assignIfExists(effect, values, ["name", "effectFilePath", "display", "autoParameter",]);
+            util.assignIfExists(effect, values, [ "name", "effectFilePath", "display", "autoParameter", ]);
 
             if ("parameters" in values) effect.SetParameters(values.parameters);
             if ("textures" in values) effect.SetTextures(values.textures);
@@ -698,31 +698,31 @@ export class Tw2Effect extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["effectFilePath", r.path],
-            ["name", r.string],
-            ["parameters", r.plainFromArray("name")],
+            [ "effectFilePath", r.path ],
+            [ "name", r.string ],
+            [ "parameters", r.plainFromArray("name") ],
             // Reroute resources to parameters for now
-            ["resources", r.intercept((reader, effect) =>
+            [ "resources", r.intercept((reader, effect) =>
             {
                 Object.assign(effect.parameters, r.plainFromArray("name")(reader));
-            })],
+            }) ],
             // Reroute constant parameters for now
-            ["constParameters", r.intercept((reader, effect) =>
+            [ "constParameters", r.intercept((reader, effect) =>
             {
                 const result = r.structList(Tw2ConstantParameter)(reader);
                 for (let i = 0; i < result.length; i++)
                 {
                     effect.parameters[result[i].name] = result[i];
                 }
-            })],
-            ["options", (reader) =>
+            }) ],
+            [ "options", (reader) =>
             {
-                throw ErrFeatureNotImplemented({feature: "Tw2Effect options"});
-            }],
-            ["samplerOverrides", (reader) =>
+                throw ErrFeatureNotImplemented({ feature: "Tw2Effect options" });
+            } ],
+            [ "samplerOverrides", (reader) =>
             {
-                throw ErrFeatureNotImplemented({feature: "Tw2Effect samplerOverrides"});
-            }]
+                throw ErrFeatureNotImplemented({ feature: "Tw2Effect samplerOverrides" });
+            } ]
         ];
     }
 
@@ -746,13 +746,13 @@ class Tw2ConstantParameter
         const item = new Tw2Vector4Parameter();
 
         // Temporary
-        Object.defineProperty(item, "isConstant", {value: true, writable: false});
+        Object.defineProperty(item, "isConstant", { value: true, writable: false });
 
         item.name = r.ReadStringU16();
         r.ExpectU16(0, "unknown content");
         r.ExpectU16(0, "unknown content");
         r.ExpectU16(0, "unknown content");
-        item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
+        item.SetValue(new Float32Array([ r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32() ]));
         return item;
     }
 

@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2PostProcess
@@ -19,7 +19,7 @@ export class Tr2PostProcess extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["stages", r.array]
+            [ "stages", r.array ]
         ];
     }
 

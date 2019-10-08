@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {Tw2ParticleForce} from "./Tw2ParticleForce";
+import { vec3 } from "../../global";
+import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 /**
  * Tr2ParticleVortexForce
@@ -47,9 +47,9 @@ export class Tr2ParticleVortexForce extends Tw2ParticleForce
     static black(r)
     {
         return [
-            ["axis", r.vector3],
-            ["magnitude", r.float],
-            ["position", r.vector3]
+            [ "axis", r.vector3 ],
+            [ "magnitude", r.float ],
+            [ "position", r.vector3 ]
         ];
     }
 

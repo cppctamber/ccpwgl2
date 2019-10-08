@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {Tw2CurveAdapter} from "./Tw2CurveAdapter";
+import { vec3 } from "../../global";
+import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
 
 /**
  * Tr2TranslationAdapter
@@ -41,8 +41,8 @@ export class Tr2TranslationAdapter extends Tw2CurveAdapter
     static black(r)
     {
         return [
-            ["curve", r.object],
-            ["value", r.vector3]
+            [ "curve", r.object ],
+            [ "value", r.vector3 ]
         ];
     }
 

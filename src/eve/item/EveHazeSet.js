@@ -1,6 +1,6 @@
-import {quat, vec3, mat4, Tw2BaseClass} from "../../global";
-import {Tw2RenderBatch} from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
+import { quat, vec3, mat4, Tw2BaseClass } from "../../global";
+import { Tw2RenderBatch } from "../../core";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**
  * Haze set render batch

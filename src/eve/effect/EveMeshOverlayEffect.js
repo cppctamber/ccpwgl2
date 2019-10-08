@@ -1,7 +1,7 @@
-import {Tw2GeometryBatch, Tw2Effect} from "../../core";
-import {Tw2CurveSet} from "../../curve";
-import {Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM_DISTORTION, store} from "../../global";
-import {assignIfExists, toArray} from "../../global/util";
+import { Tw2GeometryBatch, Tw2Effect } from "../../core";
+import { Tw2CurveSet } from "../../curve";
+import { Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM_DISTORTION, store } from "../../global";
+import { assignIfExists, toArray } from "../../global/util";
 
 
 /**
@@ -81,7 +81,7 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
 
         if (values)
         {
-            assignIfExists(item, values, ["name", "display", "update"]);
+            assignIfExists(item, values, [ "name", "display", "update" ]);
 
             if (values.curveSet)
             {
@@ -189,12 +189,12 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["additiveEffects", r.array],
-            ["curveSet", r.object],
-            ["distortionEffects", r.array],
-            ["name", r.string],
-            ["opaqueEffects", r.array],
-            ["transparentEffects", r.array],
+            [ "additiveEffects", r.array ],
+            [ "curveSet", r.object ],
+            [ "distortionEffects", r.array ],
+            [ "name", r.string ],
+            [ "opaqueEffects", r.array ],
+            [ "transparentEffects", r.array ],
         ];
     }
 

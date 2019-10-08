@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
-import {util, Tw2BaseClass} from "../../global";
-import {ErrAbstractClassMethod} from "../Tw2Error";
+import { util, Tw2BaseClass } from "../../global";
+import { ErrAbstractClassMethod } from "../Tw2Error";
 
 /**
  * Tw2Parameter base class

@@ -1,4 +1,4 @@
-import {vec3} from "../global";
+import { vec3 } from "../global";
 
 /**
  * Tr2DistanceTracker
@@ -23,9 +23,9 @@ export class Tr2DistanceTracker
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["direction", r.vector3],
-            ["targetPosition", r.vector3]
+            [ "name", r.string ],
+            [ "direction", r.vector3 ],
+            [ "targetPosition", r.vector3 ]
         ];
     }
 

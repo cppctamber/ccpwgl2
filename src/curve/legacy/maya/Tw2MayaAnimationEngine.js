@@ -1,5 +1,5 @@
-import {curve, util, vec4} from "../../../global";
-import {ErrFeatureNotImplemented} from "../../../core";
+import { curve, util, vec4 } from "../../../global";
+import { ErrFeatureNotImplemented } from "../../../core";
 
 /**
  * Tw2MayaAnimationEngine
@@ -220,7 +220,7 @@ export class Tw2MayaAnimationEngine
     _EvaluateInfinities(curve, segments, startSegment, time, bool)
     {
 
-        throw new ErrFeatureNotImplemented({feature: "Maya animation engine evaluate infinities"});
+        throw new ErrFeatureNotImplemented({ feature: "Maya animation engine evaluate infinities" });
 
     }
 
@@ -318,12 +318,12 @@ export class Tw2MayaAnimationEngine
                 else
                 {
                     index = mid;
-                    return [true, index];
+                    return [ true, index ];
                 }
             } while (low <= high);
             index = low;
         }
-        return [false, index];
+        return [ false, index ];
     }
 
     /**

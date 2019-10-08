@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * EveStretch2
@@ -33,14 +33,14 @@ export class EveStretch2 extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["destinationEmitter", r.object],
-            ["destinationLight", r.object],
-            ["effect", r.object],
-            ["loop", r.object],
-            ["name", r.string],
-            ["sourceEmitter", r.object],
-            ["sourceLight", r.object],
-            ["quadCount", r.uint]
+            [ "destinationEmitter", r.object ],
+            [ "destinationLight", r.object ],
+            [ "effect", r.object ],
+            [ "loop", r.object ],
+            [ "name", r.string ],
+            [ "sourceEmitter", r.object ],
+            [ "sourceLight", r.object ],
+            [ "quadCount", r.uint ]
         ];
     }
 

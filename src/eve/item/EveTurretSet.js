@@ -1,11 +1,11 @@
-import {vec3, vec4, quat, mat4, util, resMan, device} from "../../global";
+import { vec3, vec4, quat, mat4, util, resMan, device } from "../../global";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,
     Tw2AnimationController,
     Tw2ForwardingRenderBatch
 } from "../../core";
-import {EveObjectSet, EveObjectSetItem} from "./EveObjectSet";
+import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 
 /**
@@ -527,7 +527,7 @@ export class EveTurretSet extends EveObjectSet
 
         for (let i = 0; i < locators.length; i++)
         {
-            const {name, transform, bone = null} = locators[i];
+            const { name, transform, bone = null } = locators[i];
 
             let item = this.FindItemByLocatorName(name);
             if (!item)
@@ -912,12 +912,12 @@ export class EveTurretSet extends EveObjectSet
      */
     static perObjectData = {
         vs: [
-            ["baseCutoffData", 4],
-            ["turretSetData", 4],
-            ["shipMatrix", 16],
-            ["turretTranslation", 4 * 24],
-            ["turretRotation", 4 * 24],
-            ["turretPoseTransAndRot", 2 * 4 * 72]
+            [ "baseCutoffData", 4 ],
+            [ "turretSetData", 4 ],
+            [ "shipMatrix", 16 ],
+            [ "turretTranslation", 4 * 24 ],
+            [ "turretRotation", 4 * 24 ],
+            [ "turretPoseTransAndRot", 2 * 4 * 72 ]
         ]
     };
 
@@ -972,29 +972,29 @@ export class EveTurretSet extends EveObjectSet
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["bottomClipHeight", r.float],
-            ["boundingSphere", r.vector4],
-            ["chooseRandomLocator", r.boolean],
-            ["cyclingFireGroupCount", r.uint],
-            ["firingEffectResPath", r.path],
-            ["geometryResPath", r.path],
-            ["impactSize", r.float],
-            ["laserMissBehaviour", r.boolean],
-            ["locatorName", r.string],
-            ["maxCyclingFirePos", r.uint],
-            ["projectileMissBehaviour", r.boolean],
-            ["sysBoneHeight", r.float],
-            ["sysBonePitchMax", r.float],
-            ["sysBonePitchMin", r.float],
-            ["sysBonePitchFactor", r.float],
-            ["sysBonePitch01Factor", r.float],
-            ["sysBonePitch02Factor", r.float],
-            ["sysBonePitchOffset", r.float],
-            ["turretEffect", r.object],
-            ["updatePitchPose", r.boolean],
-            ["useDynamicBounds", r.boolean],
-            ["useRandomFiringDelay", r.boolean]
+            [ "name", r.string ],
+            [ "bottomClipHeight", r.float ],
+            [ "boundingSphere", r.vector4 ],
+            [ "chooseRandomLocator", r.boolean ],
+            [ "cyclingFireGroupCount", r.uint ],
+            [ "firingEffectResPath", r.path ],
+            [ "geometryResPath", r.path ],
+            [ "impactSize", r.float ],
+            [ "laserMissBehaviour", r.boolean ],
+            [ "locatorName", r.string ],
+            [ "maxCyclingFirePos", r.uint ],
+            [ "projectileMissBehaviour", r.boolean ],
+            [ "sysBoneHeight", r.float ],
+            [ "sysBonePitchMax", r.float ],
+            [ "sysBonePitchMin", r.float ],
+            [ "sysBonePitchFactor", r.float ],
+            [ "sysBonePitch01Factor", r.float ],
+            [ "sysBonePitch02Factor", r.float ],
+            [ "sysBonePitchOffset", r.float ],
+            [ "turretEffect", r.object ],
+            [ "updatePitchPose", r.boolean ],
+            [ "useDynamicBounds", r.boolean ],
+            [ "useRandomFiringDelay", r.boolean ]
         ];
     }
 

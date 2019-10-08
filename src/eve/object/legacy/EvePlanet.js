@@ -1,7 +1,7 @@
-import {mat4, util, device, resMan} from "../../../global/index";
-import {Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter} from "../../../core/index";
-import {EveTransform} from "../EveTransform";
-import {EveObject} from "./EveObject";
+import { mat4, util, device, resMan } from "../../../global/index";
+import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "../../../core/index";
+import { EveTransform } from "../EveTransform";
+import { EveObject } from "./EveObject";
 
 /**
  * EvePlanet
@@ -52,7 +52,7 @@ export class EvePlanet extends EveObject
      */
     Create(options = {}, onLoaded)
     {
-        const {name="", itemID = 0, resPath, atmospherePath, heightMap1, heightMap2} = options;
+        const { name = "", itemID = 0, resPath, atmospherePath, heightMap1, heightMap2 } = options;
 
         this.name = name;
         this.itemID = itemID;
@@ -118,7 +118,7 @@ export class EvePlanet extends EveObject
      */
     UpdateLod(frustum)
     {
-        const {scaling, translation} = this.highDetail;
+        const { scaling, translation } = this.highDetail;
         this._lod = !this._useLOD || !frustum.IsSphereVisible(translation, scaling[0]) ? 0 : 3;
     }
 

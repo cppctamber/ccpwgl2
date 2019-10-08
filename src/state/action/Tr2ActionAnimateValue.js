@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ActionAnimateValue
@@ -25,10 +25,10 @@ export class Tr2ActionAnimateValue extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["attribute", r.string],
-            ["curve", r.object],
-            ["path", r.path],
-            ["value", r.string]
+            [ "attribute", r.string ],
+            [ "curve", r.object ],
+            [ "path", r.path ],
+            [ "value", r.string ]
         ];
     }
 

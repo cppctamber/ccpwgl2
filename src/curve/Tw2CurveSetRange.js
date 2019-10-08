@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../global";
+import { Tw2BaseClass } from "../global";
 
 /**
  * Curve set range
@@ -25,10 +25,10 @@ export class Tw2CurveSetRange extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["endTime", r.float],
-            ["looped", r.boolean],
-            ["name", r.string],
-            ["startTime", r.float],
+            [ "endTime", r.float ],
+            [ "looped", r.boolean ],
+            [ "name", r.string ],
+            [ "startTime", r.float ],
         ];
     }
 

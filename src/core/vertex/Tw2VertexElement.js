@@ -1,4 +1,4 @@
-import {GL_FLOAT} from "../../global";
+import { GL_FLOAT } from "../../global";
 
 /**
  * Tw2VertexElement
@@ -47,12 +47,12 @@ export class Tw2VertexElement
         if (values)
         {
             // Compulsory
-            let {usage, usageIndex} = values;
+            let { usage, usageIndex } = values;
             item.usage = typeof usage === "string" ? this.Type[usage.toUpperCase()] : usage;
             item.usageIndex = usageIndex;
 
             // Optional
-            const {elements = null, type = GL_FLOAT, offset = 0, location = null, customSetter = null} = values;
+            const { elements = null, type = GL_FLOAT, offset = 0, location = null, customSetter = null } = values;
             item.offset = offset;
             item.elements = elements;
             item.type = type;
@@ -60,7 +60,7 @@ export class Tw2VertexElement
             item.customSetter = customSetter;
 
             // Unused
-            const {registerIndex = null, usedMask = null, attr = null} = values;
+            const { registerIndex = null, usedMask = null, attr = null } = values;
             item._registerIndex = registerIndex;
             item._usedMask = usedMask;
 

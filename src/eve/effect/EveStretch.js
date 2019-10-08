@@ -1,5 +1,5 @@
-import {vec3, mat4, util, Tw2BaseClass} from "../../global";
-import {Tw2Float} from "../../core";
+import { vec3, mat4, util, Tw2BaseClass } from "../../global";
+import { Tw2Float } from "../../core";
 
 /**
  * EveStretch
@@ -237,7 +237,7 @@ export class EveStretch extends Tw2BaseClass
             if (this._useTransformsForStretch)
             {
                 mat4.identity(m);
-                mat4.scale(m, m, [1, 1, scalingLength]);
+                mat4.scale(m, m, [ 1, 1, scalingLength ]);
                 mat4.multiply(m, this._sourceTransform, m);
             }
             else
@@ -252,7 +252,7 @@ export class EveStretch extends Tw2BaseClass
                 m[9] = -directionVec[1];
                 m[10] = -directionVec[2];
                 if (this._isNegZForward) scalingLength = -scalingLength;
-                mat4.scale(s, s, [1, 1, scalingLength]);
+                mat4.scale(s, s, [ 1, 1, scalingLength ]);
                 mat4.multiply(m, m, s);
             }
 
@@ -366,19 +366,19 @@ export class EveStretch extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["curveSets", r.array],
-            ["dest", r.object],
-            ["destObject", r.object],
-            ["length", r.object],
-            ["moveCompletion", r.object],
-            ["moveObject", r.object],
-            ["name", r.string],
-            ["progressCurve", r.object],
-            ["source", r.object],
-            ["sourceLights", r.array],
-            ["sourceObject", r.object],
-            ["stretchObject", r.object],
-            ["useCurveLod", r.boolean]
+            [ "curveSets", r.array ],
+            [ "dest", r.object ],
+            [ "destObject", r.object ],
+            [ "length", r.object ],
+            [ "moveCompletion", r.object ],
+            [ "moveObject", r.object ],
+            [ "name", r.string ],
+            [ "progressCurve", r.object ],
+            [ "source", r.object ],
+            [ "sourceLights", r.array ],
+            [ "sourceObject", r.object ],
+            [ "stretchObject", r.object ],
+            [ "useCurveLod", r.boolean ]
         ];
     }
 

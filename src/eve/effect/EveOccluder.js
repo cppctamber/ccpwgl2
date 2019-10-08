@@ -1,5 +1,5 @@
-import {vec4, mat4, util, device, tw2, Tw2BaseClass} from "../../global";
-import {Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator} from "../../core";
+import { vec4, mat4, util, device, tw2, Tw2BaseClass } from "../../global";
+import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "../../core";
 
 /**
  * EveOccluder
@@ -49,12 +49,12 @@ export class EveOccluder extends Tw2BaseClass
             this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
         }
 
-        tw2.SetVariableValue("OccluderValue", [(1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0]);
+        tw2.SetVariableValue("OccluderValue", [ (1 << (index * 2)) / 255.0, (2 << (index * 2)) / 255.0, 0, 0 ]);
 
         g.accumulator.Render();
 
         mat4.multiply(worldViewProj, d.viewProjection, this.sprites[0].worldTransform);
-        vec4.transformMat4(center, [0, 0, 0, 1], worldViewProj);
+        vec4.transformMat4(center, [ 0, 0, 0, 1 ], worldViewProj);
 
         const
             x0 = (center[0] / center[3] + 1) * 0.5,
@@ -95,7 +95,7 @@ export class EveOccluder extends Tw2BaseClass
         if (!effect.effectRes || !effect.effectRes.IsGood()) return false;
 
         effect.parameters.BackBuffer.SetTextureRes(tex);
-        effect.parameters.OccluderIndex.SetValue([index, total, samples]);
+        effect.parameters.OccluderIndex.SetValue([ index, total, samples ]);
 
         d.SetStandardStates(d.RM_ADDITIVE);
         d.gl.bindBuffer(d.gl.ARRAY_BUFFER, vertexBuffer);
@@ -129,16 +129,16 @@ export class EveOccluder extends Tw2BaseClass
             name: "Occluder sampler",
             effectFilePath: "res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx",
             parameters: {
-                "OccluderPosition": [1, 1, 1, 1],
-                "OccluderIndex": [1, 1, 1],
+                "OccluderPosition": [ 1, 1, 1, 1 ],
+                "OccluderIndex": [ 1, 1, 1 ],
                 "BackBuffer": ""
             }
         });
 
         g.vertexBuffer = null;
         g.decl = Tw2VertexDeclaration.from([
-            {usage: "POSITION", usageIndex: 0, elements: 2},
-            {usage: "TEXCOORD", usageIndex: 0, elements: 2}
+            { usage: "POSITION", usageIndex: 0, elements: 2 },
+            { usage: "TEXCOORD", usageIndex: 0, elements: 2 }
         ]);
         g.decl.RebuildHash();
 
@@ -201,8 +201,8 @@ export class EveOccluder extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["sprites", r.array]
+            [ "name", r.string ],
+            [ "sprites", r.array ]
         ];
     }
 

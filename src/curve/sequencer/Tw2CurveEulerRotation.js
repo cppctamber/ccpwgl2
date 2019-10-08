@@ -1,5 +1,5 @@
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
-import {quat} from "../../global";
+import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
+import { quat } from "../../global";
 
 /**
  * Euler to Quaternion sequencer
@@ -101,7 +101,7 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {string[]}
      */
-    static childProperties = ["yaw", "pitch", "roll"];
+    static childProperties = [ "yaw", "pitch", "roll" ];
 
     /**
      * Black definition
@@ -111,10 +111,10 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["pitch", r.rawObject],
-            ["roll", r.rawObject],
-            ["yaw", r.rawObject]
+            [ "name", r.string ],
+            [ "pitch", r.rawObject ],
+            [ "roll", r.rawObject ],
+            [ "yaw", r.rawObject ]
         ];
     }
 

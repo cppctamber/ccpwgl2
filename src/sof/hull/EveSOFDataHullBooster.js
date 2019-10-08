@@ -20,9 +20,9 @@ export class EveSOFDataHullBooster
     static black(r)
     {
         return [
-            ["alwaysOn", r.boolean],
-            ["hasTrails", r.boolean],
-            ["items", r.array]
+            [ "alwaysOn", r.boolean ],
+            [ "hasTrails", r.boolean ],
+            [ "items", r.array ]
         ];
     }
 }

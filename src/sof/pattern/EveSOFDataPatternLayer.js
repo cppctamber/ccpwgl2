@@ -73,15 +73,15 @@ export class EveSOFDataPatternLayer
     static black(r)
     {
         return [
-            ["isTargetMtl1", r.boolean],
-            ["isTargetMtl2", r.boolean],
-            ["isTargetMtl3", r.boolean],
-            ["isTargetMtl4", r.boolean],
-            ["materialSource", r.uint],
-            ["projectionTypeU", r.uint],
-            ["projectionTypeV", r.uint],
-            ["textureName", r.string],
-            ["textureResFilePath", r.path]
+            [ "isTargetMtl1", r.boolean ],
+            [ "isTargetMtl2", r.boolean ],
+            [ "isTargetMtl3", r.boolean ],
+            [ "isTargetMtl4", r.boolean ],
+            [ "materialSource", r.uint ],
+            [ "projectionTypeU", r.uint ],
+            [ "projectionTypeV", r.uint ],
+            [ "textureName", r.string ],
+            [ "textureResFilePath", r.path ]
         ];
     }
 }

@@ -1,6 +1,6 @@
-import {Tw2MotherLode} from "./Tw2MotherLode";
-import {Tw2LoadingObject} from "../../core/resource/Tw2LoadingObject";
-import {Tw2EventEmitter} from "../class/Tw2EventEmitter";
+import { Tw2MotherLode } from "./Tw2MotherLode";
+import { Tw2LoadingObject } from "../../core/resource/Tw2LoadingObject";
+import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
 import {
     Tw2Error,
     ErrHTTPStatus,
@@ -10,7 +10,7 @@ import {
     ErrResourcePrefixUndefined,
     ErrResourcePrefixUnregistered
 } from "../../core";
-import {assignIfExists, getPathExtension, isBoolean, isError, isFunction} from "../util";
+import { assignIfExists, getPathExtension, isBoolean, isError, isFunction } from "../util";
 
 /**
  * Resource Manager
@@ -75,7 +75,7 @@ export class Tw2ResMan extends Tw2EventEmitter
     Register(opt)
     {
         if (!opt) return;
-        assignIfExists(this, opt, ["systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime"]);
+        assignIfExists(this, opt, [ "systemMirror", "maxPrepareTime", "autoPurgeResources", "purgeTime" ]);
     }
 
     /**
@@ -85,7 +85,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      * @param {Error} err
      * @returns {Error} err
      */
-    OnPathError(path, err = new Tw2Error({path}))
+    OnPathError(path, err = new Tw2Error({ path }))
     {
         path = Tw2ResMan.NormalizePath(path);
         const res = this.motherLode.Find(path);
@@ -110,7 +110,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         if (err)
         {
             this.motherLode.AddError(path, err);
-            log = {err, message: err.message};
+            log = { err, message: err.message };
         }
 
         log.path = path;
@@ -221,7 +221,7 @@ export class Tw2ResMan extends Tw2EventEmitter
      */
     Queue(res, response, meta)
     {
-        this._prepareQueue.push([res, response, meta]);
+        this._prepareQueue.push([ res, response, meta ]);
     }
 
     /**
@@ -437,7 +437,7 @@ export class Tw2ResMan extends Tw2EventEmitter
                     return err.text()
                         .then(text =>
                         {
-                            let {status, statusText} = err;
+                            let { status, statusText } = err;
                             let json;
 
                             try
@@ -451,7 +451,7 @@ export class Tw2ResMan extends Tw2EventEmitter
                                 statusText = text;
                             }
 
-                            throw new ErrHTTPStatus({status, statusText, json});
+                            throw new ErrHTTPStatus({ status, statusText, json });
                         });
                 }
                 else
@@ -475,19 +475,19 @@ export class Tw2ResMan extends Tw2EventEmitter
 
         if (path.indexOf("dynamic:/") === 0)
         {
-            throw new ErrFeatureNotImplemented({feature: "Dynamic resources"});
+            throw new ErrFeatureNotImplemented({ feature: "Dynamic resources" });
         }
 
         const extension = getPathExtension(path);
         if (extension === null)
         {
-            throw new ErrResourceExtensionUndefined({path});
+            throw new ErrResourceExtensionUndefined({ path });
         }
 
         const Constructor = this.tw2.GetExtension(extension);
         if (!Constructor)
         {
-            throw new ErrResourceExtensionUnregistered({path, extension});
+            throw new ErrResourceExtensionUnregistered({ path, extension });
         }
 
         return Constructor;
@@ -506,7 +506,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         const prefixIndex = path.indexOf(":/");
         if (prefixIndex === -1)
         {
-            throw new ErrResourcePrefixUndefined({path});
+            throw new ErrResourcePrefixUndefined({ path });
         }
 
         const prefix = path.substr(0, prefixIndex);
@@ -518,7 +518,7 @@ export class Tw2ResMan extends Tw2EventEmitter
         const fullPrefix = this.tw2.GetPath(prefix);
         if (!fullPrefix)
         {
-            throw new ErrResourcePrefixUnregistered({path, prefix});
+            throw new ErrResourcePrefixUnregistered({ path, prefix });
         }
 
         return fullPrefix + path.substr(prefixIndex + 2);

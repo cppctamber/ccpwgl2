@@ -1,4 +1,4 @@
-import {isArray, findElementByProperty} from "../global/util";
+import { isArray, findElementByProperty } from "../global/util";
 import {
     ErrSOFFactionNotFound,
     ErrSOFHullNotFound,
@@ -284,12 +284,12 @@ export class EveSOFData
     static black(r)
     {
         return [
-            ["faction", r.array],
-            ["generic", r.object],
-            ["hull", r.array],
-            ["material", r.array],
-            ["pattern", r.array],
-            ["race", r.array]
+            [ "faction", r.array ],
+            [ "generic", r.object ],
+            [ "hull", r.array ],
+            [ "material", r.array ],
+            [ "pattern", r.array ],
+            [ "race", r.array ]
         ];
     }
 }

@@ -1,6 +1,6 @@
-import {ErrAbstractClassMethod} from "../../core/Tw2Error";
-import {generateID, isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped} from "../util";
-import {Tw2EventEmitter} from "./Tw2EventEmitter";
+import { ErrAbstractClassMethod } from "../../core/Tw2Error";
+import { generateID, isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped } from "../util";
+import { Tw2EventEmitter } from "./Tw2EventEmitter";
 
 
 /**
@@ -113,7 +113,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
      * @param {String} [path]
      * @returns {*}
      */
-    Traverse(callback, parent, path="")
+    Traverse(callback, parent, path = "")
     {
         const result = callback(this, parent, path);
         if (result) return result;
@@ -145,7 +145,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
     static copy(a, b, opt = {})
     {
         opt.verb = "copy";
-        const values = this.get(b, {}, {skipIDs: true});
+        const values = this.get(b, {}, { skipIDs: true });
         return this.set(a, values, opt);
     }
 
@@ -157,7 +157,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
      */
     static clone(a, opt)
     {
-        const values = this.get(a, {}, {skipIDs: true});
+        const values = this.get(a, {}, { skipIDs: true });
         return this.from(values, opt);
     }
 
@@ -179,7 +179,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
 
         if (values)
         {
-            this.set(item, values, {skipUpdate: hasInitialize, verb: "create"});
+            this.set(item, values, { skipUpdate: hasInitialize, verb: "create" });
         }
 
         if ((!opt || !opt.skipUpdate) && hasInitialize)
@@ -238,7 +238,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
 
         visited.add(obj);
 
-        const {list, type} = getKeys(obj);
+        const { list, type } = getKeys(obj);
 
         if (list)
         {

@@ -1,5 +1,5 @@
-import {quat, vec3, vec4} from "../../global";
-import {EveObject} from "./legacy/EveObject";
+import { quat, vec3, vec4 } from "../../global";
+import { EveObject } from "./legacy/EveObject";
 
 /**
  * EveEffectRoot2
@@ -47,20 +47,20 @@ export class EveEffectRoot2 extends EveObject
     static black(r)
     {
         return [
-            ["boundingSphereCenter", r.vector3],
-            ["boundingSphereRadius", r.float],
-            ["curveSets", r.array],
-            ["duration", r.float],
-            ["dynamicLOD", r.boolean],
-            ["effectChildren", r.array],
-            ["lights", r.array],
-            ["name", r.string],
-            ["observers", r.array],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["secondaryLightingEmissiveColor", r.color],
-            ["secondaryLightingSphereRadius", r.float],
-            ["translation", r.vector3],
+            [ "boundingSphereCenter", r.vector3 ],
+            [ "boundingSphereRadius", r.float ],
+            [ "curveSets", r.array ],
+            [ "duration", r.float ],
+            [ "dynamicLOD", r.boolean ],
+            [ "effectChildren", r.array ],
+            [ "lights", r.array ],
+            [ "name", r.string ],
+            [ "observers", r.array ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "secondaryLightingEmissiveColor", r.color ],
+            [ "secondaryLightingSphereRadius", r.float ],
+            [ "translation", r.vector3 ],
         ];
     }
 

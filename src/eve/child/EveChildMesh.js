@@ -1,6 +1,6 @@
-import {vec3, quat, mat4} from "../../global";
-import {Tw2PerObjectData, Tw2RawData} from "../../core";
-import {EveChild} from "./EveChild";
+import { vec3, quat, mat4 } from "../../global";
+import { Tw2PerObjectData, Tw2RawData } from "../../core";
+import { EveChild } from "./EveChild";
 
 /**
  * Mesh attachment to space object
@@ -142,20 +142,20 @@ export class EveChildMesh extends EveChild
     static black(r)
     {
         return [
-            ["display", r.boolean],
-            ["localTransform", r.matrix],
-            ["lowestLodVisible", r.uint],
-            ["mesh", r.object],
-            ["minScreenSize", r.float],
-            ["name", r.string],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["sortValueOffset", r.float],
-            ["staticTransform", r.boolean],
-            ["transformModifiers", r.array],
-            ["translation", r.vector3],
-            ["useSpaceObjectData", r.boolean],
-            ["useSRT", r.boolean]
+            [ "display", r.boolean ],
+            [ "localTransform", r.matrix ],
+            [ "lowestLodVisible", r.uint ],
+            [ "mesh", r.object ],
+            [ "minScreenSize", r.float ],
+            [ "name", r.string ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "sortValueOffset", r.float ],
+            [ "staticTransform", r.boolean ],
+            [ "transformModifiers", r.array ],
+            [ "translation", r.vector3 ],
+            [ "useSpaceObjectData", r.boolean ],
+            [ "useSRT", r.boolean ]
         ];
     }
 

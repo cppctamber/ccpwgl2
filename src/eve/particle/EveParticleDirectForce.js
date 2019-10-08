@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {Tw2ParticleForce} from "../../particle/force/Tw2ParticleForce";
+import { vec3 } from "../../global";
+import { Tw2ParticleForce } from "../../particle/force/Tw2ParticleForce";
 
 /**
  * EveParticleDirectForce
@@ -20,7 +20,7 @@ export class EveParticleDirectForce extends Tw2ParticleForce
     static black(r)
     {
         return [
-            ["force", r.vector3]
+            [ "force", r.vector3 ]
         ];
     }
 

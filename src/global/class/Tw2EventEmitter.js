@@ -70,7 +70,7 @@ export class Tw2EventEmitter
             }
         }
 
-        events[eventName].set(listener, {context: context, once: once});
+        events[eventName].set(listener, { context: context, once: once });
         return this;
     }
 

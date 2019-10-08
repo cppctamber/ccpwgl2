@@ -1,6 +1,6 @@
-import {vec3, quat, mat4, device} from "../../global";
-import {Tw2PerObjectData} from "../../core";
-import {EveObject} from "./legacy/EveObject";
+import { vec3, quat, mat4, device } from "../../global";
+import { Tw2PerObjectData } from "../../core";
+import { EveObject } from "./legacy/EveObject";
 
 /**
  * EveTransform
@@ -225,7 +225,7 @@ export class EveTransform extends EveObject
                     let scale = -vec3.dot(dirToCamNorm, forward);
                     if (scale < 0) scale = 0;
                     mat4.multiply(this.worldTransform, this.worldTransform, alignMat);
-                    mat4.scale(this.worldTransform, this.worldTransform, [this.scaling[0] * scale, this.scaling[1] * scale, this.scaling[2] * scale]);
+                    mat4.scale(this.worldTransform, this.worldTransform, [ this.scaling[0] * scale, this.scaling[1] * scale, this.scaling[2] * scale ]);
                 }
                 else
                 {
@@ -237,7 +237,7 @@ export class EveTransform extends EveObject
             case EveTransform.Modifier.LOOK_AT_CAMERA:
                 const lookAt = g.mat4_0;
                 mat4.multiply(this.worldTransform, parentTransform, this.localTransform);
-                mat4.lookAt(lookAt, viewInv.subarray(12), this.worldTransform.subarray(12), [0, 1, 0]);
+                mat4.lookAt(lookAt, viewInv.subarray(12), this.worldTransform.subarray(12), [ 0, 1, 0 ]);
                 mat4.transpose(lookAt, lookAt);
                 vec3.multiply(finalScale, this.scaling, parentScale);
                 this.worldTransform[0] = lookAt[0] * finalScale[0];
@@ -342,8 +342,8 @@ export class EveTransform extends EveObject
      */
     static perObjectData = {
         ffe: [
-            ["World", 16],
-            ["WorldInverseTranspose", 16]
+            [ "World", 16 ],
+            [ "WorldInverseTranspose", 16 ]
         ]
     };
 
@@ -371,29 +371,29 @@ export class EveTransform extends EveObject
     static black(r)
     {
         return [
-            ["children", r.array],
-            ["curveSets", r.array],
-            ["display", r.boolean],
-            ["distanceBasedScaleArg1", r.float],
-            ["distanceBasedScaleArg2", r.float],
-            ["hideOnLowQuality", r.boolean],
-            ["name", r.string],
-            ["mesh", r.object],
-            ["meshLod", r.object],
-            ["modifier", r.uint],
-            ["observers", r.array],
-            ["overrideBoundsMax", r.vector3],
-            ["overrideBoundsMin", r.vector3],
-            ["particleEmitters", r.array],
-            ["particleSystems", r.array],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["sortValueMultiplier", r.float],
-            ["translation", r.vector3],
-            ["update", r.boolean],
-            ["useDistanceBasedScale", r.boolean],
-            ["useLodLevel", r.boolean],
-            ["visibilityThreshold", r.float]
+            [ "children", r.array ],
+            [ "curveSets", r.array ],
+            [ "display", r.boolean ],
+            [ "distanceBasedScaleArg1", r.float ],
+            [ "distanceBasedScaleArg2", r.float ],
+            [ "hideOnLowQuality", r.boolean ],
+            [ "name", r.string ],
+            [ "mesh", r.object ],
+            [ "meshLod", r.object ],
+            [ "modifier", r.uint ],
+            [ "observers", r.array ],
+            [ "overrideBoundsMax", r.vector3 ],
+            [ "overrideBoundsMin", r.vector3 ],
+            [ "particleEmitters", r.array ],
+            [ "particleSystems", r.array ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "sortValueMultiplier", r.float ],
+            [ "translation", r.vector3 ],
+            [ "update", r.boolean ],
+            [ "useDistanceBasedScale", r.boolean ],
+            [ "useLodLevel", r.boolean ],
+            [ "visibilityThreshold", r.float ]
         ];
     }
 

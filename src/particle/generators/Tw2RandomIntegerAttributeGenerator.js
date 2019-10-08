@@ -1,6 +1,6 @@
-import {vec4} from "../../global";
-import {Tw2ParticleElement} from "../element/Tw2ParticleElement";
-import {Tw2ParticleAttributeGenerator} from "./Tw2ParticleAttributeGenerator";
+import { vec4 } from "../../global";
+import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
+import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 /**
  * Tw2RandomIntegerAttributeGenerator
@@ -68,9 +68,9 @@ export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGene
     static black(r)
     {
         return [
-            ["customName", r.string],
-            ["minRange", r.vector4],
-            ["maxRange", r.vector4]
+            [ "customName", r.string ],
+            [ "minRange", r.vector4 ],
+            [ "maxRange", r.vector4 ]
         ];
     }
 

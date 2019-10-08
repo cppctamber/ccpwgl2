@@ -1,4 +1,4 @@
-import {Tw2VertexElement} from "./Tw2VertexElement";
+import { Tw2VertexElement } from "./Tw2VertexElement";
 
 /**
  * Tw2VertexDeclaration

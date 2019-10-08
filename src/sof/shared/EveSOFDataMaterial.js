@@ -43,8 +43,8 @@ export class EveSOFDataMaterial
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["parameters", r.array]
+            [ "name", r.string ],
+            [ "parameters", r.array ]
         ];
     }
 }

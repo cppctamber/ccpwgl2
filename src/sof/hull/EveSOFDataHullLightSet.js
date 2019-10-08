@@ -20,9 +20,9 @@ export class EveSOFDataHullLightSet
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["items", r.array],
-            ["visibilityGroup", r.string]
+            [ "name", r.string ],
+            [ "items", r.array ],
+            [ "visibilityGroup", r.string ]
         ];
     }
 }

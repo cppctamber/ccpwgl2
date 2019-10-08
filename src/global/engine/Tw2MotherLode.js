@@ -191,7 +191,7 @@ export class Tw2MotherLode
                 // good but inactive
                 else if ((res.IsLoaded() || res.IsPrepared()) && (curFrame - res.activeFrame) % frameLimit >= frameDistance)
                 {
-                    if (res.Unload({hide: true, detail: "inactivity"}))
+                    if (res.Unload({ hide: true, detail: "inactivity" }))
                     {
                         detail = "inactivity";
                     }
@@ -199,7 +199,7 @@ export class Tw2MotherLode
 
                 if (detail)
                 {
-                    res.OnPurged({detail});
+                    res.OnPurged({ detail });
                     this.Remove(path);
                 }
             }

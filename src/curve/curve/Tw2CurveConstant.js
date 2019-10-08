@@ -1,5 +1,5 @@
-import {vec4} from "../../global";
-import {Tw2Curve} from "./Tw2Curve";
+import { vec4 } from "../../global";
+import { Tw2Curve } from "./Tw2Curve";
 
 /**
  * Constant curve
@@ -72,8 +72,8 @@ export class Tw2CurveConstant extends Tw2Curve
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["value", r.vector4],
+            [ "name", r.string ],
+            [ "value", r.vector4 ],
         ];
     }
 

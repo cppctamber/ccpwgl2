@@ -26,12 +26,12 @@ export class EveSOFDataHullSpotlightSet
     static black(r)
     {
         return [
-            ["coneTextureResPath", r.path],
-            ["glowTextureResPath", r.path],
-            ["items", r.array],
-            ["name", r.string],
-            ["skinned", r.boolean],
-            ["zOffset", r.float]
+            [ "coneTextureResPath", r.path ],
+            [ "glowTextureResPath", r.path ],
+            [ "items", r.array ],
+            [ "name", r.string ],
+            [ "skinned", r.boolean ],
+            [ "zOffset", r.float ]
         ];
     }
 }

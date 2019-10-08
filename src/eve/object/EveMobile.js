@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {EveObject} from "./legacy/EveObject";
+import { vec3 } from "../../global";
+import { EveObject } from "./legacy/EveObject";
 
 /**
  * EveMobile
@@ -41,17 +41,17 @@ export class EveMobile extends EveObject
     static black(r)
     {
         return [
-            ["attachments", r.array],
-            ["boundingSphereCenter", r.vector3],
-            ["boundingSphereRadius", r.float],
-            ["children", r.array],
-            ["controllers", r.array],
-            ["curveSets", r.array],
-            ["locatorSets", r.array],
-            ["name", r.string],
-            ["meshLod", r.object],
-            ["observers", r.array],
-            ["shadowEffect", r.object],
+            [ "attachments", r.array ],
+            [ "boundingSphereCenter", r.vector3 ],
+            [ "boundingSphereRadius", r.float ],
+            [ "children", r.array ],
+            [ "controllers", r.array ],
+            [ "curveSets", r.array ],
+            [ "locatorSets", r.array ],
+            [ "name", r.string ],
+            [ "meshLod", r.object ],
+            [ "observers", r.array ],
+            [ "shadowEffect", r.object ],
         ];
     }
 

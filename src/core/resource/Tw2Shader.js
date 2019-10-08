@@ -1,7 +1,7 @@
-import {quat, util, device} from "../../global";
-import {Tw2VertexDeclaration, Tw2VertexElement} from "../vertex";
-import {Tw2SamplerState} from "../sampler";
-import {ErrShaderCompile, ErrShaderLink} from "../Tw2Error";
+import { quat, util, device } from "../../global";
+import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
+import { Tw2SamplerState } from "../sampler";
+import { ErrShaderCompile, ErrShaderLink } from "../Tw2Error";
 import shaderOverrides from "./shaderOverrides.json";
 
 /**
@@ -45,7 +45,7 @@ export class Tw2Shader
             return stringTable.substr(offset, end - offset);
         }
 
-        const {wrapModes, gl} = device;
+        const { wrapModes, gl } = device;
 
         let techniqueCount = 1;
         if (version > 6)
@@ -71,7 +71,7 @@ export class Tw2Shader
             for (let passIx = 0; passIx < passCount; ++passIx)
             {
                 const pass = {};
-                pass.stages = [{}, {}];
+                pass.stages = [ {}, {} ];
                 const stageCount = reader.ReadUInt8();
                 let validShadowShader = true;
 

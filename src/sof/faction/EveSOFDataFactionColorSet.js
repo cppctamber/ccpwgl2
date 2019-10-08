@@ -1,4 +1,4 @@
-import {vec4} from "../../global";
+import { vec4 } from "../../global";
 
 
 /**
@@ -72,28 +72,28 @@ export class EveSOFDataFactionColorSet
     static black(r)
     {
         return [
-            ["Black", r.vector4],
-            ["Blue", r.vector4],
-            ["Booster", r.vector4],
-            ["Cyan", r.vector4],
-            ["Darkhull", r.vector4],
-            ["Fire", r.vector4],
-            ["Glass", r.vector4],
-            ["Green", r.vector4],
-            ["Hull", r.vector4],
-            ["Killmark", r.vector4],
-            ["Orange", r.vector4],
-            ["Primary", r.vector4],
-            ["PrimaryLight", r.vector4],
-            ["Reactor", r.vector4],
-            ["Red", r.vector4],
-            ["Secondary", r.vector4],
-            ["SecondaryLight", r.vector4],
-            ["Tertiary", r.vector4],
-            ["TertiaryLight", r.vector4],
-            ["White", r.vector4],
-            ["WhiteLight", r.vector4],
-            ["Yellow", r.vector4]
+            [ "Black", r.vector4 ],
+            [ "Blue", r.vector4 ],
+            [ "Booster", r.vector4 ],
+            [ "Cyan", r.vector4 ],
+            [ "Darkhull", r.vector4 ],
+            [ "Fire", r.vector4 ],
+            [ "Glass", r.vector4 ],
+            [ "Green", r.vector4 ],
+            [ "Hull", r.vector4 ],
+            [ "Killmark", r.vector4 ],
+            [ "Orange", r.vector4 ],
+            [ "Primary", r.vector4 ],
+            [ "PrimaryLight", r.vector4 ],
+            [ "Reactor", r.vector4 ],
+            [ "Red", r.vector4 ],
+            [ "Secondary", r.vector4 ],
+            [ "SecondaryLight", r.vector4 ],
+            [ "Tertiary", r.vector4 ],
+            [ "TertiaryLight", r.vector4 ],
+            [ "White", r.vector4 ],
+            [ "WhiteLight", r.vector4 ],
+            [ "Yellow", r.vector4 ]
         ];
     }
 }

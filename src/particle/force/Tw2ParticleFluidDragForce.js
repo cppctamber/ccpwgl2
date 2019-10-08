@@ -1,5 +1,5 @@
-import {vec3} from "../../global";
-import {Tw2ParticleForce} from "./Tw2ParticleForce";
+import { vec3 } from "../../global";
+import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 /**
  * Tw2ParticleFluidDragForce
@@ -66,7 +66,7 @@ export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
     static black(r)
     {
         return [
-            ["drag", r.float]
+            [ "drag", r.float ]
         ];
     }
 

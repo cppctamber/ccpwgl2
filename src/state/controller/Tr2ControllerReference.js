@@ -1,4 +1,4 @@
-import {Tw2BaseClass} from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2ControllerReference
@@ -19,7 +19,7 @@ export class Tr2ControllerReference extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["path", r.path]
+            [ "path", r.path ]
         ];
     }
 

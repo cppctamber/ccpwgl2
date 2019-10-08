@@ -5,9 +5,9 @@ import * as interior from "./interior";
 import * as particle from "./particle";
 import * as sof from "./sof";
 import * as state from "./state";
-import {Tw2EventEmitter, Tw2Notifications} from "./global/class";
+import { Tw2EventEmitter, Tw2Notifications } from "./global/class";
 
-import {vec4, mat4} from "./global/math";
+import { vec4, mat4 } from "./global/math";
 
 /**
  * Register global configurations

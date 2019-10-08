@@ -1,4 +1,4 @@
-import {quat, vec3, Tw2BaseClass} from "../../../global";
+import { quat, vec3, Tw2BaseClass } from "../../../global";
 
 /**
  * EveChildModifierSRT
@@ -22,9 +22,9 @@ export class EveChildModifierSRT extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["translation", r.vector3],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "translation", r.vector3 ],
         ];
     }
 

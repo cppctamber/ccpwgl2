@@ -24,11 +24,11 @@ export class EveSOFDataAreaMaterial
     static black(r)
     {
         return [
-            ["colorType", r.uint],
-            ["material1", r.string],
-            ["material2", r.string],
-            ["material3", r.string],
-            ["material4", r.string]
+            [ "colorType", r.uint ],
+            [ "material1", r.string ],
+            [ "material2", r.string ],
+            [ "material3", r.string ],
+            [ "material4", r.string ]
         ];
     }
 }

@@ -1,14 +1,14 @@
-import {num} from "./num";
-import {vec3} from "./vec3";
-import {sph3} from "./sph3";
-import {mat4} from "./mat4";
+import { num } from "./num";
+import { vec3 } from "./vec3";
+import { sph3 } from "./sph3";
+import { mat4 } from "./mat4";
 
 /**
  * 3D Box
  * @typedef {Float32Array} box3
  */
 
-export const box3 = {bounds: {}};
+export const box3 = { bounds: {} };
 
 // Scratch
 let mat4_0 = null,
@@ -1142,14 +1142,14 @@ box3.toPoints = function(a, points = [])
         y = by + Math.abs(ay),
         z = bz + Math.abs(az);
 
-    points.push([bx + 0, by + 0, bz + 0]);
-    points.push([bx - x, by + 0, bz + 0]);
-    points.push([bx + 0, by + 0, bz - z]);
-    points.push([bx - x, by + 0, bz - z]);
-    points.push([bx + 0, by - y, bz + 0]);
-    points.push([bx - x, by - y, bz + 0]);
-    points.push([bx + 0, by - y, bz - z]);
-    points.push([bx - x, by - y, bz - z]);
+    points.push([ bx + 0, by + 0, bz + 0 ]);
+    points.push([ bx - x, by + 0, bz + 0 ]);
+    points.push([ bx + 0, by + 0, bz - z ]);
+    points.push([ bx - x, by + 0, bz - z ]);
+    points.push([ bx + 0, by - y, bz + 0 ]);
+    points.push([ bx - x, by - y, bz + 0 ]);
+    points.push([ bx + 0, by - y, bz - z ]);
+    points.push([ bx - x, by - y, bz - z ]);
 
     return points;
 };
@@ -1235,14 +1235,14 @@ box3.transformMat4 = function(out, a, m)
         return box3.empty(out);
     }
 
-    vec3.transformMat4(vec3_A[0], [a[0], a[1], a[2]], m);
-    vec3.transformMat4(vec3_A[1], [a[0], a[1], a[5]], m);
-    vec3.transformMat4(vec3_A[2], [a[0], a[4], a[2]], m);
-    vec3.transformMat4(vec3_A[3], [a[0], a[4], a[5]], m);
-    vec3.transformMat4(vec3_A[4], [a[3], a[1], a[2]], m);
-    vec3.transformMat4(vec3_A[5], [a[3], a[1], a[5]], m);
-    vec3.transformMat4(vec3_A[6], [a[3], a[4], a[2]], m);
-    vec3.transformMat4(vec3_A[7], [a[3], a[4], a[5]], m);
+    vec3.transformMat4(vec3_A[0], [ a[0], a[1], a[2] ], m);
+    vec3.transformMat4(vec3_A[1], [ a[0], a[1], a[5] ], m);
+    vec3.transformMat4(vec3_A[2], [ a[0], a[4], a[2] ], m);
+    vec3.transformMat4(vec3_A[3], [ a[0], a[4], a[5] ], m);
+    vec3.transformMat4(vec3_A[4], [ a[3], a[1], a[2] ], m);
+    vec3.transformMat4(vec3_A[5], [ a[3], a[1], a[5] ], m);
+    vec3.transformMat4(vec3_A[6], [ a[3], a[4], a[2] ], m);
+    vec3.transformMat4(vec3_A[7], [ a[3], a[4], a[5] ], m);
 
     return box3.fromPoints(out, vec3_A);
 };

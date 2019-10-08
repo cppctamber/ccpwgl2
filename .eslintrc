@@ -46,6 +46,14 @@
     "space-in-parens": [
       "error",
       "never"
+    ],
+    "array-bracket-spacing" : [
+      2,
+      "always"
+    ],
+    "object-curly-spacing" : [
+      "error",
+      "always"
     ]
   }
 }

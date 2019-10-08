@@ -1,6 +1,6 @@
 /* eslint no-unused-vars:0 */
-import {mat4, util, vec3, Tw2BaseClass} from "../../../global";
-import {ErrAbstractClassMethod} from "../../../core";
+import { mat4, util, vec3, Tw2BaseClass } from "../../../global";
+import { ErrAbstractClassMethod } from "../../../core";
 
 export class EveObject extends Tw2BaseClass
 {

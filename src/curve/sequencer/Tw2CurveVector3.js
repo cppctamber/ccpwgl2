@@ -1,5 +1,5 @@
-import {Tw2CurveSequencer} from "./Tw2CurveSequencer";
-import {vec3} from "../../global";
+import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
+import { vec3 } from "../../global";
 
 /**
  * Vector3 curve sequencer
@@ -86,7 +86,7 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
      * The sequencer's curve property names
      * @type {String[]}
      */
-    static childProperties = ["x", "y", "z"];
+    static childProperties = [ "x", "y", "z" ];
 
 
     /**
@@ -97,10 +97,10 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
     static black(r)
     {
         return [
-            ["name", r.string],
-            ["x", r.rawObject],
-            ["y", r.rawObject],
-            ["z", r.rawObject]
+            [ "name", r.string ],
+            [ "x", r.rawObject ],
+            [ "y", r.rawObject ],
+            [ "z", r.rawObject ]
         ];
     }
 

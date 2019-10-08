@@ -1,5 +1,5 @@
-import {vec3, vec4} from "../../global";
-import {Tw2BaseClass} from "../../global";
+import { vec3, vec4 } from "../../global";
+import { Tw2BaseClass } from "../../global";
 
 /**
  * Tr2InteriorLightSource
@@ -43,18 +43,18 @@ export class Tr2InteriorLightSource extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["color", r.vector4],
-            ["coneAlphaInner", r.float],
-            ["coneAlphaOuter", r.float],
-            ["coneDirection", r.vector3],
-            ["falloff", r.float],
-            ["importanceBias", r.float],
-            ["importanceScale", r.float],
-            ["kelvinColor", r.object],
-            ["name", r.string],
-            ["position", r.vector3],
-            ["radius", r.float],
-            ["useKelvinColor", r.boolean],
+            [ "color", r.vector4 ],
+            [ "coneAlphaInner", r.float ],
+            [ "coneAlphaOuter", r.float ],
+            [ "coneDirection", r.vector3 ],
+            [ "falloff", r.float ],
+            [ "importanceBias", r.float ],
+            [ "importanceScale", r.float ],
+            [ "kelvinColor", r.object ],
+            [ "name", r.string ],
+            [ "position", r.vector3 ],
+            [ "radius", r.float ],
+            [ "useKelvinColor", r.boolean ],
         ];
     }
 

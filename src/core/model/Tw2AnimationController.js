@@ -1,12 +1,12 @@
-import {box3, sph3, vec3, quat, mat3, mat4, curve, util, Tw2BaseClass} from "../../global";
-import {Tw2GeometryRes} from "../resource";
-import {Tw2Animation} from "./Tw2Animation";
-import {Tw2Bone} from "./Tw2Bone";
-import {Tw2BoneBinding} from "./Tw2BoneBinding";
-import {Tw2Model} from "./Tw2Model";
-import {Tw2Track} from "./Tw2Track";
-import {Tw2TrackGroup} from "./Tw2TrackGroup";
-import {Tw2MeshBinding} from "./Tw2MeshBinding";
+import { box3, sph3, vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "../../global";
+import { Tw2GeometryRes } from "../resource";
+import { Tw2Animation } from "./Tw2Animation";
+import { Tw2Bone } from "./Tw2Bone";
+import { Tw2BoneBinding } from "./Tw2BoneBinding";
+import { Tw2Model } from "./Tw2Model";
+import { Tw2Track } from "./Tw2Track";
+import { Tw2TrackGroup } from "./Tw2TrackGroup";
+import { Tw2MeshBinding } from "./Tw2MeshBinding";
 
 /**
  * Tw2AnimationController
@@ -153,7 +153,7 @@ export class Tw2AnimationController extends Tw2BaseClass
         {
             this.pendingCommands.push({
                 "func": this.PlayAnimation,
-                "args": [name, cycle, callback]
+                "args": [ name, cycle, callback ]
             });
             return true;
         }
@@ -192,7 +192,7 @@ export class Tw2AnimationController extends Tw2BaseClass
         {
             this.pendingCommands.push({
                 "func": this.PlayAnimationFrom,
-                "args": [name, from, cycle, callback]
+                "args": [ name, from, cycle, callback ]
             });
             return true;
         }
@@ -745,8 +745,8 @@ export class Tw2AnimationController extends Tw2BaseClass
                 {
                     const b1 = this.models[i].bones[b0.boneRes.parentIndex];
                     debugHelper["AddLine"](
-                        [b0.worldTransform[12], b0.worldTransform[13], b0.worldTransform[14]],
-                        [b1.worldTransform[12], b1.worldTransform[13], b1.worldTransform[14]]);
+                        [ b0.worldTransform[12], b0.worldTransform[13], b0.worldTransform[14] ],
+                        [ b1.worldTransform[12], b1.worldTransform[13], b1.worldTransform[14] ]);
                 }
             }
         }

@@ -1,4 +1,4 @@
-import {Tw2GeometryBatch} from "./Tw2GeometryBatch";
+import { Tw2GeometryBatch } from "./Tw2GeometryBatch";
 
 /**
  * A render batch for line geometry

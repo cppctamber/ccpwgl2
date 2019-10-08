@@ -1,5 +1,5 @@
-import {vec3} from "./vec3";
-import {box3} from "./box3";
+import { vec3 } from "./vec3";
+import { box3 } from "./box3";
 
 /**
  * 3D Line

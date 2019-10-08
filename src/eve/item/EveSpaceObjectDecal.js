@@ -1,7 +1,7 @@
-import {vec3, quat, mat4, util, device, tw2, Tw2BaseClass} from "../../global";
-import {Tw2PerObjectData, Tw2ForwardingRenderBatch} from "../../core/";
-import {assignIfExists} from "../../global/util";
-import {Tw2Effect} from "../../core/mesh";
+import { vec3, quat, mat4, util, device, tw2, Tw2BaseClass } from "../../global";
+import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "../../core/";
+import { assignIfExists } from "../../global/util";
+import { Tw2Effect } from "../../core/mesh";
 
 /**
  * Decal
@@ -285,15 +285,15 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
      */
     static perObjectData = {
         vs: [
-            ["worldMatrix", 16],
-            ["invWorldMatrix", 16],
-            ["decalMatrix", 16],
-            ["invDecalMatrix", 16],
-            ["parentBoneMatrix", mat4.identity([])]
+            [ "worldMatrix", 16 ],
+            [ "invWorldMatrix", 16 ],
+            [ "decalMatrix", 16 ],
+            [ "invDecalMatrix", 16 ],
+            [ "parentBoneMatrix", mat4.identity([]) ]
         ],
         ps: [
-            ["displayData", 4],
-            ["shipData", 4 * 3]
+            [ "displayData", 4 ],
+            [ "shipData", 4 * 3 ]
         ]
     };
 
@@ -305,12 +305,12 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     static black(r)
     {
         return [
-            ["decalEffect", r.object],
-            ["name", r.string],
-            ["position", r.vector3],
-            ["rotation", r.vector4],
-            ["scaling", r.vector3],
-            ["indexBuffer", r.indexBuffer]
+            [ "decalEffect", r.object ],
+            [ "name", r.string ],
+            [ "position", r.vector3 ],
+            [ "rotation", r.vector4 ],
+            [ "scaling", r.vector3 ],
+            [ "indexBuffer", r.indexBuffer ]
         ];
     }
 

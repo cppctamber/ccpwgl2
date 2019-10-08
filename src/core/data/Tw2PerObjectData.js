@@ -1,4 +1,4 @@
-import {Tw2RawData} from "./Tw2RawData";
+import { Tw2RawData } from "./Tw2RawData";
 
 /**
  * Tw2PerObjectData
