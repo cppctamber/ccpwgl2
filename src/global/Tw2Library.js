@@ -377,7 +377,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     async FetchResource(resPath)
     {
-        return this.resMan.GetResourceAsync(resPath);
+        return this.resMan.FetchResource(resPath);
     }
 
     /**
