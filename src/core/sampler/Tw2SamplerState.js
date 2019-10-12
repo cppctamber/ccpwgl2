@@ -82,16 +82,18 @@ export class Tw2SamplerState
      * Apply
      * @param {Tw2Device} device
      * @param {Boolean} hasMipMaps
+     * @param {Boolean} [forceAddressMode]
      */
-    Apply(device, hasMipMaps)
+    Apply(device, hasMipMaps, forceAddressMode)
     {
         const
             targetType = this.samplerType,
             gl = device.gl,
-            ext = device.GetExtension("EXT_texture_filter_anisotropic");
+            ext = device.GetExtension("EXT_texture_filter_anisotropic"),
+            useAddress = hasMipMaps || forceAddressMode;
 
-        gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? this.addressU : gl.CLAMP_TO_EDGE);
-        gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? this.addressV : gl.CLAMP_TO_EDGE);
+        gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
+        gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
         gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
 

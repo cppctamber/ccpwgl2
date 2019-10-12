@@ -5,20 +5,20 @@ import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../Tw2Error";
 /**
  * Tw2VideoRes
  *
- * @property {?WebGLTexture} texture   - The video's webgl texture
- * @property {?HTMLVideoElement} video - The video
- * @property {Number} width            - The texture's width
- * @property {Number} height           - The texture's height
- * @property {Boolean} cycle           - Enables video looping
- * @property {Boolean} playOnLoad      - Plays the video as soon as it is able to
- * @property {Number} _currentSampler  - The current sampler's hash
- * @property {Number} _currentTime     - The video's current time
- * @property {Boolean} _playable       - Identifies if the video is playable
- * @property {Boolean} _isPlaying      - Identifies if the video is playing
- * @property {?Function} _onPlaying    - An optional callback which is fired when the video is playing
- * @property {?Function} _onPause      - An optional callback which is fired when the video is paused
- * @property {?Function} _onEnded      - An optional callback which is fired when the video has ended
- * @class
+ * @property {?WebGLTexture} texture     - The video's webgl texture
+ * @property {?HTMLVideoElement} video   - The video
+ * @property {Number} width              - The texture's width
+ * @property {Number} height             - The texture's height
+ * @property {Boolean} cycle             - Enables video looping
+ * @property {Boolean} playOnLoad        - Plays the video as soon as it is able to
+ * @property {Boolean} forceAddressMode  - Forces use of address modes regardless of mipmaps
+ * @property {Number} _currentSampler    - The current sampler's hash
+ * @property {Number} _currentTime       - The video's current time
+ * @property {Boolean} _playable         - Identifies if the video is playable
+ * @property {Boolean} _isPlaying        - Identifies if the video is playing
+ * @property {?Function} _onPlaying      - An optional callback which is fired when the video is playing
+ * @property {?Function} _onPause        - An optional callback which is fired when the video is paused
+ * @property {?Function} _onEnded        - An optional callback which is fired when the video has ended
  */
 export class Tw2VideoRes extends Tw2Resource
 {
@@ -29,6 +29,8 @@ export class Tw2VideoRes extends Tw2Resource
     height = 0;
     cycle = true;
     playOnLoad = true;
+    forceAddressMode = false;
+    
     _currentSampler = 0;
     _currentTime = -1;
     _playable = false;
@@ -108,9 +110,6 @@ export class Tw2VideoRes extends Tw2Resource
                 this.texture = gl.createTexture();
                 gl.bindTexture(gl.TEXTURE_2D, this.texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.video);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.bindTexture(gl.TEXTURE_2D, null);
                 this.width = this.video.width;
                 this.height = this.video.height;
@@ -249,11 +248,11 @@ export class Tw2VideoRes extends Tw2Resource
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.video);
         gl.bindTexture(gl.TEXTURE_2D, null);
-
         gl.bindTexture(targetType, this.texture);
+
         if (sampler.hash !== this._currentSampler)
         {
-            sampler.Apply(d, false);
+            sampler.Apply(d, false, this.forceAddressMode);
             this._currentSampler = sampler.hash;
         }
     }
