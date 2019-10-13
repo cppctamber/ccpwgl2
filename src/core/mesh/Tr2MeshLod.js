@@ -22,6 +22,7 @@ import {
  * @property {Array<Tw2GeometryRes>} associatedResources -
  * @property {Array.<Tw2MeshArea>} decalAreas            -
  * @property {Array.<Tw2MeshArea>} depthAreas            -
+ * @property {Array.<Tw2MeshArea>} distortionAreas       0
  * @property {Boolean} display                           -
  * @property {Tw2LodResource} geometryRes                -
  * @property {Tw2GeometryRes} geometryResource           -
@@ -39,6 +40,7 @@ export class Tr2MeshLod extends Tw2BaseClass
     associatedResources = [];
     decalAreas = [];
     depthAreas = [];
+    distortionAreas = [];
     geometryRes = null;
     opaqueAreas = [];
     pickableAreas = [];
@@ -52,6 +54,7 @@ export class Tr2MeshLod extends Tw2BaseClass
         transparentAreas: true,
         additiveAreas: true,
         pickableAreas: true,
+        distortionAreas: true,
         decalAreas: true,
         depthAreas: true
     };
@@ -174,6 +177,20 @@ export class Tr2MeshLod extends Tw2BaseClass
                 }
                 return;
         }
+    }
+
+    /**
+     * Todo: Remove when sof can figure out what areas to update
+     */
+    EmptyAreas()
+    {
+        this.additiveAreas.splice(0);
+        this.decalAreas.splice(0);
+        this.depthAreas.splice(0);
+        this.distortionAreas.splice(0);
+        this.opaqueAreas.splice(0);
+        this.pickableAreas.splice(0);
+        this.transparentAreas.splice(0);
     }
 
     /**

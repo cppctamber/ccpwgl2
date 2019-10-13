@@ -16,6 +16,7 @@ import { FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D } from "
  * @property {Number} samplerType
  * @property {Boolean} isVolume
  * @property {Number} hash
+ * @property {Boolean} forceAddressModes
  */
 export class Tw2SamplerState
 {
@@ -33,6 +34,8 @@ export class Tw2SamplerState
     samplerType = GL_TEXTURE_2D;
     isVolume = false;
     hash = 0;
+
+    forceAddressModes = false;
 
     // Not used
     _borderColor = null;
@@ -76,21 +79,21 @@ export class Tw2SamplerState
         this.hash ^= this.addressV;
         this.hash *= 16777619;
         this.hash ^= this.anisotropy;
+        this.hash += this.forceAddressModes ? 1 : 0;
     }
 
     /**
      * Apply
      * @param {Tw2Device} device
      * @param {Boolean} hasMipMaps
-     * @param {Boolean} [forceAddressMode]
      */
-    Apply(device, hasMipMaps, forceAddressMode)
+    Apply(device, hasMipMaps)
     {
         const
             targetType = this.samplerType,
             gl = device.gl,
             ext = device.GetExtension("EXT_texture_filter_anisotropic"),
-            useAddress = hasMipMaps || forceAddressMode;
+            useAddress = hasMipMaps || this.forceAddressModes;
 
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);

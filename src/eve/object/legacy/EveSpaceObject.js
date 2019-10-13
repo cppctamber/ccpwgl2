@@ -1,6 +1,7 @@
 import { vec3, vec4, quat, mat4, util } from "../../../global";
 import { Tw2AnimationController, Tw2PerObjectData } from "../../../core";
 import { EveObject } from "./EveObject";
+import { EveCustomMask } from "../../item";
 
 /**
  * EveSpaceObject
@@ -210,42 +211,6 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
-     * Adds a custom mask
-     * @param {vec3} position
-     * @param {vec3} scaling
-     * @param {quat} rotation
-     * @param {vec4} isMirrored
-     * @param {vec4} sourceMaterial
-     * @param {vec4} targetMaterials
-     */
-    AddCustomMask(position, scaling, rotation, isMirrored, sourceMaterial, targetMaterials)
-    {
-        const transform = mat4.fromRotationTranslationScale(mat4.create(), rotation, position, scaling);
-        mat4.invert(transform, transform);
-        mat4.transpose(transform, transform);
-
-        this.customMasks.push({
-            transform: transform,
-            maskData: vec4.fromValues(1, isMirrored ? 1 : 0, 0, 0),
-            materialID: vec4.fromValues(sourceMaterial, 0, 0, 0),
-            targets: targetMaterials
-        });
-
-        /*
-        const mask = new EveCustomMask();
-        mask._index = this.customMasks.length;
-        vec3.copy(mask.position, position);
-        vec3.copy(mask.scaling, scaling);
-        quat.copy(mask.rotation, rotation);
-        vec4.copy(mask.targetMaterials, targetMaterials);
-        mask.materialID = sourceMaterial;
-        mask.isMirrored = isMirrored ? 1 : 0;
-        this.customMasks.push(mask);
-        return mask;
-        */
-    }
-
-    /**
      * Gets locator count for a specific locator group
      * @param {String} prefix
      * @returns {number}
@@ -353,12 +318,19 @@ export class EveSpaceObject extends EveObject
 
     /**
      * A Per frame function that updates view dependent data
-     * @param {mat4} parentTransform
+     * @param {undefined|mat4} parentTransform
      * @param {Number} dt
      */
     UpdateViewDependentData(parentTransform, dt)
     {
-        mat4.multiply(this._worldTransform, parentTransform, this.transform);
+        if (parentTransform)
+        {
+            mat4.multiply(this._worldTransform, parentTransform, this.transform);
+        }
+        else
+        {
+            mat4.copy(this._worldTransform, this.transform);
+        }
 
         this._worldSpriteScale = mat4.maxScaleOnAxis(this._worldTransform);
 
@@ -385,28 +357,17 @@ export class EveSpaceObject extends EveObject
         }
         else if (this.mesh && this.mesh.IsGood())
         {
-            vec3.subtract(center, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
+            const { maxBounds, minBounds } = this.mesh.geometryResource;
+            vec3.subtract(center, maxBounds, minBounds);
             vec3.scale(center, center, 0.5 * 1.732050807);
-            vec3.add(radii, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
+            vec3.add(radii, maxBounds, minBounds);
             vec3.scale(radii, radii, 0.5);
         }
 
         for (let i = 0; i < this.customMasks.length; ++i)
         {
-            const targets = this.visible.customMasks ? this.customMasks[i].targets : [ 0, 0, 0, 0 ];
-            this._perObjectData.vs.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
-            this._perObjectData.vs.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
-            this._perObjectData.ps.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
-            this._perObjectData.ps.Set(i ? "CustomMaskTarget1" : "CustomMaskTarget0", targets);
-        }
-
-        /*
-        const maxCustomMasks = Math.min(this.customMasks.length, 2);
-        for (let i = 0; i < maxCustomMasks; ++i)
-        {
             this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
         }
-        */
 
         if (this.animation.animations.length)
         {
@@ -599,8 +560,8 @@ export class EveSpaceObject extends EveObject
             [ "EllipsoidCenter", 4 ],
             [ "CustomMaskMatrix0", mat4.identity([]) ],
             [ "CustomMaskMatrix1", mat4.identity([]) ],
-            [ "CustomMaskData0", 4 ],
-            [ "CustomMaskData1", 4 ],
+            [ "CustomMaskData0", [ 1, 0, 0, 0 ] ],
+            [ "CustomMaskData1", [ 1, 0, 0, 0 ] ],
             [ "JointMat", 696 ]
         ],
         ps: [

@@ -450,8 +450,10 @@ export class EveTurretSet extends EveObjectSet
     /**
      * Rebuilds the turret sets cached data
      */
-    OnResPrepared()
+    OnResPrepared(res)
     {
+        this.geometryResource = res;
+
         const
             instancedElement = Tw2VertexElement.from({
                 usage: "TEXCOORD",

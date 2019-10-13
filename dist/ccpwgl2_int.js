@@ -16586,6 +16586,7 @@ class Tw2PerObjectData {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RawData", function() { return Tw2RawData; });
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /**
  * Stores raw data for {@link Tw2PerObjectData}
  *
@@ -16594,6 +16595,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} nextOffset
  * @class
  */
+
 class Tw2RawData {
   constructor() {
     this.data = null;
@@ -16622,6 +16624,23 @@ class Tw2RawData {
     for (let i = 0; i < el.size; i++) {
       this.data[i + el.offset] = value[i];
     }
+  }
+  /**
+   * Sets an element index value
+   * @param {String} name
+   * @param {Number} index
+   * @param {Number} value
+   */
+
+
+  SetIndex(name, index, value) {
+    const el = this.elements[name];
+
+    if (index < 0 || index >= el.size) {
+      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
+    }
+
+    this.data[index + el.offset] = value;
   }
   /**
    * Gets an element's array value
@@ -17375,7 +17394,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17494,6 +17513,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -17505,8 +17526,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -17805,6 +17824,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array<Tw2GeometryRes>} associatedResources -
  * @property {Array.<Tw2MeshArea>} decalAreas            -
  * @property {Array.<Tw2MeshArea>} depthAreas            -
+ * @property {Array.<Tw2MeshArea>} distortionAreas       0
  * @property {Boolean} display                           -
  * @property {Tw2LodResource} geometryRes                -
  * @property {Tw2GeometryRes} geometryResource           -
@@ -17822,6 +17842,7 @@ class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     this.associatedResources = [];
     this.decalAreas = [];
     this.depthAreas = [];
+    this.distortionAreas = [];
     this.geometryRes = null;
     this.opaqueAreas = [];
     this.pickableAreas = [];
@@ -17833,6 +17854,7 @@ class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       transparentAreas: true,
       additiveAreas: true,
       pickableAreas: true,
+      distortionAreas: true,
       decalAreas: true,
       depthAreas: true
     };
@@ -17951,6 +17973,20 @@ class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
         return;
     }
+  }
+  /**
+   * Todo: Remove when sof can figure out what areas to update
+   */
+
+
+  EmptyAreas() {
+    this.additiveAreas.splice(0);
+    this.decalAreas.splice(0);
+    this.depthAreas.splice(0);
+    this.distortionAreas.splice(0);
+    this.opaqueAreas.splice(0);
+    this.pickableAreas.splice(0);
+    this.transparentAreas.splice(0);
   }
   /**
    * Gets render batches from a mesh area array and commits them to an accumulator
@@ -18759,39 +18795,8 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
   }
 
   /**
-   * Creates an instanced mesh from a plain object
-   * @param {*} [values]
-   * @param {*} [options]
-   * @returns {Tw2InstancedMesh}
-   */
-  static from(values, options) {
-    const item = new Tw2InstancedMesh();
-    item.meshIndex = Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["get"])(options, "index", 0);
-
-    if (values) {
-      /*
-      if (values.instanceGeometryResource)
-      {
-          item.instanceGeometryResource = values.instanceGeometryResource;
-      }
-      */
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "geometryResPath", "instanceGeometryResPath", "instanceMeshIndex"]);
-      const areaNames = ["additiveAreas", "decalAreas", "depthAreas", "distortionAreas", "opaqueAreas", "pickableAreas", "transparentAreas"];
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areaNames);
-      _Tw2Mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2Mesh"].createAreaIfExists(item, values, areaNames);
-    }
-
-    if (!options || !options.skipUpdate) {
-      item.Initialize();
-    }
-
-    return item;
-  }
-  /**
    * Initializes the instanced mesh
    */
-
-
   Initialize() {
     if (this.geometryResPath !== "") {
       this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
@@ -18923,6 +18928,51 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
     if (buffer) {
       this.geometryResource.RenderAreasInstanced(meshIx, start, count, effect, technique, buffer, this.instanceGeometryResource.GetInstanceDeclaration(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceStride(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex));
     }
+  }
+  /**
+   * Todo: Remove when sof can figure out what areas to update
+   */
+
+
+  EmptyAreas() {
+    this.additiveAreas.splice(0);
+    this.decalAreas.splice(0);
+    this.depthAreas.splice(0);
+    this.distortionAreas.splice(0);
+    this.opaqueAreas.splice(0);
+    this.pickableAreas.splice(0);
+    this.transparentAreas.splice(0);
+  }
+  /**
+   * Creates an instanced mesh from a plain object
+   * @param {*} [values]
+   * @param {*} [options]
+   * @returns {Tw2InstancedMesh}
+   */
+
+
+  static from(values, options) {
+    const item = new Tw2InstancedMesh();
+    item.meshIndex = Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["get"])(options, "index", 0);
+
+    if (values) {
+      /*
+      if (values.instanceGeometryResource)
+      {
+          item.instanceGeometryResource = values.instanceGeometryResource;
+      }
+      */
+      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "geometryResPath", "instanceGeometryResPath", "instanceMeshIndex"]);
+      const areaNames = ["additiveAreas", "decalAreas", "depthAreas", "distortionAreas", "opaqueAreas", "pickableAreas", "transparentAreas"];
+      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areaNames);
+      _Tw2Mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2Mesh"].createAreaIfExists(item, values, areaNames);
+    }
+
+    if (!options || !options.skipUpdate) {
+      item.Initialize();
+    }
+
+    return item;
   }
   /**
    * Gets area batches
@@ -19154,6 +19204,22 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
         return;
     }
+  }
+  /**
+   * Todo: Remove when sof can figure out what areas to update
+   */
+
+
+  EmptyAreas() {
+    this.additiveAreas.splice(0);
+    this.decalAreas.splice(0);
+    this.depthAreas.splice(0);
+    this.depthNormalAreas.splice(0);
+    this.distortionAreas.splice(0);
+    this.opaqueAreas.splice(0);
+    this.opaquePrepassAreas.splice(0);
+    this.pickableAreas.splice(0);
+    this.transparentAreas.splice(0);
   }
   /**
    * Gets render batches from a mesh area array and commits them to an accumulator
@@ -20538,17 +20604,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * Tw2FloatParameter
- * TODO: Remove constructor parameters
  * @ccp Tr2FloatParameter
  *
  * @property {String} name
  * @property {Number} value
  * @property {?Float32Array} _constantBuffer
  * @property {?Number} _offset
- * @class
  */
 
 class Tw2FloatParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
+  //_constantBuffer = null;
+  //_offset = null;
+
   /**
    * Constructor
    * @param {String} [name='']
@@ -20557,21 +20624,24 @@ class Tw2FloatParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2P
   constructor(name = "", value = 1) {
     super(name);
     this.value = 1;
-    this._constantBuffer = null;
-    this._offset = null;
     this.value = _global__WEBPACK_IMPORTED_MODULE_1__["util"].isArrayLike(value) ? value[0] : value;
   }
   /**
    * Sets the parameter's value
    * @param {Number} value
-   * @param {*} [controller]
-   * @param {Boolean} [skipUpdate]
+   * @param {*} [opt]
+   * @returns {Boolean}
    */
 
 
-  SetValue(value, controller, skipUpdate) {
-    this.value = value;
-    this.UpdateValues(controller, skipUpdate);
+  SetValue(value, opt) {
+    if (!this.EqualsValue(value)) {
+      this.value = value;
+      this.UpdateValues(opt);
+      return true;
+    }
+
+    return false;
   }
   /**
    * Gets the parameter's value
@@ -20943,6 +21013,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
     this.mipFilterMode = 2;
     this.textureRes = null;
     this.useAllOverrides = false;
+    this.forceAddressMode = false;
     this._sampler = null;
 
     if (texturePath) {
@@ -21081,6 +21152,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
   UpdateOverrides() {
     if (this.useAllOverrides) {
       this._sampler = this._sampler || new _sampler__WEBPACK_IMPORTED_MODULE_1__["Tw2SamplerState"]();
+      this._sampler.forceAddressModes = this.forceAddressModes;
       const {
         wrapModes,
         gl
@@ -21180,7 +21252,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
   }
 
 }
-Tw2TextureParameter.overrideProperties = ["useAllOverrides", "addressUMode", "addressVMode", "addressWMode", "filterMode", "mipFilterMode", "maxAnisotropy"];
+Tw2TextureParameter.overrideProperties = ["useAllOverrides", "addressUMode", "addressVMode", "addressWMode", "filterMode", "mipFilterMode", "maxAnisotropy", "forceAddressModes"];
 
 /***/ }),
 
@@ -21200,10 +21272,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const vec3_0 = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
-      vec3_1 = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
-      quat_0 = _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
-      mat4_0 = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
 /**
  * Tw2TransformParameter
  * @ccp Tr2TransformParameter
@@ -21213,30 +21281,55 @@ const vec3_0 = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
  * @property {vec3} scaling
  * @property {mat4} _localTransform
  * @property {mat4} _worldTransform
- * @property {mat4|null} _worldTranspose
- * @property {mat4|null} _worldInverse
+ * @property {mat4} _parentTransform
+ * @property {mat4|undefined} _worldTranspose
+ * @property {mat4|undefined} _worldInverse
+ * @property {mat4|undefined} _worldInverseTranspose
  * @property {Boolean} _rebuildLocal
  * @property {Boolean} _rebuildWorldTransform
  */
 
 class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
-  constructor(...args) {
-    super(...args);
+  // ccp
+  // ccpwgl
+  //_parentTransform = null;
+  //_worldTranspose = null;
+  //_worldInverse = null;
+  //_worldInverseTranspose = null;
+
+  /**
+   * Constructor
+   * @param {String} [name]
+   * @param {quat|mat4} [value]
+   */
+  constructor(name, value) {
+    Tw2TransformParameter.init();
+    super();
+    this.name = "";
     this.rotation = _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
     this.translation = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
     this.scaling = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
     this._localTransform = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._parentTransform = null;
     this._worldTransform = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._worldTranspose = null;
-    this._worldInverse = null;
     this._rebuildLocal = true;
     this._rebuildWorld = true;
-  }
+    if (name) this.name = name;
 
+    if (value) {
+      if (value.length === 4) {
+        this.SetRotation(value);
+      } else {
+        this.SetTransform(value);
+      }
+
+      this.RebuildTransforms();
+    }
+  }
   /**
    * Initializes the transform parameter
    */
+
+
   Initialize() {
     this.UpdateValues();
   }
@@ -21248,7 +21341,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   OnValueChanged(opt) {
     if (!opt || !opt.skipRebuild) {
-      this.Rebuild({
+      this.RebuildTransforms({
         force: true,
         skipUpdate: true
       });
@@ -21263,7 +21356,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
    */
 
 
-  Rebuild(opt) {
+  RebuildTransforms(opt) {
     let force = opt ? opt.force : false,
         skipUpdate = opt ? opt.skipUpdate : false;
 
@@ -21286,6 +21379,15 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
       if (this._worldTranspose) {
         _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
+      }
+
+      if (this._worldInverseTranspose) {
+        if (this._worldInverse) {
+          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverse);
+        } else {
+          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(this._worldInverseTranspose, this._worldTransform);
+          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverseTranspose);
+        }
       }
 
       if (this._constantBuffer) {
@@ -21334,9 +21436,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   Apply(constantBuffer, offset, size) {
     if (!this._worldTranspose) {
-      this.Rebuild();
+      this.RebuildTransforms();
       this._worldTranspose = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].tranpose(this._worldTranspose, this._worldTransform);
+      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
     }
 
     if (size >= this.constructor.constantBufferSize) {
@@ -21353,7 +21455,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetValue(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
 
     if (!this._worldTranspose) {
       this._worldTranspose = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
@@ -21365,13 +21467,26 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
   /**
    * Sets the parent transform
    * @param {null|mat4} m
+   * @returns {Tw2TransformParameter}
    */
 
 
   SetParentTransform(m) {
-    this._parentTransform = m;
-    this._rebuildWorld = true;
-    this.Rebuild();
+    // Clear
+    if (!m && this._parentTransform) {
+      this._parentTransform = null;
+      this._rebuildWorld = true;
+    } // Set new parent
+    else if (!this._parentTransform) {
+        this._parentTransform = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].clone(m);
+        this._rebuildWorld = true;
+      } // Update parent
+      else if (!_global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].equals(m, this._parentTransform)) {
+          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._parentTransform, m);
+          this._rebuildWorld = true;
+        }
+
+    return this;
   }
   /**
    * Gets the world transform
@@ -21381,7 +21496,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldTransform(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._worldTransform);
   }
   /**
@@ -21394,7 +21509,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   DecomposeWorld(rotation, translation, scaling) {
-    this.Rebuild();
+    this.RebuildTransforms();
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(rotation, this._worldTransform);
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(translation, this._worldTransform);
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(scaling, this._worldTransform);
@@ -21408,7 +21523,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldRotation(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(out, this._worldTransform);
   }
   /**
@@ -21419,7 +21534,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldDirection(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._worldTransform[8], this._worldTransform[9], this._worldTransform[10]);
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
   }
@@ -21431,6 +21546,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldEuler(out) {
+    const {
+      quat_0
+    } = Tw2TransformParameter.global;
     this.GetWorldRotation(quat_0);
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
   }
@@ -21442,7 +21560,10 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldAxisAngle(axis) {
-    this.Rebuild();
+    const {
+      quat_0
+    } = Tw2TransformParameter.global;
+    this.RebuildTransforms();
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, this._worldTransform);
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].getAxisAngle(axis, quat_0);
   }
@@ -21454,7 +21575,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldTranslation(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(out, this._worldTransform);
   }
   /**
@@ -21465,7 +21586,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldScaling(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(out, this._worldTransform);
   }
   /**
@@ -21475,6 +21596,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldMaxScale() {
+    const {
+      vec3_0
+    } = Tw2TransformParameter.global;
     this.GetWorldScaling(vec3_0);
     return Math.max(vec3_0[0], vec3_0[1], vec3_0[2]);
   }
@@ -21487,12 +21611,15 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldToLocal(out, v) {
-    this.Rebuild();
+    this.RebuildTransforms();
 
     if (this._worldInverse) {
       return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldInverse);
     }
 
+    const {
+      mat4_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(mat4_0, this._worldTransform);
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, mat4_0);
   }
@@ -21547,7 +21674,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   Decompose(rotation, translation, scaling) {
-    this.Rebuild();
+    this.RebuildTransforms();
     _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(rotation, this.rotation);
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(translation, this.translation);
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(scaling, this.scaling);
@@ -21562,7 +21689,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetLocalToWorld(out, v) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldTransform);
   }
   /**
@@ -21573,7 +21700,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetDirection(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._localTransform[8], this._localTransform[9], this._localTransform[10]);
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
   }
@@ -21585,7 +21712,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetRotation(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(out, this.rotation);
   }
   /**
@@ -21596,6 +21723,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetEuler(out) {
+    const {
+      quat_0
+    } = Tw2TransformParameter.global;
     this.GetRotation(quat_0);
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
   }
@@ -21632,6 +21762,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromValues(x, y, z, w) {
+    const {
+      quat_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].set(quat_0, x, y, z, w);
     return this.SetRotation(quat_0);
   }
@@ -21645,6 +21778,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromAxes(view, right, up) {
+    const {
+      quat_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxes(quat_0, view, right, up);
     return this.SetRotation(quat_0);
   }
@@ -21683,6 +21819,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromEulerValues(x, y, z) {
+    const {
+      vec3_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
     return this.SetRotationFromEuler(vec3_0);
   }
@@ -21694,6 +21833,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromMat4(m) {
+    const {
+      quat_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, m);
     return this.SetRotation(quat_0);
   }
@@ -21742,6 +21884,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   RotateOnAxisAngle(axis, radians) {
+    const {
+      quat_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(quat_0, axis, radians);
     _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].multiply(this.rotation, this.rotation, quat_0);
     this._rebuildLocal = true;
@@ -21766,7 +21911,10 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   LookAt(v, flip) {
-    this.Rebuild();
+    this.RebuildTransforms();
+    const {
+      mat4_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(mat4_0, this._localTransform);
 
     if (flip) {
@@ -21788,6 +21936,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   LookAtWorld(v, flip) {
+    const {
+      vec3_0
+    } = Tw2TransformParameter.global;
     this.GetWorldToLocal(vec3_0, v);
     return this.LookAt(vec3_0, flip);
   }
@@ -21799,7 +21950,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetTranslation(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.translation);
   }
   /**
@@ -21849,6 +22000,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   TranslateOnAxis(axis, distance) {
+    const {
+      vec3_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformQuat(vec3_0, axis, this.rotation);
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.translation, this.translation, vec3_0, distance);
     this._rebuildLocal = true;
@@ -21892,7 +22046,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetScale(out) {
-    this.Rebuild();
+    this.RebuildTransforms();
     return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.scaling);
   }
   /**
@@ -21926,7 +22080,11 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetScaleFromValues(x, y, z) {
-    return this.SetScale([x, y, z]);
+    const {
+      vec3_0
+    } = Tw2TransformParameter.global;
+    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
+    return this.SetScale(vec3_0);
   }
   /**
    * Sets the local x axis scale
@@ -22002,6 +22160,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   ScaleValues(x, y, z) {
+    const {
+      vec3_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
     return this.Scale(vec3_0);
   }
@@ -22013,6 +22174,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   ScaleMat4(m) {
+    const {
+      vec3_0
+    } = Tw2TransformParameter.global;
     _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_0, m);
     return this.Scale(vec3_0);
   }
@@ -22073,6 +22237,12 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
       return false;
     }
 
+    this.init();
+    const {
+      vec3_0,
+      vec3_1,
+      quat_0
+    } = this.global;
     let rotation,
         translation,
         scaling,
@@ -22117,7 +22287,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
       }
 
       if (updated && !opt.skipUpdate) {
-        a.Rebuild({
+        a.RebuildTransforms({
           force: true
         });
       }
@@ -22144,6 +22314,24 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     return out;
   }
   /**
+   * Global and scratch parameters
+   * @type {null|Object}
+   */
+
+
+  /**
+   * Initializes global and scratch parameters
+   */
+  static init() {
+    if (this.global) return;
+    this.global = {
+      vec3_0: _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
+      vec3_1: _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
+      quat_0: _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
+      mat4_0: _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()
+    };
+  }
+  /**
    * Black definition
    * @param {*} r
    * @returns {*[]}
@@ -22156,6 +22344,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 }
 Tw2TransformParameter.constantBufferSize = 16;
+Tw2TransformParameter.global = null;
 
 /***/ }),
 
@@ -22177,7 +22366,6 @@ __webpack_require__.r(__webpack_exports__);
  * Tw2VariableParameter
  *
  * @property {String} variableName
- * @class
  */
 
 class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Parameter"] {
@@ -22208,6 +22396,17 @@ class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["T
 
   get size() {
     return this.variable ? this.variable.size : 0;
+  }
+  /**
+   * Sets the variable's value
+   * @param {*} value
+   * @param {*} [opt]
+   * @returns {Boolean}
+   */
+
+
+  SetValue(value, opt) {
+    return _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue(this.variableName, value, opt);
   }
   /**
    * Gets the variable's value
@@ -22433,8 +22632,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * Tw2Vector4Parameter
- *
- * @class
+ * @ccp TriVector4Parameter
  */
 
 class Tw2Vector4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
@@ -22554,8 +22752,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /**
  * Tw2VectorParameter base class
- * TODO: Remove constructor parameters
- * @ccp N/A
  *
  * @property {Float32Array} value
  * @property {?Float32Array} _constantBuffer
@@ -22563,6 +22759,9 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+  //_constantBuffer = null;
+  //_offset = null;
+
   /**
    * Gets the parameter's constant buffer size
    * @returns {Number} 0 if invalid
@@ -22580,8 +22779,6 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
   constructor(name, value) {
     super();
     this.value = new Float32Array(this.size);
-    this._constantBuffer = null;
-    this._offset = null;
     this.name = name;
     if (value) this.value.set(value);
   }
@@ -22589,16 +22786,18 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
    * Sets the parameter's value
    * @param {Float32Array} value   - The value to set
    * @param {*} [opt]
+   * @returns {Boolean}
    */
 
 
   SetValue(value, opt) {
-    //if (!this.EqualsValue(value))
-    //{
-    this.value.set(value);
-    this.UpdateValues(opt); //return true;
-    //}
-    //return false;
+    if (!this.EqualsValue(value)) {
+      this.value.set(value);
+      this.UpdateValues(opt);
+      return true;
+    }
+
+    return false;
   }
   /**
    * Sets a parameter's value at a given index
@@ -27444,17 +27643,15 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Tw2TextureRes
  *
- * @property {WebGLTexture} texture
- * @property {Boolean} isCube
- * @property {Number} width
- * @property {Number} height
- * @property {Boolean} hasMipMaps
- * @property {Boolean} enableMipMaps
- * @property {?String} requestResponseType
- * @property {Number} _currentSampler
- * @property {Boolean} _isAttached    - identifies if the texture was attached rather than loaded
- * @property {?String} _extension     - loading file extension
- * @inherit Tw2Resource
+ * @property {WebGLTexture} texture        - The texture
+ * @property {Boolean} isCube              - Identifies if the texture is a cube map
+ * @property {Number} width                - The texture's width
+ * @property {Number} height               - The texture's height
+ * @property {Boolean} hasMipMaps          - Identifies if the texture has mip maps
+ * @property {?String} requestResponseType - Request response type for the resource
+ * @property {Number} _currentSampler      - The current sampler
+ * @property {Boolean} _isAttached         - identifies if the texture was attached rather than loaded
+ * @property {?String} _extension          - loading file extension
  */
 
 class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resource"] {
@@ -27467,6 +27664,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
     this.hasMipMaps = false;
     this._currentSampler = 0;
     this._isAttached = false;
+    this._extension = "";
   }
 
   /**
@@ -27746,10 +27944,9 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
     gl.bindTexture(targetType, this.texture);
 
-    if (sampler.hash !== this._currentSampler || this._updateSampler) {
+    if (sampler.hash !== this._currentSampler) {
       sampler.Apply(d, this.hasMipMaps);
       this._currentSampler = sampler.hash;
-      this._updateSampler = false;
     }
   }
   /**
@@ -27846,20 +28043,19 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Tw2VideoRes
  *
- * @property {?WebGLTexture} texture   - The video's webgl texture
- * @property {?HTMLVideoElement} video - The video
- * @property {Number} width            - The texture's width
- * @property {Number} height           - The texture's height
- * @property {Boolean} cycle           - Enables video looping
- * @property {Boolean} playOnLoad      - Plays the video as soon as it is able to
- * @property {Number} _currentSampler  - The current sampler's hash
- * @property {Number} _currentTime     - The video's current time
- * @property {Boolean} _playable       - Identifies if the video is playable
- * @property {Boolean} _isPlaying      - Identifies if the video is playing
- * @property {?Function} _onPlaying    - An optional callback which is fired when the video is playing
- * @property {?Function} _onPause      - An optional callback which is fired when the video is paused
- * @property {?Function} _onEnded      - An optional callback which is fired when the video has ended
- * @class
+ * @property {?WebGLTexture} texture     - The video's webgl texture
+ * @property {?HTMLVideoElement} video   - The video
+ * @property {Number} width              - The texture's width
+ * @property {Number} height             - The texture's height
+ * @property {Boolean} cycle             - Enables video looping
+ * @property {Boolean} playOnLoad        - Plays the video as soon as it is able to
+ * @property {Number} _currentSampler    - The current sampler's hash
+ * @property {Number} _currentTime       - The video's current time
+ * @property {Boolean} _playable         - Identifies if the video is playable
+ * @property {Boolean} _isPlaying        - Identifies if the video is playing
+ * @property {?Function} _onPlaying      - An optional callback which is fired when the video is playing
+ * @property {?Function} _onPause        - An optional callback which is fired when the video is paused
+ * @property {?Function} _onEnded        - An optional callback which is fired when the video has ended
  */
 
 class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource"] {
@@ -27942,9 +28138,6 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
         this.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.video);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.bindTexture(gl.TEXTURE_2D, null);
         this.width = this.video.width;
         this.height = this.video.height;
@@ -28101,7 +28294,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28292,6 +28485,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} samplerType
  * @property {Boolean} isVolume
  * @property {Number} hash
+ * @property {Boolean} forceAddressModes
  */
 
 class Tw2SamplerState {
@@ -28309,6 +28503,7 @@ class Tw2SamplerState {
     this.samplerType = _global__WEBPACK_IMPORTED_MODULE_0__["GL_TEXTURE_2D"];
     this.isVolume = false;
     this.hash = 0;
+    this.forceAddressModes = false;
     this._borderColor = null;
     this._comparison = null;
     this._comparisonFunc = null;
@@ -28350,6 +28545,7 @@ class Tw2SamplerState {
     this.hash ^= this.addressV;
     this.hash *= 16777619;
     this.hash ^= this.anisotropy;
+    this.hash += this.forceAddressModes ? 1 : 0;
   }
   /**
    * Apply
@@ -28361,9 +28557,10 @@ class Tw2SamplerState {
   Apply(device, hasMipMaps) {
     const targetType = this.samplerType,
           gl = device.gl,
-          ext = device.GetExtension("EXT_texture_filter_anisotropic");
-    gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, hasMipMaps ? this.addressU : gl.CLAMP_TO_EDGE);
-    gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, hasMipMaps ? this.addressV : gl.CLAMP_TO_EDGE);
+          ext = device.GetExtension("EXT_texture_filter_anisotropic"),
+          useAddress = hasMipMaps || this.forceAddressModes;
+    gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
+    gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);
     gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
     gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
 
@@ -36440,7 +36637,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     this.ApplyPerFrameData();
     const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = EveSpaceScene.global,
-          tr = g.MAT_ID,
+          tr = undefined,
           show = this.visible;
 
     if (show["environment"] && this.backgroundEffect) {
@@ -36617,12 +36814,21 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     ps.Set("FovXY", [d.targetResolution[3], d.targetResolution[2]]);
     ps.Set("ShadowMapSettings", [1, 1, 0, 0]);
     ps.Set("TargetResolution", d.targetResolution);
+    ps.SetIndex("SceneData.NebulaIntensity", 0, this.nebulaIntensity);
+    ps.SetIndex("ViewportSize", 0, d.viewportWidth);
+    ps.SetIndex("ViewportSize", 1, d.viewportHeight);
+    ps.SetIndex("ShadowCameraRange", 0, 1);
+    ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
+    ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+    /*
     ps.Get("SceneData.NebulaIntensity")[0] = this.nebulaIntensity;
     ps.Get("ViewportSize")[0] = d.viewportWidth;
     ps.Get("ViewportSize")[1] = d.viewportHeight;
     ps.Get("ShadowCameraRange")[0] = 1;
     ps.Get("ProjectionToView")[0] = -d.projection[14];
     ps.Get("ProjectionToView")[1] = -d.projection[10] - 1;
+     */
+
     d.perFramePSData = ps;
     const envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
           envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
@@ -36643,8 +36849,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
         vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
         mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
         mat4_1: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-        mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-        MAT_ID: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+        mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
       };
     }
   }
@@ -41314,54 +41519,63 @@ EveCurveLineSet.__isStaging = 1;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveCustomMask", function() { return EveCustomMask; });
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var _core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/parameter */ "./core/parameter/index.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
 
 /**
  * Custom mask for patterns
  * @ccp EveCustomMask
  *
- * @property {Boolean} display      - Toggles mask visibility
- * @property {Boolean} isMirrored   - Identifies if the mask is mirrored
- * @property {Number} materialIndex - The material this mask is for (ie. Mtl1, Mtl2, Mtl3, Mtl4, PMt1, PMt2)
- * @property {vec3} position        - Mask's position
- * @property {quat} rotation        - Mask's rotation
- * @property {vec3} scaling         - Mask's scale
- * @property {vec4} targetMaterials - The target materials this mask is for
- * @property {mat4} localTransform  - Mask's localTransform
- * @property {Boolean} _dirty       - Identifies if the mask is dirty and requires a rebuild
- * @property {mat4} _parentTransformLast - The paren't last transform
- * @property {mat4} _maskMatrix     - The custom mask's final matrix
+ * @property {Boolean} display             - Toggles mask visibility
+ * @property {Boolean} isMirrored          - Identifies if the mask is mirrored
+ * @property {Number} materialIndex        - The material this mask is for (ie. Mtl1, Mtl2, Mtl3, Mtl4, PMt1, PMt2)
+ * @property {Object} parameters           - Mask parameters
+ * @property {vec4} targetMaterials        - The target materials this mask is for
+ * @property {mat4} _worldInverseTranspose - The custom mask's final matrix
  */
 
-class EveCustomMask extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveCustomMask extends _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TransformParameter"] {
   constructor(...args) {
     super(...args);
     this.materialIndex = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.targetMaterials = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.display = true;
     this.isMirrored = false;
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._dirty = true;
-    this._parentTransformLast = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._maskMatrix = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.parameters = {
+      PatternMaskMap: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("PatternMaskMap"),
+      DiffuseColor: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DiffuseColor"),
+      FresnelColor: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("FresnelColor"),
+      Gloss: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Gloss")
+    };
+    this._worldInverseTranspose = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
-   * Initializes the mask
+   * Sets a sof material by name
+   * @param {String} name
+   * @returns {Promise<void>}
    */
-  Initialize() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
-  }
-  /**
-   * Fires on value changes
-   */
+  SetMaterial(name) {
+    var _this = this;
 
+    return _asyncToGenerator(function* () {
+      const material = yield _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].eveSof.FetchMaterial(name);
+      const {
+        DiffuseColor,
+        FresnelColor,
+        Gloss
+      } = material.parameters;
 
-  OnValueChanged() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
-    this._dirty = true;
+      _this.parameters.DiffuseColor.SetValue(DiffuseColor);
+
+      _this.parameters.FresnelColor.SetValue(FresnelColor);
+
+      _this.parameters.Gloss.SetValue(Gloss);
+    })();
   }
   /**
    * Updates the parent's per object data
@@ -41373,20 +41587,12 @@ class EveCustomMask extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
 
   UpdatePerObjectData(parentTransform, perObjectData, index, visible) {
-    // TODO: Find a better way to tell if the parent has been updated
-    if (this.display && this._dirty || !_global__WEBPACK_IMPORTED_MODULE_0__["mat4"].equals(this._parentTransformLast, parentTransform)) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransformLast, parentTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._maskMatrix, parentTransform, this.localTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._maskMatrix, this._maskMatrix);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._maskMatrix, this._maskMatrix);
-      this._dirty = false;
-    }
-
-    const targets = this.display && visible ? this.targetMaterials : [0, 0, 0, 0];
-    perObjectData.vs.Set("CustomMaskMatrix" + index, this._maskMatrix);
-    perObjectData.vs.Set("CustomMaskData" + index, [1, this.isMirrored ? 1 : 0, 0, 0]);
-    perObjectData.ps.Set("CustomMaskMaterialID" + index, [this.materialIndex, 0, 0, 0]);
+    this.SetParentTransform(parentTransform);
+    const targets = this.display && visible ? this.targetMaterials : _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].ZERO;
     perObjectData.ps.Set("CustomMaskTarget" + index, targets);
+    perObjectData.ps.SetIndex("CustomMaskMaterialID" + index, 0, this.materialIndex);
+    perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
+    perObjectData.vs.Set("CustomMaskMatrix" + index, this._worldInverseTranspose);
   }
   /**
    * Black definition
@@ -44521,7 +44727,8 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
    */
 
 
-  OnResPrepared() {
+  OnResPrepared(res) {
+    this.geometryResource = res;
     const instancedElement = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
       usage: "TEXCOORD",
       usageIndex: 1,
@@ -46615,6 +46822,11 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
           parentScale = g.vec3_1,
           dir = g.vec3_2,
           viewInv = d.viewInverse;
+
+    if (!parentTransform) {
+      parentTransform = g.mat4_ID;
+    }
+
     _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
     _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(parentScale, parentTransform);
@@ -46993,13 +47205,18 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
   }
   /**
    * Internal per frame update
-   * @param {mat4} parentTransform
+   * @param {undefined|mat4} parentTransform
    */
 
 
   UpdateViewDependentData(parentTransform) {
     _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
+
+    if (parentTransform) {
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
+    } else {
+      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this.localTransform);
+    }
   }
   /**
    * Internal per frame update
@@ -47008,14 +47225,11 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
 
   Update(dt) {
-    //quat.normalize(this.rotation, this.rotation); // Don't really need to normalize...
-    //mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     for (let i = 0; i < this.curveSets.length; ++i) {
       this.curveSets[i].Update(dt);
     }
 
     for (let i = 0; i < this.effectChildren.length; ++i) {
-      //this.effectChildren[i].Update(dt, this.localTransform);
       this.effectChildren[i].Update(dt, this._worldTransform);
     }
   }
@@ -47105,7 +47319,8 @@ EveObject.global = {
   vec3_7: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
   mat4_1: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-  mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+  mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+  mat4_ID: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
 };
 
 /***/ }),
@@ -47698,6 +47913,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
 /* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core */ "./core/index.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObject */ "./eve/object/legacy/EveObject.js");
+/* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../item */ "./eve/item/index.js");
+
 
 
 
@@ -47887,40 +48104,6 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
     this._useLOD = bool;
   }
   /**
-   * Adds a custom mask
-   * @param {vec3} position
-   * @param {vec3} scaling
-   * @param {quat} rotation
-   * @param {vec4} isMirrored
-   * @param {vec4} sourceMaterial
-   * @param {vec4} targetMaterials
-   */
-
-
-  AddCustomMask(position, scaling, rotation, isMirrored, sourceMaterial, targetMaterials) {
-    const transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(_global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(), rotation, position, scaling);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(transform, transform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(transform, transform);
-    this.customMasks.push({
-      transform: transform,
-      maskData: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, isMirrored ? 1 : 0, 0, 0),
-      materialID: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(sourceMaterial, 0, 0, 0),
-      targets: targetMaterials
-    });
-    /*
-    const mask = new EveCustomMask();
-    mask._index = this.customMasks.length;
-    vec3.copy(mask.position, position);
-    vec3.copy(mask.scaling, scaling);
-    quat.copy(mask.rotation, rotation);
-    vec4.copy(mask.targetMaterials, targetMaterials);
-    mask.materialID = sourceMaterial;
-    mask.isMirrored = isMirrored ? 1 : 0;
-    this.customMasks.push(mask);
-    return mask;
-    */
-  }
-  /**
    * Gets locator count for a specific locator group
    * @param {String} prefix
    * @returns {number}
@@ -48025,13 +48208,18 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
   }
   /**
    * A Per frame function that updates view dependent data
-   * @param {mat4} parentTransform
+   * @param {undefined|mat4} parentTransform
    * @param {Number} dt
    */
 
 
   UpdateViewDependentData(parentTransform, dt) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.transform);
+    if (parentTransform) {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.transform);
+    } else {
+      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this.transform);
+    }
+
     this._worldSpriteScale = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis(this._worldTransform);
 
     for (let i = 0; i < this.children.length; ++i) {
@@ -48052,31 +48240,19 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
       radii[1] = this.shapeEllipsoidRadius[1];
       radii[2] = this.shapeEllipsoidRadius[2];
     } else if (this.mesh && this.mesh.IsGood()) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(center, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
+      const {
+        maxBounds,
+        minBounds
+      } = this.mesh.geometryResource;
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(center, maxBounds, minBounds);
       _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(center, center, 0.5 * 1.732050807);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(radii, this.mesh.geometryResource.maxBounds, this.mesh.geometryResource.minBounds);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(radii, maxBounds, minBounds);
       _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
     }
 
     for (let i = 0; i < this.customMasks.length; ++i) {
-      const targets = this.visible.customMasks ? this.customMasks[i].targets : [0, 0, 0, 0];
-
-      this._perObjectData.vs.Set(i ? "CustomMaskMatrix1" : "CustomMaskMatrix0", this.customMasks[i].transform);
-
-      this._perObjectData.vs.Set(i ? "CustomMaskData1" : "CustomMaskData0", this.customMasks[i].maskData);
-
-      this._perObjectData.ps.Set(i ? "CustomMaskMaterialID1" : "CustomMaskMaterialID0", this.customMasks[i].materialID);
-
-      this._perObjectData.ps.Set(i ? "CustomMaskTarget1" : "CustomMaskTarget0", targets);
+      this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
     }
-    /*
-    const maxCustomMasks = Math.min(this.customMasks.length, 2);
-    for (let i = 0; i < maxCustomMasks; ++i)
-    {
-        this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
-    }
-    */
-
 
     if (this.animation.animations.length) {
       this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
@@ -48216,7 +48392,7 @@ EveSpaceObject.LOD_THRESHOLD_NONE = 100;
 EveSpaceObject.LOD_THRESHOLD_LOW = 200;
 EveSpaceObject.LOD_THRESHOLD_MEDIUM = 500;
 EveSpaceObject.perObjectData = {
-  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", 4], ["CustomMaskData1", 4], ["JointMat", 696]],
+  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", [1, 0, 0, 0]], ["CustomMaskData1", [1, 0, 0, 0]], ["JointMat", 696]],
   ps: [["Shipdata", [0, 1, 0, 1]], ["Clipdata1", 4], ["Clipdata2", 4], ["ShLighting", 4 * 7], ["CustomMaskMaterialID0", 4], ["CustomMaskMaterialID1", 4], ["CustomMaskTarget0", 4], ["CustomMaskTarget1", 4]]
 };
 
@@ -48797,14 +48973,6 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
 
 
   constructor() {
-    instanceCount++;
-
-    if (instanceCount > 1) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrSingletonInstantiation"]({
-        class: "Tw2Library"
-      });
-    }
-
     super();
     this.math = _math__WEBPACK_IMPORTED_MODULE_4__;
     this.util = _util__WEBPACK_IMPORTED_MODULE_2__;
@@ -48821,9 +48989,47 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
       dynamicPath: new Map(),
       type: new Map()
     };
+    this._debug = false;
+    instanceCount++;
+
+    if (instanceCount > 1) {
+      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrSingletonInstantiation"]({
+        class: "Tw2Library"
+      });
+    }
+
+    let eveSof;
+    Object.defineProperty(this, "eveSof", {
+      get: () => {
+        if (!eveSof) {
+          const Constructor = this.GetClass("EveSOF");
+          eveSof = new Constructor(this);
+        }
+
+        return eveSof;
+      }
+    });
     _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"].defaultLogger = this;
-    createDebugProperty(this);
-    lazyLoadClass(this, "eveSof", "EveSOF", this);
+  }
+  /**
+   * Sets debug mode
+   * @param {Boolean} bool
+   */
+
+
+  SetDebug(bool) {
+    if (this._debug === bool) return;
+    this._debug = bool;
+
+    this._store.class.forEach(Constructor => {
+      if ("DEBUG_ENABLED" in Constructor) {
+        Constructor.DEBUG_ENABLED = bool;
+      }
+    });
+
+    this.logger.Debug(bool);
+    this.emit("debug_mode", bool);
+    this.Log("warn", "Debugging ".concat(bool ? "enabled" : "disabled"));
   }
   /**
    * Sets an object's tw2 instantiation
@@ -48934,7 +49140,7 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
   Register(options = {}) {
     if (options.uuid) Object(_util__WEBPACK_IMPORTED_MODULE_2__["enableUUID"])(options.uuid);
     if (options.logger) this.logger.Register(options.logger);
-    if (options.debug) this.debug = options.debug;
+    if (options.debug) this.SetDebug(true);
     if (options.resMan) this.resMan.Register(options.resMan);
     if (options.device) this.device.Register(options.device);
     const {
@@ -49072,7 +49278,7 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      return _this.resMan.GetResourceAsync(resPath);
+      return _this.resMan.FetchResource(resPath);
     })();
   }
   /**
@@ -49114,7 +49320,7 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     var _this3 = this;
 
     return _asyncToGenerator(function* () {
-      return Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath) ? _this3.eveSof.FetchHullBuildClass(resPath) : 2;
+      return Object(_util__WEBPACK_IMPORTED_MODULE_2__["isDNA"])(resPath) ? yield _this3.eveSof.FetchHullBuildClass(resPath) : 2;
     })();
   }
   /**
@@ -49227,13 +49433,14 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
    * Sets a store variable's value
    * @param name
    * @param value
+   * @param {*} [opt]
    * @returns {void|*|Boolean}
    */
 
 
-  SetVariableValue(name, value) {
+  SetVariableValue(name, value, opt) {
     const variable = this.GetVariable(name);
-    if (variable.SetValue) return variable.SetValue(value);
+    if (variable.SetValue) return variable.SetValue(value, opt);
     throw new Error("Variable missing 'SetValue' method");
   }
   /**
@@ -49347,7 +49554,7 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
     Tw2Library.prototype[name] = Value;
 
     if ("DEBUG_ENABLED" in Value) {
-      Value.DEBUG_ENABLED = this.debug;
+      Value.DEBUG_ENABLED = this._debug;
     }
 
     if (Value.black) {
@@ -49646,24 +49853,6 @@ function setStoreKeyValues(library, storeType, values) {
       }
     }
   }
-}
-
-function createDebugProperty(library) {
-  let debug = false;
-  Object.defineProperty(library, "debug", {
-    get: () => debug,
-    set: bool => {
-      library._store.class.forEach(Constructor => {
-        if ("DEBUG_ENABLED" in Constructor) Constructor.DEBUG_ENABLED = debug;
-      });
-
-      if (debug !== bool) {
-        library.logger.Debug(bool);
-        library.emit("debug_mode", bool);
-        library.Log("warn", "Debugging ".concat(bool ? "enabled" : "disabled"));
-      }
-    }
-  });
 }
 
 const tw2 = new Tw2Library();
@@ -61468,6 +61657,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].ZERO = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 0);
 /**
  * Adds a scalar to a vec4
  *
@@ -65912,6 +66102,12 @@ function EveSOF(tw2) {
       }
     }
   }
+  /**
+   * Gets an address mode from a projection type
+   * @param {Number} projectionType
+   * @returns {Number}
+   */
+
 
   function GetAddressMode(projectionType) {
     switch (projectionType) {
@@ -65926,41 +66122,72 @@ function EveSOF(tw2) {
     }
   }
 
-  function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride) {
-    var hullAreas = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, areasName, []);
+  function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride, masks) {
+    const hullAreas = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, areasName, []);
 
-    for (var i = 0; i < hullAreas.length; ++i) {
-      var area = hullAreas[i];
-      var effect = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"]();
+    for (let i = 0; i < hullAreas.length; ++i) {
+      const area = hullAreas[i],
+            effect = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"](); // Use references to custom mask parameters - do not recreate them
+
+      for (let i = 0; i < 2; i++) {
+        const mask = masks[i];
+
+        if (mask) {
+          const {
+            PatternMaskMap,
+            DiffuseColor,
+            FresnelColor,
+            Gloss
+          } = mask.parameters;
+          effect.parameters[PatternMaskMap.name] = PatternMaskMap;
+          effect.parameters[DiffuseColor.name] = DiffuseColor;
+          effect.parameters[FresnelColor.name] = FresnelColor;
+          effect.parameters[Gloss.name] = Gloss;
+        } else {
+          console.error("Missing mask " + i);
+        }
+      }
+
       effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
-      var names = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
+      const names = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
 
-      for (var j = 0; j < names.length; ++j) {
-        var name = names[j];
-        var param = GetOverridenParameter(name, area, commands, race);
+      for (let j = 0; j < names.length; ++j) {
+        const name = names[j];
+        let param = GetOverridenParameter(name, area, commands, race);
         param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
         param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race.hullAreas, area.name, {}), "parameters", {}), name);
         param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction.areas, area.name, {}), "parameters", {}), name);
         param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "parameters", {}), name);
 
         if (param) {
-          effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"](name, param);
+          if (effect.parameters[name]) {
+            effect.parameters.SetValue(param);
+          } else {
+            effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"](name, param);
+          }
         }
       }
 
-      var hullTextures = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textures", []);
+      const hullTextures = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textures", {});
 
-      for (j in hullTextures) {
-        if (hullTextures.hasOwnProperty(j)) {
-          var path = hullTextures[j];
-          path = ModifyTextureResPath(path, j, area, faction, commands);
-          effect.parameters[j] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](j, path);
+      for (let name in hullTextures) {
+        if (hullTextures.hasOwnProperty(name)) {
+          const path = ModifyTextureResPath(hullTextures[name], name, area, faction, commands);
+
+          if (effect.parameters[name]) {
+            effect.parameters[name].SetValue(path);
+          } else {
+            effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, path);
+          }
         }
-      }
+      } // Only create pattern parameters if they don't already exist
 
-      for (j = 0; j < pattern.layers.length; ++j) {
-        if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.parameters)) {
-          var patternTex = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](pattern.layers[j].textureName);
+
+      for (let j = 0; j < pattern.layers.length; ++j) {
+        const textureName = pattern.layers[j] ? pattern.layers[j].textureName : "";
+
+        if (textureName && !effect.parameters[textureName]) {
+          const patternTex = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](pattern.layers[j].textureName);
           patternTex.resourcePath = pattern.layers[j].textureResFilePath;
           patternTex.useAllOverrides = true;
           patternTex.addressUMode = GetAddressMode(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeU", 0));
@@ -65970,18 +66197,18 @@ function EveSOF(tw2) {
         }
       }
 
-      var defaultTextures = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
+      const defaultTextures = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
 
-      for (var texName in defaultTextures) {
-        if (defaultTextures.hasOwnProperty(texName)) {
-          if (!(texName in effect.parameters)) {
-            effect.parameters[texName] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](texName, defaultTextures[texName]);
+      for (let name in defaultTextures) {
+        if (defaultTextures.hasOwnProperty(name)) {
+          if (!(name in effect.parameters)) {
+            effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, defaultTextures[name]);
           }
         }
       }
 
       effect.Initialize();
-      var newArea = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]();
+      const newArea = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]();
       newArea.name = area.name;
       newArea.effect = effect;
       newArea.index = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "index", 0);
@@ -65991,102 +66218,85 @@ function EveSOF(tw2) {
   }
 
   function SetupMesh(ship, hull, faction, race, commands, pattern) {
-    var mesh = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]();
+    const mesh = ship.mesh || new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]();
     mesh.geometryResPath = hull["geometryResFilePath"];
-    ship.boundingSphereCenter[0] = hull.boundingSphere[0];
-    ship.boundingSphereCenter[1] = hull.boundingSphere[1];
-    ship.boundingSphereCenter[2] = hull.boundingSphere[2];
-    ship.boundingSphereRadius = hull.boundingSphere[3];
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "transparentAreas", []), "transparentAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "additiveAreas", []), "additiveAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "decalAreas", []), "decalAreas", hull, faction, race, pattern, commands);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "depthAreas", []), "depthAreas", hull, faction, race, pattern, commands);
-    mesh.Initialize();
+
+    if (ship.mesh !== mesh) {
+      ship.boundingSphereCenter[0] = hull.boundingSphere[0];
+      ship.boundingSphereCenter[1] = hull.boundingSphere[1];
+      ship.boundingSphereCenter[2] = hull.boundingSphere[2];
+      ship.boundingSphereRadius = hull.boundingSphere[3];
+    } else {
+      mesh.EmptyAreas();
+    }
+
+    const masks = ship.customMasks;
+    masks[0] = masks[0] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
+    masks[1] = masks[1] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
+    const args = [hull, faction, race, pattern, commands, undefined, masks];
+    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "opaqueAreas", []), "opaqueAreas", ...args);
+    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "transparentAreas", []), "transparentAreas", ...args);
+    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "additiveAreas", []), "additiveAreas", ...args);
+    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "decalAreas", []), "decalAreas", ...args);
+    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "depthAreas", []), "depthAreas", ...args);
+
+    if (ship.mesh !== mesh) {
+      if ("shapeEllipsoidCenter" in hull) {
+        ship.shapeEllipsoidCenter = hull.shapeEllipsoidCenter;
+      }
+
+      if ("shapeEllipsoidRadius" in hull) {
+        ship.shapeEllipsoidRadius = hull.shapeEllipsoidRadius;
+      }
+    }
+
     ship.mesh = mesh;
-
-    if ("shapeEllipsoidCenter" in hull) {
-      ship.shapeEllipsoidCenter = hull.shapeEllipsoidCenter;
-    }
-
-    if ("shapeEllipsoidRadius" in hull) {
-      ship.shapeEllipsoidRadius = hull.shapeEllipsoidRadius;
-    }
+    mesh.Initialize();
   }
 
   function SetupPattern(hull, race, commands) {
-    var pattern = {
+    const pattern = {
       patterns: [],
       layers: []
-    };
+    }; // Requested pattern
 
     if ("pattern" in commands) {
-      var p = {};
+      // Layers
+      let l = {};
 
-      for (var k = 0; k < data.pattern.length; ++k) {
-        if (data.pattern[k].name === commands.pattern[0]) {
-          p = data.pattern[k];
+      for (let i = 0; i < data.pattern.length; ++i) {
+        if (data.pattern[i].name === commands.pattern[0]) {
+          l = data.pattern[i];
           break;
         }
       }
 
-      var layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "layer1", null);
+      pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
+      pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {}));
+      const projections = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "projections", []); // Projections
 
-      if (layer) {
-        pattern.layers.push(layer);
-      }
+      let p = {};
 
-      layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "layer2", null);
-
-      if (layer) {
-        pattern.layers.push(layer);
-      }
-
-      var projections = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "projections", []);
-
-      for (var i = 0; i < projections.length; ++i) {
+      for (let i = 0; i < projections.length; ++i) {
         if (projections[i].name === hull.name) {
           p = projections[i];
-          layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", null);
-
-          if (layer) {
-            pattern.patterns.push(layer);
-          }
-
-          layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", null);
-
-          if (layer) {
-            pattern.patterns.push(layer);
-          }
+          break;
         }
       }
-    } else if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "defaultPattern")) {
-      p = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "defaultPattern", {});
-      layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", null);
 
-      if (layer) {
-        pattern.patterns.push(layer);
+      pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", {}));
+      pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", {}));
+    } // Default pattern
+    else {
+        // Layers
+        const l = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "defaultPattern", {});
+        pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
+        pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {})); // Projections
+
+        const p = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "defaultPattern", {});
+        pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", {}));
+        pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", {}));
       }
-
-      layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", null);
-
-      if (layer) {
-        pattern.patterns.push(layer);
-      }
-
-      p = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "defaultPattern", {});
-      layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "layer1", null);
-
-      if (layer) {
-        pattern.layers.push(layer);
-      }
-
-      layer = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "layer2", null);
-
-      if (layer) {
-        pattern.layers.push(layer);
-      }
-    }
 
     return pattern;
   }
@@ -66107,12 +66317,64 @@ function EveSOF(tw2) {
     }
   }
 
-  function SetupCustomMasks(ship, pattern) {
-    for (var i = 0; i < pattern.patterns.length; ++i) {
-      if (pattern.patterns[i] && pattern.layers[i]) {
-        var p = pattern.patterns[i];
-        var l = pattern.layers[i];
-        ship.AddCustomMask(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "position", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()), Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "scaling", _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1)), Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "rotation", _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create()), Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "isMirrored", false), Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "materialSource", 0), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "isTargetMtl1", true) ? 1 : 0, Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "isTargetMtl2", true) ? 1 : 0, Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "isTargetMtl3", true) ? 1 : 0, Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "isTargetMtl4", true) ? 1 : 0));
+  function SetupCustomMasks(ship, pattern = {}) {
+    const {
+      patterns = [],
+      layers = []
+    } = pattern;
+
+    for (let i = 0; i < 2; ++i) {
+      const p = patterns[i] || {},
+            l = layers[i] || {}; // Default pattern values
+
+      const {
+        rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
+        scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1),
+        position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        isMirrored = false
+      } = p; // Default layer values
+
+      const {
+        display = !!layers[i].textureName,
+        materialSource = 0,
+        textureName = "PatternMask".concat(i + 1, "Map"),
+        textureResFilePath = "res:/texture/global/black.dds.0.png",
+        projectionTypeU = 0,
+        projectionTypeV = 0,
+        isTargetMtl1 = true,
+        isTargetMtl2 = true,
+        isTargetMtl3 = true,
+        isTargetMtl4 = true
+      } = l;
+      const mask = ship.customMasks[i] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
+      mask.name = "Pattern".concat(i + 1);
+      mask.display = display;
+      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(mask.rotation, rotation);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.scaling, scaling);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.translation, position);
+      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(mask.targetMaterials, isTargetMtl1 ? 1 : 0, isTargetMtl2 ? 1 : 0, isTargetMtl3 ? 1 : 0, isTargetMtl4 ? 1 : 0);
+      mask.materialIndex = materialSource;
+      mask.isMirrored = !!isMirrored;
+      const {
+        PatternMaskMap,
+        DiffuseColor,
+        FresnelColor,
+        Gloss
+      } = mask.parameters;
+      PatternMaskMap.name = textureName;
+      PatternMaskMap.resourcePath = textureResFilePath;
+      PatternMaskMap.useAllOverrides = true;
+      PatternMaskMap.addressUMode = GetAddressMode(projectionTypeU);
+      PatternMaskMap.addressVMode = GetAddressMode(projectionTypeV);
+      PatternMaskMap.Initialize();
+      const prefix = "PMtl".concat(i + 1);
+      DiffuseColor.name = "".concat(prefix, "DiffuseColor");
+      FresnelColor.name = "".concat(prefix, "FresnelColor");
+      Gloss.name = "".concat(prefix, "Gloss");
+      mask.Initialize();
+
+      if (ship.customMasks[i] !== mask) {
+        ship.customMasks.push(mask);
       }
     }
   }
@@ -66936,8 +67198,9 @@ function EveSOF(tw2) {
 
       const ship = new (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"])(),
             pattern = SetupPattern(hull, race, commands);
+      SetupCustomMasks(ship, pattern); // Custom masks must be first
+
       SetupMesh(ship, hull, faction, race, commands, pattern);
-      SetupCustomMasks(ship, pattern);
       SetupDecals(ship, hull, faction);
       SetupSpriteSets(ship, hull, faction);
       SetupSpotlightSets(ship, hull, faction);
@@ -67008,7 +67271,6 @@ function EveSOF(tw2) {
   /**
    * Gets all hull projections
    * @param {String} hull
-   * @param {{}} [out={}]
    * @returns {Promise<{}>}
    */
 
@@ -67016,20 +67278,18 @@ function EveSOF(tw2) {
   this.FetchHullPatternNames =
   /*#__PURE__*/
   function () {
-    var _ref13 = _asyncToGenerator(function* (hull, out = {}) {
-      const patternsData = yield getSofObject("pattern");
-      out[hull] = [];
-
-      for (let i = 0; i < patternsData.length; i++) {
-        for (let x = 0; x < patternsData[i].projections.length; i++) {
-          if (patternsData[i].projections[i].name === hull) {
-            out[hull].push(patternsData[i].name);
+    var _ref13 = _asyncToGenerator(function* (hull) {
+      const patterns = yield getSofObject("pattern");
+      let out = [];
+      patterns.forEach(pattern => {
+        for (let i = 0; i < pattern.projections.length; i++) {
+          if (pattern.projections[i].name === hull) {
+            out.push(pattern.name);
             break;
           }
         }
-      }
-
-      out[hull].sort();
+      });
+      out.sort();
       return out;
     });
 

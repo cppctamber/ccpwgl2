@@ -183,6 +183,22 @@ export class Tw2Mesh extends Tw2BaseClass
     }
 
     /**
+     * Todo: Remove when sof can figure out what areas to update
+     */
+    EmptyAreas()
+    {
+        this.additiveAreas.splice(0);
+        this.decalAreas.splice(0);
+        this.depthAreas.splice(0);
+        this.depthNormalAreas.splice(0);
+        this.distortionAreas.splice(0);
+        this.opaqueAreas.splice(0);
+        this.opaquePrepassAreas.splice(0);
+        this.pickableAreas.splice(0);
+        this.transparentAreas.splice(0);
+    }
+
+    /**
      * Gets render batches from a mesh area array and commits them to an accumulator
      * @param {Tw2Mesh} mesh
      * @param {Array.<Tw2MeshArea>} areas

@@ -6,6 +6,8 @@
  * @property {Number} nextOffset
  * @class
  */
+import { ErrIndexBounds } from "../Tw2Error";
+
 export class Tw2RawData
 {
 
@@ -35,6 +37,24 @@ export class Tw2RawData
         {
             this.data[i + el.offset] = value[i];
         }
+    }
+
+    /**
+     * Sets an element index value
+     * @param {String} name
+     * @param {Number} index
+     * @param {Number} value
+     */
+    SetIndex(name, index, value)
+    {
+        const el = this.elements[name];
+
+        if (index < 0 || index >= el.size)
+        {
+            throw new ErrIndexBounds();
+        }
+
+        this.data[index + el.offset] = value;
     }
 
     /**

@@ -1,55 +1,48 @@
-import { quat, vec3, vec4, mat4, Tw2BaseClass } from "../../global";
+import { vec4, mat4, tw2 } from "../../global";
+import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from "../../core/parameter";
+
 
 /**
  * Custom mask for patterns
  * @ccp EveCustomMask
  *
- * @property {Boolean} display      - Toggles mask visibility
- * @property {Boolean} isMirrored   - Identifies if the mask is mirrored
- * @property {Number} materialIndex - The material this mask is for (ie. Mtl1, Mtl2, Mtl3, Mtl4, PMt1, PMt2)
- * @property {vec3} position        - Mask's position
- * @property {quat} rotation        - Mask's rotation
- * @property {vec3} scaling         - Mask's scale
- * @property {vec4} targetMaterials - The target materials this mask is for
- * @property {mat4} localTransform  - Mask's localTransform
- * @property {Boolean} _dirty       - Identifies if the mask is dirty and requires a rebuild
- * @property {mat4} _parentTransformLast - The paren't last transform
- * @property {mat4} _maskMatrix     - The custom mask's final matrix
+ * @property {Boolean} display             - Toggles mask visibility
+ * @property {Boolean} isMirrored          - Identifies if the mask is mirrored
+ * @property {Number} materialIndex        - The material this mask is for (ie. Mtl1, Mtl2, Mtl3, Mtl4, PMt1, PMt2)
+ * @property {Object} parameters           - Mask parameters
+ * @property {vec4} targetMaterials        - The target materials this mask is for
+ * @property {mat4} _worldInverseTranspose - The custom mask's final matrix
  */
-export class EveCustomMask extends Tw2BaseClass
+export class EveCustomMask extends Tw2TransformParameter
 {
-
     // ccp
     materialIndex = 0;
-    position = vec3.create();
-    rotation = quat.create();
-    scaling = vec3.fromValues(1, 1, 1);
     targetMaterials = vec4.create();
 
     //ccpwgl
     display = true;
     isMirrored = false;
-    localTransform = mat4.create();
+    parameters = {
+        PatternMaskMap : new Tw2TextureParameter("PatternMaskMap"),
+        DiffuseColor: new Tw2Vector4Parameter("DiffuseColor"),
+        FresnelColor: new Tw2Vector4Parameter("FresnelColor"),
+        Gloss: new Tw2Vector4Parameter("Gloss")
+    };
 
-    _dirty = true;
-    _parentTransformLast = mat4.create();
-    _maskMatrix = mat4.create();
-
-    /**
-     * Initializes the mask
-     */
-    Initialize()
-    {
-        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
-    }
+    _worldInverseTranspose = mat4.create();
 
     /**
-     * Fires on value changes
+     * Sets a sof material by name
+     * @param {String} name
+     * @returns {Promise<void>}
      */
-    OnValueChanged()
+    async SetMaterial(name)
     {
-        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.position, this.scaling);
-        this._dirty = true;
+        const material = await tw2.eveSof.FetchMaterial(name);
+        const { DiffuseColor, FresnelColor, Gloss } = material.parameters;
+        this.parameters.DiffuseColor.SetValue(DiffuseColor);
+        this.parameters.FresnelColor.SetValue(FresnelColor);
+        this.parameters.Gloss.SetValue(Gloss);
     }
 
     /**
@@ -61,21 +54,12 @@ export class EveCustomMask extends Tw2BaseClass
      */
     UpdatePerObjectData(parentTransform, perObjectData, index, visible)
     {
-        // TODO: Find a better way to tell if the parent has been updated
-        if (this.display && this._dirty || !mat4.equals(this._parentTransformLast, parentTransform))
-        {
-            mat4.copy(this._parentTransformLast, parentTransform);
-            mat4.multiply(this._maskMatrix, parentTransform, this.localTransform);
-            mat4.invert(this._maskMatrix, this._maskMatrix);
-            mat4.transpose(this._maskMatrix, this._maskMatrix);
-            this._dirty = false;
-        }
-
-        const targets = this.display && visible ? this.targetMaterials : [ 0, 0, 0, 0 ];
-        perObjectData.vs.Set("CustomMaskMatrix" + index, this._maskMatrix);
-        perObjectData.vs.Set("CustomMaskData" + index, [ 1, this.isMirrored ? 1 : 0, 0, 0 ]);
-        perObjectData.ps.Set("CustomMaskMaterialID" + index, [ this.materialIndex, 0, 0, 0 ]);
+        this.SetParentTransform(parentTransform);
+        const targets = this.display && visible ? this.targetMaterials : vec4.ZERO;
         perObjectData.ps.Set("CustomMaskTarget" + index, targets);
+        perObjectData.ps.SetIndex("CustomMaskMaterialID" + index, 0, this.materialIndex);
+        perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
+        perObjectData.vs.Set("CustomMaskMatrix" + index, this._worldInverseTranspose);
     }
 
     /**

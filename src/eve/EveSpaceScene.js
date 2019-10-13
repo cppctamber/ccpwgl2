@@ -413,7 +413,7 @@ export class EveSpaceScene extends Tw2BaseClass
         const
             d = device,
             g = EveSpaceScene.global,
-            tr = g.MAT_ID,
+            tr = undefined,
             show = this.visible;
 
         if (show["environment"] && this.backgroundEffect)
@@ -627,12 +627,23 @@ export class EveSpaceScene extends Tw2BaseClass
         ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
         ps.Set("ShadowMapSettings", [ 1, 1, 0, 0 ]);
         ps.Set("TargetResolution", d.targetResolution);
+
+        ps.SetIndex("SceneData.NebulaIntensity", 0, this.nebulaIntensity);
+        ps.SetIndex("ViewportSize", 0, d.viewportWidth);
+        ps.SetIndex("ViewportSize", 1, d.viewportHeight);
+        ps.SetIndex("ShadowCameraRange", 0, 1);
+        ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
+        ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
+
+        /*
         ps.Get("SceneData.NebulaIntensity")[0] = this.nebulaIntensity;
         ps.Get("ViewportSize")[0] = d.viewportWidth;
         ps.Get("ViewportSize")[1] = d.viewportHeight;
         ps.Get("ShadowCameraRange")[0] = 1;
         ps.Get("ProjectionToView")[0] = -d.projection[14];
         ps.Get("ProjectionToView")[1] = -d.projection[10] - 1;
+         */
+
         d.perFramePSData = ps;
 
         const
@@ -657,8 +668,7 @@ export class EveSpaceScene extends Tw2BaseClass
                 vec4_0: vec4.create(),
                 mat4_0: mat4.create(),
                 mat4_1: mat4.create(),
-                mat4_2: mat4.create(),
-                MAT_ID: mat4.create()
+                mat4_2: mat4.create()
             };
         }
     }

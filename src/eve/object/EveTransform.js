@@ -127,6 +127,11 @@ export class EveTransform extends EveObject
             dir = g.vec3_2,
             viewInv = d.viewInverse;
 
+        if (!parentTransform)
+        {
+            parentTransform = g.mat4_ID;
+        }
+
         quat.normalize(this.rotation, this.rotation);
         mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
         mat4.getScaling(parentScale, parentTransform);

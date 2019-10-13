@@ -69,48 +69,6 @@ export class Tw2InstancedMesh extends Tw2BaseClass
         transparentAreas: true,
     };
 
-    /**
-     * Creates an instanced mesh from a plain object
-     * @param {*} [values]
-     * @param {*} [options]
-     * @returns {Tw2InstancedMesh}
-     */
-    static from(values, options)
-    {
-        const item = new Tw2InstancedMesh();
-        item.meshIndex = get(options, "index", 0);
-
-        if (values)
-        {
-            /*
-            if (values.instanceGeometryResource)
-            {
-                item.instanceGeometryResource = values.instanceGeometryResource;
-            }
-            */
-
-            assignIfExists(item, values, [
-                "name", "display", "geometryResPath",
-                "instanceGeometryResPath", "instanceMeshIndex"
-            ]);
-
-            const areaNames = [
-                "additiveAreas", "decalAreas", "depthAreas",
-                "distortionAreas", "opaqueAreas", "pickableAreas",
-                "transparentAreas"
-            ];
-
-            assignIfExists(item.visible, values.visible, areaNames);
-            Tw2Mesh.createAreaIfExists(item, values, areaNames);
-        }
-
-        if (!options || !options.skipUpdate)
-        {
-            item.Initialize();
-        }
-
-        return item;
-    }
 
     /**
      * Initializes the instanced mesh
@@ -259,6 +217,64 @@ export class Tw2InstancedMesh extends Tw2BaseClass
                 this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex));
         }
     }
+
+    /**
+     * Todo: Remove when sof can figure out what areas to update
+     */
+    EmptyAreas()
+    {
+        this.additiveAreas.splice(0);
+        this.decalAreas.splice(0);
+        this.depthAreas.splice(0);
+        this.distortionAreas.splice(0);
+        this.opaqueAreas.splice(0);
+        this.pickableAreas.splice(0);
+        this.transparentAreas.splice(0);
+    }
+
+    /**
+     * Creates an instanced mesh from a plain object
+     * @param {*} [values]
+     * @param {*} [options]
+     * @returns {Tw2InstancedMesh}
+     */
+    static from(values, options)
+    {
+        const item = new Tw2InstancedMesh();
+        item.meshIndex = get(options, "index", 0);
+
+        if (values)
+        {
+            /*
+            if (values.instanceGeometryResource)
+            {
+                item.instanceGeometryResource = values.instanceGeometryResource;
+            }
+            */
+
+            assignIfExists(item, values, [
+                "name", "display", "geometryResPath",
+                "instanceGeometryResPath", "instanceMeshIndex"
+            ]);
+
+            const areaNames = [
+                "additiveAreas", "decalAreas", "depthAreas",
+                "distortionAreas", "opaqueAreas", "pickableAreas",
+                "transparentAreas"
+            ];
+
+            assignIfExists(item.visible, values.visible, areaNames);
+            Tw2Mesh.createAreaIfExists(item, values, areaNames);
+        }
+
+        if (!options || !options.skipUpdate)
+        {
+            item.Initialize();
+        }
+
+        return item;
+    }
+
 
     /**
      * Gets area batches

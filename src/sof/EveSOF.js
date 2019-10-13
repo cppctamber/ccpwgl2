@@ -1,4 +1,4 @@
-import { vec3, vec4, quat } from "../global";
+import { vec3, vec4, quat, mat4 } from "../global";
 import { get, assignIfExists, isArray, isDNA } from "../global/util";
 import {
     Tw2ScalarCurve2,
@@ -28,7 +28,8 @@ import {
     EveSpotlightSet,
     EveSpriteSet,
     EveSpaceObject,
-    EveShip
+    EveShip,
+    EveCustomMask
 } from "../eve";
 
 
@@ -157,58 +158,101 @@ export function EveSOF(tw2)
         }
     }
 
+    /**
+     * Gets an address mode from a projection type
+     * @param {Number} projectionType
+     * @returns {Number}
+     */
     function GetAddressMode(projectionType)
     {
         switch (projectionType)
         {
             case 2:
                 return 4;
+
             case 1:
                 return 3;
+
             default:
                 return 1;
         }
     }
 
-    function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride)
+    function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride, masks)
     {
-        var hullAreas = get(hull, areasName, []);
-        for (var i = 0; i < hullAreas.length; ++i)
+        const hullAreas = get(hull, areasName, []);
+        for (let i = 0; i < hullAreas.length; ++i)
         {
-            var area = hullAreas[i];
-            var effect = new Tw2Effect();
-            effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
-            var names = get(get(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
-            for (var j = 0; j < names.length; ++j)
+            const 
+                area = hullAreas[i],
+                effect = new Tw2Effect();
+            
+            // Use references to custom mask parameters - do not recreate them
+            for (let i = 0; i < 2; i++)
             {
-                var name = names[j];
-                var param = GetOverridenParameter(name, area, commands, race);
+                const mask = masks[i];
+                if (mask)
+                {
+                    const { PatternMaskMap, DiffuseColor, FresnelColor, Gloss } = mask.parameters;
+                    effect.parameters[PatternMaskMap.name] = PatternMaskMap;
+                    effect.parameters[DiffuseColor.name] = DiffuseColor;
+                    effect.parameters[FresnelColor.name] = FresnelColor;
+                    effect.parameters[Gloss.name] = Gloss;
+                }
+                else
+                {
+                    console.error("Missing mask " + i);
+                }
+            }
+
+            effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
+            const names = get(get(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
+            for (let j = 0; j < names.length; ++j)
+            {
+                const name = names[j];
+                let param = GetOverridenParameter(name, area, commands, race);
                 param = param || get(get(get(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
                 param = param || get(get(get(race.hullAreas, area.name, {}), "parameters", {}), name);
                 param = param || get(get(get(faction.areas, area.name, {}), "parameters", {}), name);
                 param = param || get(get(area, "parameters", {}), name);
+
                 if (param)
                 {
-                    effect.parameters[name] = new Tw2Vector4Parameter(name, param);
+                    if (effect.parameters[name])
+                    {
+                        effect.parameters.SetValue(param);
+                    }
+                    else
+                    {
+                        effect.parameters[name] = new Tw2Vector4Parameter(name, param);
+                    }
                 }
             }
 
-            var hullTextures = get(area, "textures", []);
-            for (j in hullTextures)
+            const hullTextures = get(area, "textures", {});
+            for (let name in hullTextures)
             {
-                if (hullTextures.hasOwnProperty(j))
+                if (hullTextures.hasOwnProperty(name))
                 {
-                    var path = hullTextures[j];
-                    path = ModifyTextureResPath(path, j, area, faction, commands);
-                    effect.parameters[j] = new Tw2TextureParameter(j, path);
+                    const path = ModifyTextureResPath(hullTextures[name], name, area, faction, commands);
+                    if (effect.parameters[name])
+                    {
+                        effect.parameters[name].SetValue(path);
+                    }
+                    else
+                    {
+                        effect.parameters[name] = new Tw2TextureParameter(name, path);
+                    }
                 }
             }
 
-            for (j = 0; j < pattern.layers.length; ++j)
+            // Only create pattern parameters if they don't already exist
+            for (let j = 0; j < pattern.layers.length; ++j)
             {
-                if (pattern.layers[j] && !(pattern.layers[j].textureName in effect.parameters))
+                const textureName = pattern.layers[j] ? pattern.layers[j].textureName : "";
+                if (textureName && !effect.parameters[textureName])
                 {
-                    var patternTex = new Tw2TextureParameter(pattern.layers[j].textureName);
+                    const patternTex = new Tw2TextureParameter(pattern.layers[j].textureName);
                     patternTex.resourcePath = pattern.layers[j].textureResFilePath;
                     patternTex.useAllOverrides = true;
                     patternTex.addressUMode = GetAddressMode(get(pattern.layers[j], "projectionTypeU", 0));
@@ -218,21 +262,21 @@ export function EveSOF(tw2)
                 }
             }
 
-            var defaultTextures = get(get(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
-            for (var texName in defaultTextures)
+            const defaultTextures = get(get(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
+            for (let name in defaultTextures)
             {
-                if (defaultTextures.hasOwnProperty(texName))
+                if (defaultTextures.hasOwnProperty(name))
                 {
-                    if (!(texName in effect.parameters))
+                    if (!(name in effect.parameters))
                     {
-                        effect.parameters[texName] = new Tw2TextureParameter(texName, defaultTextures[texName]);
+                        effect.parameters[name] = new Tw2TextureParameter(name, defaultTextures[name]);
                     }
                 }
             }
 
             effect.Initialize();
 
-            var newArea = new Tw2MeshArea();
+            const newArea = new Tw2MeshArea();
             newArea.name = area.name;
             newArea.effect = effect;
             newArea.index = get(area, "index", 0);
@@ -244,100 +288,99 @@ export function EveSOF(tw2)
 
     function SetupMesh(ship, hull, faction, race, commands, pattern)
     {
-        var mesh = new Tw2Mesh();
+        const mesh = ship.mesh || new Tw2Mesh();
         mesh.geometryResPath = hull["geometryResFilePath"];
-        ship.boundingSphereCenter[0] = hull.boundingSphere[0];
-        ship.boundingSphereCenter[1] = hull.boundingSphere[1];
-        ship.boundingSphereCenter[2] = hull.boundingSphere[2];
-        ship.boundingSphereRadius = hull.boundingSphere[3];
-        FillMeshAreas(get(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(get(mesh, "transparentAreas", []), "transparentAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(get(mesh, "additiveAreas", []), "additiveAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(get(mesh, "decalAreas", []), "decalAreas", hull, faction, race, pattern, commands);
-        FillMeshAreas(get(mesh, "depthAreas", []), "depthAreas", hull, faction, race, pattern, commands);
-        mesh.Initialize();
+
+        if (ship.mesh !== mesh)
+        {
+            ship.boundingSphereCenter[0] = hull.boundingSphere[0];
+            ship.boundingSphereCenter[1] = hull.boundingSphere[1];
+            ship.boundingSphereCenter[2] = hull.boundingSphere[2];
+            ship.boundingSphereRadius = hull.boundingSphere[3];
+        }
+        else
+        {
+            mesh.EmptyAreas();
+        }
+
+        const masks = ship.customMasks;
+        masks[0] = masks[0] || new EveCustomMask();
+        masks[1] = masks[1] || new EveCustomMask();
+
+        const args = [ hull, faction, race, pattern, commands, undefined, masks ];
+        FillMeshAreas(get(mesh, "opaqueAreas", []), "opaqueAreas", ...args);
+        FillMeshAreas(get(mesh, "transparentAreas", []), "transparentAreas", ...args);
+        FillMeshAreas(get(mesh, "additiveAreas", []), "additiveAreas", ...args);
+        FillMeshAreas(get(mesh, "decalAreas", []), "decalAreas", ...args);
+        FillMeshAreas(get(mesh, "depthAreas", []), "depthAreas", ...args);
+
+        if (ship.mesh !== mesh)
+        {
+            if ("shapeEllipsoidCenter" in hull)
+            {
+                ship.shapeEllipsoidCenter = hull.shapeEllipsoidCenter;
+            }
+            if ("shapeEllipsoidRadius" in hull)
+            {
+                ship.shapeEllipsoidRadius = hull.shapeEllipsoidRadius;
+            }
+        }
+
         ship.mesh = mesh;
-        if ("shapeEllipsoidCenter" in hull)
-        {
-            ship.shapeEllipsoidCenter = hull.shapeEllipsoidCenter;
-        }
-        if ("shapeEllipsoidRadius" in hull)
-        {
-            ship.shapeEllipsoidRadius = hull.shapeEllipsoidRadius;
-        }
+        mesh.Initialize();
     }
 
     function SetupPattern(hull, race, commands)
     {
-        var pattern = {
+        const pattern = {
             patterns: [],
             layers: []
         };
+
+        // Requested pattern
         if ("pattern" in commands)
         {
-            var p = {};
-            for (var k = 0; k < data.pattern.length; ++k)
+            // Layers
+            let l = {};
+            for (let i = 0; i < data.pattern.length; ++i)
             {
-                if (data.pattern[k].name === commands.pattern[0])
+                if (data.pattern[i].name === commands.pattern[0])
                 {
-                    p = data.pattern[k];
+                    l = data.pattern[i];
                     break;
                 }
             }
-            var layer = get(p, "layer1", null);
-            if (layer)
-            {
-                pattern.layers.push(layer);
-            }
-            layer = get(p, "layer2", null);
-            if (layer)
-            {
-                pattern.layers.push(layer);
-            }
-            var projections = get(p, "projections", []);
-            for (var i = 0; i < projections.length; ++i)
+            pattern.layers.push(get(l, "layer1", {}));
+            pattern.layers.push(get(l, "layer2", {}));
+            const projections = get(l, "projections", []);
+
+            // Projections
+            let p = {};
+            for (let i = 0; i < projections.length; ++i)
             {
                 if (projections[i].name === hull.name)
                 {
                     p = projections[i];
-                    layer = get(p, "transformLayer1", null);
-                    if (layer)
-                    {
-                        pattern.patterns.push(layer);
-                    }
-                    layer = get(p, "transformLayer2", null);
-                    if (layer)
-                    {
-                        pattern.patterns.push(layer);
-                    }
+                    break;
                 }
             }
+            pattern.patterns.push(get(p, "transformLayer1", {}));
+            pattern.patterns.push(get(p, "transformLayer2", {}));
         }
-        else if (get(hull, "defaultPattern"))
+        // Default pattern
+        else
         {
-            p = get(hull, "defaultPattern", {});
-            layer = get(p, "transformLayer1", null);
-            if (layer)
-            {
-                pattern.patterns.push(layer);
-            }
-            layer = get(p, "transformLayer2", null);
-            if (layer)
-            {
-                pattern.patterns.push(layer);
-            }
-            p = get(race, "defaultPattern", {});
-            layer = get(p, "layer1", null);
-            if (layer)
-            {
-                pattern.layers.push(layer);
-            }
-            layer = get(p, "layer2", null);
-            if (layer)
-            {
-                pattern.layers.push(layer);
-            }
+            // Layers
+            const l = get(race, "defaultPattern", {});
+            pattern.layers.push(get(l, "layer1", {}));
+            pattern.layers.push(get(l, "layer2", {}));
+
+            // Projections
+            const p = get(hull, "defaultPattern", {});
+            pattern.patterns.push(get(p, "transformLayer1", {}));
+            pattern.patterns.push(get(p, "transformLayer2", {}));
         }
+
         return pattern;
     }
 
@@ -360,27 +403,77 @@ export function EveSOF(tw2)
         }
     }
 
-
-    function SetupCustomMasks(ship, pattern)
+    function SetupCustomMasks(ship, pattern = {})
     {
-        for (var i = 0; i < pattern.patterns.length; ++i)
+        const { patterns = [], layers = [] } = pattern;
+
+        for (let i = 0; i < 2; ++i)
         {
-            if (pattern.patterns[i] && pattern.layers[i])
+            const
+                p = patterns[i] || {},
+                l = layers[i] || {};
+
+            // Default pattern values
+            const {
+                rotation = quat.create(),
+                scaling = vec3.fromValues(1, 1, 1),
+                position = vec3.create(),
+                isMirrored = false
+            } = p;
+
+            // Default layer values
+            const {
+                display = !!layers[i].textureName,
+                materialSource = 0,
+                textureName = `PatternMask${i + 1}Map`,
+                textureResFilePath = "res:/texture/global/black.dds.0.png",
+                projectionTypeU = 0,
+                projectionTypeV = 0,
+                isTargetMtl1 = true,
+                isTargetMtl2 = true,
+                isTargetMtl3 = true,
+                isTargetMtl4 = true
+            } = l;
+
+            const mask = ship.customMasks[i] || new EveCustomMask();
+            mask.name = `Pattern${i + 1}`;
+            mask.display = display;
+
+            quat.copy(mask.rotation, rotation);
+            vec3.copy(mask.scaling, scaling);
+            vec3.copy(mask.translation, position);
+
+            vec4.set(mask.targetMaterials,
+                isTargetMtl1 ? 1 : 0,
+                isTargetMtl2 ? 1 : 0,
+                isTargetMtl3 ? 1 : 0,
+                isTargetMtl4 ? 1 : 0
+            );
+
+            mask.materialIndex = materialSource;
+            mask.isMirrored = !!isMirrored;
+
+            const { PatternMaskMap, DiffuseColor, FresnelColor, Gloss } = mask.parameters;
+
+            PatternMaskMap.name = textureName;
+            PatternMaskMap.resourcePath = textureResFilePath;
+            PatternMaskMap.useAllOverrides = true;
+            PatternMaskMap.addressUMode = GetAddressMode(projectionTypeU);
+            PatternMaskMap.addressVMode = GetAddressMode(projectionTypeV);
+            PatternMaskMap.Initialize();
+
+            const prefix = `PMtl${i + 1}`;
+            DiffuseColor.name = `${prefix}DiffuseColor`;
+            FresnelColor.name = `${prefix}FresnelColor`;
+            Gloss.name = `${prefix}Gloss`;
+
+            mask.Initialize();
+
+            if (ship.customMasks[i] !== mask)
             {
-                var p = pattern.patterns[i];
-                var l = pattern.layers[i];
-                ship.AddCustomMask(
-                    get(p, "position", vec3.create()),
-                    get(p, "scaling", vec3.fromValues(1, 1, 1)),
-                    get(p, "rotation", quat.create()),
-                    get(p, "isMirrored", false),
-                    get(l, "materialSource", 0),
-                    vec4.fromValues(
-                        get(l, "isTargetMtl1", true) ? 1 : 0,
-                        get(l, "isTargetMtl2", true) ? 1 : 0,
-                        get(l, "isTargetMtl3", true) ? 1 : 0,
-                        get(l, "isTargetMtl4", true) ? 1 : 0));
+                ship.customMasks.push(mask);
             }
+
         }
     }
 
@@ -1230,8 +1323,9 @@ export function EveSOF(tw2)
             ship = new (get(hull, "buildClass", 0) === 2 ? EveSpaceObject : EveShip)(),
             pattern = SetupPattern(hull, race, commands);
 
+        SetupCustomMasks(ship, pattern); // Custom masks must be first
+
         SetupMesh(ship, hull, faction, race, commands, pattern);
-        SetupCustomMasks(ship, pattern);
         SetupDecals(ship, hull, faction);
         SetupSpriteSets(ship, hull, faction);
         SetupSpotlightSets(ship, hull, faction);
@@ -1286,28 +1380,27 @@ export function EveSOF(tw2)
     /**
      * Gets all hull projections
      * @param {String} hull
-     * @param {{}} [out={}]
      * @returns {Promise<{}>}
      */
-    this.FetchHullPatternNames = async (hull, out = {}) =>
+    this.FetchHullPatternNames = async (hull) =>
     {
-        const patternsData = await getSofObject("pattern");
+        const patterns = await getSofObject("pattern");
 
-        out[hull] = [];
+        let out = [];
 
-        for (let i = 0; i < patternsData.length; i++)
+        patterns.forEach(pattern =>
         {
-            for (let x = 0; x < patternsData[i].projections.length; i++)
+            for (let i = 0; i < pattern.projections.length; i++)
             {
-                if (patternsData[i].projections[i].name === hull)
+                if (pattern.projections[i].name === hull)
                 {
-                    out[hull].push(patternsData[i].name);
+                    out.push(pattern.name);
                     break;
                 }
             }
-        }
+        });
 
-        out[hull].sort();
+        out.sort();
         return out;
     };
 

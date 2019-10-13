@@ -34,7 +34,6 @@ import {
  * @property {Number} height               - The texture's height
  * @property {Boolean} hasMipMaps          - Identifies if the texture has mip maps
  * @property {?String} requestResponseType - Request response type for the resource
- * @property {Boolean} forceAddressMode    - Forces use of address modes regardless of mipmaps
  * @property {Number} _currentSampler      - The current sampler
  * @property {Boolean} _isAttached         - identifies if the texture was attached rather than loaded
  * @property {?String} _extension          - loading file extension
@@ -47,7 +46,7 @@ export class Tw2TextureRes extends Tw2Resource
     width = 0;
     height = 0;
     hasMipMaps = false;
-    forceAddressMode = false;
+
     _currentSampler = 0;
     _isAttached = false;
     _extension = "";
@@ -340,7 +339,7 @@ export class Tw2TextureRes extends Tw2Resource
         gl.bindTexture(targetType, this.texture);
         if (sampler.hash !== this._currentSampler)
         {
-            sampler.Apply(d, this.hasMipMaps, this.forceAddressMode);
+            sampler.Apply(d, this.hasMipMaps);
             this._currentSampler = sampler.hash;
         }
     }

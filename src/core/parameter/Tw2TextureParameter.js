@@ -36,6 +36,7 @@ export class Tw2TextureParameter extends Tw2Parameter
     mipFilterMode = 2;
     textureRes = null;
     useAllOverrides = false;
+    forceAddressMode = false;
 
     _sampler = null;
 
@@ -201,6 +202,7 @@ export class Tw2TextureParameter extends Tw2Parameter
         if (this.useAllOverrides)
         {
             this._sampler = this._sampler || new Tw2SamplerState();
+            this._sampler.forceAddressModes = this.forceAddressModes;
 
             const
                 { wrapModes, gl } = device,
@@ -301,7 +303,8 @@ export class Tw2TextureParameter extends Tw2Parameter
         "addressWMode",
         "filterMode",
         "mipFilterMode",
-        "maxAnisotropy"
+        "maxAnisotropy",
+        "forceAddressModes"
     ];
 
     /**

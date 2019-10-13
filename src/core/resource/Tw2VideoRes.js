@@ -11,7 +11,6 @@ import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../Tw2Error";
  * @property {Number} height             - The texture's height
  * @property {Boolean} cycle             - Enables video looping
  * @property {Boolean} playOnLoad        - Plays the video as soon as it is able to
- * @property {Boolean} forceAddressMode  - Forces use of address modes regardless of mipmaps
  * @property {Number} _currentSampler    - The current sampler's hash
  * @property {Number} _currentTime       - The video's current time
  * @property {Boolean} _playable         - Identifies if the video is playable
@@ -29,7 +28,6 @@ export class Tw2VideoRes extends Tw2Resource
     height = 0;
     cycle = true;
     playOnLoad = true;
-    forceAddressMode = false;
     
     _currentSampler = 0;
     _currentTime = -1;
@@ -252,7 +250,7 @@ export class Tw2VideoRes extends Tw2Resource
 
         if (sampler.hash !== this._currentSampler)
         {
-            sampler.Apply(d, false, this.forceAddressMode);
+            sampler.Apply(d, false);
             this._currentSampler = sampler.hash;
         }
     }
