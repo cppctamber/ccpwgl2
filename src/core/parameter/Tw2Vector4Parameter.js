@@ -3,8 +3,7 @@ import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 /**
  * Tw2Vector4Parameter
- *
- * @class
+ * @ccp TriVector4Parameter
  */
 export class Tw2Vector4Parameter extends Tw2VectorParameter
 {

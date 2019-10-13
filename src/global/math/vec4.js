@@ -2,6 +2,7 @@ import { vec4 } from "gl-matrix";
 
 export { vec4 };
 
+vec4.ZERO = vec4.fromValues(0,0,0,0);
 
 /**
  * Adds a scalar to a vec4

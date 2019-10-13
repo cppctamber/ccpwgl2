@@ -53,6 +53,8 @@ class Tw2Library extends Tw2EventEmitter
         type: new Map()
     };
 
+    _debug = false;
+
     /**
      * Alias for device.gl
      * @returns {*}
@@ -121,16 +123,50 @@ class Tw2Library extends Tw2EventEmitter
      */
     constructor()
     {
+        super();
+
         instanceCount++;
         if (instanceCount > 1)
         {
             throw new ErrSingletonInstantiation({ class: "Tw2Library" });
         }
 
-        super();
+        let eveSof;
+        Object.defineProperty(this, "eveSof", {
+            get: () =>
+            {
+                if (!eveSof)
+                {
+                    const Constructor = this.GetClass("EveSOF");
+                    eveSof = new Constructor(this);
+                }
+                return eveSof;
+            }
+        });
+
         Tw2EventEmitter.defaultLogger = this;
-        createDebugProperty(this);
-        lazyLoadClass(this, "eveSof", "EveSOF", this);
+    }
+
+    /**
+     * Sets debug mode
+     * @param {Boolean} bool
+     */
+    SetDebug(bool)
+    {
+        if (this._debug === bool) return;
+        this._debug = bool;
+
+        this._store.class.forEach(Constructor =>
+        {
+            if ("DEBUG_ENABLED" in Constructor)
+            {
+                Constructor.DEBUG_ENABLED = bool;
+            }
+        });
+
+        this.logger.Debug(bool);
+        this.emit("debug_mode", bool);
+        this.Log("warn", `Debugging ${bool ? "enabled" : "disabled"}`);
     }
 
     /**
@@ -240,7 +276,7 @@ class Tw2Library extends Tw2EventEmitter
     {
         if (options.uuid) enableUUID(options.uuid);
         if (options.logger) this.logger.Register(options.logger);
-        if (options.debug) this.debug = options.debug;
+        if (options.debug) this.SetDebug(true);
         if (options.resMan) this.resMan.Register(options.resMan);
         if (options.device) this.device.Register(options.device);
 
@@ -414,7 +450,7 @@ class Tw2Library extends Tw2EventEmitter
      */
     async FetchBuildClass(resPath)
     {
-        return isDNA(resPath) ? this.eveSof.FetchHullBuildClass(resPath) : 2;
+        return isDNA(resPath) ? await this.eveSof.FetchHullBuildClass(resPath) : 2;
     }
 
     /**
@@ -535,12 +571,13 @@ class Tw2Library extends Tw2EventEmitter
      * Sets a store variable's value
      * @param name
      * @param value
+     * @param {*} [opt]
      * @returns {void|*|Boolean}
      */
-    SetVariableValue(name, value)
+    SetVariableValue(name, value, opt)
     {
         const variable = this.GetVariable(name);
-        if (variable.SetValue) return variable.SetValue(value);
+        if (variable.SetValue) return variable.SetValue(value, opt);
         throw new Error("Variable missing 'SetValue' method");
     }
 
@@ -645,7 +682,7 @@ class Tw2Library extends Tw2EventEmitter
 
         if ("DEBUG_ENABLED" in Value)
         {
-            Value.DEBUG_ENABLED = this.debug;
+            Value.DEBUG_ENABLED = this._debug;
         }
 
         if (Value.black)
@@ -943,29 +980,6 @@ function setStoreKeyValues(library, storeType, values)
             }
         }
     }
-}
-
-function createDebugProperty(library)
-{
-    let debug = false;
-
-    Object.defineProperty(library, "debug", {
-        get: () => debug,
-        set: (bool) =>
-        {
-            library._store.class.forEach(Constructor =>
-            {
-                if ("DEBUG_ENABLED" in Constructor) Constructor.DEBUG_ENABLED = debug;
-            });
-
-            if (debug !== bool)
-            {
-                library.logger.Debug(bool);
-                library.emit("debug_mode", bool);
-                library.Log("warn", `Debugging ${bool ? "enabled" : "disabled"}`);
-            }
-        }
-    });
 }
 
 export const tw2 = new Tw2Library();

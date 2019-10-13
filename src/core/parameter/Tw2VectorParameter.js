@@ -3,8 +3,6 @@ import { util, Tw2BaseClass } from "../../global";
 
 /**
  * Tw2VectorParameter base class
- * TODO: Remove constructor parameters
- * @ccp N/A
  *
  * @property {Float32Array} value
  * @property {?Float32Array} _constantBuffer
@@ -14,8 +12,8 @@ export class Tw2VectorParameter extends Tw2BaseClass
 {
 
     value = new Float32Array(this.size);
-    _constantBuffer = null;
-    _offset = null;
+    //_constantBuffer = null;
+    //_offset = null;
 
 
     /**
@@ -43,16 +41,17 @@ export class Tw2VectorParameter extends Tw2BaseClass
      * Sets the parameter's value
      * @param {Float32Array} value   - The value to set
      * @param {*} [opt]
+     * @returns {Boolean}
      */
     SetValue(value, opt)
     {
-        //if (!this.EqualsValue(value))
-        //{
-        this.value.set(value);
-        this.UpdateValues(opt);
-        //return true;
-        //}
-        //return false;
+        if (!this.EqualsValue(value))
+        {
+            this.value.set(value);
+            this.UpdateValues(opt);
+            return true;
+        }
+        return false;
     }
 
     /**

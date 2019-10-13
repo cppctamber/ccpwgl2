@@ -5,13 +5,11 @@ import { Tw2Parameter } from "./Tw2Parameter";
  * Tw2VariableParameter
  *
  * @property {String} variableName
- * @class
  */
 export class Tw2VariableParameter extends Tw2Parameter
 {
 
     variableName = "";
-
 
     /**
      * Constructor
@@ -40,6 +38,17 @@ export class Tw2VariableParameter extends Tw2Parameter
     get size()
     {
         return this.variable ? this.variable.size : 0;
+    }
+
+    /**
+     * Sets the variable's value
+     * @param {*} value
+     * @param {*} [opt]
+     * @returns {Boolean}
+     */
+    SetValue(value, opt)
+    {
+        return tw2.SetVariableValue(this.variableName, value, opt);
     }
 
     /**

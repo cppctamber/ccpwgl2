@@ -3,22 +3,20 @@ import { util } from "../../global";
 
 /**
  * Tw2FloatParameter
- * TODO: Remove constructor parameters
  * @ccp Tr2FloatParameter
  *
  * @property {String} name
  * @property {Number} value
  * @property {?Float32Array} _constantBuffer
  * @property {?Number} _offset
- * @class
  */
 export class Tw2FloatParameter extends Tw2Parameter
 {
 
     value = 1;
 
-    _constantBuffer = null;
-    _offset = null;
+    //_constantBuffer = null;
+    //_offset = null;
 
     /**
      * Constructor
@@ -34,13 +32,18 @@ export class Tw2FloatParameter extends Tw2Parameter
     /**
      * Sets the parameter's value
      * @param {Number} value
-     * @param {*} [controller]
-     * @param {Boolean} [skipUpdate]
+     * @param {*} [opt]
+     * @returns {Boolean}
      */
-    SetValue(value, controller, skipUpdate)
+    SetValue(value, opt)
     {
-        this.value = value;
-        this.UpdateValues(controller, skipUpdate);
+        if (!this.EqualsValue(value))
+        {
+            this.value = value;
+            this.UpdateValues(opt);
+            return true;
+        }
+        return false;
     }
 
     /**

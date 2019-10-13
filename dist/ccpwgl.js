@@ -6,13 +6,8 @@ var ccpwgl = (function(tw2)
 
     // Enables debug mode
     Object.defineProperty(ccpwgl, "debug", {
-        set: (bool) => tw2.debug = bool,
-        get: () => tw2.debug
-    });
-
-    // The current canvas
-    Object.defineProperty(ccpwgl, "canvas", {
-        get: () => tw2.canvas
+        set: (bool) => tw2.SetDebug(bool),
+        get: () => tw2._debug
     });
 
     // Allow debug to be set from the browser
@@ -20,6 +15,11 @@ var ccpwgl = (function(tw2)
     {
         ccpwgl.debug = true;
     }
+
+    // The current canvas
+    Object.defineProperty(ccpwgl, "canvas", {
+        get: () => tw2.canvas
+    });
 
     /**
      * Distables scene fog effects (they look terrible)

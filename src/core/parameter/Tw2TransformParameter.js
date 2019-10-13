@@ -1,12 +1,6 @@
 import { Tw2Parameter } from "./Tw2Parameter";
 import { vec3, quat, mat4 } from "../../global/math";
-import { isNumber, isTyped } from "../../global/util";
-
-const
-    vec3_0 = vec3.create(),
-    vec3_1 = vec3.create(),
-    quat_0 = quat.create(),
-    mat4_0 = mat4.create();
+import { isNumber } from "../../global/util";
 
 /**
  * Tw2TransformParameter
@@ -17,14 +11,17 @@ const
  * @property {vec3} scaling
  * @property {mat4} _localTransform
  * @property {mat4} _worldTransform
- * @property {mat4|null} _worldTranspose
- * @property {mat4|null} _worldInverse
+ * @property {mat4} _parentTransform
+ * @property {mat4|undefined} _worldTranspose
+ * @property {mat4|undefined} _worldInverse
+ * @property {mat4|undefined} _worldInverseTranspose
  * @property {Boolean} _rebuildLocal
  * @property {Boolean} _rebuildWorldTransform
  */
 export class Tw2TransformParameter extends Tw2Parameter
 {
     // ccp
+    name = "";
     rotation = quat.create();
 
     // ccpwgl
@@ -32,13 +29,42 @@ export class Tw2TransformParameter extends Tw2Parameter
     scaling = vec3.fromValues(1, 1, 1);
 
     _localTransform = mat4.create();
-    _parentTransform = null;
     _worldTransform = mat4.create();
-    _worldTranspose = null;
-    _worldInverse = null;
-
     _rebuildLocal = true;
     _rebuildWorld = true;
+
+    //_parentTransform = null;
+    //_worldTranspose = null;
+    //_worldInverse = null;
+    //_worldInverseTranspose = null;
+
+    /**
+     * Constructor
+     * @param {String} [name]
+     * @param {quat|mat4} [value]
+     */
+    constructor(name, value)
+    {
+        Tw2TransformParameter.init();
+
+        super();
+
+        if (name) this.name = name;
+
+        if (value)
+        {
+            if (value.length === 4)
+            {
+                this.SetRotation(value);
+            }
+            else
+            {
+                this.SetTransform(value);
+            }
+
+            this.RebuildTransforms();
+        }
+    }
 
     /**
      * Initializes the transform parameter
@@ -56,7 +82,7 @@ export class Tw2TransformParameter extends Tw2Parameter
     {
         if (!opt || !opt.skipRebuild)
         {
-            this.Rebuild({ force: true, skipUpdate: true });
+            this.RebuildTransforms({ force: true, skipUpdate: true });
         }
     }
 
@@ -67,7 +93,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      * @param {Boolean} [opt.skipUpdate] - Skips updating the object if there's a change
      * @returns {Boolean} true if updated
      */
-    Rebuild(opt)
+    RebuildTransforms(opt)
     {
         let
             force = opt ? opt.force : false,
@@ -99,6 +125,19 @@ export class Tw2TransformParameter extends Tw2Parameter
             if (this._worldTranspose)
             {
                 mat4.transpose(this._worldTranspose, this._worldTransform);
+            }
+
+            if (this._worldInverseTranspose)
+            {
+                if (this._worldInverse)
+                {
+                    mat4.transpose(this._worldInverseTranspose, this._worldInverse);
+                }
+                else
+                {
+                    mat4.invert(this._worldInverseTranspose, this._worldTransform);
+                    mat4.transpose(this._worldInverseTranspose, this._worldInverseTranspose);
+                }
             }
 
             if (this._constantBuffer)
@@ -148,9 +187,9 @@ export class Tw2TransformParameter extends Tw2Parameter
     {
         if (!this._worldTranspose)
         {
-            this.Rebuild();
+            this.RebuildTransforms();
             this._worldTranspose = mat4.create();
-            mat4.tranpose(this._worldTranspose, this._worldTransform);
+            mat4.transpose(this._worldTranspose, this._worldTransform);
         }
 
         if (size >= this.constructor.constantBufferSize)
@@ -170,7 +209,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetValue(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
 
         if (!this._worldTranspose)
         {
@@ -184,12 +223,30 @@ export class Tw2TransformParameter extends Tw2Parameter
     /**
      * Sets the parent transform
      * @param {null|mat4} m
+     * @returns {Tw2TransformParameter}
      */
     SetParentTransform(m)
     {
-        this._parentTransform = m;
-        this._rebuildWorld = true;
-        this.Rebuild();
+        // Clear
+        if (!m && this._parentTransform)
+        {
+            this._parentTransform = null;
+            this._rebuildWorld = true;
+        }
+        // Set new parent
+        else if (!this._parentTransform)
+        {
+            this._parentTransform = mat4.clone(m);
+            this._rebuildWorld = true;
+        }
+        // Update parent
+        else if (!mat4.equals(m, this._parentTransform))
+        {
+            mat4.copy(this._parentTransform, m);
+            this._rebuildWorld = true;
+        }
+
+        return this;
     }
 
     /**
@@ -199,7 +256,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldTransform(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return mat4.copy(out, this._worldTransform);
     }
 
@@ -212,7 +269,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     DecomposeWorld(rotation, translation, scaling)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         mat4.getRotation(rotation, this._worldTransform);
         mat4.getTranslation(translation, this._worldTransform);
         mat4.getScaling(scaling, this._worldTransform);
@@ -226,7 +283,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldRotation(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return mat4.getRotation(out, this._worldTransform);
     }
 
@@ -238,7 +295,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldDirection(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         vec3.set(out, this._worldTransform[8], this._worldTransform[9], this._worldTransform[10]);
         return vec3.normalize(out, out);
     }
@@ -250,6 +307,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldEuler(out)
     {
+        const { quat_0 } = Tw2TransformParameter.global;
         this.GetWorldRotation(quat_0);
         return vec3.euler.fromQuat(out, quat_0);
     }
@@ -261,7 +319,8 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldAxisAngle(axis)
     {
-        this.Rebuild();
+        const { quat_0 } = Tw2TransformParameter.global;
+        this.RebuildTransforms();
         mat4.getRotation(quat_0, this._worldTransform);
         return quat.getAxisAngle(axis, quat_0);
     }
@@ -273,7 +332,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldTranslation(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return mat4.getTranslation(out, this._worldTransform);
     }
 
@@ -284,7 +343,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldScaling(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return mat4.getScaling(out, this._worldTransform);
     }
 
@@ -294,6 +353,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldMaxScale()
     {
+        const { vec3_0 } = Tw2TransformParameter.global;
         this.GetWorldScaling(vec3_0);
         return Math.max(vec3_0[0], vec3_0[1], vec3_0[2]);
     }
@@ -306,13 +366,14 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetWorldToLocal(out, v)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
 
         if (this._worldInverse)
         {
             return vec3.transformMat4(out, v, this._worldInverse);
         }
 
+        const { mat4_0 } = Tw2TransformParameter.global;
         mat4.invert(mat4_0, this._worldTransform);
         return vec3.transformMat4(out, v, mat4_0);
     }
@@ -367,7 +428,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     Decompose(rotation, translation, scaling)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         quat.copy(rotation, this.rotation);
         vec3.copy(translation, this.translation);
         vec3.copy(scaling, this.scaling);
@@ -382,7 +443,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetLocalToWorld(out, v)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return vec3.transformMat4(out, v, this._worldTransform);
     }
 
@@ -393,7 +454,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetDirection(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         vec3.set(out, this._localTransform[8], this._localTransform[9], this._localTransform[10]);
         return vec3.normalize(out, out);
     }
@@ -405,7 +466,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetRotation(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return quat.copy(out, this.rotation);
     }
 
@@ -416,6 +477,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetEuler(out)
     {
+        const { quat_0 } = Tw2TransformParameter.global;
         this.GetRotation(quat_0);
         return vec3.euler.fromQuat(out, quat_0);
     }
@@ -452,6 +514,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     SetRotationFromValues(x, y, z, w)
     {
+        const { quat_0 } = Tw2TransformParameter.global;
         quat.set(quat_0, x, y, z, w);
         return this.SetRotation(quat_0);
     }
@@ -465,6 +528,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     SetRotationFromAxes(view, right, up)
     {
+        const { quat_0 } = Tw2TransformParameter.global;
         quat.setAxes(quat_0, view, right, up);
         return this.SetRotation(quat_0);
     }
@@ -503,6 +567,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     SetRotationFromEulerValues(x, y, z)
     {
+        const { vec3_0 } = Tw2TransformParameter.global;
         vec3.set(vec3_0, x, y, z);
         return this.SetRotationFromEuler(vec3_0);
     }
@@ -514,6 +579,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     SetRotationFromMat4(m)
     {
+        const { quat_0 } = Tw2TransformParameter.global;
         mat4.getRotation(quat_0, m);
         return this.SetRotation(quat_0);
     }
@@ -562,6 +628,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     RotateOnAxisAngle(axis, radians)
     {
+        const { quat_0 } = Tw2TransformParameter.global;
         quat.setAxisAngle(quat_0, axis, radians);
         quat.multiply(this.rotation, this.rotation, quat_0);
         this._rebuildLocal = true;
@@ -586,7 +653,9 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     LookAt(v, flip)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
+
+        const { mat4_0 } = Tw2TransformParameter.global;
         mat4.copy(mat4_0, this._localTransform);
 
         if (flip)
@@ -612,6 +681,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     LookAtWorld(v, flip)
     {
+        const { vec3_0 } = Tw2TransformParameter.global;
         this.GetWorldToLocal(vec3_0, v);
         return this.LookAt(vec3_0, flip);
     }
@@ -623,7 +693,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetTranslation(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return vec3.copy(out, this.translation);
     }
 
@@ -673,6 +743,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     TranslateOnAxis(axis, distance)
     {
+        const { vec3_0 } = Tw2TransformParameter.global;
         vec3.transformQuat(vec3_0, axis, this.rotation);
         vec3.scaleAndAdd(this.translation, this.translation, vec3_0, distance);
         this._rebuildLocal = true;
@@ -716,7 +787,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     GetScale(out)
     {
-        this.Rebuild();
+        this.RebuildTransforms();
         return vec3.copy(out, this.scaling);
     }
 
@@ -750,7 +821,9 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     SetScaleFromValues(x, y, z)
     {
-        return this.SetScale([ x, y, z ]);
+        const { vec3_0 } = Tw2TransformParameter.global;
+        vec3.set(vec3_0, x, y, z);
+        return this.SetScale(vec3_0);
     }
 
     /**
@@ -826,6 +899,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     ScaleValues(x, y, z)
     {
+        const { vec3_0 } = Tw2TransformParameter.global;
         vec3.set(vec3_0, x, y, z);
         return this.Scale(vec3_0);
     }
@@ -837,6 +911,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     ScaleMat4(m)
     {
+        const { vec3_0 } = Tw2TransformParameter.global;
         mat4.getScaling(vec3_0, m);
         return this.Scale(vec3_0);
     }
@@ -900,6 +975,10 @@ export class Tw2TransformParameter extends Tw2Parameter
             return false;
         }
 
+        this.init();
+
+        const { vec3_0, vec3_1, quat_0 } = this.global;
+
         let rotation, translation, scaling, updated = false;
 
         // Transform has precedence to any other property
@@ -954,7 +1033,7 @@ export class Tw2TransformParameter extends Tw2Parameter
 
             if (updated && !opt.skipUpdate)
             {
-                a.Rebuild({ force: true });
+                a.RebuildTransforms({ force: true });
             }
         }
 
@@ -980,6 +1059,26 @@ export class Tw2TransformParameter extends Tw2Parameter
         return out;
     }
 
+    /**
+     * Global and scratch parameters
+     * @type {null|Object}
+     */
+    static global = null;
+
+    /**
+     * Initializes global and scratch parameters
+     */
+    static init()
+    {
+        if (this.global) return;
+
+        this.global = {
+            vec3_0: vec3.create(),
+            vec3_1: vec3.create(),
+            quat_0: quat.create(),
+            mat4_0: mat4.create()
+        };
+    }
 
     /**
      * Black definition
