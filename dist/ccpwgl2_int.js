@@ -18439,12 +18439,12 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Sets textures from an object
    * @param {{string:string}} options
-   * @param {Boolean} [skipBind]
+   * @param {Boolean} [skipUpdate]
    * @returns {Boolean} true if updated
    */
 
 
-  SetTextures(options = {}, skipBind) {
+  SetTextures(options = {}, skipUpdate) {
     let updated = false;
 
     for (let key in options) {
@@ -18466,7 +18466,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       }
     }
 
-    if (updated && !skipBind) this.BindParameters();
+    if (updated && !skipUpdate) this.UpdateValues();
     return updated;
   }
   /**
@@ -18489,14 +18489,13 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Sets parameters from an object
    * @param {{string:*}} [options={}]
-   * @param {Boolean} [skipBind]
+   * @param {Boolean} [skipUpdate]
    * @returns {Boolean} true if updated
    */
 
 
-  SetParameters(options = {}, skipBind) {
-    let updated = false,
-        rebind = false;
+  SetParameters(options = {}, skipUpdate) {
+    let updated = false;
 
     for (let key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
@@ -18514,26 +18513,25 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
           if (parameter) {
             this.parameters[key] = parameter;
-            rebind = updated = true;
+            updated = true;
           }
         }
       }
     }
 
-    if (rebind && !skipBind) this.BindParameters();
+    if (updated && !skipUpdate) this.UpdateValues();
     return updated;
   }
   /**
    * Sets texture overrides
    * @param {*} [options={}]
-   * @param {Boolean} [skipBind]
+   * @param {Boolean} [skipUpdate]
    * @returns {Boolean} true if updated
    */
 
 
-  SetOverrides(options = {}, skipBind) {
-    let updated = false,
-        rebind = false;
+  SetOverrides(options = {}, skipUpdate) {
+    let updated = false;
 
     for (let key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
@@ -18543,7 +18541,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
         if (!param) {
           param = this.parameters[key] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](key);
-          rebind = updated = true;
+          updated = true;
         }
 
         if (param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
@@ -18567,7 +18565,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       }
     }
 
-    if (updated && !skipBind) this.BindParameters();
+    if (updated && !skipUpdate) this.UpdateValues();
     return updated;
   }
   /**
@@ -22862,9 +22860,7 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
   GetValue(out = []) {
     const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
 
-    for (let i = 0; i < value.length; i++) {
-      out[i] = value[i];
-    }
+    for (let i = 0; i < value.length; i++) out[i] = value[i];
 
     return out;
   }
@@ -50001,7 +49997,7 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     this.del("*");
   }
   /**
-   * Traverses the object
+   * Traverses the object and it's array properties which have objects as elements
    * @param {Function} callback
    * @param {*} [parent]
    * @param {String} [path]
@@ -53439,7 +53435,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
               statusText = json.message || json.msg || json.error || json.err;
               if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isBoolean"])(statusText)) statusText = undefined;
             } catch (err) {
-              statusText = text;
+              statusText = "Failed to fetch resource";
             }
 
             throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]({

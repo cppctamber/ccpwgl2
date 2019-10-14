@@ -448,7 +448,7 @@ export class Tw2ResMan extends Tw2EventEmitter
                             }
                             catch (err)
                             {
-                                statusText = text;
+                                statusText = "Failed to fetch resource";
                             }
 
                             throw new ErrHTTPStatus({ status, statusText, json });
