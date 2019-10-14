@@ -107,14 +107,18 @@ export class Tw2BaseClass extends Tw2EventEmitter
     }
 
     /**
-     * Traverses the object
+     * Traverses the object and it's array properties which have objects as elements
      * @param {Function} callback
      * @param {*} [parent]
      * @param {String} [path]
+     * @param {Set} [visited=new Set()]
      * @returns {*}
      */
-    Traverse(callback, parent, path = "")
+    Traverse(callback, parent, path = "", visited=new Set())
     {
+        if (visited.has(this)) return;
+        visited.add(this);
+
         const result = callback(this, parent, path);
         if (result) return result;
 
@@ -123,16 +127,17 @@ export class Tw2BaseClass extends Tw2EventEmitter
             let result;
             if (isFunction(child.Traverse))
             {
-                result = child.Traverse(callback, parent, path);
+                result = child.Traverse(callback, parent, path, visited);
             }
-            else if (isObjectObject(child))
+            else if (!visited.has(child))
             {
+                visited.add(child);
                 result = callback(child, parent, path);
             }
             if (result) return result;
         }
 
-        return this.constructor.perChild(this, onChild, path);
+        return perChild(this, onChild, path);
     }
 
     /**
@@ -152,10 +157,11 @@ export class Tw2BaseClass extends Tw2EventEmitter
     /**
      * Internal handler for cloning an object
      * @param {*} a
-     * @param {*} [opt]
+     * @param {*} [opt={}]
+     * @returns {*}
      * @private
      */
-    static clone(a, opt)
+    static clone(a, opt = {})
     {
         const values = this.get(a, {}, { skipIDs: true });
         return this.from(values, opt);
@@ -166,8 +172,9 @@ export class Tw2BaseClass extends Tw2EventEmitter
      * @param [values]
      * @param [opt={}]
      * @returns {*}
+     * @private
      */
-    static from(values, opt)
+    static from(values, opt = {})
     {
         if (values && values instanceof this)
         {
@@ -177,12 +184,12 @@ export class Tw2BaseClass extends Tw2EventEmitter
         const item = new this();
         let hasInitialize = "Initialize" in item;
 
-        if (values)
+        if (values && Object.keys(values))
         {
             this.set(item, values, { skipUpdate: hasInitialize, verb: "create" });
         }
 
-        if ((!opt || !opt.skipUpdate) && hasInitialize)
+        if (hasInitialize && (!opt.skipUpdate))
         {
             item.Initialize();
         }
@@ -220,66 +227,6 @@ export class Tw2BaseClass extends Tw2EventEmitter
         throw new ErrAbstractClassMethod();
     }
 
-
-    /**
-     * Fires a callback on an object's child lists and types, and no further
-     * @param {*} obj
-     * @param {Function} callback
-     * @param {String} [path="root"]
-     * @param {Set} [visited]
-     * @returns {!*}
-     */
-    static perChild(obj, callback, path = "", visited = new Set())
-    {
-        if (visited.has(obj))
-        {
-            return;
-        }
-
-        visited.add(obj);
-
-        const { list, type } = getKeys(obj);
-
-        if (list)
-        {
-            for (let i = 0; i < list.length; i++)
-            {
-                const
-                    key = list[i],
-                    arr = obj[key];
-
-                for (let x = 0; x < arr.length; x++)
-                {
-                    const item = arr[x];
-
-                    if (isObjectObject(item))
-                    {
-                        let currentPath = `${path}/${key}/${x}`;
-                        const result = callback(item, obj, currentPath);
-                        if (result) return result;
-                    }
-                }
-            }
-        }
-
-        if (type)
-        {
-            for (let i = 0; i < type.length; i++)
-            {
-                const
-                    key = type[i],
-                    item = obj[key];
-
-                if (isObjectObject(item))
-                {
-                    let currentPath = `${path}/${key}`;
-                    const result = callback(item, obj, currentPath);
-                    if (result) return result;
-                }
-            }
-        }
-    }
-
     /**
      * Defines an unwritable unique id property on an object
      * @param {*} target
@@ -312,6 +259,58 @@ export class Tw2BaseClass extends Tw2EventEmitter
      */
     static __keys = null;
 
+}
+
+
+/**
+ * Fires a callback on an object's child lists and types, and no further
+ * @param {*} obj
+ * @param {Function} callback
+ * @param {String} [path="root"]
+ * @returns {!*}
+ */
+function perChild(obj, callback, path = "")
+{
+    const { list, type } = getKeys(obj);
+
+    if (list)
+    {
+        for (let i = 0; i < list.length; i++)
+        {
+            const
+                key = list[i],
+                arr = obj[key];
+
+            for (let x = 0; x < arr.length; x++)
+            {
+                const item = arr[x];
+
+                if (isObjectObject(item))
+                {
+                    let currentPath = `${path}/${key}/${x}`;
+                    const result = callback(item, obj, currentPath);
+                    if (result) return result;
+                }
+            }
+        }
+    }
+
+    if (type)
+    {
+        for (let i = 0; i < type.length; i++)
+        {
+            const
+                key = type[i],
+                item = obj[key];
+
+            if (isObjectObject(item))
+            {
+                let currentPath = `${path}/${key}`;
+                const result = callback(item, obj, currentPath);
+                if (result) return result;
+            }
+        }
+    }
 }
 
 /**

@@ -11,8 +11,8 @@ import { Tw2SamplerState } from "./Tw2SamplerState";
  * @property {Number} lodBias
  * @property {Number} maxMipLevel
  * @property {Number} maxAnisotropy
+ * @property {Boolean} forceAddressModes
  * @property {Tw2SamplerState} _sampler
- * @class
  */
 export class Tw2SamplerOverride
 {
@@ -26,6 +26,9 @@ export class Tw2SamplerOverride
     lodBias = 0;
     maxMipLevel = 0;
     maxAnisotropy = 0;
+
+    forceAddressModes = false;
+
     _sampler = null;
 
 
@@ -46,6 +49,7 @@ export class Tw2SamplerOverride
         const sampler = this._sampler;
         sampler.registerIndex = originalSampler.registerIndex;
         sampler.name = originalSampler.name;
+        sampler.forceAddressModes = this.forceAddressModes;
 
         const { wrapModes, gl } = device;
 

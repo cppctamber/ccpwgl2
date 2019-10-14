@@ -4,6 +4,7 @@ import { toArray } from "./arr";
 /**
  * Assigns property values if they exist in a source object
  * - Typed arrays are cloned/ copied to ensure no pass-by-reference errors
+ * - TODO: Return boolean for when some thing was assigned AND the value was different
  *
  * @param {*} dest
  * @param {*} src
@@ -15,49 +16,48 @@ export function assignIfExists(dest, src, attrs)
     if (!src) return false;
 
     attrs = toArray(attrs);
-
-    let modified = false;
+    let assigned = false;
     for (let i = 0; i < attrs.length; i++)
     {
         const attr = attrs[i];
-        if (src[attr] !== undefined)
+        if (src[attr] === undefined) continue;
+
+        assigned = true;
+        if (isArrayLike(dest[attr]))
         {
-            modified = true;
-            if (isArrayLike(dest[attr]))
+            if (isTyped(dest[attr]))
             {
-                if (isTyped(dest[attr]))
+                if (dest[attr].length !== src[attr].length)
                 {
-                    if (dest[attr].length !== src[attr].length)
-                    {
-                        const Constructor = dest[attr].constructor;
-                        dest[attr] = new Constructor(src[attr]);
-                    }
-                    else
-                    {
-                        dest[attr].set(src[attr]);
-                    }
+                    const Constructor = dest[attr].constructor;
+                    dest[attr] = new Constructor(src[attr]);
                 }
                 else
                 {
-                    dest[attr] = dest[attr].splice(dest[attr].length, 0);
-                    for (let i = 0; i < src[attr].length; i++)
-                    {
-                        dest[attr].push(src[attr][i]);
-                    }
+                    dest[attr].set(src[attr]);
                 }
-            }
-            else if (isTyped(src[attr]))
-            {
-                const Constructor = src[attr].constructor;
-                dest[attr] = new Constructor(src[attr]);
             }
             else
             {
-                dest[attr] = src[attr];
+                dest[attr] = dest[attr].splice(dest[attr].length, 0);
+                for (let i = 0; i < src[attr].length; i++)
+                {
+                    dest[attr].push(src[attr][i]);
+                }
             }
         }
+        else if (isTyped(src[attr]))
+        {
+            const Constructor = src[attr].constructor;
+            dest[attr] = new Constructor(src[attr]);
+        }
+        else
+        {
+            dest[attr] = src[attr];
+        }
     }
-    return modified;
+
+    return assigned;
 }
 
 /**

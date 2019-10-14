@@ -81,6 +81,6 @@ export class Tw2ParticleElement
         "VELOCITY",
         "MASS",
         "CUSTOM"
-    ]
+    ];
 
 }

@@ -54,8 +54,8 @@ export class EveObject extends Tw2BaseClass
         mat4_0: mat4.create(),
         mat4_1: mat4.create(),
         mat4_2: mat4.create(),
-        mat4_ID : mat4.create()
-    }
+        mat4_ID: mat4.create()
+    };
 
 }
 

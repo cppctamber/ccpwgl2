@@ -324,6 +324,6 @@ export class EveObjectSet extends Tw2BaseClass
         vec4_0: vec4.create(),
         vec4_1: vec4.create(),
         mat4_0: mat4.create()
-    }
+    };
 
 }

@@ -7,6 +7,6 @@ export class Tw2BoneBinding
 {
 
     array = null;
-    offset = 0
+    offset = 0;
 
 }

@@ -175,11 +175,15 @@ export class Tw2TextureParameter extends Tw2Parameter
      * Sets the textures overrides
      * TODO: Remove once utility functions working
      * @param {{}} [opt={}] - An object containing the override options to set
+     * @returns {Boolean} true if updated
      */
     SetOverrides(opt = {})
     {
-        util.assignIfExists(this, opt, Tw2TextureParameter.overrideProperties);
-        this.UpdateValues();
+        if (util.assignIfExists(this, opt, Tw2TextureParameter.overrideProperties))
+        {
+            this.UpdateValues();
+            return true;
+        }
     }
 
     /**

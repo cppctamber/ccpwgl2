@@ -23,7 +23,7 @@ export class EveCustomMask extends Tw2TransformParameter
     display = true;
     isMirrored = false;
     parameters = {
-        PatternMaskMap : new Tw2TextureParameter("PatternMaskMap"),
+        PatternMaskMap: new Tw2TextureParameter("PatternMaskMap"),
         DiffuseColor: new Tw2Vector4Parameter("DiffuseColor"),
         FresnelColor: new Tw2Vector4Parameter("FresnelColor"),
         Gloss: new Tw2Vector4Parameter("Gloss")

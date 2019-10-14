@@ -57,7 +57,7 @@ export class EveChild extends Tw2BaseClass
             [ "world", 16 ],
             [ "worldInverseTranspose", 16 ]
         ]
-    }
+    };
 
     /**
      * Identifies that the class is a child effect

@@ -28,7 +28,7 @@ export class Tw2VideoRes extends Tw2Resource
     height = 0;
     cycle = true;
     playOnLoad = true;
-    
+
     _currentSampler = 0;
     _currentTime = -1;
     _playable = false;

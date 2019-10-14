@@ -17394,7 +17394,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17513,8 +17513,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -17526,6 +17524,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -18058,17 +18058,15 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Tw2Effect
  *
- * @property {String|Number} _id
- * @property {String} name
- * @property {String} effectFilePath
- * @property {Tw2EffectRes|null} effectRes
- * @property {Object.<string, Tw2Parameter>} parameters
- * @property {Object.<string, Array>} techniques
- * @property {Object.<string, string>} options
- * @property {Tw2Shader|null} shader
- * @property {Array} samplerOverrides
- * @property {Boolean} autoParameter
- * @class
+ * @property {String} name                              - The effect's name
+ * @property {String} effectFilePath                    - The effect's resource file path
+ * @property {Tw2EffectRes|null} effectRes              - The effect's resource
+ * @property {Object.<string, Tw2Parameter>} parameters - Effect parameters
+ * @property {Object.<string, Array>} techniques        - Shader techniques
+ * @property {Object.<string, string>} options          - Shader options
+ * @property {Tw2Shader|null} shader                    - The effect's shader
+ * @property {Object} samplerOverrides                  - Sampler overrides (not used yet)
+ * @property {Boolean} autoParameter                   - Identifies if the effect should automatically generate parameters
  */
 
 class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
@@ -18078,11 +18076,11 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     this.effectFilePath = "";
     this.effectRes = null;
     this.parameters = {};
-    this.techniques = [];
-    this.samplerOverrides = [];
-    this.autoParameter = false;
+    this.techniques = {};
+    this.samplerOverrides = {};
     this.options = {};
     this.shader = null;
+    this.autoParameter = false;
   }
 
   //resources
@@ -18097,6 +18095,15 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
       this.effectRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path, res => this.OnResPrepared(res));
     }
+  }
+  /**
+   * Fires on value changes
+   * @param {*} opt
+   */
+
+
+  OnValueChanged(opt) {
+    this.BindParameters();
   }
   /**
    * Checks if the effect's resource is good
@@ -18116,9 +18123,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   KeepAlive() {
     const res = this.GetResources();
 
-    for (let i = 0; i < res.length; i++) {
-      res[i].KeepAlive();
-    }
+    for (let i = 0; i < res.length; i++) res[i].KeepAlive();
   }
   /**
    * Gets effect resources
@@ -18184,10 +18189,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   BindParameters() {
     this.UnBindParameters();
-
-    if (!this.IsGood()) {
-      return false;
-    }
+    if (!this.IsGood()) return false;
 
     for (let techniqueName in this.shader.techniques) {
       if (this.shader.techniques.hasOwnProperty(techniqueName)) {
@@ -18381,10 +18383,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   GetPassCount(technique) {
-    if (this.shader === null || !(technique in this.techniques)) {
-      return 0;
-    }
-
+    if (this.shader === null || !(technique in this.techniques)) return 0;
     return this.techniques[technique].length;
   }
   /**
@@ -18431,10 +18430,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     for (let key in this.parameters) {
       if (this.parameters.hasOwnProperty(key) && this.parameters[key] instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
         let resourcePath = this.parameters[key].GetValue();
-
-        if (resourcePath) {
-          out[key] = resourcePath;
-        }
+        if (resourcePath) out[key] = resourcePath;
       }
     }
 
@@ -18443,11 +18439,12 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Sets textures from an object
    * @param {{string:string}} options
+   * @param {Boolean} [skipBind]
    * @returns {Boolean} true if updated
    */
 
 
-  SetTextures(options = {}) {
+  SetTextures(options = {}, skipBind) {
     let updated = false;
 
     for (let key in options) {
@@ -18469,6 +18466,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       }
     }
 
+    if (updated && !skipBind) this.BindParameters();
     return updated;
   }
   /**
@@ -18482,7 +18480,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   GetParameters(out = {}) {
     for (let key in this.parameters) {
       if (this.parameters.hasOwnProperty(key) && !(this.parameters[key] instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"])) {
-        out[key] = this.parameters[key].GetValue(true);
+        out[key] = this.parameters[key].GetValue();
       }
     }
 
@@ -18491,12 +18489,14 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Sets parameters from an object
    * @param {{string:*}} [options={}]
+   * @param {Boolean} [skipBind]
    * @returns {Boolean} true if updated
    */
 
 
-  SetParameters(options = {}) {
-    let updated = false;
+  SetParameters(options = {}, skipBind) {
+    let updated = false,
+        rebind = false;
 
     for (let key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
@@ -18505,37 +18505,48 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
         if (param) {
           if (param.constructor.isValue(value) && !param.EqualsValue(value)) {
-            this.parameters[key].SetValue(value);
-            updated = true;
+            if (this.parameters[key].SetValue(value)) {
+              updated = true;
+            }
           }
         } else {
           const parameter = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(key, value);
 
           if (parameter) {
             this.parameters[key] = parameter;
-            updated = true;
+            rebind = updated = true;
           }
         }
       }
     }
 
+    if (rebind && !skipBind) this.BindParameters();
     return updated;
   }
   /**
    * Sets texture overrides
    * @param {*} [options={}]
+   * @param {Boolean} [skipBind]
    * @returns {Boolean} true if updated
    */
 
 
-  SetOverrides(options = {}) {
-    let updated = false;
+  SetOverrides(options = {}, skipBind) {
+    let updated = false,
+        rebind = false;
 
     for (let key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
-        const param = this.parameters[key];
+        let param = this.parameters[key]; // Allow creating of parameter from overrides incase method is
+        // called before SetTextures.
+        // Todo: Remove this once proper sampler overrides are implemented
 
-        if (param && param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
+        if (!param) {
+          param = this.parameters[key] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](key);
+          rebind = updated = true;
+        }
+
+        if (param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
           let doUpdate = false;
           const overrides = options[key];
 
@@ -18556,6 +18567,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       }
     }
 
+    if (updated && !skipBind) this.BindParameters();
     return updated;
   }
   /**
@@ -18611,48 +18623,60 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     return path.toLowerCase();
   }
   /**
-   * Creates a Tw2Effect from an object
-   * @param {{}|Tw2Effect} [values]
-   * @param {String} [values.name='']
-   * @param {String} [values.effectFilePath='']
-   * @param {Boolean} [values.autoParameter]
-   * @param {{string: *}} [values.parameters]
-   * @param {{string: string}} [values.textures]
-   * @param {{string: {}}} [values.overrides]
-   * @param {*} [options]
-   * @returns {Tw2Effect}
+   * Sets an effect from a plain object
+   * @param {Tw2Effect} a
+   * @param {Tw2EffectRes} a.effectRes
+   * @param {Object} [values]
+   * @param {Object} [opt={}]
+   * @returns {boolean} true if updated
    */
 
 
-  static from(values, options) {
-    // Allow already constructed effect to be passed
-    if (values && values instanceof Tw2Effect) {
-      return values;
+  static set(a, values, opt = {}) {
+    if (!values) return false;
+    const {
+      parameters,
+      textures,
+      overrides,
+      options,
+      effectFilePath = ""
+    } = values;
+    let updated = _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(a, values, ["name", "display", "autoParameter"]);
+    if (parameters && a.SetParameters(parameters, true)) updated = true;
+    if (overrides && a.SetOverrides(overrides, true)) updated = true;
+    if (textures && a.SetTextures(textures, true)) updated = true;
+
+    if (options) {
+      // TODO: Check if options and current options are the same
+      a.options = Object.assign(options);
+      if (a.effectRes) a.shader = a.effectRes.GetShader(options);
+      updated = true;
+    } // Only allow setting of effectFilePath on creation
+
+
+    if (opt.verb === "create" && effectFilePath) {
+      a.effectFilePath = effectFilePath.toLowerCase(); // Initialize is handled in Tw2BaseClass.from
+      // updated = true;
     }
 
-    const effect = new this();
+    if (updated && !opt.skipUpdate) a.UpdateValues(opt);
+    return updated;
+  }
+  /**
+   * Serializes a effect
+   * @param {Tw2Effect} a
+   * @param {Object} [out={}]
+   * @returns {Object} out
+   */
 
-    if (values) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(effect, values, ["name", "effectFilePath", "display", "autoParameter"]);
-      if ("parameters" in values) effect.SetParameters(values.parameters);
-      if ("textures" in values) effect.SetTextures(values.textures);
-      if ("overrides" in values) effect.SetOverrides(values.overrides);
 
-      if (effect.name === "" && values.effectFilePath !== "") {
-        let path = values.effectFilePath;
-        effect.name = path.substring(path.lastIndexOf("/") + 1, path.length);
-      }
-
-      if (!effect.name && effect.effectFilePath) {
-        effect.name = effect.effectFilePath.substring(effect.effectFilePath.lastIndexOf("/") + 1, effect.effectFilePath.lastIndexOf("."));
-      }
-    }
-
-    if (!options || !options.skipUpdate) {
-      effect.Initialize();
-    }
-
-    return effect;
+  static get(a, out = {}) {
+    _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(out, a, ["name", "display", "effectFilePath"]);
+    out.parameters = a.GetParameters();
+    out.textures = a.GetTextures();
+    out.overrides = a.GetOverrides();
+    out.options = Object.assign(a.options);
+    return out;
   }
   /**
    * Constant parameters which are ignored when creating an effect
@@ -18660,6 +18684,11 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
    */
 
 
+  /**
+   * Black definition
+   * @param r
+   * @returns {*[]}
+   */
   static black(r) {
     return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.plainFromArray("name")], // Reroute resources to parameters for now
     ["resources", r.intercept((reader, effect) => {
@@ -21125,12 +21154,15 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
    * Sets the textures overrides
    * TODO: Remove once utility functions working
    * @param {{}} [opt={}] - An object containing the override options to set
+   * @returns {Boolean} true if updated
    */
 
 
   SetOverrides(opt = {}) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(this, opt, Tw2TextureParameter.overrideProperties);
-    this.UpdateValues();
+    if (_global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(this, opt, Tw2TextureParameter.overrideProperties)) {
+      this.UpdateValues();
+      return true;
+    }
   }
   /**
    * Gets the texture's overrides
@@ -22830,7 +22862,9 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
   GetValue(out = []) {
     const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
 
-    for (let i = 0; i < value.length; i++) out[0] = value[i];
+    for (let i = 0; i < value.length; i++) {
+      out[i] = value[i];
+    }
 
     return out;
   }
@@ -28294,7 +28328,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -28368,8 +28402,8 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} lodBias
  * @property {Number} maxMipLevel
  * @property {Number} maxAnisotropy
+ * @property {Boolean} forceAddressModes
  * @property {Tw2SamplerState} _sampler
- * @class
  */
 
 class Tw2SamplerOverride {
@@ -28383,6 +28417,7 @@ class Tw2SamplerOverride {
     this.lodBias = 0;
     this.maxMipLevel = 0;
     this.maxAnisotropy = 0;
+    this.forceAddressModes = false;
     this._sampler = null;
   }
 
@@ -28401,6 +28436,7 @@ class Tw2SamplerOverride {
     const sampler = this._sampler;
     sampler.registerIndex = originalSampler.registerIndex;
     sampler.name = originalSampler.name;
+    sampler.forceAddressModes = this.forceAddressModes;
     const {
       wrapModes,
       gl
@@ -37227,11 +37263,6 @@ EveChild.global = {
 };
 EveChild.perObjectData = {
   ffe: [["world", 16], ["worldInverseTranspose", 16]]
-  /**
-   * Identifies that the class is a child effect
-   * @returns {boolean}
-   */
-
 };
 EveChild.__isEffectChild = true;
 
@@ -49974,11 +50005,14 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
    * @param {Function} callback
    * @param {*} [parent]
    * @param {String} [path]
+   * @param {Set} [visited=new Set()]
    * @returns {*}
    */
 
 
-  Traverse(callback, parent, path = "") {
+  Traverse(callback, parent, path = "", visited = new Set()) {
+    if (visited.has(this)) return;
+    visited.add(this);
     const result = callback(this, parent, path);
     if (result) return result;
 
@@ -49986,15 +50020,16 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
       let result;
 
       if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(child.Traverse)) {
-        result = child.Traverse(callback, parent, path);
-      } else if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(child)) {
+        result = child.Traverse(callback, parent, path, visited);
+      } else if (!visited.has(child)) {
+        visited.add(child);
         result = callback(child, parent, path);
       }
 
       if (result) return result;
     }
 
-    return this.constructor.perChild(this, onChild, path);
+    return perChild(this, onChild, path);
   }
   /**
    * Internal handler for copying one object's values to another
@@ -50015,12 +50050,13 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
   /**
    * Internal handler for cloning an object
    * @param {*} a
-   * @param {*} [opt]
+   * @param {*} [opt={}]
+   * @returns {*}
    * @private
    */
 
 
-  static clone(a, opt) {
+  static clone(a, opt = {}) {
     const values = this.get(a, {}, {
       skipIDs: true
     });
@@ -50031,10 +50067,11 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
    * @param [values]
    * @param [opt={}]
    * @returns {*}
+   * @private
    */
 
 
-  static from(values, opt) {
+  static from(values, opt = {}) {
     if (values && values instanceof this) {
       return values;
     }
@@ -50042,14 +50079,14 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     const item = new this();
     let hasInitialize = "Initialize" in item;
 
-    if (values) {
+    if (values && Object.keys(values)) {
       this.set(item, values, {
         skipUpdate: hasInitialize,
         verb: "create"
       });
     }
 
-    if ((!opt || !opt.skipUpdate) && hasInitialize) {
+    if (hasInitialize && !opt.skipUpdate) {
       item.Initialize();
     }
 
@@ -50085,57 +50122,6 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClassMethod"]();
   }
   /**
-   * Fires a callback on an object's child lists and types, and no further
-   * @param {*} obj
-   * @param {Function} callback
-   * @param {String} [path="root"]
-   * @param {Set} [visited]
-   * @returns {!*}
-   */
-
-
-  static perChild(obj, callback, path = "", visited = new Set()) {
-    if (visited.has(obj)) {
-      return;
-    }
-
-    visited.add(obj);
-    const {
-      list,
-      type
-    } = getKeys(obj);
-
-    if (list) {
-      for (let i = 0; i < list.length; i++) {
-        const key = list[i],
-              arr = obj[key];
-
-        for (let x = 0; x < arr.length; x++) {
-          const item = arr[x];
-
-          if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
-            let currentPath = "".concat(path, "/").concat(key, "/").concat(x);
-            const result = callback(item, obj, currentPath);
-            if (result) return result;
-          }
-        }
-      }
-    }
-
-    if (type) {
-      for (let i = 0; i < type.length; i++) {
-        const key = type[i],
-              item = obj[key];
-
-        if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
-          let currentPath = "".concat(path, "/").concat(key);
-          const result = callback(item, obj, currentPath);
-          if (result) return result;
-        }
-      }
-    }
-  }
-  /**
    * Defines an unwritable unique id property on an object
    * @param {*} target
    */
@@ -50156,14 +50142,59 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
 
 }
 /**
- * Temporary method for getting an object's keys
- * TODO: Replace with schemas
+ * Fires a callback on an object's child lists and types, and no further
  * @param {*} obj
+ * @param {Function} callback
+ * @param {String} [path="root"]
+ * @returns {!*}
  */
 
 Tw2BaseClass.black = null;
 Tw2BaseClass.__category = null;
 Tw2BaseClass.__keys = null;
+
+function perChild(obj, callback, path = "") {
+  const {
+    list,
+    type
+  } = getKeys(obj);
+
+  if (list) {
+    for (let i = 0; i < list.length; i++) {
+      const key = list[i],
+            arr = obj[key];
+
+      for (let x = 0; x < arr.length; x++) {
+        const item = arr[x];
+
+        if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
+          let currentPath = "".concat(path, "/").concat(key, "/").concat(x);
+          const result = callback(item, obj, currentPath);
+          if (result) return result;
+        }
+      }
+    }
+  }
+
+  if (type) {
+    for (let i = 0; i < type.length; i++) {
+      const key = type[i],
+            item = obj[key];
+
+      if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
+        let currentPath = "".concat(path, "/").concat(key);
+        const result = callback(item, obj, currentPath);
+        if (result) return result;
+      }
+    }
+  }
+}
+/**
+ * Temporary method for getting an object's keys
+ * TODO: Replace with schemas
+ * @param {*} obj
+ */
+
 
 function getKeys(obj) {
   if (obj.constructor.hasOwnProperty("__keys") && obj.constructor.__keys !== null) {
@@ -62019,6 +62050,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Assigns property values if they exist in a source object
  * - Typed arrays are cloned/ copied to ensure no pass-by-reference errors
+ * - TODO: Return boolean for when some thing was assigned AND the value was different
  *
  * @param {*} dest
  * @param {*} src
@@ -62029,39 +62061,37 @@ __webpack_require__.r(__webpack_exports__);
 function assignIfExists(dest, src, attrs) {
   if (!src) return false;
   attrs = Object(_arr__WEBPACK_IMPORTED_MODULE_1__["toArray"])(attrs);
-  let modified = false;
+  let assigned = false;
 
   for (let i = 0; i < attrs.length; i++) {
     const attr = attrs[i];
+    if (src[attr] === undefined) continue;
+    assigned = true;
 
-    if (src[attr] !== undefined) {
-      modified = true;
-
-      if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(dest[attr])) {
-        if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(dest[attr])) {
-          if (dest[attr].length !== src[attr].length) {
-            const Constructor = dest[attr].constructor;
-            dest[attr] = new Constructor(src[attr]);
-          } else {
-            dest[attr].set(src[attr]);
-          }
+    if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(dest[attr])) {
+      if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(dest[attr])) {
+        if (dest[attr].length !== src[attr].length) {
+          const Constructor = dest[attr].constructor;
+          dest[attr] = new Constructor(src[attr]);
         } else {
-          dest[attr] = dest[attr].splice(dest[attr].length, 0);
-
-          for (let i = 0; i < src[attr].length; i++) {
-            dest[attr].push(src[attr][i]);
-          }
+          dest[attr].set(src[attr]);
         }
-      } else if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(src[attr])) {
-        const Constructor = src[attr].constructor;
-        dest[attr] = new Constructor(src[attr]);
       } else {
-        dest[attr] = src[attr];
+        dest[attr] = dest[attr].splice(dest[attr].length, 0);
+
+        for (let i = 0; i < src[attr].length; i++) {
+          dest[attr].push(src[attr][i]);
+        }
       }
+    } else if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(src[attr])) {
+      const Constructor = src[attr].constructor;
+      dest[attr] = new Constructor(src[attr]);
+    } else {
+      dest[attr] = src[attr];
     }
   }
 
-  return modified;
+  return assigned;
 }
 /**
  * Gets a source's property value if it exists else returns a default value

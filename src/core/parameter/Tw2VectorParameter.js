@@ -83,7 +83,7 @@ export class Tw2VectorParameter extends Tw2BaseClass
     GetValue(out = [])
     {
         const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
-        for (let i = 0; i < value.length; i++) out[0] = value[i];
+        for (let i = 0; i < value.length; i++) out[i] = value[i];
         return out;
     }
 

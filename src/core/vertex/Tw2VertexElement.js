@@ -98,6 +98,6 @@ export class Tw2VertexElement
         "TEXCOORD",
         "BLENDWEIGHT",
         "BLENDINDICES"
-    ]
+    ];
 
 }
