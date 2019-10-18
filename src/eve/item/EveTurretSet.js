@@ -830,7 +830,6 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Animation helper function for turret firing
-     * @returns {EveTurretSetItem} the closest turret
      */
     DoStartFiring()
     {

@@ -211,6 +211,31 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
+     * Finds turret prefixes
+     * @param {Array<String>} [out=[]] - Receiving array
+     * @returns {Array<String>} out    - Receiving array
+     */
+    FindTurretPrefixes(out=[])
+    {
+        function add(match)
+        {
+            if (!match) return;
+            const name = match[0].substring(0, match[0].length - 1);
+            if (!out.includes(name)) out.push(name);
+        }
+
+        for (let i = 0; i < this.locators.length; i++)
+        {
+            const name = this.locators[i].name;
+            add((/^locator_turret_([0-9]+)[a-z]$/i).exec(name));
+            add((/^locator_xl_([0-9]+)[a-z]$/i).exec(name));
+        }
+
+        out.sort();
+        return out;
+    }
+
+    /**
      * Gets locator count for a specific locator group
      * @param {String} prefix
      * @returns {number}

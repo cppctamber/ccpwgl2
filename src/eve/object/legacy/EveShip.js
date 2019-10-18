@@ -1,4 +1,5 @@
 import { EveSpaceObject } from "./EveSpaceObject";
+import { isNumber } from "../../../global/util";
 
 /**
  * EveShip
@@ -74,10 +75,16 @@ export class EveShip extends EveSpaceObject
 
     /**
      * Rebuilds a turret set
-     * @param {number} index
+     * @param {EveTurretSet|number} index
      */
     RebuildTurretSet(index)
     {
+        // Allow rebuilding from a turret
+        if (!isNumber(index))
+        {
+            index = this.turretSets.indexOf(index);
+        }
+
         if (this.turretSets[index] === undefined) return;
 
         const
