@@ -82,6 +82,26 @@ export class Tw2BaseClass extends Tw2EventEmitter
     }
 
     /**
+     * Adds a method which is called when "UpdateValues" is called
+     * @param {Function} method
+     * @param {*} [context]
+     * @param {Boolean} [once]
+     */
+    OnModified(method, context, once)
+    {
+        this.on("modified", method, context, once);
+    }
+
+    /**
+     * Removes a method from being called when "UpdateValues" is called
+     * @param {Function} method
+     */
+    OffModified(method)
+    {
+        this.off("modified", method);
+    }
+
+    /**
      * Internal handler for object destruction
      * @param [opt]
      */

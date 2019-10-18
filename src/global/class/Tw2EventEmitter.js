@@ -128,6 +128,72 @@ export class Tw2EventEmitter
     }
 
     /**
+     * Binds an event to another event emitter
+     * @param {Tw2EventEmitter} target  - The target event emitter
+     * @param {String} eventName        - The event name
+     * @param {Function} [func]         - An optional function to call before emitting the event on the child
+     * @returns {Tw2EventEmitter}
+     */
+    bind(target, eventName, func)
+    {
+        function listener(...args)
+        {
+            if (func) func.call(target, ...args);
+            target.emit(eventName, ...args);
+        }
+        listener._target = target;
+
+        return this.on(eventName, listener);
+    }
+
+    /**
+     * Unbinds an event from another event emitter
+     * @param {Tw2EventEmitter|String} target
+     * @param {String} [eventName="*"]
+     */
+    unbind(target, eventName)
+    {
+        if (!target) return this;
+
+        const events = PRIVATE.get(this);
+        if (events) return;
+
+        // Unbind all events
+        if (eventName === "*")
+        {
+            for (const e in events)
+            {
+                if (events.hasOwnProperty(e))
+                {
+                    events[e].forEach((value, listener) =>
+                    {
+                        if (listener._target === target)
+                        {
+                            this.off(e, listener);
+                        }
+                    });
+                }
+            }
+            return this;
+        }
+
+        eventName = eventName.toLowerCase();
+        if (eventName in events)
+        {
+            events[eventName].forEach((value, listener) =>
+            {
+                if (listener._target === target)
+                {
+                    this.off(eventName, listener);
+                }
+            });
+        }
+
+        return this;
+    }
+
+
+    /**
      * Checks if a listener exists on an event, or on any event by passing "*"
      * @param {String} eventName
      * @param {String|Function} listener
