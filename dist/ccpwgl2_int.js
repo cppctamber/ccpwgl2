@@ -17394,7 +17394,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17513,6 +17513,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -17524,8 +17526,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -28324,7 +28324,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -45098,7 +45098,6 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
   }
   /**
    * Animation helper function for turret firing
-   * @returns {EveTurretSetItem} the closest turret
    */
 
 
@@ -47750,6 +47749,8 @@ EvePlanet.__isPlanet = true;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return EveShip; });
 /* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/legacy/EveSpaceObject.js");
+/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../global/util */ "./global/util/index.js");
+
 
 /**
  * EveShip
@@ -47820,11 +47821,16 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
   }
   /**
    * Rebuilds a turret set
-   * @param {number} index
+   * @param {EveTurretSet|number} index
    */
 
 
   RebuildTurretSet(index) {
+    // Allow rebuilding from a turret
+    if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(index)) {
+      index = this.turretSets.indexOf(index);
+    }
+
     if (this.turretSets[index] === undefined) return;
     const turretSet = this.turretSets[index],
           prefix = turretSet.locatorName,
@@ -48129,6 +48135,29 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
   UseLOD(bool) {
     this._useLOD = bool;
+  }
+  /**
+   * Finds turret prefixes
+   * @param {Array<String>} [out=[]] - Receiving array
+   * @returns {Array<String>} out    - Receiving array
+   */
+
+
+  FindTurretPrefixes(out = []) {
+    function add(match) {
+      if (!match) return;
+      const name = match[0].substring(0, match[0].length - 1);
+      if (!out.includes(name)) out.push(name);
+    }
+
+    for (let i = 0; i < this.locators.length; i++) {
+      const name = this.locators[i].name;
+      add(/^locator_turret_([0-9]+)[a-z]$/i.exec(name));
+      add(/^locator_xl_([0-9]+)[a-z]$/i.exec(name));
+    }
+
+    out.sort();
+    return out;
   }
   /**
    * Gets locator count for a specific locator group
@@ -48948,6 +48977,15 @@ class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] 
 
   get now() {
     return this.device.now;
+  }
+  /**
+   * Alias for device.frameCounter
+   * @returns {number}
+   */
+
+
+  get frame() {
+    return this.device.frameCounter;
   }
   /**
    * Alias for device.canvas
@@ -49975,6 +50013,26 @@ class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2Eve
     }
   }
   /**
+   * Adds a method which is called when "UpdateValues" is called
+   * @param {Function} method
+   * @param {*} [context]
+   * @param {Boolean} [once]
+   */
+
+
+  OnModified(method, context, once) {
+    this.on("modified", method, context, once);
+  }
+  /**
+   * Removes a method from being called when "UpdateValues" is called
+   * @param {Function} method
+   */
+
+
+  OffModified(method) {
+    this.off("modified", method);
+  }
+  /**
    * Internal handler for object destruction
    * @param [opt]
    */
@@ -50253,10 +50311,12 @@ function getKeys(obj) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EventEmitter", function() { return Tw2EventEmitter; });
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 /**
  * Emitter privates
  * @type {WeakMap<object, *>}
  */
+
 const PRIVATE = new WeakMap();
 /**
  * Tw2EventEmitter
@@ -50282,6 +50342,48 @@ class Tw2EventEmitter {
 
       if (events[eventName].size === 0) {
         Reflect.deleteProperty(events, eventName);
+      }
+    }
+
+    return this;
+  }
+  /**
+   * Adds events from a plain object
+   * @param {Object} options
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  add(options) {
+    if (!options) return this;
+
+    for (let key in options) {
+      if (options.hasOwnProperty(key)) {
+        let listener = options[key],
+            eventName = key,
+            context,
+            once; // Append ".once" to event name to fire only once
+
+        if (key.indexOf(".once") !== -1) {
+          if (key.lastIndexOf(".once") === key.length - 5) {
+            eventName = key.substring(0, key.length - 5);
+            once = true;
+          }
+        } // options as an array/ arguments
+
+
+        if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(listener)) {
+          listener = listener[0];
+          if (listener[1]) context = listener[1]; // .once in property key overrides array argument
+
+          if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isBoolean"])(listener[2]) && !Object(_util__WEBPACK_IMPORTED_MODULE_0__["isBoolean"])(once)) once = listener[2];
+        }
+
+        if (!Object(_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(listener)) {
+          throw new Error("Invalid listener");
+        }
+
+        this.on(eventName, listener, context, once);
       }
     }
 
@@ -50370,6 +50472,62 @@ class Tw2EventEmitter {
       if (events[eventName].size === 0) {
         Reflect.deleteProperty(events, eventName);
       }
+    }
+
+    return this;
+  }
+  /**
+   * Binds an event to another event emitter
+   * @param {Tw2EventEmitter} target  - The target event emitter
+   * @param {String} eventName        - The event name
+   * @param {Function} [func]         - An optional function to call before emitting the event on the child
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  bind(target, eventName, func) {
+    function listener(...args) {
+      if (func) func.call(target, ...args);
+      target.emit(eventName, ...args);
+    }
+
+    listener._target = target;
+    return this.on(eventName, listener);
+  }
+  /**
+   * Unbinds an event from another event emitter
+   * @param {Tw2EventEmitter|String} target
+   * @param {String} [eventName="*"]
+   */
+
+
+  unbind(target, eventName) {
+    if (!target) return this;
+    const events = PRIVATE.get(this);
+    if (events) return; // Unbind all events
+
+    if (eventName === "*") {
+      for (const e in events) {
+        if (events.hasOwnProperty(e)) {
+          events[e].forEach((value, listener) => {
+            if (listener._target === target) {
+              this.off(e, listener);
+            }
+          });
+        }
+      }
+
+      return this;
+    }
+
+    eventName = eventName.toLowerCase();
+
+    if (eventName in events) {
+      events[eventName].forEach((value, listener) => {
+        if (listener._target === target) {
+          this.off(eventName, listener);
+        }
+      });
     }
 
     return this;
@@ -66187,7 +66345,7 @@ function EveSOF(tw2) {
 
         if (param) {
           if (effect.parameters[name]) {
-            effect.parameters.SetValue(param);
+            effect.parameters[name].SetValue(param);
           } else {
             effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"](name, param);
           }

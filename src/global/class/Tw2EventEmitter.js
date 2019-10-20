@@ -2,6 +2,8 @@
  * Emitter privates
  * @type {WeakMap<object, *>}
  */
+import { isArray, isBoolean, isFunction, isPlain, toArray } from "../util";
+
 const PRIVATE = new WeakMap();
 
 /**
@@ -32,6 +34,55 @@ export class Tw2EventEmitter
             if (events[eventName].size === 0)
             {
                 Reflect.deleteProperty(events, eventName);
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Adds events from a plain object
+     * @param {Object} options
+     * @returns {Tw2EventEmitter}
+     */
+    add(options)
+    {
+        if (!options) return this;
+
+        for (let key in options)
+        {
+            if (options.hasOwnProperty(key))
+            {
+                let listener = options[key],
+                    eventName = key,
+                    context,
+                    once;
+
+                // Append ".once" to event name to fire only once
+                if (key.indexOf(".once") !== -1)
+                {
+                    if (key.lastIndexOf(".once") === key.length - 5)
+                    {
+                        eventName = key.substring(0, key.length - 5);
+                        once = true;
+                    }
+                }
+
+                // options as an array/ arguments
+                if (isArray(listener))
+                {
+                    listener = listener[0];
+                    if (listener[1]) context = listener[1];
+                    // .once in property key overrides array argument
+                    if (isBoolean(listener[2]) && !isBoolean(once)) once = listener[2];
+                }
+
+                if (!isFunction(listener))
+                {
+                    throw new Error("Invalid listener");
+                }
+
+                this.on(eventName, listener, context, once);
             }
         }
 
