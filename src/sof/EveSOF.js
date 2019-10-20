@@ -220,7 +220,7 @@ export function EveSOF(tw2)
                 {
                     if (effect.parameters[name])
                     {
-                        effect.parameters.SetValue(param);
+                        effect.parameters[name].SetValue(param);
                     }
                     else
                     {
