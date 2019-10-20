@@ -74,6 +74,15 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Alias for device.frameCounter
+     * @returns {number}
+     */
+    get frame()
+    {
+        return this.device.frameCounter;
+    }
+
+    /**
      * Alias for device.canvas
      * @returns {*}
      */
