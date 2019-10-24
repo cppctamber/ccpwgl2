@@ -813,11 +813,11 @@ var ccpwgl = (function(tw2)
                 switch (self.siegeState)
                 {
                     case ccpwgl.ShipSiegeState.SIEGE:
-                        self.wrappedObjects[index].animation.PlayAnimation("SiegeLoop", true);
+                        self.wrappedObjects[index].animation.PlayAnimation("SiegeLoop", { cycle: true });
                         self.internalSiegeState = ccpwgl.ShipSiegeState.SIEGE;
                         break;
                     default:
-                        self.wrappedObjects[index].animation.PlayAnimation("NormalLoop", true);
+                        self.wrappedObjects[index].animation.PlayAnimation("NormalLoop", { cycle: true });
                 }
                 if (self.onInitialSeigeState)
                 {
@@ -1385,15 +1385,14 @@ var ccpwgl = (function(tw2)
                                     // with correct offset into animation, but we don't have that functionality yet...
                                     this.internalSiegeState = 100;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
-                                    this.wrappedObjects[j].animation.PlayAnimation(
-                                        "StartSiege",
-                                        false,
-                                        getOnComplete(j, ccpwgl.ShipSiegeState.SIEGE, "SiegeLoop"));
+                                    this.wrappedObjects[j].animation.PlayAnimation("StartSiege", {
+                                        callback: getOnComplete(j, ccpwgl.ShipSiegeState.SIEGE, "SiegeLoop")
+                                    });
                                     break;
                                 default:
                                     this.internalSiegeState = ccpwgl.ShipSiegeState.SIEGE;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
-                                    this.wrappedObjects[j].animation.PlayAnimation("SiegeLoop", true);
+                                    this.wrappedObjects[j].animation.PlayAnimation("SiegeLoop", { cycle: true });
                                     if (onswitch)
                                     {
                                         onswitch.call(self, self.internalSiegeState);
@@ -1410,15 +1409,14 @@ var ccpwgl = (function(tw2)
                                     // with correct offset into animation, but we don't have that functionality yet...
                                     this.internalSiegeState = 101;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
-                                    this.wrappedObjects[j].animation.PlayAnimation(
-                                        "EndSiege",
-                                        false,
-                                        getOnComplete(j, ccpwgl.ShipSiegeState.NORMAL, "NormalLoop"));
+                                    this.wrappedObjects[j].animation.PlayAnimation("EndSiege", {
+                                        callback: getOnComplete(j, ccpwgl.ShipSiegeState.NORMAL, "NormalLoop")
+                                    });
                                     break;
                                 default:
                                     this.internalSiegeState = ccpwgl.ShipSiegeState.NORMAL;
                                     this.wrappedObjects[j].animation.StopAllAnimations();
-                                    this.wrappedObjects[j].animation.PlayAnimation("NormalLoop", true);
+                                    this.wrappedObjects[j].animation.PlayAnimation("NormalLoop", { cycle: true });
                                     if (onswitch)
                                     {
                                         onswitch.call(self, self.internalSiegeState);

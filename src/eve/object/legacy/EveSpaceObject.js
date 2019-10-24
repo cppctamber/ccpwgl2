@@ -211,7 +211,7 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
-     * Finds turret prefixes
+     * Finds all turret prefixes
      * @param {Array<String>} [out=[]] - Receiving array
      * @returns {Array<String>} out    - Receiving array
      */
@@ -219,16 +219,19 @@ export class EveSpaceObject extends EveObject
     {
         function add(match)
         {
-            if (!match) return;
+            if (!match) return false;
             const name = match[0].substring(0, match[0].length - 1);
             if (!out.includes(name)) out.push(name);
+            return true;
         }
 
         for (let i = 0; i < this.locators.length; i++)
         {
             const name = this.locators[i].name;
-            add((/^locator_turret_([0-9]+)[a-z]$/i).exec(name));
-            add((/^locator_xl_([0-9]+)[a-z]$/i).exec(name));
+            if (!add((/^locator_turret_([0-9]+)[a-z]$/i).exec(name)))
+            {
+                add((/^locator_xl_([0-9]+)[a-z]$/i).exec(name));
+            }
         }
 
         out.sort();
@@ -258,9 +261,9 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
-     *
-     * @param name
-     * @returns {null}
+     * Finds a locator's transform by it's name
+     * @param {String} name
+     * @returns {?mat4}
      */
     FindLocatorTransformByName(name)
     {
@@ -277,7 +280,7 @@ export class EveSpaceObject extends EveObject
     {
         for (let i = 0; i < this.locators.length; i++)
         {
-            if (this.locators[i].name.substring(0, prefix.length) === prefix)
+            if (this.locators[i].name.indexOf(prefix) === 0)
             {
                 return true;
             }
@@ -292,18 +295,7 @@ export class EveSpaceObject extends EveObject
      */
     FindLocatorBoneByName(name)
     {
-        const model = this.animation.FindModelForMesh(0);
-        if (model)
-        {
-            for (let i = 0; i < model.bones.length; ++i)
-            {
-                if (model.bones[i].boneRes.name === name)
-                {
-                    return model.bones[i];
-                }
-            }
-        }
-        return null;
+        return this.animation.FindBoneForMesh(name, 0);
     }
 
     /**
@@ -326,19 +318,19 @@ export class EveSpaceObject extends EveObject
     /**
      * Finds locators with a given prefix
      * @param {String} prefix
+     * @param {Array} [out=[]}
      * @returns {Array<EveLocator2>}
      */
-    FindLocatorsByPrefix(prefix)
+    FindLocatorsByPrefix(prefix, out=[])
     {
-        const locators = [];
         for (let i = 0; i < this.locators.length; i++)
         {
             if (this.locators[i].name.indexOf(prefix) === 0)
             {
-                locators.push(this.locators[i]);
+                out.push(this.locators[i]);
             }
         }
-        return locators;
+        return out;
     }
 
     /**

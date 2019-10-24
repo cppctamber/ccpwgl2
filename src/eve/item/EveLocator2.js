@@ -28,23 +28,11 @@ export class EveLocator2 extends Tw2BaseClass
     /**
      * Gets the locator's bone from an animation controller
      * @param {Tw2AnimationController} animationController
-     * @returns {?Tw2Bone}
+     * @returns {null|Tw2Bone}
      */
     FindBone(animationController)
     {
-        this.bone = null;
-        const model = animationController.FindModelForMesh(0);
-        if (model)
-        {
-            for (let i = 0; i < model.bones.length; ++i)
-            {
-                if (model.bones[i].boneRes.name === this.name)
-                {
-                    this.bone = model.bones[i];
-                    break;
-                }
-            }
-        }
+        this.bone = animationController.FindBoneForMesh(this.name, 0);
         return this.bone;
     }
 

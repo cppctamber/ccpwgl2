@@ -17394,7 +17394,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrAbstractClassMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -17513,8 +17513,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -17526,6 +17524,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -19525,37 +19525,279 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Animation", function() { return Tw2Animation; });
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+
 /**
  * Tw2Animation
  *
- * @property {Tw2GeometryAnimation} animationRes
- * @property {Number} time
- * @property {Number} timeScale
- * @property {Boolean} cycle
- * @property {Boolean} isPlaying
- * @property {Function} callback - Stores optional callback passed to prototypes
- * @property {Array} trackGroups - Array of {@link Tw2TrackGroup}
+ * @property {Tw2GeometryAnimation} animationRes - The animation's resource
+ * @property {Number} time                       - The current animation time
+ * @property {Number} timeScale                  - The animation's time scale
+ * @property {Boolean} cycle                     - identifies if the animation will cycle
+ * @property {Array<Tw2TrackGroup>} trackGroups  - Track groups
+ * @property {Function} _callback                - Optional callback fired when an animation ends
+ * @property {Function} _controller              - The animation's controller
  */
-class Tw2Animation {
-  constructor() {
+
+class Tw2Animation extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
+  /**
+   * Constructor
+   * @param animationController
+   */
+  constructor(animationController) {
+    super();
     this.animationRes = null;
     this.time = 0;
     this.timeScale = 1.0;
     this.cycle = false;
-    this.isPlaying = false;
-    this.callback = null;
     this.trackGroups = [];
+    this._callback = null;
+    this._controller = null;
+    this._state = Tw2Animation.State.FINISHED;
+    this._controller = animationController;
   }
+  /**
+   * Gets the animation's name
+   * @returns {null|string}
+   */
 
+
+  get name() {
+    return this.animationRes ? this.animationRes.name : null;
+  }
+  /**
+   * Gets the animation's duration
+   * @returns {number}
+   */
+
+
+  get duration() {
+    return this.animationRes ? this.animationRes.duration : 0;
+  }
+  /**
+   * Gets current percentage of duration
+   * @returns {number}
+   */
+
+
+  get percent() {
+    return this.animationRes ? Math.min(this.time, this.duration) / this.duration : 0;
+  }
+  /**
+   * Adds a callback
+   * - Provided for backwards compatibility
+   * - If the callback returns true it will be removed once fired
+   * @param {Function} callback
+   */
+
+
+  AddCallback(callback) {
+    this._callback = callback;
+  }
+  /**
+   * Fires the stored callback
+   * - Provided for backwards compatibility
+   */
+
+
+  UpdateCallback() {
+    if (this._callback) {
+      if (this._callback(this, this._controller)) {
+        this._callback = null;
+      }
+    }
+  }
+  /**
+   * Starts playing the animation
+   * @param {Object} [options={}]
+   * @param {Number} [options.time=0]             - the time to play from
+   * @param {Number} [options.percent]            - the percentage of the duration to play from (overrides time)
+   * @param {Boolean} [options.cycle=this.cycle]  - identifies if the animation should cycle
+   * @param {Number} [options.timeScale]          - the time scale
+   * @param {Object} [options.events]             - events to add to the animation
+   * @param {Function} [options.callback]         - a callback which is fired when the animation ends
+   */
+
+
+  Play(options = {}) {
+    let wasPaused = this.IsPaused();
+    let {
+      time = wasPaused ? this.time : 0,
+      cycle = this.cycle,
+      timeScale = this.timeScale,
+      callback,
+      events,
+      percent
+    } = options;
+
+    if (percent !== undefined) {
+      time = this.duration * percent;
+    }
+
+    this.time = Math.max(Math.min(time, this.duration), 0);
+    this.timeScale = timeScale;
+    this.cycle = cycle;
+    this._state = Tw2Animation.State.PLAYING;
+    if (events) this.add(events);
+    if (callback) this.AddCallback(callback);
+
+    if (wasPaused) {
+      /**
+       * Fires when the animation plays after being paused
+       * @event Tw2Animation#unpause
+       * @type {Object}
+       * @property {Tw2Animation} animation
+       * @property {Tw2AnimationController} controller
+       */
+      this.emit("unpause", {
+        animation: this,
+        controller: this._controller
+      });
+    } else {
+      /**
+       * Fires when the animation is playing
+       * @event Tw2Animation#play
+       * @type {Object}
+       * @property {Tw2Animation} animation
+       * @property {Tw2AnimationController} controller
+       */
+      this.emit("play", {
+        animation: this,
+        controller: this._controller
+      });
+    }
+  }
+  /**
+   * Pauses the animation at the current time
+   */
+
+
+  Pause() {
+    if (this.IsPlaying()) {
+      this._state = Tw2Animation.State.PAUSED;
+      /** Fires when the animation pauses
+       * @event Tw2Animation#pause
+       * @type {Object}
+       * @property {Tw2Animation} animation
+       * @property {Tw2AnimationController} controller
+       */
+
+      this.emit("pause", {
+        animation: this,
+        controller: this._controller
+      });
+    }
+  }
+  /**
+   * Stops the animation
+   */
+
+
+  Stop() {
+    if (!this.IsFinished()) {
+      this._state = Tw2Animation.State.FINISHED;
+      this.time = this.duration;
+      /**
+       * Fires when the animation ends
+       * @event Tw2Animation#end
+       * @type {Object}
+       * @property {Tw2Animation} animation
+       * @property {Tw2AnimationController} controller
+       */
+
+      this.emit("end", {
+        animation: this,
+        controller: this._controller
+      });
+      this.UpdateCallback();
+    }
+  }
+  /**
+   * Checks if the animation is good
+   * @returns {boolean}
+   */
+
+
+  IsGood() {
+    return !!this.animationRes;
+  }
+  /**
+   * Checks if the animation is playing
+   * @returns {boolean}
+   */
+
+
+  IsPlaying() {
+    return this._state === Tw2Animation.State.PLAYING || this._state === Tw2Animation.State.CYCLING;
+  }
+  /**
+   * Checks if the animation is stopped
+   * @returns {boolean}
+   */
+
+
+  IsPaused() {
+    return this._state === Tw2Animation.State.PAUSED;
+  }
   /**
    * Checks to see if the animation has finished playing
    * @return {Boolean}
    */
+
+
   IsFinished() {
-    return !this.cycle && this.time >= this.animationRes.duration;
+    return this._state === Tw2Animation.State.FINISHED;
   }
+  /**
+   * Per frame update
+   * @param {Number} dt
+   * @returns {Boolean} true to keep animating
+   */
+
+
+  Update(dt) {
+    if (this.IsFinished()) return false; // Keep calculating bone positions when paused
+
+    if (this.IsPaused()) return true;
+    this.time += dt * this.timeScale;
+
+    if (this.time >= this.duration) {
+      if (this.cycle) {
+        this._state = Tw2Animation.State.CYCLING;
+        this.time = this.time % this.duration;
+        /**
+         * Fires when the animation starts a new animation cycle
+         * @event Tw2Animation#cycle
+         * @type {Object}
+         * @property {Tw2Animation} animation
+         * @property {Tw2AnimationController} controller
+         */
+
+        this.emit("cycle", {
+          animation: this,
+          controller: this._controller
+        });
+        this.UpdateCallback();
+      } else {
+        this.Stop();
+      }
+    }
+
+    return true;
+  }
+  /**
+   * Animation state
+   * @type {{PAUSED: number, CYCLING: number, FINISHED: number, PLAYING: number}}
+   */
+
 
 }
+Tw2Animation.State = {
+  PAUSED: 0,
+  PLAYING: 1,
+  CYCLING: 2,
+  FINISHED: 3
+};
 
 /***/ }),
 
@@ -19595,12 +19837,11 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<Tw2Model>} models
  * @property {Array.<Tw2Animation>} animations
  * @property {Array.<Tw2MeshBinding>} meshBindings
- * @property {Boolean} loaded
  * @property {Boolean} update
- * @property _geometryResource
- * @property {Array} pendingCommands
- * @property {Function} [onPendingCleared] an optional callback fired when any commands are cleared
- * @class
+ * @property {Boolean} _isLoaded
+ * @property {Boolean} _isPlaying
+ * @property {Boolean} _boundsDirty
+ * @property {Array} _pendingCommands
  */
 
 class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
@@ -19614,12 +19855,11 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     this.models = [];
     this.animations = [];
     this.meshBindings = [];
-    this.loaded = false;
     this.update = true;
-    this.pendingCommands = [];
-    this.onPendingCleared = null;
+    this._isLoaded = false;
     this._isPlaying = false;
     this._boundsDirty = false;
+    this._pendingCommands = [];
 
     if (geometryResource) {
       this.SetGeometryResource(geometryResource);
@@ -19643,7 +19883,7 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     if (!isGood || !this.animations.length) return false;
 
     for (let i = 0; i < this.animations.length; i++) {
-      if (!this.animations[i].animationRes) {
+      if (!this.animations[i].IsGood()) {
         return false;
       }
     }
@@ -19660,20 +19900,29 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     return this._isPlaying;
   }
   /**
+   * Checks if the animations are loaded
+   * @returns {boolean}
+   */
+
+
+  IsLoaded() {
+    return this._isLoaded;
+  }
+  /**
    * Gets a loaded Tw2Animation by it's name
+   * @param {Object} [out={}]
    * @returns {?{String:Tw2Animation}} an object containing animation names and animations, or null if not loaded
    */
 
 
-  GetAnimationsByName() {
-    if (!this.loaded) return null;
-    const animations = {};
+  GetAnimationsByName(out = {}) {
+    if (!this.IsLoaded()) return null;
 
     for (let i = 0; i < this.animations.length; i++) {
-      animations[this.animations[i].animationRes.name] = this.animations[i];
+      out[this.animations[i].name] = this.animations[i];
     }
 
-    return animations;
+    return out;
   }
   /**
    * Gets a loaded Tw2Animation by it's name
@@ -19684,7 +19933,7 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
   GetAnimation(name) {
     for (let i = 0; i < this.animations.length; i++) {
-      if (this.animations[i].animationRes.name === name) {
+      if (this.animations[i].name === name) {
         return this.animations[i];
       }
     }
@@ -19692,91 +19941,30 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     return null;
   }
   /**
-   * Resets a Tw2Animation by it's name
-   * @param {String} name
-   * @return {Boolean}
-   */
-
-
-  ResetAnimation(name) {
-    const animation = this.GetAnimation(name);
-
-    if (animation) {
-      animation.time = 0;
-      animation.isPlaying = false;
-      animation.callback = null;
-      return true;
-    }
-  }
-  /**
    * Plays a specific animation by it's name
    * @param {String} name - Animation's Name
-   * @param {Boolean} [cycle]
-   * @param {Function} [callback] - Optional callback which is fired once the animation has completed
-   * @return {Boolean}
+   * @param {Object} options
+   * @param {Boolean} [options.cycle]
+   * @param {Number} [options.time]
+   * @param {Function} [options.callback]
+   * @param {Object} [options.events]
    */
 
 
-  PlayAnimation(name, cycle, callback) {
+  PlayAnimation(name, options) {
     if (this.animations.length === 0) {
-      this.pendingCommands.push({
+      this._pendingCommands.push({
         "func": this.PlayAnimation,
-        "args": [name, cycle, callback]
+        "args": [name, options]
       });
-      return true;
+
+      return;
     }
 
     const animation = this.GetAnimation(name);
 
     if (animation) {
-      animation.time = 0;
-      animation.isPlaying = true;
-
-      if (!_global__WEBPACK_IMPORTED_MODULE_0__["util"].isUndefined(cycle)) {
-        animation.cycle = cycle;
-      }
-
-      if (callback) {
-        animation.callback = callback;
-      }
-
-      return true;
-    }
-  }
-  /**
-   * Plays a specific animation from a specific time
-   * @param {String} name - Animation's Name
-   * @param {Number} from - Time to play from
-   * @param {Boolean} [cycle]
-   * @param {Function} [callback] - Optional callback which is fired once the animation has completed
-   * @returns {Boolean}
-   */
-
-
-  PlayAnimationFrom(name, from, cycle, callback) {
-    if (this.animations.length === 0) {
-      this.pendingCommands.push({
-        "func": this.PlayAnimationFrom,
-        "args": [name, from, cycle, callback]
-      });
-      return true;
-    }
-
-    const animation = this.GetAnimation(name);
-
-    if (animation) {
-      animation.time = Math.max(Math.min(from, animation.animationRes.duration), 0);
-      animation.isPlaying = true;
-
-      if (!_global__WEBPACK_IMPORTED_MODULE_0__["util"].isUndefined(cycle)) {
-        animation.cycle = cycle;
-      }
-
-      if (callback) {
-        animation.callback = callback;
-      }
-
-      return true;
+      animation.Play(options);
     }
   }
   /**
@@ -19789,8 +19977,8 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     const result = [];
 
     for (let i = 0; i < this.animations.length; i++) {
-      if (this.animations[i].isPlaying) {
-        result.push(this.animations[i].animationRes.name);
+      if (this.animations[i].IsPlaying()) {
+        result.push(this.animations[i].name);
       }
     }
 
@@ -19804,23 +19992,19 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
   StopAnimation(names) {
     if (this.animations.length === 0) {
-      this.pendingCommands.push({
+      this._pendingCommands.push({
         "func": this.StopAnimation,
         "args": names
       });
+
       return;
     }
 
     names = _global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
-    const toStop = {};
-
-    for (let n = 0; n < names.length; n++) {
-      toStop[names[n]] = true;
-    }
 
     for (let i = 0; i < this.animations.length; ++i) {
-      if (this.animations[i].animationRes.name in toStop) {
-        this.animations[i].isPlaying = false;
+      if (names.includes(this.animations[i].name)) {
+        this.animations[i].Stop();
       }
     }
   }
@@ -19831,15 +20015,16 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
   StopAllAnimations() {
     if (this.animations.length === 0) {
-      this.pendingCommands.push({
+      this._pendingCommands.push({
         "func": this.StopAllAnimations,
         "args": null
       });
+
       return;
     }
 
     for (let i = 0; i < this.animations.length; ++i) {
-      this.animations[i].isPlaying = false;
+      this.animations[i].Stop();
     }
   }
   /**
@@ -19850,23 +20035,19 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
   StopAllAnimationsExcept(names) {
     if (this.animations.length === 0) {
-      this.pendingCommands.push({
+      this._pendingCommands.push({
         "func": this.StopAllAnimationsExcept,
         "args": names
       });
+
       return;
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
-    const keepAnimating = {};
-
-    for (let n = 0; n < names.length; n++) {
-      keepAnimating[names[n]] = true;
-    }
+    names = _global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
 
     for (let i = 0; i < this.animations.length; ++i) {
-      if (!(this.animations[i].animationRes.name in keepAnimating)) {
-        this.animations[i].isPlaying = false;
+      if (!names.includes(this.animations[i].name)) {
+        this.animations[i].Stop();
       }
     }
   }
@@ -19878,14 +20059,33 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
   SetGeometryResource(geometryResource) {
     this.models.splice(0);
-    this.animations.splice(0);
+
+    for (let i = 0; i < this.animations.length; i++) {
+      const animation = this.animations[i];
+      this.animations.splice(i, 1);
+      i--;
+      /**
+       * Fires when an animation has been removed
+       * @event Tw2AnimationController#removed
+       * @type {Object}
+       * @property {Tw2Animation} animation
+       * @property {Tw2AnimationController} controller
+       */
+
+      this.emit("removed", {
+        animation,
+        controller: this
+      });
+      animation.OnDestroy();
+    }
+
     this.meshBindings.splice(0);
 
     for (let i = 0; i < this.geometryResources.length; ++i) {
       this.geometryResources[i].UnregisterNotification(this);
     }
 
-    this.loaded = false;
+    this._isLoaded = false;
     this.geometryResources.splice(0);
 
     if (geometryResource) {
@@ -19903,73 +20103,6 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     if (!this.geometryResources.includes(geometryResource)) {
       this.geometryResources.push(geometryResource);
       geometryResource.RegisterNotification(this);
-    }
-  }
-  /**
-   * Adds animations from a resource
-   * @param {Tw2GeometryRes} resource
-   */
-
-
-  AddAnimationsFromRes(resource) {
-    for (let i = 0; i < resource.animations.length; ++i) {
-      let animation = null;
-
-      for (let j = 0; j < this.animations.length; ++j) {
-        if (this.animations[j].animationRes === resource.animations[i]) {
-          animation = this.animations[i];
-          break;
-        }
-      }
-
-      if (!animation) {
-        animation = new _Tw2Animation__WEBPACK_IMPORTED_MODULE_2__["Tw2Animation"]();
-        animation.animationRes = resource.animations[i];
-        this.animations.push(animation);
-      }
-
-      for (let j = 0; j < animation.animationRes.trackGroups.length; ++j) {
-        let found = false;
-
-        for (let k = 0; k < animation.trackGroups.length; ++k) {
-          if (animation.trackGroups[k].trackGroupRes === animation.animationRes.trackGroups[j]) {
-            found = true;
-            break;
-          }
-        }
-
-        if (found) {
-          continue;
-        }
-
-        let model = null;
-
-        for (let k = 0; k < this.models.length; ++k) {
-          if (this.models[k].modelRes.name === animation.animationRes.trackGroups[j].name) {
-            model = this.models[k];
-            break;
-          }
-        }
-
-        if (model !== null) {
-          const group = new _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__["Tw2TrackGroup"]();
-          group.trackGroupRes = animation.animationRes.trackGroups[j];
-
-          for (let k = 0; k < group.trackGroupRes.transformTracks.length; ++k) {
-            for (let m = 0; m < model.bones.length; ++m) {
-              if (model.bones[m].boneRes.name === group.trackGroupRes.transformTracks[k].name) {
-                const track = new _Tw2Track__WEBPACK_IMPORTED_MODULE_6__["Tw2Track"]();
-                track.trackRes = group.trackGroupRes.transformTracks[k];
-                track.bone = model.bones[m];
-                group.transformTracks.push(track);
-                break;
-              }
-            }
-          }
-
-          animation.trackGroups.push(group);
-        }
-      }
     }
   }
   /**
@@ -20030,6 +20163,27 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     }
 
     return new Float32Array();
+  }
+  /**
+   * Finds a bone for a mesh by it's name
+   * @param {String} name
+   * @param {Number} meshIndex
+   * @returns {null|Tw2Bone}
+   */
+
+
+  FindBoneForMesh(name, meshIndex) {
+    const model = this.FindModelForMesh(meshIndex);
+
+    if (model) {
+      for (let i = 0; i < model.bones.length; i++) {
+        if (model.bones[i].boneRes.name === name) {
+          return model.bones[i];
+        }
+      }
+    }
+
+    return null;
   }
   /**
    * FindModelForMesh
@@ -20131,23 +20285,9 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     for (let i = 0; i < this.animations.length; ++i) {
       const animation = this.animations[i];
 
-      if (animation.isPlaying) {
+      if (animation.Update(dt)) {
         this._isPlaying = true;
         const res = animation.animationRes;
-        animation.time += dt * animation.timeScale;
-
-        if (animation.time > res.duration) {
-          if (animation.callback) {
-            animation.callback(this, animation, false);
-          }
-
-          if (animation.cycle) {
-            animation.time = animation.time % res.duration;
-          } else {
-            animation.isPlaying = false;
-            animation.time = res.duration;
-          }
-        }
 
         for (let j = 0; j < animation.trackGroups.length; ++j) {
           for (let k = 0; k < animation.trackGroups[j].transformTracks.length; ++k) {
@@ -20241,16 +20381,100 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     }
   }
   /**
+   * Adds animations from a resource
+   * @param {Tw2AnimationController} controller
+   * @param {Tw2GeometryRes} resource
+   */
+
+
+  static AddAnimationsFromRes(controller, resource) {
+    for (let i = 0; i < resource.animations.length; ++i) {
+      let animation = null;
+      let added;
+
+      for (let j = 0; j < controller.animations.length; ++j) {
+        if (controller.animations[j].animationRes === resource.animations[i]) {
+          animation = controller.animations[i];
+          break;
+        }
+      }
+
+      if (!animation) {
+        animation = new _Tw2Animation__WEBPACK_IMPORTED_MODULE_2__["Tw2Animation"](controller);
+        animation.animationRes = resource.animations[i];
+        controller.animations.push(animation);
+        added = true;
+      }
+
+      for (let j = 0; j < animation.animationRes.trackGroups.length; ++j) {
+        let found = false;
+
+        for (let k = 0; k < animation.trackGroups.length; ++k) {
+          if (animation.trackGroups[k].trackGroupRes === animation.animationRes.trackGroups[j]) {
+            found = true;
+            break;
+          }
+        }
+
+        if (found) {
+          continue;
+        }
+
+        let model = null;
+
+        for (let k = 0; k < controller.models.length; ++k) {
+          if (controller.models[k].modelRes.name === animation.animationRes.trackGroups[j].name) {
+            model = controller.models[k];
+            break;
+          }
+        }
+
+        if (model !== null) {
+          const group = new _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__["Tw2TrackGroup"]();
+          group.trackGroupRes = animation.animationRes.trackGroups[j];
+
+          for (let k = 0; k < group.trackGroupRes.transformTracks.length; ++k) {
+            for (let m = 0; m < model.bones.length; ++m) {
+              if (model.bones[m].boneRes.name === group.trackGroupRes.transformTracks[k].name) {
+                const track = new _Tw2Track__WEBPACK_IMPORTED_MODULE_6__["Tw2Track"]();
+                track.trackRes = group.trackGroupRes.transformTracks[k];
+                track.bone = model.bones[m];
+                group.transformTracks.push(track);
+                break;
+              }
+            }
+          }
+
+          animation.trackGroups.push(group);
+        }
+      }
+
+      if (added) {
+        /**
+         * Fires when an animation is added
+         * @event Tw2AnimationController#added
+         * @type {Object}
+         * @property {Tw2Animation} animation
+         * @property {Tw2AnimationController} controller
+         */
+        controller.emit("added", {
+          controller,
+          animation
+        });
+      }
+    }
+  }
+  /**
    * Adds a model resource to an animation controller
-   * @param {Tw2AnimationController} animationController
+   * @param {Tw2AnimationController} controller
    * @param {Tw2GeometryModel} modelRes
    * @returns {null|Tw2Model} Returns a newly created Tw2Model if the model resource doesn't already exist, and null if it does
    */
 
 
-  static AddModel(animationController, modelRes) {
-    for (let i = 0; i < animationController.models.length; ++i) {
-      if (animationController.models[i].modelRes.name === modelRes.name) {
+  static AddModel(controller, modelRes) {
+    for (let i = 0; i < controller.models.length; ++i) {
+      if (controller.models[i].modelRes.name === modelRes.name) {
         return null;
       }
     }
@@ -20268,22 +20492,22 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
       }
     }
 
-    animationController.models.push(model);
+    controller.models.push(model);
     return model;
   }
   /**
    * Finds a mesh binding for a supplied resource
-   * @param {Tw2AnimationController} animationController
+   * @param {Tw2AnimationController} controller
    * @param {Tw2GeometryRes} resource
    * @returns {Object|null} Returns the mesh binding of a resource if it exists, null if it doesn't
    * @private
    */
 
 
-  static FindMeshBindings(animationController, resource) {
-    for (let i = 0; i < animationController.meshBindings.length; ++i) {
-      if (animationController.meshBindings[i].resource === resource) {
-        return animationController.meshBindings[i];
+  static FindMeshBindings(controller, resource) {
+    for (let i = 0; i < controller.meshBindings.length; ++i) {
+      if (controller.meshBindings[i].resource === resource) {
+        return controller.meshBindings[i];
       }
     }
 
@@ -20291,42 +20515,36 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
   }
   /**
    * DoRebuildCachedData
-   * @param {Tw2AnimationController} animationController
+   * @param {Tw2AnimationController} controller
    * @param {Tw2GeometryRes} resource
    */
 
 
-  static DoRebuildCachedData(animationController, resource) {
-    const newModels = [];
-
+  static DoRebuildCachedData(controller, resource) {
     if (resource.meshes.length) {
       for (let i = 0; i < resource.models.length; ++i) {
-        const model = Tw2AnimationController.AddModel(animationController, resource.models[i]);
-
-        if (model) {
-          newModels.push(model);
-        }
+        Tw2AnimationController.AddModel(controller, resource.models[i]);
       }
     }
 
-    for (let i = 0; i < animationController.geometryResources.length; ++i) {
-      animationController.AddAnimationsFromRes(animationController.geometryResources[i]);
+    for (let i = 0; i < controller.geometryResources.length; ++i) {
+      this.AddAnimationsFromRes(controller, controller.geometryResources[i]);
     }
 
     if (resource.models.length === 0) {
       for (let i = 0; i < resource.meshes.length; ++i) {
-        _resource__WEBPACK_IMPORTED_MODULE_1__["Tw2GeometryRes"].BindMeshToModel(resource.meshes[i], animationController.geometryResources[0].models[0], resource);
+        _resource__WEBPACK_IMPORTED_MODULE_1__["Tw2GeometryRes"].BindMeshToModel(resource.meshes[i], controller.geometryResources[0].models[0], resource);
       }
 
-      resource.models.push(animationController.geometryResources[0].models[0]);
+      resource.models.push(controller.geometryResources[0].models[0]);
     }
 
     for (let i = 0; i < resource.models.length; ++i) {
       let model = null;
 
-      for (let j = 0; j < animationController.models.length; ++j) {
-        if (animationController.models[j].modelRes.name === resource.models[i].name) {
-          model = animationController.models[j];
+      for (let j = 0; j < controller.models.length; ++j) {
+        if (controller.models[j].modelRes.name === resource.models[i].name) {
+          model = controller.models[j];
           break;
         }
       }
@@ -20337,12 +20555,12 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
       for (let j = 0; j < resource.models[i].meshBindings.length; ++j) {
         const meshIx = resource.meshes.indexOf(resource.models[i].meshBindings[j].mesh);
-        let meshBindings = Tw2AnimationController.FindMeshBindings(animationController, resource);
+        let meshBindings = Tw2AnimationController.FindMeshBindings(controller, resource);
 
         if (meshBindings === null) {
           meshBindings = new _Tw2MeshBinding__WEBPACK_IMPORTED_MODULE_8__["Tw2MeshBinding"]();
           meshBindings.resource = resource;
-          animationController.meshBindings.push(meshBindings);
+          controller.meshBindings.push(meshBindings);
         }
 
         meshBindings.meshIndex[meshIx] = new Float32Array(resource.models[i].meshBindings[j].bones.length * 12);
@@ -20363,27 +20581,34 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     }
 
     if (resource.meshes.length && resource.models.length) {
-      animationController.ResetBoneTransforms();
+      controller.ResetBoneTransforms();
     }
 
-    animationController.loaded = true;
+    controller._isLoaded = true;
+    /**
+     * Fires when the animation controller has loaded
+     * @event Tw2AnimationController#loaded
+     * @type {Object}
+     * @property {Tw2Animation} animation
+     * @property {Tw2AnimationController} controller
+     */
 
-    if (animationController.animations.length) {
-      if (animationController.pendingCommands.length) {
-        for (let i = 0; i < animationController.pendingCommands.length; ++i) {
-          if (!animationController.pendingCommands[i].args) {
-            animationController.pendingCommands[i].func.apply(animationController);
+    controller.emit("loaded", {
+      controller
+    });
+
+    if (controller.animations.length) {
+      if (controller._pendingCommands.length) {
+        for (let i = 0; i < controller._pendingCommands.length; ++i) {
+          if (!controller._pendingCommands[i].args) {
+            controller._pendingCommands[i].func.apply(controller);
           } else {
-            animationController.pendingCommands[i].func.apply(animationController, animationController.pendingCommands[i].args);
+            controller._pendingCommands[i].func.apply(controller, controller._pendingCommands[i].args);
           }
         }
       }
 
-      animationController.pendingCommands.splice(0);
-
-      if (animationController.onPendingCleared) {
-        animationController.onPendingCleared(animationController);
-      }
+      controller._pendingCommands.splice(0);
     }
   }
   /**
@@ -28324,7 +28549,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -41804,21 +42029,10 @@ class EveLocator2 extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Gets the locator's bone from an animation controller
    * @param {Tw2AnimationController} animationController
-   * @returns {?Tw2Bone}
+   * @returns {null|Tw2Bone}
    */
   FindBone(animationController) {
-    this.bone = null;
-    const model = animationController.FindModelForMesh(0);
-
-    if (model) {
-      for (let i = 0; i < model.bones.length; ++i) {
-        if (model.bones[i].boneRes.name === this.name) {
-          this.bone = model.bones[i];
-          break;
-        }
-      }
-    }
-
+    this.bone = animationController.FindBoneForMesh(this.name, 0);
     return this.bone;
   }
   /**
@@ -48216,17 +48430,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   FindLocatorBoneByName(name) {
-    const model = this.animation.FindModelForMesh(0);
-
-    if (model) {
-      for (let i = 0; i < model.bones.length; ++i) {
-        if (model.bones[i].boneRes.name === name) {
-          return model.bones[i];
-        }
-      }
-    }
-
-    return null;
+    return this.animation.FindBoneForMesh(name, 0);
   }
   /**
    * Finds a locator by name

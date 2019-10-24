@@ -1,4 +1,4 @@
-import { box3, sph3, vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "../../global";
+import { vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "../../global";
 import { Tw2GeometryRes } from "../resource";
 import { Tw2Animation } from "./Tw2Animation";
 import { Tw2Bone } from "./Tw2Bone";
@@ -16,12 +16,11 @@ import { Tw2MeshBinding } from "./Tw2MeshBinding";
  * @property {Array.<Tw2Model>} models
  * @property {Array.<Tw2Animation>} animations
  * @property {Array.<Tw2MeshBinding>} meshBindings
- * @property {Boolean} loaded
  * @property {Boolean} update
- * @property _geometryResource
- * @property {Array} pendingCommands
- * @property {Function} [onPendingCleared] an optional callback fired when any commands are cleared
- * @class
+ * @property {Boolean} _isLoaded
+ * @property {Boolean} _isPlaying
+ * @property {Boolean} _boundsDirty
+ * @property {Array} _pendingCommands
  */
 export class Tw2AnimationController extends Tw2BaseClass
 {
@@ -30,13 +29,12 @@ export class Tw2AnimationController extends Tw2BaseClass
     models = [];
     animations = [];
     meshBindings = [];
-    loaded = false;
     update = true;
-    pendingCommands = [];
-    onPendingCleared = null;
 
+    _isLoaded = false;
     _isPlaying = false;
     _boundsDirty = false;
+    _pendingCommands = [];
 
     /**
      * Constructor
@@ -45,6 +43,7 @@ export class Tw2AnimationController extends Tw2BaseClass
     constructor(geometryResource)
     {
         super();
+
         if (geometryResource)
         {
             this.SetGeometryResource(geometryResource);
@@ -72,7 +71,7 @@ export class Tw2AnimationController extends Tw2BaseClass
 
         for (let i = 0; i < this.animations.length; i++)
         {
-            if (!this.animations[i].animationRes)
+            if (!this.animations[i].IsGood())
             {
                 return false;
             }
@@ -91,19 +90,29 @@ export class Tw2AnimationController extends Tw2BaseClass
     }
 
     /**
+     * Checks if the animations are loaded
+     * @returns {boolean}
+     */
+    IsLoaded()
+    {
+        return this._isLoaded;
+    }
+
+    /**
      * Gets a loaded Tw2Animation by it's name
+     * @param {Object} [out={}]
      * @returns {?{String:Tw2Animation}} an object containing animation names and animations, or null if not loaded
      */
-    GetAnimationsByName()
+    GetAnimationsByName(out = {})
     {
-        if (!this.loaded) return null;
+        if (!this.IsLoaded()) return null;
 
-        const animations = {};
         for (let i = 0; i < this.animations.length; i++)
         {
-            animations[this.animations[i].animationRes.name] = this.animations[i];
+            out[this.animations[i].name] = this.animations[i];
         }
-        return animations;
+
+        return out;
     }
 
     /**
@@ -115,7 +124,7 @@ export class Tw2AnimationController extends Tw2BaseClass
     {
         for (let i = 0; i < this.animations.length; i++)
         {
-            if (this.animations[i].animationRes.name === name)
+            if (this.animations[i].name === name)
             {
                 return this.animations[i];
             }
@@ -124,96 +133,29 @@ export class Tw2AnimationController extends Tw2BaseClass
     }
 
     /**
-     * Resets a Tw2Animation by it's name
-     * @param {String} name
-     * @return {Boolean}
-     */
-    ResetAnimation(name)
-    {
-        const animation = this.GetAnimation(name);
-        if (animation)
-        {
-            animation.time = 0;
-            animation.isPlaying = false;
-            animation.callback = null;
-            return true;
-        }
-    }
-
-    /**
      * Plays a specific animation by it's name
      * @param {String} name - Animation's Name
-     * @param {Boolean} [cycle]
-     * @param {Function} [callback] - Optional callback which is fired once the animation has completed
-     * @return {Boolean}
+     * @param {Object} options
+     * @param {Boolean} [options.cycle]
+     * @param {Number} [options.time]
+     * @param {Function} [options.callback]
+     * @param {Object} [options.events]
      */
-    PlayAnimation(name, cycle, callback)
+    PlayAnimation(name, options)
     {
         if (this.animations.length === 0)
         {
-            this.pendingCommands.push({
+            this._pendingCommands.push({
                 "func": this.PlayAnimation,
-                "args": [ name, cycle, callback ]
+                "args": [ name, options ]
             });
-            return true;
+            return;
         }
 
         const animation = this.GetAnimation(name);
         if (animation)
         {
-            animation.time = 0;
-            animation.isPlaying = true;
-
-            if (!util.isUndefined(cycle))
-            {
-                animation.cycle = cycle;
-            }
-
-            if (callback)
-            {
-                animation.callback = callback;
-            }
-
-            return true;
-        }
-    }
-
-    /**
-     * Plays a specific animation from a specific time
-     * @param {String} name - Animation's Name
-     * @param {Number} from - Time to play from
-     * @param {Boolean} [cycle]
-     * @param {Function} [callback] - Optional callback which is fired once the animation has completed
-     * @returns {Boolean}
-     */
-    PlayAnimationFrom(name, from, cycle, callback)
-    {
-        if (this.animations.length === 0)
-        {
-            this.pendingCommands.push({
-                "func": this.PlayAnimationFrom,
-                "args": [ name, from, cycle, callback ]
-            });
-            return true;
-        }
-
-        const animation = this.GetAnimation(name);
-        if (animation)
-        {
-            animation.time = Math.max(Math.min(from, animation.animationRes.duration), 0);
-            animation.isPlaying = true;
-
-            if (!util.isUndefined(cycle))
-            {
-                animation.cycle = cycle;
-            }
-
-            if (callback)
-            {
-                animation.callback = callback;
-            }
-
-            return true;
+            animation.Play(options);
         }
     }
 
@@ -226,9 +168,9 @@ export class Tw2AnimationController extends Tw2BaseClass
         const result = [];
         for (let i = 0; i < this.animations.length; i++)
         {
-            if (this.animations[i].isPlaying)
+            if (this.animations[i].IsPlaying())
             {
-                result.push(this.animations[i].animationRes.name);
+                result.push(this.animations[i].name);
             }
         }
         return result;
@@ -242,7 +184,7 @@ export class Tw2AnimationController extends Tw2BaseClass
     {
         if (this.animations.length === 0)
         {
-            this.pendingCommands.push({
+            this._pendingCommands.push({
                 "func": this.StopAnimation,
                 "args": names
             });
@@ -251,17 +193,11 @@ export class Tw2AnimationController extends Tw2BaseClass
 
         names = util.toArray(names);
 
-        const toStop = {};
-        for (let n = 0; n < names.length; n++)
-        {
-            toStop[names[n]] = true;
-        }
-
         for (let i = 0; i < this.animations.length; ++i)
         {
-            if (this.animations[i].animationRes.name in toStop)
+            if (names.includes(this.animations[i].name))
             {
-                this.animations[i].isPlaying = false;
+                this.animations[i].Stop();
             }
         }
     }
@@ -273,7 +209,7 @@ export class Tw2AnimationController extends Tw2BaseClass
     {
         if (this.animations.length === 0)
         {
-            this.pendingCommands.push({
+            this._pendingCommands.push({
                 "func": this.StopAllAnimations,
                 "args": null
             });
@@ -282,7 +218,7 @@ export class Tw2AnimationController extends Tw2BaseClass
 
         for (let i = 0; i < this.animations.length; ++i)
         {
-            this.animations[i].isPlaying = false;
+            this.animations[i].Stop();
         }
     }
 
@@ -294,26 +230,20 @@ export class Tw2AnimationController extends Tw2BaseClass
     {
         if (this.animations.length === 0)
         {
-            this.pendingCommands.push({
+            this._pendingCommands.push({
                 "func": this.StopAllAnimationsExcept,
                 "args": names
             });
             return;
         }
 
-        util.toArray(names);
-
-        const keepAnimating = {};
-        for (let n = 0; n < names.length; n++)
-        {
-            keepAnimating[names[n]] = true;
-        }
+        names = util.toArray(names);
 
         for (let i = 0; i < this.animations.length; ++i)
         {
-            if (!(this.animations[i].animationRes.name in keepAnimating))
+            if (!names.includes(this.animations[i].name))
             {
-                this.animations[i].isPlaying = false;
+                this.animations[i].Stop();
             }
         }
     }
@@ -325,7 +255,24 @@ export class Tw2AnimationController extends Tw2BaseClass
     SetGeometryResource(geometryResource)
     {
         this.models.splice(0);
-        this.animations.splice(0);
+
+        for (let i = 0; i < this.animations.length; i++)
+        {
+            const animation = this.animations[i];
+            this.animations.splice(i, 1);
+            i--;
+
+            /**
+             * Fires when an animation has been removed
+             * @event Tw2AnimationController#removed
+             * @type {Object}
+             * @property {Tw2Animation} animation
+             * @property {Tw2AnimationController} controller
+             */
+            this.emit("removed", { animation, controller: this });
+            animation.OnDestroy();
+        }
+
         this.meshBindings.splice(0);
 
         for (let i = 0; i < this.geometryResources.length; ++i)
@@ -333,7 +280,7 @@ export class Tw2AnimationController extends Tw2BaseClass
             this.geometryResources[i].UnregisterNotification(this);
         }
 
-        this.loaded = false;
+        this._isLoaded = false;
         this.geometryResources.splice(0);
 
         if (geometryResource)
@@ -353,82 +300,6 @@ export class Tw2AnimationController extends Tw2BaseClass
         {
             this.geometryResources.push(geometryResource);
             geometryResource.RegisterNotification(this);
-        }
-    }
-
-    /**
-     * Adds animations from a resource
-     * @param {Tw2GeometryRes} resource
-     */
-    AddAnimationsFromRes(resource)
-    {
-        for (let i = 0; i < resource.animations.length; ++i)
-        {
-            let animation = null;
-            for (let j = 0; j < this.animations.length; ++j)
-            {
-                if (this.animations[j].animationRes === resource.animations[i])
-                {
-                    animation = this.animations[i];
-                    break;
-                }
-            }
-
-            if (!animation)
-            {
-                animation = new Tw2Animation();
-                animation.animationRes = resource.animations[i];
-                this.animations.push(animation);
-            }
-
-            for (let j = 0; j < animation.animationRes.trackGroups.length; ++j)
-            {
-                let found = false;
-                for (let k = 0; k < animation.trackGroups.length; ++k)
-                {
-                    if (animation.trackGroups[k].trackGroupRes === animation.animationRes.trackGroups[j])
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (found)
-                {
-                    continue;
-                }
-
-                let model = null;
-                for (let k = 0; k < this.models.length; ++k)
-                {
-                    if (this.models[k].modelRes.name === animation.animationRes.trackGroups[j].name)
-                    {
-                        model = this.models[k];
-                        break;
-                    }
-                }
-
-                if (model !== null)
-                {
-                    const group = new Tw2TrackGroup();
-                    group.trackGroupRes = animation.animationRes.trackGroups[j];
-                    for (let k = 0; k < group.trackGroupRes.transformTracks.length; ++k)
-                    {
-                        for (let m = 0; m < model.bones.length; ++m)
-                        {
-                            if (model.bones[m].boneRes.name === group.trackGroupRes.transformTracks[k].name)
-                            {
-                                const track = new Tw2Track();
-                                track.trackRes = group.trackGroupRes.transformTracks[k];
-                                track.bone = model.bones[m];
-                                group.transformTracks.push(track);
-                                break;
-                            }
-                        }
-                    }
-                    animation.trackGroups.push(group);
-                }
-            }
         }
     }
 
@@ -499,6 +370,28 @@ export class Tw2AnimationController extends Tw2BaseClass
             return meshBindings.meshIndex[meshIndex];
         }
         return new Float32Array();
+    }
+
+    /**
+     * Finds a bone for a mesh by it's name
+     * @param {String} name
+     * @param {Number} meshIndex
+     * @returns {null|Tw2Bone}
+     */
+    FindBoneForMesh(name, meshIndex)
+    {
+        const model = this.FindModelForMesh(meshIndex);
+        if (model)
+        {
+            for (let i = 0; i < model.bones.length; i++)
+            {
+                if (model.bones[i].boneRes.name === name)
+                {
+                    return model.bones[i];
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -615,29 +508,10 @@ export class Tw2AnimationController extends Tw2BaseClass
         for (let i = 0; i < this.animations.length; ++i)
         {
             const animation = this.animations[i];
-            if (animation.isPlaying)
+            if (animation.Update(dt))
             {
                 this._isPlaying = true;
-
                 const res = animation.animationRes;
-                animation.time += dt * animation.timeScale;
-                if (animation.time > res.duration)
-                {
-                    if (animation.callback)
-                    {
-                        animation.callback(this, animation, false);
-                    }
-
-                    if (animation.cycle)
-                    {
-                        animation.time = animation.time % res.duration;
-                    }
-                    else
-                    {
-                        animation.isPlaying = false;
-                        animation.time = res.duration;
-                    }
-                }
 
                 for (let j = 0; j < animation.trackGroups.length; ++j)
                 {
@@ -652,6 +526,7 @@ export class Tw2AnimationController extends Tw2BaseClass
                         {
                             position[0] = position[1] = position[2] = 0;
                         }
+
                         if (track.trackRes.orientation)
                         {
                             curve.evaluate(track.trackRes.orientation, animation.time, orientation, animation.cycle, res.duration);
@@ -661,6 +536,7 @@ export class Tw2AnimationController extends Tw2BaseClass
                         {
                             quat.identity(orientation);
                         }
+
                         if (track.trackRes.scaleShear)
                         {
                             curve.evaluate(track.trackRes.scaleShear, animation.time, scale, animation.cycle, res.duration);
@@ -753,16 +629,108 @@ export class Tw2AnimationController extends Tw2BaseClass
     }
 
     /**
+     * Adds animations from a resource
+     * @param {Tw2AnimationController} controller
+     * @param {Tw2GeometryRes} resource
+     */
+    static AddAnimationsFromRes(controller, resource)
+    {
+        for (let i = 0; i < resource.animations.length; ++i)
+        {
+            let animation = null;
+            let added;
+
+            for (let j = 0; j < controller.animations.length; ++j)
+            {
+                if (controller.animations[j].animationRes === resource.animations[i])
+                {
+                    animation = controller.animations[i];
+                    break;
+                }
+            }
+
+            if (!animation)
+            {
+                animation = new Tw2Animation(controller);
+                animation.animationRes = resource.animations[i];
+                controller.animations.push(animation);
+                added = true;
+            }
+
+            for (let j = 0; j < animation.animationRes.trackGroups.length; ++j)
+            {
+                let found = false;
+                for (let k = 0; k < animation.trackGroups.length; ++k)
+                {
+                    if (animation.trackGroups[k].trackGroupRes === animation.animationRes.trackGroups[j])
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    continue;
+                }
+
+                let model = null;
+                for (let k = 0; k < controller.models.length; ++k)
+                {
+                    if (controller.models[k].modelRes.name === animation.animationRes.trackGroups[j].name)
+                    {
+                        model = controller.models[k];
+                        break;
+                    }
+                }
+
+                if (model !== null)
+                {
+                    const group = new Tw2TrackGroup();
+                    group.trackGroupRes = animation.animationRes.trackGroups[j];
+                    for (let k = 0; k < group.trackGroupRes.transformTracks.length; ++k)
+                    {
+                        for (let m = 0; m < model.bones.length; ++m)
+                        {
+                            if (model.bones[m].boneRes.name === group.trackGroupRes.transformTracks[k].name)
+                            {
+                                const track = new Tw2Track();
+                                track.trackRes = group.trackGroupRes.transformTracks[k];
+                                track.bone = model.bones[m];
+                                group.transformTracks.push(track);
+                                break;
+                            }
+                        }
+                    }
+                    animation.trackGroups.push(group);
+                }
+            }
+
+            if (added)
+            {
+                /**
+                 * Fires when an animation is added
+                 * @event Tw2AnimationController#added
+                 * @type {Object}
+                 * @property {Tw2Animation} animation
+                 * @property {Tw2AnimationController} controller
+                 */
+                controller.emit("added", { controller, animation });
+            }
+        }
+    }
+
+    /**
      * Adds a model resource to an animation controller
-     * @param {Tw2AnimationController} animationController
+     * @param {Tw2AnimationController} controller
      * @param {Tw2GeometryModel} modelRes
      * @returns {null|Tw2Model} Returns a newly created Tw2Model if the model resource doesn't already exist, and null if it does
      */
-    static AddModel(animationController, modelRes)
+    static AddModel(controller, modelRes)
     {
-        for (let i = 0; i < animationController.models.length; ++i)
+        for (let i = 0; i < controller.models.length; ++i)
         {
-            if (animationController.models[i].modelRes.name === modelRes.name)
+            if (controller.models[i].modelRes.name === modelRes.name)
             {
                 return null;
             }
@@ -781,24 +749,24 @@ export class Tw2AnimationController extends Tw2BaseClass
                 model.bonesByName[bone.boneRes.name] = bone;
             }
         }
-        animationController.models.push(model);
+        controller.models.push(model);
         return model;
     }
 
     /**
      * Finds a mesh binding for a supplied resource
-     * @param {Tw2AnimationController} animationController
+     * @param {Tw2AnimationController} controller
      * @param {Tw2GeometryRes} resource
      * @returns {Object|null} Returns the mesh binding of a resource if it exists, null if it doesn't
      * @private
      */
-    static FindMeshBindings(animationController, resource)
+    static FindMeshBindings(controller, resource)
     {
-        for (let i = 0; i < animationController.meshBindings.length; ++i)
+        for (let i = 0; i < controller.meshBindings.length; ++i)
         {
-            if (animationController.meshBindings[i].resource === resource)
+            if (controller.meshBindings[i].resource === resource)
             {
-                return animationController.meshBindings[i];
+                return controller.meshBindings[i];
             }
         }
         return null;
@@ -806,46 +774,41 @@ export class Tw2AnimationController extends Tw2BaseClass
 
     /**
      * DoRebuildCachedData
-     * @param {Tw2AnimationController} animationController
+     * @param {Tw2AnimationController} controller
      * @param {Tw2GeometryRes} resource
      */
-    static DoRebuildCachedData(animationController, resource)
+    static DoRebuildCachedData(controller, resource)
     {
-        const newModels = [];
         if (resource.meshes.length)
         {
             for (let i = 0; i < resource.models.length; ++i)
             {
-                const model = Tw2AnimationController.AddModel(animationController, resource.models[i]);
-                if (model)
-                {
-                    newModels.push(model);
-                }
+                Tw2AnimationController.AddModel(controller, resource.models[i]);
             }
         }
 
-        for (let i = 0; i < animationController.geometryResources.length; ++i)
+        for (let i = 0; i < controller.geometryResources.length; ++i)
         {
-            animationController.AddAnimationsFromRes(animationController.geometryResources[i]);
+            this.AddAnimationsFromRes(controller, controller.geometryResources[i]);
         }
 
         if (resource.models.length === 0)
         {
             for (let i = 0; i < resource.meshes.length; ++i)
             {
-                Tw2GeometryRes.BindMeshToModel(resource.meshes[i], animationController.geometryResources[0].models[0], resource);
+                Tw2GeometryRes.BindMeshToModel(resource.meshes[i], controller.geometryResources[0].models[0], resource);
             }
-            resource.models.push(animationController.geometryResources[0].models[0]);
+            resource.models.push(controller.geometryResources[0].models[0]);
         }
 
         for (let i = 0; i < resource.models.length; ++i)
         {
             let model = null;
-            for (let j = 0; j < animationController.models.length; ++j)
+            for (let j = 0; j < controller.models.length; ++j)
             {
-                if (animationController.models[j].modelRes.name === resource.models[i].name)
+                if (controller.models[j].modelRes.name === resource.models[i].name)
                 {
-                    model = animationController.models[j];
+                    model = controller.models[j];
                     break;
                 }
             }
@@ -858,13 +821,13 @@ export class Tw2AnimationController extends Tw2BaseClass
             for (let j = 0; j < resource.models[i].meshBindings.length; ++j)
             {
                 const meshIx = resource.meshes.indexOf(resource.models[i].meshBindings[j].mesh);
-                let meshBindings = Tw2AnimationController.FindMeshBindings(animationController, resource);
+                let meshBindings = Tw2AnimationController.FindMeshBindings(controller, resource);
 
                 if (meshBindings === null)
                 {
                     meshBindings = new Tw2MeshBinding();
                     meshBindings.resource = resource;
-                    animationController.meshBindings.push(meshBindings);
+                    controller.meshBindings.push(meshBindings);
                 }
 
                 meshBindings.meshIndex[meshIx] = new Float32Array(resource.models[i].meshBindings[j].bones.length * 12);
@@ -888,31 +851,37 @@ export class Tw2AnimationController extends Tw2BaseClass
 
         if (resource.meshes.length && resource.models.length)
         {
-            animationController.ResetBoneTransforms();
+            controller.ResetBoneTransforms();
         }
 
-        animationController.loaded = true;
-        if (animationController.animations.length)
+        controller._isLoaded = true;
+
+        /**
+         * Fires when the animation controller has loaded
+         * @event Tw2AnimationController#loaded
+         * @type {Object}
+         * @property {Tw2Animation} animation
+         * @property {Tw2AnimationController} controller
+         */
+        controller.emit("loaded", { controller });
+
+        if (controller.animations.length)
         {
-            if (animationController.pendingCommands.length)
+            if (controller._pendingCommands.length)
             {
-                for (let i = 0; i < animationController.pendingCommands.length; ++i)
+                for (let i = 0; i < controller._pendingCommands.length; ++i)
                 {
-                    if (!animationController.pendingCommands[i].args)
+                    if (!controller._pendingCommands[i].args)
                     {
-                        animationController.pendingCommands[i].func.apply(animationController);
+                        controller._pendingCommands[i].func.apply(controller);
                     }
                     else
                     {
-                        animationController.pendingCommands[i].func.apply(animationController, animationController.pendingCommands[i].args);
+                        controller._pendingCommands[i].func.apply(controller, controller._pendingCommands[i].args);
                     }
                 }
             }
-            animationController.pendingCommands.splice(0);
-            if (animationController.onPendingCleared)
-            {
-                animationController.onPendingCleared(animationController);
-            }
+            controller._pendingCommands.splice(0);
         }
     }
 
