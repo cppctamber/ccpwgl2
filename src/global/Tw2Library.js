@@ -1,5 +1,10 @@
+import { singleton } from "./decorators";
 import { Tw2EventEmitter } from "./class";
 import { Tw2ResMan, Tw2Device, Tw2Logger } from "./engine";
+import * as math from "./math";
+import * as util from "./util";
+import * as consts from "./engine/Tw2Constant";
+import * as readers from "../core/reader/Tw2BlackPropertyReaders";
 import {
     isArray,
     isFunction,
@@ -12,26 +17,25 @@ import {
     isTr2OrTri,
     toTw2
 } from "./util";
-import * as readers from "../core/reader/Tw2BlackPropertyReaders";
-import * as math from "./math";
-import * as util from "./util";
-import * as consts from "./engine/Tw2Constant";
 import {
-    ErrSingletonInstantiation,
     ErrStoreValueInvalid,
     ErrStoreValueMissing,
     ErrStoreInvalid,
     ErrStoreKeyReserved
 } from "../core/Tw2Error";
 
-let instanceCount = 0;
-
 /**
  *
  * @param {Tw2ResMan} resMan
  * @param {Tw2Device} device
  * @param {Tw2Logger} logger
+ * @param {Object} math
+ * @param {Object} util
+ * @param {Object} consts
+ * @param {Object} _store
+ * @param {Boolean} _debug
  */
+@singleton
 class Tw2Library extends Tw2EventEmitter
 {
 
@@ -133,12 +137,6 @@ class Tw2Library extends Tw2EventEmitter
     constructor()
     {
         super();
-
-        instanceCount++;
-        if (instanceCount > 1)
-        {
-            throw new ErrSingletonInstantiation({ class: "Tw2Library" });
-        }
 
         let eveSof;
         Object.defineProperty(this, "eveSof", {

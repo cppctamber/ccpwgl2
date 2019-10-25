@@ -1,6 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { vec3, vec4, mat4, util, Tw2BaseClass } from "../../global";
-import { ErrAbstractClassMethod } from "../../core";
+import { meta, vec3, vec4, mat4, Tw2BaseClass } from "../../global";
 
 /**
  * EveObjectSetItem base class
@@ -9,6 +8,7 @@ import { ErrAbstractClassMethod } from "../../core";
  * @property {Boolean} display - Toggles the set item's visibility
  * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
+@meta.abstract
 export class EveObjectSetItem extends Tw2BaseClass
 {
 
@@ -23,14 +23,6 @@ export class EveObjectSetItem extends Tw2BaseClass
         this._dirty = true;
     }
 
-    /**
-     * Fires when the object is destroyed
-     */
-    OnDestroyed()
-    {
-
-    }
-
 }
 
 /**
@@ -43,6 +35,7 @@ export class EveObjectSetItem extends Tw2BaseClass
  * @property {Boolean} _dirty         - Identifies if the set requires rebuilding
  * @property {Boolean} _autoRebuild   - Auto rebuilds the object if a child is dirty
  */
+@meta.abstract
 export class EveObjectSet extends Tw2BaseClass
 {
     // ccpwgl
@@ -294,17 +287,19 @@ export class EveObjectSet extends Tw2BaseClass
      * @param {Tw2BatchAccumulator} accumulator
      * @param {Tw2PerObjectData} perObjectData
      */
+    @meta.abstract
     GetBatches(mode, accumulator, perObjectData)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
      * Renders the set
      */
+    @meta.abstract
     Render()
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**

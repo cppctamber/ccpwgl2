@@ -1,12 +1,12 @@
 /* eslint no-unused-vars:0 */
-import { util, Tw2BaseClass } from "../../global";
-import { ErrAbstractClassMethod } from "../Tw2Error";
+import { meta, Tw2BaseClass } from "../../global";
 
 /**
  * Tw2Parameter base class
  * * TODO: Remove constructor parameters
  * @ccp N/A
  */
+@meta.abstract
 export class Tw2Parameter extends Tw2BaseClass
 {
 
@@ -33,9 +33,10 @@ export class Tw2Parameter extends Tw2BaseClass
      * Gets the parameter's value
      * @returns {*}
      */
+    @meta.abstract
     GetValue()
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
@@ -45,17 +46,19 @@ export class Tw2Parameter extends Tw2BaseClass
      * @param {*} c
      * @returns {Boolean} false if not bound
      */
+    @meta.abstract
     Bind(a, b, c)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
      * Unbinds the parameter
      */
+    @meta.abstract
     Unbind()
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
@@ -64,9 +67,10 @@ export class Tw2Parameter extends Tw2BaseClass
      * @param {*} b
      * @param {*} c
      */
+    @meta.abstract
     Apply(a, b, c)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**

@@ -1,6 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { Tw2BaseClass } from "../../global";
-import { ErrAbstractClassMethod } from "../../core";
+import { meta, Tw2BaseClass } from "../../global";
 
 /**
  * Particle Emitter base class
@@ -8,6 +7,7 @@ import { ErrAbstractClassMethod } from "../../core";
  *
  * @property {Tw2ParticleSystem} particleSystem
  */
+@meta.abstract
 export class Tw2ParticleEmitter extends Tw2BaseClass
 {
 
@@ -17,9 +17,10 @@ export class Tw2ParticleEmitter extends Tw2BaseClass
     /**
      * Initializes the particle emitter
      */
+    //@meta.abstract
     Initialize()
     {
-        //throw new ErrAbstractClassMethod();
+
     }
 
     /**
@@ -37,9 +38,10 @@ export class Tw2ParticleEmitter extends Tw2BaseClass
      * Per frame update
      * @param {number} dt - delta time
      */
+    //@meta.abstract
     Update(dt)
     {
-        //throw new ErrAbstractClassMethod();
+
     }
 
 }

@@ -1,3 +1,6 @@
+import * as meta from "./decorators";
+export { meta };
+
 export * from "./class";
 export * from "./engine/Tw2Constant";
 export * from "./Tw2Library";

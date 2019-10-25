@@ -1,7 +1,7 @@
 /* eslint no-unused-vars:0 */
-import { mat4, util, vec3, Tw2BaseClass } from "../../../global";
-import { ErrAbstractClassMethod } from "../../../core";
+import { meta, mat4, vec3, Tw2BaseClass } from "../../../global";
 
+@meta.abstract
 export class EveObject extends Tw2BaseClass
 {
 
@@ -14,18 +14,20 @@ export class EveObject extends Tw2BaseClass
      * @param {Array} [out=[]]
      * @returns {Array<Tw2Resource>} out
      */
+    @meta.abstract
     GetResources(out = [])
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
      * Per frame update
      * @param {number} dt - delta time
      */
+    @meta.abstract
     Update(dt)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
@@ -33,9 +35,10 @@ export class EveObject extends Tw2BaseClass
      * @param {number} mode
      * @param {Tw2BatchAccumulator} accumulator
      */
+    @meta.abstract
     GetBatches(mode, accumulator)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**

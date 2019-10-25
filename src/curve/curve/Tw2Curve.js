@@ -1,6 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { vec3, vec4, quat, Tw2BaseClass } from "../../global";
-import { ErrAbstractClassMethod } from "../../core";
+import { meta, vec3, vec4, quat, Tw2BaseClass } from "../../global";
 
 /**
  * Tw2CurveKey base class
@@ -9,6 +8,7 @@ import { ErrAbstractClassMethod } from "../../core";
  * @property {String} name
  * @property {number} time
  */
+@meta.abstract
 export class Tw2CurveKey extends Tw2BaseClass
 {
 
@@ -24,6 +24,7 @@ export class Tw2CurveKey extends Tw2BaseClass
  * @property {number|String} _id
  * @property {String} name
  */
+@meta.abstract
 export class Tw2Curve extends Tw2BaseClass
 {
 
@@ -40,27 +41,30 @@ export class Tw2Curve extends Tw2BaseClass
     /**
      * Sorts the curve
      */
+    @meta.abstract
     Sort()
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
      * Gets the curve's length
      * @returns {number}
      */
+    @meta.abstract
     GetLength()
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
      * Updates the current value at the given time
      * @param {number} time
      */
+    @meta.abstract
     UpdateValue(time)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**

@@ -1,6 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { util, Tw2BaseClass } from "../../global";
-import { ErrAbstractClassMethod } from "../../core";
+import { meta, Tw2BaseClass } from "../../global";
 
 /**
  * Tw2ParticleConstraint base class
@@ -9,6 +8,7 @@ import { ErrAbstractClassMethod } from "../../core";
  * @property {String|number} _id
  * @property {String} name
  */
+@meta.abstract
 export class Tw2ParticleConstraint extends Tw2BaseClass
 {
 
@@ -19,9 +19,10 @@ export class Tw2ParticleConstraint extends Tw2BaseClass
      * @param {number} aliveCount
      * @param {number} dt
      */
+    @meta.abstract
     ApplyConstraint(buffers, instanceStride, aliveCount, dt)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
 }

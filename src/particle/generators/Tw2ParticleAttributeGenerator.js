@@ -1,6 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { util, vec3, Tw2BaseClass } from "../../global";
-import { ErrAbstractClassMethod } from "../../core";
+import { meta, vec3, Tw2BaseClass } from "../../global";
 
 /**
  * Tw2ParticleAttributeGenerator base class
@@ -9,6 +8,7 @@ import { ErrAbstractClassMethod } from "../../core";
  * @property {String} name
  * @class
  */
+@meta.abstract
 export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
 {
     /**
@@ -16,9 +16,10 @@ export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
      * @param {Tw2ParticleSystem} ps
      * @returns {Boolean} True if successfully bound
      */
+    @meta.abstract
     Bind(ps)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
@@ -27,9 +28,10 @@ export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
      * @param {Tw2ParticleElement} velocity
      * @param {number} index
      */
+    @meta.abstract
     Generate(position, velocity, index)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**

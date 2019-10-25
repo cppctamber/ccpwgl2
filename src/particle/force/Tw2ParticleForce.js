@@ -1,11 +1,11 @@
 /* eslint no-unused-vars:0 */
-import { util, vec3, vec4, Tw2BaseClass } from "../../global";
-import { ErrAbstractClassMethod } from "../../core";
+import { meta, vec3, vec4, Tw2BaseClass } from "../../global";
 
 /**
  * Tw2ParticleForce base class
  * @ccp N/A
  */
+@meta.abstract
 export class Tw2ParticleForce extends Tw2BaseClass
 {
 
@@ -17,15 +17,17 @@ export class Tw2ParticleForce extends Tw2BaseClass
      * @param {Number} [dt]                 - unused
      * @param {Number} [mass]               - unused
      */
+    @meta.abstract
     ApplyForce(position, velocity, force, dt, mass)
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
      * Per frame update (Called before ApplyForce)
      * @param {number} dt - delta time
      */
+    //@meta.abstract
     Update(dt)
     {
 

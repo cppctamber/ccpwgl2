@@ -1,5 +1,5 @@
+import { meta } from "../../global";
 import { Tw2ParticleConstraint } from "./Tw2ParticleConstraint";
-import { ErrAbstractClassMethod } from "../../core";
 
 /**
  * Tr2PlaneConstraint
@@ -9,6 +9,7 @@ import { ErrAbstractClassMethod } from "../../core";
  * @property {Array.<ParticleAttributeGenerator>} generators -
  * @property {Number} reflectionNoise                        -
  */
+@meta.abstract
 export class Tr2PlaneConstraint extends Tw2ParticleConstraint
 {
 
@@ -22,9 +23,10 @@ export class Tr2PlaneConstraint extends Tw2ParticleConstraint
      * @param {number} aliveCount
      * @param {number} dt
      */
+    @meta.abstract
     ApplyConstraint(buffers, instanceStride, aliveCount, dt)
     {
-        //TODO Implement ApplyConstraint
+
     }
 
     /**

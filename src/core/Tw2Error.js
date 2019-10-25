@@ -433,19 +433,40 @@ export class ErrSingletonInstantiation extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Multiple class instantiations not yet supported: (%class%)");
+        super(data, "Cannot re-instantiate singleton (%class%)");
     }
 }
 
+/**
+ * Throws when a decorators usage is invalid
+ */
+export class ErrInvalidDecoratorUsage extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Invalid decorator usage");
+    }
+}
 
 /**
  * Throws when an abstract classes' method is not implemented directly on a child class
  */
-export class ErrAbstractClassMethod extends Tw2Error
+export class ErrAbstractClass extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Abstract class method not implemented directly on child class");
+        super(data, "Abstract class cannot be directly instantiated (%class%)");
+    }
+}
+
+/**
+ * Throws when an abstract classes' method is not implemented directly on a child class
+ */
+export class ErrAbstractMethod extends Tw2Error
+{
+    constructor(data)
+    {
+        super(data, "Abstract class method not implemented on child class (%method%)");
     }
 }
 
@@ -478,7 +499,7 @@ export class ErrBindingValueUndefined extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Error binding '%name=unknown%', %object% property is undefined (%property%)");
+        super(data, "Error binding '%name=unknown%', '%object%' property is undefined (%property%)");
     }
 }
 
@@ -500,7 +521,7 @@ export class ErrBindingReference extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Error binding '%name=unknown%', could not find %object% object reference");
+        super(data, "Error binding '%name=unknown%', could not find '%object%' object reference");
     }
 }
 
@@ -512,7 +533,7 @@ export class ErrSOFHullNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF Hull not found: '%name%'");
+        super(data, "SOF Hull not found (%name%)");
     }
 }
 
@@ -523,7 +544,7 @@ export class ErrSOFFactionNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF Faction not found: '%name%'");
+        super(data, "SOF Faction not found (%name%)");
     }
 }
 
@@ -534,7 +555,7 @@ export class ErrSOFRaceNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF Race not found: '%name%'");
+        super(data, "SOF Race not found (%name%)");
     }
 }
 
@@ -545,7 +566,7 @@ export class ErrSOFMaterialNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF Material not found: '%name%'");
+        super(data, "SOF Material not found (%name%)");
     }
 }
 
@@ -556,7 +577,7 @@ export class ErrSOFPatternNotFound extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "SOF Pattern not found: '%name%'");
+        super(data, "SOF Pattern not found (%name%)");
     }
 }
 

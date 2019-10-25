@@ -1,4 +1,4 @@
-import { ErrAbstractClassMethod } from "../../core/Tw2Error";
+import { abstract } from "../decorators";
 import { generateID, isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped } from "../util";
 import { Tw2EventEmitter } from "./Tw2EventEmitter";
 
@@ -6,6 +6,7 @@ import { Tw2EventEmitter } from "./Tw2EventEmitter";
 /**
  * Tw2BaseClass
  */
+@abstract
 export class Tw2BaseClass extends Tw2EventEmitter
 {
 
@@ -226,9 +227,10 @@ export class Tw2BaseClass extends Tw2EventEmitter
      * @returns {boolean}
      * @private
      */
+    @abstract
     static set(a, values, opt = {})
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
@@ -242,9 +244,10 @@ export class Tw2BaseClass extends Tw2EventEmitter
      * @returns {*} out
      * @private
      */
+    @abstract
     static get(a, out = {}, opt = {})
     {
-        throw new ErrAbstractClassMethod();
+
     }
 
     /**
