@@ -1,5 +1,82 @@
 /*
 
+    Property Types
+
+ */
+
+export const Type = {
+    BOOLEAN: 0,
+    STRING: 10,
+    PATH: 11,
+    EXPRESSION: 12,
+    BYTE: 20,
+    UINT: 21,
+    USHORT: 22,
+    FLOAT: 23,
+    INTEGER: 24,
+    OBJECT: 30,
+    RAW: 31,
+    PLAIN: 32,
+    LIST: 33,
+    ARRAY: 34,
+    VECTOR: 50,
+    VECTOR2: 52,
+    VECTOR3: 53,
+    VECTOR4: 54,
+    COLOR: 58,
+    QUATERNION: 59,
+    MATRIX3: 60,
+    MATRIX4: 61,
+    INDEX_BUFFER: 62
+};
+
+export const TypeCategory = {
+    BOOLEAN: 0,
+    STRING: 1,
+    NUMBER: 2,
+    OBJECT: 3,
+    PLAIN: 4,
+    LIST: 5,
+    ARRAY: 6,
+    TYPED: 7
+};
+
+export const TypeTypeCategory = {
+    [Type.BOOLEAN]: TypeCategory.BOOLEAN,
+    [Type.STRING]: TypeCategory.STRING,
+    [Type.PATH]: TypeCategory.STRING,
+    [Type.EXPRESSION]: TypeCategory.STRING,
+    [Type.BYTE]: TypeCategory.NUMBER,
+    [Type.UINT]: TypeCategory.NUMBER,
+    [Type.USHORT]: TypeCategory.NUMBER,
+    [Type.FLOAT]: TypeCategory.NUMBER,
+    [Type.INTEGER]: TypeCategory.NUMBER,
+    [Type.OBJECT]: TypeCategory.OBJECT,
+    [Type.RAW]: TypeCategory.OBJECT,
+    [Type.LIST]: TypeCategory.LIST,
+    [Type.PLAIN]: TypeCategory.PLAIN,
+    [Type.ARRAY]: TypeCategory.ARRAY,
+    [Type.VECTOR]: TypeCategory.TYPED,
+    [Type.VECTOR2]: TypeCategory.TYPED,
+    [Type.VECTOR3]: TypeCategory.TYPED,
+    [Type.VECTOR4]: TypeCategory.TYPED,
+    [Type.MATRIX3]: TypeCategory.TYPED,
+    [Type.MATRIX4]: TypeCategory.TYPED,
+    [Type.INDEX_BUFFER]: TypeCategory.TYPED,
+};
+
+export const TypeLength = {
+    [Type.VECTOR2] : 2,
+    [Type.VECTOR3] : 3,
+    [Type.VECTOR4] : 4,
+    [Type.COLOR] : 4,
+    [Type.QUATERNION] : 4,
+    [Type.MATRIX3] : 9,
+    [Type.MATRIX4] : 16
+};
+
+/*
+
     Webgl & Webgl2
 
 */
