@@ -1,5 +1,5 @@
 import { Tw2Error, Tw2Effect } from "../../core";
-import { isArray, isPlain, findElementByProperty } from "../../global/util";
+import { isArray, isPlain, findElementByPropertyValue } from "../../global/util";
 
 /**
  * EveSOFDataGeneric
@@ -115,7 +115,7 @@ export class EveSOFDataGeneric
      */
     HasAreaShader(name)
     {
-        return !!findElementByProperty(this.areaShaders, "name", name);
+        return !!findElementByPropertyValue(this.areaShaders, "name", name);
     }
 
     /**
@@ -125,7 +125,7 @@ export class EveSOFDataGeneric
      */
     GetAreaShader(name)
     {
-        return findElementByProperty(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
+        return findElementByPropertyValue(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
     }
 
     /**
@@ -135,7 +135,7 @@ export class EveSOFDataGeneric
      */
     HasDecalShader(name)
     {
-        return !!findElementByProperty(this.decalShaders, "name", name);
+        return !!findElementByPropertyValue(this.decalShaders, "name", name);
     }
 
     /**
@@ -145,7 +145,7 @@ export class EveSOFDataGeneric
      */
     GetDecalShader(name)
     {
-        return findElementByProperty(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
+        return findElementByPropertyValue(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
     }
 
     /**

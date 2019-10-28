@@ -1,10 +1,11 @@
-import { isTyped, isArrayLike, isArray, isObjectObject } from "./type";
+import { isTyped, isArrayLike, isArray, isObjectObject, isNumber, isVector, isPlain, } from "./type";
 import { toArray } from "./arr";
+import { num } from "../math";
 
 /**
  * Assigns property values if they exist in a source object
  * - Typed arrays are cloned/ copied to ensure no pass-by-reference errors
- * - TODO: Return boolean for when some thing was assigned AND the value was different
+ * - TODO: Return boolean for when some thing was assigned
  *
  * @param {*} dest
  * @param {*} src
@@ -39,7 +40,7 @@ export function assignIfExists(dest, src, attrs)
             }
             else
             {
-                dest[attr] = dest[attr].splice(dest[attr].length, 0);
+                dest[attr].splice(0);
                 for (let i = 0; i < src[attr].length; i++)
                 {
                     dest[attr].push(src[attr][i]);
@@ -117,4 +118,79 @@ export function template(str, obj = {})
     }
 
     return str;
+}
+
+/**
+ * Checks if two primary values are equal
+ * - Allows for numbers to be "almost" equal
+ * @param {String|Boolean|Number} a
+ * @param {String|Boolean|Number} b
+ * @returns {boolean}
+ */
+export function isPrimaryEqual(a, b)
+{
+    if (a === b) return true;
+
+    return isNumber(a) && isNumber(b) ? num.equals(a, b) : false;
+}
+
+/**
+ * Checks two vectors for equality
+ * - Allows for numbers to be "almost" equal
+ * @param {Array|TypedArray} a
+ * @param {Array|TypedArray} b
+ * @returns {boolean}
+ */
+export function isVectorEqual(a, b)
+{
+    if (a === b) return true;
+
+    if (a.length !== b.length) return false;
+
+    for (let i = 0; i < a.length; i++)
+    {
+        if (!num.equals(a[i], b[i])) return false;
+    }
+
+    return true;
+}
+
+/**
+ * Checks two parameters for equality
+ * TODO: Optimize
+ * TODO: Circular references
+ * - Allows for numbers to be "almost" equal
+ * @param {String|Boolean|Number|Array|TypedArray} a
+ * @param {String|Boolean|Number|Array|TypedArray} b
+ * @returns {boolean}
+ */
+export function isEqual(a, b)
+{
+    if (a === b) return true;
+
+    // allow "almost" equal numbers
+    if (isNumber(a)) return isNumber(b) ? num.equals(a, b) : false;
+    if (isVector(a)) return isVector(b) ? isVectorEqual(a, b) : false;
+    if (!isObjectObject(a) || !isObjectObject(b)) return false;
+    if (a.constructor !== b.constructor) return false;
+
+    const
+        aKeys = Object.keys(a),
+        bKeys = Object.keys(b);
+
+    if (aKeys.length !== bKeys.length) return false;
+
+    for (let i = 0; i < aKeys.length; i++)
+    {
+        let key = aKeys[i];
+        if (!b.hasOwnProperty(key)) return false;
+        if (!isEqual(a[key], b[key])) return false;
+    }
+
+    for (let i = 0; i < bKeys.length; i++)
+    {
+        if (a.hasOwnProperty(bKeys[i])) return false;
+    }
+
+    return true;
 }

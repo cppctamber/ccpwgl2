@@ -26,18 +26,31 @@ export function addToArray(arr, ...args)
  * @param {Array} arr
  * @param {String} property
  * @param {*} value
- * @param {Function} [err]
+ * @param {Tw2Error} [err]
  * @returns {*|null}
  */
-export function findElementByProperty(arr, property, value, err)
+export function findElementByPropertyValue(arr, property, value, err)
 {
-    //if (!value || value === "none") return null;
+    const index = findIndexByPropertyValue(arr, property, value, err);
+    return arr[index];
+}
 
+/**
+ * Finds the first index of an element in an array with a given property and value
+ * - Throws an optional error if not found
+ * @param {Array} arr
+ * @param {String} property
+ * @param {*} value
+ * @param {Tw2Error} err
+ * @returns {number}
+ */
+export function findIndexByPropertyValue(arr, property, value, err)
+{
     for (let i = 0; i < arr.length; i++)
     {
         if (property in arr[i] && arr[i][property] === value)
         {
-            return arr[i];
+            return i;
         }
     }
 
@@ -46,7 +59,7 @@ export function findElementByProperty(arr, property, value, err)
         throw new err({ [property]: value });
     }
 
-    return null;
+    return -1;
 }
 
 /**

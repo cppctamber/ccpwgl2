@@ -1,4 +1,4 @@
-import { findElementByProperty } from "../../global/util";
+import { findElementByPropertyValue } from "../../global/util";
 import { Tw2Error } from "../../core";
 
 /**
@@ -42,7 +42,7 @@ export class EveSOFDataPattern
      */
     HasProjection(name)
     {
-        return !!findElementByProperty(this.projections, "name", name);
+        return !!findElementByPropertyValue(this.projections, "name", name);
     }
 
     /**

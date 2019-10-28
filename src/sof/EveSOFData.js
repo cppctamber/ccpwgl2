@@ -1,4 +1,4 @@
-import { isArray, findElementByProperty } from "../global/util";
+import { isArray, findElementByPropertyValue } from "../global/util";
 import {
     ErrSOFFactionNotFound,
     ErrSOFHullNotFound,
@@ -52,7 +52,7 @@ export class EveSOFData
      */
     GetHull(name)
     {
-        return findElementByProperty(this.hull, "name", name, ErrSOFHullNotFound);
+        return findElementByPropertyValue(this.hull, "name", name, ErrSOFHullNotFound);
     }
 
     /**
@@ -72,7 +72,7 @@ export class EveSOFData
      */
     HasHull(name)
     {
-        return !!findElementByProperty(this.hull, "name", name);
+        return !!findElementByPropertyValue(this.hull, "name", name);
     }
 
     /**
@@ -134,7 +134,7 @@ export class EveSOFData
      */
     GetFaction(name)
     {
-        return findElementByProperty(this.faction, "name", name, ErrSOFFactionNotFound);
+        return findElementByPropertyValue(this.faction, "name", name, ErrSOFFactionNotFound);
     }
 
     /**
@@ -154,7 +154,7 @@ export class EveSOFData
      */
     HasFaction(name)
     {
-        return !!findElementByProperty(this.faction, "name", name);
+        return !!findElementByPropertyValue(this.faction, "name", name);
     }
 
     /**
@@ -164,7 +164,7 @@ export class EveSOFData
      */
     GetRace(name)
     {
-        return findElementByProperty(this.race, "name", name, ErrSOFRaceNotFound);
+        return findElementByPropertyValue(this.race, "name", name, ErrSOFRaceNotFound);
     }
 
     /**
@@ -184,7 +184,7 @@ export class EveSOFData
      */
     HasRace(name)
     {
-        return findElementByProperty(this.race, "name", name);
+        return findElementByPropertyValue(this.race, "name", name);
     }
 
     /**
@@ -194,7 +194,7 @@ export class EveSOFData
      */
     GetMaterial(name)
     {
-        return findElementByProperty(this.material, "name", name, ErrSOFMaterialNotFound);
+        return findElementByPropertyValue(this.material, "name", name, ErrSOFMaterialNotFound);
     }
 
     /**
@@ -214,7 +214,7 @@ export class EveSOFData
      */
     HasMaterial(name)
     {
-        return !!findElementByProperty(this.material, "name", name);
+        return !!findElementByPropertyValue(this.material, "name", name);
     }
 
     /**
@@ -224,7 +224,7 @@ export class EveSOFData
      */
     GetPattern(name)
     {
-        return findElementByProperty(this.pattern, "name", name, ErrSOFPatternNotFound);
+        return findElementByPropertyValue(this.pattern, "name", name, ErrSOFPatternNotFound);
     }
 
     /**
@@ -244,7 +244,7 @@ export class EveSOFData
      */
     HasPattern(name)
     {
-        return !!findElementByProperty(this.pattern, "name", name);
+        return !!findElementByPropertyValue(this.pattern, "name", name);
     }
 
     /**
