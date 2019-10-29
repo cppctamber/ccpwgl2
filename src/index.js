@@ -1,5 +1,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+import "reflect-metadata";
 
 import { config } from "./config";
 import { tw2 } from "./global";

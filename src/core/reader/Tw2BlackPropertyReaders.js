@@ -1,5 +1,40 @@
+import { Type } from "../../global/engine/Tw2Constant";
 import { vec2, vec3, vec4, mat4, tw2 } from "../../global";
-import { ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError } from "../Tw2Error";
+import { ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError, ErrFeatureNotImplemented } from "../Tw2Error";
+import { isPlain, isString } from "../../global/util";
+
+const TypeReader = {
+    [Type.UNKNOWN]: notImplemented,
+    [Type.BOOLEAN]: boolean,
+    [Type.PATH]: path,
+    [Type.STRING]: string,
+    [Type.BYTE]: byte,
+    [Type.UINT]: uint,
+    [Type.USHORT]: ushort,
+    [Type.FLOAT]: float,
+    [Type.VECTOR2]: vector2,
+    [Type.VECTOR3]: vector3,
+    [Type.VECTOR4]: vector4,
+    [Type.QUATERNION]: vector4,
+    [Type.COLOR]: color,
+    [Type.OBJECT]: object,
+    [Type.RAW]: rawObject,
+    [Type.LIST]: array,
+    [Type.PLAIN]: rawObject,
+    [Type.INDEX_BUFFER]: indexBuffer
+};
+
+/**
+ * Gets a black reader from a property type
+ * @param {Number|String} type
+ * @returns {Function}
+ */
+function getReaderFromType(type)
+{
+    if (isString(type)) type = Type[type.toUpperCase()];
+    if (type === undefined || TypeReader[type] === undefined) type = Type.UNKNOWN;
+    return TypeReader[type];
+}
 
 /**
  * Reads a path
@@ -115,25 +150,21 @@ export function object(reader, id)
             try
             {
                 const reader = properties.get(propertyName);
-                let doPropertyCheck = true;
 
-                if (reader.interceptor)
+                if (reader.custom)
                 {
-                    if (reader(objectReader, result, propertyName, result[propertyName]) === undefined)
-                    {
-                        doPropertyCheck = false;
-                    }
+                    reader(objectReader, result, propertyName);
                 }
                 else
                 {
+                    // Ensure property is defined on object
+                    if (!(propertyName in result) && debugEnabled)
+                    {
+                        console.log(`'${type}' missing property: '${propertyName}'`);
+                    }
+
                     result[propertyName] = reader(objectReader);
                 }
-
-                if (doPropertyCheck && !(propertyName in result) && debugEnabled)
-                {
-                    console.log(`'${type}' missing property: '${propertyName}'`);
-                }
-
             }
             catch (err)
             {
@@ -142,7 +173,7 @@ export function object(reader, id)
                     console.dir(result);
                 }
 
-                throw new ErrBinaryReaderReadError({ readError: `${propertyName} > ` + err.message });
+                throw new ErrBinaryReaderReadError({ message: `${propertyName} > ` + err.message });
             }
         }
         else
@@ -334,8 +365,9 @@ export function matrix(reader)
  */
 export function indexBuffer(reader)
 {
-    let count = reader.ReadU32();
-    let byteSize = reader.ReadU16();
+    const
+        count = reader.ReadU32(),
+        byteSize = reader.ReadU16();
 
     if (byteSize === 4)
     {
@@ -387,46 +419,67 @@ export function structList(struct)
 
 /**
  * Gets a plain object from an array, using the supplied key as the property for each item
- * @param {String} key
+ * @param {String|Object} options
+ * @param {String} options.key         - The element key to use as a property key
+ * @param {?Function} [options.struct] - The optional struct to use (will use array reader by default)
+ * @param {?String} [options.reroute]  - The optional property to reroute the results to
  * @returns {function(*=)}
  */
-export function plainFromArray(key)
+export function fromList(options)
 {
-    return function(reader)
+    if (isString(options))
     {
-        const
-            arr = array(reader),
-            result = {};
+        options = { key: options };
+    }
 
-        for (let i = 0; i < arr.length; i++)
+    const { key, struct, reroute } = options;
+
+    const handler = function(reader, parent, property)
+    {
+        // Allows rerouting of results to a new target property
+        const target = parent[reroute ? reroute : property];
+
+        // Target must be a plain object
+        if (!isPlain(target))
         {
-            if (key in arr[i])
-            {
-                result[arr[i][key]] = arr[i];
-            }
-            else
-            {
-                throw new Error(`Supplied key "${key}" is missing from array element`);
-            }
+            throw new Error("Target is not a plain object");
         }
 
-        return result;
+        const result = struct ? structList(struct)(reader) : array(reader);
+        for (let i = 0; i < result.length; i++)
+        {
+            const
+                item = result[i],
+                prop = result[i][key];
+
+            if (prop === undefined)
+            {
+                throw new Error(`Array element property '${key}' is undefined`);
+            }
+
+            if (prop in target)
+            {
+                console.warn(`Property '${prop}' already defined`);
+            }
+
+            target[prop] = item;
+        }
     };
+
+    handler.custom = true;
+
+    return handler;
 }
 
 /**
- * Allows rerouting of a readers value
- * @param {Function} interceptor
- * @returns {Function}
+ * Throws an error when the reader is called
+ * @param {Tw2BlackBinaryReader} reader
+ * @param {*} target
+ * @param {String} property
  */
-export function intercept(interceptor)
+export function notImplemented(reader, target, property)
 {
-    function intercept(reader, parent, property, value)
-    {
-        interceptor(reader, parent, property, value);
-    }
-
-    interceptor.interceptor = true;
-
-    return interceptor;
+    throw new ErrFeatureNotImplemented({ feature: `Black reader for property '${property}'` });
 }
+
+notImplemented.custom = true;

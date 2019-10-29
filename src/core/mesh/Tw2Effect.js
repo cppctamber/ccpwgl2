@@ -1,7 +1,6 @@
-import { util, resMan, device, tw2, Tw2BaseClass } from "../../global";
+import { meta, util, device, tw2, Tw2BaseClass } from "../../global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
-import { ErrFeatureNotImplemented } from "../Tw2Error";
-import { Tw2Vector4Parameter } from "../parameter";
+import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 
 /**
  * Tw2Effect
@@ -27,8 +26,8 @@ export class Tw2Effect extends Tw2BaseClass
     samplerOverrides = {};
     options = {};
     shader = null;
-
     autoParameter = false;
+
     //resources
     //constParameters
 
@@ -41,7 +40,7 @@ export class Tw2Effect extends Tw2BaseClass
         {
             this.effectFilePath = this.effectFilePath.toLowerCase();
             const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-            this.effectRes = resMan.GetResource(path, res => this.OnResPrepared(res));
+            this.effectRes = tw2.GetResource(path, res => this.OnResPrepared(res));
         }
     }
 
@@ -724,29 +723,13 @@ export class Tw2Effect extends Tw2BaseClass
         return [
             [ "effectFilePath", r.path ],
             [ "name", r.string ],
-            [ "parameters", r.plainFromArray("name") ],
+            [ "parameters", r.fromList({ key: "name" }) ],
             // Reroute resources to parameters for now
-            [ "resources", r.intercept((reader, effect) =>
-            {
-                Object.assign(effect.parameters, r.plainFromArray("name")(reader));
-            }) ],
+            [ "resources", r.fromList({ key: "name", reroute: "parameters" }) ],
             // Reroute constant parameters for now
-            [ "constParameters", r.intercept((reader, effect) =>
-            {
-                const result = r.structList(Tw2ConstantParameter)(reader);
-                for (let i = 0; i < result.length; i++)
-                {
-                    effect.parameters[result[i].name] = result[i];
-                }
-            }) ],
-            [ "options", (reader) =>
-            {
-                throw ErrFeatureNotImplemented({ feature: "Tw2Effect options" });
-            } ],
-            [ "samplerOverrides", (reader) =>
-            {
-                throw ErrFeatureNotImplemented({ feature: "Tw2Effect samplerOverrides" });
-            } ]
+            [ "constParameters", r.fromList({ key: "name", reroute: "parameters", struct: Tw2ConstantParameter }) ],
+            [ "options", r.notImplemented ],
+            [ "samplerOverrides", r.notImplemented ]
         ];
     }
 

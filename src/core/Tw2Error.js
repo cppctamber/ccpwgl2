@@ -444,7 +444,7 @@ export class ErrInvalidDecoratorUsage extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Invalid decorator usage");
+        super(data, "Invalid decorator usage (%reason%)");
     }
 }
 

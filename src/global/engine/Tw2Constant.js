@@ -5,7 +5,8 @@
  */
 
 export const Type = {
-    BOOLEAN: 0,
+    UNKNOWN: 0,
+    BOOLEAN: 1,
     STRING: 10,
     PATH: 11,
     EXPRESSION: 12,
@@ -30,17 +31,19 @@ export const Type = {
 };
 
 export const TypeCategory = {
-    BOOLEAN: 0,
-    STRING: 1,
-    NUMBER: 2,
-    OBJECT: 3,
-    PLAIN: 4,
-    LIST: 5,
-    ARRAY: 6,
-    TYPED: 7
+    UNKNOWN: 0,
+    BOOLEAN: 1,
+    STRING: 2,
+    NUMBER: 3,
+    OBJECT: 4,
+    PLAIN: 5,
+    LIST: 6,
+    ARRAY: 7,
+    TYPED: 8
 };
 
 export const TypeTypeCategory = {
+    [Type.UNKNOWN]: TypeCategory.UNKNOWN,
     [Type.BOOLEAN]: TypeCategory.BOOLEAN,
     [Type.STRING]: TypeCategory.STRING,
     [Type.PATH]: TypeCategory.STRING,

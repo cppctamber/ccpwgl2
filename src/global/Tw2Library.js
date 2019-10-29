@@ -1,4 +1,4 @@
-import { singleton } from "./decorators";
+import { singleton } from "./meta";
 import { Tw2EventEmitter } from "./class";
 import { Tw2ResMan, Tw2Device, Tw2Logger } from "./engine";
 import * as math from "./math";
@@ -414,8 +414,21 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
+     * Gets a resource
+     * @param {String} resPath
+     * @param {Function} [onResolved]
+     * @param {Function} [onRejected]
+     * @returns {Tw2Resource}
+     */
+    GetResource(resPath, onResolved, onRejected)
+    {
+        return this.resMan.GetResource(resPath, onResolved, onRejected);
+    }
+
+    /**
      * Gets a resource asynchronously
      * @param {String} resPath
+
      * @returns {Promise<Tw2Resource>}
      */
     async FetchResource(resPath)
@@ -989,4 +1002,10 @@ function setStoreKeyValues(library, storeType, values)
     }
 }
 
-export const tw2 = new Tw2Library();
+const
+    tw2 = new Tw2Library(),
+    // Temporarily export resMan and device
+    resMan = tw2.resMan,
+    device = tw2.device;
+
+export { tw2, resMan, device };

@@ -1,4 +1,4 @@
-import { abstract } from "../decorators";
+import { abstract } from "../meta";
 import { generateID, isArray, isFunction, isObjectObject, isPlain, isPrimary, isTyped } from "../util";
 import { Tw2EventEmitter } from "./Tw2EventEmitter";
 
