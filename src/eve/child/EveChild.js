@@ -1,5 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3, mat4, Tw2BaseClass } from "../../global";
+import { meta, vec3, mat4, Tw2BaseClass } from "global";
 
 /**
  * Root EveChild class

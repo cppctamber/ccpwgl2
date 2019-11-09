@@ -1,6 +1,6 @@
-import { Tw2VertexElement } from "../../core";
+import { Tw2VertexElement } from "core";
 import { Tw2ParticleElement } from "./Tw2ParticleElement";
-import { Tw2BaseClass } from "../../global";
+import { Tw2BaseClass } from "global";
 
 /**
  * Tw2ParticleElementDeclaration

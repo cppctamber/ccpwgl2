@@ -1,4 +1,4 @@
-import { util, resMan, tw2, Tw2BaseClass } from "../../global";
+import { util, resMan, tw2, Tw2BaseClass } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -7,8 +7,8 @@ import {
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_PICKABLE
-} from "../../global/engine";
-import { assignIfExists, get, toArray } from "../../global/util";
+} from "global/engine";
+import { assignIfExists, get, toArray } from "global/util";
 
 /**
  * Tw2Mesh

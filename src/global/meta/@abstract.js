@@ -1,4 +1,4 @@
-import { ErrAbstractClass, ErrAbstractMethod } from "../../core/Tw2Error";
+import { ErrAbstractClass, ErrAbstractMethod } from "core/Tw2Error";
 import { create } from "./meta";
 
 /**

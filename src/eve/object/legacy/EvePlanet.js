@@ -1,5 +1,5 @@
-import { mat4, util, device, resMan } from "../../../global/index";
-import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "../../../core/index";
+import { mat4, util, device, resMan } from "global";
+import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "core";
 import { EveTransform } from "../EveTransform";
 import { EveObject } from "./EveObject";
 

@@ -1,6 +1,6 @@
 import { Tw2Parameter } from "./Tw2Parameter";
-import { vec3, quat, mat4 } from "../../global/math";
-import { isNumber } from "../../global/util";
+import { vec3, quat, mat4 } from "global/math";
+import { isNumber } from "global/util";
 
 /**
  * Tw2TransformParameter

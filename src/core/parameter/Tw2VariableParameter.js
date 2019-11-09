@@ -1,4 +1,4 @@
-import { tw2 } from "../../global";
+import { tw2 } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 /**

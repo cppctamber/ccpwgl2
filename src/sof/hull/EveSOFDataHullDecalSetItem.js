@@ -1,4 +1,4 @@
-import { vec3, quat } from "../../global";
+import { vec3, quat } from "global";
 
 
 /**

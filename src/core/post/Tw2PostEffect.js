@@ -1,9 +1,9 @@
-import { device, Tw2BaseClass } from "../../global";
+import { device, Tw2BaseClass } from "global";
 import { Tw2RenderTarget } from "../Tw2RenderTarget";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
 import { Tw2PostEffectStep } from "./Tw2PostEffectStep";
-import { assignIfExists } from "../../global/util";
+import { assignIfExists } from "global/util";
 
 /**
  * Tw2PostEffect

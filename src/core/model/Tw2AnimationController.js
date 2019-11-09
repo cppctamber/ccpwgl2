@@ -1,4 +1,4 @@
-import { vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "../../global";
+import { vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "global";
 import { Tw2GeometryRes } from "../resource";
 import { Tw2Animation } from "./Tw2Animation";
 import { Tw2Bone } from "./Tw2Bone";

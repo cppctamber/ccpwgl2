@@ -1,4 +1,4 @@
-import { Tw2BaseClass, resMan } from "../../global";
+import { Tw2BaseClass, resMan } from "global";
 
 /**
  * Tr2LodResource

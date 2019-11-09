@@ -1,6 +1,6 @@
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
-import { ErrFeatureNotImplemented } from "../../core";
-import * as r from "../../core/reader/Tw2BlackPropertyReaders";
+import { ErrFeatureNotImplemented } from "core";
+import * as r from "core/reader/Tw2BlackPropertyReaders";
 
 /**
  * Tr2ForceSphereVolume

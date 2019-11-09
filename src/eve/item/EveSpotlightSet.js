@@ -1,8 +1,8 @@
-import { vec3, vec4, mat4, util, device, Tw2BaseClass } from "../../global";
-import { Tw2VertexDeclaration, Tw2RenderBatch } from "../../core";
+import { vec3, vec4, mat4, util, device, Tw2BaseClass } from "global";
+import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
-import { assignIfExists, isFunction } from "../../global/util";
-import { Tw2Effect } from "../../core/mesh";
+import { assignIfExists, isFunction } from "global/util";
+import { Tw2Effect } from "core/mesh";
 
 /**
  * Spotlight set render batch

@@ -1,5 +1,5 @@
 import { isFunction } from "../util/type";
-import { ErrInvalidDecoratorUsage } from "../../core/Tw2Error";
+import { ErrInvalidDecoratorUsage } from "core/Tw2Error";
 
 /**
  * Turns a string into a meta data name

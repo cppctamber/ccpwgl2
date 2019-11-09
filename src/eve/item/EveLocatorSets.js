@@ -1,4 +1,4 @@
-import { vec3, quat, Tw2BaseClass } from "../../global";
+import { vec3, quat, Tw2BaseClass } from "global";
 
 /**
  * Locator

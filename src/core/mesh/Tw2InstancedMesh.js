@@ -1,4 +1,4 @@
-import { vec3, util, resMan, Tw2BaseClass } from "../../global";
+import { vec3, util, resMan, Tw2BaseClass } from "global";
 import { Tw2InstancedMeshBatch } from "../batch";
 import {
     RM_ADDITIVE,
@@ -8,8 +8,8 @@ import {
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_PICKABLE
-} from "../../global/engine";
-import { assignIfExists, get } from "../../global/util";
+} from "global/engine";
+import { assignIfExists, get } from "global/util";
 import { Tw2MeshArea } from "./Tw2MeshArea";
 import { Tw2Mesh } from "./Tw2Mesh";
 

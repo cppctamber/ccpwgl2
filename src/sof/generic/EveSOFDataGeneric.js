@@ -1,5 +1,5 @@
-import { Tw2Error, Tw2Effect } from "../../core";
-import { isArray, isPlain, findElementByPropertyValue } from "../../global/util";
+import { Tw2Error, Tw2Effect } from "core";
+import { isArray, isPlain, findElementByPropertyValue } from "global/util";
 
 /**
  * EveSOFDataGeneric

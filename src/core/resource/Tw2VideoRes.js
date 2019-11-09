@@ -1,4 +1,4 @@
-import { device, resMan } from "../../global";
+import { device, resMan } from "global";
 import { Tw2Resource } from "./Tw2Resource";
 import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../Tw2Error";
 

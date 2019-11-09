@@ -1,4 +1,4 @@
-import { meta } from "../../global";
+import { meta } from "global";
 import { Tw2ParticleConstraint } from "./Tw2ParticleConstraint";
 
 /**

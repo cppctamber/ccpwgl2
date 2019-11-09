@@ -1,4 +1,4 @@
-import { Tw2Curve } from "../../curve";
+import { Tw2Curve } from "curve";
 
 /**
  * Tw2MayaScalarCurve

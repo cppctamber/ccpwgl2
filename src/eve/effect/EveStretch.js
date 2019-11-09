@@ -1,5 +1,5 @@
-import { vec3, mat4, util, Tw2BaseClass } from "../../global";
-import { Tw2Float } from "../../core";
+import { vec3, mat4, util, Tw2BaseClass } from "global";
+import { Tw2Float } from "core";
 
 /**
  * EveStretch

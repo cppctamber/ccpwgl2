@@ -1,5 +1,5 @@
-import { resMan, Tw2BaseClass } from "../../global";
-import { Tw2RenderBatch } from "../../core/batch";
+import { resMan, Tw2BaseClass } from "global";
+import { Tw2RenderBatch } from "core/batch";
 
 /**
  * EveTrailSetRenderBatch

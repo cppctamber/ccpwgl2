@@ -1,6 +1,6 @@
-import { ErrInvalidDecoratorUsage } from "../../core/Tw2Error";
+import { ErrInvalidDecoratorUsage } from "core/Tw2Error";
 import { isArray, isFunction } from "../util/type";
-import { structList, struct, fromList } from "../../core/reader/Tw2BlackPropertyReaders";
+import { structList, struct, fromList } from "core/reader/Tw2BlackPropertyReaders";
 import { set, create } from "./meta";
 
 

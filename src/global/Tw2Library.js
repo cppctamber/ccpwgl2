@@ -4,7 +4,7 @@ import { Tw2ResMan, Tw2Device, Tw2Logger } from "./engine";
 import * as math from "./math";
 import * as util from "./util";
 import * as consts from "./engine/Tw2Constant";
-import * as readers from "../core/reader/Tw2BlackPropertyReaders";
+import * as readers from "core/reader/Tw2BlackPropertyReaders";
 import {
     isArray,
     isFunction,
@@ -22,7 +22,7 @@ import {
     ErrStoreValueMissing,
     ErrStoreInvalid,
     ErrStoreKeyReserved
-} from "../core/Tw2Error";
+} from "core/Tw2Error";
 
 /**
  *

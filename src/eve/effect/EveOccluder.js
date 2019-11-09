@@ -1,5 +1,5 @@
-import { vec4, mat4, util, device, tw2, Tw2BaseClass } from "../../global";
-import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "../../core";
+import { vec4, mat4, util, device, tw2, Tw2BaseClass } from "global";
+import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 /**
  * EveOccluder

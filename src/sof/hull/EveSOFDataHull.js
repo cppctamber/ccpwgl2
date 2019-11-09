@@ -1,4 +1,4 @@
-import { vec3, vec4 } from "../../global";
+import { vec3, vec4 } from "global";
 
 /**
  * EveSOFDataHull

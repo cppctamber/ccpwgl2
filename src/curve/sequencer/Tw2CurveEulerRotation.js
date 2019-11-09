@@ -1,5 +1,5 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { quat } from "../../global";
+import { quat } from "global";
 
 /**
  * Euler to Quaternion sequencer

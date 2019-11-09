@@ -1,5 +1,5 @@
-import { vec4, mat4, tw2 } from "../../global";
-import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from "../../core/parameter";
+import { vec4, mat4, tw2 } from "global";
+import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from "core/parameter";
 
 
 /**

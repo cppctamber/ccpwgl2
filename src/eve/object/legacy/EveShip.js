@@ -1,5 +1,5 @@
 import { EveSpaceObject } from "./EveSpaceObject";
-import { isNumber } from "../../../global/util";
+import { isNumber } from "global/util";
 
 /**
  * EveShip

@@ -1,5 +1,5 @@
-import { vec4, Tw2BaseClass } from "../../global";
-import { Tw2RenderBatch } from "../../core";
+import { vec4, Tw2BaseClass } from "global";
+import { Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**

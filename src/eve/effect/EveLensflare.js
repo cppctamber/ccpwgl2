@@ -1,5 +1,5 @@
-import { vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE } from "../../global";
-import { Tw2TextureRes, Tw2RenderTarget } from "../../core";
+import { vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE } from "global";
+import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 
 /**

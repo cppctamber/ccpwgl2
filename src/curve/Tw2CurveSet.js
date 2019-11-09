@@ -1,4 +1,4 @@
-import { util, Tw2BaseClass } from "../global";
+import { util, Tw2BaseClass } from "global";
 
 /**
  * Curve set

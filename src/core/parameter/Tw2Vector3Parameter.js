@@ -1,4 +1,4 @@
-import { vec3 } from "../../global";
+import { vec3 } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 /**

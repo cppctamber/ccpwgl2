@@ -1,5 +1,5 @@
-import { resMan, } from "../../global";
-import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement } from "../../core";
+import { resMan, } from "global";
+import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement } from "core";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 

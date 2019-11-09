@@ -1,5 +1,5 @@
 import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
-import { vec4 } from "../../global";
+import { vec4 } from "global";
 
 /**
  * Tr2RotationAdapter

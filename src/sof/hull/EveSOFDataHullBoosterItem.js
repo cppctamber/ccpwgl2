@@ -1,4 +1,4 @@
-import { mat4, vec4 } from "../../global";
+import { mat4, vec4 } from "global";
 
 
 /**

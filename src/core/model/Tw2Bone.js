@@ -1,4 +1,4 @@
-import { mat4 } from "../../global";
+import { mat4 } from "global";
 
 /**
  * Tw2Bone

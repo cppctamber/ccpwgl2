@@ -1,11 +1,11 @@
-import { isArray, findElementByPropertyValue } from "../global/util";
+import { isArray, findElementByPropertyValue } from "global/util";
 import {
     ErrSOFFactionNotFound,
     ErrSOFHullNotFound,
     ErrSOFMaterialNotFound,
     ErrSOFPatternNotFound,
     ErrSOFRaceNotFound
-} from "../core";
+} from "core";
 
 /**
  * EveSOFData

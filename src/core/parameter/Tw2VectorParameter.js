@@ -1,5 +1,5 @@
 import { ErrIndexBounds } from "../Tw2Error";
-import { util, Tw2BaseClass } from "../../global";
+import { util, Tw2BaseClass } from "global";
 
 /**
  * Tw2VectorParameter base class

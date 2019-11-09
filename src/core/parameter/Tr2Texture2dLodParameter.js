@@ -1,4 +1,4 @@
-import { Tw2BaseClass } from "../../global/index";
+import { Tw2BaseClass } from "global";
 
 /**
  * Tr2Texture2dLodParameter

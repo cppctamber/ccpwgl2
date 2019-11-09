@@ -1,4 +1,4 @@
-import { GL_FLOAT } from "../../global";
+import { GL_FLOAT } from "global";
 
 /**
  * Tw2VertexElement

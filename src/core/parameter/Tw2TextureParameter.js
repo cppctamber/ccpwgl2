@@ -1,4 +1,4 @@
-import { resMan, device, util } from "../../global";
+import { resMan, device, util } from "global";
 import { Tw2SamplerState } from "../sampler";
 import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";

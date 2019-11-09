@@ -1,4 +1,4 @@
-import { vec3, vec4, Tw2BaseClass } from "../../global";
+import { vec3, vec4, Tw2BaseClass } from "global";
 
 /**
  * EveSpherePin

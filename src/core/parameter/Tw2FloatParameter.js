@@ -1,5 +1,5 @@
 import { Tw2Parameter } from "./Tw2Parameter";
-import { util } from "../../global";
+import { util } from "global";
 
 /**
  * Tw2FloatParameter

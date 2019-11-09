@@ -1,6 +1,6 @@
 import { Tw2GeometryBatch } from "../batch";
-import { util, Tw2BaseClass } from "../../global";
-import { assignIfExists } from "../../global/util";
+import { util, Tw2BaseClass } from "global";
+import { assignIfExists } from "global/util";
 import { Tw2Effect } from "./Tw2Effect";
 
 /**

@@ -1,4 +1,4 @@
-import { util, device } from "../global";
+import { util, device } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 /**

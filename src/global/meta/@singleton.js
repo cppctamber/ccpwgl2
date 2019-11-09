@@ -1,4 +1,4 @@
-import { ErrSingletonInstantiation } from "../../core/Tw2Error";
+import { ErrSingletonInstantiation } from "core/Tw2Error";
 import { create }  from "./meta";
 
 export const singleton = create(false, {

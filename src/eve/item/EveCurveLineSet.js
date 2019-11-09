@@ -1,5 +1,5 @@
-import { vec3, vec4, quat, mat4, ray3, util, device } from "../../global";
-import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "../../core";
+import { vec3, vec4, quat, mat4, ray3, util, device } from "global";
+import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**

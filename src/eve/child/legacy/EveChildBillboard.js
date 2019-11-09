@@ -1,5 +1,5 @@
-import { vec3, quat, mat4, tw2 } from "../../../global";
-import { Tw2PerObjectData } from "../../../core";
+import { vec3, quat, mat4, tw2 } from "global";
+import { Tw2PerObjectData } from "core";
 import { EveChild } from "../EveChild";
 
 const { device } = tw2;

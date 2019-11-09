@@ -1,4 +1,4 @@
-import { Tw2BaseClass, util, resMan } from "../../global";
+import { Tw2BaseClass, util, resMan } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -7,7 +7,7 @@ import {
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_PICKABLE
-} from "../../global/engine";
+} from "global/engine";
 
 /**
  * Tr2MeshLod

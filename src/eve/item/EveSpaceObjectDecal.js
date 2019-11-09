@@ -1,7 +1,7 @@
-import { vec3, quat, mat4, util, device, tw2, Tw2BaseClass } from "../../global";
-import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "../../core/";
-import { assignIfExists } from "../../global/util";
-import { Tw2Effect } from "../../core/mesh";
+import { vec3, quat, mat4, util, device, tw2, Tw2BaseClass } from "global";
+import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "core/";
+import { assignIfExists } from "global/util";
+import { Tw2Effect } from "core/mesh";
 
 /**
  * Decal

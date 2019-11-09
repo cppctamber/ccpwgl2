@@ -1,5 +1,5 @@
-import { vec3, vec4, quat, mat4, util, device, resMan, tw2, Tw2BaseClass } from "../global";
-import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess } from "../core";
+import { vec3, vec4, quat, mat4, util, device, resMan, tw2, Tw2BaseClass } from "global";
+import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess } from "core";
 
 /**
  * EveSpaceScene

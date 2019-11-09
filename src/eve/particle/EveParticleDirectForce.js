@@ -1,5 +1,5 @@
-import { vec3 } from "../../global";
-import { Tw2ParticleForce } from "../../particle/force/Tw2ParticleForce";
+import { vec3 } from "global";
+import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 /**
  * EveParticleDirectForce

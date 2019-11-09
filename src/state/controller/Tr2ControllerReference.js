@@ -1,4 +1,4 @@
-import { Tw2BaseClass } from "../../global";
+import { Tw2BaseClass } from "global";
 
 /**
  * Tr2ControllerReference

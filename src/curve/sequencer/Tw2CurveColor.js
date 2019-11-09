@@ -1,5 +1,5 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { vec4 } from "../../global";
+import { vec4 } from "global";
 
 /**
  * Tw2CurveColor

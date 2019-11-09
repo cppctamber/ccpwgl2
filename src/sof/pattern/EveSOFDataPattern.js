@@ -1,5 +1,5 @@
-import { findElementByPropertyValue } from "../../global/util";
-import { Tw2Error } from "../../core";
+import { findElementByPropertyValue } from "global/util";
+import { Tw2Error } from "core";
 
 /**
  * EveSOFDataPattern

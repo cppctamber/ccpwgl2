@@ -1,8 +1,8 @@
-import { vec3, vec4, util, device } from "../../global";
-import { Tw2VertexDeclaration, Tw2RenderBatch } from "../../core";
+import { vec3, vec4, util, device } from "global";
+import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
-import { assignIfExists } from "../../global/util";
-import { Tw2Effect } from "../../core/mesh";
+import { assignIfExists } from "global/util";
+import { Tw2Effect } from "core/mesh";
 
 /**
  * Sprite set render batch

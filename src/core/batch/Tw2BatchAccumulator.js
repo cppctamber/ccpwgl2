@@ -1,4 +1,4 @@
-import { device } from "../../global";
+import { device } from "global";
 
 /**
  * Accumulates render batches for rendering

@@ -1,4 +1,4 @@
-import { mat4, quat, vec3, vec4 } from "../../global/index";
+import { mat4, quat, vec3, vec4 } from "global";
 import { EveChild } from "./EveChild";
 
 /**

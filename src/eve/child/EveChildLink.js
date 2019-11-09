@@ -1,4 +1,4 @@
-import { quat } from "../../global";
+import { quat } from "global";
 import { EveChild } from "./EveChild";
 
 /**

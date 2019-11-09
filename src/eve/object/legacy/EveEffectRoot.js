@@ -1,5 +1,5 @@
-import { vec3, quat, mat4 } from "../../../global/index";
-import { Tw2PerObjectData } from "../../../core/index";
+import { vec3, quat, mat4 } from "global";
+import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 import { EveSpaceObject } from "./EveSpaceObject";
 

@@ -23,6 +23,20 @@ module.exports = {
 
     devtool: "none",
 
+    resolve: {
+        alias: {
+            "core": path.resolve(__dirname, "./src/core"),
+            "curve" : path.resolve(__dirname, "./src/curve"),
+            "global" : path.resolve(__dirname, "./src/global"),
+            "eve" : path.resolve(__dirname, "./src/eve"),
+            "interior": path.resolve(__dirname, "./src/interior"),
+            "particle": path.resolve(__dirname, "./src/particle"),
+            "sof" : path.resolve(__dirname, "./src/sof"),
+            "state" : path.resolve(__dirname, "./src/state"),
+            "wrapped" : path.resolve(__dirname, "./src/wrapped")
+        }
+    },
+
     optimization: {
         minimize: false,
     },

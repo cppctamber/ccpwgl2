@@ -1,7 +1,7 @@
 import { num, vec3, vec4, mat4 } from "../math";
 import { get, isString } from "../util";
-import { Tw2Effect } from "../../core/mesh/Tw2Effect";
-import { Tw2VertexDeclaration } from "../../core/vertex/Tw2VertexDeclaration";
+import { Tw2Effect } from "core/mesh/Tw2Effect";
+import { Tw2VertexDeclaration } from "core/vertex/Tw2VertexDeclaration";
 import { Tw2EventEmitter } from "../class/Tw2EventEmitter";
 import {
     RM_ANY,
@@ -62,7 +62,7 @@ import {
     ErrWebxrNotSupported,
     ErrWebxrRequestFailed,
     ErrWebxrSessionNotSupported
-} from "../../core";
+} from "core";
 
 /**
  * Tw2Device

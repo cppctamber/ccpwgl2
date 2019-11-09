@@ -1,5 +1,5 @@
 import { Tw2Curve } from "./Tw2Curve";
-import { noise } from "../../global/math";
+import { noise } from "global/math";
 
 /**
  * Perlin curve

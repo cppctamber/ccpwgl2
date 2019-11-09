@@ -1,4 +1,4 @@
-import { Tw2EventEmitter } from "../../global";
+import { Tw2EventEmitter } from "global";
 
 /**
  * Tw2Animation

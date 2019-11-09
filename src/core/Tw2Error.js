@@ -1,4 +1,4 @@
-import { isFunction, isPlain, template } from "../global/util";
+import { isFunction, isPlain, template } from "global/util";
 
 const HAS_CAPTURE_STACK_TRACE = isFunction(Error["captureStackTrace"]);
 

@@ -1,4 +1,4 @@
-import { vec3, mat4, util, Tw2BaseClass } from "../../global";
+import { vec3, mat4, util, Tw2BaseClass } from "global";
 
 /**
  * EvePerMuzzleData

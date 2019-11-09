@@ -16419,7 +16419,7 @@ const config = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2DistanceTracker", function() { return Tr2DistanceTracker; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2DistanceTracker
@@ -16433,8 +16433,8 @@ __webpack_require__.r(__webpack_exports__);
 class Tr2DistanceTracker {
   constructor() {
     this.name = "";
-    this.direction = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.targetPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.direction = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.targetPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -16466,9 +16466,9 @@ Tr2DistanceTracker.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2RuntimeInstanceData", function() { return Tr2RuntimeInstanceData; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vertex */ "./core/vertex/index.js");
-/* harmony import */ var _particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../particle/element/Tw2ParticleElementDeclaration */ "./particle/element/Tw2ParticleElementDeclaration.js");
+/* harmony import */ var particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! particle/element/Tw2ParticleElementDeclaration */ "./particle/element/Tw2ParticleElementDeclaration.js");
 
 
 
@@ -16484,7 +16484,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} _vertexStride
  */
 
-class Tr2RuntimeInstanceData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this._count = 0;
@@ -16510,7 +16510,7 @@ class Tr2RuntimeInstanceData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
   SetElementLayout(decl) {
     if (this._vb) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vb);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vb);
       this._vb = null;
     }
 
@@ -16518,7 +16518,7 @@ class Tr2RuntimeInstanceData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
     this._declaration = new _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
 
     for (let i = 0; i < decl.length; ++i) {
-      const element = new _particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElementDeclaration"]();
+      const element = new particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElementDeclaration"]();
       element.elementType = decl[i][0];
       element.dimension = decl[i][2];
       element.usageIndex = decl[i][1];
@@ -16602,7 +16602,7 @@ class Tr2RuntimeInstanceData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
       return;
     }
 
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
           vbData = new Float32Array(this._data.length * this._vertexStride);
     let offset = 0;
 
@@ -16634,7 +16634,7 @@ class Tr2RuntimeInstanceData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
   Unload() {
     if (this._vb) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vb);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vb);
       this._vb = null;
     }
   }
@@ -16699,7 +16699,7 @@ class Tr2RuntimeInstanceData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TriObserverLocal", function() { return TriObserverLocal; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/index */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -16709,10 +16709,10 @@ __webpack_require__.r(__webpack_exports__);
  * @property {vec3} front -
  */
 
-class TriObserverLocal extends _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class TriObserverLocal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
-    this.front = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.front = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -16790,9 +16790,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialNotFound", function() { return ErrSOFMaterialNotFound; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternNotFound", function() { return ErrSOFPatternNotFound; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return ErrWrapped; });
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/util */ "./global/util/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
-const HAS_CAPTURE_STACK_TRACE = Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(Error["captureStackTrace"]);
+const HAS_CAPTURE_STACK_TRACE = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(Error["captureStackTrace"]);
 /**
  * Tw2Error
  *
@@ -16820,7 +16820,7 @@ class Tw2Error extends Error {
     }
 
     super();
-    this.message = Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["template"])(message, data);
+    this.message = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["template"])(message, data);
     this.name = this.constructor.name;
     this.data = data;
 
@@ -17326,7 +17326,7 @@ class ErrWrapped extends Tw2Error {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Frustum", function() { return Tw2Frustum; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2Frustum
@@ -17340,9 +17340,9 @@ __webpack_require__.r(__webpack_exports__);
 
 class Tw2Frustum {
   constructor() {
-    this.planes = [_global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()];
-    this.viewPos = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.viewDir = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.planes = [global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()];
+    this.viewPos = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.viewDir = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.halfWidthProjection = 1;
   }
 
@@ -17357,11 +17357,11 @@ class Tw2Frustum {
    */
   Initialize(view, proj, viewportSize, viewInverse, viewProjection) {
     const mat4_0 = Tw2Frustum.global.mat4_0;
-    const viewInv = viewInverse ? viewInverse : _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(mat4_0, view);
+    const viewInv = viewInverse ? viewInverse : global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(mat4_0, view);
     this.viewPos.set(viewInv.subarray(12, 14));
     this.viewDir.set(viewInv.subarray(8, 10));
     this.halfWidthProjection = proj[0] * viewportSize * 0.5;
-    const viewProj = viewProjection ? viewProjection : _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(mat4_0, proj, view);
+    const viewProj = viewProjection ? viewProjection : global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(mat4_0, proj, view);
     this.planes[0][0] = viewProj[2];
     this.planes[0][1] = viewProj[6];
     this.planes[0][2] = viewProj[10];
@@ -17388,7 +17388,7 @@ class Tw2Frustum {
     this.planes[5][3] = viewProj[15] - viewProj[14];
 
     for (let i = 0; i < 6; ++i) {
-      let len = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(this.planes[i]);
+      let len = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(this.planes[i]);
       this.planes[i][0] /= len;
       this.planes[i][1] /= len;
       this.planes[i][2] /= len;
@@ -17423,8 +17423,8 @@ class Tw2Frustum {
 
 
   GetPixelSizeAcross(center, radius) {
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(Tw2Frustum.global.vec3_0, this.viewPos, center);
-    let depth = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(this.viewDir, d),
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(Tw2Frustum.global.vec3_0, this.viewPos, center);
+    let depth = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(this.viewDir, d),
         epsilon = 1e-5;
     if (depth < epsilon) depth = epsilon;
     if (radius < epsilon) return 0;
@@ -17438,8 +17438,8 @@ class Tw2Frustum {
 
 }
 Tw2Frustum.global = {
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
 };
 
 /***/ }),
@@ -17454,7 +17454,7 @@ Tw2Frustum.global = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RenderTarget", function() { return Tw2RenderTarget; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
 
 
@@ -17474,7 +17474,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Tw2RenderTarget {
   constructor() {
-    this._id = _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
+    this._id = global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
     this.name = "";
     this.texture = null;
     this.width = null;
@@ -17488,7 +17488,7 @@ class Tw2RenderTarget {
    * Destroys the render target's webgl buffers and textures
    */
   Destroy() {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this.texture) {
       gl.deleteTexture(this.texture.texture);
@@ -17515,7 +17515,7 @@ class Tw2RenderTarget {
 
 
   Create(width, height, hasDepth) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
     this.Destroy();
     this.texture = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureRes"]();
     this.texture.Attach(gl.createTexture());
@@ -17552,8 +17552,8 @@ class Tw2RenderTarget {
 
 
   Set() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindFramebuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.FRAMEBUFFER, this._frameBuffer);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.viewport(0, 0, this.width, this.height);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindFramebuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.FRAMEBUFFER, this._frameBuffer);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.viewport(0, 0, this.width, this.height);
   }
   /**
    * Unsets the render target as the current frame buffer
@@ -17561,8 +17561,8 @@ class Tw2RenderTarget {
 
 
   Unset() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindFramebuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.FRAMEBUFFER, null);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.viewport(0, 0, _global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportWidth, _global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportHeight);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindFramebuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.FRAMEBUFFER, null);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.viewport(0, 0, global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportWidth, global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportHeight);
   }
 
 }
@@ -17579,7 +17579,7 @@ class Tw2RenderTarget {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2BatchAccumulator", function() { return Tw2BatchAccumulator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Accumulates render batches for rendering
@@ -17640,11 +17640,11 @@ class Tw2BatchAccumulator {
       if (this.batches[i] instanceof Tw2BatchAccumulator) {
         this.batches[i].Render(technique);
       } else {
-        if (this.batches[i].renderMode !== _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ANY) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["device"].SetStandardStates(this.batches[i].renderMode);
+        if (this.batches[i].renderMode !== global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ANY) {
+          global__WEBPACK_IMPORTED_MODULE_0__["device"].SetStandardStates(this.batches[i].renderMode);
         }
 
-        _global__WEBPACK_IMPORTED_MODULE_0__["device"].perObjectData = this.batches[i].perObjectData;
+        global__WEBPACK_IMPORTED_MODULE_0__["device"].perObjectData = this.batches[i].perObjectData;
         this.batches[i].Commit(technique);
       }
     }
@@ -17823,7 +17823,7 @@ class Tw2InstancedMeshBatch extends _Tw2GeometryBatch__WEBPACK_IMPORTED_MODULE_0
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RenderBatch", function() { return Tw2RenderBatch; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /*eslint no-unused-vars:0*/
 
 /**
@@ -17836,7 +17836,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Tw2RenderBatch {
   constructor() {
-    this.renderMode = _global__WEBPACK_IMPORTED_MODULE_0__["RM_ANY"];
+    this.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["RM_ANY"];
     this.perObjectData = null;
   }
 
@@ -18191,7 +18191,7 @@ class Tw2GeometryAnimation {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryBone", function() { return Tw2GeometryBone; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2GeometryBone
@@ -18210,12 +18210,12 @@ class Tw2GeometryBone {
   constructor() {
     this.name = "";
     this.parentIndex = -1;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.orientation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaleShear = _global__WEBPACK_IMPORTED_MODULE_0__["mat3"].create();
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.worldTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.worldTransformInv = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.orientation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaleShear = global__WEBPACK_IMPORTED_MODULE_0__["mat3"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.worldTransformInv = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
@@ -18223,10 +18223,10 @@ class Tw2GeometryBone {
    * @returns {mat4}
    */
   UpdateTransform() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromMat3(this.localTransform, this.scaleShear);
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.orientation, this.orientation);
-    let rm = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(Tw2GeometryBone.global.mat4_0, this.orientation);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.localTransform, this.localTransform, rm);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromMat3(this.localTransform, this.scaleShear);
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.orientation, this.orientation);
+    let rm = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(Tw2GeometryBone.global.mat4_0, this.orientation);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.localTransform, this.localTransform, rm);
     this.localTransform[12] = this.position[0];
     this.localTransform[13] = this.position[1];
     this.localTransform[14] = this.position[2];
@@ -18239,7 +18239,7 @@ class Tw2GeometryBone {
 
 }
 Tw2GeometryBone.global = {
-  mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+  mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
 };
 
 /***/ }),
@@ -18284,9 +18284,9 @@ class Tw2GeometryCurve {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMesh", function() { return Tw2GeometryMesh; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var _Tw2GeometryMeshArea__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2GeometryMeshArea */ "./core/geometry/Tw2GeometryMeshArea.js");
 
 
@@ -18323,9 +18323,9 @@ class Tw2GeometryMesh {
     this.indexes = null;
     this.indexData = null;
     this.indexType = 0;
-    this.minBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
-    this.maxBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
-    this.boundsSpherePosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.minBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
+    this.maxBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
+    this.boundsSpherePosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundsSphereRadius = 0;
     this.bones = [];
     this.boneBindings = [];
@@ -18341,8 +18341,8 @@ class Tw2GeometryMesh {
    * @returns {Boolean} True if bounds are valid
    */
   GetBoundingBox(out, parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
-    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
+    if (parentTransform) global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
     return true;
   }
   /**
@@ -18354,8 +18354,8 @@ class Tw2GeometryMesh {
 
 
   GetBoundingSphere(out, parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
-    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    if (parentTransform) global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
     return true;
   }
   /**
@@ -18367,15 +18367,15 @@ class Tw2GeometryMesh {
   RebuildBounds(fromVertex) {
     const min = this.minBounds,
           max = this.maxBounds;
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
 
     for (let i = 0; i < this.areas.length; i++) {
       const area = this.areas[i];
       this.RebuildAreaBounds(area, this.bufferData, this.indexData, fromVertex);
-      _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, area.minBounds, area.maxBounds);
+      global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, area.minBounds, area.maxBounds);
     }
 
-    this.boundsSphereRadius = _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+    this.boundsSphereRadius = global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(min, max, this.boundsSpherePosition);
   }
   /**
    * Rebuilds an area's bounds
@@ -18392,9 +18392,9 @@ class Tw2GeometryMesh {
     if (!pDecl) return false;
     const stride = this.declaration.stride / 4,
           pOffset = pDecl.offset;
-    const box = Tw2GeometryMesh.GetBoundsFromVertices(_global__WEBPACK_IMPORTED_MODULE_0__["box3"].create(), area.start, area.count, stride, pOffset, bufferData, indexData);
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectBounds(box, area);
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectPositionRadius(box, area);
+    const box = Tw2GeometryMesh.GetBoundsFromVertices(global__WEBPACK_IMPORTED_MODULE_0__["box3"].create(), area.start, area.count, stride, pOffset, bufferData, indexData);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectBounds(box, area);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectPositionRadius(box, area);
     return true;
   }
   /**
@@ -18429,12 +18429,12 @@ class Tw2GeometryMesh {
 
 
   static GetVertexPosition(out, index, stride, offset, bufferData) {
-    if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(index) || index > bufferData.length / stride) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(index) || index > bufferData.length / stride) {
       throw new Error("Invalid vertex index: " + index);
     }
 
     const ix = index * stride;
-    return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, bufferData[ix + offset], bufferData[ix + offset + 1], bufferData[ix + offset + 2]);
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, bufferData[ix + offset], bufferData[ix + offset + 1], bufferData[ix + offset + 2]);
   }
   /**
    * Updates an area's bounds
@@ -18452,9 +18452,9 @@ class Tw2GeometryMesh {
     count = count / 3;
     start = start / 2 / 3;
     const vertexIndices = [],
-          indices = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-          position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].empty(out);
+          indices = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+          position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].empty(out);
 
     for (let i = 0; i < count; i++) {
       this.GetFaceVertexIndices(indices, i + start, indexData);
@@ -18463,7 +18463,7 @@ class Tw2GeometryMesh {
         if (!vertexIndices.includes(indices[x])) {
           vertexIndices.push(indices[x]);
           this.GetVertexPosition(position, indices[x], stride, pOffset, bufferData);
-          _global__WEBPACK_IMPORTED_MODULE_0__["box3"].addPoint(out, out, position);
+          global__WEBPACK_IMPORTED_MODULE_0__["box3"].addPoint(out, out, position);
         }
       }
     }
@@ -18485,7 +18485,7 @@ class Tw2GeometryMesh {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryMeshArea", function() { return Tw2GeometryMeshArea; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2GeometryMeshArea
@@ -18504,9 +18504,9 @@ class Tw2GeometryMeshArea {
     this.name = "";
     this.start = 0;
     this.count = 0;
-    this.minBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
-    this.maxBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
-    this.boundsSpherePosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.minBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
+    this.maxBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
+    this.boundsSpherePosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundsSphereRadius = 0;
   }
 
@@ -18517,8 +18517,8 @@ class Tw2GeometryMeshArea {
    * @returns {Boolean} True if bounds are valid
    */
   GetBoundingBox(out, parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
-    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
+    if (parentTransform) global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
     return true;
   }
   /**
@@ -18530,8 +18530,8 @@ class Tw2GeometryMeshArea {
 
 
   GetBoundingSphere(out, parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
-    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    if (parentTransform) global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
     return true;
   }
 
@@ -18754,7 +18754,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18873,6 +18873,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -18884,8 +18886,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -19046,7 +19046,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PointLight", function() { return Tr2PointLight; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2PointLight
@@ -19062,17 +19062,17 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} radius         -
  */
 
-class Tr2PointLight extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2PointLight extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
     this.brightness = 0;
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.innerRadius = 0;
     this.noiseAmplitude = 0;
     this.noiseFrequency = 0;
     this.noiseOctaves = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radius = 0;
   }
 
@@ -19105,7 +19105,7 @@ Tr2PointLight.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ShLightingManager", function() { return Tr2ShLightingManager; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ShLightingManager
@@ -19115,7 +19115,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} secondaryIntensity -
  */
 
-class Tr2ShLightingManager extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ShLightingManager extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.primaryIntensity = 0;
@@ -19171,8 +19171,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2MeshLod", function() { return Tr2MeshLod; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _global_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/engine */ "./global/engine/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/engine */ "./global/engine/index.js");
 
 
 /**
@@ -19199,7 +19199,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {null|Tw2GeometryRes} _geometryQuality      -
  */
 
-class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.additiveAreas = [];
@@ -19262,13 +19262,13 @@ class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     } //return super.GetResources(out);
 
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
     return out;
   }
   /**
@@ -19284,21 +19284,21 @@ class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     const getBatches = this.constructor.GetAreaBatches;
 
     switch (mode) {
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
         if (this.visible.additiveAreas) {
           getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]:
         if (this.visible.decalAreas) {
           getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]:
         /*
         if (this.visible.depthAreas)
         {
@@ -19307,7 +19307,7 @@ class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         */
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]:
         /*
         if (this.visible.distortionAreas)
         {
@@ -19316,21 +19316,21 @@ class Tr2MeshLod extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         */
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]:
         if (this.visible.opaqueAreas) {
           getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]:
         if (this.visible.pickableAreas) {
           getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]:
         if (this.visible.transparentAreas) {
           getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
         }
@@ -19411,7 +19411,7 @@ Tr2MeshLod.__isStaging = 3;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Effect", function() { return Tw2Effect; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
 /* harmony import */ var _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parameter/Tw2Vector4Parameter */ "./core/parameter/Tw2Vector4Parameter.js");
 
@@ -19431,7 +19431,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} autoParameter                   - Identifies if the effect should automatically generate parameters
  */
 
-class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -19455,7 +19455,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     if (this.effectFilePath !== "") {
       this.effectFilePath = this.effectFilePath.toLowerCase();
       const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
-      this.effectRes = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetResource(path, res => this.OnResPrepared(res));
+      this.effectRes = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetResource(path, res => this.OnResPrepared(res));
     }
   }
   /**
@@ -19590,15 +19590,15 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
                     size: constant.size
                   });
                 }
-              } else if (_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
+              } else if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
                 stage.parameters.push({
-                  parameter: _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name),
+                  parameter: global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name),
                   constantBuffer: stage.constantBuffer,
                   offset: constant.offset,
                   size: constant.size
                 });
               } else if (constant.isAutoregister && Type) {
-                const variable = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, Type);
+                const variable = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, Type);
 
                 if (variable) {
                   stage.parameters.push({
@@ -19617,7 +19617,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
                   value = value[0];
                 }
 
-                const param = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, value, Type);
+                const param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, value, Type);
 
                 if (param) {
                   this.parameters[name] = param;
@@ -19642,10 +19642,10 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
               if (name in this.parameters) {
                 param = this.parameters[name];
-              } else if (_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
-                param = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name);
+              } else if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
+                param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name);
               } else if (stageRes.textures[k].isAutoregister) {
-                param = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
+                param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
               } else if (this.autoParameter) {
                 param = this.parameters[name] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](name);
               } else {
@@ -19661,7 +19661,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
               for (let n = 0; n < stageRes.samplers.length; ++n) {
                 if (stageRes.samplers[n].registerIndex === p.slot) {
                   if (stageRes.samplers[n].name in this.samplerOverrides) {
-                    p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(_global__WEBPACK_IMPORTED_MODULE_0__["device"], stageRes.samplers[n]);
+                    p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(global__WEBPACK_IMPORTED_MODULE_0__["device"], stageRes.samplers[n]);
                   } else {
                     p.sampler = stageRes.samplers[n];
                   }
@@ -19684,8 +19684,8 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       }
     }
 
-    if (_global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]["OnEffectChanged"](this);
+    if (global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]) {
+      global__WEBPACK_IMPORTED_MODULE_0__["device"]["effectObserver"]["OnEffectChanged"](this);
     }
 
     this.autoParameter = false;
@@ -19706,7 +19706,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     this.shader.ApplyPass(technique, pass);
     const p = this.techniques[technique][pass],
           rp = this.shader.techniques[technique].passes[pass],
-          d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+          d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl;
     const program = d.IsAlphaTestEnabled() && rp.shadowShaderProgram ? rp.shadowShaderProgram : rp.shaderProgram;
 
@@ -19761,7 +19761,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       return null;
     }
 
-    if (_global__WEBPACK_IMPORTED_MODULE_0__["device"].IsAlphaTestEnabled() && this.shader.techniques[technique].passes[pass].shadowShaderProgram) {
+    if (global__WEBPACK_IMPORTED_MODULE_0__["device"].IsAlphaTestEnabled() && this.shader.techniques[technique].passes[pass].shadowShaderProgram) {
       return this.shader.techniques[technique].passes[pass].shadowShaderProgram.input;
     } else {
       return this.shader.techniques[technique].passes[pass].shaderProgram.input;
@@ -19871,7 +19871,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
             }
           }
         } else {
-          const parameter = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(key, value);
+          const parameter = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(key, value);
 
           if (parameter) {
             this.parameters[key] = parameter;
@@ -19967,7 +19967,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static ToEffectResPath(path) {
-    path = path ? path.substr(0, path.lastIndexOf(".")).replace("/effect/", _global__WEBPACK_IMPORTED_MODULE_0__["device"].effectDir) + ".sm_" + _global__WEBPACK_IMPORTED_MODULE_0__["device"].shaderModel : "";
+    path = path ? path.substr(0, path.lastIndexOf(".")).replace("/effect/", global__WEBPACK_IMPORTED_MODULE_0__["device"].effectDir) + ".sm_" + global__WEBPACK_IMPORTED_MODULE_0__["device"].shaderModel : "";
     return path.toLowerCase();
   }
   /**
@@ -19979,7 +19979,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static FromEffectResPath(path, ext = "fx") {
-    path = path.substr(0, path.lastIndexOf(".")).replace(_global__WEBPACK_IMPORTED_MODULE_0__["device"].effectDir, "/effect/") + "." + ext;
+    path = path.substr(0, path.lastIndexOf(".")).replace(global__WEBPACK_IMPORTED_MODULE_0__["device"].effectDir, "/effect/") + "." + ext;
     return path.toLowerCase();
   }
   /**
@@ -20001,7 +20001,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       options,
       effectFilePath = ""
     } = values;
-    let updated = _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(a, values, ["name", "display", "autoParameter"]);
+    let updated = global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(a, values, ["name", "display", "autoParameter"]);
     if (parameters && a.SetParameters(parameters, true)) updated = true;
     if (overrides && a.SetOverrides(overrides, true)) updated = true;
     if (textures && a.SetTextures(textures, true)) updated = true;
@@ -20031,7 +20031,7 @@ class Tw2Effect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static get(a, out = {}) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(out, a, ["name", "display", "effectFilePath"]);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(out, a, ["name", "display", "effectFilePath"]);
     out.parameters = a.GetParameters();
     out.textures = a.GetTextures();
     out.overrides = a.GetOverrides();
@@ -20108,10 +20108,10 @@ class Tw2ConstantParameter {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2InstancedMesh", function() { return Tw2InstancedMesh; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _batch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../batch */ "./core/batch/index.js");
-/* harmony import */ var _global_engine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/engine */ "./global/engine/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_engine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/engine */ "./global/engine/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2MeshArea */ "./core/mesh/Tw2MeshArea.js");
 /* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
 
@@ -20146,7 +20146,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {*} visible                                                               -
  */
 
-class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.additiveAreas = [];
@@ -20157,8 +20157,8 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
     this.instanceGeometryResPath = "";
     this.instanceGeometryResource = null;
     this.instanceMeshIndex = 0;
-    this.maxBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.minBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.maxBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.minBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.opaqueAreas = [];
     this.transparentAreas = [];
     this.name = "";
@@ -20181,11 +20181,11 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
    */
   Initialize() {
     if (this.geometryResPath !== "") {
-      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
+      this.geometryResource = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
     }
 
     if (this.instanceGeometryResPath !== "") {
-      this.instanceGeometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.instanceGeometryResPath);
+      this.instanceGeometryResource = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.instanceGeometryResPath);
     }
   }
   /**
@@ -20217,13 +20217,13 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
     } //return super.GetResources(out);
 
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
     return out;
   }
   /**
@@ -20239,21 +20239,21 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
     const getBatches = this.constructor.GetAreaBatches;
 
     switch (mode) {
-      case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_ADDITIVE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_ADDITIVE"]:
         if (this.visible.additiveAreas) {
           getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DECAL"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DECAL"]:
         if (this.visible.decalAreas) {
           getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DEPTH"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DEPTH"]:
         /*
         if (this.visible.depthAreas)
         {
@@ -20262,7 +20262,7 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
         */
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DISTORTION"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_DISTORTION"]:
         /*
         if (this.visible.distortionAreas)
         {
@@ -20271,21 +20271,21 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
         */
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_OPAQUE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_OPAQUE"]:
         if (this.visible.opaqueAreas) {
           getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_PICKABLE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_PICKABLE"]:
         if (this.visible.pickableAreas) {
           getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_TRANSPARENT"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_TRANSPARENT"]:
         if (this.visible.transparentAreas) {
           getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
         }
@@ -20335,7 +20335,7 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
   static from(values, options) {
     const item = new Tw2InstancedMesh();
-    item.meshIndex = Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["get"])(options, "index", 0);
+    item.meshIndex = Object(global_util__WEBPACK_IMPORTED_MODULE_3__["get"])(options, "index", 0);
 
     if (values) {
       /*
@@ -20344,9 +20344,9 @@ class Tw2InstancedMesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
           item.instanceGeometryResource = values.instanceGeometryResource;
       }
       */
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "geometryResPath", "instanceGeometryResPath", "instanceMeshIndex"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "geometryResPath", "instanceGeometryResPath", "instanceMeshIndex"]);
       const areaNames = ["additiveAreas", "decalAreas", "depthAreas", "distortionAreas", "opaqueAreas", "pickableAreas", "transparentAreas"];
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areaNames);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areaNames);
       _Tw2Mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2Mesh"].createAreaIfExists(item, values, areaNames);
     }
 
@@ -20414,9 +20414,9 @@ Tw2InstancedMesh.__isStaging = 1;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return Tw2Mesh; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _global_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/engine */ "./global/engine/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/engine */ "./global/engine/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 
@@ -20450,7 +20450,7 @@ __webpack_require__.r(__webpack_exports__);
 
  */
 
-class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -20486,7 +20486,7 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
    */
   Initialize() {
     if (this.geometryResPath !== "") {
-      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
+      this.geometryResource = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath);
     }
   }
   /**
@@ -20511,13 +20511,13 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     } //return super.GetResources(out);
 
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.additiveAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decalAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.depthAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.distortionAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.opaqueAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.pickableAreas, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.transparentAreas, "GetResources", out);
     return out;
   }
   /**
@@ -20533,21 +20533,21 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     const getBatches = this.constructor.GetAreaBatches;
 
     switch (mode) {
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
         if (this.visible.additiveAreas) {
           getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DECAL"]:
         if (this.visible.decalAreas) {
           getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DEPTH"]:
         /*
         if (this.visible.depthAreas)
         {
@@ -20556,7 +20556,7 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         */
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_DISTORTION"]:
         /*
         if (this.visible.distortionAreas)
         {
@@ -20565,21 +20565,21 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         */
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_OPAQUE"]:
         if (this.visible.opaqueAreas) {
           getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_PICKABLE"]:
         if (this.visible.pickableAreas) {
           getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
         }
 
         return;
 
-      case _global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]:
+      case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_TRANSPARENT"]:
         if (this.visible.transparentAreas) {
           getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
         }
@@ -20639,7 +20639,7 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static createAreaIfExists(dest, src, names) {
-    names = Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["toArray"])(names);
+    names = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["toArray"])(names);
 
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
@@ -20647,7 +20647,7 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       if (name in src && name in dest) {
         for (let i = 0; i < src[name].length; i++) {
           const type = src[name][i].__type || "Tw2MeshArea",
-                Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
+                Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
           dest[name].push(Constructor.from(src[name][i], {
             index: i
           }));
@@ -20665,12 +20665,12 @@ class Tw2Mesh extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   static from(values, options) {
     const item = new Tw2Mesh();
-    item.index = Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["get"])(options, "index", 0);
+    item.index = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["get"])(options, "index", 0);
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "deferGeometryLoad", "geometryResPath", "meshIndex"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "deferGeometryLoad", "geometryResPath", "meshIndex"]);
       const areaNames = ["additiveAreas", "decalAreas", "depthAreas", "depthNormalAreas", "distortionAreas", "opaqueAreas", "opaquePrepassAreas", "pickableAreas", "transparentAreas"];
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item.visible, values.visible, areaNames);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item.visible, values.visible, areaNames);
       this.createAreaIfExists(item, values, areaNames);
     }
 
@@ -20712,8 +20712,8 @@ Tw2Mesh.__isStaging = 1;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MeshArea", function() { return Tw2MeshArea; });
 /* harmony import */ var _batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../batch */ "./core/batch/index.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var _Tw2Effect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Effect */ "./core/mesh/Tw2Effect.js");
 
 
@@ -20733,7 +20733,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} useSHLighting -
  */
 
-class Tw2MeshArea extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+class Tw2MeshArea extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -20771,10 +20771,10 @@ class Tw2MeshArea extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
 
   static from(values, options) {
     const item = new this();
-    Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, options, "index");
+    Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, options, "index");
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "count", "index", "reversed", "useSHLighting"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "count", "index", "reversed", "useSHLighting"]);
 
       if (values.effect) {
         item.effect = _Tw2Effect__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from(values.effect);
@@ -20880,7 +20880,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Animation", function() { return Tw2Animation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2Animation
@@ -20894,7 +20894,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Function} _controller              - The animation's controller
  */
 
-class Tw2Animation extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
+class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
   /**
    * Constructor
    * @param animationController
@@ -21166,7 +21166,7 @@ Tw2Animation.State = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2AnimationController", function() { return Tw2AnimationController; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../resource */ "./core/resource/index.js");
 /* harmony import */ var _Tw2Animation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Animation */ "./core/model/Tw2Animation.js");
 /* harmony import */ var _Tw2Bone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Bone */ "./core/model/Tw2Bone.js");
@@ -21199,7 +21199,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array} _pendingCommands
  */
 
-class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    * @param {Tw2GeometryRes} [geometryResource]
@@ -21355,7 +21355,7 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
       return;
     }
 
-    names = _global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
+    names = global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
 
     for (let i = 0; i < this.animations.length; ++i) {
       if (names.includes(this.animations[i].name)) {
@@ -21398,7 +21398,7 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
       return;
     }
 
-    names = _global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
+    names = global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
 
     for (let i = 0; i < this.animations.length; ++i) {
       if (!names.includes(this.animations[i].name)) {
@@ -21470,19 +21470,19 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
       for (let j = 0; j < this.models[i].bones.length; ++j) {
         const bone = this.models[i].bones[j],
               boneRes = bone.boneRes;
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(bone.localTransform, boneRes.localTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(bone.localTransform, boneRes.localTransform);
 
         if (boneRes.parentIndex !== -1) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.worldTransform, bone.localTransform, this.models[i].bones[bone.boneRes.parentIndex].worldTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.worldTransform, bone.localTransform, this.models[i].bones[bone.boneRes.parentIndex].worldTransform);
         } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].set(bone.worldTransform, bone.localTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].set(bone.worldTransform, bone.localTransform);
         }
 
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(bone.offsetTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(bone.offsetTransform);
       }
     }
 
-    const id = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(Tw2AnimationController.global.mat4_0);
+    const id = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(Tw2AnimationController.global.mat4_0);
 
     for (let i = 0; i < this.meshBindings.length; ++i) {
       for (let j = 0; j < this.meshBindings[i].meshIndex.length; ++j) {
@@ -21649,26 +21649,26 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
             const track = animation.trackGroups[j].transformTracks[k];
 
             if (track.trackRes.position) {
-              _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(track.trackRes.position, animation.time, position, animation.cycle, res.duration);
+              global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(track.trackRes.position, animation.time, position, animation.cycle, res.duration);
             } else {
               position[0] = position[1] = position[2] = 0;
             }
 
             if (track.trackRes.orientation) {
-              _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(track.trackRes.orientation, animation.time, orientation, animation.cycle, res.duration);
-              _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(orientation, orientation);
+              global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(track.trackRes.orientation, animation.time, orientation, animation.cycle, res.duration);
+              global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(orientation, orientation);
             } else {
-              _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(orientation);
+              global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(orientation);
             }
 
             if (track.trackRes.scaleShear) {
-              _global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(track.trackRes.scaleShear, animation.time, scale, animation.cycle, res.duration);
+              global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(track.trackRes.scaleShear, animation.time, scale, animation.cycle, res.duration);
             } else {
-              _global__WEBPACK_IMPORTED_MODULE_0__["mat3"].identity(scale);
+              global__WEBPACK_IMPORTED_MODULE_0__["mat3"].identity(scale);
             }
 
-            _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromMat3(track.bone.localTransform, scale);
-            _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(track.bone.localTransform, track.bone.localTransform, _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(rotationMat, orientation));
+            global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromMat3(track.bone.localTransform, scale);
+            global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(track.bone.localTransform, track.bone.localTransform, global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(rotationMat, orientation));
             track.bone.localTransform[12] = position[0];
             track.bone.localTransform[13] = position[1];
             track.bone.localTransform[14] = position[2];
@@ -21682,12 +21682,12 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
         const bone = this.models[i].bones[j];
 
         if (bone.boneRes.parentIndex !== -1) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.worldTransform, this.models[i].bones[bone.boneRes.parentIndex].worldTransform, bone.localTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.worldTransform, this.models[i].bones[bone.boneRes.parentIndex].worldTransform, bone.localTransform);
         } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(bone.worldTransform, bone.localTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(bone.worldTransform, bone.localTransform);
         }
 
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.offsetTransform, bone.worldTransform, bone.boneRes.worldTransformInv);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.offsetTransform, bone.worldTransform, bone.boneRes.worldTransformInv);
 
         for (let a = 0; a < bone.bindingArrays.length; ++a) {
           const ba = bone.bindingArrays[a],
@@ -21973,10 +21973,10 @@ class Tw2AnimationController extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2Ba
 
 }
 Tw2AnimationController.global = {
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  quat_0: _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
-  mat3_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat3"].create(),
-  mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  quat_0: global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
+  mat3_0: global__WEBPACK_IMPORTED_MODULE_0__["mat3"].create(),
+  mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
 };
 Tw2AnimationController.keys = {
   primary: ["update"]
@@ -21994,7 +21994,7 @@ Tw2AnimationController.keys = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Bone", function() { return Tw2Bone; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2Bone
@@ -22010,9 +22010,9 @@ class Tw2Bone {
   constructor() {
     this.boneRes = null;
     this.bindingArrays = [];
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.worldTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.offsetTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.offsetTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
 }
@@ -22206,7 +22206,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2FloatParameter", function() { return Tw2FloatParameter; });
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -22231,7 +22231,7 @@ class Tw2FloatParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2P
   constructor(name = "", value = 1) {
     super(name);
     this.value = 1;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_1__["util"].isArrayLike(value) ? value[0] : value;
+    this.value = global__WEBPACK_IMPORTED_MODULE_1__["util"].isArrayLike(value) ? value[0] : value;
   }
   /**
    * Sets the parameter's value
@@ -22314,7 +22314,7 @@ class Tw2FloatParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2P
 
 
   static isValue(a) {
-    return _global__WEBPACK_IMPORTED_MODULE_1__["util"].isNumber(a);
+    return global__WEBPACK_IMPORTED_MODULE_1__["util"].isNumber(a);
   }
   /**
    * The parameter's constant buffer size
@@ -22347,7 +22347,7 @@ Tw2FloatParameter.constantBufferSize = 1;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Matrix4Parameter", function() { return Tw2Matrix4Parameter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MatrixParameter", function() { return Tw2MatrixParameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2VectorParameter */ "./core/parameter/Tw2VectorParameter.js");
 
 
@@ -22361,7 +22361,7 @@ class Tw2Matrix4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1
    * @param {String} [name='']
    * @param {mat4|Float32Array} [value=mat4.create()]
    */
-  constructor(name = "", value = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()) {
+  constructor(name = "", value = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()) {
     super(name, value);
   }
   /**
@@ -22376,7 +22376,7 @@ class Tw2Matrix4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1
     if ("value" in rotation) rotation = rotation["value"];
     if ("value" in translation) translation = translation["value"];
     if ("value" in scaling) scaling = scaling["value"];
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.value, rotation, translation, scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.value, rotation, translation, scaling);
     this.UpdateValues();
   }
   /**
@@ -22388,9 +22388,9 @@ class Tw2Matrix4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1
 
 
   Decompose(rotation, translation, scaling) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation("value" in rotation ? rotation.value : rotation, this.value);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation("value" in translation ? translation.value : translation, this.value);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling("value" in scaling ? scaling.value : scaling, this.value);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation("value" in rotation ? rotation.value : rotation, this.value);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation("value" in translation ? translation.value : translation, this.value);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling("value" in scaling ? scaling.value : scaling, this.value);
     if ("UpdateValues" in rotation) rotation.UpdateValues();
     if ("UpdateValues" in translation) translation.UpdateValues();
     if ("UpdateValues" in scaling) scaling.UpdateValues();
@@ -22483,7 +22483,7 @@ function Tw2MatrixParameter(name, value) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Parameter", function() { return Tw2Parameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _class3, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -22496,7 +22496,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @ccp N/A
  */
 
-let Tw2Parameter = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Parameter extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Parameter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Gets the parameter's constant buffer size
    * @returns {Number} 0 if invalid
@@ -22566,7 +22566,7 @@ let Tw2Parameter = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureParameter", function() { return Tw2TextureParameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../sampler */ "./core/sampler/index.js");
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
@@ -22686,13 +22686,13 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
       if (this.resourcePath.indexOf("rgba:/") === 0) {
         if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
           const color = this.resourcePath.replace("rgba:/", "").split(","),
-                texture = _global__WEBPACK_IMPORTED_MODULE_0__["device"].CreateSolidTexture([parseFloat(color[0]), parseFloat(color[1]), parseFloat(color[2]), color[3] !== undefined ? parseFloat(color[3]) : 255]);
+                texture = global__WEBPACK_IMPORTED_MODULE_0__["device"].CreateSolidTexture([parseFloat(color[0]), parseFloat(color[1]), parseFloat(color[2]), color[3] !== undefined ? parseFloat(color[3]) : 255]);
           this.textureRes = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureRes"]();
           this.textureRes.path = this.resourcePath;
           this.textureRes.Attach(texture);
         }
       } else {
-        this.textureRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.resourcePath);
+        this.textureRes = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.resourcePath);
       }
     } else {
       this.textureRes = null;
@@ -22717,7 +22717,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
         sampler = this._sampler;
       }
 
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.activeTexture(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.TEXTURE0 + stage);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.activeTexture(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.TEXTURE0 + stage);
       this.textureRes.Bind(sampler, slices);
     }
   }
@@ -22730,7 +22730,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
 
 
   SetOverrides(opt = {}) {
-    if (_global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(this, opt, Tw2TextureParameter.overrideProperties)) {
+    if (global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(this, opt, Tw2TextureParameter.overrideProperties)) {
       this.UpdateValues();
       return true;
     }
@@ -22743,7 +22743,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
 
 
   GetOverrides(out = {}) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(out, this, Tw2TextureParameter.overrideProperties);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(out, this, Tw2TextureParameter.overrideProperties);
     return out;
   }
   /**
@@ -22759,7 +22759,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
       const {
         wrapModes,
         gl
-      } = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+      } = global__WEBPACK_IMPORTED_MODULE_0__["device"],
             sampler = this._sampler;
 
       if (this.filterMode === 1) {
@@ -22837,7 +22837,7 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
 
 
   static isValue(a) {
-    return _global__WEBPACK_IMPORTED_MODULE_0__["util"].isString(a);
+    return global__WEBPACK_IMPORTED_MODULE_0__["util"].isString(a);
   }
   /**
    * The texture parameter's override properties
@@ -22870,8 +22870,8 @@ Tw2TextureParameter.overrideProperties = ["useAllOverrides", "addressUMode", "ad
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformParameter", function() { return Tw2TransformParameter; });
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
-/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/math */ "./global/math/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/math */ "./global/math/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 
@@ -22909,11 +22909,11 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     Tw2TransformParameter.init();
     super();
     this.name = "";
-    this.rotation = _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
-    this.translation = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
-    this.scaling = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
-    this._localTransform = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._worldTransform = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+    this.rotation = global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
+    this.translation = global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+    this.scaling = global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
+    this._localTransform = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+    this._worldTransform = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
     this._rebuildLocal = true;
     this._rebuildWorld = true;
     if (name) this.name = name;
@@ -22964,32 +22964,32 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
         skipUpdate = opt ? opt.skipUpdate : false;
 
     if (force || this._rebuildLocal) {
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
+      global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
       this._rebuildLocal = false;
       force = true;
     }
 
     if (force || this._rebuildWorld) {
       if (this._parentTransform) {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, this._parentTransform, this._localTransform);
+        global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, this._parentTransform, this._localTransform);
       } else {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransform, this._localTransform);
+        global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransform, this._localTransform);
       }
 
       if (this._worldInverse) {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(this._worldInverse, this._worldTransform);
+        global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(this._worldInverse, this._worldTransform);
       }
 
       if (this._worldTranspose) {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
+        global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
       }
 
       if (this._worldInverseTranspose) {
         if (this._worldInverse) {
-          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverse);
+          global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverse);
         } else {
-          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(this._worldInverseTranspose, this._worldTransform);
-          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverseTranspose);
+          global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(this._worldInverseTranspose, this._worldTransform);
+          global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldInverseTranspose, this._worldInverseTranspose);
         }
       }
 
@@ -23040,8 +23040,8 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
   Apply(constantBuffer, offset, size) {
     if (!this._worldTranspose) {
       this.RebuildTransforms();
-      this._worldTranspose = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
+      this._worldTranspose = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+      global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
     }
 
     if (size >= this.constructor.constantBufferSize) {
@@ -23061,11 +23061,11 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     this.RebuildTransforms();
 
     if (!this._worldTranspose) {
-      this._worldTranspose = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
+      this._worldTranspose = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+      global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].transpose(this._worldTranspose, this._worldTransform);
     }
 
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._worldTranspose);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._worldTranspose);
   }
   /**
    * Sets the parent transform
@@ -23081,11 +23081,11 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
       this._rebuildWorld = true;
     } // Set new parent
     else if (!this._parentTransform) {
-        this._parentTransform = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].clone(m);
+        this._parentTransform = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].clone(m);
         this._rebuildWorld = true;
       } // Update parent
-      else if (!_global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].equals(m, this._parentTransform)) {
-          _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._parentTransform, m);
+      else if (!global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].equals(m, this._parentTransform)) {
+          global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._parentTransform, m);
           this._rebuildWorld = true;
         }
 
@@ -23100,7 +23100,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetWorldTransform(out) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._worldTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._worldTransform);
   }
   /**
    * Decomposes the world transform
@@ -23113,9 +23113,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   DecomposeWorld(rotation, translation, scaling) {
     this.RebuildTransforms();
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(rotation, this._worldTransform);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(translation, this._worldTransform);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(scaling, this._worldTransform);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(rotation, this._worldTransform);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(translation, this._worldTransform);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(scaling, this._worldTransform);
     return this;
   }
   /**
@@ -23127,7 +23127,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetWorldRotation(out) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(out, this._worldTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(out, this._worldTransform);
   }
   /**
    * Gets world direction
@@ -23138,8 +23138,8 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetWorldDirection(out) {
     this.RebuildTransforms();
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._worldTransform[8], this._worldTransform[9], this._worldTransform[10]);
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._worldTransform[8], this._worldTransform[9], this._worldTransform[10]);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
   }
   /**
    * Gets the world rotation as a euler
@@ -23153,7 +23153,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
       quat_0
     } = Tw2TransformParameter.global;
     this.GetWorldRotation(quat_0);
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
   }
   /**
    * Gets the world axis angle
@@ -23167,8 +23167,8 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
       quat_0
     } = Tw2TransformParameter.global;
     this.RebuildTransforms();
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, this._worldTransform);
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].getAxisAngle(axis, quat_0);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, this._worldTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].getAxisAngle(axis, quat_0);
   }
   /**
    * Gets the world translation
@@ -23179,7 +23179,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetWorldTranslation(out) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(out, this._worldTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(out, this._worldTransform);
   }
   /**
    * Gets the world scaling
@@ -23190,7 +23190,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetWorldScaling(out) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(out, this._worldTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(out, this._worldTransform);
   }
   /**
    * Gets the world max scale
@@ -23217,14 +23217,14 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     this.RebuildTransforms();
 
     if (this._worldInverse) {
-      return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldInverse);
+      return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldInverse);
     }
 
     const {
       mat4_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(mat4_0, this._worldTransform);
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, mat4_0);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(mat4_0, this._worldTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, mat4_0);
   }
   /**
    * Gets the local transform
@@ -23234,7 +23234,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetTransform(out) {
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._localTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(out, this._localTransform);
   }
   /**
    * Sets the local transform
@@ -23244,10 +23244,10 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetTransform(m) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, m);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, m);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, m);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._localTransform, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._localTransform, m);
     this._rebuildWorld = true;
     return this;
   }
@@ -23261,9 +23261,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   Compose(rotation, translation, scaling) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(this.rotation, rotation);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.translation, translation);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.scaling, scaling);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(this.rotation, rotation);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.translation, translation);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.scaling, scaling);
     this._rebuildLocal = true;
     return this;
   }
@@ -23278,9 +23278,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   Decompose(rotation, translation, scaling) {
     this.RebuildTransforms();
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(rotation, this.rotation);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(translation, this.translation);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(scaling, this.scaling);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(rotation, this.rotation);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(translation, this.translation);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(scaling, this.scaling);
     return this;
   }
   /**
@@ -23293,7 +23293,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetLocalToWorld(out, v) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldTransform);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldTransform);
   }
   /**
    * Gets local direction
@@ -23304,8 +23304,8 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetDirection(out) {
     this.RebuildTransforms();
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._localTransform[8], this._localTransform[9], this._localTransform[10]);
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(out, this._localTransform[8], this._localTransform[9], this._localTransform[10]);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].normalize(out, out);
   }
   /**
    * Gets the local rotation
@@ -23316,7 +23316,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetRotation(out) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(out, this.rotation);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(out, this.rotation);
   }
   /**
    * Gets the local rotation as a euler
@@ -23330,7 +23330,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
       quat_0
     } = Tw2TransformParameter.global;
     this.GetRotation(quat_0);
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.fromQuat(out, quat_0);
   }
   /**
    * Gets a matrix from the local rotation
@@ -23340,7 +23340,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetRotationMatrix(out) {
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotation(out, this.rotation);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotation(out, this.rotation);
   }
   /**
    * Sets the the local rotation from a quat
@@ -23350,7 +23350,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotation(q) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(this.rotation, q);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(this.rotation, q);
     this._rebuildLocal = true;
     return this;
   }
@@ -23368,7 +23368,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       quat_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].set(quat_0, x, y, z, w);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].set(quat_0, x, y, z, w);
     return this.SetRotation(quat_0);
   }
   /**
@@ -23384,7 +23384,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       quat_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxes(quat_0, view, right, up);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxes(quat_0, view, right, up);
     return this.SetRotation(quat_0);
   }
   /**
@@ -23396,7 +23396,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromAxisAngle(axis, radians) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(this.rotation, axis, radians);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(this.rotation, axis, radians);
     this._rebuildLocal = true;
     return this;
   }
@@ -23408,7 +23408,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromEuler(e) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat(this.rotation, e);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat(this.rotation, e);
     this._rebuildLocal = true;
     return this;
   }
@@ -23425,7 +23425,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       vec3_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
     return this.SetRotationFromEuler(vec3_0);
   }
   /**
@@ -23439,7 +23439,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       quat_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, m);
     return this.SetRotation(quat_0);
   }
   /**
@@ -23450,7 +23450,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   RotateX(radians) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateX(this.rotation, this.rotation, radians);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateX(this.rotation, this.rotation, radians);
     this._rebuildLocal = true;
     return this;
   }
@@ -23462,7 +23462,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   RotateY(radians) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateY(this.rotation, this.rotation, radians);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateY(this.rotation, this.rotation, radians);
     this._rebuildLocal = true;
     return this;
   }
@@ -23474,7 +23474,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   RotateZ(radians) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateZ(this.rotation, this.rotation, radians);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].rotateZ(this.rotation, this.rotation, radians);
     this._rebuildLocal = true;
     return this;
   }
@@ -23490,8 +23490,8 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       quat_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(quat_0, axis, radians);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].multiply(this.rotation, this.rotation, quat_0);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(quat_0, axis, radians);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].multiply(this.rotation, this.rotation, quat_0);
     this._rebuildLocal = true;
     return this;
   }
@@ -23503,7 +23503,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetAxisAngle(out) {
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].getAxisAngle(out, this.rotation);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].getAxisAngle(out, this.rotation);
   }
   /**
    * Local rotation to look at a local coordinate
@@ -23518,15 +23518,15 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       mat4_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(mat4_0, this._localTransform);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(mat4_0, this._localTransform);
 
     if (flip) {
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].lookAtGL(mat4_0, this.translation, v, _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS);
+      global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].lookAtGL(mat4_0, this.translation, v, global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS);
     } else {
-      _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].lookAtGL(mat4_0, v, this.translation, _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS);
+      global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].lookAtGL(mat4_0, v, this.translation, global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS);
     }
 
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, mat4_0);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(this.rotation, mat4_0);
     this._rebuildLocal = true;
     return this;
   }
@@ -23554,7 +23554,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetTranslation(out) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.translation);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.translation);
   }
   /**
    * Sets the local translation from a vector
@@ -23564,7 +23564,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetTranslation(v) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.translation, v);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.translation, v);
     this._rebuildLocal = true;
     return this;
   }
@@ -23578,7 +23578,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetTranslationFromValues(x, y, z) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(this.translation, x, y, z);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(this.translation, x, y, z);
     this._rebuildLocal = true;
     return this;
   }
@@ -23590,7 +23590,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetTranslationFromMat4(m) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(this.translation, m);
     this._rebuildLocal = true;
     return this;
   }
@@ -23606,8 +23606,8 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       vec3_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformQuat(vec3_0, axis, this.rotation);
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.translation, this.translation, vec3_0, distance);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformQuat(vec3_0, axis, this.rotation);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].scaleAndAdd(this.translation, this.translation, vec3_0, distance);
     this._rebuildLocal = true;
     return this;
   }
@@ -23619,7 +23619,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   TranslateX(distance) {
-    return this.TranslateOnAxis(_global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].X_AXIS, distance);
+    return this.TranslateOnAxis(global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].X_AXIS, distance);
   }
   /**
    * Local translation on the y axis
@@ -23629,7 +23629,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   TranslateY(distance) {
-    return this.TranslateOnAxis(_global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS, distance);
+    return this.TranslateOnAxis(global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Y_AXIS, distance);
   }
   /**
    * Local translation on the z axis
@@ -23639,7 +23639,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   TranslateZ(distance) {
-    return this.TranslateOnAxis(_global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Z_AXIS, distance);
+    return this.TranslateOnAxis(global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].Z_AXIS, distance);
   }
   /**
    * Gets the local scaling
@@ -23650,7 +23650,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   GetScale(out) {
     this.RebuildTransforms();
-    return _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.scaling);
+    return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(out, this.scaling);
   }
   /**
    * Gets the maximum local scale
@@ -23669,7 +23669,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetScale(v) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.scaling, v);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(this.scaling, v);
     this._rebuildLocal = true;
     return this;
   }
@@ -23686,7 +23686,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       vec3_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
     return this.SetScale(vec3_0);
   }
   /**
@@ -23737,7 +23737,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetScaleFromMat4(m) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(this.scaling, m);
     this._rebuildLocal = true;
     return this;
   }
@@ -23749,7 +23749,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   Scale(v) {
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].multiply(this.scaling, this.scaling, v);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].multiply(this.scaling, this.scaling, v);
     this._rebuildLocal = true;
     return this;
   }
@@ -23766,7 +23766,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       vec3_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
     return this.Scale(vec3_0);
   }
   /**
@@ -23780,7 +23780,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     const {
       vec3_0
     } = Tw2TransformParameter.global;
-    _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_0, m);
+    global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_0, m);
     return this.Scale(vec3_0);
   }
   /**
@@ -23852,9 +23852,9 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
         updated = false; // Transform has precedence to any other property
 
     if (values.transform) {
-      rotation = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, values.transform);
-      translation = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(vec3_0, values.transform);
-      scaling = _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_1, values.transform);
+      rotation = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, values.transform);
+      translation = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getTranslation(vec3_0, values.transform);
+      scaling = global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_1, values.transform);
     } else {
       rotation = values.rotation || values.orientation;
       translation = values.position || values.translation;
@@ -23864,27 +23864,27 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     if (rotation || translation || scaling !== undefined) {
       if (rotation) {
         if (rotation.length === 3) {
-          rotation = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat(quat_0, rotation);
+          rotation = global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].euler.getQuat(quat_0, rotation);
         }
 
-        if (!_global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].equals(a.rotation, rotation)) {
-          _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(a.rotation, rotation);
+        if (!global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].equals(a.rotation, rotation)) {
+          global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].copy(a.rotation, rotation);
           updated = true;
         }
       }
 
-      if (translation && !_global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals(a.translation, translation)) {
-        _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(a.translation, translation);
+      if (translation && !global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals(a.translation, translation)) {
+        global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(a.translation, translation);
         updated = true;
       }
 
       if (scaling !== undefined) {
-        if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(scaling)) {
-          scaling = _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_1, scaling, scaling, scaling);
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(scaling)) {
+          scaling = global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_1, scaling, scaling, scaling);
         }
 
-        if (!_global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals(a.scaling, scaling)) {
-          _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(a.scaling, scaling);
+        if (!global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].equals(a.scaling, scaling)) {
+          global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].copy(a.scaling, scaling);
           updated = true;
         }
       }
@@ -23928,10 +23928,10 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
   static init() {
     if (this.global) return;
     this.global = {
-      vec3_0: _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
-      vec3_1: _global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
-      quat_0: _global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
-      mat4_0: _global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()
+      vec3_0: global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
+      vec3_1: global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].create(),
+      quat_0: global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].create(),
+      mat4_0: global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].create()
     };
   }
   /**
@@ -23961,7 +23961,7 @@ Tw2TransformParameter.global = null;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VariableParameter", function() { return Tw2VariableParameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Parameter */ "./core/parameter/Tw2Parameter.js");
 
 
@@ -23989,7 +23989,7 @@ class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["T
 
 
   get variable() {
-    return _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(this.variableName);
+    return global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(this.variableName);
   }
   /**
    * Gets the linked variable's size
@@ -24009,7 +24009,7 @@ class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["T
 
 
   SetValue(value, opt) {
-    return _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue(this.variableName, value, opt);
+    return global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue(this.variableName, value, opt);
   }
   /**
    * Gets the variable's value
@@ -24019,7 +24019,7 @@ class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["T
 
 
   GetValue(out = []) {
-    return _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariableValue(this.variableName, out);
+    return global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariableValue(this.variableName, out);
   }
   /**
    * Apply
@@ -24059,7 +24059,7 @@ class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["T
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Parameter", function() { return Tw2Vector2Parameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2VectorParameter */ "./core/parameter/Tw2VectorParameter.js");
 
 
@@ -24075,7 +24075,7 @@ class Tw2Vector2Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1
    * @param {String} [name='']
    * @param {vec2|Array|Float32Array} [value=vec2.fromValues(1,1)]
    */
-  constructor(name = "", value = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 1)) {
+  constructor(name = "", value = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(1, 1)) {
     super(name, value);
   }
   /**
@@ -24135,7 +24135,7 @@ Tw2Vector2Parameter.constantBufferSize = 2;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Parameter", function() { return Tw2Vector3Parameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2VectorParameter */ "./core/parameter/Tw2VectorParameter.js");
 
 
@@ -24151,7 +24151,7 @@ class Tw2Vector3Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1
    * @param {String} [name='']
    * @param {vec3|Array|Float32Array} [value=vec3.fromValues(1,1,1)]
    */
-  constructor(name = "", value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1)) {
+  constructor(name = "", value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1)) {
     super(name, value);
   }
   /**
@@ -24229,7 +24229,7 @@ Tw2Vector3Parameter.constantBufferSize = 3;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector4Parameter", function() { return Tw2Vector4Parameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2VectorParameter */ "./core/parameter/Tw2VectorParameter.js");
 
 
@@ -24244,7 +24244,7 @@ class Tw2Vector4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1
    * @param {String} [name='']
    * @param {vec4|Array|Float32Array} [value=vec4.fromValues(1,1,1,1)]
    */
-  constructor(name = "", value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1)) {
+  constructor(name = "", value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1)) {
     super(name, value);
   }
   /**
@@ -24350,7 +24350,7 @@ Tw2Vector4Parameter.constantBufferSize = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorParameter", function() { return Tw2VectorParameter; });
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -24361,7 +24361,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {?Number} _offset
  */
 
-class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+class Tw2VectorParameter extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
   //_constantBuffer = null;
   //_offset = null;
 
@@ -24527,7 +24527,7 @@ class Tw2VectorParameter extends _global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCl
 
 
   static isValue(value) {
-    return _global__WEBPACK_IMPORTED_MODULE_1__["util"].isArrayLike(value) && value.length === this.constantBufferSize;
+    return global__WEBPACK_IMPORTED_MODULE_1__["util"].isArrayLike(value) && value.length === this.constantBufferSize;
   }
   /**
    * The parameter's constant buffer size
@@ -24600,7 +24600,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PostProcess", function() { return Tr2PostProcess; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2PostProcess
@@ -24609,7 +24609,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<Tr2Effect>} stages -
  */
 
-class Tr2PostProcess extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2PostProcess extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.stages = [];
@@ -24644,12 +24644,12 @@ Tr2PostProcess.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffect", function() { return Tw2PostEffect; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2RenderTarget */ "./core/Tw2RenderTarget.js");
 /* harmony import */ var _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../resource/Tw2TextureRes */ "./core/resource/Tw2TextureRes.js");
 /* harmony import */ var _parameter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../parameter */ "./core/parameter/index.js");
 /* harmony import */ var _Tw2PostEffectStep__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Tw2PostEffectStep */ "./core/post/Tw2PostEffectStep.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 
@@ -24671,7 +24671,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Function} _onChildModified              - a function called when a child step is modified
  */
 
-class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.display = true;
@@ -24825,7 +24825,7 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
    */
 
 
-  CreateTarget(name, width = _global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportWidth, height = _global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportHeight) {
+  CreateTarget(name, width = global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportWidth, height = global__WEBPACK_IMPORTED_MODULE_0__["device"].viewportHeight) {
     if (!this._targets[name]) {
       this._targets[name] = new _Tw2RenderTarget__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"]();
       this._targets[name].name = name;
@@ -24853,7 +24853,7 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
 
   Render() {
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           width = d.viewportWidth,
           height = d.viewportHeight;
@@ -24964,7 +24964,7 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     gl.bindTexture(gl.TEXTURE_2D, this._texture.texture);
     gl.copyTexImage2D(gl.TEXTURE_2D, 0, d.alphaBlendBackBuffer ? gl.RGBA : gl.RGB, 0, 0, width, height, 0);
     gl.bindTexture(gl.TEXTURE_2D, null);
-    d.SetStandardStates(_global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_OPAQUE);
+    d.SetStandardStates(global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_OPAQUE);
     let didPost = 0;
 
     for (let i = 0; i < this._visibleSteps.length; ++i) {
@@ -24994,7 +24994,7 @@ class Tw2PostEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
   static from(opt = {}) {
     const postEffect = new this();
-    Object(_global_util__WEBPACK_IMPORTED_MODULE_5__["assignIfExists"])(postEffect, opt, ["name", "display", "index"]);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_5__["assignIfExists"])(postEffect, opt, ["name", "display", "index"]);
 
     if (opt.steps) {
       for (let i = 0; i < opt.steps.length; i++) {
@@ -25026,7 +25026,7 @@ Tw2PostEffect.Item = _Tw2PostEffectStep__WEBPACK_IMPORTED_MODULE_4__["Tw2PostEff
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffectManager", function() { return Tw2PostEffectManager; });
 /* harmony import */ var _Tw2PostEffect__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2PostEffect */ "./core/post/Tw2PostEffect.js");
-/* harmony import */ var _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/class/Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
+/* harmony import */ var global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/class/Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
 
 
 /**
@@ -25037,7 +25037,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array<Tw2PostEffect>} items
  */
 
-class Tw2PostEffectManager extends _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "Post manager";
@@ -25227,9 +25227,9 @@ Tw2PostEffectManager.Item = _Tw2PostEffect__WEBPACK_IMPORTED_MODULE_0__["Tw2Post
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2PostEffectStep", function() { return Tw2PostEffectStep; });
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var _mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
-/* harmony import */ var _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/class/Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
+/* harmony import */ var global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/class/Tw2BaseClass */ "./global/class/Tw2BaseClass.js");
 
 
 
@@ -25247,7 +25247,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {?Function} _onModified            - a function which is called when the step is modified
  */
 
-class Tw2PostEffectStep extends _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+class Tw2PostEffectStep extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.index = -1;
@@ -25307,7 +25307,7 @@ class Tw2PostEffectStep extends _global_class_Tw2BaseClass__WEBPACK_IMPORTED_MOD
 
   static from(opt = {}) {
     const item = new this();
-    Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(item, opt, ["name", "display", "target", "index"]);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(item, opt, ["name", "display", "target", "index"]);
 
     if (opt.inputs) {
       Object.assign(item.inputs, opt.inputs);
@@ -25858,33 +25858,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "structList", function() { return structList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromList", function() { return fromList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
-/* harmony import */ var _global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 
 
 const TypeReader = {
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN]: notImplemented,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN]: boolean,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH]: path,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING]: string,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE]: byte,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT]: uint,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].USHORT]: ushort,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT]: float,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2]: vector2,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3]: vector3,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4]: vector4,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION]: vector4,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR]: color,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT]: object,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW]: rawObject,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST]: array,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN]: rawObject,
-  [_global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER]: indexBuffer
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN]: notImplemented,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN]: boolean,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH]: path,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING]: string,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE]: byte,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT]: uint,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].USHORT]: ushort,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT]: float,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2]: vector2,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3]: vector3,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4]: vector4,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION]: vector4,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR]: color,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT]: object,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW]: rawObject,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST]: array,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN]: rawObject,
+  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER]: indexBuffer
 };
 /**
  * Gets a black reader from a property type
@@ -25893,8 +25893,8 @@ const TypeReader = {
  */
 
 function getReaderFromType(type) {
-  if (Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["isString"])(type)) type = _global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"][type.toUpperCase()];
-  if (type === undefined || TypeReader[type] === undefined) type = _global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN;
+  if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isString"])(type)) type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"][type.toUpperCase()];
+  if (type === undefined || TypeReader[type] === undefined) type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN;
   return TypeReader[type];
 }
 /**
@@ -25967,7 +25967,7 @@ function path(reader) {
 function object(reader, id) {
   const context = reader.context,
         givenId = id !== undefined,
-        debugEnabled = _global__WEBPACK_IMPORTED_MODULE_1__["tw2"].constructor.DEBUG_ENABLED;
+        debugEnabled = global__WEBPACK_IMPORTED_MODULE_1__["tw2"].constructor.DEBUG_ENABLED;
 
   if (!givenId) {
     id = reader.ReadU32();
@@ -25987,13 +25987,13 @@ function object(reader, id) {
     reader.references.set(id, result);
   }
 
-  if (!_global__WEBPACK_IMPORTED_MODULE_1__["tw2"].HasBlack(type)) {
+  if (!global__WEBPACK_IMPORTED_MODULE_1__["tw2"].HasBlack(type)) {
     throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryObjectTypeNotFound"]({
       type
     });
   }
 
-  let properties = _global__WEBPACK_IMPORTED_MODULE_1__["tw2"].GetBlack(type);
+  let properties = global__WEBPACK_IMPORTED_MODULE_1__["tw2"].GetBlack(type);
 
   while (!objectReader.AtEnd()) {
     let propertyName = objectReader.ReadStringU16();
@@ -26144,7 +26144,7 @@ function byte(reader) {
  */
 
 function vector2(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_1__["vec2"].fromValues(reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_1__["vec2"].fromValues(reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a vector3
@@ -26153,7 +26153,7 @@ function vector2(reader) {
  */
 
 function vector3(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a color
@@ -26162,7 +26162,7 @@ function vector3(reader) {
  */
 
 function color(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a vector4
@@ -26171,7 +26171,7 @@ function color(reader) {
  */
 
 function vector4(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a matrix with 16 elements
@@ -26180,7 +26180,7 @@ function vector4(reader) {
  */
 
 function matrix(reader) {
-  return _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads an index buffer
@@ -26240,7 +26240,7 @@ function structList(struct) {
  */
 
 function fromList(options) {
-  if (Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["isString"])(options)) {
+  if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isString"])(options)) {
     options = {
       key: options
     };
@@ -26256,7 +26256,7 @@ function fromList(options) {
     // Allows rerouting of results to a new target property
     const target = parent[reroute ? reroute : property]; // Target must be a plain object
 
-    if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["isPlain"])(target)) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isPlain"])(target)) {
       throw new Error("Target is not a plain object");
     }
 
@@ -26307,11 +26307,11 @@ notImplemented.custom = true;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackReader", function() { return Tw2BlackReader; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2BlackBinaryReader */ "./core/reader/Tw2BlackBinaryReader.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 
@@ -26411,8 +26411,8 @@ class Tw2BlackReader {
 
 
   ConstructType(type) {
-    if (_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(type)) {
-      const Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
+    if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(type)) {
+      const Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
       return new Constructor();
     } else if (Tw2BlackReader.DEBUG_ENABLED) {
       return {
@@ -26445,7 +26445,7 @@ Tw2BlackReader.DEBUG_ENABLED = true;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return Tw2ObjectReader; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2BinaryReader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2BinaryReader */ "./core/reader/Tw2BinaryReader.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 
@@ -26545,7 +26545,7 @@ class Tw2ObjectReader {
 
     let Constructor;
 
-    if (!_global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(data.type)) {
+    if (!global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(data.type)) {
       if (Tw2ObjectReader.DEBUG_ENABLED) {
         Constructor = Object;
       } else {
@@ -26554,7 +26554,7 @@ class Tw2ObjectReader {
         });
       }
     } else {
-      Constructor = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(data.type);
+      Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(data.type);
     }
 
     const object = new Constructor();
@@ -27094,7 +27094,7 @@ Tw2EffectRes.prototype.requestResponseType = "arraybuffer";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return Tw2GeometryRes; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../reader */ "./core/reader/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
@@ -27124,13 +27124,13 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   constructor(...args) {
     super(...args);
     this.meshes = [];
-    this.minBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
-    this.maxBounds = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
-    this.boundsSpherePosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.minBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
+    this.maxBounds = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
+    this.boundsSpherePosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundsSphereRadius = 0;
     this.models = [];
     this.animations = [];
-    this.systemMirror = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].systemMirror;
+    this.systemMirror = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].systemMirror;
   }
 
   /**
@@ -27140,8 +27140,8 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
    * @returns {Boolean} True if bounds are valid
    */
   GetBoundingBox(out, parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
-    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].fromBounds(out, this.minBounds, this.maxBounds);
+    if (parentTransform) global__WEBPACK_IMPORTED_MODULE_0__["box3"].transformMat4(out, out, parentTransform);
     return true;
   }
   /**
@@ -27153,8 +27153,8 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   GetBoundingSphere(out, parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
-    if (parentTransform) _global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromPositionRadius(out, this.boundsSpherePosition, this.boundsSphereRadius);
+    if (parentTransform) global__WEBPACK_IMPORTED_MODULE_0__["sph3"].transformMat4(out, out, parentTransform);
     return true;
   }
   /**
@@ -27166,15 +27166,15 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RebuildBounds(fromVertex) {
     const min = this.minBounds,
           max = this.maxBounds;
-    _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
 
     for (let i = 0; i < this.meshes.length; i++) {
       const mesh = this.meshes[i];
       mesh.RebuildBounds(fromVertex);
-      _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, mesh.minBounds, mesh.maxBounds);
+      global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, mesh.minBounds, mesh.maxBounds);
     }
 
-    this.boundsSphereRadius = _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(min, max, this.boundsSpherePosition);
+    this.boundsSphereRadius = global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(min, max, this.boundsSpherePosition);
   }
   /**
    * GetInstanceBuffer
@@ -27223,7 +27223,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   Prepare(data) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
           reader = new _reader__WEBPACK_IMPORTED_MODULE_1__["Tw2BinaryReader"](new Uint8Array(data));
     /* let fileVersion = */
 
@@ -27263,11 +27263,11 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         area.name = reader.ReadString();
         area.start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
         area.count = reader.ReadUInt32() * 3;
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(area.minBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(area.maxBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
-        area.boundsSphereRadius = _global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(area.minBounds, area.maxBounds, area.boundsSpherePosition); // Recalculate bounds if missing
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(area.minBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(area.maxBounds, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+        area.boundsSphereRadius = global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.toPositionRadius(area.minBounds, area.maxBounds, area.boundsSpherePosition); // Recalculate bounds if missing
 
-        if (_global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.isEmpty(area.minBounds, area.maxBounds)) {
+        if (global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.isEmpty(area.minBounds, area.maxBounds)) {
           if (!mesh.RebuildAreaBounds(area, buffer, indexes, true)) {
             console.log("Could not generate bounds for area: " + area.name || false);
           }
@@ -27339,15 +27339,15 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         if (bone.parentIndex === 255) bone.parentIndex = -1;
 
         if ((flags & 1) !== 0) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(bone.position, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(bone.position, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
         } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(bone.position, 0, 0, 0);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(bone.position, 0, 0, 0);
         }
 
         if ((flags & 2) !== 0) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].set(bone.orientation, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+          global__WEBPACK_IMPORTED_MODULE_0__["quat"].set(bone.orientation, reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
         } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(bone.orientation);
+          global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(bone.orientation);
         }
 
         if ((flags & 4) !== 0) {
@@ -27355,7 +27355,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
             bone.scaleShear[k] = reader.ReadFloat32();
           }
         } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat3"].identity(bone.scaleShear);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat3"].identity(bone.scaleShear);
         }
 
         model.skeleton.bones[i] = bone;
@@ -27365,12 +27365,12 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         model.skeleton.bones[i].UpdateTransform();
 
         if (model.skeleton.bones[i].parentIndex !== -1) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(model.skeleton.bones[i].worldTransform, model.skeleton.bones[model.skeleton.bones[i].parentIndex].worldTransform, model.skeleton.bones[i].localTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(model.skeleton.bones[i].worldTransform, model.skeleton.bones[model.skeleton.bones[i].parentIndex].worldTransform, model.skeleton.bones[i].localTransform);
         } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(model.skeleton.bones[i].worldTransform, model.skeleton.bones[i].localTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(model.skeleton.bones[i].worldTransform, model.skeleton.bones[i].localTransform);
         }
 
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(model.skeleton.bones[i].worldTransformInv, model.skeleton.bones[i].worldTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(model.skeleton.bones[i].worldTransformInv, model.skeleton.bones[i].worldTransform);
       }
 
       const meshBindingCount = reader.ReadUInt8();
@@ -27499,7 +27499,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RenderAreasInstanced(meshIx, start, count, effect, technique, instanceVB, instanceDecl, instanceStride, instanceCount) {
     this.KeepAlive();
     if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           mesh = this.meshes[meshIx],
           passCount = effect.GetPassCount(technique);
@@ -27560,7 +27560,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RenderAreas(meshIx, start, count, effect, technique) {
     this.KeepAlive();
     if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           mesh = this.meshes[meshIx] || this.meshes[0],
           passCount = effect.GetPassCount(technique);
@@ -27626,7 +27626,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RenderLines(meshIx, start, count, effect, technique) {
     this.KeepAlive();
     if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           mesh = this.meshes[meshIx],
           passCount = effect.GetPassCount(technique);
@@ -27710,7 +27710,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
   Unload(eventLog) {
     for (let i = 0; i < this.meshes.length; ++i) {
-      const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+      const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
       if (this.meshes[i].buffer) {
         gl.deleteBuffer(this.meshes[i].buffer);
@@ -27744,7 +27744,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
       element.usage = reader.ReadUInt8();
       element.usageIndex = reader.ReadUInt8();
       element.fileType = reader.ReadUInt8();
-      element.type = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.FLOAT;
+      element.type = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.FLOAT;
       element.elements = (element.fileType >> 5) + 1;
       element.offset = vertexSize * 4;
       declaration.elements[declIx] = element;
@@ -27944,7 +27944,7 @@ Tw2GeometryRes.prototype.requestResponseType = "arraybuffer";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2LoadingObject", function() { return Tw2LoadingObject; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _reader_Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../reader/Tw2ObjectReader */ "./core/reader/Tw2ObjectReader.js");
 /* harmony import */ var _reader_Tw2BlackReader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../reader/Tw2BlackReader */ "./core/reader/Tw2BlackReader.js");
@@ -28073,7 +28073,7 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
       }
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.Remove(this.path);
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.Remove(this.path);
 
     this._objects.splice(0);
 
@@ -28086,7 +28086,7 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
 
 
   OnPrepared(eventLog) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.Remove(this.path);
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].motherLode.Remove(this.path);
 
     this._objects.splice(0);
 
@@ -28113,7 +28113,7 @@ Tw2LoadingObject.prototype.requestResponseType = "arraybuffer";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2LodResource", function() { return Tw2LodResource; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2LodResource
@@ -28125,7 +28125,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} mediumDetailResPath -
  */
 
-class Tw2LodResource extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Gets the high detail resource
    * @returns {null|Tw2TextureRes}
@@ -28219,7 +28219,7 @@ class Tw2LodResource extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
       if (low) path = low;else if (med) path = med;else if (high) path = high;
     }
 
-    return path ? _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path) : null;
+    return path ? global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path) : null;
   }
   /**
    * Creates a lod resource from a plain object
@@ -28269,10 +28269,10 @@ Tw2LodResource.__isStaging = 2;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return Tw2Resource; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
-/* harmony import */ var _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/class/Tw2Notifications */ "./global/class/Tw2Notifications.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/class/Tw2Notifications */ "./global/class/Tw2Notifications.js");
 
 
 
@@ -28289,7 +28289,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Set} _watchers
  */
 
-class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
+class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
   constructor(...args) {
     super(...args);
     this.path = "";
@@ -28396,7 +28396,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
     }
 
     if (this.IsPurged() || this.IsUnloaded()) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].LoadResource(this, log);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].LoadResource(this, log);
     }
   }
   /**
@@ -28405,7 +28405,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
 
 
   KeepAlive() {
-    this.activeFrame = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].activeFrame;
+    this.activeFrame = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].activeFrame;
 
     if (this.IsPurged() || this.IsUnloaded()) {
       this.Reload({
@@ -28439,7 +28439,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
 
 
   OnWarning(log) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "warning", log);
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "warning", log);
     this.UpdateNotifications(Tw2Resource.Callback.WARNING);
   }
   /**
@@ -28449,7 +28449,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
 
 
   OnDebug(log) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "debug", log);
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "debug", log);
     this.UpdateNotifications(Tw2Resource.Callback.DEBUG);
   }
   /**
@@ -28475,7 +28475,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
       });
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "error", err);
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "error", err);
     this.UpdateNotifications(Tw2Resource.Callback.ERROR, err);
     return err;
   }
@@ -28490,7 +28490,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
 
     if (this._SetState(Tw2Resource.State.REQUESTED)) {
       this._requested = Date.now();
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, stateName.toLowerCase(), log);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, stateName.toLowerCase(), log);
       this.UpdateNotifications(Tw2Resource.Callback[stateName]);
     }
   }
@@ -28503,7 +28503,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
   OnLoaded(log = {}) {
     if (this._SetState(Tw2Resource.State.LOADED)) {
       log.time = (Date.now() - this._requested) * 0.001;
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "loaded", log);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "loaded", log);
       this.UpdateNotifications(Tw2Resource.Callback.LOADED);
     }
   }
@@ -28516,7 +28516,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
   OnPrepared(log = {}) {
     if (this._SetState(Tw2Resource.State.PREPARED)) {
       log.time = (Date.now() - this._requested) * 0.001;
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "prepared", log);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "prepared", log);
       this.UpdateNotifications(Tw2Resource.Callback.PREPARED);
     }
   }
@@ -28528,7 +28528,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
 
   OnUnloaded(log) {
     if (this._SetState(Tw2Resource.State.UNLOADED)) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "unloaded", log);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "unloaded", log);
       this.UpdateNotifications(Tw2Resource.Callback.UNLOADED);
     }
   }
@@ -28541,7 +28541,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
   OnPurged(log) {
     this._SetState(Tw2Resource.State.PURGED);
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "purged", log);
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].OnPathEvent(this.path, "purged", log);
     this.UpdateNotifications(Tw2Resource.Callback.PURGED, this.GetLastError());
   }
   /**
@@ -28633,7 +28633,7 @@ class Tw2Resource extends _global_class_Tw2Notifications__WEBPACK_IMPORTED_MODUL
     } // Don't add notification if it returns true
 
 
-    if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(notification)) {
       return !!notification(resource, err, funcName);
     } else if (funcName && funcName in notification) {
       return !!notification[funcName](resource, err);
@@ -28696,7 +28696,7 @@ Tw2Resource.prototype.requestResponseType = null;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return Tw2Shader; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../vertex */ "./core/vertex/index.js");
 /* harmony import */ var _sampler__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../sampler */ "./core/sampler/index.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
@@ -28747,7 +28747,7 @@ class Tw2Shader {
     const {
       wrapModes,
       gl
-    } = _global__WEBPACK_IMPORTED_MODULE_0__["device"];
+    } = global__WEBPACK_IMPORTED_MODULE_0__["device"];
     let techniqueCount = 1;
 
     if (version > 6) {
@@ -28923,7 +28923,7 @@ class Tw2Shader {
             s._maxAnisotropy = reader.ReadUInt8();
             s._comparisonFunc = reader.ReadUInt8(); // not used
 
-            s._borderColor = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
+            s._borderColor = global__WEBPACK_IMPORTED_MODULE_0__["quat"].fromValues(reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32(), reader.ReadFloat32());
             s._minLOD = reader.ReadFloat32(); // not used
 
             s._maxLOD = reader.ReadFloat32(); // not used
@@ -29057,7 +29057,7 @@ class Tw2Shader {
 
 
   ApplyPass(technique, pass) {
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl;
     pass = this.techniques[technique].passes[pass];
 
@@ -29147,14 +29147,14 @@ class Tw2Shader {
 
 
   static CompileShader(stageType, prefix, shaderCode, path, skipError) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
           shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER),
-          ccpShaderBinary = _global__WEBPACK_IMPORTED_MODULE_0__["device"].GetExtension("CCP_shader_binary");
+          ccpShaderBinary = global__WEBPACK_IMPORTED_MODULE_0__["device"].GetExtension("CCP_shader_binary");
 
     if (ccpShaderBinary) {
       ccpShaderBinary["shaderBinary"](shader, shaderCode);
     } else {
-      let source = prefix + (_global__WEBPACK_IMPORTED_MODULE_0__["util"].isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
+      let source = prefix + (global__WEBPACK_IMPORTED_MODULE_0__["util"].isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
       source = source.substr(0, source.length - 1);
       gl.shaderSource(shader, source);
       gl.compileShader(shader);
@@ -29186,7 +29186,7 @@ class Tw2Shader {
 
 
   static CreateProgram(vertexShader, fragmentShader, pass, path, skipError) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
           program = {};
     program.program = gl.createProgram();
     gl.attachShader(program.program, vertexShader);
@@ -29301,7 +29301,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return Tw2TextureRes; });
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 
@@ -29337,7 +29337,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
    * @param {*|Image|arrayBuffer} data
    */
   Prepare(data) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
     const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
 
     switch (this._extension) {
@@ -29392,12 +29392,12 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
         */
 
       case "dds":
-        const ext = _global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
-              header = new Int32Array(data, 0, _global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_LENGTH_INT"]),
-              isFourCC = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
-              isMagic = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MAGIC"]] === _global__WEBPACK_IMPORTED_MODULE_2__["DDS_MAGIC"],
-              isCube = (header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS2"]] & _global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"]) === _global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"],
-              fourCC = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
+        const ext = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
+              header = new Int32Array(data, 0, global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_LENGTH_INT"]),
+              isFourCC = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
+              isMagic = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MAGIC"]] === global__WEBPACK_IMPORTED_MODULE_2__["DDS_MAGIC"],
+              isCube = (header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS2"]] & global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"]) === global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"],
+              fourCC = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
               mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
         //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
         // Check compatibility
@@ -29405,24 +29405,24 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
         if (!ext) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Compressed textures not supported by your device");
         if (!isMagic) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, missing magic number");
         if (!isFourCC) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, missing FourCC code");
-        let width = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_WIDTH"]],
-            height = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_HEIGHT"]],
-            dataOffset = header[_global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_SIZE"]] + 4,
+        let width = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_WIDTH"]],
+            height = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_HEIGHT"]],
+            dataOffset = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_SIZE"]] + 4,
             blockBytes,
             internalFormat;
 
         switch (fourCC) {
-          case _global__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT1"]:
+          case global__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT1"]:
             blockBytes = 8;
             internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT1_EXT;
             break;
 
-          case _global__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT3"]:
+          case global__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT3"]:
             blockBytes = 16;
             internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT3_EXT;
             break;
 
-          case _global__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT5"]:
+          case global__WEBPACK_IMPORTED_MODULE_2__["FOURCC_DXT5"]:
             blockBytes = 16;
             internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT5_EXT;
             break;
@@ -29492,9 +29492,9 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
       case "dds":
         this._extension = extension;
-        _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer").then(response => {
+        global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Fetch(Tw2TextureRes.AddMipLevelSkipCount(path), "arraybuffer").then(response => {
           this.OnLoaded();
-          _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, response);
+          global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, response);
         }).catch(err => {
           this.OnError(err);
         });
@@ -29507,7 +29507,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
         });
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].AddPendingLoad(path);
+    global__WEBPACK_IMPORTED_MODULE_2__["resMan"].AddPendingLoad(path);
     const image = new Image();
     image.crossOrigin = "anonymous";
     /**
@@ -29515,7 +29515,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
      */
 
     image.onerror = () => {
-      _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].RemovePendingLoad(path);
+      global__WEBPACK_IMPORTED_MODULE_2__["resMan"].RemovePendingLoad(path);
       this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrHTTPRequest"]({
         path
       }));
@@ -29526,8 +29526,8 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
 
     image.onload = () => {
-      _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].RemovePendingLoad(path);
-      _global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image);
+      global__WEBPACK_IMPORTED_MODULE_2__["resMan"].RemovePendingLoad(path);
+      global__WEBPACK_IMPORTED_MODULE_2__["resMan"].Queue(this, image);
       this.OnLoaded();
     };
 
@@ -29543,7 +29543,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
   Unload(log) {
     if (this.texture) {
-      _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.deleteTexture(this.texture);
+      global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.deleteTexture(this.texture);
       this.texture = null;
     }
 
@@ -29591,7 +29591,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
 
   Bind(sampler, slices) {
-    const d = _global__WEBPACK_IMPORTED_MODULE_2__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_2__["device"],
           gl = d.gl;
     this.KeepAlive();
     let targetType = sampler.samplerType;
@@ -29632,7 +29632,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
 
   static AddMipLevelSkipCount(path) {
-    const d = _global__WEBPACK_IMPORTED_MODULE_2__["device"];
+    const d = global__WEBPACK_IMPORTED_MODULE_2__["device"];
 
     if (d.mipLevelSkipCount > 0) {
       const index = path.lastIndexOf(".");
@@ -29665,8 +29665,8 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
    */
 
 
-  static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.RGBA) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
+  static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.RGBA) {
+    const gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
     const fb = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
@@ -29699,7 +29699,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return Tw2VideoRes; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 
@@ -29755,7 +29755,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 
 
   KeepAlive() {
-    this.activeFrame = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].activeFrame;
+    this.activeFrame = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].activeFrame;
   }
   /**
    * Plays the animation
@@ -29794,7 +29794,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 
 
   Prepare(response) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     switch (this._extension) {
       case "mp4":
@@ -29843,7 +29843,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
         });
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].AddPendingLoad(path);
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].AddPendingLoad(path);
     this.video = document.createElement("video");
     this.video.crossOrigin = "anonymous";
     this.video.muted = true;
@@ -29852,7 +29852,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
      */
 
     this.video.onerror = () => {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].RemovePendingLoad(path);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].RemovePendingLoad(path);
       this.video = null;
       this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrHTTPRequest"]({
         path
@@ -29866,8 +29866,8 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
     this.video.oncanplay = () => {
       this._playable = true;
       this.video.oncanplay = null;
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].RemovePendingLoad(path);
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Queue(this, undefined, extension);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].RemovePendingLoad(path);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].Queue(this, undefined, extension);
       this.OnLoaded();
     };
     /**
@@ -29909,7 +29909,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 
   Unload(log) {
     if (this.texture) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteTexture(this.texture);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteTexture(this.texture);
       this.texture = null;
     }
 
@@ -29928,7 +29928,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 
 
   Bind(sampler) {
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl;
     this.KeepAlive();
     const targetType = sampler.samplerType;
@@ -29959,7 +29959,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
+/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -30134,7 +30134,7 @@ class Tw2SamplerOverride {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SamplerState", function() { return Tw2SamplerState; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2SamplerState
@@ -30159,15 +30159,15 @@ class Tw2SamplerState {
   constructor() {
     this.name = "";
     this.registerIndex = 0;
-    this.minFilter = _global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
-    this.maxFilter = _global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
-    this.magFilter = _global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
-    this.minFilterNoMips = _global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
-    this.addressU = _global__WEBPACK_IMPORTED_MODULE_0__["GL_REPEAT"];
-    this.addressV = _global__WEBPACK_IMPORTED_MODULE_0__["GL_REPEAT"];
-    this.addressW = _global__WEBPACK_IMPORTED_MODULE_0__["GL_REPEAT"];
+    this.minFilter = global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
+    this.maxFilter = global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
+    this.magFilter = global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
+    this.minFilterNoMips = global__WEBPACK_IMPORTED_MODULE_0__["GL_LINEAR"];
+    this.addressU = global__WEBPACK_IMPORTED_MODULE_0__["GL_REPEAT"];
+    this.addressV = global__WEBPACK_IMPORTED_MODULE_0__["GL_REPEAT"];
+    this.addressW = global__WEBPACK_IMPORTED_MODULE_0__["GL_REPEAT"];
     this.anisotropy = 1;
-    this.samplerType = _global__WEBPACK_IMPORTED_MODULE_0__["GL_TEXTURE_2D"];
+    this.samplerType = global__WEBPACK_IMPORTED_MODULE_0__["GL_TEXTURE_2D"];
     this.isVolume = false;
     this.hash = 0;
     this.forceAddressModes = false;
@@ -30184,7 +30184,7 @@ class Tw2SamplerState {
    * @returns {Number}
    */
   get filterMode() {
-    return this.minFilterNoMips in _global__WEBPACK_IMPORTED_MODULE_0__["FilterMode"] ? _global__WEBPACK_IMPORTED_MODULE_0__["FilterMode"][this.minFilterNoMips] : 2;
+    return this.minFilterNoMips in global__WEBPACK_IMPORTED_MODULE_0__["FilterMode"] ? global__WEBPACK_IMPORTED_MODULE_0__["FilterMode"][this.minFilterNoMips] : 2;
   }
   /**
    * Gets the current mip filter mode
@@ -30193,7 +30193,7 @@ class Tw2SamplerState {
 
 
   get mipFilterMode() {
-    return this.minFilter in _global__WEBPACK_IMPORTED_MODULE_0__["MipFilterMode"] ? _global__WEBPACK_IMPORTED_MODULE_0__["MipFilterMode"][this.minFilter] : 2;
+    return this.minFilter in global__WEBPACK_IMPORTED_MODULE_0__["MipFilterMode"] ? global__WEBPACK_IMPORTED_MODULE_0__["MipFilterMode"][this.minFilter] : 2;
   }
   /**
    * Computes the sampler hash
@@ -30270,7 +30270,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TriMatrix", function() { return TriMatrix; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * TriMatrix
@@ -30295,7 +30295,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} _44 -
  */
 
-class TriMatrix extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class TriMatrix extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this._11 = 0;
@@ -30339,7 +30339,7 @@ class TriMatrix extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Float", function() { return Tw2Float; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2Float
@@ -30348,7 +30348,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} value -
  */
 
-class Tw2Float extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2Float extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.value = 0;
@@ -30653,7 +30653,7 @@ class Tw2VertexDeclaration {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VertexElement", function() { return Tw2VertexElement; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2VertexElement
@@ -30709,7 +30709,7 @@ class Tw2VertexElement {
 
       const {
         elements = null,
-        type = _global__WEBPACK_IMPORTED_MODULE_0__["GL_FLOAT"],
+        type = global__WEBPACK_IMPORTED_MODULE_0__["GL_FLOAT"],
         offset = 0,
         location = null,
         customSetter = null
@@ -30800,7 +30800,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveSet", function() { return Tw2CurveSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Curve set
@@ -30818,7 +30818,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} _scaledTime                                           -
  */
 
-class Tw2CurveSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -30945,7 +30945,7 @@ class Tw2CurveSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveSetRange", function() { return Tw2CurveSetRange; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Curve set range
@@ -30957,7 +30957,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} startTime -
  */
 
-class Tw2CurveSetRange extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2CurveSetRange extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -30995,10 +30995,10 @@ Tw2CurveSetRange.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ValueBinding", function() { return Tw2ValueBinding; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
-/* harmony import */ var _core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core/parameter */ "./core/parameter/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../global/util */ "./global/util/index.js");
-/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/parameter */ "./core/parameter/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 
 
 
@@ -31026,13 +31026,13 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} _sourceIsRGBA       -
  */
 
-class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
     this.destinationAttribute = "";
     this.destinationObject = null;
-    this.offset = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.offset = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.scale = 1;
     this.sourceAttribute = "";
     this.sourceObject = null;
@@ -31098,7 +31098,7 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
       this._sourceElement = 3;
       this.sourceAttribute = this.sourceAttribute.substr(0, this.sourceAttribute.length - 2);
       this._sourceIsRGBA = srcSwizzle === ".a";
-    } else if (this.sourceObject instanceof _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
+    } else if (this.sourceObject instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
       if (this.sourceAttribute === "v1") {
         srcSwizzled = true;
         this._sourceElement = 0;
@@ -31140,7 +31140,7 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
       this._destinationElement = 3;
       this.destinationAttribute = this.destinationAttribute.substr(0, this.destinationAttribute.length - 2);
       this._destinationIsRGBA = destSwizzle === ".a";
-    } else if (this.destinationObject instanceof _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
+    } else if (this.destinationObject instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]) {
       if (this.destinationAttribute === "v1") {
         destSwizzled = true;
         this._destinationElement = 0;
@@ -31164,7 +31164,7 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
           dest = this.destinationObject[this.destinationAttribute]; // Targets must be defined
 
     if (src === undefined) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingValueUndefined"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingValueUndefined"]({
         name: this.name,
         object: "source",
         property: this.sourceAttribute
@@ -31172,15 +31172,15 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
     }
 
     if (dest === undefined) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingValueUndefined"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingValueUndefined"]({
         name: this.name,
         object: "destination",
         property: this.destinationAttribute
       });
     }
 
-    const srcIsArr = this._sourceIsArray = Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(src),
-          destIsArr = this._destinationIsArray = Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(dest),
+    const srcIsArr = this._sourceIsArray = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(src),
+          destIsArr = this._destinationIsArray = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(dest),
           con = Tw2ValueBinding;
     let copyFunc;
 
@@ -31194,18 +31194,18 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
       } else if (src.length === 16) {
         copyFunc = con.ExtractPos;
       }
-    } else if (srcIsArr && srcSwizzled && Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(dest)) {
+    } else if (srcIsArr && srcSwizzled && Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(dest)) {
       copyFunc = con.CopyElementToValue;
-    } else if (destIsArr && Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(src)) {
+    } else if (destIsArr && Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(src)) {
       copyFunc = destSwizzled ? con.CopyValueToElement : con.ReplicateValue;
-    } else if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(src) && Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isBoolean"])(dest)) {
+    } else if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(src) && Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isBoolean"])(dest)) {
       copyFunc = con.CopyFloatToBoolean;
-    } else if (Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isBoolean"])(src) && Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(dest)) {
+    } else if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isBoolean"])(src) && Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isNumber"])(dest)) {
       copyFunc = con.CopyBooleanToFloat;
     }
 
     if (!copyFunc) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingType"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingType"]({
         name: this.name
       });
     }
@@ -31301,7 +31301,7 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
 
   static GetAttribute(object, attribute, element, isRGBA) {
     // Looks to be deprecated
-    if (object instanceof _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
+    if (object instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
       switch (element) {
         case 0:
           return "v0";
@@ -31354,7 +31354,7 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
     } // Looks to be depreciated
 
 
-    if (object instanceof _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
+    if (object instanceof core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"] && attribute === "value") {
       switch (element) {
         case 0:
           attribute = "v0";
@@ -31523,7 +31523,7 @@ class Tw2ValueBinding extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return Tr2RotationAdapter; });
 /* harmony import */ var _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2CurveAdapter */ "./curve/adapter/Tw2CurveAdapter.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -31536,7 +31536,7 @@ __webpack_require__.r(__webpack_exports__);
 class Tr2RotationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveAdapter"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_1__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_1__["vec4"].create();
   }
 
   /**
@@ -31549,7 +31549,7 @@ class Tr2RotationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_0__["
       this.curve.GetValueAt(time, this.value);
     }
 
-    return _global__WEBPACK_IMPORTED_MODULE_1__["vec4"].copy(value, this.value);
+    return global__WEBPACK_IMPORTED_MODULE_1__["vec4"].copy(value, this.value);
   }
   /**
    * The adapter's output dimension
@@ -31587,7 +31587,7 @@ Tr2RotationAdapter.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2TranslationAdapter", function() { return Tr2TranslationAdapter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveAdapter */ "./curve/adapter/Tw2CurveAdapter.js");
 
 
@@ -31601,7 +31601,7 @@ __webpack_require__.r(__webpack_exports__);
 class Tr2TranslationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveAdapter"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -31614,7 +31614,7 @@ class Tr2TranslationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_1_
       this.curve.GetValueAt(time, this.value);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
   }
   /**
    * The sequencer's output dimension
@@ -32073,7 +32073,7 @@ Tr2ScalarExprKeyCurve.__isStaging = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return Tw2CurveKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return Tw2Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _class, _temp, _dec2, _dec3, _dec4, _dec5, _class3, _class4, _class5, _temp2;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -32088,7 +32088,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {number} time
  */
 
-let Tw2CurveKey = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2CurveKey extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2CurveKey extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -32103,7 +32103,7 @@ let Tw2CurveKey = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract,
  * @property {String} name
  */
 
-let Tw2Curve = (_dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class Tw2Curve extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let Tw2Curve = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class Tw2Curve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -32230,10 +32230,10 @@ let Tw2Curve = (_dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _
   EXPRESSION: 200,
   ADAPTER: 300
 }, _class5.global = {
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
-  quat_0: _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
-  quat_1: _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create()
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
+  quat_0: global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
+  quat_1: global__WEBPACK_IMPORTED_MODULE_0__["quat"].create()
 }, _temp2), (_applyDecoratedDescriptor(_class4.prototype, "Sort", [_dec3], Object.getOwnPropertyDescriptor(_class4.prototype, "Sort"), _class4.prototype), _applyDecoratedDescriptor(_class4.prototype, "GetLength", [_dec4], Object.getOwnPropertyDescriptor(_class4.prototype, "GetLength"), _class4.prototype), _applyDecoratedDescriptor(_class4.prototype, "UpdateValue", [_dec5], Object.getOwnPropertyDescriptor(_class4.prototype, "UpdateValue"), _class4.prototype)), _class4)) || _class3);
 
 /***/ }),
@@ -32248,7 +32248,7 @@ let Tw2Curve = (_dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveConstant", function() { return Tw2CurveConstant; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -32263,7 +32263,7 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2CurveConstant extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
 
   /**
@@ -32288,7 +32288,7 @@ class Tw2CurveConstant extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
 
 
   UpdateValue(time, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
   }
   /**
    * The curve's dimension
@@ -32461,7 +32461,7 @@ Tw2EventCurve.Extrapolation = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2PerlinCurve", function() { return Tw2PerlinCurve; });
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Curve */ "./curve/curve/Tw2Curve.js");
-/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/math */ "./global/math/index.js");
+/* harmony import */ var global_math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/math */ "./global/math/index.js");
 
 
 /**
@@ -32521,7 +32521,7 @@ class Tw2PerlinCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] 
 
   GetValueAt(time) {
     time -= this.offset;
-    return (_global_math__WEBPACK_IMPORTED_MODULE_1__["noise"].perlin1D(time * this.speed, this.alpha, this.beta, this.N) + 1) / 2 * this.scale + this.offset;
+    return (global_math__WEBPACK_IMPORTED_MODULE_1__["noise"].perlin1D(time * this.speed, this.alpha, this.beta, this.N) + 1) / 2 * this.scale + this.offset;
   }
   /**
    * The curve's dimension
@@ -32656,7 +32656,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey", function() { return Tw2ColorKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve", function() { return Tw2ColorCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -32673,9 +32673,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2ColorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.left = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.right = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.left = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.right = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.interpolation = 0;
   }
 
@@ -32696,7 +32696,7 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
     this.start = 0;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.extrapolation = 0;
     this.keys = [];
     this._currentKey = 1;
@@ -32737,7 +32737,7 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
 
   GetValueAt(time, value) {
     if (this.length === 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+      return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
     }
 
     const firstKey = this.keys[0],
@@ -32746,13 +32746,13 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
     if (time >= lastKey.time) {
       switch (this.extrapolation) {
         case Tw2ColorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
 
         case Tw2ColorCurve.Extrapolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, lastKey.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, lastKey.value);
 
         case Tw2ColorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
 
         default:
           time = time % lastKey.time;
@@ -32760,13 +32760,13 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
     } else if (time < 0 || time < firstKey.time) {
       switch (this.extrapolation) {
         case Tw2ColorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
 
         case Tw2ColorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
 
         default:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, firstKey.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, firstKey.value);
       }
     }
 
@@ -32784,7 +32784,7 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
 
     switch (ck_1.interpolation) {
       case Tw2ColorCurve.Interpolation.CONSTANT:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, ck_1.value);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, ck_1.value);
 
       default:
         value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
@@ -32831,7 +32831,7 @@ Tw2ColorCurve.Interpolation = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorKey2", function() { return Tw2ColorKey2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorCurve2", function() { return Tw2ColorCurve2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -32849,9 +32849,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2ColorKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.leftTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.rightTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.leftTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.rightTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.interpolation = 1;
   }
 
@@ -32880,11 +32880,11 @@ class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
     this.reversed = false;
     this.timeOffset = 0;
     this.timeScale = 1;
-    this.startValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
-    this.endValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
-    this.startTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.endTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.startValue = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
+    this.endValue = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
+    this.startTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.endTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.interpolation = 1;
     this.keys = [];
     this.length = 0;
@@ -32926,16 +32926,16 @@ class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
     time = time / this.timeScale + this.timeOffset;
 
     if (this.length <= 0 || time <= 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
+      return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
     }
 
     if (time > this.length) {
       if (this.cycle) {
         time = time % this.length;
       } else if (this.reversed) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
       } else {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.endValue);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.endValue);
       }
     }
 
@@ -32975,7 +32975,7 @@ class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
 
 
   Interpolate(time, lastKey, nextKey, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
     let startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
@@ -33040,7 +33040,7 @@ Tw2ColorCurve2.Interpolation = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey2", function() { return Tw2QuaternionKey2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionCurve", function() { return Tw2QuaternionCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -33057,9 +33057,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2QuaternionKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.leftTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.rightTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.leftTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.rightTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.interpolation = 1;
   }
 
@@ -33089,11 +33089,11 @@ class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curv
     this.reversed = false;
     this.timeOffset = 0;
     this.timeScale = 1;
-    this.startValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.endValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.startTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.endTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.startValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.endValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.startTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.endTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.interpolation = 1;
     this.keys = [];
     this.length = 0;
@@ -33220,7 +33220,7 @@ class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curv
           deltaTime = this.length - lastKey.time;
         }
 
-        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, startValue, endValue, time / deltaTime);
+        global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, startValue, endValue, time / deltaTime);
         return value;
 
       default:
@@ -33332,7 +33332,7 @@ Tw2RandomConstantCurve.curveType = _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Cu
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Torque", function() { return Tw2Torque; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RigidOrientation", function() { return Tw2RigidOrientation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -33348,9 +33348,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2Torque extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.rot0 = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.omega0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.torque = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rot0 = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.omega0 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.torque = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
 }
@@ -33373,7 +33373,7 @@ class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Cur
     this.name = "";
     this.I = 1;
     this.drag = 1;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.start = 0;
     this.states = [];
     this.length = 0;
@@ -33413,7 +33413,7 @@ class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Cur
 
   GetValueAt(time, value) {
     if (this.states.length === 0 || time < 0 || time < this.states[0].time) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+      return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
     }
 
     let key = 0;
@@ -33431,9 +33431,9 @@ class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Cur
     const vec3_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.vec3_0,
           quat_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.quat_0;
     const ck = this.states[key];
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay(vec3_0, ck.omega0, ck.torque, this.I, this.drag, time - ck.time);
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].exp(quat_0, vec3_0);
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, this.states[key].rot0, quat_0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay(vec3_0, ck.omega0, ck.torque, this.I, this.drag, time - ck.time);
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].exp(quat_0, vec3_0);
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, this.states[key].rot0, quat_0);
     return value;
   }
   /**
@@ -33462,7 +33462,7 @@ Tw2RigidOrientation.Key = Tw2Torque;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionKey", function() { return Tw2QuaternionKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RotationCurve", function() { return Tw2RotationCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -33479,9 +33479,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2QuaternionKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.left = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.right = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.left = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.right = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.interpolation = 5;
   }
 
@@ -33502,7 +33502,7 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
   constructor(...args) {
     super(...args);
     this.start = 0;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.extrapolation = 0;
     this.keys = [];
     this.length = 0;
@@ -33543,7 +33543,7 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
 
   GetValueAt(time, value) {
     if (this.length === 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+      return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
     }
 
     const scratch = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global,
@@ -33553,10 +33553,10 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
     if (time >= lastKey.time) {
       switch (this.extrapolation) {
         case Tw2RotationCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
 
         case Tw2RotationCurve.Extrapolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, lastKey.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, lastKey.value);
 
         default:
           time = time % lastKey.time;
@@ -33564,10 +33564,10 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
     } else if (time < 0 || time < firstKey.time) {
       switch (this.extrapolation) {
         case Tw2RotationCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
 
         default:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, firstKey.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, firstKey.value);
       }
     }
 
@@ -33585,7 +33585,7 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
 
     switch (ck_1.interpolation) {
       case Tw2RotationCurve.Interpolation.CONSTANT:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, ck_1.value);
+        return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, ck_1.value);
 
       case Tw2RotationCurve.Interpolation.LINEAR:
         value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
@@ -33595,28 +33595,28 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
         return value;
 
       case Tw2RotationCurve.Interpolation.HERMITE:
-        const collect = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
+        const collect = global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
               arr = [ck_1.value, ck_1.right, ck.left, ck.value];
 
         for (let i = 3; i > 0; i--) {
-          const power = _global__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
-          if (power > 1) _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, arr[i]);
+          const power = global__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
+          if (power > 1) global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, arr[i]);
           value[0] = -arr[i - 1][0];
           value[1] = -arr[i - 1][1];
           value[2] = -arr[i - 1][2];
           value[3] = arr[i - 1][3];
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, arr[i]);
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].pow(value, value, power);
-          _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(collect, collect, value);
+          global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, arr[i]);
+          global__WEBPACK_IMPORTED_MODULE_0__["quat"].pow(value, value, power);
+          global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(collect, collect, value);
         }
 
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, ck_1.value);
+        return global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, ck_1.value);
 
       case Tw2RotationCurve.Interpolation.SLERP:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, ck_1.value, ck.value, nt);
+        return global__WEBPACK_IMPORTED_MODULE_0__["quat"].slerp(value, ck_1.value, ck.value, nt);
 
       default:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["quat"].sqlerp(value, ck_1.value, ck_1.right, ck.left, ck.value, nt);
+        return global__WEBPACK_IMPORTED_MODULE_0__["quat"].sqlerp(value, ck_1.value, ck_1.right, ck.left, ck.value, nt);
     }
   }
   /**
@@ -34155,7 +34155,7 @@ Tw2SineCurve.curveType = _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Key", function() { return Tw2Vector2Key; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector2Curve", function() { return Tw2Vector2Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -34172,9 +34172,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2Vector2Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.leftTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.rightTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.leftTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.rightTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
     this.interpolation = 1;
   }
 
@@ -34204,11 +34204,11 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
     this.reversed = false;
     this.timeOffset = 0;
     this.timeScale = 1;
-    this.startValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.endValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.startTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.endTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.startValue = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.endValue = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.startTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.endTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
     this.interpolation = 1;
     this.keys = [];
     this.length = 0;
@@ -34251,16 +34251,16 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
     time = time / this.timeScale + this.timeOffset;
 
     if (this.length <= 0 || time <= 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+      return global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
     }
 
     if (time > this.length) {
       if (this.cycle) {
         time = time % this.length;
       } else if (this.reversed) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
       } else {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.endValue);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.endValue);
       }
     }
 
@@ -34300,7 +34300,7 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
 
 
   Interpolate(time, lastKey, nextKey, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
     let startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
@@ -34395,7 +34395,7 @@ Tw2Vector2Curve.Interpolation = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Key", function() { return Tw2Vector3Key; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Vector3Curve", function() { return Tw2Vector3Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -34413,9 +34413,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2Vector3Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.leftTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rightTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.leftTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rightTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.interpolation = 1;
   }
 
@@ -34445,11 +34445,11 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
     this.reversed = false;
     this.timeOffset = 0;
     this.timeScale = 1;
-    this.startValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.endValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.startTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.endTangent = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.startValue = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.endValue = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.startTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.endTangent = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.interpolation = 1;
     this.keys = [];
     this.length = 0;
@@ -34491,16 +34491,16 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
     time = time / this.timeScale + this.timeOffset;
 
     if (this.length <= 0 || time <= 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+      return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
     }
 
     if (time > this.length) {
       if (this.cycle) {
         time = time % this.length;
       } else if (this.reversed) {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
       } else {
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.endValue);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.endValue);
       }
     }
 
@@ -34540,7 +34540,7 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
 
 
   Interpolate(time, lastKey, nextKey, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
     let startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
@@ -34637,7 +34637,7 @@ Tw2Vector3Curve.Interpolation = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorKey", function() { return Tw2VectorKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorCurve", function() { return Tw2VectorCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Curve */ "./curve/curve/Tw2Curve.js");
 
 
@@ -34655,9 +34655,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2VectorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.left = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.right = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.left = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.right = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.interpolation = 0;
   }
 
@@ -34679,7 +34679,7 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
   constructor(...args) {
     super(...args);
     this.start = 0;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.extrapolation = 0;
     this.keys = [];
     this._currentKey = 1;
@@ -34720,7 +34720,7 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
 
   GetValueAt(time, value) {
     if (this.length === 0) {
-      return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+      return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
     }
 
     const firstKey = this.keys[0],
@@ -34729,13 +34729,13 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
     if (time >= lastKey.time) {
       switch (this.extrapolation) {
         case Tw2VectorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
 
         case Tw2VectorCurve.Extrapolation.CONSTANT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, lastKey.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, lastKey.value);
 
         case Tw2VectorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
 
         default:
           time = time % lastKey.time;
@@ -34743,13 +34743,13 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
     } else if (time < 0 || time < firstKey.time) {
       switch (this.extrapolation) {
         case Tw2VectorCurve.Extrapolation.NONE:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
 
         case Tw2VectorCurve.Extrapolation.GRADIENT:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
 
         default:
-          return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, firstKey.value);
+          return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, firstKey.value);
       }
     }
 
@@ -34767,7 +34767,7 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
 
     switch (ck_1.interpolation) {
       case Tw2VectorCurve.Interpolation.CONSTANT:
-        return _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, ck_1.value);
+        return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, ck_1.value);
 
       case Tw2VectorCurve.Interpolation.LINEAR:
         value[0] = ck_1.value[0] * (1 - nt) + ck.value[0] * nt;
@@ -34906,7 +34906,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveEulerRotationExpression", function() { return Tr2CurveEulerRotationExpression; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveExpression */ "./curve/expression/Tw2CurveExpression.js");
 
 
@@ -34926,7 +34926,7 @@ class Tr2CurveEulerRotationExpression extends _Tw2CurveExpression__WEBPACK_IMPOR
     this.expressionPitch = "";
     this.expressionRoll = "";
     this.expressionYaw = "";
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
 
   /**
@@ -35018,7 +35018,7 @@ Tr2CurveScalarExpression.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2CurveVector3Expression", function() { return Tr2CurveVector3Expression; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveExpression */ "./curve/expression/Tw2CurveExpression.js");
 
 
@@ -35038,7 +35038,7 @@ class Tr2CurveVector3Expression extends _Tw2CurveExpression__WEBPACK_IMPORTED_MO
     this.expressionX = "";
     this.expressionY = "";
     this.expressionZ = "";
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -35074,7 +35074,7 @@ Tr2CurveVector3Expression.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveExpression", function() { return Tw2CurveExpression; });
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../curve */ "./curve/curve/index.js");
+/* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! curve */ "./curve/index.js");
 
 /**
  * Tw2CurveExpression
@@ -35085,7 +35085,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array} inputs
  */
 
-class Tw2CurveExpression extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+class Tw2CurveExpression extends curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -35106,7 +35106,7 @@ class Tw2CurveExpression extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
 
 
 }
-Tw2CurveExpression.curveType = _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.EXPRESSION;
+Tw2CurveExpression.curveType = curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.EXPRESSION;
 
 /***/ }),
 
@@ -35336,8 +35336,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaAnimationEngine", function() { return Tw2MayaAnimationEngine; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 
 
 /**
@@ -35354,7 +35354,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Tw2MayaAnimationEngine {
   constructor() {
-    this._id = _global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
+    this._id = global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
     this.curves = [];
     this.hermiteSegments = [];
     this.bezierSegments = [];
@@ -35526,7 +35526,7 @@ class Tw2MayaAnimationEngine {
 
 
   _EvaluateInfinities(curve, segments, startSegment, time, bool) {
-    throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
+    throw new core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
       feature: "Maya animation engine evaluate infinities"
     });
   }
@@ -35561,13 +35561,13 @@ class Tw2MayaAnimationEngine {
     if (segment[Tw2MayaAnimationEngine.BezierSegment.IS_LINEAR]) {
       t = s;
     } else {
-      let poly = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+      let poly = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
       poly[3] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][3];
       poly[2] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][2];
       poly[1] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][1];
       poly[0] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][0] - s;
       let roots = [];
-      if (_global__WEBPACK_IMPORTED_MODULE_0__["curve"].polyZeroes(poly, 3, 0.0, 1, 1.0, 1, roots) === 1) t = roots[0];else t = 0.0;
+      if (global__WEBPACK_IMPORTED_MODULE_0__["curve"].polyZeroes(poly, 3, 0.0, 1, 1.0, 1, roots) === 1) t = roots[0];else t = 0.0;
     }
 
     let poly = segment[Tw2MayaAnimationEngine.BezierSegment.POLYY];
@@ -35697,8 +35697,8 @@ Tw2MayaAnimationEngine.INFINITY = 0;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaEulerRotationCurve", function() { return Tw2MayaEulerRotationCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! curve */ "./curve/index.js");
 
 
 /**
@@ -35716,16 +35716,16 @@ __webpack_require__.r(__webpack_exports__);
  * @class
  */
 
-class Tw2MayaEulerRotationCurve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+class Tw2MayaEulerRotationCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
     this.xIndex = -1;
     this.yIndex = -1;
     this.zIndex = -1;
     this.animationEngine = null;
-    this.eulerValue = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.eulerValue = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.updateQuaternion = false;
-    this.quatValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.quatValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.length = 0;
   }
 
@@ -35816,7 +35816,7 @@ class Tw2MayaEulerRotationCurve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2
 }
 Tw2MayaEulerRotationCurve.outputDimension = 3;
 Tw2MayaEulerRotationCurve.valueProperty = "eulerValue";
-Tw2MayaEulerRotationCurve.curveType = _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE_MAYA;
+Tw2MayaEulerRotationCurve.curveType = curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE_MAYA;
 
 /***/ }),
 
@@ -35830,7 +35830,7 @@ Tw2MayaEulerRotationCurve.curveType = _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Cu
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaScalarCurve", function() { return Tw2MayaScalarCurve; });
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
+/* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! curve */ "./curve/index.js");
 
 /**
  * Tw2MayaScalarCurve
@@ -35842,7 +35842,7 @@ __webpack_require__.r(__webpack_exports__);
  * @class
  */
 
-class Tw2MayaScalarCurve extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+class Tw2MayaScalarCurve extends curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
     this.index = -1;
@@ -35895,7 +35895,7 @@ class Tw2MayaScalarCurve extends _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
 }
 Tw2MayaScalarCurve.outputDimension = 1;
 Tw2MayaScalarCurve.valueProperty = "value";
-Tw2MayaScalarCurve.curveType = _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE_MAYA;
+Tw2MayaScalarCurve.curveType = curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].Type.CURVE_MAYA;
 
 /***/ }),
 
@@ -35909,8 +35909,8 @@ Tw2MayaScalarCurve.curveType = _curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"].T
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2MayaVector3Curve", function() { return Tw2MayaVector3Curve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/curve/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! curve */ "./curve/index.js");
 
 
 /**
@@ -35925,14 +35925,14 @@ __webpack_require__.r(__webpack_exports__);
  * @property {number} length
  */
 
-class Tw2MayaVector3Curve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+class Tw2MayaVector3Curve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
     this.xIndex = -1;
     this.yIndex = -1;
     this.zIndex = -1;
     this.animationEngine = null;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.length = 0;
   }
 
@@ -36010,7 +36010,7 @@ class Tw2MayaVector3Curve extends _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
 }
 Tw2MayaVector3Curve.outputDimension = 3;
 Tw2MayaVector3Curve.valueProperty = "value";
-Tw2MayaVector3Curve.curveType = _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE_MAYA;
+Tw2MayaVector3Curve.curveType = curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.CURVE_MAYA;
 
 /***/ }),
 
@@ -36052,7 +36052,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2TransformTrack", function() { return Tw2TransformTrack; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2TransformTrack
@@ -36076,17 +36076,17 @@ __webpack_require__.r(__webpack_exports__);
 
 class Tw2TransformTrack {
   constructor() {
-    this._id = _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
+    this._id = global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
     this.name = "";
     this.resPath = "";
     this.res = null;
     this.group = "";
     this.cycle = false;
     this.duration = 0;
-    this.translation = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scale = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
-    this.scaleShear = _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(0, 0, 0);
+    this.scaleShear = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.positionCurve = null;
     this.orientationCurve = null;
     this.scaleCurve = null;
@@ -36097,7 +36097,7 @@ class Tw2TransformTrack {
    */
   Initialize() {
     if (this.resPath !== "") {
-      this.res = _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.resPath);
+      this.res = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.resPath);
     }
   }
   /**
@@ -36123,11 +36123,11 @@ class Tw2TransformTrack {
     if (!this.positionCurve) return;
     if (this.cycle) time = time % this.duration;
     if (time > this.duration || time < 0) return;
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.positionCurve, time, this.translation, this.cycle, this.duration);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.orientationCurve, time, this.rotation, this.cycle, this.duration);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.scaleCurve, time, this.scaleShear, this.cycle, this.duration);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scale, this.scaleCurve);
+    global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.positionCurve, time, this.translation, this.cycle, this.duration);
+    global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.orientationCurve, time, this.rotation, this.cycle, this.duration);
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+    global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(this.scaleCurve, time, this.scaleShear, this.cycle, this.duration);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scale, this.scaleCurve);
   }
   /**
    * FindTracks
@@ -36174,7 +36174,7 @@ class Tw2TransformTrack {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTrack", function() { return Tw2WbgTrack; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2WbgTransformTrack", function() { return Tw2WbgTransformTrack; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tw2WbgTrack
@@ -36189,7 +36189,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function Tw2WbgTrack() {
-  this._id = _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
+  this._id = global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
   this.name = "";
   this.geometryResPath = "";
   this.geometryRes = null;
@@ -36224,7 +36224,7 @@ function Tw2WbgTrack() {
 
   this.Initialize = function () {
     if (this.geometryResPath) {
-      this.geometryRes = _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => SetCurves(this));
+      this.geometryRes = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => SetCurves(this));
     }
   };
   /**
@@ -36253,15 +36253,15 @@ function Tw2WbgTrack() {
  */
 
 function Tw2WbgTransformTrack() {
-  this._id = _global_index__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
-  this.translation = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-  this.rotation = _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+  this._id = global__WEBPACK_IMPORTED_MODULE_0__["util"].generateID();
+  this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   this.rotation[3] = 1;
-  this.scale = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  this.scale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   let positionCurve = null;
   let rotationCurve = null;
   let scaleCurve = null;
-  let scaleShear = _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+  let scaleShear = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   /**
    * _TracksReady
    * @returns {*}
@@ -36302,16 +36302,16 @@ function Tw2WbgTransformTrack() {
 
   this._UpdateValue = function (time) {
     if (positionCurve) {
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(positionCurve, time, this.translation, this.cycle, this.duration);
+      global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(positionCurve, time, this.translation, this.cycle, this.duration);
     }
 
     if (rotationCurve) {
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(rotationCurve, time, this.rotation, this.cycle, this.duration);
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+      global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(rotationCurve, time, this.rotation, this.cycle, this.duration);
+      global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
     }
 
     if (scaleCurve) {
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(scaleCurve, time, scaleShear, this.cycle, this.duration);
+      global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(scaleCurve, time, scaleShear, this.cycle, this.duration);
     }
 
     this.scale[0] = scaleShear[0];
@@ -36360,7 +36360,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TriColorSequencer", function() { return TriColorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -36378,7 +36378,7 @@ class TriColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__[
   constructor(...args) {
     super(...args);
     this.functions = [];
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
 
   /**
@@ -36415,11 +36415,11 @@ class TriColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__[
 
   GetValueAt(time, value) {
     const vec4_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec4_0;
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(vec4_0, 0, 0, 0, 0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(vec4_0, 0, 0, 0, 0);
 
     for (let i = 0; i < this.functions.length; i++) {
       this.functions[i].GetValueAt(time, value);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
     }
 
     return value;
@@ -36465,7 +36465,7 @@ TriColorSequencer.__isStaging = 2;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveColor", function() { return Tw2CurveColor; });
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -36486,7 +36486,7 @@ class Tw2CurveColor extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2
     this.g = null;
     this.b = null;
     this.a = null;
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(0, 0, 0, 0);
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(0, 0, 0, 0);
   }
 
   /**
@@ -36569,7 +36569,7 @@ Tw2CurveColor.__isStaging = 2;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveEulerRotation", function() { return Tw2CurveEulerRotation; });
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -36588,7 +36588,7 @@ class Tw2CurveEulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_
     this.pitch = null;
     this.roll = null;
     this.yaw = null;
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
   }
 
   /**
@@ -36789,7 +36789,7 @@ Tw2CurveSequencer.Operator = null;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveVector3", function() { return Tw2CurveVector3; });
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -36808,7 +36808,7 @@ class Tw2CurveVector3 extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["T
     this.x = null;
     this.y = null;
     this.z = null;
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
   }
 
   /**
@@ -36939,7 +36939,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ColorSequencer", function() { return Tw2ColorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -36957,7 +36957,7 @@ class Tw2ColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__[
   constructor(...args) {
     super(...args);
     this.start = 0;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.operator = 0;
     this.functions = [];
   }
@@ -36999,21 +36999,21 @@ class Tw2ColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__[
 
     switch (this.operator) {
       case Tw2ColorSequencer.Operator.MULTIPLY:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 1, 1, 1, 1);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 1, 1, 1, 1);
 
         for (let i = 0; i < this.functions.length; ++i) {
           this.functions[i].GetValueAt(time, vec4_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(value, value, vec4_0);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(value, value, vec4_0);
         }
 
         break;
 
       default:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 0, 0, 0, 0);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 0, 0, 0, 0);
 
         for (let i = 0; i < this.functions.length; ++i) {
           this.functions[i].GetValueAt(time, vec4_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
         }
 
     }
@@ -37049,7 +37049,7 @@ Tw2ColorSequencer.Operator = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EulerRotation", function() { return Tw2EulerRotation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -37070,7 +37070,7 @@ class Tw2EulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["
     this.yawCurve = null;
     this.pitchCurve = null;
     this.rollCurve = null;
-    this.currentValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.currentValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
 
   /**
@@ -37146,7 +37146,7 @@ Tw2EulerRotation.childProperties = ["yawCurve", "pitchCurve", "rollCurve"];
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2QuaternionSequencer", function() { return Tw2QuaternionSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -37164,7 +37164,7 @@ class Tw2QuaternionSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE
   constructor(...args) {
     super(...args);
     this.start = 0;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.functions = [];
   }
 
@@ -37201,12 +37201,12 @@ class Tw2QuaternionSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE
 
 
   GetValueAt(time, value) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(value);
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(value);
     const quat_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.quat_0;
 
     for (let i = 0; i < this.functions.length; ++i) {
       this.functions[i].GetValueAt(time, quat_0);
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, quat_0);
+      global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, quat_0);
     }
 
     return value;
@@ -37236,7 +37236,7 @@ Tw2QuaternionSequencer.childArray = "functions";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RGBAScalarSequencer", function() { return Tw2RGBAScalarSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -37254,7 +37254,7 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2RGBAScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.RedCurve = null;
     this.GreenCurve = null;
     this.BlueCurve = null;
@@ -37457,7 +37457,7 @@ Tw2ScalarSequencer.Operator = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorSequencer", function() { return Tw2VectorSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -37476,7 +37476,7 @@ class Tw2VectorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__
   constructor(...args) {
     super(...args);
     this.start = 0;
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.operator = 0;
     this.functions = [];
   }
@@ -37518,21 +37518,21 @@ class Tw2VectorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__
 
     switch (this.operator) {
       case Tw2VectorSequencer.Operator.MULTIPLY:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 1, 1, 1);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 1, 1, 1);
 
         for (let i = 0; i < this.functions.length; ++i) {
           this.functions[i].GetValueAt(time, vec3_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(value, value, vec3_0);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(value, value, vec3_0);
         }
 
         return value;
 
       default:
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 0, 0, 0);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 0, 0, 0);
 
         for (let i = 0; i < this.functions.length; ++i) {
           this.functions[i].GetValueAt(time, vec3_0);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(value, value, vec3_0);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(value, value, vec3_0);
         }
 
         return value;
@@ -37567,7 +37567,7 @@ Tw2VectorSequencer.Operator = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2XYZScalarSequencer", function() { return Tw2XYZScalarSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -37585,7 +37585,7 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2XYZScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.XCurve = null;
     this.YCurve = null;
     this.ZCurve = null;
@@ -37654,7 +37654,7 @@ Tw2XYZScalarSequencer.childProperties = ["XCurve", "YCurve", "ZCurve"];
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2YPRSequencer", function() { return Tw2YPRSequencer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2CurveSequencer */ "./curve/sequencer/Tw2CurveSequencer.js");
 
 
@@ -37672,8 +37672,8 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2YPRSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.YawPitchRoll = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.YawPitchRoll = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.YawCurve = null;
     this.PitchCurve = null;
     this.RollCurve = null;
@@ -37798,7 +37798,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveCamera", function() { return EveCamera; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveCamera
@@ -37823,7 +37823,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Tr2CurveScalar} zoomCurve       -
  */
 
-class EveCamera extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveCamera extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.fieldOfView = 0;
@@ -37832,13 +37832,13 @@ class EveCamera extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     this.idleMove = false;
     this.idleScale = 0;
     this.idleSpeed = 0;
-    this.intr = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.intr = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.maxSpeed = 0;
     this.noiseScale = 0;
     this.noiseScaleCurve = null;
     this.pitch = 0;
-    this.pos = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotationAroundParent = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.pos = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotationAroundParent = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.translationFromParent = 0;
     this.yaw = 0;
     this.zoomCurve = null;
@@ -37868,7 +37868,7 @@ EveCamera.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLineContainer", function() { return EveLineContainer; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveLineContainer
@@ -37878,7 +37878,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {EveCurveLineSet} lineSet -
  */
 
-class EveLineContainer extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveLineContainer extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.lineSet = null;
@@ -37913,8 +37913,8 @@ EveLineContainer.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return EveSpaceScene; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 
 
 /**
@@ -37982,7 +37982,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Tw2TextureRes} _envMap1Res
  */
 
-class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   // ccp
   //ccpwgl
   // Should this come from the background effect?
@@ -37993,7 +37993,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
    */
   constructor() {
     super();
-    this.ambientColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.25, 0.25, 0.25, 1);
+    this.ambientColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.25, 0.25, 0.25, 1);
     this.backgroundEffect = null;
     this.backgroundObjects = [];
     this.backgroundRenderingEnabled = true;
@@ -38002,9 +38002,9 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     this.envMap1ResPath = "";
     this.envMap2ResPath = "";
     this.envMapResPath = "";
-    this.envMapRotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.envMapRotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.externalParameters = [];
-    this.fogColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.25, 0.25, 0.25, 1);
+    this.fogColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0.25, 0.25, 0.25, 1);
     this.fogEnd = 0;
     this.fogMax = 0;
     this.fogStart = 0;
@@ -38016,13 +38016,13 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     this.shadowFadeThreshold = 0;
     this.shadowThreshold = 0;
     this.starfield = null;
-    this.sunDiffuseColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
-    this.sunDiffuseColorWithDynamicLights = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
-    this.sunDirection = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, -1, 1);
+    this.sunDiffuseColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
+    this.sunDiffuseColorWithDynamicLights = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
+    this.sunDirection = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, -1, 1);
     this.useSunDiffuseColorWithDynamicLights = false;
-    this.clearColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
+    this.clearColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
     this.display = true;
-    this.envMapScaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.envMapScaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.fogBlur = 0;
     this.fogType = 0;
     this.lensflares = [];
@@ -38047,12 +38047,12 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       starField: true
     };
     this._debugHelper = null;
-    this._batches = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
+    this._batches = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
     this._emptyTexture = null;
-    this._frustum = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Frustum"]();
+    this._frustum = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2Frustum"]();
     this._lodEnabled = false;
-    this._perFrameVS = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.vs);
-    this._perFramePS = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.ps);
+    this._perFrameVS = core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.vs);
+    this._perFramePS = core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"].from(EveSpaceScene.perFrameData.ps);
     this._envMapRes = null;
     this._envMap1Res = null;
     this._envMap2Res = null;
@@ -38099,7 +38099,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       this.postProcess = null;
     } else {
       this.postProcessPath = path.toLowerCase();
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(path, obj => this.postProcess = obj);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(path, obj => this.postProcess = obj);
     }
   }
   /**
@@ -38114,7 +38114,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       this._envMapRes = null;
     } else {
       this.envMapResPath = path;
-      this._envMapRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
+      this._envMapRes = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
     }
   }
   /**
@@ -38129,7 +38129,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
       this._envMap1Res = null;
     } else {
       this.envMap1ResPath = path.toLowerCase();
-      this._envMap1Res = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
+      this._envMap1Res = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
     }
   }
   /**
@@ -38146,7 +38146,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     }
 
     this.envMap2ResPath = path.toLowerCase();
-    this._envMap2Res = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
+    this._envMap2Res = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(path);
   }
   /**
    * Enables LOD
@@ -38242,7 +38242,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
   GetEmptyTexture() {
     if (!this._emptyTexture) {
-      this._emptyTexture = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource("res:/texture/global/black.dds.0.png");
+      this._emptyTexture = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource("res:/texture/global/black.dds.0.png");
     }
 
     return this._emptyTexture;
@@ -38289,7 +38289,7 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
   Render(dt) {
     this.ApplyPerFrameData();
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = EveSpaceScene.global,
           tr = undefined,
           show = this.visible;
@@ -38300,8 +38300,8 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     }
 
     if (show.planets && this.planets.length) {
-      const tempProj = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_0, d.projection),
-            newProj = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_1, d.projection),
+      const tempProj = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_0, d.projection),
+            newProj = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_1, d.projection),
             zn = 10000,
             zf = 1e11;
       newProj[10] = zf / (zn - zf);
@@ -38429,17 +38429,17 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
 
   ApplyPerFrameData() {
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = EveSpaceScene.global,
           envMapTransform = g.mat4_2,
           sunDir = g.vec3_0,
           show = this.visible; // Todo: Update from local transform??
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(envMapTransform, this.envMapRotation);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(envMapTransform, envMapTransform, this.envMapScaling);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(envMapTransform, envMapTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(sunDir, this.sunDirection);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(sunDir, sunDir);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(envMapTransform, this.envMapRotation);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(envMapTransform, envMapTransform, this.envMapScaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(envMapTransform, envMapTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(sunDir, this.sunDirection);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(sunDir, sunDir);
     let distance = this.fogEnd - this.fogStart;
     if (Math.abs(distance) < 1e-5) distance = 1e-5;
     const f = 1.0 / distance;
@@ -38487,9 +38487,9 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
     const envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
           envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
           envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap1").SetTextureRes(envMap1);
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap2").SetTextureRes(envMap2);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap1").SetTextureRes(envMap1);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap2").SetTextureRes(envMap2);
   }
   /**
    * Initializes class global and scratch variables
@@ -38499,11 +38499,11 @@ class EveSpaceScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
   static init() {
     if (!EveSpaceScene.global) {
       EveSpaceScene.global = {
-        vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-        vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
-        mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-        mat4_1: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-        mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+        vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
+        mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+        mat4_1: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+        mat4_2: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
       };
     }
   }
@@ -38829,7 +38829,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChild", function() { return EveChild; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _dec2, _dec3, _dec4, _class, _class2, _class3, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -38840,7 +38840,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * Root EveChild class
  */
 
-let EveChild = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveChild extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Per frame update
    * @param {number} dt
@@ -38871,8 +38871,8 @@ let EveChild = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _d
 
 
 }, _class3.global = {
-  mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
+  mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
 }, _class3.perObjectData = {
   ffe: [["world", 16], ["worldInverseTranspose", 16]]
 }, _class3.__isEffectChild = true, _temp), (_applyDecoratedDescriptor(_class2.prototype, "Update", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "Update"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "GetResources", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "GetResources"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "GetBatches", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "GetBatches"), _class2.prototype)), _class2)) || _class);
@@ -38952,7 +38952,7 @@ EveChildBulletStorm.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildCloud", function() { return EveChildCloud; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChild */ "./eve/child/EveChild.js");
 
 
@@ -38977,10 +38977,10 @@ class EveChildCloud extends _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
     this.cellScreenSize = 0;
     this.effect = null;
     this.preTesselationLevel = 0;
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.sortingModifier = 0;
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -39024,7 +39024,7 @@ EveChildCloud.__isStaging = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildContainer", function() { return EveChildContainer; });
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveChild */ "./eve/child/EveChild.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -39065,17 +39065,17 @@ class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild
     this.hideOnLowQuality = false;
     this.inheritProperties = null;
     this.lights = [];
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
     this.objects = [];
     this.observers = [];
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_1__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(1, 1, 1);
     this.staticTransform = false;
     this.transformModifiers = [];
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_1__["vec3"].create();
     this.useSRT = true;
-    this._worldTransform = _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
-    this._worldTransformLast = _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
+    this._worldTransformLast = global__WEBPACK_IMPORTED_MODULE_1__["mat4"].create();
   }
 
   /**
@@ -39099,7 +39099,7 @@ class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild
 
   Update(dt, parentTransform) {
     if (this.useSRT) {
-      _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+      global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     }
     /*
     for (let i = 0; i < this.transformModifiers.length; i++)
@@ -39109,8 +39109,8 @@ class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild
     */
 
 
-    _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransformLast, this._worldTransform);
-    _global__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransformLast, this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
 
     for (let i = 0; i < this.curveSets.length; i++) {
       this.curveSets[i].Update(dt);
@@ -39181,7 +39181,7 @@ EveChildContainer.__isStaging = 2;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildExplosion", function() { return EveChildExplosion; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChild */ "./eve/child/EveChild.js");
 
 
@@ -39212,16 +39212,16 @@ class EveChildExplosion extends _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild
     this.globalDuration = 0;
     this.globalExplosion = null;
     this.globalExplosionDelay = 0;
-    this.globalScaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.globalScaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.localDuration = 0;
     this.localExplosion = null;
     this.localExplosionInterval = 0;
     this.localExplosionIntervalFactor = 0;
     this.localExplosionShared = null;
     this.localExplosions = [];
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
   }
 
   /**
@@ -39304,7 +39304,7 @@ EveChildInheritProperties.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildLink", function() { return EveChildLink; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChild */ "./eve/child/EveChild.js");
 
 
@@ -39326,7 +39326,7 @@ class EveChildLink extends _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
     this.linkStrengthBindings = [];
     this.linkStrengthCurves = [];
     this.mesh = null;
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
 
   /**
@@ -39369,8 +39369,8 @@ EveChildLink.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildMesh", function() { return EveChildMesh; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveChild */ "./eve/child/EveChild.js");
 
 
@@ -39407,20 +39407,20 @@ class EveChildMesh extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
     super(...args);
     this.name = "";
     this.display = true;
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.lowestLodVisible = 2;
     this.mesh = null;
     this.minScreenSize = 0;
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.sortValueOffset = 0;
     this.staticTransform = false;
     this.transformModifiers = [];
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.useSRT = true;
     this.useSpaceObjectData = true;
-    this._worldTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._worldTransformLast = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._worldTransformLast = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._perObjectData = null;
   }
 
@@ -39442,8 +39442,8 @@ class EveChildMesh extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
 
   Update(dt, parentTransform) {
     if (this.useSRT) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+      global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     }
     /*
     for (let i = 0; i < this.transformModifiers.length; i++)
@@ -39453,8 +39453,8 @@ class EveChildMesh extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
     */
 
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
   }
   /**
    * Gets render batches
@@ -39469,12 +39469,12 @@ class EveChildMesh extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
 
     if (this.useSpaceObjectData) {
       if (!this._perObjectData) {
-        this._perObjectData = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"]();
-        this._perObjectData.vs = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"]();
+        this._perObjectData = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"]();
+        this._perObjectData.vs = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"]();
         this._perObjectData.vs.data = new Float32Array(perObjectData.vs.data.length);
         this._perObjectData.vs.data[33] = 1;
         this._perObjectData.vs.data[35] = 1;
-        this._perObjectData.ps = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"]();
+        this._perObjectData.ps = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2RawData"]();
         this._perObjectData.ps.data = new Float32Array(perObjectData.ps.data.length);
         this._perObjectData.ps.data[1] = 1;
         this._perObjectData.ps.data[3] = 1;
@@ -39484,15 +39484,15 @@ class EveChildMesh extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
 
       this._perObjectData.ps.data.set(perObjectData.ps.data);
 
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.data, this._worldTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.data.subarray(16), this._worldTransformLast);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.data, this._worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.data.subarray(16), this._worldTransformLast);
     } else {
       if (!this._perObjectData) {
-        this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData);
+        this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData);
       }
 
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
     }
 
     this.mesh.GetBatches(mode, accumulator, this._perObjectData);
@@ -39610,8 +39610,8 @@ EveChildParticleSphere.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildParticleSystem", function() { return EveChildParticleSystem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveChild */ "./eve/child/EveChild.js");
 
 
@@ -39644,20 +39644,20 @@ class EveChildParticleSystem extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["Eve
     super(...args);
     this.name = "";
     this.display = true;
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.lodSphereRadius = 0;
     this.mesh = null;
     this.minScreenSize = 0;
     this.particleEmitters = [];
     this.particleSystems = [];
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.useDynamicLod = false;
     this.useSRT = true;
-    this._worldTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._worldTransformLast = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData);
+    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._worldTransformLast = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData);
   }
 
   /**
@@ -39687,12 +39687,12 @@ class EveChildParticleSystem extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["Eve
 
   Update(dt, parentTransform) {
     if (this.useSRT) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+      global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
 
     for (let i = 0; i < this.particleEmitters.length; ++i) {
       this.particleEmitters[i].Update(dt);
@@ -39711,8 +39711,8 @@ class EveChildParticleSystem extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["Eve
 
   GetBatches(mode, accumulator) {
     if (this.display && this.mesh) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
       this.mesh.GetBatches(mode, accumulator, this._perObjectData);
     }
   }
@@ -39747,7 +39747,7 @@ EveChildParticleSystem.__isStaging = 1;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildQuad", function() { return EveChildQuad; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChild */ "./eve/child/EveChild.js");
 
 
@@ -39771,13 +39771,13 @@ class EveChildQuad extends _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
     super(...args);
     this.name = "";
     this.brightness = 0;
-    this.color = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.effect = null;
-    this.localTransform = _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.minScreenSize = 0;
-    this.rotation = _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.translation = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -39890,15 +39890,15 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildBillboard", function() { return EveChildBillboard; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveChild__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../EveChild */ "./eve/child/EveChild.js");
 
 
 
 const {
   device
-} = _global__WEBPACK_IMPORTED_MODULE_0__["tw2"];
+} = global__WEBPACK_IMPORTED_MODULE_0__["tw2"];
 /**
  * Mesh attachment to space object and oriented towards the camera
  * TODO: Is this deprecated?
@@ -39922,17 +39922,17 @@ class EveChildBillboard extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild
   constructor(...args) {
     super(...args);
     this.display = true;
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.lowestLodVisible = 2;
     this.mesh = null;
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.staticTransform = false;
     this.useSRT = true;
-    this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData);
-    this._worldTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._worldTransformLast = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].perObjectData);
+    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._worldTransformLast = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
@@ -39953,18 +39953,18 @@ class EveChildBillboard extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild
 
   Update(dt, parentTransform) {
     if (this.useSRT) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+      global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
     const viewInverse = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.mat4_0,
           finalScale = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.vec3_0;
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(viewInverse, device.eyePosition, this._worldTransform.subarray(12), [0, 1, 0]);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(viewInverse, viewInverse);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(finalScale, parentTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, finalScale, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(viewInverse, device.eyePosition, this._worldTransform.subarray(12), [0, 1, 0]);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(viewInverse, viewInverse);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(finalScale, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, finalScale, this.scaling);
     this._worldTransform[0] = viewInverse[0] * finalScale[0];
     this._worldTransform[1] = viewInverse[1] * finalScale[0];
     this._worldTransform[2] = viewInverse[2] * finalScale[0];
@@ -39984,8 +39984,8 @@ class EveChildBillboard extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild
 
   GetBatches(mode, accumulator) {
     if (this.display && this.mesh) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("world"), this._worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("worldInverseTranspose"), this._worldTransform);
       this.mesh.GetBatches(mode, accumulator, this._perObjectData);
     }
   }
@@ -40020,7 +40020,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierAttachToBone", function() { return EveChildModifierAttachToBone; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveChildModifierAttachToBone
@@ -40028,7 +40028,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} boneIndex -
  */
 
-class EveChildModifierAttachToBone extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveChildModifierAttachToBone extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.boneIndex = -1;
@@ -40063,13 +40063,13 @@ EveChildModifierAttachToBone.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard2D", function() { return EveChildModifierBillboard2D; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveChildModifierBillboard2D
  */
 
-class EveChildModifierBillboard2D extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
+class EveChildModifierBillboard2D extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
 
 EveChildModifierBillboard2D.black = function (r) {
   return [];
@@ -40089,13 +40089,13 @@ EveChildModifierBillboard2D.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard3D", function() { return EveChildModifierBillboard3D; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveChildModifierBillboard3D
  */
 
-class EveChildModifierBillboard3D extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
+class EveChildModifierBillboard3D extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
 
 EveChildModifierBillboard3D.black = function (r) {
   return [];
@@ -40115,13 +40115,13 @@ EveChildModifierBillboard3D.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierCameraOrientedRotationConstrained", function() { return EveChildModifierCameraOrientedRotationConstrained; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveChildModifierCameraOrientedRotationConstrained
  */
 
-class EveChildModifierCameraOrientedRotationConstrained extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
+class EveChildModifierCameraOrientedRotationConstrained extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
 
 EveChildModifierCameraOrientedRotationConstrained.black = function (r) {
   return [];
@@ -40141,7 +40141,7 @@ EveChildModifierCameraOrientedRotationConstrained.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierSRT", function() { return EveChildModifierSRT; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveChildModifierSRT
@@ -40151,12 +40151,12 @@ __webpack_require__.r(__webpack_exports__);
  * @property {vec3} translation -
  */
 
-class EveChildModifierSRT extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveChildModifierSRT extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -40188,14 +40188,14 @@ EveChildModifierSRT.__isStaging = 2;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return EveChildModifierTranslateWithCamera; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveChildModifierTranslateWithCamera
  *
  */
 
-class EveChildModifierTranslateWithCamera extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
+class EveChildModifierTranslateWithCamera extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}
 
 EveChildModifierTranslateWithCamera.black = function (r) {
   return [];
@@ -40251,8 +40251,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLensflare", function() { return EveLensflare; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveOccluder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveOccluder */ "./eve/effect/EveOccluder.js");
 
 
@@ -40293,7 +40293,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {*} _backBuffer                            -
  */
 
-class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   // ccp
   // ccpwgl
 
@@ -40309,7 +40309,7 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     this.distanceToEdgeCurves = [];
     this.mesh = null;
     this.occluders = [];
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radialAngleCurves = [];
     this.xDistanceToCenter = [];
     this.yDistanceToCenter = [];
@@ -40322,8 +40322,8 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     this.occlusionIntensity = 1;
     this.backgroundOcclusionIntensity = 1;
     this.curveSets = [];
-    this._direction = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this._transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._direction = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._backBuffer = null;
     EveLensflare.init();
   }
@@ -40334,7 +40334,7 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
   UpdateOccluders() {
     if (!this.doOcclusionQueries) return;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           g = EveLensflare.global;
 
@@ -40366,7 +40366,7 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     }
 
     for (let i = 0; i < this.occluders.length; ++i) {
-      d.SetRenderState(_global__WEBPACK_IMPORTED_MODULE_0__["RS_COLORWRITEENABLE"], 8);
+      d.SetRenderState(global__WEBPACK_IMPORTED_MODULE_0__["RS_COLORWRITEENABLE"], 8);
       gl.colorMask(false, false, false, true);
       gl.clearColor(0.0, 0.0, 0.0, 0.0);
       gl.clear(gl.COLOR_BUFFER_BIT); // Turn off antialiasing
@@ -40410,7 +40410,7 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     }
 
     this.backgroundOcclusionIntensity = this.occlusionIntensity;
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxOccScale", [this.occlusionIntensity, this.occlusionIntensity, 0, 0]);
     g.occludedLevelIndex = (g.occludedLevelIndex + 1) % g.occluderLevels.length;
   }
   /**
@@ -40423,9 +40423,9 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
   GetBatches(mode, accumulator, perObjectData) {
     if (this.display) {
-      const viewDir = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(viewDir, viewDir, _global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
-      if (_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(viewDir, this._direction) < 0) return;
+      const viewDir = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(viewDir, viewDir, global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
+      if (global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(viewDir, this._direction) < 0) return;
 
       for (let i = 0; i < this.flares.length; ++i) {
         this.flares[i].GetBatches(mode, accumulator, perObjectData);
@@ -40446,33 +40446,33 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     const g = EveLensflare.global,
           viewDir = g.vec4_0,
           cameraPos = g.vec3_0,
-          scaleMat = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
+          scaleMat = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
           cameraSpacePos = g.vec3_2,
           negDirVec = g.vec3_3,
           negPos = g.vec3_1,
           dist = g.vec4_1;
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(cameraPos, [0, 0, 0], _global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(cameraPos, [0, 0, 0], global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
 
-    if (_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(this.position) === 0) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(negPos, cameraPos); //let distScale = vec3.length(negPos);
+    if (global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(this.position) === 0) {
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(negPos, cameraPos); //let distScale = vec3.length(negPos);
       //distScale = distScale > 1.5 ? 1 / Math.log(distScale) : 2.5;
     } else {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(negPos, this.position);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(this._direction, negPos);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(negPos, this.position);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(this._direction, negPos);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(viewDir, [0, 0, 1, 0], _global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(cameraSpacePos, cameraPos, viewDir, -this.cameraFactor);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(negDirVec, this._direction);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].arcFromForward(this._transform, negDirVec);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(this._transform, cameraSpacePos);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(scaleMat, scaleMat, [this.occlusionIntensity, this.occlusionIntensity, 1]); //mat4.multiply(scaleMat, scaleMat, this._transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(viewDir, [0, 0, 1, 0], global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(cameraSpacePos, cameraPos, viewDir, -this.cameraFactor);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(negDirVec, this._direction);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].arcFromForward(this._transform, negDirVec);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(this._transform, cameraSpacePos);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(scaleMat, scaleMat, [this.occlusionIntensity, this.occlusionIntensity, 1]); //mat4.multiply(scaleMat, scaleMat, this._transform);
 
     const dir = this._direction;
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(dist, dir[0], dir[1], dir[2], 0);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, _global__WEBPACK_IMPORTED_MODULE_0__["device"].view);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, _global__WEBPACK_IMPORTED_MODULE_0__["device"].projection);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(dist, dir[0], dir[1], dir[2], 0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, global__WEBPACK_IMPORTED_MODULE_0__["device"].view);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, global__WEBPACK_IMPORTED_MODULE_0__["device"].projection);
     dist[0] /= dist[3];
     dist[1] /= dist[3];
     const distToEdge = 1 - Math.min(1 - Math.abs(dist[0]), 1 - Math.abs(dist[1])),
@@ -40515,19 +40515,19 @@ class EveLensflare extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
   static init() {
     if (!EveLensflare.global) {
       const g = EveLensflare.global = {};
-      g.vec3_0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-      g.vec3_1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-      g.vec3_2 = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-      g.vec3_3 = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-      g.vec4_0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-      g.vec4_1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-      g.mat4_0 = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-      g.backBuffer = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureRes"]();
+      g.vec3_0 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      g.vec3_1 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      g.vec3_2 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      g.vec3_3 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+      g.vec4_0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+      g.vec4_1 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+      g.mat4_0 = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+      g.backBuffer = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureRes"]();
       g.backBuffer.width = 0;
       g.backBuffer.height = 0;
       g.backBuffer.hasMipMaps = false;
       g.occludedLevelIndex = 0;
-      g.occluderLevels = [new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"](), new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"](), new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"](), new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"]()];
+      g.occluderLevels = [new core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"](), new core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"](), new core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"](), new core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"]()];
     }
   }
   /**
@@ -40567,10 +40567,10 @@ EveLensflare.__isLensflare = true;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveMeshOverlayEffect", function() { return EveMeshOverlayEffect; });
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core */ "./core/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../curve */ "./curve/index.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! curve */ "./curve/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 
@@ -40597,7 +40597,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} visible.distortionEffects    - Currently not supported
  */
 
-class EveMeshOverlayEffect extends _global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -40625,14 +40625,14 @@ class EveMeshOverlayEffect extends _global__WEBPACK_IMPORTED_MODULE_2__["Tw2Base
    * @param {String|String[]} names
    */
   static createAreaEffects(dest, src, names) {
-    names = Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["toArray"])(names);
+    names = Object(global_util__WEBPACK_IMPORTED_MODULE_3__["toArray"])(names);
 
     for (let i = 0; i < names.length; i++) {
       const name = names[i];
 
       if (name in src && name in dest) {
         for (let i = 0; i < src[name].length; i++) {
-          dest[name].push(_core__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"].from(src[name][i]));
+          dest[name].push(core__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"].from(src[name][i]));
         }
       }
     }
@@ -40649,16 +40649,16 @@ class EveMeshOverlayEffect extends _global__WEBPACK_IMPORTED_MODULE_2__["Tw2Base
     const item = new EveMeshOverlayEffect();
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "update"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "update"]);
 
       if (values.curveSet) {
-        item.curveSet = _curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSet"].from(values.curveSet);
+        item.curveSet = curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSet"].from(values.curveSet);
       }
 
       const areas = ["additiveEffects", "distortionEffects", "opaqueEffects", "transparentEffects", "decalEffects"];
 
       if (values.visible) {
-        Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areas);
+        Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areas);
       }
 
       this.createAreaEffects(item, values, areas);
@@ -40694,7 +40694,7 @@ class EveMeshOverlayEffect extends _global__WEBPACK_IMPORTED_MODULE_2__["Tw2Base
     const effects = this.GetEffects(mode);
 
     for (let i = 0; i < effects.length; i++) {
-      const batch = new _core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryBatch"]();
+      const batch = new core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryBatch"]();
       batch.renderMode = mode;
       batch.perObjectData = perObjectData;
       batch.geometryRes = mesh.geometryResource;
@@ -40715,23 +40715,23 @@ class EveMeshOverlayEffect extends _global__WEBPACK_IMPORTED_MODULE_2__["Tw2Base
   GetEffects(mode) {
     if (this.display) {
       switch (mode) {
-        case _global__WEBPACK_IMPORTED_MODULE_2__["RM_OPAQUE"]:
+        case global__WEBPACK_IMPORTED_MODULE_2__["RM_OPAQUE"]:
           if (this.visible.opaqueEffects) return this.opaqueEffects;
           break;
 
-        case _global__WEBPACK_IMPORTED_MODULE_2__["RM_TRANSPARENT"]:
+        case global__WEBPACK_IMPORTED_MODULE_2__["RM_TRANSPARENT"]:
           if (this.visible.transparentEffects) return this.transparentEffects;
           break;
 
-        case _global__WEBPACK_IMPORTED_MODULE_2__["RM_ADDITIVE"]:
+        case global__WEBPACK_IMPORTED_MODULE_2__["RM_ADDITIVE"]:
           if (this.visible.additiveEffects) return this.additiveEffects;
           break;
 
-        case _global__WEBPACK_IMPORTED_MODULE_2__["RM_DECAL"]:
+        case global__WEBPACK_IMPORTED_MODULE_2__["RM_DECAL"]:
           if (this.visible.decalEffects) return this.decalEffects;
           break;
 
-        case _global__WEBPACK_IMPORTED_MODULE_2__["RM_DISTORTION"]:
+        case global__WEBPACK_IMPORTED_MODULE_2__["RM_DISTORTION"]:
           if (this.visible.distortionEffects) return this.distortionEffects;
       }
     }
@@ -40769,8 +40769,8 @@ EveMeshOverlayEffect.__isStaging = 1;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveOccluder", function() { return EveOccluder; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 
 
 /**
@@ -40783,7 +40783,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<EveTransform>} sprites -
  */
 
-class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    */
@@ -40801,8 +40801,8 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   UpdateValue(parentTransform, index) {
-    if (!_global__WEBPACK_IMPORTED_MODULE_0__["device"].alphaBlendBackBuffer) return;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    if (!global__WEBPACK_IMPORTED_MODULE_0__["device"].alphaBlendBackBuffer) return;
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = EveOccluder.global,
           worldViewProj = g.mat4_0,
           center = g.vec4_0;
@@ -40813,14 +40813,14 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("OccluderValue", [(1 << index * 2) / 255.0, (2 << index * 2) / 255.0, 0, 0]);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("OccluderValue", [(1 << index * 2) / 255.0, (2 << index * 2) / 255.0, 0, 0]);
     g.accumulator.Render();
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldViewProj, d.viewProjection, this.sprites[0].worldTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, [0, 0, 0, 1], worldViewProj);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldViewProj, d.viewProjection, this.sprites[0].worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, [0, 0, 0, 1], worldViewProj);
     const x0 = (center[0] / center[3] + 1) * 0.5,
           y0 = (center[1] / center[3] + 1) * 0.5;
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(center, 0.5, 0.5, 0, 1);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, center, worldViewProj);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(center, 0.5, 0.5, 0, 1);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, center, worldViewProj);
     const x1 = (center[0] / center[3] + 1) * 0.5,
           y1 = (center[1] / center[3] + 1) * 0.5;
     center[0] = x0;
@@ -40840,7 +40840,7 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static CollectSamples(tex, index, total, samples) {
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = this.global,
           effect = g.effect,
           vertexBuffer = g.vertexBuffer,
@@ -40867,12 +40867,12 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   static init() {
     if (EveOccluder.global) return;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = EveOccluder.global = {};
-    g.mat4_0 = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    g.vec4_0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    g.accumulator = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
-    g.effect = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"].from({
+    g.mat4_0 = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    g.vec4_0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    g.accumulator = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
+    g.effect = core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"].from({
       name: "Occluder sampler",
       effectFilePath: "res:/graphics/effect/managed/space/specialfx/lensflares/collectsamples.fx",
       parameters: {
@@ -40882,7 +40882,7 @@ class EveOccluder extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       }
     });
     g.vertexBuffer = null;
-    g.decl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from([{
+    g.decl = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from([{
       usage: "POSITION",
       usageIndex: 0,
       elements: 2
@@ -40961,7 +40961,7 @@ EveOccluder.global = null;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStarfield", function() { return EveStarfield; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/index */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveStarfield
@@ -40977,7 +40977,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} seed              -
  */
 
-class EveStarfield extends _global_index__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveStarfield extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.effect = null;
@@ -41019,8 +41019,8 @@ EveStarfield.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStretch", function() { return EveStretch; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 
 
 /**
@@ -41054,7 +41054,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} _useTransformsForStretch - Toggles using transforms for stretch objects
  */
 
-class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   // ccpwgl
 
   /**
@@ -41066,7 +41066,7 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     this.curveSets = [];
     this.dest = null;
     this.destObject = null;
-    this.length = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Float"]();
+    this.length = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2Float"]();
     this.moveCompletion = null;
     this.moveObject = null;
     this.progressCurve = null;
@@ -41077,12 +41077,12 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     this.useCurveLod = false;
     this.display = true;
     this.update = true;
-    this._destinationPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._destinationPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this._displayDestObject = true;
     this._displaySourceObject = true;
     this._isNegZForward = false;
     this._useTransformsForStretch = false;
-    this._sourcePosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._sourcePosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this._sourceTransform = null;
     this._time = 0;
     this._useParentMatrix = false;
@@ -41126,7 +41126,7 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   SetSourcePosition(position) {
     this._useTransformsForStretch = false;
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._sourcePosition, position);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._sourcePosition, position);
   }
   /**
    * Sets the source's position from a transform
@@ -41148,7 +41148,7 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   SetDestinationPosition(position) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._destinationPosition, position);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._destinationPosition, position);
   }
   /**
    * Sets the source transform
@@ -41179,17 +41179,17 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     if (!this.display) return; // TODO: Handle parent scale....
 
     const g = EveStretch.global,
-          directionVec = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(g.vec3_0, this._destinationPosition, this._sourcePosition),
-          m = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
-          x = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_1, 0, 0, 0),
-          up = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_2, 0, 0, 0),
-          s = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_1);
-    let scalingLength = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec);
+          directionVec = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(g.vec3_0, this._destinationPosition, this._sourcePosition),
+          m = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
+          x = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_1, 0, 0, 0),
+          up = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_2, 0, 0, 0),
+          s = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_1);
+    let scalingLength = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec);
 
     if (this._useTransformsForStretch) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].rotateX(m, m, -Math.PI / 2);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, this._sourceTransform, m);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].rotateX(m, m, -Math.PI / 2);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, this._sourceTransform, m);
     } else {
       if (Math.abs(directionVec[1]) > 0.9) {
         up[2] = 1;
@@ -41197,9 +41197,9 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         up[1] = 1;
       }
 
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(x, up, directionVec);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(x, x);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(up, directionVec, x);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(x, up, directionVec);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(x, x);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(up, directionVec, x);
       m[0] = x[0];
       m[1] = x[1];
       m[2] = x[2];
@@ -41209,21 +41209,21 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       m[8] = up[0];
       m[9] = up[1];
       m[10] = up[2];
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, parentTransform, m);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, parentTransform, m);
     }
 
     if (this.destObject && this._displayDestObject) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(m, this._destinationPosition);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(m, this._destinationPosition);
       this.destObject.UpdateViewDependentData(m);
     }
 
     if (this.sourceObject && this._displaySourceObject) {
       if (this._useTransformsForStretch) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(m);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].rotateX(m, m, -Math.PI / 2);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, this._sourceTransform, m);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(m);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].rotateX(m, m, -Math.PI / 2);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, this._sourceTransform, m);
       } else {
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(m, this._sourcePosition);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(m, this._sourcePosition);
       }
 
       this.sourceObject.UpdateViewDependentData(m);
@@ -41231,9 +41231,9 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
     if (this.stretchObject) {
       if (this._useTransformsForStretch) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(m);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(m, m, [1, 1, scalingLength]);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, this._sourceTransform, m);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(m);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(m, m, [1, 1, scalingLength]);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, this._sourceTransform, m);
       } else {
         m[0] = x[0];
         m[1] = x[1];
@@ -41245,8 +41245,8 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         m[9] = -directionVec[1];
         m[10] = -directionVec[2];
         if (this._isNegZForward) scalingLength = -scalingLength;
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(s, s, [1, 1, scalingLength]);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, m, s);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(s, s, [1, 1, scalingLength]);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(m, m, s);
       }
 
       this.stretchObject.UpdateViewDependentData(m);
@@ -41277,9 +41277,9 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       this.source.GetValueAt(this._time, this._destinationPosition);
     }
 
-    const directionVec = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(EveStretch.global.vec3_0, this._destinationPosition, this._sourcePosition);
-    this.length.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec); // Unused - typo?
+    const directionVec = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(EveStretch.global.vec3_0, this._destinationPosition, this._sourcePosition);
+    this.length.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec); // Unused - typo?
 
     if (this.sourceObject && this._displaySourceObject) {
       this.sourceObject.Update(dt);
@@ -41324,11 +41324,11 @@ class EveStretch extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   static init() {
     if (!EveStretch.global) {
       EveStretch.global = {
-        vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-        vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-        vec3_2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-        mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-        mat4_1: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+        vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+        mat4_1: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
       };
     }
   }
@@ -41368,7 +41368,7 @@ EveStretch.__isStaging = 1;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStretch2", function() { return EveStretch2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveStretch2
@@ -41384,7 +41384,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} quadCount     -
  */
 
-class EveStretch2 extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveStretch2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -41427,7 +41427,7 @@ EveStretch2.__isStaging = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EvePerMuzzleData", function() { return EvePerMuzzleData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTurretFiringFX", function() { return EveTurretFiringFX; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EvePerMuzzleData
@@ -41441,14 +41441,14 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} started
  */
 
-class EvePerMuzzleData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EvePerMuzzleData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.constantDelay = 0;
     this.currentStartDelay = 0;
     this.elapsedTime = 0;
     this.muzzlePositionBone = null;
-    this.muzzleTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.muzzleTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.readyToStart = false;
     this.started = false;
   }
@@ -41501,7 +41501,7 @@ class EvePerMuzzleData extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
  * @property {Array.<EvePerMuzzleData>} _perMuzzleData -
  */
 
-class EveTurretFiringFX extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -41529,7 +41529,7 @@ class EveTurretFiringFX extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
     this.firingDelay6 = 0;
     this.firingDelay7 = 0;
     this.firingDelay8 = 0;
-    this._endPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._endPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this._firingDuration = 0;
     this._isFiring = false;
     this._perMuzzleData = [];
@@ -42049,7 +42049,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return EveBanner; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveBanner
@@ -42065,25 +42065,25 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} usage     -
  */
 
-class EveBanner extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveBanner extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.angleX = 0;
     this.angleY = 0;
     this.boneIndex = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.usage = 0;
     this.display = true;
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
    * Fires on value changes
    */
   OnValueChanged() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
   }
 
 }
@@ -42102,8 +42102,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2Batch", function() { return EveBoosterSet2Batch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2Item", function() { return EveBoosterSet2Item; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet2", function() { return EveBoosterSet2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 
 
@@ -42115,7 +42115,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {EveBoosterSet2} boosterSet
  */
 
-class EveBoosterSet2Batch extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
+class EveBoosterSet2Batch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
   constructor(...args) {
     super(...args);
     this.boosterSet = null;
@@ -42170,22 +42170,22 @@ class EveBoosterSet2 extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObje
     this.alwaysOn = false;
     this.alwaysOnIntensity = 0;
     this.effect = null;
-    this.glowColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.glowColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.glowScale = 0;
     this.glows = null;
-    this.haloColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.haloColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.haloScaleX = 0;
     this.haloScaleY = 0;
-    this.lightColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.lightColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.lightFlickerAmplitude = 0;
     this.lightFlickerFrequency = 0;
     this.lightRadius = 0;
-    this.lightWarpColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.lightWarpColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.lightWarpRadius = 0;
     this.symHaloScale = 0;
     this.trails = null;
-    this.warpGlowColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.warpHaloColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.warpGlowColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.warpHaloColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
 
   /**
@@ -42218,8 +42218,8 @@ EveBoosterSet2.__isStaging = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveCurveLineSetItem", function() { return EveCurveLineSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveCurveLineSet", function() { return EveCurveLineSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 
 
@@ -42248,15 +42248,15 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
     super(...args);
     this.animationSpeed = 0;
     this.animationScale = 1;
-    this.color1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
-    this.color2 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
-    this.intermediatePosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.multiColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
+    this.color1 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
+    this.color2 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
+    this.intermediatePosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.multiColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
     this.multiColorBorder = -1;
     this.numOfSegments = 1;
-    this.overlayColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
-    this.position1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.position2 = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.overlayColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
+    this.position1 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position2 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.type = EveCurveLineSetItem.Type.INVALID;
     this.width = 1;
   }
@@ -42268,8 +42268,8 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
    * @param {Number} [length=EveCurveLineSetItem.DEFAULT_RAY_LENGTH]
    */
   ChangePositionFromRay(origin, direction, length = EveCurveLineSetItem.DEFAULT_RAY_LENGTH) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position1, origin);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(this.position2, origin, direction, length);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position1, origin);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scaleAndAdd(this.position2, origin, direction, length);
     this.UpdateValues();
   }
   /**
@@ -42280,8 +42280,8 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangeColor(startColor, endColor) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.color1, startColor);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.color2, endColor);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.color1, startColor);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.color2, endColor);
     this.UpdateValues();
   }
   /**
@@ -42303,9 +42303,9 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangeCartesian(startPosition, endPosition, middle) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position1, startPosition);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position2, endPosition);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.intermediatePosition, middle);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position1, startPosition);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position2, endPosition);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.intermediatePosition, middle);
     this.UpdateValues();
   }
   /**
@@ -42316,8 +42316,8 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangePositionCartesian(startPosition, endPosition) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position1, startPosition);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position2, endPosition);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position1, startPosition);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.position2, endPosition);
     this.UpdateValues();
   }
   /**
@@ -42327,7 +42327,7 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangeIntermediateCartesian(intermediatePosition) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.intermediatePosition, intermediatePosition);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this.intermediatePosition, intermediatePosition);
     this.UpdateValues();
   }
   /**
@@ -42340,9 +42340,9 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangeSpherical(startPosition, endPosition, middle, center) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position1, startPosition, center);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position2, endPosition, center);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.intermediatePosition, middle, center);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position1, startPosition, center);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position2, endPosition, center);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.intermediatePosition, middle, center);
     this.UpdateValues();
   }
   /**
@@ -42354,8 +42354,8 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangePositionSpherical(startPosition, endPosition, center) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position1, startPosition, center);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position2, endPosition, center);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position1, startPosition, center);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.position2, endPosition, center);
     this.UpdateValues();
   }
   /**
@@ -42366,7 +42366,7 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangeIntermediateSpherical(intermediatePosition, center) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.intermediatePosition, intermediatePosition, center);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(this.intermediatePosition, intermediatePosition, center);
     this.UpdateValues();
   }
   /**
@@ -42377,7 +42377,7 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangeMultiColor(color, border) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(this.multiColor, color);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(this.multiColor, color);
     this.multiColorBorder = border;
     this.UpdateValues();
   }
@@ -42390,7 +42390,7 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   ChangeAnimation(color, speed, scale) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(this.overlayColor, color);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(this.overlayColor, color);
     this.animationSpeed = speed;
     this.animationScale = scale;
     this.UpdateValues();
@@ -42417,7 +42417,7 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
   static from(opt = {}) {
     const item = new this();
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "type", "position1", "color1", "position2", "color2", "intermediatePosition", "width", "multiColor", "multiColorBorder", "overlayColor", "animationSpeed", "animationScale", "numOfSegments"]);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "type", "position1", "color1", "position2", "color2", "intermediatePosition", "width", "multiColor", "multiColorBorder", "overlayColor", "animationSpeed", "animationScale", "numOfSegments"]);
     return item;
   }
   /**
@@ -42473,7 +42473,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
    */
   constructor() {
     super();
-    this.lineEffect = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"].from({
+    this.lineEffect = core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"].from({
       effectFilePath: "res:/Graphics/Effect/Managed/Space/SpecialFX/Lines3D.fx",
       textures: {
         "TexMap": "res:/texture/global/white.dds.0.png",
@@ -42485,16 +42485,16 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     this.additive = false;
     this.depthOffset = 0;
     this.pickable = true;
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._parentTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._parentTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._vertexSize = 26;
     this._vbSize = 0;
     this._vb = null;
-    this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveCurveLineSet.perObjectData);
-    this._decl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EveCurveLineSet.vertexDeclarations).SetStride(26 * 4);
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveCurveLineSet.perObjectData);
+    this._decl = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EveCurveLineSet.vertexDeclarations).SetStride(26 * 4);
     EveCurveLineSet.init();
   }
   /**
@@ -42631,9 +42631,9 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     const g = EveCurveLineSet.global;
     return this.CreateItem({
       type: EveCurveLineSetItem.Type.CURVED,
-      position1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_0, start, center),
-      position2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_1, end, center),
-      intermediatePosition: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_2, middle, center),
+      position1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_0, start, center),
+      position2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_1, end, center),
+      intermediatePosition: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_2, middle, center),
       color1: startColor,
       color2: endColor,
       width: width,
@@ -42681,9 +42681,9 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     const g = EveCurveLineSet.global;
     return this.CreateItem({
       type: EveCurveLineSetItem.Type.SPHERED,
-      position1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_0, start, center),
-      position2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_1, end, center),
-      intermediatePosition: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_2, middle, center),
+      position1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_0, start, center),
+      position2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_1, end, center),
+      intermediatePosition: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_2, middle, center),
       color1: startColor,
       color2: endColor,
       width: width,
@@ -42696,7 +42696,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   OnValueChanged() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
     this._dirty = true;
   }
   /**
@@ -42706,7 +42706,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   UpdateViewDependentData(parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentTransform);
   }
   /**
    * Unloads the line set's buffers
@@ -42715,7 +42715,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   Unload(skipEvent) {
     if (this._vb) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vb);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vb);
       this._vb = null;
     }
 
@@ -42770,27 +42770,27 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
           break;
 
         case EveCurveLineSetItem.Type.SPHERED:
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(startDir, item.position1, item.intermediatePosition);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(endDir, item.position2, item.intermediatePosition);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(startDirNrm, startDir);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(endDirNrm, endDir);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(rotationAxis, startDir, endDir);
-          const fullAngle = Math.acos(_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(startDirNrm, endDirNrm)),
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(startDir, item.position1, item.intermediatePosition);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(endDir, item.position2, item.intermediatePosition);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(startDirNrm, startDir);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(endDirNrm, endDir);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(rotationAxis, startDir, endDir);
+          const fullAngle = Math.acos(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(startDirNrm, endDirNrm)),
                 segmentAngle = fullAngle / item.numOfSegments;
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(rotationMatrix);
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].rotate(rotationMatrix, rotationMatrix, segmentAngle, rotationAxis);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(dir1, startDir);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(col1, item.color1);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(rotationMatrix);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].rotate(rotationMatrix, rotationMatrix, segmentAngle, rotationAxis);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(dir1, startDir);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(col1, item.color1);
 
           for (let j = 0; j < this.lines[i].numOfSegments; ++j) {
             const segmentFactor = (j + 1) / item.numOfSegments;
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(dir2, dir1, rotationMatrix);
+            global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(dir2, dir1, rotationMatrix);
             col2[0] = item.color1[0] * (1 - segmentFactor) + item.color2[0] * segmentFactor;
             col2[1] = item.color1[1] * (1 - segmentFactor) + item.color2[1] * segmentFactor;
             col2[2] = item.color1[2] * (1 - segmentFactor) + item.color2[2] * segmentFactor;
             col2[3] = item.color1[3] * (1 - segmentFactor) + item.color2[3] * segmentFactor;
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(pos1, dir1, item.intermediatePosition);
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(pos2, dir2, item.intermediatePosition);
+            global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(pos1, dir1, item.intermediatePosition);
+            global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(pos2, dir2, item.intermediatePosition);
             EveCurveLineSet.WriteLineVerticesToBuffer(this, pos1, col1, j / item.numOfSegments, pos2, col2, segmentFactor, i, data, offset);
             offset += 6 * this._vertexSize;
             tmp = dir1;
@@ -42804,14 +42804,14 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
           break;
 
         case EveCurveLineSetItem.Type.CURVED:
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(tangent1, item.intermediatePosition, item.position1);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(tangent2, item.position2, item.intermediatePosition);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(pos1, item.position1);
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(col1, item.color1);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(tangent1, item.intermediatePosition, item.position1);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(tangent2, item.position2, item.intermediatePosition);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(pos1, item.position1);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(col1, item.color1);
 
           for (let j = 0; j < item.numOfSegments; ++j) {
             const segmentFactor = (j + 1) / item.numOfSegments;
-            _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].hermite(pos2, item.position1, tangent1, item.position2, tangent2, segmentFactor);
+            global__WEBPACK_IMPORTED_MODULE_0__["vec3"].hermite(pos2, item.position1, tangent1, item.position2, tangent2, segmentFactor);
             col2[0] = item.color1[0] * (1 - segmentFactor) + item.color2[0] * segmentFactor;
             col2[1] = item.color1[1] * (1 - segmentFactor) + item.color2[1] * segmentFactor;
             col2[2] = item.color1[2] * (1 - segmentFactor) + item.color2[2] * segmentFactor;
@@ -42830,10 +42830,10 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     } //if (this._vb) device.gl.deleteBuffer(this._vb);
 
 
-    this._vb = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.createBuffer();
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, this._vb);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bufferData(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, data, _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.STATIC_DRAW);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, null);
+    this._vb = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.createBuffer();
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, this._vb);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bufferData(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, data, global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.STATIC_DRAW);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, null);
     super.Rebuild();
   }
   /**
@@ -42848,26 +42848,26 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     let effect;
 
     switch (mode) {
-      case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_TRANSPARENT:
+      case global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_TRANSPARENT:
         if (this.additive || !this.lineEffect) return;
         effect = this.lineEffect;
         break;
 
-      case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE:
+      case global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE:
         if (!this.additive || !this.lineEffect) return;
         effect = this.lineEffect;
         break;
 
-      case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_PICKABLE:
+      case global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_PICKABLE:
         if (!this.pickable || !this.pickEffect) return;
         effect = this.pickEffect;
     }
 
-    const batch = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"](),
+    const batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"](),
           worldTransform = EveCurveLineSet.global.mat4_0;
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldTransform, this.transform, this._parentTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), worldTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ps.Get("WorldMat"), worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldTransform, this.transform, this._parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ps.Get("WorldMat"), worldTransform);
     batch.perObjectData = this._perObjectData;
     batch.geometryProvider = this;
     batch.renderMode = mode;
@@ -42884,7 +42884,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   Render(batch, technique) {
     if (!batch.effect || !batch.effect.IsGood() || !this._vb) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
     let passCount = batch.effect.GetPassCount(technique);
@@ -43059,33 +43059,33 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
   static init() {
     if (!EveCurveLineSet.global) {
       EveCurveLineSet.global = {
-        vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // start direction
-        vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // end direction
-        vec3_2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // start direction normalized
-        vec3_3: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_3: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // end direction normalized
-        vec3_4: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_4: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // rotationAxis
-        vec3_5: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_5: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // direction1
-        vec3_6: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_6: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // direction2
-        vec3_7: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_7: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // position 1
-        vec3_8: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_8: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // position 2
-        vec3_9: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_9: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // tangent1
-        vec3_10: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        vec3_10: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         // tangent2
-        vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
+        vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
         // color 1
-        vec4_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
+        vec4_1: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
         // color 2
-        mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create() // rotationMatrix
+        mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create() // rotationMatrix
 
       };
     }
@@ -43160,8 +43160,8 @@ EveCurveLineSet.__isStaging = 1;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveCustomMask", function() { return EveCustomMask; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/parameter */ "./core/parameter/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core_parameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/parameter */ "./core/parameter/index.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -43180,20 +43180,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @property {mat4} _worldInverseTranspose - The custom mask's final matrix
  */
 
-class EveCustomMask extends _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TransformParameter"] {
+class EveCustomMask extends core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TransformParameter"] {
   constructor(...args) {
     super(...args);
     this.materialIndex = 0;
-    this.targetMaterials = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.targetMaterials = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.display = true;
     this.isMirrored = false;
     this.parameters = {
-      PatternMaskMap: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("PatternMaskMap"),
-      DiffuseColor: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DiffuseColor"),
-      FresnelColor: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("FresnelColor"),
-      Gloss: new _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Gloss")
+      PatternMaskMap: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("PatternMaskMap"),
+      DiffuseColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("DiffuseColor"),
+      FresnelColor: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("FresnelColor"),
+      Gloss: new core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Vector4Parameter"]("Gloss")
     };
-    this._worldInverseTranspose = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._worldInverseTranspose = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
@@ -43205,7 +43205,7 @@ class EveCustomMask extends _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Tra
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const material = yield _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].eveSof.FetchMaterial(name);
+      const material = yield global__WEBPACK_IMPORTED_MODULE_0__["tw2"].eveSof.FetchMaterial(name);
       const {
         DiffuseColor,
         FresnelColor,
@@ -43230,7 +43230,7 @@ class EveCustomMask extends _core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Tra
 
   UpdatePerObjectData(parentTransform, perObjectData, index, visible) {
     this.SetParentTransform(parentTransform);
-    const targets = this.display && visible ? this.targetMaterials : _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].ZERO;
+    const targets = this.display && visible ? this.targetMaterials : global__WEBPACK_IMPORTED_MODULE_0__["vec4"].ZERO;
     perObjectData.ps.Set("CustomMaskTarget" + index, targets);
     perObjectData.ps.SetIndex("CustomMaskMaterialID" + index, 0, this.materialIndex);
     perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
@@ -43269,8 +43269,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveHazeSetBatch", function() { return EveHazeSetBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveHazeSetItem", function() { return EveHazeSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveHazeSet", function() { return EveHazeSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 
 
@@ -43282,7 +43282,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {EveHazeSet} hazeSet
  */
 
-class EveHazeSetBatch extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
+class EveHazeSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
   constructor(...args) {
     super(...args);
     this.hazeSet = null;
@@ -43320,19 +43320,19 @@ class EveHazeSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObje
     this.colorType = 0;
     this.hazeBrightness = 0;
     this.hazeFalloff = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.sourceBrightness = 0;
     this.sourceSize = 0;
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
    * Fires on value changes
    */
   OnValueChanged() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
     this._dirty = true;
   }
 
@@ -43390,8 +43390,8 @@ class EveHazeSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSe
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLocator2", function() { return EveLocator2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLocator", function() { return EveLocator2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 /**
@@ -43406,11 +43406,11 @@ __webpack_require__.r(__webpack_exports__);
  * @property {?Tw2Bone} _bone               - A turret locator's bone
  */
 
-class EveLocator2 extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveLocator2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.atlasIndex0 = null;
     this.atlasIndex1 = null;
     this.bone = null;
@@ -43437,7 +43437,7 @@ class EveLocator2 extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     const item = new EveLocator2();
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, values, ["transform", "name", "atlasIndex0", "atlasIndex1"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, values, ["transform", "name", "atlasIndex0", "atlasIndex1"]);
     }
 
     return item;
@@ -43486,7 +43486,7 @@ EveLocator2.__isStaging = 1;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObjectSetItem", function() { return EveObjectSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObjectSet", function() { return EveObjectSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _class, _temp, _dec2, _dec3, _dec4, _class3, _class4, _class5, _temp2;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -43501,7 +43501,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
 
-let EveObjectSetItem = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class EveObjectSetItem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class EveObjectSetItem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.display = true;
@@ -43527,7 +43527,7 @@ let EveObjectSetItem = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abst
  * @property {Boolean} _autoRebuild   - Auto rebuilds the object if a child is dirty
  */
 
-let EveObjectSet = (_dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class EveObjectSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class EveObjectSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.autoRebuild = true;
@@ -43772,12 +43772,12 @@ let EveObjectSet = (_dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstrac
 
 
 }, _class5.Item = null, _class5.global = {
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
-  vec4_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
-  mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
+  vec4_1: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
+  mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
 }, _temp2), (_applyDecoratedDescriptor(_class4.prototype, "GetBatches", [_dec3], Object.getOwnPropertyDescriptor(_class4.prototype, "GetBatches"), _class4.prototype), _applyDecoratedDescriptor(_class4.prototype, "Render", [_dec4], Object.getOwnPropertyDescriptor(_class4.prototype, "Render"), _class4.prototype)), _class4)) || _class3);
 
 /***/ }),
@@ -43794,11 +43794,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EvePlaneSetBatch", function() { return EvePlaneSetBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EvePlaneSetItem", function() { return EvePlaneSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EvePlaneSet", function() { return EvePlaneSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
-/* harmony import */ var _core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../core/mesh */ "./core/mesh/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
 
 
 
@@ -43810,7 +43810,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {EvePlaneSet} planeSet
  */
 
-class EvePlaneSetBatch extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
+class EvePlaneSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
   constructor(...args) {
     super(...args);
     this.planeSet = null;
@@ -43854,25 +43854,25 @@ class EvePlaneSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
   constructor(...args) {
     super(...args);
     this.name = "";
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.layer1Scroll = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.layer1Transform = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.layer2Scroll = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.layer2Transform = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer1Scroll = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer1Transform = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer2Scroll = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer2Transform = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.maskAtlasID = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.boneIndex = 0;
     this.groupIndex = -1;
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
    * Fires on value changes
    */
   OnValueChanged() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
     this._dirty = true;
   }
   /**
@@ -43886,7 +43886,7 @@ class EvePlaneSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     const item = new EvePlaneSetItem();
 
     if (values) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "boneIndex", "groupIndex", "position", "scaling", "rotation", "transform", "color", "layer1Transform", "layer2Transform", "layer1Scroll", "layer2Scroll", "maskAtlasID"]); // Allow alias for maskAtlasID
+      global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "boneIndex", "groupIndex", "position", "scaling", "rotation", "transform", "color", "layer1Transform", "layer2Transform", "layer1Scroll", "layer2Scroll", "maskAtlasID"]); // Allow alias for maskAtlasID
 
       if (values.maskMapAtlasIndex !== undefined) {
         item.maskAtlasID = values.maskMapAtlasIndex;
@@ -43935,7 +43935,7 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
     this._time = 0;
     this._vertexBuffer = null;
     this._indexBuffer = null;
-    this._decl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EvePlaneSet.vertexDeclarations);
+    this._decl = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EvePlaneSet.vertexDeclarations);
   }
 
   /**
@@ -43984,12 +43984,12 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
 
   Unload(skipEvent) {
     if (this._vertexBuffer) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vertexBuffer);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._vertexBuffer);
       this._vertexBuffer = null;
     }
 
     if (this._indexBuffer) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._indexBuffer);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._indexBuffer);
       this._indexBuffer = null;
     }
 
@@ -44022,7 +44022,7 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
       array[offset + vertexSize + vertexSize - 3] = 1;
       array[offset + 2 * vertexSize + vertexSize - 3] = 2;
       array[offset + 3 * vertexSize + vertexSize - 3] = 3;
-      const itemTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(item.transform, item.rotation, item.position, item.scaling);
+      const itemTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(item.transform, item.rotation, item.position, item.scaling);
 
       for (let j = 0; j < 4; ++j) {
         const vtxOffset = offset + j * vertexSize;
@@ -44063,10 +44063,10 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
       }
     }
 
-    this._vertexBuffer = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.createBuffer();
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, this._vertexBuffer);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bufferData(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, array, _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.STATIC_DRAW);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, null);
+    this._vertexBuffer = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.createBuffer();
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, this._vertexBuffer);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bufferData(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, array, global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.STATIC_DRAW);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, null);
     const indexes = new Uint16Array(itemCount * 6);
 
     for (let i = 0; i < itemCount; ++i) {
@@ -44080,10 +44080,10 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
       indexes[offset + 5] = vtxOffset + 2;
     }
 
-    this._indexBuffer = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.createBuffer();
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bufferData(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ELEMENT_ARRAY_BUFFER, indexes, _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.STATIC_DRAW);
-    _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(_global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ELEMENT_ARRAY_BUFFER, null);
+    this._indexBuffer = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.createBuffer();
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bufferData(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ELEMENT_ARRAY_BUFFER, indexes, global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.STATIC_DRAW);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ELEMENT_ARRAY_BUFFER, null);
     this._indexBuffer.count = itemCount * 6;
     super.Rebuild();
   }
@@ -44096,9 +44096,9 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
 
 
   GetBatches(mode, accumulator, perObjectData) {
-    if (this.display && mode === _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._vertexBuffer && this._visibleItems.length) {
+    if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._vertexBuffer && this._visibleItems.length) {
       const batch = new EvePlaneSetBatch();
-      batch.renderMode = _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
+      batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       batch.planeSet = this;
       batch.perObjectData = perObjectData;
       accumulator.Commit(batch);
@@ -44112,7 +44112,7 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
 
   Render(technique) {
     if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl;
     d.SetStandardStates(d.RM_ADDITIVE);
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
@@ -44139,10 +44139,10 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
     const item = new EvePlaneSet();
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "hideOnLowQuality"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "hideOnLowQuality"]);
 
       if (values.effect) {
-        item.effect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.effect);
+        item.effect = core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.effect);
       }
 
       if (values.items) {
@@ -44225,10 +44225,10 @@ EvePlaneSet.vertexDeclarations = [{
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObjectDecal", function() { return EveSpaceObjectDecal; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/ */ "./core/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
-/* harmony import */ var _core_mesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core/mesh */ "./core/mesh/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/ */ "./core/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
 
 
 
@@ -44258,15 +44258,15 @@ __webpack_require__.r(__webpack_exports__);
  * @property {mat4} _transformInv              - Decal local transform inverse
  */
 
-class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
     this.decalEffect = null;
     this.indexBuffer = [];
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.display = true;
     this.groupIndex = -1;
     this.parentBoneIndex = -1;
@@ -44274,9 +44274,9 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
     this.pickEffect = null;
     this._indexBuffer = null;
     this._parentGeometry = null;
-    this._perObjectData = _core___WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObjectDecal.perObjectData);
-    this._transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._transformInv = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._perObjectData = core___WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObjectDecal.perObjectData);
+    this._transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._transformInv = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._dirty = true;
   }
 
@@ -44305,8 +44305,8 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
 
 
   OnValueChanged() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this._transform, this.rotation, this.position, this.scaling);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._transformInv, this._transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this._transform, this.rotation, this.position, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._transformInv, this._transform);
   }
   /**
    * Sets the parent geometry
@@ -44324,7 +44324,7 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
 
   Unload(skipEvent) {
     if (this._indexBuffer) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._indexBuffer);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._indexBuffer);
       this._indexBuffer = null;
     }
 
@@ -44341,7 +44341,7 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
     this.Unload(true);
 
     if (this.indexBuffer) {
-      const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+      const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
             indexes = new Uint16Array(this.indexBuffer);
       this._indexBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
@@ -44364,11 +44364,11 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
     let effect;
 
     switch (mode) {
-      case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_DECAL:
+      case global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_DECAL:
         effect = this.decalEffect;
         break;
 
-      case _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_PICKABLE:
+      case global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_PICKABLE:
         effect = this.pickable ? this.pickEffect : null;
         break;
     }
@@ -44382,7 +44382,7 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
     }
 
     if (effect.IsGood() && this._parentGeometry.IsGood()) {
-      const batch = new _core___WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
+      const batch = new core___WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
 
       this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
 
@@ -44409,13 +44409,13 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
           bone[13] = bones[offset + 7];
           bone[14] = bones[offset + 11];
           bone[15] = 1;
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(bone, bone);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(bone, bone);
         }
       }
 
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("decalMatrix"), this._transform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._transformInv);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("decalMatrix"), this._transform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._transformInv);
       this._perObjectData.ps.Get("displayData")[0] = counter || 0;
 
       this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
@@ -44440,12 +44440,12 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
           bkStart = mesh.areas[0].start,
           bkCount = mesh.areas[0].count,
           bkIndexType = mesh.indexType;
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_DecalMatrix", this._transform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_InvDecalMatrix", this._transformInv);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_DecalMatrix", this._transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_InvDecalMatrix", this._transformInv);
     mesh.indexes = this._indexBuffer;
     mesh.areas[0].start = 0;
     mesh.areas[0].count = this.indexBuffer.length;
-    mesh.indexType = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.UNSIGNED_SHORT;
+    mesh.indexType = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.UNSIGNED_SHORT;
 
     this._parentGeometry.RenderAreas(0, 0, 1, batch.effect, technique);
 
@@ -44466,20 +44466,20 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
     const item = new EveSpaceObjectDecal();
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "pickable", "position", "rotation", "scaling", "groupIndex", "parentBoneIndex"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "pickable", "position", "rotation", "scaling", "groupIndex", "parentBoneIndex"]);
 
       if (values.indexBuffer) {
         item.indexBuffer = new Uint16Array(values.indexBuffer);
       }
 
       if (values.pickEffect) {
-        item.pickEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from(values.pickEffect);
+        item.pickEffect = core_mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from(values.pickEffect);
       }
 
       const decalEffect = values.decalEffect || values.effect;
 
       if (decalEffect) {
-        item.decalEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from(decalEffect);
+        item.decalEffect = core_mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from(decalEffect);
       }
     }
 
@@ -44506,7 +44506,7 @@ class EveSpaceObjectDecal extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseC
 
 }
 EveSpaceObjectDecal.perObjectData = {
-  vs: [["worldMatrix", 16], ["invWorldMatrix", 16], ["decalMatrix", 16], ["invDecalMatrix", 16], ["parentBoneMatrix", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])]],
+  vs: [["worldMatrix", 16], ["invWorldMatrix", 16], ["decalMatrix", 16], ["invDecalMatrix", 16], ["parentBoneMatrix", global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])]],
   ps: [["displayData", 4], ["shipData", 4 * 3]]
 };
 
@@ -44524,11 +44524,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpotlightSetBatch", function() { return EveSpotlightSetBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpotlightSetItem", function() { return EveSpotlightSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpotlightSet", function() { return EveSpotlightSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
-/* harmony import */ var _core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../core/mesh */ "./core/mesh/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
 
 
 
@@ -44539,7 +44539,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {EveSpotlightSet} spotlightSet
  */
 
-class EveSpotlightSetBatch extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
+class EveSpotlightSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
   constructor(...args) {
     super(...args);
     this.spotlightSet = null;
@@ -44578,11 +44578,11 @@ class EveSpotlightSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
   constructor(...args) {
     super(...args);
     this.name = "";
-    this.coneColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.flareColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.spriteColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.spriteScale = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.coneColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.flareColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.spriteColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.spriteScale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.boosterGainInfluence = 0;
     this.boneIndex = 0;
     this.display = true;
@@ -44601,7 +44601,7 @@ class EveSpotlightSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
    */
   static from(opt = {}) {
     const item = new this();
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "boosterGainInfluence", "boneIndex", "groupIndex", "coneIntensity", "spriteIntensity", "flareIntensity", "transform", "coneColor", "spriteColor", "flareColor", "spriteScale"]);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "boosterGainInfluence", "boneIndex", "groupIndex", "coneIntensity", "spriteIntensity", "flareIntensity", "transform", "coneColor", "spriteColor", "flareColor", "spriteScale"]);
     return item;
   }
   /**
@@ -44642,7 +44642,7 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     this._coneVertexBuffer = null;
     this._spriteVertexBuffer = null;
     this._indexBuffer = null;
-    this._decl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EveSpotlightSet.vertexDeclarations);
+    this._decl = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EveSpotlightSet.vertexDeclarations);
   }
 
   /**
@@ -44681,17 +44681,17 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   Unload(skipEvent) {
     if (this._coneVertexBuffer) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._coneVertexBuffer);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._coneVertexBuffer);
       this._coneVertexBuffer = null;
     }
 
     if (this._spriteVertexBuffer) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._spriteVertexBuffer);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._spriteVertexBuffer);
       this._spriteVertexBuffer = null;
     }
 
     if (this._indexBuffer) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._indexBuffer);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._indexBuffer);
       this._indexBuffer = null;
     }
 
@@ -44713,7 +44713,7 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
       return;
     }
 
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           vertCount = 4,
           coneQuadCount = 4,
           coneVertexCount = itemCount * coneQuadCount * vertCount,
@@ -44839,9 +44839,9 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   GetBatches(mode, accumulator, perObjectData) {
-    if (this.display && mode === _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._indexBuffer.count) {
+    if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._indexBuffer.count) {
       const batch = new EveSpotlightSetBatch();
-      batch.renderMode = _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
+      batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       batch.spotlightSet = this;
       batch.perObjectData = perObjectData;
       accumulator.Commit(batch);
@@ -44880,7 +44880,7 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   static Render(spotlightSet, effect, technique, buffer) {
     if (!effect || !effect.IsGood() || !buffer || !spotlightSet._indexBuffer) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           stride = 22 * 4;
     d.SetStandardStates(d.RM_ADDITIVE);
@@ -44908,21 +44908,21 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     const item = new EveSpotlightSet();
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "intensity"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "intensity"]);
 
       if (values.coneEffect) {
-        if (Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(values.coneEffect)) {
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(values.coneEffect)) {
           item.coneEffect = values.coneEffect;
         } else {
-          item.coneEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.coneEffect);
+          item.coneEffect = core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.coneEffect);
         }
       }
 
       if (values.glowEffect) {
-        if (Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(values.glowEffect)) {
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(values.glowEffect)) {
           item.glowEffect = values.glowEffect;
         } else {
-          item.glowEffect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.glowEffect);
+          item.glowEffect = core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.glowEffect);
         }
       }
 
@@ -44996,7 +44996,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteLineSetBatch", function() { return EveSpriteLineSetBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteLineSetItem", function() { return EveSpriteLineSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteLineSet", function() { return EveSpriteLineSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 
 
@@ -45055,12 +45055,12 @@ class EveSpriteLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_1__["E
     this.isCircle = false;
     this.maxScale = 0;
     this.minScale = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.spacing = 0;
     this.display = true;
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._dirty = true;
   }
 
@@ -45068,7 +45068,7 @@ class EveSpriteLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_1__["E
    * Fires on value changes
    */
   OnValueChanged() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
     this._dirty = true;
   }
 
@@ -45130,11 +45130,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteSetBatch", function() { return EveSpriteSetBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteSetItem", function() { return EveSpriteSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteSet", function() { return EveSpriteSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
-/* harmony import */ var _core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../core/mesh */ "./core/mesh/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
 
 
 
@@ -45151,7 +45151,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number}
  */
 
-class EveSpriteSetBatch extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
+class EveSpriteSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
   constructor(...args) {
     super(...args);
     this.boosterGlow = false;
@@ -45197,12 +45197,12 @@ class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
     this.blinkPhase = 0;
     this.blinkRate = 0;
     this.boneIndex = 0;
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.falloff = 0;
     this.maxScale = 0;
     this.minScale = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.warpColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.warpColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.groupIndex = -1;
     this.groupName = "";
   }
@@ -45216,7 +45216,7 @@ class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
     const item = new this();
 
     if (values) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale", "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor", "groupName"]);
+      global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale", "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor", "groupName"]);
     }
 
     return item;
@@ -45262,7 +45262,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     this._indexBuffer = null;
     this._instanceBuffer = null;
     this._decl = null;
-    this._vdecl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from([{
+    this._vdecl = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from([{
       usage: "TEXCOORD",
       usageType: 5,
       elements: 1
@@ -45314,7 +45314,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   UseQuads(useQuads) {
     this.useQuads = useQuads;
-    this._decl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(useQuads ? EveSpriteSet.quadVertexDeclarations : EveSpriteSet.vertexDeclarations);
+    this._decl = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(useQuads ? EveSpriteSet.quadVertexDeclarations : EveSpriteSet.vertexDeclarations);
     this._dirty = true;
   }
   /**
@@ -45341,7 +45341,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   Unload(skipEvent) {
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this._vertexBuffer) {
       gl.deleteBuffer(this._vertexBuffer);
@@ -45377,7 +45377,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       return;
     }
 
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this.useQuads) {
       this._vertexBuffer = gl.createBuffer();
@@ -45450,10 +45450,10 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   GetBatches(mode, accumulator, perObjectData, world) {
-    if (this.display && mode === _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length) {
+    if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length) {
       const batch = new EveSpriteSetBatch();
       batch.world = world;
-      batch.renderMode = _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
+      batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       batch.spriteSet = this;
       batch.perObjectData = perObjectData;
       accumulator.Commit(batch);
@@ -45471,13 +45471,13 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   GetBoosterGlowBatches(mode, accumulator, perObjectData, world, boosterGain, warpIntensity) {
-    if (this.display && mode === _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length) {
+    if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length) {
       const batch = new EveSpriteSetBatch();
       batch.boosterGlow = true;
       batch.world = world;
       batch.boosterGain = boosterGain;
       batch.warpIntensity = warpIntensity;
-      batch.renderMode = _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
+      batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       batch.spriteSet = this;
       batch.perObjectData = perObjectData;
       accumulator.Commit(batch);
@@ -45498,7 +45498,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     }
 
     if (!this.effect || !this.effect.IsGood() || !this._indexBuffer || !this._vertexBuffer) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl;
     d.SetStandardStates(d.RM_ADDITIVE);
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
@@ -45525,7 +45525,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   RenderBoosterGlow(technique, world, boosterGain, warpIntensity) {
     if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           pos = _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].global.vec3_0,
           itemCount = this._visibleItems.length,
@@ -45535,7 +45535,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
     for (let i = 0; i < itemCount; ++i) {
       const item = this._visibleItems[i];
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(pos, item.position, world);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(pos, item.position, world);
       array[index++] = pos[0];
       array[index++] = pos[1];
       array[index++] = pos[2];
@@ -45588,7 +45588,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   RenderQuads(technique, world, perObjectData) {
     if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl,
           itemCount = this._visibleItems.length,
           array = new Float32Array(17 * itemCount),
@@ -45605,9 +45605,9 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
         pos[0] = bones[offset] * item.position[0] + bones[offset + 1] * item.position[1] + bones[offset + 2] * item.position[2] + bones[offset + 3];
         pos[1] = bones[offset + 4] * item.position[0] + bones[offset + 5] * item.position[1] + bones[offset + 6] * item.position[2] + bones[offset + 7];
         pos[2] = bones[offset + 8] * item.position[0] + bones[offset + 9] * item.position[1] + bones[offset + 10] * item.position[2] + bones[offset + 11];
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(pos, pos, world);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(pos, pos, world);
       } else {
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(pos, item.position, world);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(pos, item.position, world);
       }
 
       array[index++] = pos[0];
@@ -45663,10 +45663,10 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     const item = new EveSpriteSet();
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "intensity", "skinned", "useQuads"]);
+      Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "intensity", "skinned", "useQuads"]);
 
       if (values.effect) {
-        item.effect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.effect);
+        item.effect = core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.effect);
       }
 
       if (values.items) {
@@ -45767,8 +45767,8 @@ EveSpriteSet.quadVertexDeclarations = [{
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTrailSetRenderBatch", function() { return EveTrailSetRenderBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTrailsSet", function() { return EveTrailsSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core_batch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/batch */ "./core/batch/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core_batch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/batch */ "./core/batch/index.js");
 
 
 /**
@@ -45779,7 +45779,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {EveTrailsSet} trailsSet
  */
 
-class EveTrailSetRenderBatch extends _core_batch__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
+class EveTrailSetRenderBatch extends core_batch__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
   constructor(...args) {
     super(...args);
     this.trailsSet = null;
@@ -45805,7 +45805,7 @@ class EveTrailSetRenderBatch extends _core_batch__WEBPACK_IMPORTED_MODULE_1__["T
  * @property {Tw2GeometryRes} geometryRes -
  */
 
-class EveTrailsSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveTrailsSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.effect = null;
@@ -45819,7 +45819,7 @@ class EveTrailsSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
    */
   Initialize() {
     if (this.geometryResPath) {
-      this.geometryRes = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => this.OnResPrepared(res));
+      this.geometryRes = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => this.OnResPrepared(res));
     }
   }
   /**
@@ -45920,8 +45920,8 @@ EveTrailsSet.__isStaging = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTurretSetItem", function() { return EveTurretSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTurretSet", function() { return EveTurretSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 
 
@@ -45947,11 +45947,11 @@ class EveTurretSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
     this.locatorName = null;
     this.updateFromLocator = false;
     this.canFireWhenHidden = false;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this._bone = null;
-    this._localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._localRotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this._localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._localRotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
 
   /**
@@ -45967,13 +45967,13 @@ class EveTurretSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
 
   UpdateTransforms() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslation(this._localTransform, this.rotation, this.position);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslation(this._localTransform, this.rotation, this.position);
 
     if (this._bone) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._localTransform, this._bone.offsetTransform, this._localTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this._localRotation, this._localTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._localTransform, this._bone.offsetTransform, this._localTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this._localRotation, this._localTransform);
     } else {
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(this._localRotation, this.rotation);
+      global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(this._localRotation, this.rotation);
     }
   }
   /**
@@ -45985,7 +45985,7 @@ class EveTurretSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
   static from(opt = {}) {
     const item = new this();
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "locatorName", "updateFromLocator", "position", "rotation", "canFireWhenHidden"]);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "locatorName", "updateFromLocator", "position", "rotation", "canFireWhenHidden"]);
     item.UpdateValues();
     return item;
   }
@@ -46058,7 +46058,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
   constructor(...args) {
     super(...args);
     this.bottomClipHeight = 0;
-    this.boundingSphere = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.boundingSphere = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.chooseRandomLocator = false;
     this.cyclingFireGroupCount = 0;
     this.firingEffectResPath = "";
@@ -46085,19 +46085,19 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       turrets: true,
       firingEffects: true
     };
-    this._activeAnimation = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]();
+    this._activeAnimation = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]();
     this._activeTurret = -1;
     this._currentCyclingFiresPos = 0;
     this._fireCallback = null;
     this._fireCallbackPending = false;
     this._hasCyclingFiringPos = false;
-    this._inactiveAnimation = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]();
+    this._inactiveAnimation = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]();
     this._locatorDirty = true;
-    this._parentTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._perObjectDataActive = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveTurretSet.perObjectData);
-    this._perObjectDataInactive = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveTurretSet.perObjectData);
+    this._parentTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._perObjectDataActive = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveTurretSet.perObjectData);
+    this._perObjectDataInactive = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveTurretSet.perObjectData);
     this._state = EveTurretSet.State.IDLE;
-    this._targetPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._targetPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this._recheckTimeLeft = 0;
   }
 
@@ -46124,7 +46124,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   Initialize() {
     if (this.turretEffect && this.geometryResPath !== "") {
-      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => this.OnResPrepared(res));
+      this.geometryResource = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResPath, res => this.OnResPrepared(res));
 
       this._activeAnimation.SetGeometryResource(this.geometryResource);
 
@@ -46132,7 +46132,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     }
 
     if (this.firingEffectResPath !== "") {
-      _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(this.firingEffectResPath, object => this.firingEffect = object);
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(this.firingEffectResPath, object => this.firingEffect = object);
     }
 
     this.Rebuild();
@@ -46186,7 +46186,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   SetTargetPosition(v) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._targetPosition, v);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._targetPosition, v);
   }
   /**
    * Helper function for finding out what turret should be firing
@@ -46209,13 +46209,13 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       turretPosition[1] = item._localTransform[13];
       turretPosition[2] = item._localTransform[14];
       turretPosition[3] = 1;
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(turretPosition, turretPosition, this._parentTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(nrmToTarget, this._targetPosition, turretPosition);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(nrmToTarget, nrmToTarget);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(nrmUp, 0, 1, 0, 0);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, item._localTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, this._parentTransform);
-      const angle = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(nrmUp, nrmToTarget);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(turretPosition, turretPosition, this._parentTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(nrmToTarget, this._targetPosition, turretPosition);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(nrmToTarget, nrmToTarget);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(nrmUp, 0, 1, 0, 0);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, item._localTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, this._parentTransform);
+      const angle = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(nrmUp, nrmToTarget);
 
       if (angle > closestAngle) {
         closestTurret = this.items.indexOf(item);
@@ -46350,7 +46350,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   OnResPrepared(res) {
     this.geometryResource = res;
-    const instancedElement = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
+    const instancedElement = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
       usage: "TEXCOORD",
       usageIndex: 1,
       elements: 2
@@ -46438,12 +46438,12 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
       if (item.updateFromLocator) {
         item._bone = bone;
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(norm, transform);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(0, 3), norm.subarray(0, 3));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(4, 7), norm.subarray(4, 7));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(8, 11), norm.subarray(8, 11));
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(item.rotation, norm);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(item.position, norm);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(norm, transform);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(0, 3), norm.subarray(0, 3));
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(4, 7), norm.subarray(4, 7));
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(norm.subarray(8, 11), norm.subarray(8, 11));
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(item.rotation, norm);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(item.position, norm);
         item.UpdateValues();
       }
     }
@@ -46474,7 +46474,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   UpdateViewDependentData(parentTransform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentTransform);
 
     if (this.firingEffect) {
       this.firingEffect.UpdateViewDependentData(parentTransform);
@@ -46526,12 +46526,12 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
           for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
             const transform = bones[EveTurretSet.positionBoneSkeletonNames[i]].worldTransform,
                   out = this.firingEffect.GetMuzzleTransform(i);
-            _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, activeTurret._localTransform, transform);
-            _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, this._parentTransform, out);
+            global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, activeTurret._localTransform, transform);
+            global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, this._parentTransform, out);
           }
         } else {
           for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
-            _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.firingEffect.GetMuzzleTransform(i), this._parentTransform, activeTurret._localTransform);
+            global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.firingEffect.GetMuzzleTransform(i), this._parentTransform, activeTurret._localTransform);
           }
         }
 
@@ -46566,13 +46566,13 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
   GetBatches(mode, accumulator, perObjectData, hideFiringEffect) {
     if (!this.turretEffect || !this.geometryResource || !this.display || !this._visibleItems.length) return;
 
-    if (mode === _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_OPAQUE && this.visible.turrets) {
+    if (mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_OPAQUE && this.visible.turrets) {
       const transforms = this._inactiveAnimation.GetBoneMatrices(0);
 
       if (transforms.length !== 0) {
         this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms);
         this._perObjectDataInactive.ps = perObjectData.ps;
-        const batch = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
+        const batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
         batch.renderMode = mode;
         batch.renderActive = false;
         batch.perObjectData = this._perObjectDataInactive;
@@ -46585,7 +46585,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
           if (transforms.length !== 0) {
             this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true);
             this._perObjectDataActive.ps = perObjectData.ps;
-            const batch = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
+            const batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
             batch.renderActive = true;
             batch.perObjectData = this._perObjectDataActive;
             batch.geometryProvider = this;
@@ -46624,13 +46624,13 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     let index = 0;
 
     const customSetter = function (el) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.disableVertexAttribArray(el.location);
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.vertexAttrib2f(el.location, index, index);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.disableVertexAttribArray(el.location);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.vertexAttrib2f(el.location, index, index);
     };
 
     for (let i = 0; i < this.geometryResource.meshes.length; ++i) {
       const decl = this.geometryResource.meshes[i].declaration;
-      decl.FindUsage(_core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].Type.TEXCOORD, 1).customSetter = customSetter;
+      decl.FindUsage(core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].Type.TEXCOORD, 1).customSetter = customSetter;
     }
 
     let rendered = 0;
@@ -46657,7 +46657,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(perObjectData.Get("shipMatrix"), this._parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(perObjectData.Get("shipMatrix"), this._parentTransform);
     const transformCount = transforms.length / 12;
     perObjectData.Get("turretSetData")[0] = transformCount;
     perObjectData.Get("baseCutoffData")[0] = this.bottomClipHeight;
@@ -46765,8 +46765,8 @@ EveTurretSet.mat3x4toquat = function () {
   let m, q;
   return function (mm, index, out, outIndex) {
     if (!m) {
-      m = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-      q = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+      m = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+      q = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     }
 
     index *= 12;
@@ -46787,7 +46787,7 @@ EveTurretSet.mat3x4toquat = function () {
     m[13] = mm[index + 7];
     m[14] = mm[index + 11];
     m[15] = 1;
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(q, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(q, m);
     out[outIndex] = q[0];
     out[outIndex + 1] = q[1];
     out[outIndex + 2] = q[2];
@@ -46921,11 +46921,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBoosterBatch", function() { return EveBoosterBatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSetItem", function() { return EveBoosterSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBoosterSet", function() { return EveBoosterSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../EveObjectSet */ "./eve/item/EveObjectSet.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../global/util */ "./global/util/index.js");
-/* harmony import */ var _core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../../core/mesh */ "./core/mesh/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
 /* harmony import */ var _EveSpriteSet__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../EveSpriteSet */ "./eve/item/EveSpriteSet.js");
 
 
@@ -46940,7 +46940,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {EveBoosterSet} boosters
  */
 
-class EveBoosterBatch extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
+class EveBoosterBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"] {
   constructor(...args) {
     super(...args);
     this.boosters = null;
@@ -46983,7 +46983,7 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
     this.customValues = null;
     this.locatorName = null;
     this.seed = Math.random() * 7;
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this.updateFromLocator = false;
     this.visible = {
       glow: true,
@@ -47001,7 +47001,7 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
    * @returns {vec3} out
    */
   GetPosition(out) {
-    return _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(out, this.transform);
+    return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(out, this.transform);
   }
   /**
    * Gets the item's direction
@@ -47011,10 +47011,10 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
 
 
   GetDirection(out) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, this.transform[8], this.transform[9], this.transform[10]);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(out, out);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, this.transform[8], this.transform[9], this.transform[10]);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(out, out);
     const scale = this.GetScale();
-    if (scale < 3) _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(out, out, scale / 3);
+    if (scale < 3) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(out, out, scale / 3);
     return out;
   }
   /**
@@ -47025,7 +47025,7 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
 
   GetScale() {
     const tr = this.transform;
-    return Math.max(_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[0], tr[1], tr[2]]), _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[4], tr[5], tr[6]]));
+    return Math.max(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[0], tr[1], tr[2]]), global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[4], tr[5], tr[6]]));
   }
   /**
    * Creates an item from an object
@@ -47038,8 +47038,8 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
     const item = new this();
 
     if (values) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item.visible, values.visible, ["glow", "symHalo", "halo", "trail"]);
-      _global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "seed", "wavePhase", "transform", "locatorName", "updateFromLocator", "atlas0", "atlas1"]);
+      global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item.visible, values.visible, ["glow", "symHalo", "halo", "trail"]);
+      global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "seed", "wavePhase", "transform", "locatorName", "updateFromLocator", "atlas0", "atlas1"]);
     }
 
     return item;
@@ -47085,18 +47085,18 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
     super(...args);
     this.alwaysOn = true;
     this.effect = null;
-    this.glowColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.glowColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.glows = null;
     this.glowScale = 1.0;
-    this.haloColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.haloColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.haloScaleX = 1.0;
     this.haloScaleY = 1.0;
     this.maxVel = 250;
     this.symHaloScale = 1.0;
-    this.trailColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.trailSize = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.warpGlowColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.warpHaloColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.trailColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.trailSize = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.warpGlowColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.warpHaloColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.glowDistance = 2.5;
     this.haloDistance = 3.01;
     this.symHaloDistance = 3;
@@ -47106,10 +47106,10 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
       halos: true,
       trails: true
     };
-    this._parentTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._parentTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._positions = null;
-    this._decl = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EveBoosterSet.vertexDeclarations);
-    this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveBoosterSet.perObjectData);
+    this._decl = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"].from(EveBoosterSet.vertexDeclarations);
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveBoosterSet.perObjectData);
     this._locatorDirty = true;
   }
 
@@ -47150,7 +47150,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
           if (this.visible.glows && item.visible.glow) {
             glows.CreateItem({
               name: item.name + "_glow",
-              position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.glowDistance)),
+              position: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.glowDistance)),
               blinkRate: item.seed,
               blinkPhase: item.seed,
               minScale: src.glowScale * scale,
@@ -47163,7 +47163,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
           if (this.visible.symHalos && item.visible.symHalo) {
             glows.CreateItem({
               name: item.name + "_symHalo",
-              position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.symHaloDistance)),
+              position: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.symHaloDistance)),
               blinkRate: item.seed,
               blinkPhase: item.seed + 1,
               minScale: src.symHaloScale * scale,
@@ -47176,7 +47176,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
           if (this.visible.halos && item.visible.halo) {
             glows.CreateItem({
               name: item.name + "_halo",
-              position: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.haloDistance)),
+              position: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(spritePos, pos, global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(spritePos, dir, src.haloDistance)),
               blinkRate: item.seed,
               blinkPhase: item.seed + 1,
               minScale: src.haloScaleX * scale,
@@ -47240,7 +47240,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
         items.splice(items.indexOf(item), 1);
 
         if (item.updateFromLocator) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(item.transform, transform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(item.transform, transform);
           item.atlas0 = atlasIndex0;
           item.atlas1 = atlasIndex1;
           item.UpdateValues();
@@ -47278,7 +47278,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
 
   Update(dt, parentMatrix, worldSpriteScale) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentMatrix);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentMatrix);
     super.Update(dt);
 
     if (this.glows) {
@@ -47293,7 +47293,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
   Unload(skipEvent) {
     if (this._positions) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._positions);
+      global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.deleteBuffer(this._positions);
       this._positions = null;
     }
 
@@ -47318,7 +47318,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
       return;
     }
 
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           box = EveBoosterSet._box,
           data = new Float32Array(itemCount * box.length * 6 * 28),
           order = [0, 3, 1, 3, 2, 1];
@@ -47364,18 +47364,18 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
 
   GetBatches(mode, accumulator, perObjectData) {
-    if (!this.display || mode !== _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE || !this._positions || !this._visibleItems.length) return;
+    if (!this.display || mode !== global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE || !this._positions || !this._visibleItems.length) return;
 
     if (this.effect) {
       const batch = new EveBoosterBatch();
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._parentTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._parentTransform);
 
       this._perObjectData.vs.Set("Shipdata", perObjectData.vs.Get("Shipdata"));
 
       this._perObjectData.ps = perObjectData.ps;
       batch.perObjectData = this._perObjectData;
       batch.boosters = this;
-      batch.renderMode = _global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
+      batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       accumulator.Commit(batch);
     }
 
@@ -47392,7 +47392,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
   Render(technique) {
     if (!this.effect || !this.effect.IsGood() || !this._positions) return false;
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           gl = d.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER, this._positions);
 
@@ -47417,18 +47417,18 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
     const item = new EveBoosterSet();
 
     if (values) {
-      Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["alwaysOn", "glowColor", "glowScale", "haloColor", "haloScaleX", "haloScaleY", "maxVel", "symHaloScale", "trailColor", "trailSize", "warpGlowColor", "name", "display", "glowDistance", "haloDistance", "symHaloDistance", "warpHaloColor"]); // Allow for ccp spelling mistakes
+      Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["alwaysOn", "glowColor", "glowScale", "haloColor", "haloScaleX", "haloScaleY", "maxVel", "symHaloScale", "trailColor", "trailSize", "warpGlowColor", "name", "display", "glowDistance", "haloDistance", "symHaloDistance", "warpHaloColor"]); // Allow for ccp spelling mistakes
 
       if (values.warpHalpColor !== undefined) {
         item.warpHaloColor = values.warpHalpColor;
       }
 
       if (values.visible) {
-        Object(_global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, ["glows", "symHalos", "halos", "trails"]);
+        Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, ["glows", "symHalos", "halos", "trails"]);
       }
 
       if (values.effect) {
-        item.effect = _core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.effect);
+        item.effect = core_mesh__WEBPACK_IMPORTED_MODULE_4__["Tw2Effect"].from(values.effect);
       }
 
       if (values.glows) {
@@ -47530,7 +47530,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot2", function() { return EveEffectRoot2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./legacy/EveObject */ "./eve/object/legacy/EveObject.js");
 
 
@@ -47559,7 +47559,7 @@ class EveEffectRoot2 extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["Eve
   constructor(...args) {
     super(...args);
     this.name = "";
-    this.boundingSphereCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.boundingSphereCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundingSphereRadius = 0;
     this.curveSets = [];
     this.duration = 0;
@@ -47567,11 +47567,11 @@ class EveEffectRoot2 extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["Eve
     this.effectChildren = [];
     this.lights = [];
     this.observers = [];
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.secondaryLightingEmissiveColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.secondaryLightingEmissiveColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.secondaryLightingSphereRadius = 0;
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -47604,8 +47604,8 @@ EveEffectRoot2.__isStaging = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveMissileWarhead", function() { return EveMissileWarhead; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveMissile", function() { return EveMissile; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./legacy/EveObject */ "./eve/object/legacy/EveObject.js");
 
 
@@ -47657,11 +47657,11 @@ class EveMissileWarhead extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["
     this.startEjectVelocity = 0;
     this.warheadLength = 0;
     this.warheadRadius = 0;
-    this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveMissileWarhead.perObjectData);
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveMissileWarhead.perObjectData);
     this._state = EveMissileWarhead.State.READY;
     this._time = 0;
-    this._transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._velocity = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._velocity = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -47689,7 +47689,7 @@ class EveMissileWarhead extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["
 
 
   Launch(transform) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._transform, transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._transform, transform);
     this._velocity[0] = transform[8] * this.startEjectVelocity;
     this._velocity[1] = transform[9] * this.startEjectVelocity;
     this._velocity[2] = transform[10] * this.startEjectVelocity;
@@ -47703,8 +47703,8 @@ class EveMissileWarhead extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["
 
   UpdateViewDependentData() {
     if (!this.display || this._state === EveMissileWarhead.State.DEAD) return;
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._transform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._transform);
   }
   /**
    * Per frame update
@@ -47717,39 +47717,39 @@ class EveMissileWarhead extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["
   Update(dt, missilePosition, missileTarget) {
     if (this._state === EveMissileWarhead.State.IN_FLIGHT) {
       const g = _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global,
-            position = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(g.vec3_0, this._transform),
+            position = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(g.vec3_0, this._transform),
             tmp = g.vec3_1,
             x = g.vec3_2,
             y = g.vec3_3;
       this._time += dt;
 
       if (this._time > this.durationEjectPhase) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(position, this._velocity, missilePosition);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(position, position, missilePosition, 1 - Math.exp(-dt * 0.9999));
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(this._transform, position);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(tmp, missileTarget, position);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(position, this._velocity, missilePosition);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(position, position, missilePosition, 1 - Math.exp(-dt * 0.9999));
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(this._transform, position);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(tmp, missileTarget, position);
 
-        if (_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(tmp) < this.maxExplosionDistance) {
+        if (global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(tmp) < this.maxExplosionDistance) {
           console.log(position, tmp);
           this._state = EveMissileWarhead.State.DEAD;
         }
       } else {
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(tmp, this._velocity, dt);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(tmp, this._velocity, dt);
         this._transform[12] += tmp[0];
         this._transform[13] += tmp[1];
         this._transform[14] += tmp[2];
       }
 
-      const z = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(tmp, this._velocity);
+      const z = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(tmp, this._velocity);
 
       if (Math.abs(z[0]) < 0.99) {
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(x, z, [1, 0, 0]);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(x, z, [1, 0, 0]);
       } else {
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(x, z, [0, 1, 0]);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(x, z, [0, 1, 0]);
       }
 
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(x, x);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(y, x, z);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(x, x);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(y, x, z);
       this._transform[0] = x[0];
       this._transform[1] = x[1];
       this._transform[2] = x[2];
@@ -47838,14 +47838,14 @@ EveMissileWarhead.__isStaging = 2;
 class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
   constructor(...args) {
     super(...args);
-    this.boundingSphereCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.boundingSphereCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundingSphereRadius = 0;
     this.modelTranslationCurve = null;
     this.warheads = [];
     this.curveSets = [];
     this.speed = 1;
-    this._position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this._target = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._target = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this._warheadExplosionCallback = null;
     this._missileFinishedCallback = null;
   }
@@ -47875,8 +47875,8 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
 
 
   Launch(position, turretTransforms, target) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._position, position);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._target, target);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._position, position);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(this._target, target);
 
     if (this.warheads.length > turretTransforms.length) {
       this.warheads.splice(turretTransforms.length);
@@ -47921,13 +47921,13 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
 
 
   Update(dt) {
-    const tmp = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(_legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this._target, this._position),
-          distance = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(tmp);
+    const tmp = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(_legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this._target, this._position),
+          distance = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(tmp);
 
     if (distance > 0.1) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(tmp, tmp);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(tmp, tmp, Math.min(dt * this.speed, distance));
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(this._position, this._position, tmp);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(tmp, tmp);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(tmp, tmp, Math.min(dt * this.speed, distance));
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(this._position, this._position, tmp);
     }
 
     for (let i = 0; i < this.curveSets.length; ++i) {
@@ -48017,7 +48017,7 @@ EveMissile.__isStaging = 2;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveMobile", function() { return EveMobile; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./legacy/EveObject */ "./eve/object/legacy/EveObject.js");
 
 
@@ -48044,7 +48044,7 @@ class EveMobile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObjec
     super(...args);
     this.name = "";
     this.attachments = [];
-    this.boundingSphereCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.boundingSphereCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundingSphereRadius = 0;
     this.children = [];
     this.controllers = [];
@@ -48084,7 +48084,7 @@ EveMobile.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveRootTransform", function() { return EveRootTransform; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./legacy/EveObject */ "./eve/object/legacy/EveObject.js");
 
 
@@ -48120,11 +48120,11 @@ class EveRootTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["E
     this.mesh = null;
     this.modifier = 0;
     this.observers = [];
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.rotationCurve = null;
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.sortValueMultiplier = 0;
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.translationCurve = null;
   }
 
@@ -48157,7 +48157,7 @@ EveRootTransform.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveShip2", function() { return EveShip2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./legacy/EveObject */ "./eve/object/legacy/EveObject.js");
 
 
@@ -48189,7 +48189,7 @@ class EveShip2 extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject
     super(...args);
     this.attachments = [];
     this.boosters = null;
-    this.boundingSphereCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.boundingSphereCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundingSphereRadius = 0;
     this.children = [];
     this.customMasks = [];
@@ -48200,8 +48200,8 @@ class EveShip2 extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject
     this.mesh = null;
     this.rotationCurve = null;
     this.shadowEffect = null;
-    this.shapeEllipsoidCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.shapeEllipsoidRadius = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.shapeEllipsoidCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.shapeEllipsoidRadius = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.translationCurve = null;
   }
 
@@ -48235,7 +48235,7 @@ EveShip2.__isShip = true;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStation2", function() { return EveStation2; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./legacy/EveObject */ "./eve/object/legacy/EveObject.js");
 
 
@@ -48268,7 +48268,7 @@ class EveStation2 extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObj
   constructor(...args) {
     super(...args);
     this.attachments = [];
-    this.boundingSphereCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.boundingSphereCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundingSphereRadius = 0;
     this.children = [];
     this.curveSets = [];
@@ -48316,8 +48316,8 @@ EveStation2.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTransform", function() { return EveTransform; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./legacy/EveObject */ "./eve/object/legacy/EveObject.js");
 
 
@@ -48375,14 +48375,14 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
     this.mesh = null;
     this.modifier = EveTransform.Modifier.NONE;
     this.observers = [];
-    this.overrideBoundsMax = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.overrideBoundsMin = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.overrideBoundsMax = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.overrideBoundsMin = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.particleEmitters = [];
     this.particleSystems = [];
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.sortValueMultiplier = 1.0;
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.update = false;
     this.useDistanceBasedScale = false;
     this.useLodLevel = false;
@@ -48391,16 +48391,16 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
       mesh: true,
       children: true
     };
-    this.localTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.worldTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveTransform.perObjectData);
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveTransform.perObjectData);
   }
 
   /**
    * Initializes the EveTransform
    */
   Initialize() {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
   }
   /**
    * Sets the object's local transform
@@ -48409,9 +48409,9 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
 
   SetTransform(m) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, m);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
   }
   /**
    * Gets object resources
@@ -48436,7 +48436,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
 
   UpdateViewDependentData(parentTransform) {
-    const d = _global__WEBPACK_IMPORTED_MODULE_0__["device"],
+    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
           g = _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global,
           finalScale = g.vec3_0,
           parentScale = g.vec3_1,
@@ -48447,24 +48447,24 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
       parentTransform = g.mat4_ID;
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(parentScale, parentTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.rotation, this.rotation);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(parentScale, parentTransform);
 
     switch (this.modifier) {
       case EveTransform.Modifier.BILLBOARD:
       case EveTransform.Modifier.SIMPLE_HALO:
         const dirNorm = g.vec3_3;
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, this.scaling, parentScale);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, this.scaling, parentScale);
 
         if (this.modifier === EveTransform.Modifier.SIMPLE_HALO) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(dir, d.GetEyePosition(dir), this.worldTransform.subarray(12));
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dirNorm, this.worldTransform.subarray(8));
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dir, dir);
-          let scale = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dir, dirNorm);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(dir, d.GetEyePosition(dir), this.worldTransform.subarray(12));
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dirNorm, this.worldTransform.subarray(8));
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dir, dir);
+          let scale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dir, dirNorm);
           if (scale < 0) scale = 0;
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(finalScale, finalScale, scale * scale);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(finalScale, finalScale, scale * scale);
         }
 
         this.worldTransform[0] = viewInv[0] * finalScale[0];
@@ -48480,9 +48480,9 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
       case EveTransform.Modifier.EVE_CAMERA_ROTATION:
         const translation = g.vec3_3;
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(translation, this.translation, parentTransform);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, translation, this.scaling);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, viewInv, this.localTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(translation, this.translation, parentTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, translation, this.scaling);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, viewInv, this.localTransform);
         this.worldTransform[12] = this.localTransform[12];
         this.worldTransform[13] = this.localTransform[13];
         this.worldTransform[14] = this.localTransform[14];
@@ -48499,22 +48499,22 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
               alignMat = g.mat4_1,
               rotationT = g.mat4_2; // 3 4 3 3 3 4 3 3
 
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].translate(this.worldTransform, parentTransform, this.translation);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(parentT, parentTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].translate(this.worldTransform, parentTransform, this.translation);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(parentT, parentTransform);
         d.GetEyePosition(dir);
         dir[0] -= this.worldTransform[12];
         dir[1] -= this.worldTransform[13];
         dir[2] -= this.worldTransform[14];
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(camFwd, dir);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(camFwd, camFwd, parentT);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].divide(camFwd, camFwd, parentScale);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(camFwd, camFwd);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(right, d.view[0], d.view[4], d.view[8]);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(right, right, parentT);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(right, right);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(up, camFwd, right);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(up, up);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(right, up, camFwd);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(camFwd, dir);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(camFwd, camFwd, parentT);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].divide(camFwd, camFwd, parentScale);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(camFwd, camFwd);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(right, d.view[0], d.view[4], d.view[8]);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(right, right, parentT);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(right, right);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(up, camFwd, right);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(up, up);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(right, up, camFwd);
         alignMat[0] = right[0];
         alignMat[1] = right[1];
         alignMat[2] = right[2];
@@ -48525,29 +48525,29 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
         alignMat[9] = camFwd[1];
         alignMat[10] = camFwd[2];
         alignMat[15] = 1;
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(rotationT, this.rotation);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(alignMat, alignMat, rotationT);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(rotationT, this.rotation);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(alignMat, alignMat, rotationT);
 
         if (this.modifier === EveTransform.Modifier.EVE_SIMPLE_HALO) {
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(forward, this.worldTransform.subarray(8));
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dirToCamNorm, dir);
-          let scale = -_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dirToCamNorm, forward);
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(forward, this.worldTransform.subarray(8));
+          global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dirToCamNorm, dir);
+          let scale = -global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dirToCamNorm, forward);
           if (scale < 0) scale = 0;
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, this.worldTransform, alignMat);
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(this.worldTransform, this.worldTransform, [this.scaling[0] * scale, this.scaling[1] * scale, this.scaling[2] * scale]);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, this.worldTransform, alignMat);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(this.worldTransform, this.worldTransform, [this.scaling[0] * scale, this.scaling[1] * scale, this.scaling[2] * scale]);
         } else {
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(this.worldTransform, this.worldTransform, this.scaling);
-          _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, this.worldTransform, alignMat);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(this.worldTransform, this.worldTransform, this.scaling);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, this.worldTransform, alignMat);
         }
 
         break;
 
       case EveTransform.Modifier.LOOK_AT_CAMERA:
         const lookAt = g.mat4_0;
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(lookAt, viewInv.subarray(12), this.worldTransform.subarray(12), [0, 1, 0]);
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(lookAt, lookAt);
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, this.scaling, parentScale);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(lookAt, viewInv.subarray(12), this.worldTransform.subarray(12), [0, 1, 0]);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(lookAt, lookAt);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, this.scaling, parentScale);
         this.worldTransform[0] = lookAt[0] * finalScale[0];
         this.worldTransform[1] = lookAt[1] * finalScale[0];
         this.worldTransform[2] = lookAt[2] * finalScale[0];
@@ -48560,7 +48560,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
         break;
 
       default:
-        _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
     }
 
     for (let i = 0; i < this.children.length; ++i) {
@@ -48602,8 +48602,8 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
     if (!this.display) return;
 
     if (this.visible.mesh && this.mesh) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("World"), this.worldTransform);
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("WorldInverseTranspose"), this.worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ffe.Get("World"), this.worldTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.ffe.Get("WorldInverseTranspose"), this.worldTransform);
 
       if (perObjectData) {
         this._perObjectData.vs = perObjectData.vs;
@@ -48737,8 +48737,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveEffectRoot", function() { return EveEffectRoot; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
-/* harmony import */ var _core_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/index */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObject */ "./eve/object/legacy/EveObject.js");
 /* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/legacy/EveSpaceObject.js");
 
@@ -48770,14 +48770,14 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
     this.curveSets = [];
     this.effectChildren = [];
     this.duration = 0;
-    this.scaling = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.rotation = _global_index__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.translation = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.localTransform = _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.boundingSphereCenter = _global_index__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.boundingSphereCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundingSphereRadius = 0;
-    this._worldTransform = _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._perObjectData = _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveSpaceObject__WEBPACK_IMPORTED_MODULE_3__["EveSpaceObject"].perObjectData);
+    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(_EveSpaceObject__WEBPACK_IMPORTED_MODULE_3__["EveSpaceObject"].perObjectData);
   }
 
   /**
@@ -48785,9 +48785,9 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
    * @param {mat4} m
    */
   SetTransform(m) {
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, m);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.rotation, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.scaling, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(this.translation, m);
   }
   /**
    * Gets effect root res objects
@@ -48830,12 +48830,12 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
 
   UpdateViewDependentData(parentTransform) {
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
 
     if (parentTransform) {
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
     } else {
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this.localTransform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this.localTransform);
     }
   }
   /**
@@ -48882,14 +48882,14 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObject", function() { return EveObject; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _dec2, _dec3, _dec4, _class, _class2, _class3, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 /* eslint no-unused-vars:0 */
 
-let EveObject = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveObject extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -48924,18 +48924,18 @@ let EveObject = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _
 
 
 }, _class3.global = {
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_2: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_3: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_4: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_5: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_6: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_7: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-  mat4_1: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-  mat4_2: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
-  mat4_ID: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_3: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_4: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_5: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_6: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_7: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+  mat4_1: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+  mat4_2: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
+  mat4_ID: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
 }, _temp), (_applyDecoratedDescriptor(_class2.prototype, "GetResources", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "GetResources"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "Update", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "Update"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "GetBatches", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "GetBatches"), _class2.prototype)), _class2)) || _class);
 
 /***/ }),
@@ -48950,8 +48950,8 @@ let EveObject = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EvePlanet", function() { return EvePlanet; });
-/* harmony import */ var _global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global/index */ "./global/index.js");
-/* harmony import */ var _core_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core/index */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../EveTransform */ "./eve/object/EveTransform.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveObject */ "./eve/object/legacy/EveObject.js");
 
@@ -48980,8 +48980,8 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
   constructor(...args) {
     super(...args);
     this.highDetail = new _EveTransform__WEBPACK_IMPORTED_MODULE_2__["EveTransform"]();
-    this.effectHeight = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
-    this.heightMap = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"]();
+    this.effectHeight = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"]();
+    this.heightMap = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderTarget"]();
     this.zOnlyModel = null;
     this.itemID = 0;
     this.heightMapResPath1 = "";
@@ -49037,7 +49037,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     }
 
     if (resPath) {
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(resPath, obj => {
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(resPath, obj => {
         this._planet = obj;
         EvePlanet.MeshLoaded(this, obj);
         onPartLoaded();
@@ -49045,14 +49045,14 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     }
 
     if (atmospherePath) {
-      _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(atmospherePath, obj => {
+      global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(atmospherePath, obj => {
         this._atmosphere = obj;
         this.highDetail.children.push(obj);
         onPartLoaded();
       });
     }
 
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject("res:/dx9/model/worldobject/planet/planetzonly.red", obj => {
+    global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject("res:/dx9/model/worldobject/planet/planetzonly.red", obj => {
       this.zOnlyModel = obj;
       onPartLoaded();
     });
@@ -49128,7 +49128,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
 
     for (let prop in obj) {
       if (obj.hasOwnProperty(prop)) {
-        if (_global_index__WEBPACK_IMPORTED_MODULE_0__["util"].isObjectLike(obj[prop])) {
+        if (global__WEBPACK_IMPORTED_MODULE_0__["util"].isObjectLike(obj[prop])) {
           this.GetPlanetResources(obj[prop], visited, result);
         }
       }
@@ -49168,10 +49168,10 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
 
   CreateHeightMap() {
     this.heightMap.Set();
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].SetStandardStates(_global_index__WEBPACK_IMPORTED_MODULE_0__["device"].RM_FULLSCREEN);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clearColor(0.0, 0.0, 0.0, 0.0);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clear(_global_index__WEBPACK_IMPORTED_MODULE_0__["device"].gl.COLOR_BUFFER_BIT);
-    _global_index__WEBPACK_IMPORTED_MODULE_0__["device"].RenderFullScreenQuad(this.effectHeight);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].SetStandardStates(global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_FULLSCREEN);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.clear(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.COLOR_BUFFER_BIT);
+    global__WEBPACK_IMPORTED_MODULE_0__["device"].RenderFullScreenQuad(this.effectHeight);
     this.heightMap.Unset();
   }
   /**
@@ -49288,18 +49288,18 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
       }
     }
 
-    const NormalHeight1 = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight1", planet.heightMapResPath1);
+    const NormalHeight1 = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight1", planet.heightMapResPath1);
     NormalHeight1.Initialize();
     planet.watchedResources.push(NormalHeight1.textureRes);
     planet.lockedResources.push(NormalHeight1.textureRes);
     planet.effectHeight.parameters.NormalHeight1 = NormalHeight1;
-    const NormalHeight2 = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight2", planet.heightMapResPath2);
+    const NormalHeight2 = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight2", planet.heightMapResPath2);
     NormalHeight2.Initialize();
     planet.watchedResources.push(NormalHeight2.textureRes);
     planet.lockedResources.push(NormalHeight2.textureRes);
     planet.effectHeight.parameters.NormalHeight2 = NormalHeight2;
-    planet.effectHeight.parameters.Random = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("Random", planet.itemID % 100);
-    planet.effectHeight.parameters.TargetTextureHeight = new _core_index__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("TargetTextureHeight", 1024);
+    planet.effectHeight.parameters.Random = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("Random", planet.itemID % 100);
+    planet.effectHeight.parameters.TargetTextureHeight = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2FloatParameter"]("TargetTextureHeight", 1024);
     planet.effectHeight.effectFilePath = resPath;
     planet.effectHeight.Initialize();
     planet.heightDirty = true;
@@ -49338,7 +49338,7 @@ EvePlanet.__isPlanet = true;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return EveShip; });
 /* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/legacy/EveSpaceObject.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../global/util */ "./global/util/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 /**
@@ -49416,7 +49416,7 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
 
   RebuildTurretSet(index) {
     // Allow rebuilding from a turret
-    if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(index)) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isNumber"])(index)) {
       index = this.turretSets.indexOf(index);
     }
 
@@ -49532,8 +49532,8 @@ EveShip.__isShip = true;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpaceObject", function() { return EveSpaceObject; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveStation", function() { return EveSpaceObject; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObject */ "./eve/object/legacy/EveObject.js");
 /* harmony import */ var _item__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../item */ "./eve/item/index.js");
 
@@ -49603,7 +49603,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
       boosters: true
     };
     this.mesh = null;
-    this.animation = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]();
+    this.animation = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2AnimationController"]();
     this.locators = [];
     this.spriteSets = [];
     this.turretSets = [];
@@ -49618,14 +49618,14 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
     this.customMasks = [];
     this.lod = 3;
     this.killCount = 0;
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this.boundingSphereCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.boundingSphereCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.boundingSphereRadius = 0;
-    this.shapeEllipsoidRadius = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.shapeEllipsoidCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.shapeEllipsoidRadius = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.shapeEllipsoidCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this._worldSpriteScale = 1;
-    this._worldTransform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
-    this._perObjectData = _core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObject.perObjectData);
+    this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObject.perObjectData);
   }
 
   /**
@@ -49649,9 +49649,9 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
   SetTransform(m, offset) {
     if (offset) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.transform, m, offset);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.transform, m, offset);
     } else {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.transform, m);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.transform, m);
     }
   }
   /**
@@ -49664,15 +49664,15 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
   GetResources(out = []) {
     if (this.mesh) this.mesh.GetResources(out);
     if (this.animation) this.animation.GetResources(out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spriteSets, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.turretSets, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decals, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spotlightSets, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.planeSets, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.lineSets, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.overlayEffects, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.effectChildren, "GetResources", out);
-    _global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.children, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spriteSets, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.turretSets, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.decals, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.spotlightSets, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.planeSets, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.lineSets, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.overlayEffects, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.effectChildren, "GetResources", out);
+    global__WEBPACK_IMPORTED_MODULE_0__["util"].perArrayChild(this.children, "GetResources", out);
     return out;
   }
   /**
@@ -49693,7 +49693,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
     if (!this._useLOD) {
       this.lod = 3;
     } else {
-      const center = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
+      const center = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
 
       if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
         const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
@@ -49852,19 +49852,19 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
   UpdateViewDependentData(parentTransform, dt) {
     if (parentTransform) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.transform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.transform);
     } else {
-      _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this.transform);
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this.transform);
     }
 
-    this._worldSpriteScale = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis(this._worldTransform);
+    this._worldSpriteScale = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis(this._worldTransform);
 
     for (let i = 0; i < this.children.length; ++i) {
       this.children[i].UpdateViewDependentData(this._worldTransform);
     }
 
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
-    _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
     const center = this._perObjectData.vs.Get("EllipsoidCenter"),
           radii = this._perObjectData.vs.Get("EllipsoidRadii");
@@ -49881,10 +49881,10 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
         maxBounds,
         minBounds
       } = this.mesh.geometryResource;
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(center, maxBounds, minBounds);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(center, center, 0.5 * 1.732050807);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(radii, maxBounds, minBounds);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(center, maxBounds, minBounds);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(center, center, 0.5 * 1.732050807);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(radii, maxBounds, minBounds);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
     }
 
     for (let i = 0; i < this.customMasks.length; ++i) {
@@ -50029,7 +50029,7 @@ EveSpaceObject.LOD_THRESHOLD_NONE = 100;
 EveSpaceObject.LOD_THRESHOLD_LOW = 200;
 EveSpaceObject.LOD_THRESHOLD_MEDIUM = 500;
 EveSpaceObject.perObjectData = {
-  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", [1, 0, 0, 0]], ["CustomMaskData1", [1, 0, 0, 0]], ["JointMat", 696]],
+  vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", [1, 0, 0, 0]], ["CustomMaskData1", [1, 0, 0, 0]], ["JointMat", 696]],
   ps: [["Shipdata", [0, 1, 0, 1]], ["Clipdata1", 4], ["Clipdata2", 4], ["ShLighting", 4 * 7], ["CustomMaskMaterialID0", 4], ["CustomMaskMaterialID1", 4], ["CustomMaskTarget0", 4], ["CustomMaskTarget1", 4]]
 };
 
@@ -50076,8 +50076,8 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return EveParticleDirectForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../particle/force/Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! particle/force/Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 
 /**
@@ -50087,10 +50087,10 @@ __webpack_require__.r(__webpack_exports__);
  * @property {vec3} force -
  */
 
-class EveParticleDirectForce extends _particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+class EveParticleDirectForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
-    this.force = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.force = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -50122,7 +50122,7 @@ EveParticleDirectForce.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return EveParticleDragForce; });
-/* harmony import */ var _particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../particle/force/Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+/* harmony import */ var particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! particle/force/Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 /**
  * EveParticleDragForce
@@ -50131,7 +50131,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} drag -
  */
 
-class EveParticleDragForce extends _particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"] {
+class EveParticleDragForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
     this.drag = 0;
@@ -50186,7 +50186,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveConnector", function() { return EveConnector; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveConnector
@@ -50205,15 +50205,15 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} type                        -
  */
 
-class EveConnector extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveConnector extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
-    this.animationColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.animationColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.animationScale = 0;
     this.animationSpeed = 0;
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.destObject = null;
-    this.destPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.destPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.isAnimated = false;
     this.lineWidth = 0;
     this.sourceObject = null;
@@ -50249,7 +50249,7 @@ EveConnector.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveLocalPositionCurve", function() { return EveLocalPositionCurve; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveLocalPositionCurve
@@ -50259,10 +50259,10 @@ __webpack_require__.r(__webpack_exports__);
  * @property {vec3} value -
  */
 
-class EveLocalPositionCurve extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveLocalPositionCurve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -50294,7 +50294,7 @@ EveLocalPositionCurve.__isStaging = 3;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpherePin", function() { return EveSpherePin; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSpherePin
@@ -50315,16 +50315,16 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} sortValueMultiplier    -
  */
 
-class EveSpherePin extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveSpherePin extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
-    this.centerNormal = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.centerNormal = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.curveSets = [];
     this.enablePicking = false;
     this.geometryResPath = "";
-    this.pinColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.pinColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.pinEffect = null;
     this.pinMaxRadius = 0;
     this.pinRadius = 0;
@@ -50385,7 +50385,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTacticalOverlay", function() { return EveTacticalOverlay; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveTacticalOverlay
@@ -50402,7 +50402,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Tw2Effect} velocityEffect    -
  */
 
-class EveTacticalOverlay extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveTacticalOverlay extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.anchorEffect = null;
@@ -50444,7 +50444,7 @@ EveTacticalOverlay.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveUiObject", function() { return EveUiObject; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveUiObject
@@ -50457,7 +50457,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} modelScale           -
  */
 
-class EveUiObject extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class EveUiObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -50523,8 +50523,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./global/util/index.js");
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 var _class, _temp;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -51169,7 +51169,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
 
   SetBlack(name, values) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(values)) values = values(_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__);
+    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(values)) values = values(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__);
     return setStoreKey(this, "black", name, values, {
       isValue: _util__WEBPACK_IMPORTED_MODULE_4__["isArray"],
       onBeforeSet: value => new Map(value)
@@ -51383,7 +51383,7 @@ function lazyLoadClass(library, propertyName, className, ...args) {
 
 function validateStore(library, storeType) {
   if (!library._store[storeType]) {
-    throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreInvalid"]({
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreInvalid"]({
       store: storeType
     });
   }
@@ -51431,7 +51431,7 @@ function getStoreKey(library, storeType, key, options) {
     }
 
   library.emit("store.missing", storeType, key);
-  throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueMissing"]({
+  throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueMissing"]({
     store: storeType,
     key
   });
@@ -51454,7 +51454,7 @@ function setStoreKey(library, storeType, key, value, options) {
   validateStore(library, storeType);
 
   if (!value) {
-    throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueInvalid"]({
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueInvalid"]({
       store: storeType,
       key
     });
@@ -51462,14 +51462,14 @@ function setStoreKey(library, storeType, key, value, options) {
 
   if (options) {
     if (options.reserved && options.reserved.includes(key)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreKeyReserved"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreKeyReserved"]({
         store: storeType,
         key
       });
     }
 
     if (options.isValue && !options.isValue(value)) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueInvalid"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueInvalid"]({
         store: storeType,
         key
       });
@@ -53392,11 +53392,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Device", function() { return Tw2Device; });
 /* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../math */ "./global/math/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
-/* harmony import */ var _core_mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../core/mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
-/* harmony import */ var _core_vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core/vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
+/* harmony import */ var core_mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/mesh/Tw2Effect */ "./core/mesh/Tw2Effect.js");
+/* harmony import */ var core_vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/vertex/Tw2VertexDeclaration */ "./core/vertex/Tw2VertexDeclaration.js");
 /* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
 /* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core */ "./core/index.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -53636,7 +53636,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     this._cameraQuadBuffer = gl.createBuffer();
-    this._quadDecl = _core_vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_3__["Tw2VertexDeclaration"].from([{
+    this._quadDecl = core_vertex_Tw2VertexDeclaration__WEBPACK_IMPORTED_MODULE_3__["Tw2VertexDeclaration"].from([{
       usage: "POSITION",
       usageIndex: 0,
       elements: 4
@@ -53957,7 +53957,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
   RenderTexture(texture) {
     if (this._blitEffect === null) {
-      this._blitEffect = _core_mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from({
+      this._blitEffect = core_mesh_Tw2Effect__WEBPACK_IMPORTED_MODULE_2__["Tw2Effect"].from({
         effectFilePath: "res:/graphics/effect/managed/space/system/blit.fx",
         textures: {
           BlitSource: ""
@@ -54349,7 +54349,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     }
 
     if (!context) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebglContext"]({
+      throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebglContext"]({
         version: params.webgl2 ? 2 : 1
       });
     }
@@ -54370,7 +54370,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
   static FindXRDevice(sessionOptions) {
     return _asyncToGenerator(function* () {
       if (!navigator.xr) {
-        throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrNotSupported"]();
+        throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrNotSupported"]();
       }
 
       let device;
@@ -54379,12 +54379,12 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
         device = yield navigator.xr["requestDevice"]();
       } catch (err) {
         if (err.name === "NotFoundError" || err.message === "NotFoundError") {
-          throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrDeviceNotFound"]({
+          throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrDeviceNotFound"]({
             err: err.message
           });
         }
 
-        throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrRequestFailed"]({
+        throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrRequestFailed"]({
           err: err.message
         });
       } // Optionally pass session requirements
@@ -54394,7 +54394,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
         try {
           yield device["supportsSession"](sessionOptions);
         } catch (err) {
-          throw new _core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrSessionNotSupported"]({
+          throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrSessionNotSupported"]({
             err: err.message
           });
         }
@@ -54853,9 +54853,9 @@ class Tw2MotherLode {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ResMan", function() { return Tw2ResMan; });
 /* harmony import */ var _Tw2MotherLode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2MotherLode */ "./global/engine/Tw2MotherLode.js");
-/* harmony import */ var _core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/resource/Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
+/* harmony import */ var core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/resource/Tw2LoadingObject */ "./core/resource/Tw2LoadingObject.js");
 /* harmony import */ var _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../class/Tw2EventEmitter */ "./global/class/Tw2EventEmitter.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../util */ "./global/util/index.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -54935,7 +54935,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
    */
 
 
-  OnPathError(path, err = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"]({
+  OnPathError(path, err = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Error"]({
     path
   })) {
     path = Tw2ResMan.NormalizePath(path);
@@ -55127,7 +55127,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       return;
     }
 
-    res = new _core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__["Tw2LoadingObject"]();
+    res = new core_resource_Tw2LoadingObject__WEBPACK_IMPORTED_MODULE_1__["Tw2LoadingObject"]();
     res.path = path;
     res.AddObject(onResolved, onRejected);
     this.LoadResource(res);
@@ -55269,7 +55269,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
               statusText = "Failed to fetch resource";
             }
 
-            throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]({
+            throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrHTTPStatus"]({
               status,
               statusText,
               json
@@ -55295,7 +55295,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     path = Tw2ResMan.NormalizePath(path);
 
     if (path.indexOf("dynamic:/") === 0) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrFeatureNotImplemented"]({
+      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrFeatureNotImplemented"]({
         feature: "Dynamic resources"
       });
     }
@@ -55303,7 +55303,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     const extension = Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(path);
 
     if (extension === null) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUndefined"]({
+      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUndefined"]({
         path
       });
     }
@@ -55311,7 +55311,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     const Constructor = this.tw2.GetExtension(extension);
 
     if (!Constructor) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]({
+      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]({
         path,
         extension
       });
@@ -55332,7 +55332,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     const prefixIndex = path.indexOf(":/");
 
     if (prefixIndex === -1) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUndefined"]({
+      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUndefined"]({
         path
       });
     }
@@ -55346,7 +55346,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     const fullPrefix = this.tw2.GetPath(prefix);
 
     if (!fullPrefix) {
-      throw new _core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUnregistered"]({
+      throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUnregistered"]({
         path,
         prefix
       });
@@ -56902,7 +56902,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "resMan", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_5__["resMan"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "device", function() { return _Tw2Library__WEBPACK_IMPORTED_MODULE_5__["device"]; });
-
 
 
 
@@ -63639,7 +63638,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].subtractScalar = function (out, a
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return abstract; });
-/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
 
 
@@ -63657,7 +63656,7 @@ const abstract = Object(_meta__WEBPACK_IMPORTED_MODULE_1__["create"])(false, {
         super();
 
         if (this.constructor === Abstract) {
-          throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClass"]({
+          throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClass"]({
             class: target.name
           });
         }
@@ -63671,7 +63670,7 @@ const abstract = Object(_meta__WEBPACK_IMPORTED_MODULE_1__["create"])(false, {
     descriptor
   }) {
     descriptor.value = function () {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractMethod"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractMethod"]({
         method: property
       });
     };
@@ -63696,9 +63695,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "blackReader", function() { return blackReader; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "blackStruct", function() { return blackStruct; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "blackFromList", function() { return blackFromList; });
-/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _util_type__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/type */ "./global/util/type.js");
-/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
 /* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
 
 
@@ -63749,15 +63748,15 @@ const blackStruct = Object(_meta__WEBPACK_IMPORTED_MODULE_3__["create"])(true, {
 
     if (Object(_util_type__WEBPACK_IMPORTED_MODULE_1__["isArray"])(value)) {
       if (Object(_util_type__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value[0])) {
-        handler = Object(_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["structList"])(value[0]);
+        handler = Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["structList"])(value[0]);
       }
     } // object
     else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value)) {
-        handler = Object(_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["struct"])(value);
+        handler = Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["struct"])(value);
       }
 
     if (!handler) {
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrInvalidDecoratorUsage"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrInvalidDecoratorUsage"]({
         reason: "Could not identify struct type"
       });
     }
@@ -63776,7 +63775,7 @@ const blackFromList = Object(_meta__WEBPACK_IMPORTED_MODULE_3__["create"])(true,
     target,
     property
   }, options) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_3__["set"])("black", Object(_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["fromList"])(options), target, property);
+    Object(_meta__WEBPACK_IMPORTED_MODULE_3__["set"])("black", Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["fromList"])(options), target, property);
   }
 
 });
@@ -63817,7 +63816,7 @@ const notImplemented = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["create"])(fals
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return singleton; });
-/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
 
 
@@ -63831,7 +63830,7 @@ const singleton = Object(_meta__WEBPACK_IMPORTED_MODULE_1__["create"])(false, {
         count++;
 
         if (count > 1) {
-          throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrSingletonInstantiation"]({
+          throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrSingletonInstantiation"]({
             class: target.name
           });
         }
@@ -64153,7 +64152,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOwn", function() { return getOwn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
 /* harmony import */ var _util_type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/type */ "./global/util/type.js");
-/* harmony import */ var _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 
 
 /**
@@ -64324,7 +64323,7 @@ function create(hasArguments, options) {
         }
 
         message += " (".concat(property ? property : target.name, ")");
-        throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
+        throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
           message
         });
       };
@@ -64376,7 +64375,7 @@ function create(hasArguments, options) {
       }
 
       message += " (".concat(property ? property : target.name, ")");
-      throw new _core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
         message
       });
     };
@@ -65565,7 +65564,7 @@ const ccpwgl_int = _global__WEBPACK_IMPORTED_MODULE_45__["tw2"];
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2Model", function() { return Tr2Model; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2Model
@@ -65575,7 +65574,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<Tr2Mesh>} meshes -
  */
 
-class Tr2Model extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2Model extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.meshes = [];
@@ -65610,7 +65609,7 @@ Tr2Model.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2IntSkinnedObject", function() { return Tr2IntSkinnedObject; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2IntSkinnedObject
@@ -65622,7 +65621,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Tr2SkinnedModel} visualModel   -
  */
 
-class Tr2IntSkinnedObject extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2IntSkinnedObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.curveSets = [];
@@ -65659,7 +65658,7 @@ Tr2IntSkinnedObject.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2SkinnedModel", function() { return Tr2SkinnedModel; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2SkinnedModel
@@ -65672,7 +65671,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} skeletonName    -
  */
 
-class Tr2SkinnedModel extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2SkinnedModel extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -65766,7 +65765,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorLightSource", function() { return Tr2InteriorLightSource; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 /**
@@ -65788,19 +65787,19 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} useKelvinColor     -
  */
 
-class Tr2InteriorLightSource extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2InteriorLightSource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.coneAlphaInner = 0;
     this.coneAlphaOuter = 0;
-    this.coneDirection = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.coneDirection = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.falloff = 0;
     this.importanceBias = 0;
     this.importanceScale = 0;
     this.kelvinColor = null;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radius = 0;
     this.useKelvinColor = false;
   }
@@ -65834,7 +65833,7 @@ Tr2InteriorLightSource.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2KelvinColor", function() { return Tr2KelvinColor; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2KelvinColor
@@ -65845,7 +65844,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} tint        -
  */
 
-class Tr2KelvinColor extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2KelvinColor extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.temperature = 0;
@@ -65901,7 +65900,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorPlaceable", function() { return Tr2InteriorPlaceable; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2InteriorPlaceable
@@ -65912,7 +65911,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {TriMatrix} transform     -
  */
 
-class Tr2InteriorPlaceable extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2InteriorPlaceable extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.placeableResPath = "";
@@ -65948,7 +65947,7 @@ Tr2InteriorPlaceable.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2InteriorScene", function() { return Tr2InteriorScene; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2InteriorScene
@@ -65959,7 +65958,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<Tr2InteriorLightSource>} lights -
  */
 
-class Tr2InteriorScene extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2InteriorScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.dynamics = [];
@@ -65995,7 +65994,7 @@ Tr2InteriorScene.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WodPlaceableRes", function() { return WodPlaceableRes; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * WodPlaceableRes
@@ -66007,7 +66006,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Tr2Model} visualModel    -
  */
 
-class WodPlaceableRes extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class WodPlaceableRes extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.farFadeDistance = 0;
@@ -66053,7 +66052,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuParticleSystem", function() { return Tr2GpuParticleSystem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2GpuParticleSystem
@@ -66071,7 +66070,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Tw2Effect} update            -
  */
 
-class Tr2GpuParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2GpuParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.clear = null;
@@ -66133,8 +66132,8 @@ Tr2GpuParticleSystem.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSystem", function() { return Tw2ParticleSystem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./element */ "./particle/element/index.js");
 
 
@@ -66180,7 +66179,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array} _vertexStride                                              - Vertex stride
  */
 
-class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   // ccpwgl
   //Float32Array
   //Float32Array
@@ -66206,8 +66205,8 @@ class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
     this.useSimTimeRebase = false;
     this.isGlobal = false;
     this.peakAliveCount = 0;
-    this._aabbMin = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this._aabbMax = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._aabbMin = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this._aabbMax = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this._aliveCount = 0;
     this._bufferDirty = false;
     this._buffers = [null, null];
@@ -66248,7 +66247,7 @@ class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
 
   UpdateElementDeclaration() {
     this._isValid = false;
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this._vb) {
       gl.deleteBuffer(this._vb);
@@ -66262,7 +66261,7 @@ class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
     this._elements = [];
     this._instanceStride = [0, 0];
     this._vertexStride = [0, 0];
-    this._declaration = new _core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
+    this._declaration = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
     this._buffers = [null, null];
 
     for (let i = 0; i < this.elements.length; ++i) {
@@ -66440,13 +66439,13 @@ class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
       for (let i = 0; i < this._aliveCount; ++i) {
         if (hasForces) {
           const amass = mass ? mass.buffer[mass.offset] : 1,
-                force = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, 0, 0, 0);
+                force = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, 0, 0, 0);
 
           for (let j = 0; j < this.forces.length; ++j) {
             this.forces[j].ApplyForce(position, velocity, force, dt, amass);
           }
 
-          if (mass) _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(force, force, 1 / mass.buffer[mass.offset]);
+          if (mass) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(force, force, 1 / mass.buffer[mass.offset]);
           velocity.buffer[velocity.offset] += force[0] * dt;
           velocity.buffer[velocity.offset + 1] += force[1] * dt;
           velocity.buffer[velocity.offset + 2] += force[2] * dt;
@@ -66540,7 +66539,7 @@ class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
 
 
   _Sort() {
-    const eye = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(Tw2ParticleSystem.global.mat4_0, _global__WEBPACK_IMPORTED_MODULE_0__["device"].projection, _global__WEBPACK_IMPORTED_MODULE_0__["device"].view),
+    const eye = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(Tw2ParticleSystem.global.mat4_0, global__WEBPACK_IMPORTED_MODULE_0__["device"].projection, global__WEBPACK_IMPORTED_MODULE_0__["device"].view),
           //device.viewInverse;
     position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
           count = this._aliveCount,
@@ -66595,7 +66594,7 @@ class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
 
   GetInstanceBuffer() {
     if (this._aliveCount === 0) return undefined;
-    const gl = _global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this.requiresSorting && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this._buffers) {
       this._Sort();
@@ -66658,8 +66657,8 @@ class Tw2ParticleSystem extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCla
   static init() {
     if (!Tw2ParticleSystem.global) {
       Tw2ParticleSystem.global = {
-        vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-        mat4_0: _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+        vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
       };
     }
   }
@@ -66692,7 +66691,7 @@ Tw2ParticleSystem.global = null;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return Tr2PlaneConstraint; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleConstraint */ "./particle/constraint/Tw2ParticleConstraint.js");
 var _dec, _dec2, _class, _class2, _class3, _temp;
 
@@ -66709,7 +66708,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {Number} reflectionNoise                        -
  */
 
-let Tr2PlaneConstraint = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tr2PlaneConstraint extends _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleConstraint"] {
+let Tr2PlaneConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tr2PlaneConstraint extends _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleConstraint"] {
   constructor(...args) {
     super(...args);
     this.generators = [];
@@ -66754,7 +66753,7 @@ let Tr2PlaneConstraint = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].ab
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleConstraint", function() { return Tw2ParticleConstraint; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _dec2, _class, _class2;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -66769,7 +66768,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {String} name
  */
 
-let Tw2ParticleConstraint = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = class Tw2ParticleConstraint extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = class Tw2ParticleConstraint extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Applies constraints
    * @param {Array} buffers
@@ -66896,9 +66895,9 @@ Tw2ParticleElement.TypeMap = ["LIFETIME", "POSITION", "VELOCITY", "MASS", "CUSTO
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return Tw2ParticleElementDeclaration; });
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
 
 
 
@@ -66914,7 +66913,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} usedByGPU  -
  */
 
-class Tw2ParticleElementDeclaration extends _global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+class Tw2ParticleElementDeclaration extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.customName = "";
@@ -66956,26 +66955,26 @@ class Tw2ParticleElementDeclaration extends _global__WEBPACK_IMPORTED_MODULE_2__
 
     switch (this.elementType) {
       case _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.LIFETIME:
-        usage = _core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.TANGENT;
+        usage = core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.TANGENT;
         break;
 
       case _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.POSITION:
-        usage = _core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.POSITION;
+        usage = core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.POSITION;
         break;
 
       case _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.VELOCITY:
-        usage = _core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.NORMAL;
+        usage = core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.NORMAL;
         break;
 
       case _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.MASS:
-        usage = _core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.BINORMAL;
+        usage = core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.BINORMAL;
         break;
 
       default:
-        usage = _core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.TEXCOORD;
+        usage = core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.TEXCOORD;
     }
 
-    return _core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].from({
+    return core__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].from({
       usage: usage,
       usageIndex: this.usageIndex,
       elements: this.GetDimension()
@@ -67026,7 +67025,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return Tr2GpuSharedEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitter/Tw2ParticleEmitter.js");
 
 
@@ -67075,15 +67074,15 @@ class Tr2GpuSharedEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1
     super(...args);
     this.name = "";
     this.angle = 0;
-    this.attractorPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.attractorPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.attractorStrength = 0;
-    this.color0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.color1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.color2 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.color3 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color1 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color2 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color3 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.colorMidpoint = 0;
     this.continuousEmitter = false;
-    this.direction = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.direction = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.drag = 0;
     this.emissionDensity = 0;
     this.gravity = 0;
@@ -67096,12 +67095,12 @@ class Tr2GpuSharedEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1
     this.minLifeTime = 0;
     this.minSpeed = 0;
     this.particleSystem = null;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radius = 0;
     this.rate = 0;
     this.scaledByParent = false;
     this.sizeVariance = 0;
-    this.sizes = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.sizes = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.textureIndex = 0;
     this.turbulenceAmplitude = 0;
     this.turbulenceFrequency = 0;
@@ -67137,7 +67136,7 @@ Tr2GpuSharedEmitter.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuUniqueEmitter", function() { return Tr2GpuUniqueEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitter/Tw2ParticleEmitter.js");
 
 
@@ -67186,15 +67185,15 @@ class Tr2GpuUniqueEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1
     super(...args);
     this.name = "";
     this.angle = 0;
-    this.attractorPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.attractorPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.attractorStrength = 0;
-    this.color0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.color1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.color2 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.color3 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color1 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color2 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color3 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.colorMidpoint = 0;
     this.continuousEmitter = false;
-    this.direction = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.direction = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.drag = 0;
     this.emissionDensity = 0;
     this.gravity = 0;
@@ -67207,12 +67206,12 @@ class Tr2GpuUniqueEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1
     this.minLifeTime = 0;
     this.minSpeed = 0;
     this.particleSystem = null;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radius = 0;
     this.rate = 0;
     this.scaledByParent = false;
     this.sizeVariance = 0;
-    this.sizes = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.sizes = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.textureIndex = 0;
     this.turbulenceAmplitude = 0;
     this.turbulenceFrequency = 0;
@@ -67356,7 +67355,7 @@ class Tw2DynamicEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_0__
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleEmitter", function() { return Tw2ParticleEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _class, _temp;
 
 /* eslint no-unused-vars:0 */
@@ -67368,7 +67367,7 @@ var _dec, _class, _temp;
  * @property {Tw2ParticleSystem} particleSystem
  */
 
-let Tw2ParticleEmitter = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2ParticleEmitter extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2ParticleEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.particleSystem = null;
@@ -67413,8 +67412,8 @@ let Tw2ParticleEmitter = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].ab
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2StaticEmitter", function() { return Tw2StaticEmitter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleEmitter */ "./particle/emitter/Tw2ParticleEmitter.js");
 
 
@@ -67462,7 +67461,7 @@ class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__[
 
   Initialize() {
     if (this.geometryResourcePath !== "") {
-      this.geometryResource = _global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResourcePath, res => {
+      this.geometryResource = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetResource(this.geometryResourcePath, res => {
         res.systemMirror = true;
         this.OnResPrepared(res);
       });
@@ -67519,7 +67518,7 @@ class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__[
               input = mesh.declaration.FindUsage(d.usage, d.usageIndex - 8);
 
         if (input === null) {
-          res.OnError(new _core__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshMissingParticleElement"]({
+          res.OnError(new core__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshMissingParticleElement"]({
             path: res.path,
             elementUsage: d.usage,
             elementUsageIndex: d.usageIndex
@@ -67528,7 +67527,7 @@ class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__[
         }
 
         if (input.elements < d.elements) {
-          res.OnError(new _core__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshElementComponentsMissing"]({
+          res.OnError(new core__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshElementComponentsMissing"]({
             path: res.path,
             inputCount: input.elements,
             elementCount: d.elements,
@@ -67613,8 +67612,8 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ForceSphereVolume", function() { return Tr2ForceSphereVolume; });
 /* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
-/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
 
 
 
@@ -67644,7 +67643,7 @@ class Tr2ForceSphereVolume extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0_
    */
   ApplyForce(position, velocity, force, dt, mass) {
     // Todo: Implement ApplyForce
-    throw new _core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]();
+    throw new core__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]();
   }
   /**
    * Per frame update
@@ -67689,7 +67688,7 @@ Tr2ForceSphereVolume.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ParticleVortexForce", function() { return Tr2ParticleVortexForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 
@@ -67706,9 +67705,9 @@ __webpack_require__.r(__webpack_exports__);
 class Tr2ParticleVortexForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
-    this.axis = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.axis = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.magnitude = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -67760,7 +67759,7 @@ Tr2ParticleVortexForce.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttractorForce", function() { return Tw2ParticleAttractorForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 
@@ -67776,7 +67775,7 @@ class Tw2ParticleAttractorForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
   constructor(...args) {
     super(...args);
     this.magnitude = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -67792,9 +67791,9 @@ class Tw2ParticleAttractorForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
     vec3_0[0] = this.position[0] - position.buffer[position.offset];
     vec3_0[1] = this.position[1] - position.buffer[position.offset + 1];
     vec3_0[2] = this.position[2] - position.buffer[position.offset + 2];
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(vec3_0, vec3_0);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(vec3_0, vec3_0, this.magnitude);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(force, force, vec3_0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(vec3_0, vec3_0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(vec3_0, vec3_0, this.magnitude);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(force, force, vec3_0);
   }
   /**
    * Black definition
@@ -67821,7 +67820,7 @@ class Tw2ParticleAttractorForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleDirectForce", function() { return Tw2ParticleDirectForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 
@@ -67835,7 +67834,7 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2ParticleDirectForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
-    this.force = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.force = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -67847,7 +67846,7 @@ class Tw2ParticleDirectForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_
    * @param {Number} [mass]               - unused
    */
   ApplyForce(position, velocity, force, dt, mass) {
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(force, force, this.force);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(force, force, this.force);
   }
   /**
    * Black definition
@@ -67927,7 +67926,7 @@ class Tw2ParticleDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0_
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleFluidDragForce", function() { return Tw2ParticleFluidDragForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 
@@ -67959,7 +67958,7 @@ class Tw2ParticleFluidDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
     vec3_0[0] = velocity.buffer[velocity.offset] * -speed * this.drag;
     vec3_0[1] = velocity.buffer[velocity.offset + 1] * -speed * this.drag;
     vec3_0[2] = velocity.buffer[velocity.offset + 2] * -speed * this.drag;
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(vec3_1, vec3_0, dt * mass);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(vec3_1, vec3_0, dt * mass);
     vec3_1[0] += velocity.buffer[velocity.offset];
     vec3_1[1] += velocity.buffer[velocity.offset + 1];
     vec3_1[2] += velocity.buffer[velocity.offset + 2];
@@ -67970,7 +67969,7 @@ class Tw2ParticleFluidDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
       force[1] = -velocity.buffer[velocity.offset + 1] / dt / mass;
       force[2] = -velocity.buffer[velocity.offset + 2] / dt / mass;
     } else {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(force, vec3_0);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(force, vec3_0);
     }
   }
   /**
@@ -67998,7 +67997,7 @@ class Tw2ParticleFluidDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleForce", function() { return Tw2ParticleForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _dec2, _class, _class2, _class3, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -68010,7 +68009,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @ccp N/A
  */
 
-let Tw2ParticleForce = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleForce extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleForce extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Applies forces
    * @param {Tw2ParticleElement} position - Position
@@ -68035,9 +68034,9 @@ let Tw2ParticleForce = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abst
 
 
 }, _class3.global = {
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec3_1: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-  vec4_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()
 }, _temp), (_applyDecoratedDescriptor(_class2.prototype, "ApplyForce", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "ApplyForce"), _class2.prototype)), _class2)) || _class);
 
 /***/ }),
@@ -68052,7 +68051,7 @@ let Tw2ParticleForce = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abst
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleSpring", function() { return Tw2ParticleSpring; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 
@@ -68068,7 +68067,7 @@ class Tw2ParticleSpring extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["
   constructor(...args) {
     super(...args);
     this.springConstant = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -68109,7 +68108,7 @@ class Tw2ParticleSpring extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleTurbulenceForce", function() { return Tw2ParticleTurbulenceForce; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
 
 
@@ -68127,8 +68126,8 @@ __webpack_require__.r(__webpack_exports__);
 class Tw2ParticleTurbulenceForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
-    this.amplitude = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.frequency = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
+    this.amplitude = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.frequency = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
     this.noiseLevel = 3;
     this.noiseRatio = 0.5;
     this._time = 0;
@@ -68151,10 +68150,10 @@ class Tw2ParticleTurbulenceForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MOD
     let sum = 0,
         power = 0.5,
         frequency = 1 / this.noiseRatio;
-    const out = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec4_0, 0, 0, 0, 0);
+    const out = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec4_0, 0, 0, 0, 0);
 
     for (let i = 0; i < this.noiseLevel; ++i) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["noise"].turbulence(out, pos_0, pos_1, pos_2, pos_3, power);
+      global__WEBPACK_IMPORTED_MODULE_0__["noise"].turbulence(out, pos_0, pos_1, pos_2, pos_3, power);
       sum += power;
       pos_0 *= frequency;
       pos_1 *= frequency;
@@ -68245,7 +68244,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttributeGenerator", function() { return Tw2ParticleAttributeGenerator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _dec2, _dec3, _class, _class2, _class3, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
@@ -68260,7 +68259,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @class
  */
 
-let Tw2ParticleAttributeGenerator = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = _global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleAttributeGenerator extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+let Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleAttributeGenerator extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Binds a particle system element to the generator
    * @param {Tw2ParticleSystem} ps
@@ -68283,7 +68282,7 @@ let Tw2ParticleAttributeGenerator = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__
 
 
 }, _class3.global = {
-  vec3_0: _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
 }, _temp), (_applyDecoratedDescriptor(_class2.prototype, "Bind", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "Bind"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "Generate", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "Generate"), _class2.prototype)), _class2)) || _class);
 
 /***/ }),
@@ -68298,7 +68297,7 @@ let Tw2ParticleAttributeGenerator = (_dec = _global__WEBPACK_IMPORTED_MODULE_0__
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomIntegerAttributeGenerator", function() { return Tw2RandomIntegerAttributeGenerator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../element/Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
 /* harmony import */ var _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleAttributeGenerator */ "./particle/generators/Tw2ParticleAttributeGenerator.js");
 
@@ -68320,8 +68319,8 @@ class Tw2RandomIntegerAttributeGenerator extends _Tw2ParticleAttributeGenerator_
     super(...args);
     this.customName = "";
     this.elementType = _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM;
-    this.minRange = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.maxRange = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.minRange = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.maxRange = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this._element = null;
   }
 
@@ -68378,7 +68377,7 @@ class Tw2RandomIntegerAttributeGenerator extends _Tw2ParticleAttributeGenerator_
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2RandomUniformAttributeGenerator", function() { return Tw2RandomUniformAttributeGenerator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../element/Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
 /* harmony import */ var _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleAttributeGenerator */ "./particle/generators/Tw2ParticleAttributeGenerator.js");
 
@@ -68400,8 +68399,8 @@ class Tw2RandomUniformAttributeGenerator extends _Tw2ParticleAttributeGenerator_
     super(...args);
     this.customName = "";
     this.elementType = _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM;
-    this.minRange = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.maxRange = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.minRange = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.maxRange = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this._element = null;
   }
 
@@ -68458,7 +68457,7 @@ class Tw2RandomUniformAttributeGenerator extends _Tw2ParticleAttributeGenerator_
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2SphereShapeAttributeGenerator", function() { return Tw2SphereShapeAttributeGenerator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../element/Tw2ParticleElement */ "./particle/element/Tw2ParticleElement.js");
 /* harmony import */ var _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ParticleAttributeGenerator */ "./particle/generators/Tw2ParticleAttributeGenerator.js");
 
@@ -68505,8 +68504,8 @@ class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__W
     this.minSpeed = 0;
     this.minTheta = 0;
     this.parentVelocityFactor = 1;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.controlPosition = true;
     this.controlVelocity = true;
     this._position = null;
@@ -68547,7 +68546,7 @@ class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__W
     rv[0] = Math.sin(phi) * Math.cos(theta);
     rv[1] = -Math.cos(phi);
     rv[2] = Math.sin(phi) * Math.sin(theta);
-    _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformQuat(rv, rv, this.rotation);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformQuat(rv, rv, this.rotation);
 
     if (this._velocity) {
       const speed = this.minSpeed + Math.random() * (this.maxSpeed - this.minSpeed),
@@ -68564,8 +68563,8 @@ class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__W
     }
 
     if (this._position) {
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(rv, rv, this.minRadius + Math.random() * (this.maxRadius - this.minRadius));
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(rv, rv, this.position);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(rv, rv, this.minRadius + Math.random() * (this.maxRadius - this.minRadius));
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(rv, rv, this.position);
 
       if (position) {
         rv[0] += position.buffer[position.offset];
@@ -68700,10 +68699,10 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOF", function() { return EveSOF; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../global/util */ "./global/util/index.js");
-/* harmony import */ var _curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../curve */ "./curve/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! curve */ "./curve/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _eve__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../eve */ "./eve/index.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
@@ -68726,13 +68725,13 @@ function EveSOF(tw2) {
    */
 
   function GetShaderPrefix(isAnimated) {
-    return isAnimated ? Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"], "shaderPrefixAnimated", "") : Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"], "shaderPrefix", "");
+    return isAnimated ? Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"], "shaderPrefixAnimated", "") : Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"], "shaderPrefix", "");
   }
 
   function ModifyTextureResPath(path, name, area, faction, commands) {
     var pathInsert = null;
 
-    if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "resPathInsert", "").length) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "resPathInsert", "").length) {
       pathInsert = faction.resPathInsert;
     }
 
@@ -68756,7 +68755,7 @@ function EveSOF(tw2) {
 
       if (index >= 0) {
         pathCopy = pathCopy.substr(0, index) + "_" + pathInsert + pathCopy.substr(index);
-        var textureOverrides = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textureOverrides", {});
+        var textureOverrides = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textureOverrides", {});
 
         if (name in textureOverrides && faction.name in textureOverrides[name]) {
           return pathCopy;
@@ -68795,12 +68794,12 @@ function EveSOF(tw2) {
       prefixes = data.generic.materialPrefixes;
       materialIndex = FindPrefix(prefixes, name);
 
-      if (materialIndex !== null && materialIndex < commands.mesh.length && (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "blockedMaterials", 0) & 1 << materialIndex) === 0) {
-        materialData = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.material, commands.mesh[materialIndex], null);
+      if (materialIndex !== null && materialIndex < commands.mesh.length && (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "blockedMaterials", 0) & 1 << materialIndex) === 0) {
+        materialData = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.material, commands.mesh[materialIndex], null);
 
         if (materialData) {
           shortName = name.substr(prefixes[materialIndex].length);
-          return Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(materialData.parameters, shortName, undefined);
+          return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(materialData.parameters, shortName, undefined);
         }
       }
     }
@@ -68810,21 +68809,21 @@ function EveSOF(tw2) {
 
     if ("pattern" in commands) {
       if (materialIndex !== null && 1 + materialIndex < commands.pattern.length) {
-        materialData = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.material, commands.pattern[1 + materialIndex], null);
+        materialData = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.material, commands.pattern[1 + materialIndex], null);
 
         if (materialData) {
           shortName = name.substr(prefixes[materialIndex].length);
-          return Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(materialData.parameters, shortName, undefined);
+          return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(materialData.parameters, shortName, undefined);
         }
       }
     }
 
     if (materialIndex !== null) {
-      materialData = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.material, race.defaultPatternLayer1MaterialName, null);
+      materialData = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.material, race.defaultPatternLayer1MaterialName, null);
 
       if (materialData) {
         shortName = name.substr(prefixes[materialIndex].length);
-        return Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(materialData.parameters, shortName, undefined);
+        return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(materialData.parameters, shortName, undefined);
       }
     }
   }
@@ -68849,11 +68848,11 @@ function EveSOF(tw2) {
   }
 
   function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride, masks) {
-    const hullAreas = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, areasName, []);
+    const hullAreas = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, areasName, []);
 
     for (let i = 0; i < hullAreas.length; ++i) {
       const area = hullAreas[i],
-            effect = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"](); // Use references to custom mask parameters - do not recreate them
+            effect = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"](); // Use references to custom mask parameters - do not recreate them
 
       for (let i = 0; i < 2; i++) {
         const mask = masks[i];
@@ -68875,26 +68874,26 @@ function EveSOF(tw2) {
       }
 
       effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
-      const names = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
+      const names = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
 
       for (let j = 0; j < names.length; ++j) {
         const name = names[j];
         let param = GetOverridenParameter(name, area, commands, race);
-        param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
-        param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race.hullAreas, area.name, {}), "parameters", {}), name);
-        param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction.areas, area.name, {}), "parameters", {}), name);
-        param = param || Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "parameters", {}), name);
+        param = param || Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
+        param = param || Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race.hullAreas, area.name, {}), "parameters", {}), name);
+        param = param || Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction.areas, area.name, {}), "parameters", {}), name);
+        param = param || Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "parameters", {}), name);
 
         if (param) {
           if (effect.parameters[name]) {
             effect.parameters[name].SetValue(param);
           } else {
-            effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"](name, param);
+            effect.parameters[name] = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"](name, param);
           }
         }
       }
 
-      const hullTextures = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textures", {});
+      const hullTextures = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textures", {});
 
       for (let name in hullTextures) {
         if (hullTextures.hasOwnProperty(name)) {
@@ -68903,7 +68902,7 @@ function EveSOF(tw2) {
           if (effect.parameters[name]) {
             effect.parameters[name].SetValue(path);
           } else {
-            effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, path);
+            effect.parameters[name] = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, path);
           }
         }
       } // Only create pattern parameters if they don't already exist
@@ -68913,38 +68912,38 @@ function EveSOF(tw2) {
         const textureName = pattern.layers[j] ? pattern.layers[j].textureName : "";
 
         if (textureName && !effect.parameters[textureName]) {
-          const patternTex = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](pattern.layers[j].textureName);
+          const patternTex = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](pattern.layers[j].textureName);
           patternTex.resourcePath = pattern.layers[j].textureResFilePath;
           patternTex.useAllOverrides = true;
-          patternTex.addressUMode = GetAddressMode(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeU", 0));
-          patternTex.addressVMode = GetAddressMode(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeV", 0));
+          patternTex.addressUMode = GetAddressMode(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeU", 0));
+          patternTex.addressVMode = GetAddressMode(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeV", 0));
           patternTex.Initialize();
           effect.parameters[pattern.layers[j].textureName] = patternTex;
         }
       }
 
-      const defaultTextures = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
+      const defaultTextures = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
 
       for (let name in defaultTextures) {
         if (defaultTextures.hasOwnProperty(name)) {
           if (!(name in effect.parameters)) {
-            effect.parameters[name] = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, defaultTextures[name]);
+            effect.parameters[name] = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, defaultTextures[name]);
           }
         }
       }
 
       effect.Initialize();
-      const newArea = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]();
+      const newArea = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]();
       newArea.name = area.name;
       newArea.effect = effect;
-      newArea.index = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "index", 0);
-      newArea.count = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "count", 1);
+      newArea.index = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "index", 0);
+      newArea.count = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "count", 1);
       areas.push(newArea);
     }
   }
 
   function SetupMesh(ship, hull, faction, race, commands, pattern) {
-    const mesh = ship.mesh || new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]();
+    const mesh = ship.mesh || new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]();
     mesh.geometryResPath = hull["geometryResFilePath"];
 
     if (ship.mesh !== mesh) {
@@ -68960,11 +68959,11 @@ function EveSOF(tw2) {
     masks[0] = masks[0] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
     masks[1] = masks[1] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
     const args = [hull, faction, race, pattern, commands, undefined, masks];
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "opaqueAreas", []), "opaqueAreas", ...args);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "transparentAreas", []), "transparentAreas", ...args);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "additiveAreas", []), "additiveAreas", ...args);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "decalAreas", []), "decalAreas", ...args);
-    FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "depthAreas", []), "depthAreas", ...args);
+    FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "opaqueAreas", []), "opaqueAreas", ...args);
+    FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "transparentAreas", []), "transparentAreas", ...args);
+    FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "additiveAreas", []), "additiveAreas", ...args);
+    FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "decalAreas", []), "decalAreas", ...args);
+    FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "depthAreas", []), "depthAreas", ...args);
 
     if (ship.mesh !== mesh) {
       if ("shapeEllipsoidCenter" in hull) {
@@ -68997,9 +68996,9 @@ function EveSOF(tw2) {
         }
       }
 
-      pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
-      pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {}));
-      const projections = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "projections", []); // Projections
+      pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
+      pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {}));
+      const projections = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "projections", []); // Projections
 
       let p = {};
 
@@ -69010,33 +69009,33 @@ function EveSOF(tw2) {
         }
       }
 
-      pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", {}));
-      pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", {}));
+      pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", {}));
+      pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", {}));
     } // Default pattern
     else {
         // Layers
-        const l = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "defaultPattern", {});
-        pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
-        pattern.layers.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {})); // Projections
+        const l = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "defaultPattern", {});
+        pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
+        pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {})); // Projections
 
-        const p = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "defaultPattern", {});
-        pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", {}));
-        pattern.patterns.push(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", {}));
+        const p = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "defaultPattern", {});
+        pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", {}));
+        pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", {}));
       }
 
     return pattern;
   }
 
   function SetupInstancedMeshes(ship, hull, faction, race, commands, pattern) {
-    var instancedMeshes = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "instancedMeshes", []);
+    var instancedMeshes = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "instancedMeshes", []);
 
     for (var i = 0; i < instancedMeshes.length; ++i) {
       var him = instancedMeshes[i];
-      var mesh = new _core__WEBPACK_IMPORTED_MODULE_3__["Tw2InstancedMesh"]();
+      var mesh = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2InstancedMesh"]();
       mesh.instanceGeometryResPath = him.instanceGeometryResPath;
       mesh.geometryResPath = him.geometryResPath;
       mesh.Initialize();
-      FillMeshAreas(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands, him.shader);
+      FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "opaqueAreas", []), "opaqueAreas", hull, faction, race, pattern, commands, him.shader);
       var child = new _eve__WEBPACK_IMPORTED_MODULE_4__["EveChildMesh"]();
       child.mesh = mesh;
       ship.effectChildren.push(child);
@@ -69054,9 +69053,9 @@ function EveSOF(tw2) {
             l = layers[i] || {}; // Default pattern values
 
       const {
-        rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
-        scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1),
-        position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
+        scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1),
+        position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         isMirrored = false
       } = p; // Default layer values
 
@@ -69075,10 +69074,10 @@ function EveSOF(tw2) {
       const mask = ship.customMasks[i] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
       mask.name = "Pattern".concat(i + 1);
       mask.display = display;
-      _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(mask.rotation, rotation);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.scaling, scaling);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.translation, position);
-      _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(mask.targetMaterials, isTargetMtl1 ? 1 : 0, isTargetMtl2 ? 1 : 0, isTargetMtl3 ? 1 : 0, isTargetMtl4 ? 1 : 0);
+      global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(mask.rotation, rotation);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.scaling, scaling);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(mask.translation, position);
+      global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(mask.targetMaterials, isTargetMtl1 ? 1 : 0, isTargetMtl2 ? 1 : 0, isTargetMtl3 ? 1 : 0, isTargetMtl4 ? 1 : 0);
       mask.materialIndex = materialSource;
       mask.isMirrored = !!isMirrored;
       const {
@@ -69113,7 +69112,7 @@ function EveSOF(tw2) {
 
 
   function SetupDecals(ship, hull, faction = {}) {
-    const hullDecals = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "hullDecals", []);
+    const hullDecals = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "hullDecals", []);
 
     for (let i = 0; i < hullDecals.length; ++i) {
       const src = hullDecals[i],
@@ -69124,7 +69123,7 @@ function EveSOF(tw2) {
       const effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + shader,
             parameters = Object.assign({}, src.parameters),
             // Should src.shader actually be shader?
-      textures = Object.assign(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["decalShaders"], src.shader, {}), "defaultTextures", {}));
+      textures = Object.assign(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["decalShaders"], src.shader, {}), "defaultTextures", {}));
 
       if (factionDecal) {
         Object.assign(parameters, factionDecal.parameters);
@@ -69170,12 +69169,12 @@ function EveSOF(tw2) {
 
 
   function SetupSpriteSets(ship, hull, faction) {
-    const hullSets = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spriteSets", []),
-          factionSets = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spriteSets", {});
+    const hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spriteSets", []),
+          factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spriteSets", {});
 
     for (let i = 0; i < hullSets.length; ++i) {
       const hullSet = hullSets[i],
-            hullSetItems = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
+            hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
             items = [];
 
       for (let j = 0; j < hullSetItems.length; j++) {
@@ -69204,10 +69203,10 @@ function EveSOF(tw2) {
         if (factionSet) {
           item.groupName = factionSet.name; // ""
 
-          Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, factionSet, "color"); // [0,0,0,0]
+          Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, factionSet, "color"); // [0,0,0,0]
         }
 
-        if (!self.SKIP_EMPTY_ITEMS || item.color && !_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].isEmpty(item.color)) {
+        if (!self.SKIP_EMPTY_ITEMS || item.color && !global__WEBPACK_IMPORTED_MODULE_0__["vec3"].isEmpty(item.color)) {
           items.push(item);
         }
       }
@@ -69237,12 +69236,12 @@ function EveSOF(tw2) {
    */
 
   function SetupSpotlightSets(ship, hull, faction) {
-    const hullSets = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spotlightSets", []),
-          factionSets = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spotlightSets", {});
+    const hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spotlightSets", []),
+          factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spotlightSets", {});
 
     for (let i = 0; i < hullSets.length; ++i) {
       const hullSet = hullSets[i],
-            hullSetItems = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
+            hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
             isSkinned = hullSet.skinned,
             items = []; // Get spotlight items
 
@@ -69265,7 +69264,7 @@ function EveSOF(tw2) {
         */
 
         if (factionSet) {
-          Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, factionSet, ["coneColor", "spriteColor", "flareColor"]); // [0,0,0,0]
+          Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, factionSet, ["coneColor", "spriteColor", "flareColor"]); // [0,0,0,0]
         }
 
         if (!self.SKIP_EMPTY_ITEMS || factionSet) {
@@ -69281,7 +69280,7 @@ function EveSOF(tw2) {
             effectFilePath: isSkinned ? EFF_SPOTLIGHT_CONE_SKINNED : EFF_SPOTLIGHT_CONE,
             parameters: {
               TextureMap: hullSet.coneTextureResPath,
-              zOffset: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "zOffset", 0)
+              zOffset: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "zOffset", 0)
             }
           },
           glowEffect: {
@@ -69305,12 +69304,12 @@ function EveSOF(tw2) {
    */
 
   function SetupPlaneSets(ship, hull, faction) {
-    const hullSets = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "planeSets", []),
-          factionSets = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "planeSets", {});
+    const hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "planeSets", []),
+          factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "planeSets", {});
 
     for (let i = 0; i < hullSets.length; ++i) {
       const hullSet = hullSets[i],
-            hullSetItems = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
+            hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
             items = []; // Get plane items
 
       for (let j = 0; j < hullSetItems.length; ++j) {
@@ -69332,10 +69331,10 @@ function EveSOF(tw2) {
         */
 
         if (factionSet) {
-          Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, factionSet, "color"); // [0, 0, 0, 0]);
+          Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, factionSet, "color"); // [0, 0, 0, 0]);
         }
 
-        if (!self.SKIP_EMPTY_ITEMS || item.color && !_global__WEBPACK_IMPORTED_MODULE_0__["vec3"].isEmpty(item.color)) {
+        if (!self.SKIP_EMPTY_ITEMS || item.color && !global__WEBPACK_IMPORTED_MODULE_0__["vec3"].isEmpty(item.color)) {
           items.push(item);
         }
       }
@@ -69350,7 +69349,7 @@ function EveSOF(tw2) {
               Layer1Map: hullSet.layer1MapResPath,
               Layer2Map: hullSet.layer2MapResPath,
               MaskMap: hullSet.maskMapResPath,
-              PlaneData: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "planeData", [1, 0, 0, 0])
+              PlaneData: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "planeData", [1, 0, 0, 0])
             }
           }
         }));
@@ -69373,16 +69372,16 @@ function EveSOF(tw2) {
   function SetupBoosters(ship, hull, race) {
     if (!hull.booster) return;
     const zero = [0, 0, 0, 0],
-          raceBooster = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "booster", {}),
+          raceBooster = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "booster", {}),
           hullBooster = hull["booster"],
-          hullBoosterItems = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBooster, "items", []);
+          hullBoosterItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBooster, "items", []);
 
     for (let i = 0; i < hullBoosterItems.length; ++i) {
       ship.locators.push(_eve__WEBPACK_IMPORTED_MODULE_4__["EveLocator2"].from({
         name: "locator_booster_" + (i + 1),
         transform: hullBoosterItems[i].transform,
-        atlasIndex0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBoosterItems[i], "atlasIndex0", 0),
-        atlasIndex1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBoosterItems[i], "atlasIndex1", 0)
+        atlasIndex0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBoosterItems[i], "atlasIndex0", 0),
+        atlasIndex1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBoosterItems[i], "atlasIndex1", 0)
       }));
     }
 
@@ -69400,32 +69399,32 @@ function EveSOF(tw2) {
       effect: {
         effectFilePath: EFF_BOOSTER_VOLUMETRIC,
         parameters: {
-          NoiseFunction0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseFunction", 0),
-          NoiseSpeed0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseSpeed", 0),
-          NoiseAmplitudeStart0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseAmplitureStart", zero),
-          NoiseAmplitudeEnd0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseAmplitureEnd", zero),
-          NoiseFrequency0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseFrequency", zero),
-          Color0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "color", zero),
-          NoiseFunction1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseFunction", 0),
-          NoiseSpeed1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseSpeed", 0),
-          NoiseAmplitudeStart1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseAmplitureStart", zero),
-          NoiseAmplitudeEnd1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseAmplitureEnd", zero),
-          NoiseFrequency1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseFrequency", zero),
-          Color1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "color", zero),
-          WarpNoiseFunction0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseFunction", 0),
-          WarpNoiseSpeed0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseSpeed", 0),
-          WarpNoiseAmplitudeStart0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseAmplitureStart", zero),
-          WarpNoiseAmplitudeEnd0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseAmplitureEnd", zero),
-          WarpNoiseFrequency0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseFrequency", zero),
-          WarpColor0: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "color", zero),
-          WarpNoiseFunction1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseFunction", 0),
-          WarpNoiseSpeed1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseSpeed", 0),
-          WarpNoiseAmplitudeStart1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseAmplitureStart", zero),
-          WarpNoiseAmplitudeEnd1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseAmplitureEnd", zero),
-          WarpNoiseFrequency1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseFrequency", zero),
-          WarpColor1: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "color", zero),
-          ShapeAtlasSize: [Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster, "shapeAtlasHeight", 0), Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster, "shapeAtlasCount", 0), 0, 0],
-          BoosterScale: Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster, "scale", [1, 1, 1, 1])
+          NoiseFunction0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseFunction", 0),
+          NoiseSpeed0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseSpeed", 0),
+          NoiseAmplitudeStart0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseAmplitureStart", zero),
+          NoiseAmplitudeEnd0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseAmplitureEnd", zero),
+          NoiseFrequency0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "noiseFrequency", zero),
+          Color0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape0, "color", zero),
+          NoiseFunction1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseFunction", 0),
+          NoiseSpeed1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseSpeed", 0),
+          NoiseAmplitudeStart1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseAmplitureStart", zero),
+          NoiseAmplitudeEnd1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseAmplitureEnd", zero),
+          NoiseFrequency1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "noiseFrequency", zero),
+          Color1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.shape1, "color", zero),
+          WarpNoiseFunction0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseFunction", 0),
+          WarpNoiseSpeed0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseSpeed", 0),
+          WarpNoiseAmplitudeStart0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseAmplitureStart", zero),
+          WarpNoiseAmplitudeEnd0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseAmplitureEnd", zero),
+          WarpNoiseFrequency0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "noiseFrequency", zero),
+          WarpColor0: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape0, "color", zero),
+          WarpNoiseFunction1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseFunction", 0),
+          WarpNoiseSpeed1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseSpeed", 0),
+          WarpNoiseAmplitudeStart1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseAmplitureStart", zero),
+          WarpNoiseAmplitudeEnd1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseAmplitureEnd", zero),
+          WarpNoiseFrequency1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "noiseFrequency", zero),
+          WarpColor1: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster.warpShape1, "color", zero),
+          ShapeAtlasSize: [Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster, "shapeAtlasHeight", 0), Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster, "shapeAtlasCount", 0), 0, 0],
+          BoosterScale: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(raceBooster, "scale", [1, 1, 1, 1])
         },
         textures: {
           ShapeMap: raceBooster.shapeAtlasResPath,
@@ -69454,7 +69453,7 @@ function EveSOF(tw2) {
 
 
   function SetupLocators(ship, hull) {
-    const hullLocators = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "locatorTurrets", []);
+    const hullLocators = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "locatorTurrets", []);
 
     for (let i = 0; i < hullLocators.length; ++i) {
       ship.locators.push(_eve__WEBPACK_IMPORTED_MODULE_4__["EveLocator2"].from(hullLocators[i]));
@@ -69465,7 +69464,7 @@ function EveSOF(tw2) {
     if (Array.isArray(obj.particleEmitters)) {
       for (var i = 0; i < obj.particleEmitters.length; ++i) {
         if ("rate" in obj.particleEmitters[i]) {
-          var binding = new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ValueBinding"]();
+          var binding = new curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ValueBinding"]();
           binding.sourceObject = curve;
           binding.sourceAttribute = "currentValue";
           binding.destinationObject = obj.particleEmitters[i];
@@ -69496,10 +69495,10 @@ function EveSOF(tw2) {
           ship.children.push(obj);
         }
 
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.translation, Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "translation", [0, 0, 0]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(obj.rotation, Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "rotation", [0, 0, 0, 1]));
-        _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.scaling, Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "scaling", [1, 1, 1]));
-        var id = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "id", -1);
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.translation, Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "translation", [0, 0, 0]));
+        global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(obj.rotation, Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "rotation", [0, 0, 0, 1]));
+        global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(obj.scaling, Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "scaling", [1, 1, 1]));
+        var id = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(child, "id", -1);
 
         if (id !== -1 && curves[id]) {
           BindParticleEmitters(obj, curveSet, curves[id]);
@@ -69507,7 +69506,7 @@ function EveSOF(tw2) {
       };
     }
 
-    const children = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "children", []);
+    const children = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "children", []);
 
     for (let i = 0; i < children.length; ++i) {
       const resPath = children[i]["redFilePath"];
@@ -69527,24 +69526,24 @@ function EveSOF(tw2) {
   function SetupAnimations(ship, hull) {
     var id_curves = [];
     var curveSet = null;
-    var animations = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "animations", []);
+    var animations = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "animations", []);
 
     for (var i = 0; i < animations.length; ++i) {
-      if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "id", -1) !== -1 && Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "startRate", -1) !== -1) {
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "id", -1) !== -1 && Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "startRate", -1) !== -1) {
         if (!curveSet) {
-          curveSet = new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2CurveSet"]();
+          curveSet = new curve__WEBPACK_IMPORTED_MODULE_2__["Tw2CurveSet"]();
         }
 
-        var curve = new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarCurve2"]();
-        curve.keys.push(new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
-        curve.keys.push(new _curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
-        curve.keys[0].value = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "startRate", -1);
+        var curve = new curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarCurve2"]();
+        curve.keys.push(new curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
+        curve.keys.push(new curve__WEBPACK_IMPORTED_MODULE_2__["Tw2ScalarKey2"]());
+        curve.keys[0].value = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "startRate", -1);
         curve.keys[1].time = 1;
-        curve.keys[1].value = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "endRate", -1);
+        curve.keys[1].value = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "endRate", -1);
         curve.Initialize();
         curveSet.curves.push(curve);
         ship.curveSets.push(curveSet);
-        id_curves[Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "id", -1)] = curve;
+        id_curves[Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(animations[i], "id", -1)] = curve;
       }
     }
 
@@ -69566,7 +69565,7 @@ function EveSOF(tw2) {
     }
 
     if (materialIdx !== -1) {
-      var turretMaterialIndex = Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(parentFaction, "materialUsageMtl" + (materialIdx + 1), materialIdx);
+      var turretMaterialIndex = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(parentFaction, "materialUsageMtl" + (materialIdx + 1), materialIdx);
 
       if (turretMaterialIndex >= 0 && turretMaterialIndex < data["generic"]["materialPrefixes"].length) {
         name = data["generic"]["materialPrefixes"][turretMaterialIndex] + name;
@@ -69624,7 +69623,7 @@ function EveSOF(tw2) {
 
       for (var i in params) {
         if (params.hasOwnProperty(i)) {
-          if (params[i].constructor.prototype !== _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"].prototype) {
+          if (params[i].constructor.prototype !== core__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"].prototype) {
             continue;
           }
 
@@ -69639,7 +69638,7 @@ function EveSOF(tw2) {
             turretValue = GetTurretMaterialParameter(i, parentFaction, parentArea);
           }
 
-          _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(params[i].value, CombineTurretMaterial(i, parentValue, turretValue, turretSet.turretEffect.name));
+          global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(params[i].value, CombineTurretMaterial(i, parentValue, turretValue, turretSet.turretEffect.name));
         }
       }
 
@@ -69680,7 +69679,7 @@ function EveSOF(tw2) {
       /*#__PURE__*/
       _asyncToGenerator(function* () {
         if (!sofPromise) {
-          spriteEffect = _core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
+          spriteEffect = core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from({
             effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
             parameters: {
               MainIntensity: 1,
@@ -69791,7 +69790,7 @@ function EveSOF(tw2) {
     var _ref6 = _asyncToGenerator(function* (name, key, ErrorConstructor) {
       const sofObject = yield getSofObject(name);
 
-      if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
         for (let i = 0; i < sofObject.length; i++) {
           if (sofObject[key].name === name) {
             return sofObject[key];
@@ -69828,7 +69827,7 @@ function EveSOF(tw2) {
       const sofObject = yield getSofObject(name),
             out = {};
 
-      if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
         for (let i = 0; i < sofObject.length; i++) {
           out[sofObject[i].name] = sofObject[i].description || "";
         }
@@ -69893,7 +69892,7 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref9 = _asyncToGenerator(function* (dna) {
-      if (!Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isDNA"])(dna)) {
+      if (!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isDNA"])(dna)) {
         throw new Error("Invalid DNA (".concat(dna, ")"));
       }
 
@@ -69922,7 +69921,7 @@ function EveSOF(tw2) {
         }
       }
 
-      const ship = new (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"])(),
+      const ship = new (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"])(),
             pattern = SetupPattern(hull, race, commands);
       SetupCustomMasks(ship, pattern); // Custom masks must be first
 
@@ -69955,7 +69954,7 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref10 = _asyncToGenerator(function* (hull) {
-      return getSofObjectKey("hull", hull, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFHullNotFound"]);
+      return getSofObjectKey("hull", hull, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFHullNotFound"]);
     });
 
     return function (_x14) {
@@ -70054,7 +70053,7 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref15 = _asyncToGenerator(function* (race) {
-      return getSofObjectKey("race", race, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFRaceNotFound"]);
+      return getSofObjectKey("race", race, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFRaceNotFound"]);
     });
 
     return function (_x19) {
@@ -70082,7 +70081,7 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref17 = _asyncToGenerator(function* (faction) {
-      return getSofObjectKey("faction", faction, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFFactionNotFound"]);
+      return getSofObjectKey("faction", faction, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFFactionNotFound"]);
     });
 
     return function (_x20) {
@@ -70110,7 +70109,7 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref19 = _asyncToGenerator(function* (material) {
-      return getSofObjectKey("material", material, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFMaterialNotFound"]);
+      return getSofObjectKey("material", material, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFMaterialNotFound"]);
     });
 
     return function (_x21) {
@@ -70138,7 +70137,7 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref21 = _asyncToGenerator(function* (pattern) {
-      return getSofObjectKey("pattern", pattern, _core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFPatternNotFound"]);
+      return getSofObjectKey("pattern", pattern, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFPatternNotFound"]);
     });
 
     return function (_x22) {
@@ -70170,8 +70169,8 @@ function EveSOF(tw2) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return EveSOFData; });
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global/util */ "./global/util/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../core */ "./core/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 
 
 /**
@@ -70218,7 +70217,7 @@ class EveSOFData {
 
 
   GetHull(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFHullNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFHullNotFound"]);
   }
   /**
    * Gets hull names
@@ -70238,7 +70237,7 @@ class EveSOFData {
 
 
   HasHull(name) {
-    return !!Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name);
   }
   /**
    * Gets a hull's build class
@@ -70300,7 +70299,7 @@ class EveSOFData {
 
 
   GetFaction(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFFactionNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFFactionNotFound"]);
   }
   /**
    * Gets faction names
@@ -70320,7 +70319,7 @@ class EveSOFData {
 
 
   HasFaction(name) {
-    return !!Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name);
   }
   /**
    * Gets a race
@@ -70330,7 +70329,7 @@ class EveSOFData {
 
 
   GetRace(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFRaceNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFRaceNotFound"]);
   }
   /**
    * Gets race names
@@ -70350,7 +70349,7 @@ class EveSOFData {
 
 
   HasRace(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name);
   }
   /**
    * Gets a material
@@ -70360,7 +70359,7 @@ class EveSOFData {
 
 
   GetMaterial(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFMaterialNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFMaterialNotFound"]);
   }
   /**
    * Gets material names
@@ -70380,7 +70379,7 @@ class EveSOFData {
 
 
   HasMaterial(name) {
-    return !!Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name);
   }
   /**
    * Gets a pattern
@@ -70390,7 +70389,7 @@ class EveSOFData {
 
 
   GetPattern(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name, _core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFPatternNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFPatternNotFound"]);
   }
   /**
    * Gets pattern names
@@ -70410,7 +70409,7 @@ class EveSOFData {
 
 
   HasPattern(name) {
-    return !!Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name);
   }
   /**
    * Gets the names from a sof array
@@ -70421,7 +70420,7 @@ class EveSOFData {
 
 
   static GetNames(arr, out = {}) {
-    const getDescription = !Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(out);
+    const getDescription = !Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(out);
 
     for (let i = 0; i < arr.length; i++) {
       if (getDescription) {
@@ -70563,7 +70562,7 @@ class EveSOFDataFactionChild {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionColorSet", function() { return EveSOFDataFactionColorSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataFactionColorSet
@@ -70594,28 +70593,28 @@ __webpack_require__.r(__webpack_exports__);
 
 class EveSOFDataFactionColorSet {
   constructor() {
-    this.Black = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Blue = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Booster = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Cyan = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Darkhull = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Fire = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Glass = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Green = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Hull = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Killmark = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Orange = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Primary = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.PrimaryLight = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Reactor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Red = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Secondary = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.SecondaryLight = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Tertiary = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.TertiaryLight = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.White = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.WhiteLight = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.Yellow = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Black = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Blue = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Booster = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Cyan = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Darkhull = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Fire = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Glass = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Green = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Hull = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Killmark = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Orange = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Primary = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.PrimaryLight = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Reactor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Red = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Secondary = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.SecondaryLight = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Tertiary = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.TertiaryLight = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.White = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.WhiteLight = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.Yellow = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
 
   /**
@@ -70652,7 +70651,7 @@ class EveSOFDataFactionColorSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionPlaneSet", function() { return EveSOFDataFactionPlaneSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataFactionPlaneSet
@@ -70665,7 +70664,7 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataFactionPlaneSet {
   constructor() {
     this.name = "";
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.groupIndex = -1;
   }
 
@@ -70692,7 +70691,7 @@ class EveSOFDataFactionPlaneSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataFactionSpotlightSet", function() { return EveSOFDataFactionSpotlightSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataFactionSpotlightSet
@@ -70707,10 +70706,10 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataFactionSpotlightSet {
   constructor() {
     this.name = "";
-    this.coneColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.flareColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.coneColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.flareColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.groupIndex = -1;
-    this.spriteColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.spriteColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
 
   /**
@@ -70809,8 +70808,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFDecalShaderNotFound", function() { return ErrSOFDecalShaderNotFound; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFMaterialPrefixNotFound", function() { return ErrSOFMaterialPrefixNotFound; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternMaterialPrefixNotFound", function() { return ErrSOFPatternMaterialPrefixNotFound; });
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core */ "./core/index.js");
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 /**
@@ -70870,10 +70869,10 @@ class EveSOFDataGeneric {
     function assignObject(dest, src) {
       if (!src) return; // Sof object array
 
-      if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(src)) {
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(src)) {
         src.forEach(child => child.Assign(dest));
       } // Plain object
-      else if (Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["isPlain"])(src)) {
+      else if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isPlain"])(src)) {
           Object.assign(dest, src);
         }
     }
@@ -70887,7 +70886,7 @@ class EveSOFDataGeneric {
       assignObject(overrides, assignable.overrides);
     }
 
-    return _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"].from({
+    return core__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"].from({
       effectFilePath,
       parameters,
       textures,
@@ -70926,7 +70925,7 @@ class EveSOFDataGeneric {
 
 
   HasAreaShader(name) {
-    return !!Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.areaShaders, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.areaShaders, "name", name);
   }
   /**
    * Gets area shader by it's short name
@@ -70936,7 +70935,7 @@ class EveSOFDataGeneric {
 
 
   GetAreaShader(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
   }
   /**
    * Checks if a decal shader exists
@@ -70946,7 +70945,7 @@ class EveSOFDataGeneric {
 
 
   HasDecalShader(name) {
-    return !!Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.decalShaders, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.decalShaders, "name", name);
   }
   /**
    * Gets a decal shader by it's short name
@@ -70956,7 +70955,7 @@ class EveSOFDataGeneric {
 
 
   GetDecalShader(name) {
-    return Object(_global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
   }
   /**
    * Gets material prefixes
@@ -71040,7 +71039,7 @@ class EveSOFDataGeneric {
  * Fires when a sof area shader is not found
  */
 
-class ErrSOFAreaShaderNotFound extends _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
+class ErrSOFAreaShaderNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF Area shader not found: %name%");
   }
@@ -71050,7 +71049,7 @@ class ErrSOFAreaShaderNotFound extends _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Er
  * Fires when a sof decal shader is not found
  */
 
-class ErrSOFDecalShaderNotFound extends _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
+class ErrSOFDecalShaderNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF Decal area shader not found: %name%");
   }
@@ -71060,7 +71059,7 @@ class ErrSOFDecalShaderNotFound extends _core__WEBPACK_IMPORTED_MODULE_0__["Tw2E
  * Fires when a sof material prefix is not found
  */
 
-class ErrSOFMaterialPrefixNotFound extends _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
+class ErrSOFMaterialPrefixNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF Material prefix index not found: %index%");
   }
@@ -71070,7 +71069,7 @@ class ErrSOFMaterialPrefixNotFound extends _core__WEBPACK_IMPORTED_MODULE_0__["T
  * Fires when a sof pattern material prefix is not found
  */
 
-class ErrSOFPatternMaterialPrefixNotFound extends _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
+class ErrSOFPatternMaterialPrefixNotFound extends core__WEBPACK_IMPORTED_MODULE_0__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF Pattern material prefix index not found: %index%");
   }
@@ -71089,7 +71088,7 @@ class ErrSOFPatternMaterialPrefixNotFound extends _core__WEBPACK_IMPORTED_MODULE
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericDamage", function() { return EveSOFDataGenericDamage; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataGenericDamage
@@ -71121,15 +71120,15 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataGenericDamage {
   constructor() {
     this.armorParticleAngle = 0;
-    this.armorParticleColor0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.armorParticleColor1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.armorParticleColor2 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.armorParticleColor3 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.armorParticleColor0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.armorParticleColor1 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.armorParticleColor2 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.armorParticleColor3 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.armorParticleDrag = 0;
-    this.armorParticleMinMaxLifeTime = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.armorParticleMinMaxSpeed = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.armorParticleMinMaxLifeTime = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.armorParticleMinMaxSpeed = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
     this.armorParticleRate = 0;
-    this.armorParticleSizes = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.armorParticleSizes = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.armorParticleTextureIndex = 0;
     this.armorParticleTurbulenceAmplitude = 0;
     this.armorParticleTurbulenceFrequency = 0;
@@ -71207,7 +71206,7 @@ class EveSOFDataGenericDecalShader {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericHullDamage", function() { return EveSOFDataGenericHullDamage; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataGenericHullDamage
@@ -71230,15 +71229,15 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataGenericHullDamage {
   constructor() {
     this.hullParticleAngle = 0;
-    this.hullParticleColor0 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.hullParticleColor1 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.hullParticleColor2 = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.hullParticleColor0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.hullParticleColor1 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.hullParticleColor2 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.hullParticleColorMidpoint = 0;
     this.hullParticleDrag = 0;
-    this.hullParticleMinMaxLifeTime = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
-    this.hullParticleMinMaxSpeed = _global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.hullParticleMinMaxLifeTime = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
+    this.hullParticleMinMaxSpeed = global__WEBPACK_IMPORTED_MODULE_0__["vec2"].create();
     this.hullParticleRate = 0;
-    this.hullParticleSizes = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.hullParticleSizes = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.hullParticleTextureIndex = 0;
     this.hullParticleTurbulenceAmplitude = 0;
     this.hullParticleTurbulenceFrequency = 0;
@@ -71490,7 +71489,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHull", function() { return EveSOFDataHull; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHull
@@ -71539,10 +71538,10 @@ class EveSOFDataHull {
     this.name = "";
     this.additiveAreas = [];
     this.animations = [];
-    this.audioPosition = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.audioPosition = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.banners = [];
     this.booster = null;
-    this.boundingSphere = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.boundingSphere = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.buildClass = 0;
     this.castShadow = false;
     this.category = "";
@@ -71566,8 +71565,8 @@ class EveSOFDataHull {
     this.modelRotationCurvePath = "";
     this.opaqueAreas = [];
     this.planeSets = [];
-    this.shapeEllipsoidCenter = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.shapeEllipsoidRadius = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.shapeEllipsoidCenter = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.shapeEllipsoidRadius = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.soundEmitters = [];
     this.spotlightSets = [];
     this.spriteLineSets = [];
@@ -71598,7 +71597,7 @@ class EveSOFDataHull {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullAnimation", function() { return EveSOFDataHullAnimation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullAnimation
@@ -71618,11 +71617,11 @@ class EveSOFDataHullAnimation {
     this.name = "";
     this.endRate = 0;
     this.endRotationTime = 0;
-    this.endRotationValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.endRotationValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.id = 0;
     this.startRate = 0;
     this.startRotationTime = 0;
-    this.startRotationValue = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.startRotationValue = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
 
   /**
@@ -71695,7 +71694,7 @@ class EveSOFDataHullArea {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBanner", function() { return EveSOFDataHullBanner; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullBanner
@@ -71716,9 +71715,9 @@ class EveSOFDataHullBanner {
     this.angleX = 0;
     this.angleY = 0;
     this.boneIndex = -1;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.usage = 0;
   }
 
@@ -71782,7 +71781,7 @@ class EveSOFDataHullBooster {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBoosterItem", function() { return EveSOFDataHullBoosterItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullBoosterItem
@@ -71798,9 +71797,9 @@ class EveSOFDataHullBoosterItem {
   constructor() {
     this.atlasIndex0 = 0;
     this.atlasIndex1 = 0;
-    this.functionality = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.functionality = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.hasTrail = false;
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
@@ -71826,7 +71825,7 @@ class EveSOFDataHullBoosterItem {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return EveSOFDataHullChild; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullChild
@@ -71848,9 +71847,9 @@ class EveSOFDataHullChild {
     this.id = 0;
     this.lowestLodVisible = 0;
     this.redFilePath = "";
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.translation = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -71947,7 +71946,7 @@ class EveSOFDataHullDecalSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecalSetItem", function() { return EveSOFDataHullDecalSetItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullDecalSetItem
@@ -71976,9 +71975,9 @@ class EveSOFDataHullDecalSetItem {
     this.logoType = 0;
     this.meshIndex = 0;
     this.parameters = [];
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.textures = [];
     this.usage = 0;
     this.visibilityGroup = "";
@@ -72044,7 +72043,7 @@ class EveSOFDataHullHazeSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSetItem", function() { return EveSOFDataHullHazeSetItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullHazeSetItem
@@ -72066,9 +72065,9 @@ class EveSOFDataHullHazeSetItem {
     this.colorType = 0;
     this.hazeBrightness = 0;
     this.hazeFalloff = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.sourceBrightness = 0;
     this.sourceSize = 0;
   }
@@ -72133,7 +72132,7 @@ class EveSOFDataHullLightSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return EveSOFDataHullLightSetItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullLightSetItem
@@ -72152,10 +72151,10 @@ class EveSOFDataHullLightSetItem {
     this.name = "";
     this.brightness = 0;
     this.innerRadius = 0;
-    this.lightColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.lightColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.noiseAmplitude = 0;
     this.noiseFrequency = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radius = 0;
   }
 
@@ -72182,7 +72181,7 @@ class EveSOFDataHullLightSetItem {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return EveSOFDataHullLightSetSpotLight; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullLightSetSpotLight
@@ -72205,11 +72204,11 @@ class EveSOFDataHullLightSetSpotLight {
     this.brightness = 0;
     this.innerAngle = 0;
     this.innerRadius = 0;
-    this.lightColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.lightColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.outerAngle = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radius = 0;
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
 
   /**
@@ -72235,7 +72234,7 @@ class EveSOFDataHullLightSetSpotLight {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetTexturedPointLight", function() { return EveSOFDataHullLightSetTexturedPointLight; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullLightSetTexturedPointLight
@@ -72253,7 +72252,7 @@ class EveSOFDataHullLightSetTexturedPointLight {
     this.name = "";
     this.brightness = 0;
     this.innerRadius = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.radius = 0;
     this.texturePath = "";
   }
@@ -72281,7 +72280,7 @@ class EveSOFDataHullLightSetTexturedPointLight {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return EveSOFDataHullLocator; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullLocator
@@ -72293,7 +72292,7 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataHullLocator {
   constructor() {
     this.name = "";
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
@@ -72401,7 +72400,7 @@ class EveSOFDataHullPlaneSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return EveSOFDataHullPlaneSetItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullPlaneSetItem
@@ -72422,16 +72421,16 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataHullPlaneSetItem {
   constructor() {
     this.boneIndex = -1;
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.groupIndex = -1;
-    this.layer1Scroll = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.layer1Transform = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.layer2Scroll = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.layer2Transform = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer1Scroll = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer1Transform = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer2Scroll = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.layer2Transform = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.maskMapAtlasIndex = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
   }
 
   /**
@@ -72535,7 +72534,7 @@ class EveSOFDataHullSpotlightSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return EveSOFDataHullSpotlightSetItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullSpotlightSetItem
@@ -72558,8 +72557,8 @@ class EveSOFDataHullSpotlightSetItem {
     this.flareIntensity = 0;
     this.groupIndex = -1;
     this.spriteIntensity = 0;
-    this.spriteScale = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
-    this.transform = _global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this.spriteScale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
   /**
@@ -72624,7 +72623,7 @@ class EveSOFDataHullSpriteLineSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return EveSOFDataHullSpriteLineSetItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullSpriteLineSetItem
@@ -72657,9 +72656,9 @@ class EveSOFDataHullSpriteLineSetItem {
     this.isCircle = false;
     this.maxScale = 0;
     this.minScale = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
     this.spacing = 0;
   }
 
@@ -72725,7 +72724,7 @@ class EveSOFDataHullSpriteSet {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return EveSOFDataHullSpriteSetItem; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataHullSpriteSetItem
@@ -72751,7 +72750,7 @@ class EveSOFDataHullSpriteSetItem {
     this.intensity = 0;
     this.maxScale = 0;
     this.minScale = 0;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 
   /**
@@ -73056,8 +73055,8 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPattern", function() { return EveSOFDataPattern; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFProjectionNotFound", function() { return ErrSOFProjectionNotFound; });
-/* harmony import */ var _global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global/util */ "./global/util/index.js");
-/* harmony import */ var _core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../core */ "./core/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 
 
 /**
@@ -73100,7 +73099,7 @@ class EveSOFDataPattern {
 
 
   HasProjection(name) {
-    return !!Object(_global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.projections, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.projections, "name", name);
   }
   /**
    * Gets a hull projection
@@ -73137,7 +73136,7 @@ class EveSOFDataPattern {
  * Fires when a sof pattern projection is not found
  */
 
-class ErrSOFProjectionNotFound extends _core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
+class ErrSOFProjectionNotFound extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"] {
   constructor(data) {
     super(data, "SOF Pattern projection '%projection%' not found for pattern '%pattern%'");
   }
@@ -73292,7 +73291,7 @@ class EveSOFDataPatternPerHull {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataPatternTransform", function() { return EveSOFDataPatternTransform; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataPatternTransform
@@ -73306,9 +73305,9 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataPatternTransform {
   constructor() {
     this.isMirrored = false;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
   }
 
   /**
@@ -73586,7 +73585,7 @@ class EveSOFDataAreaMaterial {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBooster", function() { return EveSOFDataBooster; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataBooster
@@ -73620,18 +73619,18 @@ __webpack_require__.r(__webpack_exports__);
 
 class EveSOFDataBooster {
   constructor() {
-    this.glowColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.glowColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.glowScale = 0;
     this.gradient0ResPath = "";
     this.gradient1ResPath = "";
-    this.haloColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.haloColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.haloScaleX = 0;
     this.haloScaleY = 0;
-    this.lightColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.lightColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.lightFlickerAmplitude = 0;
     this.lightFlickerFrequency = 0;
     this.lightRadius = 0;
-    this.lightWarpColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.lightWarpColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.lightWarpRadius = 0;
     this.shape0 = null;
     this.shape1 = null;
@@ -73639,10 +73638,10 @@ class EveSOFDataBooster {
     this.shapeAtlasHeight = 0;
     this.shapeAtlasResPath = "";
     this.symHaloScale = 0;
-    this.trailColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.trailSize = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.warpGlowColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.warpHaloColor = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.trailColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.trailSize = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.warpGlowColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.warpHaloColor = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.warpShape0 = null;
     this.warpShape1 = null;
   }
@@ -73688,7 +73687,7 @@ class EveSOFDataBooster {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataBoosterShape", function() { return EveSOFDataBoosterShape; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataBoosterShape
@@ -73703,10 +73702,10 @@ __webpack_require__.r(__webpack_exports__);
 
 class EveSOFDataBoosterShape {
   constructor() {
-    this.color = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.noiseAmplitureEnd = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.noiseAmplitureStart = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-    this.noiseFrequency = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.color = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.noiseAmplitureEnd = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.noiseAmplitureStart = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.noiseFrequency = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.noiseFunction = 0;
     this.noiseSpeed = 0;
   }
@@ -73927,7 +73926,7 @@ class EveSOFDataMaterial {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataParameter", function() { return EveSOFDataParameter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataParameter
@@ -73939,7 +73938,7 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataParameter {
   constructor() {
     this.name = "";
-    this.value = _global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+    this.value = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
 
   /**
@@ -74023,7 +74022,7 @@ class EveSOFDataTexture {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataTransform", function() { return EveSOFDataTransform; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * EveSOFDataTransform
@@ -74036,9 +74035,9 @@ __webpack_require__.r(__webpack_exports__);
 class EveSOFDataTransform {
   constructor() {
     this.boneIndex = -1;
-    this.position = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    this.rotation = _global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
-    this.scaling = _global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
+    this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
+    this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
   }
 
   /**
@@ -74120,7 +74119,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachine", function() { return Tr2StateMachine; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2StateMachine
@@ -74131,7 +74130,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<Tr2StateMachineState>} states -
  */
 
-class Tr2StateMachine extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2StateMachine extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -74168,7 +74167,7 @@ Tr2StateMachine.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineState", function() { return Tr2StateMachineState; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2StateMachineState
@@ -74180,7 +74179,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<Tr2StateMachineTransition>} transitions -
  */
 
-class Tr2StateMachineState extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2StateMachineState extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -74218,7 +74217,7 @@ Tr2StateMachineState.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2StateMachineTransition", function() { return Tr2StateMachineTransition; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2StateMachineTransition
@@ -74228,7 +74227,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} condition -
  */
 
-class Tr2StateMachineTransition extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2StateMachineTransition extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -74264,14 +74263,14 @@ Tr2StateMachineTransition.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2SyncToAnimation", function() { return Tr2SyncToAnimation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2SyncToAnimation
  * Todo: Implement
  */
 
-class Tr2SyncToAnimation extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2SyncToAnimation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Black definition
    * @param {*} r
@@ -74301,7 +74300,7 @@ Tr2SyncToAnimation.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateCurveSet", function() { return Tr2ActionAnimateCurveSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionAnimateCurveSet
@@ -74311,7 +74310,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} value         -
  */
 
-class Tr2ActionAnimateCurveSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionAnimateCurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.curveSet = null;
@@ -74347,7 +74346,7 @@ Tr2ActionAnimateCurveSet.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionAnimateValue", function() { return Tr2ActionAnimateValue; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionAnimateValue
@@ -74359,7 +74358,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} value                   -
  */
 
-class Tr2ActionAnimateValue extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionAnimateValue extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.attribute = "";
@@ -74397,7 +74396,7 @@ Tr2ActionAnimateValue.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionChildEffect", function() { return Tr2ActionChildEffect; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionChildEffect
@@ -74408,7 +74407,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} removeOnStop -
  */
 
-class Tr2ActionChildEffect extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionChildEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.childName = "";
@@ -74445,7 +74444,7 @@ Tr2ActionChildEffect.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionOverlay", function() { return Tr2ActionOverlay; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionOverlay
@@ -74454,7 +74453,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} path -
  */
 
-class Tr2ActionOverlay extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionOverlay extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.path = "";
@@ -74489,7 +74488,7 @@ Tr2ActionOverlay.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayCurveSet", function() { return Tr2ActionPlayCurveSet; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionPlayCurveSet
@@ -74501,7 +74500,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} syncToRange -
  */
 
-class Tr2ActionPlayCurveSet extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionPlayCurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.curveSetName = "";
@@ -74538,7 +74537,7 @@ Tr2ActionPlayCurveSet.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionPlayMeshAnimation", function() { return Tr2ActionPlayMeshAnimation; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionPlayMeshAnimation
@@ -74549,7 +74548,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} mask      -
  */
 
-class Tr2ActionPlayMeshAnimation extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionPlayMeshAnimation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.animation = "";
@@ -74629,14 +74628,14 @@ Tr2ActionPlaySound.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionResetClipSphereCenter", function() { return Tr2ActionResetClipSphereCenter; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionResetClipSphereCenter
  * Todo: Implement
  */
 
-class Tr2ActionResetClipSphereCenter extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionResetClipSphereCenter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Black definition
    * @param {*} r
@@ -74666,7 +74665,7 @@ Tr2ActionResetClipSphereCenter.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionSetValue", function() { return Tr2ActionSetValue; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ActionSetValue
@@ -74677,7 +74676,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} value     -
  */
 
-class Tr2ActionSetValue extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ActionSetValue extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.attribute = "";
@@ -74801,7 +74800,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2Controller", function() { return Tr2Controller; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2Controller
@@ -74813,7 +74812,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<StateVariable>} variables       -
  */
 
-class Tr2Controller extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2Controller extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -74915,7 +74914,7 @@ Tr2ControllerFloatVariable.__isStaging = 4;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerReference", function() { return Tr2ControllerReference; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ControllerReference
@@ -74924,7 +74923,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {String} path -
  */
 
-class Tr2ControllerReference extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ControllerReference extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.path = "";
@@ -75043,7 +75042,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ControllerFloatVariable", function() { return Tr2ControllerFloatVariable; });
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../global */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 
 /**
  * Tr2ControllerFloatVariable
@@ -75054,7 +75053,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} variableType -
  */
 
-class Tr2ControllerFloatVariable extends _global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+class Tr2ControllerFloatVariable extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.defaultValue = 0;

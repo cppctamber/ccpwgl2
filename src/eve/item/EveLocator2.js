@@ -1,5 +1,5 @@
-import { mat4, Tw2BaseClass } from "../../global";
-import { assignIfExists } from "../../global/util";
+import { mat4, Tw2BaseClass } from "global";
+import { assignIfExists } from "global/util";
 
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets

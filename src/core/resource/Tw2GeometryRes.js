@@ -1,4 +1,4 @@
-import { box3, sph3, vec3, quat, mat3, mat4, resMan, device } from "../../global";
+import { box3, sph3, vec3, quat, mat3, mat4, resMan, device } from "global";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { Tw2Resource } from "./Tw2Resource";

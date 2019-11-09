@@ -1,4 +1,4 @@
-import { meta, util, device, tw2, Tw2BaseClass } from "../../global";
+import { meta, util, device, tw2, Tw2BaseClass } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 

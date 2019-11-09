@@ -1,4 +1,4 @@
-import { quat, util, device } from "../../global";
+import { quat, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
 import { ErrShaderCompile, ErrShaderLink } from "../Tw2Error";

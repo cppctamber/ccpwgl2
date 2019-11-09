@@ -1,5 +1,5 @@
-import { vec3, vec4 } from "../../global";
-import { Tw2BaseClass } from "../../global";
+import { vec3, vec4 } from "global";
+import { Tw2BaseClass } from "global";
 
 /**
  * Tr2InteriorLightSource

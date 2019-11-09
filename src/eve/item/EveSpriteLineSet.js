@@ -1,4 +1,4 @@
-import { vec3, quat, mat4 } from "../../global";
+import { vec3, quat, mat4 } from "global";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**

@@ -1,10 +1,10 @@
-import { vec3, vec4, quat, mat4, util, resMan, device } from "../../global";
+import { vec3, vec4, quat, mat4, util, resMan, device } from "global";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,
     Tw2AnimationController,
     Tw2ForwardingRenderBatch
-} from "../../core";
+} from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 

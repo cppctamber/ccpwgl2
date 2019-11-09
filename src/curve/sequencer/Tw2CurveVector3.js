@@ -1,5 +1,5 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { vec3 } from "../../global";
+import { vec3 } from "global";
 
 /**
  * Vector3 curve sequencer

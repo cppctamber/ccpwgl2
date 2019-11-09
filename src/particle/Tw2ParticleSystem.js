@@ -1,5 +1,5 @@
-import { vec3, mat4, util, device, Tw2BaseClass } from "../global";
-import { Tw2VertexDeclaration } from "../core";
+import { vec3, mat4, util, device, Tw2BaseClass } from "global";
+import { Tw2VertexDeclaration } from "core";
 import { Tw2ParticleElement } from "./element";
 
 /**

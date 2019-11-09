@@ -1,4 +1,4 @@
-import { vec4 } from "../../global";
+import { vec4 } from "global";
 import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 

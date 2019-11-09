@@ -1,5 +1,5 @@
 import { EveChild } from "./EveChild";
-import { mat4, quat, vec3 } from "../../global";
+import { mat4, quat, vec3 } from "global";
 
 /**
  * Container for other child effects

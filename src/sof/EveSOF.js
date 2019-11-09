@@ -1,11 +1,11 @@
-import { vec3, vec4, quat, mat4 } from "../global";
-import { get, assignIfExists, isArray, isDNA } from "../global/util";
+import { vec3, vec4, quat, mat4 } from "global";
+import { get, assignIfExists, isArray, isDNA } from "global/util";
 import {
     Tw2ScalarCurve2,
     Tw2ScalarKey2,
     Tw2CurveSet,
     Tw2ValueBinding
-} from "../curve";
+} from "curve";
 import {
     Tw2TextureParameter,
     Tw2Vector4Parameter,
@@ -18,7 +18,7 @@ import {
     ErrSOFMaterialNotFound,
     ErrSOFPatternNotFound,
     ErrSOFHullNotFound,
-} from "../core";
+} from "core";
 import {
     EveBoosterSet,
     EveChildMesh,

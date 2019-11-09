@@ -1,5 +1,5 @@
-import { curve, util, vec4 } from "../../../global";
-import { ErrFeatureNotImplemented } from "../../../core";
+import { curve, util, vec4 } from "global";
+import { ErrFeatureNotImplemented } from "core";
 
 /**
  * Tw2MayaAnimationEngine

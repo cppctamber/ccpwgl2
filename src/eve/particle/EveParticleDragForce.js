@@ -1,4 +1,4 @@
-import { Tw2ParticleForce } from "../../particle/force/Tw2ParticleForce";
+import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 /**
  * EveParticleDragForce

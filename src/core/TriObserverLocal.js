@@ -1,5 +1,5 @@
-import { vec3 } from "../global/index";
-import { Tw2BaseClass } from "../global/index";
+import { vec3 } from "global";
+import { Tw2BaseClass } from "global";
 
 /**
  * TriObserverLocal

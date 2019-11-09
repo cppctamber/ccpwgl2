@@ -23,7 +23,7 @@ import {
     FOURCC_DXT1,
     FOURCC_DXT3,
     FOURCC_DXT5
-} from "../../global";
+} from "global";
 
 /**
  * Tw2TextureRes
