@@ -2,6 +2,7 @@ export * from "./EveSOFDataHull";
 export * from "./EveSOFDataHullAnimation";
 export * from "./EveSOFDataHullArea";
 export * from "./EveSOFDataHullBanner";
+export * from "./EveSOFDataHullBannerLight";
 export * from "./EveSOFDataHullBooster";
 export * from "./EveSOFDataHullBoosterItem";
 export * from "./EveSOFDataHullChild";

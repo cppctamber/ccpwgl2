@@ -8,6 +8,7 @@ import { mat4, vec4 } from "global";
  * @property {Number} atlasIndex1 -
  * @property {vec4} functionality -
  * @property {Boolean} hasTrail   -
+ * @property {Number} lightScale  -
  * @property {mat4} transform     -
  */
 export class EveSOFDataHullBoosterItem
@@ -17,6 +18,7 @@ export class EveSOFDataHullBoosterItem
     atlasIndex1 = 0;
     functionality = vec4.create();
     hasTrail = false;
+    lightScale = 1; // What should be the default value here?
     transform = mat4.create();
 
     /**
@@ -31,6 +33,7 @@ export class EveSOFDataHullBoosterItem
             [ "atlasIndex1", r.uint ],
             [ "functionality", r.vector4 ],
             [ "hasTrail", r.boolean ],
+            [ "lightScale", r.float ],
             [ "transform", r.matrix ],
         ];
     }

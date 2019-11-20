@@ -8,6 +8,7 @@ import { quat, vec3 } from "global";
  * @property {Number} angleX    -
  * @property {Number} angleY    -
  * @property {Number} boneIndex -
+ * @property {*} lightOverride  -
  * @property {vec3} position    -
  * @property {quat} rotation    -
  * @property {vec3} scaling     -
@@ -20,6 +21,7 @@ export class EveSOFDataHullBanner
     angleX = 0;
     angleY = 0;
     boneIndex = -1;
+    lightOverride =  null;
     position = vec3.create();
     rotation = quat.create();
     scaling = vec3.fromValues(1, 1, 1);
@@ -37,6 +39,7 @@ export class EveSOFDataHullBanner
             [ "angleY", r.float ],
             [ "angleZ", r.float ],
             [ "boneIndex", r.uint ],
+            [ "lightOverride", r.object ],
             [ "name", r.string ],
             [ "position", r.vector3 ],
             [ "rotation", r.vector4 ],
