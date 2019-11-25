@@ -315,7 +315,7 @@ ray3.getClosestPointToPoint = function(out, a, p)
 };
 
 /**
- * Sets a vec3 with the intersection point of a ray3 and boxes" components
+ * Sets a vec3 with the intersection point of a ray3 and boxes' components
  * - Returns null if there was no intersection, or the receiving vec3 if there was
  *
  * @author three.js authors (converted)
@@ -405,7 +405,7 @@ ray3.getIntersectBox3 = (function()
         box3.getMin(vec3_0, b);
         box3.getMax(vec3_1, b);
 
-        return box3.getIntersectBounds(out, a, vec3_0, vec3_1);
+        return ray3.getIntersectBounds(out, a, vec3_0, vec3_1);
     };
 })();
 
