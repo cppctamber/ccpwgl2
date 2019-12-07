@@ -1,11 +1,11 @@
 import { ErrAbstractClass, ErrAbstractMethod } from "core/Tw2Error";
-import { create } from "./meta";
+import { decorate } from "./helpers";
 
 /**
  * Abstract class/ method decorator
  * @type {ClassDecorator|MethodDecorator}
  */
-export const abstract = create(false, {
+export const abstract = decorate({
 
     class({ target })
     {
@@ -33,4 +33,4 @@ export const abstract = create(false, {
         return descriptor;
     }
 
-});
+})();

@@ -1,5 +1,15 @@
-import { isFunction } from "../util/type";
-import { ErrInvalidDecoratorUsage } from "core/Tw2Error";
+/**
+ * meta
+ * @description Wraps Reflect.metadata
+ * @module
+ */
+
+
+/**
+ * Meta data prefix
+ * @type {string}
+ */
+const PREFIX = "tw2:";
 
 /**
  * Turns a string into a meta data name
@@ -8,25 +18,18 @@ import { ErrInvalidDecoratorUsage } from "core/Tw2Error";
  */
 function getMetaName(name)
 {
-    return `tw2:${name}`;
+    return `${PREFIX}${name}`;
 }
 
 /**
- * Meta data decorator
- * @param {String} name         - The meta data type
- * @param {*} [value=true]      - The meta data's value (defaults to true)
- * @returns {PropertyDecorator}
- * @example
- *
- *     @meta.add("black")
- *     @meta.add("type", "Boolean")
- *     @meta.add("desc", "Toggles displaying the object")
- *     display = true;
- *
+ * Defines meta data as a decorator
+ * @param {String|Object} key
+ * @param {*} [value=true]
+ * @returns {PropertyDecorator|ClassDecorator|MethodDecorator}
  */
-export function add(name, value=true)
+export function data(key, value=true)
 {
-    return Reflect.metadata(getMetaName(name), value);
+    return Reflect.metadata(getMetaName(key), value);
 }
 
 /**
@@ -34,7 +37,8 @@ export function add(name, value=true)
  * @param {String} name
  * @param {*} value
  * @param {*} target
- * @param{String} [property]
+ * @param {String} [property]
+ * @returns {*} value
  */
 export function set(name, value, target, property)
 {
@@ -90,139 +94,96 @@ export function getOwn(name, target, property)
 }
 
 /**
- * Handler for undefined descriptor values
- * - Babel doesn't always add true as defaults
- * @param {PropertyDescriptor} d
- * @returns {PropertyDescriptor} d
+ * Removes/deletes meta data
+ * @param {String} key
+ * @param {*} target
+ * @param {String} property
+ * @returns {boolean}
  */
-function handleDescriptor(d)
+export function del(key, target, property)
 {
-    if (d.writable === undefined) d.writable = true;
-    if (d.enumerable === undefined) d.enumerable = true;
-    if (d.configurable === undefined) d.configurable = true;
-    return d;
+    return Reflect.deleteMetadata(getMetaName(key), target, property);
 }
 
 /**
- * Descriptor error messages
- * @type {{METHOD: string, CLASS: string, PARAMETER: string}}
+ * Gets only valid meta data keys
+ * @param {Array<String>} array
+ * @returns {Array<String>}
  */
-const Failmessage = {
-    CLASS: "Decorator not applicable to classes",
-    METHOD: "Decorator not applicable to methods",
-    PARAMETER: "Decorator not applicable to parameters"
-};
-
-/**
- * Decorator factory
- * TODO: Make this cleaner
- * @param {Boolean} hasArguments
- * @param {Object} options
- * @param {Boolean} [options.hasArguments]
- * @param {Function} [options.class]
- * @param {Function} [options.method]
- * @param {Function} [options.parameter]
- * @param {Function} [options.handler]
- * @returns {PropertyDecorator|ClassDecorator|MethodDecorator}
- */
-export function create(hasArguments, options)
+function getValidKeys(array)
 {
-    if (hasArguments)
+    let out = [];
+    for (let i = 0; i < array.length; i++)
     {
-        return function(...args)
+        if (array[i].indexOf(PREFIX) === 0)
         {
-            return function(target, property, descriptor)
-            {
-                let message;
-
-                if (!property)
-                {
-                    if (options.class)
-                    {
-                        return options.class({ target }, ...args);
-                    }
-                    message = Failmessage.CLASS;
-                }
-                else
-                {
-                    if (isFunction(target[property]))
-                    {
-                        if (options.method)
-                        {
-                            const result = options.method({ target, property, descriptor }, ...args);
-                            handleDescriptor(descriptor);
-                            return result;
-                        }
-                        message = Failmessage.METHOD;
-                    }
-                    else if (options.parameter)
-                    {
-                        const result = options.parameter({ target, property, descriptor }, ...args);
-                        handleDescriptor(descriptor);
-                        return result;
-                    }
-                    else
-                    {
-                        message = Failmessage.PARAMETER;
-                    }
-                }
-
-                if (options.handler)
-                {
-                    return options.handler({ target, property, descriptor }, ...args);
-                }
-
-                message += ` (${property ? property : target.name})`;
-                throw new ErrInvalidDecoratorUsage({ message });
-            };
-        };
+            out.push(array[i].replace(PREFIX, ""));
+        }
     }
-    else
-    {
-        return function(target, property, descriptor)
-        {
-            let message;
-
-            if (!property)
-            {
-                if (options.class)
-                {
-                    return options.class({ target });
-                }
-                message = Failmessage.CLASS;
-            }
-            else
-            {
-                if (isFunction(target[property]))
-                {
-                    if (options.method)
-                    {
-                        const result = options.method({ target, property, descriptor });
-                        handleDescriptor(descriptor);
-                        return result;
-                    }
-                    message = Failmessage.METHOD;
-                }
-                else if (options.parameter)
-                {
-                    const result = options.parameter({ target, property, descriptor });
-                    handleDescriptor(descriptor);
-                    return result;
-                }
-                else
-                {
-                    message = Failmessage.PARAMETER;
-                }
-            }
-
-            if (options.handler)
-            {
-                return options.handler({ target, property, descriptor });
-            }
-
-            message += ` (${property ? property : target.name})`;
-            throw new ErrInvalidDecoratorUsage({ message });
-        };
-    }
+    return out;
 }
 
+/**
+ * Gets meta data keys
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {[]}
+ */
+export function keys(target, property)
+{
+    return getValidKeys(Reflect.getMetadataKeys(target, property));
+}
+
+/**
+ * Gets own meta data keys
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {[]}
+ */
+export function ownKeys(target, property)
+{
+    return getValidKeys(Reflect.getOwnMetadataKeys(target, property));
+}
+
+/**
+ *
+ * @param {*} target
+ * @param {String} property
+ * @param {Function} keyFunc
+ * @param {Function} getFunc
+ */
+function getAllValidValues(target, property, keyFunc, getFunc)
+{
+    const
+        metaKeys = keyFunc(target, property),
+        out = {};
+
+    metaKeys.forEach((key) =>
+    {
+        const result = getFunc(key, target, property);
+        if (result !== undefined) out[key] = result;
+    });
+
+    return out;
+}
+
+/**
+ * Gets all meta data values
+ * @param {*} target
+ * @param {String} [property]
+ */
+export function values(target, property)
+{
+    return getAllValidValues(target, property, keys, get);
+}
+
+/**
+ * Gets all own metadata values
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {Object}
+ */
+export function ownValues(target, property)
+{
+    return getAllValidValues(target, property, ownKeys, getOwn);
+}

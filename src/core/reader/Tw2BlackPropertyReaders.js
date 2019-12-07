@@ -1,40 +1,6 @@
-import { Type } from "global/engine/Tw2Constant";
-import { vec2, vec3, vec4, mat4, tw2 } from "global";
+import { vec2, vec3, vec4, mat4, tw2, meta } from "global";
 import { ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError, ErrFeatureNotImplemented } from "../Tw2Error";
-import { isPlain, isString } from "global/util";
-
-const TypeReader = {
-    [Type.UNKNOWN]: notImplemented,
-    [Type.BOOLEAN]: boolean,
-    [Type.PATH]: path,
-    [Type.STRING]: string,
-    [Type.BYTE]: byte,
-    [Type.UINT]: uint,
-    [Type.USHORT]: ushort,
-    [Type.FLOAT]: float,
-    [Type.VECTOR2]: vector2,
-    [Type.VECTOR3]: vector3,
-    [Type.VECTOR4]: vector4,
-    [Type.QUATERNION]: vector4,
-    [Type.COLOR]: color,
-    [Type.OBJECT]: object,
-    [Type.RAW]: rawObject,
-    [Type.LIST]: array,
-    [Type.PLAIN]: rawObject,
-    [Type.INDEX_BUFFER]: indexBuffer
-};
-
-/**
- * Gets a black reader from a property type
- * @param {Number|String} type
- * @returns {Function}
- */
-function getReaderFromType(type)
-{
-    if (isString(type)) type = Type[type.toUpperCase()];
-    if (type === undefined || TypeReader[type] === undefined) type = Type.UNKNOWN;
-    return TypeReader[type];
-}
+import { isFunction, isPlain, isString } from "global/util";
 
 /**
  * Reads a path
@@ -127,30 +93,46 @@ export function object(reader, id)
     const
         objectReader = reader.ReadBinaryReader(reader.ReadU32()),
         type = objectReader.ReadStringU16(),
-        result = context.ConstructType(type);
+        result = context.ConstructType(type),
+        properties = tw2.HasBlack(type) ? tw2.GetBlack(type) : null;
 
     if (!givenId)
     {
         reader.references.set(id, result);
     }
 
-    if (!tw2.HasBlack(type))
+    if (!properties && !meta.has("black", result))
     {
         throw new ErrBinaryObjectTypeNotFound({ type });
     }
 
-    let properties = tw2.GetBlack(type);
-
     while (!objectReader.AtEnd())
     {
-        let propertyName = objectReader.ReadStringU16();
+        let propertyName = objectReader.ReadStringU16(),
+            reader;
 
-        if (properties.has(propertyName))
+        // Defined on object
+        if (properties && properties.has(propertyName))
         {
+            reader = properties.get(propertyName);
+        }
+
+        // Defined with meta data
+        if (!properties && meta.has("black", result, propertyName))
+        {
+            reader = meta.get("black", result, propertyName);
+        }
+
+        if (reader)
+        {
+            if (!isFunction(reader))
+            {
+                if (debugEnabled) console.dir(result);
+                throw new ErrBinaryReaderReadError({ readError: `Invalid reader for property "${propertyName}" for "${type}"` });
+            }
+
             try
             {
-                const reader = properties.get(propertyName);
-
                 if (reader.custom)
                 {
                     reader(objectReader, result, propertyName);
@@ -168,21 +150,13 @@ export function object(reader, id)
             }
             catch (err)
             {
-                if (debugEnabled)
-                {
-                    console.dir(result);
-                }
-
+                if (debugEnabled) console.dir(result);
                 throw new ErrBinaryReaderReadError({ message: `${propertyName} > ` + err.message });
             }
         }
         else
         {
-            if (debugEnabled)
-            {
-                console.dir(result);
-            }
-
+            if (debugEnabled) console.dir(result);
             throw new ErrBinaryReaderReadError({ readError: `Unknown property "${propertyName}" for "${type}"` });
         }
     }
