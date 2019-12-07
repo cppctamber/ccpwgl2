@@ -215,7 +215,7 @@ export class EveSpaceObject extends EveObject
      * @param {Array<String>} [out=[]] - Receiving array
      * @returns {Array<String>} out    - Receiving array
      */
-    FindTurretPrefixes(out=[])
+    FindTurretPrefixes(out = [])
     {
         function add(match)
         {
@@ -321,7 +321,7 @@ export class EveSpaceObject extends EveObject
      * @param {Array} [out=[]}
      * @returns {Array<EveLocator2>}
      */
-    FindLocatorsByPrefix(prefix, out=[])
+    FindLocatorsByPrefix(prefix, out = [])
     {
         for (let i = 0; i < this.locators.length; i++)
         {

@@ -6,7 +6,6 @@ import { decorate } from "./helpers";
  * @type {ClassDecorator|MethodDecorator}
  */
 export const abstract = decorate({
-
     class({ target })
     {
         return class Abstract extends target
@@ -23,7 +22,6 @@ export const abstract = decorate({
             }
         };
     },
-
     method({ property, descriptor })
     {
         descriptor.value = function()
@@ -32,5 +30,4 @@ export const abstract = decorate({
         };
         return descriptor;
     }
-
 })();

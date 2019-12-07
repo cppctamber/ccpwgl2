@@ -1,11 +1,4 @@
 /**
- * meta
- * @description Wraps Reflect.metadata
- * @module
- */
-
-
-/**
  * Meta data prefix
  * @type {string}
  */
@@ -27,7 +20,7 @@ function getMetaName(name)
  * @param {*} [value=true]
  * @returns {PropertyDecorator|ClassDecorator|MethodDecorator}
  */
-export function data(key, value=true)
+export function data(key, value = true)
 {
     return Reflect.metadata(getMetaName(key), value);
 }

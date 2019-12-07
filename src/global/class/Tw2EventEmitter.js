@@ -192,6 +192,7 @@ export class Tw2EventEmitter
             if (func) func.call(target, ...args);
             target.emit(eventName, ...args);
         }
+
         listener._target = target;
 
         return this.on(eventName, listener);

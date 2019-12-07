@@ -1,5 +1,5 @@
 import { ErrSingletonInstantiation } from "core/Tw2Error";
-import { decorate }  from "./helpers";
+import { decorate } from "./helpers";
 
 export const singleton = decorate({
     class({ target })

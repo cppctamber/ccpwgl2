@@ -77,12 +77,6 @@ export function decorate(options, value)
     {
         return function(target, property, descriptor)
         {
-            console.group();
-            console.dir(target);
-            if (property) console.dir(property);
-            if (descriptor) console.dir(descriptor);
-            console.groupEnd();
-
             if (descriptor) handleDescriptor(descriptor);
             const targetType = getTargetType(target, property);
 

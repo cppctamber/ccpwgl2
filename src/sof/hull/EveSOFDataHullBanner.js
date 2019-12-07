@@ -21,7 +21,7 @@ export class EveSOFDataHullBanner
     angleX = 0;
     angleY = 0;
     boneIndex = -1;
-    lightOverride =  null;
+    lightOverride = null;
     position = vec3.create();
     rotation = quat.create();
     scaling = vec3.fromValues(1, 1, 1);

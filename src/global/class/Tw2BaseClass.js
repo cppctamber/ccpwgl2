@@ -135,7 +135,7 @@ export class Tw2BaseClass extends Tw2EventEmitter
      * @param {Set} [visited=new Set()]
      * @returns {*}
      */
-    Traverse(callback, parent, path = "", visited=new Set())
+    Traverse(callback, parent, path = "", visited = new Set())
     {
         if (visited.has(this)) return;
         visited.add(this);

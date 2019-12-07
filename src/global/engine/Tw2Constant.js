@@ -67,13 +67,13 @@ export const TypeTypeCategory = {
 };
 
 export const TypeLength = {
-    [Type.VECTOR2] : 2,
-    [Type.VECTOR3] : 3,
-    [Type.VECTOR4] : 4,
-    [Type.COLOR] : 4,
-    [Type.QUATERNION] : 4,
-    [Type.MATRIX3] : 9,
-    [Type.MATRIX4] : 16
+    [Type.VECTOR2]: 2,
+    [Type.VECTOR3]: 3,
+    [Type.VECTOR4]: 4,
+    [Type.COLOR]: 4,
+    [Type.QUATERNION]: 4,
+    [Type.MATRIX3]: 9,
+    [Type.MATRIX4]: 16
 };
 
 /*

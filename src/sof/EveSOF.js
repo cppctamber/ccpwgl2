@@ -183,10 +183,10 @@ export function EveSOF(tw2)
         const hullAreas = get(hull, areasName, []);
         for (let i = 0; i < hullAreas.length; ++i)
         {
-            const 
+            const
                 area = hullAreas[i],
                 effect = new Tw2Effect();
-            
+
             // Use references to custom mask parameters - do not recreate them
             for (let i = 0; i < 2; i++)
             {
