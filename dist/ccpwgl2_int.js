@@ -139,7 +139,7 @@ module.exports = function (it) {
 
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
 var create = __webpack_require__(/*! ../internals/object-create */ "../node_modules/core-js/internals/object-create.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 
 var UNSCOPABLES = wellKnownSymbol('unscopables');
 var ArrayPrototype = Array.prototype;
@@ -147,7 +147,7 @@ var ArrayPrototype = Array.prototype;
 // Array.prototype[@@unscopables]
 // https://tc39.github.io/ecma262/#sec-array.prototype-@@unscopables
 if (ArrayPrototype[UNSCOPABLES] == undefined) {
-  hide(ArrayPrototype, UNSCOPABLES, create(null));
+  createNonEnumerableProperty(ArrayPrototype, UNSCOPABLES, create(null));
 }
 
 // add a key to Array.prototype[@@unscopables]
@@ -226,7 +226,7 @@ var global = __webpack_require__(/*! ../internals/global */ "../node_modules/cor
 var isObject = __webpack_require__(/*! ../internals/is-object */ "../node_modules/core-js/internals/is-object.js");
 var has = __webpack_require__(/*! ../internals/has */ "../node_modules/core-js/internals/has.js");
 var classof = __webpack_require__(/*! ../internals/classof */ "../node_modules/core-js/internals/classof.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var redefine = __webpack_require__(/*! ../internals/redefine */ "../node_modules/core-js/internals/redefine.js");
 var defineProperty = __webpack_require__(/*! ../internals/object-define-property */ "../node_modules/core-js/internals/object-define-property.js").f;
 var getPrototypeOf = __webpack_require__(/*! ../internals/object-get-prototype-of */ "../node_modules/core-js/internals/object-get-prototype-of.js");
@@ -248,7 +248,8 @@ var isPrototypeOf = ObjectPrototype.isPrototypeOf;
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 var TYPED_ARRAY_TAG = uid('TYPED_ARRAY_TAG');
 var NATIVE_ARRAY_BUFFER = !!(global.ArrayBuffer && DataView);
-var NATIVE_ARRAY_BUFFER_VIEWS = NATIVE_ARRAY_BUFFER && !!setPrototypeOf;
+// Fixing native typed arrays in Opera Presto crashes the browser, see #595
+var NATIVE_ARRAY_BUFFER_VIEWS = NATIVE_ARRAY_BUFFER && !!setPrototypeOf && classof(global.opera) !== 'Opera';
 var TYPED_ARRAY_TAG_REQIRED = false;
 var NAME;
 
@@ -289,7 +290,7 @@ var aTypedArrayConstructor = function (C) {
   } throw TypeError('Target is not a typed array constructor');
 };
 
-var exportProto = function (KEY, property, forced) {
+var exportTypedArrayMethod = function (KEY, property, forced) {
   if (!DESCRIPTORS) return;
   if (forced) for (var ARRAY in TypedArrayConstructorsList) {
     var TypedArrayConstructor = global[ARRAY];
@@ -303,7 +304,7 @@ var exportProto = function (KEY, property, forced) {
   }
 };
 
-var exportStatic = function (KEY, property, forced) {
+var exportTypedArrayStaticMethod = function (KEY, property, forced) {
   var ARRAY, TypedArrayConstructor;
   if (!DESCRIPTORS) return;
   if (setPrototypeOf) {
@@ -361,7 +362,7 @@ if (DESCRIPTORS && !has(TypedArrayPrototype, TO_STRING_TAG)) {
     return isObject(this) ? this[TYPED_ARRAY_TAG] : undefined;
   } });
   for (NAME in TypedArrayConstructorsList) if (global[NAME]) {
-    hide(global[NAME], TYPED_ARRAY_TAG, NAME);
+    createNonEnumerableProperty(global[NAME], TYPED_ARRAY_TAG, NAME);
   }
 }
 
@@ -376,8 +377,8 @@ module.exports = {
   TYPED_ARRAY_TAG: TYPED_ARRAY_TAG_REQIRED && TYPED_ARRAY_TAG,
   aTypedArray: aTypedArray,
   aTypedArrayConstructor: aTypedArrayConstructor,
-  exportProto: exportProto,
-  exportStatic: exportStatic,
+  exportTypedArrayMethod: exportTypedArrayMethod,
+  exportTypedArrayStaticMethod: exportTypedArrayStaticMethod,
   isView: isView,
   isTypedArray: isTypedArray,
   TypedArray: TypedArray,
@@ -399,13 +400,14 @@ module.exports = {
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
 var DESCRIPTORS = __webpack_require__(/*! ../internals/descriptors */ "../node_modules/core-js/internals/descriptors.js");
 var NATIVE_ARRAY_BUFFER = __webpack_require__(/*! ../internals/array-buffer-view-core */ "../node_modules/core-js/internals/array-buffer-view-core.js").NATIVE_ARRAY_BUFFER;
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var redefineAll = __webpack_require__(/*! ../internals/redefine-all */ "../node_modules/core-js/internals/redefine-all.js");
 var fails = __webpack_require__(/*! ../internals/fails */ "../node_modules/core-js/internals/fails.js");
 var anInstance = __webpack_require__(/*! ../internals/an-instance */ "../node_modules/core-js/internals/an-instance.js");
 var toInteger = __webpack_require__(/*! ../internals/to-integer */ "../node_modules/core-js/internals/to-integer.js");
 var toLength = __webpack_require__(/*! ../internals/to-length */ "../node_modules/core-js/internals/to-length.js");
 var toIndex = __webpack_require__(/*! ../internals/to-index */ "../node_modules/core-js/internals/to-index.js");
+var IEEE754 = __webpack_require__(/*! ../internals/ieee754 */ "../node_modules/core-js/internals/ieee754.js");
 var getOwnPropertyNames = __webpack_require__(/*! ../internals/object-get-own-property-names */ "../node_modules/core-js/internals/object-get-own-property-names.js").f;
 var defineProperty = __webpack_require__(/*! ../internals/object-define-property */ "../node_modules/core-js/internals/object-define-property.js").f;
 var arrayFill = __webpack_require__(/*! ../internals/array-fill */ "../node_modules/core-js/internals/array-fill.js");
@@ -422,95 +424,10 @@ var WRONG_INDEX = 'Wrong index';
 var NativeArrayBuffer = global[ARRAY_BUFFER];
 var $ArrayBuffer = NativeArrayBuffer;
 var $DataView = global[DATA_VIEW];
-var Math = global.Math;
 var RangeError = global.RangeError;
-// eslint-disable-next-line no-shadow-restricted-names
-var Infinity = 1 / 0;
-var abs = Math.abs;
-var pow = Math.pow;
-var floor = Math.floor;
-var log = Math.log;
-var LN2 = Math.LN2;
 
-// IEEE754 conversions based on https://github.com/feross/ieee754
-var packIEEE754 = function (number, mantissaLength, bytes) {
-  var buffer = new Array(bytes);
-  var exponentLength = bytes * 8 - mantissaLength - 1;
-  var eMax = (1 << exponentLength) - 1;
-  var eBias = eMax >> 1;
-  var rt = mantissaLength === 23 ? pow(2, -24) - pow(2, -77) : 0;
-  var sign = number < 0 || number === 0 && 1 / number < 0 ? 1 : 0;
-  var index = 0;
-  var exponent, mantissa, c;
-  number = abs(number);
-  // eslint-disable-next-line no-self-compare
-  if (number != number || number === Infinity) {
-    // eslint-disable-next-line no-self-compare
-    mantissa = number != number ? 1 : 0;
-    exponent = eMax;
-  } else {
-    exponent = floor(log(number) / LN2);
-    if (number * (c = pow(2, -exponent)) < 1) {
-      exponent--;
-      c *= 2;
-    }
-    if (exponent + eBias >= 1) {
-      number += rt / c;
-    } else {
-      number += rt * pow(2, 1 - eBias);
-    }
-    if (number * c >= 2) {
-      exponent++;
-      c /= 2;
-    }
-    if (exponent + eBias >= eMax) {
-      mantissa = 0;
-      exponent = eMax;
-    } else if (exponent + eBias >= 1) {
-      mantissa = (number * c - 1) * pow(2, mantissaLength);
-      exponent = exponent + eBias;
-    } else {
-      mantissa = number * pow(2, eBias - 1) * pow(2, mantissaLength);
-      exponent = 0;
-    }
-  }
-  for (; mantissaLength >= 8; buffer[index++] = mantissa & 255, mantissa /= 256, mantissaLength -= 8);
-  exponent = exponent << mantissaLength | mantissa;
-  exponentLength += mantissaLength;
-  for (; exponentLength > 0; buffer[index++] = exponent & 255, exponent /= 256, exponentLength -= 8);
-  buffer[--index] |= sign * 128;
-  return buffer;
-};
-
-var unpackIEEE754 = function (buffer, mantissaLength) {
-  var bytes = buffer.length;
-  var exponentLength = bytes * 8 - mantissaLength - 1;
-  var eMax = (1 << exponentLength) - 1;
-  var eBias = eMax >> 1;
-  var nBits = exponentLength - 7;
-  var index = bytes - 1;
-  var sign = buffer[index--];
-  var exponent = sign & 127;
-  var mantissa;
-  sign >>= 7;
-  for (; nBits > 0; exponent = exponent * 256 + buffer[index], index--, nBits -= 8);
-  mantissa = exponent & (1 << -nBits) - 1;
-  exponent >>= -nBits;
-  nBits += mantissaLength;
-  for (; nBits > 0; mantissa = mantissa * 256 + buffer[index], index--, nBits -= 8);
-  if (exponent === 0) {
-    exponent = 1 - eBias;
-  } else if (exponent === eMax) {
-    return mantissa ? NaN : sign ? -Infinity : Infinity;
-  } else {
-    mantissa = mantissa + pow(2, mantissaLength);
-    exponent = exponent - eBias;
-  } return (sign ? -1 : 1) * mantissa * pow(2, exponent - mantissaLength);
-};
-
-var unpackInt32 = function (buffer) {
-  return buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0];
-};
+var packIEEE754 = IEEE754.pack;
+var unpackIEEE754 = IEEE754.unpack;
 
 var packInt8 = function (number) {
   return [number & 0xFF];
@@ -522,6 +439,10 @@ var packInt16 = function (number) {
 
 var packInt32 = function (number) {
   return [number & 0xFF, number >> 8 & 0xFF, number >> 16 & 0xFF, number >> 24 & 0xFF];
+};
+
+var unpackInt32 = function (buffer) {
+  return buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0];
 };
 
 var packFloat32 = function (number) {
@@ -537,8 +458,7 @@ var addGetter = function (Constructor, key) {
 };
 
 var get = function (view, count, index, isLittleEndian) {
-  var numIndex = +index;
-  var intIndex = toIndex(numIndex);
+  var intIndex = toIndex(index);
   var store = getInternalState(view);
   if (intIndex + count > store.byteLength) throw RangeError(WRONG_INDEX);
   var bytes = getInternalState(store.buffer).bytes;
@@ -548,8 +468,7 @@ var get = function (view, count, index, isLittleEndian) {
 };
 
 var set = function (view, count, index, conversion, value, isLittleEndian) {
-  var numIndex = +index;
-  var intIndex = toIndex(numIndex);
+  var intIndex = toIndex(index);
   var store = getInternalState(view);
   if (intIndex + count > store.byteLength) throw RangeError(WRONG_INDEX);
   var bytes = getInternalState(store.buffer).bytes;
@@ -665,7 +584,9 @@ if (!NATIVE_ARRAY_BUFFER) {
     };
     var ArrayBufferPrototype = $ArrayBuffer[PROTOTYPE] = NativeArrayBuffer[PROTOTYPE];
     for (var keys = getOwnPropertyNames(NativeArrayBuffer), j = 0, key; keys.length > j;) {
-      if (!((key = keys[j++]) in $ArrayBuffer)) hide($ArrayBuffer, key, NativeArrayBuffer[key]);
+      if (!((key = keys[j++]) in $ArrayBuffer)) {
+        createNonEnumerableProperty($ArrayBuffer, key, NativeArrayBuffer[key]);
+      }
     }
     ArrayBufferPrototype.constructor = $ArrayBuffer;
   }
@@ -686,8 +607,11 @@ if (!NATIVE_ARRAY_BUFFER) {
 
 setToStringTag($ArrayBuffer, ARRAY_BUFFER);
 setToStringTag($DataView, DATA_VIEW);
-exports[ARRAY_BUFFER] = $ArrayBuffer;
-exports[DATA_VIEW] = $DataView;
+
+module.exports = {
+  ArrayBuffer: $ArrayBuffer,
+  DataView: $DataView
+};
 
 
 /***/ }),
@@ -769,13 +693,14 @@ module.exports = function from(arrayLike /* , mapfn = undefined, thisArg = undef
   var mapping = mapfn !== undefined;
   var index = 0;
   var iteratorMethod = getIteratorMethod(O);
-  var length, result, step, iterator;
+  var length, result, step, iterator, next;
   if (mapping) mapfn = bind(mapfn, argumentsLength > 2 ? arguments[2] : undefined, 2);
   // if the target is not iterable or it's an array with the default iterator - use a simple case
   if (iteratorMethod != undefined && !(C == Array && isArrayIteratorMethod(iteratorMethod))) {
     iterator = iteratorMethod.call(O);
+    next = iterator.next;
     result = new C();
-    for (;!(step = iterator.next()).done; index++) {
+    for (;!(step = next.call(iterator)).done; index++) {
       createProperty(result, index, mapping
         ? callWithSafeIterationClosing(iterator, mapfn, [step.value, index], true)
         : step.value
@@ -1076,6 +1001,7 @@ module.exports = function (it) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var TO_STRING_TAG_SUPPORT = __webpack_require__(/*! ../internals/to-string-tag-support */ "../node_modules/core-js/internals/to-string-tag-support.js");
 var classofRaw = __webpack_require__(/*! ../internals/classof-raw */ "../node_modules/core-js/internals/classof-raw.js");
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
 
@@ -1091,7 +1017,7 @@ var tryGet = function (it, key) {
 };
 
 // getting tag from ES6+ `Object.prototype.toString`
-module.exports = function (it) {
+module.exports = TO_STRING_TAG_SUPPORT ? classofRaw : function (it) {
   var O, tag, result;
   return it === undefined ? 'Undefined' : it === null ? 'Null'
     // @@toStringTag case
@@ -1176,6 +1102,27 @@ module.exports = function (IteratorConstructor, NAME, next) {
 
 /***/ }),
 
+/***/ "../node_modules/core-js/internals/create-non-enumerable-property.js":
+/*!***************************************************************************!*\
+  !*** ../node_modules/core-js/internals/create-non-enumerable-property.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var DESCRIPTORS = __webpack_require__(/*! ../internals/descriptors */ "../node_modules/core-js/internals/descriptors.js");
+var definePropertyModule = __webpack_require__(/*! ../internals/object-define-property */ "../node_modules/core-js/internals/object-define-property.js");
+var createPropertyDescriptor = __webpack_require__(/*! ../internals/create-property-descriptor */ "../node_modules/core-js/internals/create-property-descriptor.js");
+
+module.exports = DESCRIPTORS ? function (object, key, value) {
+  return definePropertyModule.f(object, key, createPropertyDescriptor(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
+};
+
+
+/***/ }),
+
 /***/ "../node_modules/core-js/internals/create-property-descriptor.js":
 /*!***********************************************************************!*\
   !*** ../node_modules/core-js/internals/create-property-descriptor.js ***!
@@ -1231,7 +1178,7 @@ var createIteratorConstructor = __webpack_require__(/*! ../internals/create-iter
 var getPrototypeOf = __webpack_require__(/*! ../internals/object-get-prototype-of */ "../node_modules/core-js/internals/object-get-prototype-of.js");
 var setPrototypeOf = __webpack_require__(/*! ../internals/object-set-prototype-of */ "../node_modules/core-js/internals/object-set-prototype-of.js");
 var setToStringTag = __webpack_require__(/*! ../internals/set-to-string-tag */ "../node_modules/core-js/internals/set-to-string-tag.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var redefine = __webpack_require__(/*! ../internals/redefine */ "../node_modules/core-js/internals/redefine.js");
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
 var IS_PURE = __webpack_require__(/*! ../internals/is-pure */ "../node_modules/core-js/internals/is-pure.js");
@@ -1278,7 +1225,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
         if (setPrototypeOf) {
           setPrototypeOf(CurrentIteratorPrototype, IteratorPrototype);
         } else if (typeof CurrentIteratorPrototype[ITERATOR] != 'function') {
-          hide(CurrentIteratorPrototype, ITERATOR, returnThis);
+          createNonEnumerableProperty(CurrentIteratorPrototype, ITERATOR, returnThis);
         }
       }
       // Set @@toStringTag to native iterators
@@ -1295,7 +1242,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 
   // define iterator
   if ((!IS_PURE || FORCED) && IterablePrototype[ITERATOR] !== defaultIterator) {
-    hide(IterablePrototype, ITERATOR, defaultIterator);
+    createNonEnumerableProperty(IterablePrototype, ITERATOR, defaultIterator);
   }
   Iterators[NAME] = defaultIterator;
 
@@ -1455,7 +1402,7 @@ module.exports = [
 
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
 var getOwnPropertyDescriptor = __webpack_require__(/*! ../internals/object-get-own-property-descriptor */ "../node_modules/core-js/internals/object-get-own-property-descriptor.js").f;
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var redefine = __webpack_require__(/*! ../internals/redefine */ "../node_modules/core-js/internals/redefine.js");
 var setGlobal = __webpack_require__(/*! ../internals/set-global */ "../node_modules/core-js/internals/set-global.js");
 var copyConstructorProperties = __webpack_require__(/*! ../internals/copy-constructor-properties */ "../node_modules/core-js/internals/copy-constructor-properties.js");
@@ -1501,7 +1448,7 @@ module.exports = function (options, source) {
     }
     // add a flag to not completely full polyfills
     if (options.sham || (targetProperty && targetProperty.sham)) {
-      hide(sourceProperty, 'sham', true);
+      createNonEnumerableProperty(sourceProperty, 'sham', true);
     }
     // extend global
     redefine(target, key, sourceProperty, options);
@@ -1538,7 +1485,7 @@ module.exports = function (exec) {
 
 "use strict";
 
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var redefine = __webpack_require__(/*! ../internals/redefine */ "../node_modules/core-js/internals/redefine.js");
 var fails = __webpack_require__(/*! ../internals/fails */ "../node_modules/core-js/internals/fails.js");
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
@@ -1583,14 +1530,21 @@ module.exports = function (KEY, length, exec, sham) {
     // Symbol-named RegExp methods call .exec
     var execCalled = false;
     var re = /a/;
-    re.exec = function () { execCalled = true; return null; };
 
     if (KEY === 'split') {
+      // We can't use real regex here since it causes deoptimization
+      // and serious performance degradation in V8
+      // https://github.com/zloirock/core-js/issues/306
+      re = {};
       // RegExp[@@split] doesn't call the regex's exec method, but first creates
       // a new one. We need to return the patched regex when creating the new one.
       re.constructor = {};
       re.constructor[SPECIES] = function () { return re; };
+      re.flags = '';
+      re[SYMBOL] = /./[SYMBOL];
     }
+
+    re.exec = function () { execCalled = true; return null; };
 
     re[SYMBOL]('');
     return !execCalled;
@@ -1627,7 +1581,7 @@ module.exports = function (KEY, length, exec, sham) {
       // 21.2.5.9 RegExp.prototype[@@search](string)
       : function (string) { return regexMethod.call(string, this); }
     );
-    if (sham) hide(RegExp.prototype[SYMBOL], 'sham', true);
+    if (sham) createNonEnumerableProperty(RegExp.prototype[SYMBOL], 'sham', true);
   }
 };
 
@@ -1726,20 +1680,6 @@ module.exports = function (METHOD_NAME) {
 
 /***/ }),
 
-/***/ "../node_modules/core-js/internals/function-to-string.js":
-/*!***************************************************************!*\
-  !*** ../node_modules/core-js/internals/function-to-string.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var shared = __webpack_require__(/*! ../internals/shared */ "../node_modules/core-js/internals/shared.js");
-
-module.exports = shared('native-function-to-string', Function.toString);
-
-
-/***/ }),
-
 /***/ "../node_modules/core-js/internals/get-built-in.js":
 /*!*********************************************************!*\
   !*** ../node_modules/core-js/internals/get-built-in.js ***!
@@ -1811,18 +1751,17 @@ module.exports = function (it) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var O = 'object';
-var check = function (it) {
+/* WEBPACK VAR INJECTION */(function(global) {var check = function (it) {
   return it && it.Math == Math && it;
 };
 
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 module.exports =
   // eslint-disable-next-line no-undef
-  check(typeof globalThis == O && globalThis) ||
-  check(typeof window == O && window) ||
-  check(typeof self == O && self) ||
-  check(typeof global == O && global) ||
+  check(typeof globalThis == 'object' && globalThis) ||
+  check(typeof window == 'object' && window) ||
+  check(typeof self == 'object' && self) ||
+  check(typeof global == 'object' && global) ||
   // eslint-disable-next-line no-new-func
   Function('return this')();
 
@@ -1854,27 +1793,6 @@ module.exports = function (it, key) {
 /***/ (function(module, exports) {
 
 module.exports = {};
-
-
-/***/ }),
-
-/***/ "../node_modules/core-js/internals/hide.js":
-/*!*************************************************!*\
-  !*** ../node_modules/core-js/internals/hide.js ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(/*! ../internals/descriptors */ "../node_modules/core-js/internals/descriptors.js");
-var definePropertyModule = __webpack_require__(/*! ../internals/object-define-property */ "../node_modules/core-js/internals/object-define-property.js");
-var createPropertyDescriptor = __webpack_require__(/*! ../internals/create-property-descriptor */ "../node_modules/core-js/internals/create-property-descriptor.js");
-
-module.exports = DESCRIPTORS ? function (object, key, value) {
-  return definePropertyModule.f(object, key, createPropertyDescriptor(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
 
 
 /***/ }),
@@ -1933,6 +1851,105 @@ module.exports = !DESCRIPTORS && !fails(function () {
 
 /***/ }),
 
+/***/ "../node_modules/core-js/internals/ieee754.js":
+/*!****************************************************!*\
+  !*** ../node_modules/core-js/internals/ieee754.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// IEEE754 conversions based on https://github.com/feross/ieee754
+// eslint-disable-next-line no-shadow-restricted-names
+var Infinity = 1 / 0;
+var abs = Math.abs;
+var pow = Math.pow;
+var floor = Math.floor;
+var log = Math.log;
+var LN2 = Math.LN2;
+
+var pack = function (number, mantissaLength, bytes) {
+  var buffer = new Array(bytes);
+  var exponentLength = bytes * 8 - mantissaLength - 1;
+  var eMax = (1 << exponentLength) - 1;
+  var eBias = eMax >> 1;
+  var rt = mantissaLength === 23 ? pow(2, -24) - pow(2, -77) : 0;
+  var sign = number < 0 || number === 0 && 1 / number < 0 ? 1 : 0;
+  var index = 0;
+  var exponent, mantissa, c;
+  number = abs(number);
+  // eslint-disable-next-line no-self-compare
+  if (number != number || number === Infinity) {
+    // eslint-disable-next-line no-self-compare
+    mantissa = number != number ? 1 : 0;
+    exponent = eMax;
+  } else {
+    exponent = floor(log(number) / LN2);
+    if (number * (c = pow(2, -exponent)) < 1) {
+      exponent--;
+      c *= 2;
+    }
+    if (exponent + eBias >= 1) {
+      number += rt / c;
+    } else {
+      number += rt * pow(2, 1 - eBias);
+    }
+    if (number * c >= 2) {
+      exponent++;
+      c /= 2;
+    }
+    if (exponent + eBias >= eMax) {
+      mantissa = 0;
+      exponent = eMax;
+    } else if (exponent + eBias >= 1) {
+      mantissa = (number * c - 1) * pow(2, mantissaLength);
+      exponent = exponent + eBias;
+    } else {
+      mantissa = number * pow(2, eBias - 1) * pow(2, mantissaLength);
+      exponent = 0;
+    }
+  }
+  for (; mantissaLength >= 8; buffer[index++] = mantissa & 255, mantissa /= 256, mantissaLength -= 8);
+  exponent = exponent << mantissaLength | mantissa;
+  exponentLength += mantissaLength;
+  for (; exponentLength > 0; buffer[index++] = exponent & 255, exponent /= 256, exponentLength -= 8);
+  buffer[--index] |= sign * 128;
+  return buffer;
+};
+
+var unpack = function (buffer, mantissaLength) {
+  var bytes = buffer.length;
+  var exponentLength = bytes * 8 - mantissaLength - 1;
+  var eMax = (1 << exponentLength) - 1;
+  var eBias = eMax >> 1;
+  var nBits = exponentLength - 7;
+  var index = bytes - 1;
+  var sign = buffer[index--];
+  var exponent = sign & 127;
+  var mantissa;
+  sign >>= 7;
+  for (; nBits > 0; exponent = exponent * 256 + buffer[index], index--, nBits -= 8);
+  mantissa = exponent & (1 << -nBits) - 1;
+  exponent >>= -nBits;
+  nBits += mantissaLength;
+  for (; nBits > 0; mantissa = mantissa * 256 + buffer[index], index--, nBits -= 8);
+  if (exponent === 0) {
+    exponent = 1 - eBias;
+  } else if (exponent === eMax) {
+    return mantissa ? NaN : sign ? -Infinity : Infinity;
+  } else {
+    mantissa = mantissa + pow(2, mantissaLength);
+    exponent = exponent - eBias;
+  } return (sign ? -1 : 1) * mantissa * pow(2, exponent - mantissaLength);
+};
+
+module.exports = {
+  pack: pack,
+  unpack: unpack
+};
+
+
+/***/ }),
+
 /***/ "../node_modules/core-js/internals/indexed-object.js":
 /*!***********************************************************!*\
   !*** ../node_modules/core-js/internals/indexed-object.js ***!
@@ -1957,6 +1974,52 @@ module.exports = fails(function () {
 
 /***/ }),
 
+/***/ "../node_modules/core-js/internals/inherit-if-required.js":
+/*!****************************************************************!*\
+  !*** ../node_modules/core-js/internals/inherit-if-required.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(/*! ../internals/is-object */ "../node_modules/core-js/internals/is-object.js");
+var setPrototypeOf = __webpack_require__(/*! ../internals/object-set-prototype-of */ "../node_modules/core-js/internals/object-set-prototype-of.js");
+
+// makes subclassing work correct for wrapped built-ins
+module.exports = function ($this, dummy, Wrapper) {
+  var NewTarget, NewTargetPrototype;
+  if (
+    // it can work only with native `setPrototypeOf`
+    setPrototypeOf &&
+    // we haven't completely correct pre-ES6 way for getting `new.target`, so use this
+    typeof (NewTarget = dummy.constructor) == 'function' &&
+    NewTarget !== Wrapper &&
+    isObject(NewTargetPrototype = NewTarget.prototype) &&
+    NewTargetPrototype !== Wrapper.prototype
+  ) setPrototypeOf($this, NewTargetPrototype);
+  return $this;
+};
+
+
+/***/ }),
+
+/***/ "../node_modules/core-js/internals/inspect-source.js":
+/*!***********************************************************!*\
+  !*** ../node_modules/core-js/internals/inspect-source.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var shared = __webpack_require__(/*! ../internals/shared */ "../node_modules/core-js/internals/shared.js");
+
+var functionToString = Function.toString;
+
+module.exports = shared('inspectSource', function (it) {
+  return functionToString.call(it);
+});
+
+
+/***/ }),
+
 /***/ "../node_modules/core-js/internals/internal-state.js":
 /*!***********************************************************!*\
   !*** ../node_modules/core-js/internals/internal-state.js ***!
@@ -1967,7 +2030,7 @@ module.exports = fails(function () {
 var NATIVE_WEAK_MAP = __webpack_require__(/*! ../internals/native-weak-map */ "../node_modules/core-js/internals/native-weak-map.js");
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
 var isObject = __webpack_require__(/*! ../internals/is-object */ "../node_modules/core-js/internals/is-object.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var objectHas = __webpack_require__(/*! ../internals/has */ "../node_modules/core-js/internals/has.js");
 var sharedKey = __webpack_require__(/*! ../internals/shared-key */ "../node_modules/core-js/internals/shared-key.js");
 var hiddenKeys = __webpack_require__(/*! ../internals/hidden-keys */ "../node_modules/core-js/internals/hidden-keys.js");
@@ -2007,7 +2070,7 @@ if (NATIVE_WEAK_MAP) {
   var STATE = sharedKey('state');
   hiddenKeys[STATE] = true;
   set = function (it, metadata) {
-    hide(it, STATE, metadata);
+    createNonEnumerableProperty(it, STATE, metadata);
     return metadata;
   };
   get = function (it) {
@@ -2100,6 +2163,20 @@ module.exports = isForced;
 
 /***/ }),
 
+/***/ "../node_modules/core-js/internals/is-ios.js":
+/*!***************************************************!*\
+  !*** ../node_modules/core-js/internals/is-ios.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var userAgent = __webpack_require__(/*! ../internals/user-agent */ "../node_modules/core-js/internals/user-agent.js");
+
+module.exports = /(iphone|ipod|ipad).*applewebkit/i.test(userAgent);
+
+
+/***/ }),
+
 /***/ "../node_modules/core-js/internals/is-object.js":
 /*!******************************************************!*\
   !*** ../node_modules/core-js/internals/is-object.js ***!
@@ -2147,7 +2224,7 @@ var Result = function (stopped, result) {
 
 var iterate = module.exports = function (iterable, fn, that, AS_ENTRIES, IS_ITERATOR) {
   var boundFunction = bind(fn, that, AS_ENTRIES ? 2 : 1);
-  var iterator, iterFn, index, length, result, step;
+  var iterator, iterFn, index, length, result, next, step;
 
   if (IS_ITERATOR) {
     iterator = iterable;
@@ -2166,9 +2243,10 @@ var iterate = module.exports = function (iterable, fn, that, AS_ENTRIES, IS_ITER
     iterator = iterFn.call(iterable);
   }
 
-  while (!(step = iterator.next()).done) {
+  next = iterator.next;
+  while (!(step = next.call(iterator)).done) {
     result = callWithSafeIterationClosing(iterator, boundFunction, step.value, AS_ENTRIES);
-    if (result && result instanceof Result) return result;
+    if (typeof result == 'object' && result && result instanceof Result) return result;
   } return new Result(false);
 };
 
@@ -2189,7 +2267,7 @@ iterate.stop = function (result) {
 "use strict";
 
 var getPrototypeOf = __webpack_require__(/*! ../internals/object-get-prototype-of */ "../node_modules/core-js/internals/object-get-prototype-of.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var has = __webpack_require__(/*! ../internals/has */ "../node_modules/core-js/internals/has.js");
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
 var IS_PURE = __webpack_require__(/*! ../internals/is-pure */ "../node_modules/core-js/internals/is-pure.js");
@@ -2216,7 +2294,9 @@ if ([].keys) {
 if (IteratorPrototype == undefined) IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-if (!IS_PURE && !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+if (!IS_PURE && !has(IteratorPrototype, ITERATOR)) {
+  createNonEnumerableProperty(IteratorPrototype, ITERATOR, returnThis);
+}
 
 module.exports = {
   IteratorPrototype: IteratorPrototype,
@@ -2249,7 +2329,7 @@ var global = __webpack_require__(/*! ../internals/global */ "../node_modules/cor
 var getOwnPropertyDescriptor = __webpack_require__(/*! ../internals/object-get-own-property-descriptor */ "../node_modules/core-js/internals/object-get-own-property-descriptor.js").f;
 var classof = __webpack_require__(/*! ../internals/classof-raw */ "../node_modules/core-js/internals/classof-raw.js");
 var macrotask = __webpack_require__(/*! ../internals/task */ "../node_modules/core-js/internals/task.js").set;
-var userAgent = __webpack_require__(/*! ../internals/user-agent */ "../node_modules/core-js/internals/user-agent.js");
+var IS_IOS = __webpack_require__(/*! ../internals/is-ios */ "../node_modules/core-js/internals/is-ios.js");
 
 var MutationObserver = global.MutationObserver || global.WebKitMutationObserver;
 var process = global.process;
@@ -2259,7 +2339,7 @@ var IS_NODE = classof(process) == 'process';
 var queueMicrotaskDescriptor = getOwnPropertyDescriptor(global, 'queueMicrotask');
 var queueMicrotask = queueMicrotaskDescriptor && queueMicrotaskDescriptor.value;
 
-var flush, head, last, notify, toggle, node, promise;
+var flush, head, last, notify, toggle, node, promise, then;
 
 // modern engines have queueMicrotask method
 if (!queueMicrotask) {
@@ -2286,10 +2366,10 @@ if (!queueMicrotask) {
       process.nextTick(flush);
     };
   // browsers with MutationObserver, except iOS - https://github.com/zloirock/core-js/issues/339
-  } else if (MutationObserver && !/(iphone|ipod|ipad).*applewebkit/i.test(userAgent)) {
+  } else if (MutationObserver && !IS_IOS) {
     toggle = true;
     node = document.createTextNode('');
-    new MutationObserver(flush).observe(node, { characterData: true }); // eslint-disable-line no-new
+    new MutationObserver(flush).observe(node, { characterData: true });
     notify = function () {
       node.data = toggle = !toggle;
     };
@@ -2297,8 +2377,9 @@ if (!queueMicrotask) {
   } else if (Promise && Promise.resolve) {
     // Promise.resolve without an argument throws an error in LG WebOS 2
     promise = Promise.resolve(undefined);
+    then = promise.then;
     notify = function () {
-      promise.then(flush);
+      then.call(promise, flush);
     };
   // for other environments - macrotask based on:
   // - setImmediate
@@ -2322,6 +2403,20 @@ module.exports = queueMicrotask || function (fn) {
     notify();
   } last = task;
 };
+
+
+/***/ }),
+
+/***/ "../node_modules/core-js/internals/native-promise-constructor.js":
+/*!***********************************************************************!*\
+  !*** ../node_modules/core-js/internals/native-promise-constructor.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
+
+module.exports = global.Promise;
 
 
 /***/ }),
@@ -2358,13 +2453,18 @@ var IS_PURE = __webpack_require__(/*! ../internals/is-pure */ "../node_modules/c
 var ITERATOR = wellKnownSymbol('iterator');
 
 module.exports = !fails(function () {
-  var url = new URL('b?e=1', 'http://a');
+  var url = new URL('b?a=1&b=2&c=3', 'http://a');
   var searchParams = url.searchParams;
+  var result = '';
   url.pathname = 'c%20d';
+  searchParams.forEach(function (value, key) {
+    searchParams['delete']('b');
+    result += key + value;
+  });
   return (IS_PURE && !url.toJSON)
     || !searchParams.sort
-    || url.href !== 'http://a/c%20d?e=1'
-    || searchParams.get('e') !== '1'
+    || url.href !== 'http://a/c%20d?a=1&c=3'
+    || searchParams.get('c') !== '3'
     || String(new URLSearchParams('?a=1')) !== 'a=1'
     || !searchParams[ITERATOR]
     // throws in Edge
@@ -2373,7 +2473,11 @@ module.exports = !fails(function () {
     // not punycoded in Edge
     || new URL('http://тест').host !== 'xn--e1aybc'
     // not escaped in Chrome 62-
-    || new URL('http://a#б').hash !== '#%D0%B1';
+    || new URL('http://a#б').hash !== '#%D0%B1'
+    // fails in Chrome 66-
+    || result !== 'a1c3'
+    // throws in Safari
+    || new URL('http://x', undefined).host !== 'x';
 });
 
 
@@ -2387,11 +2491,11 @@ module.exports = !fails(function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
-var nativeFunctionToString = __webpack_require__(/*! ../internals/function-to-string */ "../node_modules/core-js/internals/function-to-string.js");
+var inspectSource = __webpack_require__(/*! ../internals/inspect-source */ "../node_modules/core-js/internals/inspect-source.js");
 
 var WeakMap = global.WeakMap;
 
-module.exports = typeof WeakMap === 'function' && /native code/.test(nativeFunctionToString.call(WeakMap));
+module.exports = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));
 
 
 /***/ }),
@@ -2444,11 +2548,22 @@ var toObject = __webpack_require__(/*! ../internals/to-object */ "../node_module
 var IndexedObject = __webpack_require__(/*! ../internals/indexed-object */ "../node_modules/core-js/internals/indexed-object.js");
 
 var nativeAssign = Object.assign;
+var defineProperty = Object.defineProperty;
 
 // `Object.assign` method
 // https://tc39.github.io/ecma262/#sec-object.assign
-// should work with symbols and should have deterministic property order (V8 bug)
 module.exports = !nativeAssign || fails(function () {
+  // should have correct order of operations (Edge bug)
+  if (DESCRIPTORS && nativeAssign({ b: 1 }, nativeAssign(defineProperty({}, 'a', {
+    enumerable: true,
+    get: function () {
+      defineProperty(this, 'b', {
+        value: 3,
+        enumerable: false
+      });
+    }
+  }), { b: 2 })).b !== 1) return true;
+  // should work with symbols and should have deterministic property order (V8 bug)
   var A = {};
   var B = {};
   // eslint-disable-next-line no-undef
@@ -2850,7 +2965,9 @@ module.exports = FORCED ? function parseFloat(string) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
+var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
+
+module.exports = global;
 
 
 /***/ }),
@@ -3101,27 +3218,22 @@ module.exports = function (target, src, options) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
-var shared = __webpack_require__(/*! ../internals/shared */ "../node_modules/core-js/internals/shared.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var has = __webpack_require__(/*! ../internals/has */ "../node_modules/core-js/internals/has.js");
 var setGlobal = __webpack_require__(/*! ../internals/set-global */ "../node_modules/core-js/internals/set-global.js");
-var nativeFunctionToString = __webpack_require__(/*! ../internals/function-to-string */ "../node_modules/core-js/internals/function-to-string.js");
+var inspectSource = __webpack_require__(/*! ../internals/inspect-source */ "../node_modules/core-js/internals/inspect-source.js");
 var InternalStateModule = __webpack_require__(/*! ../internals/internal-state */ "../node_modules/core-js/internals/internal-state.js");
 
 var getInternalState = InternalStateModule.get;
 var enforceInternalState = InternalStateModule.enforce;
-var TEMPLATE = String(nativeFunctionToString).split('toString');
-
-shared('inspectSource', function (it) {
-  return nativeFunctionToString.call(it);
-});
+var TEMPLATE = String(String).split('String');
 
 (module.exports = function (O, key, value, options) {
   var unsafe = options ? !!options.unsafe : false;
   var simple = options ? !!options.enumerable : false;
   var noTargetGet = options ? !!options.noTargetGet : false;
   if (typeof value == 'function') {
-    if (typeof key == 'string' && !has(value, 'name')) hide(value, 'name', key);
+    if (typeof key == 'string' && !has(value, 'name')) createNonEnumerableProperty(value, 'name', key);
     enforceInternalState(value).source = TEMPLATE.join(typeof key == 'string' ? key : '');
   }
   if (O === global) {
@@ -3134,10 +3246,10 @@ shared('inspectSource', function (it) {
     simple = true;
   }
   if (simple) O[key] = value;
-  else hide(O, key, value);
+  else createNonEnumerableProperty(O, key, value);
 // add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
 })(Function.prototype, 'toString', function toString() {
-  return typeof this == 'function' && getInternalState(this).source || nativeFunctionToString.call(this);
+  return typeof this == 'function' && getInternalState(this).source || inspectSource(this);
 });
 
 
@@ -3295,11 +3407,11 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 
 module.exports = function (key, value) {
   try {
-    hide(global, key, value);
+    createNonEnumerableProperty(global, key, value);
   } catch (error) {
     global[key] = value;
   } return value;
@@ -3380,6 +3492,24 @@ module.exports = function (key) {
 
 /***/ }),
 
+/***/ "../node_modules/core-js/internals/shared-store.js":
+/*!*********************************************************!*\
+  !*** ../node_modules/core-js/internals/shared-store.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
+var setGlobal = __webpack_require__(/*! ../internals/set-global */ "../node_modules/core-js/internals/set-global.js");
+
+var SHARED = '__core-js_shared__';
+var store = global[SHARED] || setGlobal(SHARED, {});
+
+module.exports = store;
+
+
+/***/ }),
+
 /***/ "../node_modules/core-js/internals/shared.js":
 /*!***************************************************!*\
   !*** ../node_modules/core-js/internals/shared.js ***!
@@ -3387,17 +3517,13 @@ module.exports = function (key) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
-var setGlobal = __webpack_require__(/*! ../internals/set-global */ "../node_modules/core-js/internals/set-global.js");
 var IS_PURE = __webpack_require__(/*! ../internals/is-pure */ "../node_modules/core-js/internals/is-pure.js");
-
-var SHARED = '__core-js_shared__';
-var store = global[SHARED] || setGlobal(SHARED, {});
+var store = __webpack_require__(/*! ../internals/shared-store */ "../node_modules/core-js/internals/shared-store.js");
 
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.1.3',
+  version: '3.4.7',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
@@ -3609,6 +3735,7 @@ var classof = __webpack_require__(/*! ../internals/classof-raw */ "../node_modul
 var bind = __webpack_require__(/*! ../internals/bind-context */ "../node_modules/core-js/internals/bind-context.js");
 var html = __webpack_require__(/*! ../internals/html */ "../node_modules/core-js/internals/html.js");
 var createElement = __webpack_require__(/*! ../internals/document-create-element */ "../node_modules/core-js/internals/document-create-element.js");
+var IS_IOS = __webpack_require__(/*! ../internals/is-ios */ "../node_modules/core-js/internals/is-ios.js");
 
 var location = global.location;
 var set = global.setImmediate;
@@ -3672,7 +3799,8 @@ if (!set || !clear) {
       Dispatch.now(runner(id));
     };
   // Browsers with MessageChannel, includes WebWorkers
-  } else if (MessageChannel) {
+  // except iOS - https://github.com/zloirock/core-js/issues/624
+  } else if (MessageChannel && !IS_IOS) {
     channel = new MessageChannel();
     port = channel.port2;
     channel.port1.onmessage = listener;
@@ -3720,7 +3848,7 @@ var min = Math.min;
 
 // Helper for a popular repeating case of the spec:
 // Let integer be ? ToInteger(index).
-// If integer < 0, let result be max((length + integer), 0); else let result be min(length, length).
+// If integer < 0, let result be max((length + integer), 0); else let result be min(integer, length).
 module.exports = function (index, length) {
   var integer = toInteger(index);
   return integer < 0 ? max(integer + length, 0) : min(integer, length);
@@ -3834,12 +3962,30 @@ module.exports = function (argument) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(/*! ../internals/to-integer */ "../node_modules/core-js/internals/to-integer.js");
+var toPositiveInteger = __webpack_require__(/*! ../internals/to-positive-integer */ "../node_modules/core-js/internals/to-positive-integer.js");
 
 module.exports = function (it, BYTES) {
-  var offset = toInteger(it);
-  if (offset < 0 || offset % BYTES) throw RangeError('Wrong offset');
+  var offset = toPositiveInteger(it);
+  if (offset % BYTES) throw RangeError('Wrong offset');
   return offset;
+};
+
+
+/***/ }),
+
+/***/ "../node_modules/core-js/internals/to-positive-integer.js":
+/*!****************************************************************!*\
+  !*** ../node_modules/core-js/internals/to-positive-integer.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(/*! ../internals/to-integer */ "../node_modules/core-js/internals/to-integer.js");
+
+module.exports = function (it) {
+  var result = toInteger(it);
+  if (result < 0) throw RangeError("The argument can't be less than 0");
+  return result;
 };
 
 
@@ -3870,6 +4016,25 @@ module.exports = function (input, PREFERRED_STRING) {
 
 /***/ }),
 
+/***/ "../node_modules/core-js/internals/to-string-tag-support.js":
+/*!******************************************************************!*\
+  !*** ../node_modules/core-js/internals/to-string-tag-support.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
+
+var TO_STRING_TAG = wellKnownSymbol('toStringTag');
+var test = {};
+
+test[TO_STRING_TAG] = 'z';
+
+module.exports = String(test) === '[object z]';
+
+
+/***/ }),
+
 /***/ "../node_modules/core-js/internals/typed-array-constructor.js":
 /*!********************************************************************!*\
   !*** ../node_modules/core-js/internals/typed-array-constructor.js ***!
@@ -3887,7 +4052,7 @@ var ArrayBufferViewCore = __webpack_require__(/*! ../internals/array-buffer-view
 var ArrayBufferModule = __webpack_require__(/*! ../internals/array-buffer */ "../node_modules/core-js/internals/array-buffer.js");
 var anInstance = __webpack_require__(/*! ../internals/an-instance */ "../node_modules/core-js/internals/an-instance.js");
 var createPropertyDescriptor = __webpack_require__(/*! ../internals/create-property-descriptor */ "../node_modules/core-js/internals/create-property-descriptor.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var toLength = __webpack_require__(/*! ../internals/to-length */ "../node_modules/core-js/internals/to-length.js");
 var toIndex = __webpack_require__(/*! ../internals/to-index */ "../node_modules/core-js/internals/to-index.js");
 var toOffset = __webpack_require__(/*! ../internals/to-offset */ "../node_modules/core-js/internals/to-offset.js");
@@ -3904,6 +4069,7 @@ var setSpecies = __webpack_require__(/*! ../internals/set-species */ "../node_mo
 var definePropertyModule = __webpack_require__(/*! ../internals/object-define-property */ "../node_modules/core-js/internals/object-define-property.js");
 var getOwnPropertyDescriptorModule = __webpack_require__(/*! ../internals/object-get-own-property-descriptor */ "../node_modules/core-js/internals/object-get-own-property-descriptor.js");
 var InternalStateModule = __webpack_require__(/*! ../internals/internal-state */ "../node_modules/core-js/internals/internal-state.js");
+var inheritIfRequired = __webpack_require__(/*! ../internals/inherit-if-required */ "../node_modules/core-js/internals/inherit-if-required.js");
 
 var getInternalState = InternalStateModule.get;
 var setInternalState = InternalStateModule.set;
@@ -3985,8 +4151,8 @@ if (DESCRIPTORS) {
     defineProperty: wrappedDefineProperty
   });
 
-  // eslint-disable-next-line max-statements
-  module.exports = function (TYPE, BYTES, wrapper, CLAMPED) {
+  module.exports = function (TYPE, wrapper, CLAMPED) {
+    var BYTES = TYPE.match(/\d+$/)[0] / 8;
     var CONSTRUCTOR_NAME = TYPE + (CLAMPED ? 'Clamped' : '') + 'Array';
     var GETTER = 'get' + TYPE;
     var SETTER = 'set' + TYPE;
@@ -4061,28 +4227,34 @@ if (DESCRIPTORS) {
     } else if (TYPED_ARRAYS_CONSTRUCTORS_REQUIRES_WRAPPERS) {
       TypedArrayConstructor = wrapper(function (dummy, data, typedArrayOffset, $length) {
         anInstance(dummy, TypedArrayConstructor, CONSTRUCTOR_NAME);
-        if (!isObject(data)) return new NativeTypedArrayConstructor(toIndex(data));
-        if (isArrayBuffer(data)) return $length !== undefined
-          ? new NativeTypedArrayConstructor(data, toOffset(typedArrayOffset, BYTES), $length)
-          : typedArrayOffset !== undefined
-            ? new NativeTypedArrayConstructor(data, toOffset(typedArrayOffset, BYTES))
-            : new NativeTypedArrayConstructor(data);
-        if (isTypedArray(data)) return fromList(TypedArrayConstructor, data);
-        return typedArrayFrom.call(TypedArrayConstructor, data);
+        return inheritIfRequired(function () {
+          if (!isObject(data)) return new NativeTypedArrayConstructor(toIndex(data));
+          if (isArrayBuffer(data)) return $length !== undefined
+            ? new NativeTypedArrayConstructor(data, toOffset(typedArrayOffset, BYTES), $length)
+            : typedArrayOffset !== undefined
+              ? new NativeTypedArrayConstructor(data, toOffset(typedArrayOffset, BYTES))
+              : new NativeTypedArrayConstructor(data);
+          if (isTypedArray(data)) return fromList(TypedArrayConstructor, data);
+          return typedArrayFrom.call(TypedArrayConstructor, data);
+        }(), dummy, TypedArrayConstructor);
       });
 
       if (setPrototypeOf) setPrototypeOf(TypedArrayConstructor, TypedArray);
       forEach(getOwnPropertyNames(NativeTypedArrayConstructor), function (key) {
-        if (!(key in TypedArrayConstructor)) hide(TypedArrayConstructor, key, NativeTypedArrayConstructor[key]);
+        if (!(key in TypedArrayConstructor)) {
+          createNonEnumerableProperty(TypedArrayConstructor, key, NativeTypedArrayConstructor[key]);
+        }
       });
       TypedArrayConstructor.prototype = TypedArrayConstructorPrototype;
     }
 
     if (TypedArrayConstructorPrototype.constructor !== TypedArrayConstructor) {
-      hide(TypedArrayConstructorPrototype, 'constructor', TypedArrayConstructor);
+      createNonEnumerableProperty(TypedArrayConstructorPrototype, 'constructor', TypedArrayConstructor);
     }
 
-    if (TYPED_ARRAY_TAG) hide(TypedArrayConstructorPrototype, TYPED_ARRAY_TAG, CONSTRUCTOR_NAME);
+    if (TYPED_ARRAY_TAG) {
+      createNonEnumerableProperty(TypedArrayConstructorPrototype, TYPED_ARRAY_TAG, CONSTRUCTOR_NAME);
+    }
 
     exported[CONSTRUCTOR_NAME] = TypedArrayConstructor;
 
@@ -4091,11 +4263,11 @@ if (DESCRIPTORS) {
     }, exported);
 
     if (!(BYTES_PER_ELEMENT in TypedArrayConstructor)) {
-      hide(TypedArrayConstructor, BYTES_PER_ELEMENT, BYTES);
+      createNonEnumerableProperty(TypedArrayConstructor, BYTES_PER_ELEMENT, BYTES);
     }
 
     if (!(BYTES_PER_ELEMENT in TypedArrayConstructorPrototype)) {
-      hide(TypedArrayConstructorPrototype, BYTES_PER_ELEMENT, BYTES);
+      createNonEnumerableProperty(TypedArrayConstructorPrototype, BYTES_PER_ELEMENT, BYTES);
     }
 
     setSpecies(CONSTRUCTOR_NAME);
@@ -4125,11 +4297,12 @@ module.exports = function from(source /* , mapfn, thisArg */) {
   var mapfn = argumentsLength > 1 ? arguments[1] : undefined;
   var mapping = mapfn !== undefined;
   var iteratorMethod = getIteratorMethod(O);
-  var i, length, result, step, iterator;
+  var i, length, result, step, iterator, next;
   if (iteratorMethod != undefined && !isArrayIteratorMethod(iteratorMethod)) {
     iterator = iteratorMethod.call(O);
+    next = iterator.next;
     O = [];
-    while (!(step = iterator.next()).done) {
+    while (!(step = next.call(iterator)).done) {
       O.push(step.value);
     }
   }
@@ -4173,7 +4346,7 @@ module.exports = !NATIVE_ARRAY_BUFFER_VIEWS || !fails(function () {
   new Int8Array(1.5);
   new Int8Array(iterable);
 }, true) || fails(function () {
-  // Safari 11 bug
+  // Safari (11+) bug - a reason why even Safari 13 should load a typed array polyfill
   return new Int8Array(new ArrayBuffer(2), 1, undefined).length !== 1;
 });
 
@@ -4197,6 +4370,24 @@ module.exports = function (key) {
 
 /***/ }),
 
+/***/ "../node_modules/core-js/internals/use-symbol-as-uid.js":
+/*!**************************************************************!*\
+  !*** ../node_modules/core-js/internals/use-symbol-as-uid.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var NATIVE_SYMBOL = __webpack_require__(/*! ../internals/native-symbol */ "../node_modules/core-js/internals/native-symbol.js");
+
+module.exports = NATIVE_SYMBOL
+  // eslint-disable-next-line no-undef
+  && !Symbol.sham
+  // eslint-disable-next-line no-undef
+  && typeof Symbol() == 'symbol';
+
+
+/***/ }),
+
 /***/ "../node_modules/core-js/internals/user-agent.js":
 /*!*******************************************************!*\
   !*** ../node_modules/core-js/internals/user-agent.js ***!
@@ -4207,6 +4398,37 @@ module.exports = function (key) {
 var getBuiltIn = __webpack_require__(/*! ../internals/get-built-in */ "../node_modules/core-js/internals/get-built-in.js");
 
 module.exports = getBuiltIn('navigator', 'userAgent') || '';
+
+
+/***/ }),
+
+/***/ "../node_modules/core-js/internals/v8-version.js":
+/*!*******************************************************!*\
+  !*** ../node_modules/core-js/internals/v8-version.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
+var userAgent = __webpack_require__(/*! ../internals/user-agent */ "../node_modules/core-js/internals/user-agent.js");
+
+var process = global.process;
+var versions = process && process.versions;
+var v8 = versions && versions.v8;
+var match, version;
+
+if (v8) {
+  match = v8.split('.');
+  version = match[0] + match[1];
+} else if (userAgent) {
+  match = userAgent.match(/Edge\/(\d+)/);
+  if (!match || match[1] >= 74) {
+    match = userAgent.match(/Chrome\/(\d+)/);
+    if (match) version = match[1];
+  }
+}
+
+module.exports = version && +version;
 
 
 /***/ }),
@@ -4236,15 +4458,20 @@ module.exports = /Version\/10\.\d+(\.\d+)?( Mobile\/\w+)? Safari\//.test(userAge
 
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
 var shared = __webpack_require__(/*! ../internals/shared */ "../node_modules/core-js/internals/shared.js");
+var has = __webpack_require__(/*! ../internals/has */ "../node_modules/core-js/internals/has.js");
 var uid = __webpack_require__(/*! ../internals/uid */ "../node_modules/core-js/internals/uid.js");
 var NATIVE_SYMBOL = __webpack_require__(/*! ../internals/native-symbol */ "../node_modules/core-js/internals/native-symbol.js");
+var USE_SYMBOL_AS_UID = __webpack_require__(/*! ../internals/use-symbol-as-uid */ "../node_modules/core-js/internals/use-symbol-as-uid.js");
 
+var WellKnownSymbolsStore = shared('wks');
 var Symbol = global.Symbol;
-var store = shared('wks');
+var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : uid;
 
 module.exports = function (name) {
-  return store[name] || (store[name] = NATIVE_SYMBOL && Symbol[name]
-    || (NATIVE_SYMBOL ? Symbol : uid)('Symbol.' + name));
+  if (!has(WellKnownSymbolsStore, name)) {
+    if (NATIVE_SYMBOL && has(Symbol, name)) WellKnownSymbolsStore[name] = Symbol[name];
+    else WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
+  } return WellKnownSymbolsStore[name];
 };
 
 
@@ -4271,7 +4498,9 @@ module.exports = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u2000\u2001\u
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.f = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
+var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
+
+exports.f = wellKnownSymbol;
 
 
 /***/ }),
@@ -4504,6 +4733,7 @@ var test = [1, 2];
 // https://bugs.webkit.org/show_bug.cgi?id=188794
 $({ target: 'Array', proto: true, forced: String(test) === String(test.reverse()) }, {
   reverse: function reverse() {
+    // eslint-disable-next-line no-self-assign
     if (isArray(this)) this.length = this.length;
     return nativeReverse.call(this);
   }
@@ -4527,8 +4757,8 @@ var toObject = __webpack_require__(/*! ../internals/to-object */ "../node_module
 var fails = __webpack_require__(/*! ../internals/fails */ "../node_modules/core-js/internals/fails.js");
 var sloppyArrayMethod = __webpack_require__(/*! ../internals/sloppy-array-method */ "../node_modules/core-js/internals/sloppy-array-method.js");
 
-var nativeSort = [].sort;
-var test = [1, 2, 3];
+var test = [];
+var nativeSort = test.sort;
 
 // IE8-
 var FAILS_ON_UNDEFINED = fails(function () {
@@ -4584,6 +4814,50 @@ addToUnscopables('flatMap');
 var addToUnscopables = __webpack_require__(/*! ../internals/add-to-unscopables */ "../node_modules/core-js/internals/add-to-unscopables.js");
 
 addToUnscopables('flat');
+
+
+/***/ }),
+
+/***/ "../node_modules/core-js/modules/es.math.hypot.js":
+/*!********************************************************!*\
+  !*** ../node_modules/core-js/modules/es.math.hypot.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $ = __webpack_require__(/*! ../internals/export */ "../node_modules/core-js/internals/export.js");
+
+var $hypot = Math.hypot;
+var abs = Math.abs;
+var sqrt = Math.sqrt;
+
+// Chrome 77 bug
+// https://bugs.chromium.org/p/v8/issues/detail?id=9546
+var BUGGY = !!$hypot && $hypot(Infinity, NaN) !== Infinity;
+
+// `Math.hypot` method
+// https://tc39.github.io/ecma262/#sec-math.hypot
+$({ target: 'Math', stat: true, forced: BUGGY }, {
+  hypot: function hypot(value1, value2) { // eslint-disable-line no-unused-vars
+    var sum = 0;
+    var i = 0;
+    var aLen = arguments.length;
+    var larg = 0;
+    var arg, div;
+    while (i < aLen) {
+      arg = abs(arguments[i++]);
+      if (larg < arg) {
+        div = larg / arg;
+        sum = sum * div * div + 1;
+        larg = arg;
+      } else if (arg > 0) {
+        div = arg / larg;
+        sum += div * div;
+      } else sum += arg;
+    }
+    return larg === Infinity ? Infinity : larg * sqrt(sum);
+  }
+});
 
 
 /***/ }),
@@ -4771,13 +5045,22 @@ if (DESCRIPTORS) {
 "use strict";
 
 var $ = __webpack_require__(/*! ../internals/export */ "../node_modules/core-js/internals/export.js");
+var IS_PURE = __webpack_require__(/*! ../internals/is-pure */ "../node_modules/core-js/internals/is-pure.js");
+var NativePromise = __webpack_require__(/*! ../internals/native-promise-constructor */ "../node_modules/core-js/internals/native-promise-constructor.js");
+var fails = __webpack_require__(/*! ../internals/fails */ "../node_modules/core-js/internals/fails.js");
 var getBuiltIn = __webpack_require__(/*! ../internals/get-built-in */ "../node_modules/core-js/internals/get-built-in.js");
 var speciesConstructor = __webpack_require__(/*! ../internals/species-constructor */ "../node_modules/core-js/internals/species-constructor.js");
 var promiseResolve = __webpack_require__(/*! ../internals/promise-resolve */ "../node_modules/core-js/internals/promise-resolve.js");
+var redefine = __webpack_require__(/*! ../internals/redefine */ "../node_modules/core-js/internals/redefine.js");
+
+// Safari bug https://bugs.webkit.org/show_bug.cgi?id=200829
+var NON_GENERIC = !!NativePromise && fails(function () {
+  NativePromise.prototype['finally'].call({ then: function () { /* empty */ } }, function () { /* empty */ });
+});
 
 // `Promise.prototype.finally` method
 // https://tc39.github.io/ecma262/#sec-promise.prototype.finally
-$({ target: 'Promise', proto: true, real: true }, {
+$({ target: 'Promise', proto: true, real: true, forced: NON_GENERIC }, {
   'finally': function (onFinally) {
     var C = speciesConstructor(this, getBuiltIn('Promise'));
     var isFunction = typeof onFinally == 'function';
@@ -4791,6 +5074,11 @@ $({ target: 'Promise', proto: true, real: true }, {
     );
   }
 });
+
+// patch native Promise.prototype for native async functions
+if (!IS_PURE && typeof NativePromise == 'function' && !NativePromise.prototype['finally']) {
+  redefine(NativePromise.prototype, 'finally', getBuiltIn('Promise').prototype['finally']);
+}
 
 
 /***/ }),
@@ -4807,7 +5095,9 @@ $({ target: 'Promise', proto: true, real: true }, {
 var $ = __webpack_require__(/*! ../internals/export */ "../node_modules/core-js/internals/export.js");
 var IS_PURE = __webpack_require__(/*! ../internals/is-pure */ "../node_modules/core-js/internals/is-pure.js");
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
-var path = __webpack_require__(/*! ../internals/path */ "../node_modules/core-js/internals/path.js");
+var getBuiltIn = __webpack_require__(/*! ../internals/get-built-in */ "../node_modules/core-js/internals/get-built-in.js");
+var NativePromise = __webpack_require__(/*! ../internals/native-promise-constructor */ "../node_modules/core-js/internals/native-promise-constructor.js");
+var redefine = __webpack_require__(/*! ../internals/redefine */ "../node_modules/core-js/internals/redefine.js");
 var redefineAll = __webpack_require__(/*! ../internals/redefine-all */ "../node_modules/core-js/internals/redefine-all.js");
 var setToStringTag = __webpack_require__(/*! ../internals/set-to-string-tag */ "../node_modules/core-js/internals/set-to-string-tag.js");
 var setSpecies = __webpack_require__(/*! ../internals/set-species */ "../node_modules/core-js/internals/set-species.js");
@@ -4815,6 +5105,7 @@ var isObject = __webpack_require__(/*! ../internals/is-object */ "../node_module
 var aFunction = __webpack_require__(/*! ../internals/a-function */ "../node_modules/core-js/internals/a-function.js");
 var anInstance = __webpack_require__(/*! ../internals/an-instance */ "../node_modules/core-js/internals/an-instance.js");
 var classof = __webpack_require__(/*! ../internals/classof-raw */ "../node_modules/core-js/internals/classof-raw.js");
+var inspectSource = __webpack_require__(/*! ../internals/inspect-source */ "../node_modules/core-js/internals/inspect-source.js");
 var iterate = __webpack_require__(/*! ../internals/iterate */ "../node_modules/core-js/internals/iterate.js");
 var checkCorrectnessOfIteration = __webpack_require__(/*! ../internals/check-correctness-of-iteration */ "../node_modules/core-js/internals/check-correctness-of-iteration.js");
 var speciesConstructor = __webpack_require__(/*! ../internals/species-constructor */ "../node_modules/core-js/internals/species-constructor.js");
@@ -4824,23 +5115,21 @@ var promiseResolve = __webpack_require__(/*! ../internals/promise-resolve */ "..
 var hostReportErrors = __webpack_require__(/*! ../internals/host-report-errors */ "../node_modules/core-js/internals/host-report-errors.js");
 var newPromiseCapabilityModule = __webpack_require__(/*! ../internals/new-promise-capability */ "../node_modules/core-js/internals/new-promise-capability.js");
 var perform = __webpack_require__(/*! ../internals/perform */ "../node_modules/core-js/internals/perform.js");
-var userAgent = __webpack_require__(/*! ../internals/user-agent */ "../node_modules/core-js/internals/user-agent.js");
 var InternalStateModule = __webpack_require__(/*! ../internals/internal-state */ "../node_modules/core-js/internals/internal-state.js");
 var isForced = __webpack_require__(/*! ../internals/is-forced */ "../node_modules/core-js/internals/is-forced.js");
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
+var V8_VERSION = __webpack_require__(/*! ../internals/v8-version */ "../node_modules/core-js/internals/v8-version.js");
 
 var SPECIES = wellKnownSymbol('species');
 var PROMISE = 'Promise';
 var getInternalState = InternalStateModule.get;
 var setInternalState = InternalStateModule.set;
 var getInternalPromiseState = InternalStateModule.getterFor(PROMISE);
-var PromiseConstructor = global[PROMISE];
+var PromiseConstructor = NativePromise;
 var TypeError = global.TypeError;
 var document = global.document;
 var process = global.process;
-var $fetch = global.fetch;
-var versions = process && process.versions;
-var v8 = versions && versions.v8 || '';
+var $fetch = getBuiltIn('fetch');
 var newPromiseCapability = newPromiseCapabilityModule.f;
 var newGenericPromiseCapability = newPromiseCapability;
 var IS_NODE = classof(process) == 'process';
@@ -4852,24 +5141,32 @@ var FULFILLED = 1;
 var REJECTED = 2;
 var HANDLED = 1;
 var UNHANDLED = 2;
-var Internal, OwnPromiseCapability, PromiseWrapper;
+var Internal, OwnPromiseCapability, PromiseWrapper, nativeThen;
 
 var FORCED = isForced(PROMISE, function () {
-  // correct subclassing with @@species support
-  var promise = PromiseConstructor.resolve(1);
-  var empty = function () { /* empty */ };
-  var FakePromise = (promise.constructor = {})[SPECIES] = function (exec) {
-    exec(empty, empty);
-  };
-  // unhandled rejections tracking support, NodeJS Promise without it fails @@species test
-  return !((IS_NODE || typeof PromiseRejectionEvent == 'function')
-    && (!IS_PURE || promise['finally'])
-    && promise.then(empty) instanceof FakePromise
-    // v8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
+  var GLOBAL_CORE_JS_PROMISE = inspectSource(PromiseConstructor) !== String(PromiseConstructor);
+  if (!GLOBAL_CORE_JS_PROMISE) {
+    // V8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
     // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
-    // we can't detect it synchronously, so just check versions
-    && v8.indexOf('6.6') !== 0
-    && userAgent.indexOf('Chrome/66') === -1);
+    // We can't detect it synchronously, so just check versions
+    if (V8_VERSION === 66) return true;
+    // Unhandled rejections tracking support, NodeJS Promise without it fails @@species test
+    if (!IS_NODE && typeof PromiseRejectionEvent != 'function') return true;
+  }
+  // We need Promise#finally in the pure version for preventing prototype pollution
+  if (IS_PURE && !PromiseConstructor.prototype['finally']) return true;
+  // We can't use @@species feature detection in V8 since it causes
+  // deoptimization and performance degradation
+  // https://github.com/zloirock/core-js/issues/679
+  if (V8_VERSION >= 51 && /native code/.test(PromiseConstructor)) return false;
+  // Detect correctness of subclassing with @@species support
+  var promise = PromiseConstructor.resolve(1);
+  var FakePromise = function (exec) {
+    exec(function () { /* empty */ }, function () { /* empty */ });
+  };
+  var constructor = promise.constructor = {};
+  constructor[SPECIES] = FakePromise;
+  return !(promise.then(function () { /* empty */ }) instanceof FakePromise);
 });
 
 var INCORRECT_ITERATION = FORCED || !checkCorrectnessOfIteration(function (iterable) {
@@ -5077,13 +5374,26 @@ if (FORCED) {
       : newGenericPromiseCapability(C);
   };
 
-  // wrap fetch result
-  if (!IS_PURE && typeof $fetch == 'function') $({ global: true, enumerable: true, forced: true }, {
-    // eslint-disable-next-line no-unused-vars
-    fetch: function fetch(input) {
-      return promiseResolve(PromiseConstructor, $fetch.apply(global, arguments));
-    }
-  });
+  if (!IS_PURE && typeof NativePromise == 'function') {
+    nativeThen = NativePromise.prototype.then;
+
+    // wrap native Promise#then for native async functions
+    redefine(NativePromise.prototype, 'then', function then(onFulfilled, onRejected) {
+      var that = this;
+      return new PromiseConstructor(function (resolve, reject) {
+        nativeThen.call(that, resolve, reject);
+      }).then(onFulfilled, onRejected);
+    // https://github.com/zloirock/core-js/issues/640
+    }, { unsafe: true });
+
+    // wrap fetch result
+    if (typeof $fetch == 'function') $({ global: true, enumerable: true, forced: true }, {
+      // eslint-disable-next-line no-unused-vars
+      fetch: function fetch(input /* , init */) {
+        return promiseResolve(PromiseConstructor, $fetch.apply(global, arguments));
+      }
+    });
+  }
 }
 
 $({ global: true, wrap: true, forced: FORCED }, {
@@ -5093,7 +5403,7 @@ $({ global: true, wrap: true, forced: FORCED }, {
 setToStringTag(PromiseConstructor, PROMISE, false, true);
 setSpecies(PROMISE);
 
-PromiseWrapper = path[PROMISE];
+PromiseWrapper = getBuiltIn(PROMISE);
 
 // statics
 $({ target: PROMISE, stat: true, forced: FORCED }, {
@@ -5558,11 +5868,11 @@ if (DESCRIPTORS && typeof NativeSymbol == 'function' && (!('description' in Nati
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Float32Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Float32', 4, function (init) {
+createTypedArrayConstructor('Float32', function (init) {
   return function Float32Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5578,11 +5888,11 @@ typedArrayConstructor('Float32', 4, function (init) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Float64Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Float64', 8, function (init) {
+createTypedArrayConstructor('Float64', function (init) {
   return function Float64Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5601,12 +5911,12 @@ typedArrayConstructor('Float64', 8, function (init) {
 "use strict";
 
 var TYPED_ARRAYS_CONSTRUCTORS_REQUIRES_WRAPPERS = __webpack_require__(/*! ../internals/typed-arrays-constructors-requires-wrappers */ "../node_modules/core-js/internals/typed-arrays-constructors-requires-wrappers.js");
-var ArrayBufferViewCore = __webpack_require__(/*! ../internals/array-buffer-view-core */ "../node_modules/core-js/internals/array-buffer-view-core.js");
+var exportTypedArrayStaticMethod = __webpack_require__(/*! ../internals/array-buffer-view-core */ "../node_modules/core-js/internals/array-buffer-view-core.js").exportTypedArrayStaticMethod;
 var typedArrayFrom = __webpack_require__(/*! ../internals/typed-array-from */ "../node_modules/core-js/internals/typed-array-from.js");
 
 // `%TypedArray%.from` method
 // https://tc39.github.io/ecma262/#sec-%typedarray%.from
-ArrayBufferViewCore.exportStatic('from', typedArrayFrom, TYPED_ARRAYS_CONSTRUCTORS_REQUIRES_WRAPPERS);
+exportTypedArrayStaticMethod('from', typedArrayFrom, TYPED_ARRAYS_CONSTRUCTORS_REQUIRES_WRAPPERS);
 
 
 /***/ }),
@@ -5618,11 +5928,11 @@ ArrayBufferViewCore.exportStatic('from', typedArrayFrom, TYPED_ARRAYS_CONSTRUCTO
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Int16Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Int16', 2, function (init) {
+createTypedArrayConstructor('Int16', function (init) {
   return function Int16Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5638,11 +5948,11 @@ typedArrayConstructor('Int16', 2, function (init) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Int32Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Int32', 4, function (init) {
+createTypedArrayConstructor('Int32', function (init) {
   return function Int32Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5658,11 +5968,11 @@ typedArrayConstructor('Int32', 4, function (init) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Int8Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Int8', 1, function (init) {
+createTypedArrayConstructor('Int8', function (init) {
   return function Int8Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5684,10 +5994,11 @@ var ArrayBufferViewCore = __webpack_require__(/*! ../internals/array-buffer-view
 var TYPED_ARRAYS_CONSTRUCTORS_REQUIRES_WRAPPERS = __webpack_require__(/*! ../internals/typed-arrays-constructors-requires-wrappers */ "../node_modules/core-js/internals/typed-arrays-constructors-requires-wrappers.js");
 
 var aTypedArrayConstructor = ArrayBufferViewCore.aTypedArrayConstructor;
+var exportTypedArrayStaticMethod = ArrayBufferViewCore.exportTypedArrayStaticMethod;
 
 // `%TypedArray%.of` method
 // https://tc39.github.io/ecma262/#sec-%typedarray%.of
-ArrayBufferViewCore.exportStatic('of', function of(/* ...items */) {
+exportTypedArrayStaticMethod('of', function of(/* ...items */) {
   var index = 0;
   var length = arguments.length;
   var result = new (aTypedArrayConstructor(this))(length);
@@ -5705,11 +6016,11 @@ ArrayBufferViewCore.exportStatic('of', function of(/* ...items */) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Uint16Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Uint16', 2, function (init) {
+createTypedArrayConstructor('Uint16', function (init) {
   return function Uint16Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5725,11 +6036,11 @@ typedArrayConstructor('Uint16', 2, function (init) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Uint32Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Uint32', 4, function (init) {
+createTypedArrayConstructor('Uint32', function (init) {
   return function Uint32Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5745,11 +6056,11 @@ typedArrayConstructor('Uint32', 4, function (init) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Uint8Array` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Uint8', 1, function (init) {
+createTypedArrayConstructor('Uint8', function (init) {
   return function Uint8Array(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5765,11 +6076,11 @@ typedArrayConstructor('Uint8', 1, function (init) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var typedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
+var createTypedArrayConstructor = __webpack_require__(/*! ../internals/typed-array-constructor */ "../node_modules/core-js/internals/typed-array-constructor.js");
 
 // `Uint8ClampedArray` constructor
 // https://tc39.github.io/ecma262/#sec-typedarray-objects
-typedArrayConstructor('Uint8', 1, function (init) {
+createTypedArrayConstructor('Uint8', function (init) {
   return function Uint8ClampedArray(data, byteOffset, length) {
     return init(this, data, byteOffset, length);
   };
@@ -5788,14 +6099,14 @@ typedArrayConstructor('Uint8', 1, function (init) {
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
 var DOMIterables = __webpack_require__(/*! ../internals/dom-iterables */ "../node_modules/core-js/internals/dom-iterables.js");
 var forEach = __webpack_require__(/*! ../internals/array-for-each */ "../node_modules/core-js/internals/array-for-each.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 
 for (var COLLECTION_NAME in DOMIterables) {
   var Collection = global[COLLECTION_NAME];
   var CollectionPrototype = Collection && Collection.prototype;
   // some Chrome versions have non-configurable methods on DOMTokenList
   if (CollectionPrototype && CollectionPrototype.forEach !== forEach) try {
-    hide(CollectionPrototype, 'forEach', forEach);
+    createNonEnumerableProperty(CollectionPrototype, 'forEach', forEach);
   } catch (error) {
     CollectionPrototype.forEach = forEach;
   }
@@ -5814,7 +6125,7 @@ for (var COLLECTION_NAME in DOMIterables) {
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
 var DOMIterables = __webpack_require__(/*! ../internals/dom-iterables */ "../node_modules/core-js/internals/dom-iterables.js");
 var ArrayIteratorMethods = __webpack_require__(/*! ../modules/es.array.iterator */ "../node_modules/core-js/modules/es.array.iterator.js");
-var hide = __webpack_require__(/*! ../internals/hide */ "../node_modules/core-js/internals/hide.js");
+var createNonEnumerableProperty = __webpack_require__(/*! ../internals/create-non-enumerable-property */ "../node_modules/core-js/internals/create-non-enumerable-property.js");
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -5827,15 +6138,17 @@ for (var COLLECTION_NAME in DOMIterables) {
   if (CollectionPrototype) {
     // some Chrome versions have non-configurable methods on DOMTokenList
     if (CollectionPrototype[ITERATOR] !== ArrayValues) try {
-      hide(CollectionPrototype, ITERATOR, ArrayValues);
+      createNonEnumerableProperty(CollectionPrototype, ITERATOR, ArrayValues);
     } catch (error) {
       CollectionPrototype[ITERATOR] = ArrayValues;
     }
-    if (!CollectionPrototype[TO_STRING_TAG]) hide(CollectionPrototype, TO_STRING_TAG, COLLECTION_NAME);
+    if (!CollectionPrototype[TO_STRING_TAG]) {
+      createNonEnumerableProperty(CollectionPrototype, TO_STRING_TAG, COLLECTION_NAME);
+    }
     if (DOMIterables[COLLECTION_NAME]) for (var METHOD_NAME in ArrayIteratorMethods) {
       // some Chrome versions have non-configurable methods on DOMTokenList
       if (CollectionPrototype[METHOD_NAME] !== ArrayIteratorMethods[METHOD_NAME]) try {
-        hide(CollectionPrototype, METHOD_NAME, ArrayIteratorMethods[METHOD_NAME]);
+        createNonEnumerableProperty(CollectionPrototype, METHOD_NAME, ArrayIteratorMethods[METHOD_NAME]);
       } catch (error) {
         CollectionPrototype[METHOD_NAME] = ArrayIteratorMethods[METHOD_NAME];
       }
@@ -5853,13 +6166,14 @@ for (var COLLECTION_NAME in DOMIterables) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+var $ = __webpack_require__(/*! ../internals/export */ "../node_modules/core-js/internals/export.js");
 var global = __webpack_require__(/*! ../internals/global */ "../node_modules/core-js/internals/global.js");
 var task = __webpack_require__(/*! ../internals/task */ "../node_modules/core-js/internals/task.js");
 
 var FORCED = !global.setImmediate || !global.clearImmediate;
 
 // http://w3c.github.io/setImmediate/
-__webpack_require__(/*! ../internals/export */ "../node_modules/core-js/internals/export.js")({ global: true, bind: true, enumerable: true, forced: FORCED }, {
+$({ global: true, bind: true, enumerable: true, forced: FORCED }, {
   // `setImmediate` method
   // http://w3c.github.io/setImmediate/#si-setImmediate
   setImmediate: task.set,
@@ -5910,6 +6224,7 @@ $({ global: true, enumerable: true, noTargetGet: true }, {
 // TODO: in core-js@4, move /modules/ dependencies to public entries for better optimization by tools like `preset-env`
 __webpack_require__(/*! ../modules/es.array.iterator */ "../node_modules/core-js/modules/es.array.iterator.js");
 var $ = __webpack_require__(/*! ../internals/export */ "../node_modules/core-js/internals/export.js");
+var getBuiltIn = __webpack_require__(/*! ../internals/get-built-in */ "../node_modules/core-js/internals/get-built-in.js");
 var USE_NATIVE_URL = __webpack_require__(/*! ../internals/native-url */ "../node_modules/core-js/internals/native-url.js");
 var redefine = __webpack_require__(/*! ../internals/redefine */ "../node_modules/core-js/internals/redefine.js");
 var redefineAll = __webpack_require__(/*! ../internals/redefine-all */ "../node_modules/core-js/internals/redefine-all.js");
@@ -5919,12 +6234,17 @@ var InternalStateModule = __webpack_require__(/*! ../internals/internal-state */
 var anInstance = __webpack_require__(/*! ../internals/an-instance */ "../node_modules/core-js/internals/an-instance.js");
 var hasOwn = __webpack_require__(/*! ../internals/has */ "../node_modules/core-js/internals/has.js");
 var bind = __webpack_require__(/*! ../internals/bind-context */ "../node_modules/core-js/internals/bind-context.js");
+var classof = __webpack_require__(/*! ../internals/classof */ "../node_modules/core-js/internals/classof.js");
 var anObject = __webpack_require__(/*! ../internals/an-object */ "../node_modules/core-js/internals/an-object.js");
 var isObject = __webpack_require__(/*! ../internals/is-object */ "../node_modules/core-js/internals/is-object.js");
+var create = __webpack_require__(/*! ../internals/object-create */ "../node_modules/core-js/internals/object-create.js");
+var createPropertyDescriptor = __webpack_require__(/*! ../internals/create-property-descriptor */ "../node_modules/core-js/internals/create-property-descriptor.js");
 var getIterator = __webpack_require__(/*! ../internals/get-iterator */ "../node_modules/core-js/internals/get-iterator.js");
 var getIteratorMethod = __webpack_require__(/*! ../internals/get-iterator-method */ "../node_modules/core-js/internals/get-iterator-method.js");
 var wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ "../node_modules/core-js/internals/well-known-symbol.js");
 
+var $fetch = getBuiltIn('fetch');
+var Headers = getBuiltIn('Headers');
 var ITERATOR = wellKnownSymbol('iterator');
 var URL_SEARCH_PARAMS = 'URLSearchParams';
 var URL_SEARCH_PARAMS_ITERATOR = URL_SEARCH_PARAMS + 'Iterator';
@@ -6029,7 +6349,7 @@ var URLSearchParamsConstructor = function URLSearchParams(/* init */) {
   var init = arguments.length > 0 ? arguments[0] : undefined;
   var that = this;
   var entries = [];
-  var iteratorMethod, iterator, step, entryIterator, first, second, key;
+  var iteratorMethod, iterator, next, step, entryIterator, entryNext, first, second, key;
 
   setInternalState(that, {
     type: URL_SEARCH_PARAMS,
@@ -6043,12 +6363,14 @@ var URLSearchParamsConstructor = function URLSearchParams(/* init */) {
       iteratorMethod = getIteratorMethod(init);
       if (typeof iteratorMethod === 'function') {
         iterator = iteratorMethod.call(init);
-        while (!(step = iterator.next()).done) {
+        next = iterator.next;
+        while (!(step = next.call(iterator)).done) {
           entryIterator = getIterator(anObject(step.value));
+          entryNext = entryIterator.next;
           if (
-            (first = entryIterator.next()).done ||
-            (second = entryIterator.next()).done ||
-            !entryIterator.next().done
+            (first = entryNext.call(entryIterator)).done ||
+            (second = entryNext.call(entryIterator)).done ||
+            !entryNext.call(entryIterator).done
           ) throw TypeError('Expected sequence with length 2');
           entries.push({ key: first.value + '', value: second.value + '' });
         }
@@ -6212,6 +6534,34 @@ setToStringTag(URLSearchParamsConstructor, URL_SEARCH_PARAMS);
 $({ global: true, forced: !USE_NATIVE_URL }, {
   URLSearchParams: URLSearchParamsConstructor
 });
+
+// Wrap `fetch` for correct work with polyfilled `URLSearchParams`
+// https://github.com/zloirock/core-js/issues/674
+if (!USE_NATIVE_URL && typeof $fetch == 'function' && typeof Headers == 'function') {
+  $({ global: true, enumerable: true, forced: true }, {
+    fetch: function fetch(input /* , init */) {
+      var args = [input];
+      var init, body, headers;
+      if (arguments.length > 1) {
+        init = arguments[1];
+        if (isObject(init)) {
+          body = init.body;
+          if (classof(body) === URL_SEARCH_PARAMS) {
+            headers = init.headers ? new Headers(init.headers) : new Headers();
+            if (!headers.has('content-type')) {
+              headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            }
+            init = create(init, {
+              body: createPropertyDescriptor(0, String(body)),
+              headers: createPropertyDescriptor(0, headers)
+            });
+          }
+        }
+        args.push(init);
+      } return $fetch.apply(this, args);
+    }
+  });
+}
 
 module.exports = {
   URLSearchParams: URLSearchParamsConstructor,
@@ -6491,7 +6841,6 @@ var percentEncode = function (char, set) {
 var specialSchemes = {
   ftp: 21,
   file: null,
-  gopher: 70,
   http: 80,
   https: 443,
   ws: 80,
@@ -16324,7 +16673,7 @@ __webpack_require__.r(__webpack_exports__);
  * Register global configurations
  */
 
-const config = {
+var config = {
   debug: false,
   device: {
     "textureQuality": 0,
@@ -16517,12 +16866,12 @@ class Tr2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
     this._vertexStride = 0;
     this._declaration = new _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
 
-    for (let i = 0; i < decl.length; ++i) {
-      const element = new particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElementDeclaration"]();
+    for (var i = 0; i < decl.length; ++i) {
+      var element = new particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElementDeclaration"]();
       element.elementType = decl[i][0];
       element.dimension = decl[i][2];
       element.usageIndex = decl[i][1];
-      const d = element.GetDeclaration();
+      var d = element.GetDeclaration();
       d.offset = this._vertexStride * 4;
 
       this._declaration.elements.push(d);
@@ -16559,7 +16908,7 @@ class Tr2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
   SetItemElement(index, elementIndex, value) {
     if (this._declaration.elements[elementIndex].elements > 1) {
-      for (let i = 0; i < this._declaration.elements[elementIndex].elements; ++i) {
+      for (var i = 0; i < this._declaration.elements[elementIndex].elements; ++i) {
         this._data[index][elementIndex][i] = value[i];
       }
     } else {
@@ -16602,16 +16951,16 @@ class Tr2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
       return;
     }
 
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-          vbData = new Float32Array(this._data.length * this._vertexStride);
-    let offset = 0;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+        vbData = new Float32Array(this._data.length * this._vertexStride);
+    var offset = 0;
 
-    for (let i = 0; i < this._data.length; ++i) {
-      for (let j = 0; j < this._declaration.elements.length; ++j) {
+    for (var i = 0; i < this._data.length; ++i) {
+      for (var j = 0; j < this._declaration.elements.length; ++j) {
         if (this._declaration.elements[j].elements === 1) {
           vbData[offset++] = this._data[i][j];
         } else {
-          for (let k = 0; k < this._declaration.elements[j].elements; ++k) {
+          for (var k = 0; k < this._declaration.elements[j].elements; ++k) {
             vbData[offset++] = this._data[i][j][k];
           }
         }
@@ -16792,7 +17141,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrWrapped", function() { return ErrWrapped; });
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
-const HAS_CAPTURE_STACK_TRACE = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(Error["captureStackTrace"]);
+var HAS_CAPTURE_STACK_TRACE = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(Error["captureStackTrace"]);
 /**
  * Tw2Error
  *
@@ -16809,7 +17158,7 @@ class Tw2Error extends Error {
    * @param {String} [defaultMessage='Undefined Error'] - The default error message
    */
   constructor(data = {}, defaultMessage = "Undefined error") {
-    let message = defaultMessage;
+    var message = defaultMessage;
 
     if (typeof data === "string") {
       message = data;
@@ -17356,12 +17705,12 @@ class Tw2Frustum {
    * @param {mat4} [viewProjection] Optional viewProjection matrix
    */
   Initialize(view, proj, viewportSize, viewInverse, viewProjection) {
-    const mat4_0 = Tw2Frustum.global.mat4_0;
-    const viewInv = viewInverse ? viewInverse : global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(mat4_0, view);
+    var mat4_0 = Tw2Frustum.global.mat4_0;
+    var viewInv = viewInverse ? viewInverse : global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(mat4_0, view);
     this.viewPos.set(viewInv.subarray(12, 14));
     this.viewDir.set(viewInv.subarray(8, 10));
     this.halfWidthProjection = proj[0] * viewportSize * 0.5;
-    const viewProj = viewProjection ? viewProjection : global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(mat4_0, proj, view);
+    var viewProj = viewProjection ? viewProjection : global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(mat4_0, proj, view);
     this.planes[0][0] = viewProj[2];
     this.planes[0][1] = viewProj[6];
     this.planes[0][2] = viewProj[10];
@@ -17387,8 +17736,8 @@ class Tw2Frustum {
     this.planes[5][2] = viewProj[11] - viewProj[10];
     this.planes[5][3] = viewProj[15] - viewProj[14];
 
-    for (let i = 0; i < 6; ++i) {
-      let len = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(this.planes[i]);
+    for (var i = 0; i < 6; ++i) {
+      var len = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(this.planes[i]);
       this.planes[i][0] /= len;
       this.planes[i][1] /= len;
       this.planes[i][2] /= len;
@@ -17405,7 +17754,7 @@ class Tw2Frustum {
 
 
   IsSphereVisible(center, radius) {
-    for (let i = 0; i < 6; ++i) {
+    for (var i = 0; i < 6; ++i) {
       if (this.planes[i][0] * center[0] + this.planes[i][1] * center[1] + this.planes[i][2] * center[2] + this.planes[i][3] < -radius) {
         return false;
       }
@@ -17423,12 +17772,12 @@ class Tw2Frustum {
 
 
   GetPixelSizeAcross(center, radius) {
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(Tw2Frustum.global.vec3_0, this.viewPos, center);
-    let depth = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(this.viewDir, d),
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(Tw2Frustum.global.vec3_0, this.viewPos, center);
+    var depth = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(this.viewDir, d),
         epsilon = 1e-5;
     if (depth < epsilon) depth = epsilon;
     if (radius < epsilon) return 0;
-    let ratio = radius / depth;
+    var ratio = radius / depth;
     return ratio * this.halfWidthProjection * 2;
   }
   /**
@@ -17488,7 +17837,7 @@ class Tw2RenderTarget {
    * Destroys the render target's webgl buffers and textures
    */
   Destroy() {
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this.texture) {
       gl.deleteTexture(this.texture.texture);
@@ -17515,7 +17864,7 @@ class Tw2RenderTarget {
 
 
   Create(width, height, hasDepth) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
     this.Destroy();
     this.texture = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureRes"]();
     this.texture.Attach(gl.createTexture());
@@ -17636,7 +17985,7 @@ class Tw2BatchAccumulator {
       this.batches.sort(this._sortMethod);
     }
 
-    for (let i = 0; i < this.batches.length; ++i) {
+    for (var i = 0; i < this.batches.length; ++i) {
       if (this.batches[i] instanceof Tw2BatchAccumulator) {
         this.batches[i].Render(technique);
       } else {
@@ -17921,7 +18270,7 @@ class Tw2PerObjectData {
    * @returns {Tw2PerObjectData}
    */
   static from(values, opt) {
-    const item = new Tw2PerObjectData();
+    var item = new Tw2PerObjectData();
 
     if (values) {
       if (values.ps) item.ps = _Tw2RawData__WEBPACK_IMPORTED_MODULE_0__["Tw2RawData"].from(values.ps, opt);
@@ -17979,9 +18328,9 @@ class Tw2RawData {
 
 
   Set(name, value) {
-    const el = this.elements[name];
+    var el = this.elements[name];
 
-    for (let i = 0; i < el.size; i++) {
+    for (var i = 0; i < el.size; i++) {
       this.data[i + el.offset] = value[i];
     }
   }
@@ -17994,7 +18343,7 @@ class Tw2RawData {
 
 
   SetIndex(name, index, value) {
-    const el = this.elements[name];
+    var el = this.elements[name];
 
     if (index < 0 || index >= el.size) {
       throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrIndexBounds"]();
@@ -18020,7 +18369,7 @@ class Tw2RawData {
 
 
   Declare(name, data) {
-    let isValue = typeof data !== "number",
+    var isValue = typeof data !== "number",
         size = isValue ? data.length : data,
         value = isValue ? data : null;
     this.elements[name] = {
@@ -18039,13 +18388,13 @@ class Tw2RawData {
   Create() {
     this.data = new Float32Array(this._nextOffset);
 
-    for (let name in this.elements) {
+    for (var name in this.elements) {
       if (this.elements.hasOwnProperty(name)) {
-        const el = this.elements[name];
+        var el = this.elements[name];
         el.array = this.data.subarray(el.offset, el.offset + el.size);
 
         if (el.value) {
-          for (let i = 0; i < el.size; i++) {
+          for (var i = 0; i < el.size; i++) {
             el.array[i] = el.value[i];
           }
 
@@ -18064,10 +18413,10 @@ class Tw2RawData {
 
 
   static from(values, opt) {
-    const item = new Tw2RawData();
+    var item = new Tw2RawData();
 
     if (values) {
-      for (let i = 0; i < values.length; i++) {
+      for (var i = 0; i < values.length; i++) {
         item.Declare(values[i][0], values[i][1]);
       }
 
@@ -18225,7 +18574,7 @@ class Tw2GeometryBone {
   UpdateTransform() {
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromMat3(this.localTransform, this.scaleShear);
     global__WEBPACK_IMPORTED_MODULE_0__["quat"].normalize(this.orientation, this.orientation);
-    let rm = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(Tw2GeometryBone.global.mat4_0, this.orientation);
+    var rm = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(Tw2GeometryBone.global.mat4_0, this.orientation);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.localTransform, this.localTransform, rm);
     this.localTransform[12] = this.position[0];
     this.localTransform[13] = this.position[1];
@@ -18365,12 +18714,12 @@ class Tw2GeometryMesh {
 
 
   RebuildBounds(fromVertex) {
-    const min = this.minBounds,
-          max = this.maxBounds;
+    var min = this.minBounds,
+        max = this.maxBounds;
     global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
 
-    for (let i = 0; i < this.areas.length; i++) {
-      const area = this.areas[i];
+    for (var i = 0; i < this.areas.length; i++) {
+      var area = this.areas[i];
       this.RebuildAreaBounds(area, this.bufferData, this.indexData, fromVertex);
       global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, area.minBounds, area.maxBounds);
     }
@@ -18388,11 +18737,11 @@ class Tw2GeometryMesh {
 
   RebuildAreaBounds(area, bufferData, indexData, fromVertex) {
     if (!fromVertex || !bufferData || !indexData) return false;
-    const pDecl = this.declaration.FindUsage(0, 0);
+    var pDecl = this.declaration.FindUsage(0, 0);
     if (!pDecl) return false;
-    const stride = this.declaration.stride / 4,
-          pOffset = pDecl.offset;
-    const box = Tw2GeometryMesh.GetBoundsFromVertices(global__WEBPACK_IMPORTED_MODULE_0__["box3"].create(), area.start, area.count, stride, pOffset, bufferData, indexData);
+    var stride = this.declaration.stride / 4,
+        pOffset = pDecl.offset;
+    var box = Tw2GeometryMesh.GetBoundsFromVertices(global__WEBPACK_IMPORTED_MODULE_0__["box3"].create(), area.start, area.count, stride, pOffset, bufferData, indexData);
     global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectBounds(box, area);
     global__WEBPACK_IMPORTED_MODULE_0__["box3"].toObjectPositionRadius(box, area);
     return true;
@@ -18411,7 +18760,7 @@ class Tw2GeometryMesh {
       throw new Error("Invalid index: " + index);
     }
 
-    for (let i = 0; i < 3; i++) {
+    for (var i = 0; i < 3; i++) {
       out[i] = indexData[index * 3 + i];
     }
 
@@ -18433,7 +18782,7 @@ class Tw2GeometryMesh {
       throw new Error("Invalid vertex index: " + index);
     }
 
-    const ix = index * stride;
+    var ix = index * stride;
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, bufferData[ix + offset], bufferData[ix + offset + 1], bufferData[ix + offset + 2]);
   }
   /**
@@ -18451,15 +18800,15 @@ class Tw2GeometryMesh {
   static GetBoundsFromVertices(out, start, count, stride, pOffset, bufferData, indexData) {
     count = count / 3;
     start = start / 2 / 3;
-    const vertexIndices = [],
-          indices = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
-          position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    var vertexIndices = [],
+        indices = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+        position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     global__WEBPACK_IMPORTED_MODULE_0__["box3"].empty(out);
 
-    for (let i = 0; i < count; i++) {
+    for (var i = 0; i < count; i++) {
       this.GetFaceVertexIndices(indices, i + start, indexData);
 
-      for (let x = 0; x < 3; x++) {
+      for (var x = 0; x < 3; x++) {
         if (!vertexIndices.includes(indices[x])) {
           vertexIndices.push(indices[x]);
           this.GetVertexPosition(position, indices[x], stride, pOffset, bufferData);
@@ -18599,7 +18948,7 @@ class Tw2GeometryModel {
       return null;
     }
 
-    for (let i = 0; i < this.skeleton.bones.length; ++i) {
+    for (var i = 0; i < this.skeleton.bones.length; ++i) {
       if (this.skeleton.bones[i].name === name) {
         return this.skeleton.bones[i];
       }
@@ -18754,7 +19103,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2TextureRes, Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tr2DistanceTracker, Tr2RuntimeInstanceData, TriObserverLocal, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tr2PointLight, Tr2ShLightingManager, Tr2MeshLod, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tr2PostProcess, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, TriMatrix, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -18873,8 +19222,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_8__["Tw2ObjectReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2EffectRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2GeometryRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2GeometryRes"]; });
@@ -18886,6 +19233,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Resource", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Resource"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Shader", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2Shader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2TextureRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2TextureRes"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2VideoRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_9__["Tw2VideoRes"]; });
 
@@ -19255,7 +19604,7 @@ class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   GetResources(out = []) {
-    for (let i = 0; i < this.associatedResources; i++) {
+    for (var i = 0; i < this.associatedResources; i++) {
       if (out[i] && !out.includes(this.associatedResources[i])) {
         out.push(this.associatedResources[i]);
       }
@@ -19281,7 +19630,7 @@ class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   GetBatches(mode, accumulator, perObjectData) {
     if (!this.IsGood() || !this.display) return false;
-    const getBatches = this.constructor.GetAreaBatches;
+    var getBatches = this.constructor.GetAreaBatches;
 
     switch (mode) {
       case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
@@ -19363,11 +19712,11 @@ class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData) {
-    for (let i = 0; i < areas.length; ++i) {
-      const area = areas[i];
+    for (var i = 0; i < areas.length; ++i) {
+      var area = areas[i];
 
       if (area.effect && area.display) {
-        const batch = new area.constructor.batchType();
+        var batch = new area.constructor.batchType();
         batch.renderMode = mode;
         batch.perObjectData = perObjectData;
         batch.geometryRes = mesh.geometryResource;
@@ -19454,7 +19803,7 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   Initialize() {
     if (this.effectFilePath !== "") {
       this.effectFilePath = this.effectFilePath.toLowerCase();
-      const path = Tw2Effect.ToEffectResPath(this.effectFilePath);
+      var path = Tw2Effect.ToEffectResPath(this.effectFilePath);
       this.effectRes = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetResource(path, res => this.OnResPrepared(res));
     }
   }
@@ -19483,9 +19832,11 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   KeepAlive() {
-    const res = this.GetResources();
+    var res = this.GetResources();
 
-    for (let i = 0; i < res.length; i++) res[i].KeepAlive();
+    for (var i = 0; i < res.length; i++) {
+      res[i].KeepAlive();
+    }
   }
   /**
    * Gets effect resources
@@ -19499,7 +19850,7 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       out.push(this.effectRes);
     }
 
-    for (let param in this.parameters) {
+    for (var param in this.parameters) {
       if (this.parameters.hasOwnProperty(param)) {
         if ("GetResources" in this.parameters[param]) {
           this.parameters[param].GetResources(out);
@@ -19527,13 +19878,13 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   UnBindParameters() {
-    for (let t in this.techniques) {
+    for (var t in this.techniques) {
       if (this.techniques.hasOwnProperty(t)) {
-        let technique = this.techniques[t];
+        var technique = this.techniques[t];
 
-        for (let i = 0; i < technique.length; ++i) {
-          for (let j = 0; j < technique[i].stages.length; ++j) {
-            for (let k = 0; k < technique[i].stages[j].reroutedParameters.length; ++k) {
+        for (var i = 0; i < technique.length; ++i) {
+          for (var j = 0; j < technique[i].stages.length; ++j) {
+            for (var k = 0; k < technique[i].stages[j].reroutedParameters.length; ++k) {
               technique[i].stages[j].reroutedParameters[k].Unbind();
             }
           }
@@ -19553,32 +19904,32 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     this.UnBindParameters();
     if (!this.IsGood()) return false;
 
-    for (let techniqueName in this.shader.techniques) {
+    for (var techniqueName in this.shader.techniques) {
       if (this.shader.techniques.hasOwnProperty(techniqueName)) {
-        let technique = this.shader.techniques[techniqueName];
-        let passes = [];
+        var technique = this.shader.techniques[techniqueName];
+        var passes = [];
 
-        for (let i = 0; i < technique.passes.length; ++i) {
-          const pass = [];
+        for (var i = 0; i < technique.passes.length; ++i) {
+          var pass = [];
           pass.stages = [];
 
-          for (let j = 0; j < technique.passes[i].stages.length; ++j) {
-            const stageRes = technique.passes[i].stages[j],
-                  stage = {};
+          for (var j = 0; j < technique.passes[i].stages.length; ++j) {
+            var stageRes = technique.passes[i].stages[j],
+                stage = {};
             stage.constantBuffer = new Float32Array(stageRes.constantSize);
             stage.reroutedParameters = [];
             stage.parameters = [];
             stage.textures = [];
             stage.constantBuffer.set(stageRes.constantValues);
 
-            for (let k = 0; k < stageRes.constants.length; ++k) {
-              const constant = stageRes.constants[k],
-                    name = constant.name,
-                    Type = constant.Type;
+            for (var k = 0; k < stageRes.constants.length; ++k) {
+              var constant = stageRes.constants[k],
+                  name = constant.name,
+                  Type = constant.Type;
               if (Tw2Effect.ConstantIgnore.includes(name)) continue;
 
               if (name in this.parameters) {
-                const param = this.parameters[name];
+                var param = this.parameters[name];
 
                 if (param.Bind(stage.constantBuffer, constant.offset, constant.size)) {
                   stage.reroutedParameters.push(param);
@@ -19598,7 +19949,7 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
                   size: constant.size
                 });
               } else if (constant.isAutoregister && Type) {
-                const variable = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, Type);
+                var variable = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, Type);
 
                 if (variable) {
                   stage.parameters.push({
@@ -19609,7 +19960,7 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
                   });
                 }
               } else if (this.autoParameter && constant.elements === 1) {
-                let value = stage.constantBuffer.subarray(constant.offset, constant.offset + constant.size);
+                var value = stage.constantBuffer.subarray(constant.offset, constant.offset + constant.size);
 
                 if (value.length === 0) {
                   value = undefined;
@@ -19617,16 +19968,16 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
                   value = value[0];
                 }
 
-                const param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, value, Type);
+                var _param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, value, Type);
 
-                if (param) {
-                  this.parameters[name] = param;
+                if (_param) {
+                  this.parameters[name] = _param;
 
-                  if (param.Bind(stage.constantBuffer, constant.offset, constant.size)) {
-                    stage.reroutedParameters.push(param);
+                  if (_param.Bind(stage.constantBuffer, constant.offset, constant.size)) {
+                    stage.reroutedParameters.push(_param);
                   } else {
                     stage.parameter.push({
-                      parameter: param,
+                      parameter: _param,
                       constantBuffer: stage.constantBuffer,
                       offset: constant.offset,
                       size: constant.size
@@ -19636,29 +19987,29 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
               }
             }
 
-            for (let k = 0; k < stageRes.textures.length; ++k) {
-              const name = stageRes.textures[k].name;
-              let param = null;
+            for (var _k = 0; _k < stageRes.textures.length; ++_k) {
+              var _name = stageRes.textures[_k].name;
+              var _param2 = null;
 
-              if (name in this.parameters) {
-                param = this.parameters[name];
-              } else if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(name)) {
-                param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(name);
-              } else if (stageRes.textures[k].isAutoregister) {
-                param = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
+              if (_name in this.parameters) {
+                _param2 = this.parameters[_name];
+              } else if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasVariable(_name)) {
+                _param2 = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable(_name);
+              } else if (stageRes.textures[_k].isAutoregister) {
+                _param2 = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(_name, undefined, _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]);
               } else if (this.autoParameter) {
-                param = this.parameters[name] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](name);
+                _param2 = this.parameters[_name] = new _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"](_name);
               } else {
                 continue;
               }
 
-              const p = {
-                parameter: param,
-                slot: stageRes.textures[k].registerIndex,
+              var p = {
+                parameter: _param2,
+                slot: stageRes.textures[_k].registerIndex,
                 sampler: null
               };
 
-              for (let n = 0; n < stageRes.samplers.length; ++n) {
+              for (var n = 0; n < stageRes.samplers.length; ++n) {
                 if (stageRes.samplers[n].registerIndex === p.slot) {
                   if (stageRes.samplers[n].name in this.samplerOverrides) {
                     p.sampler = this.samplerOverrides[stageRes.samplers[n].name].GetSampler(global__WEBPACK_IMPORTED_MODULE_0__["device"], stageRes.samplers[n]);
@@ -19704,32 +20055,32 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     }
 
     this.shader.ApplyPass(technique, pass);
-    const p = this.techniques[technique][pass],
-          rp = this.shader.techniques[technique].passes[pass],
-          d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl;
-    const program = d.IsAlphaTestEnabled() && rp.shadowShaderProgram ? rp.shadowShaderProgram : rp.shaderProgram;
+    var p = this.techniques[technique][pass],
+        rp = this.shader.techniques[technique].passes[pass],
+        d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl;
+    var program = d.IsAlphaTestEnabled() && rp.shadowShaderProgram ? rp.shadowShaderProgram : rp.shaderProgram;
 
-    for (let i = 0; i < 2; ++i) {
-      const stages = p.stages[i];
+    for (var i = 0; i < 2; ++i) {
+      var stages = p.stages[i];
 
-      for (let j = 0; j < stages.parameters.length; ++j) {
-        let pp = stages.parameters[j];
+      for (var j = 0; j < stages.parameters.length; ++j) {
+        var pp = stages.parameters[j];
         pp.parameter.Apply(pp.constantBuffer, pp.offset, pp.size);
       }
 
-      for (let j = 0; j < stages.textures.length; ++j) {
-        let tex = stages.textures[j];
+      for (var _j = 0; _j < stages.textures.length; ++_j) {
+        var tex = stages.textures[_j];
         tex.parameter.Apply(tex.slot, tex.sampler, program.volumeSlices[tex.sampler.registerIndex]);
       }
     }
 
-    const cbh = program.constantBufferHandles;
+    var cbh = program.constantBufferHandles;
     if (cbh[0]) gl.uniform4fv(cbh[0], p.stages[0].constantBuffer);
     if (cbh[7]) gl.uniform4fv(cbh[7], p.stages[1].constantBuffer);
     if (d.perFrameVSData && cbh[1]) gl.uniform4fv(cbh[1], d.perFrameVSData.data);
     if (d.perFramePSData && cbh[2]) gl.uniform4fv(cbh[2], d.perFramePSData.data);
-    const pod = d.perObjectData;
+    var pod = d.perObjectData;
 
     if (pod) {
       if (pod.vs && cbh[3]) gl.uniform4fv(cbh[3], pod.vs.data);
@@ -19774,9 +20125,9 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   Render(cb) {
-    const count = this.GetPassCount("Main");
+    var count = this.GetPassCount("Main");
 
-    for (let i = 0; i < count; ++i) {
+    for (var i = 0; i < count; ++i) {
       this.ApplyPass("Main", i);
       cb(this, i);
     }
@@ -19789,9 +20140,9 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   GetTextures(out = {}) {
-    for (let key in this.parameters) {
+    for (var key in this.parameters) {
       if (this.parameters.hasOwnProperty(key) && this.parameters[key] instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-        let resourcePath = this.parameters[key].GetValue();
+        var resourcePath = this.parameters[key].GetValue();
         if (resourcePath) out[key] = resourcePath;
       }
     }
@@ -19807,12 +20158,12 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   SetTextures(options = {}, skipUpdate) {
-    let updated = false;
+    var updated = false;
 
-    for (let key in options) {
+    for (var key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
-        const value = options[key],
-              param = this.parameters[key];
+        var value = options[key],
+            param = this.parameters[key];
 
         if (_parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].isValue(value)) {
           if (param) {
@@ -19840,7 +20191,7 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   GetParameters(out = {}) {
-    for (let key in this.parameters) {
+    for (var key in this.parameters) {
       if (this.parameters.hasOwnProperty(key) && !(this.parameters[key] instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"])) {
         out[key] = this.parameters[key].GetValue();
       }
@@ -19857,12 +20208,12 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   SetParameters(options = {}, skipUpdate) {
-    let updated = false;
+    var updated = false;
 
-    for (let key in options) {
+    for (var key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
-        const value = options[key],
-              param = this.parameters[key];
+        var value = options[key],
+            param = this.parameters[key];
 
         if (param) {
           if (param.constructor.isValue(value) && !param.EqualsValue(value)) {
@@ -19871,7 +20222,7 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
             }
           }
         } else {
-          const parameter = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(key, value);
+          var parameter = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].CreateVariable(key, value);
 
           if (parameter) {
             this.parameters[key] = parameter;
@@ -19893,11 +20244,11 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   SetOverrides(options = {}, skipUpdate) {
-    let updated = false;
+    var updated = false;
 
-    for (let key in options) {
+    for (var key in options) {
       if (options.hasOwnProperty(key) && options[key] !== undefined) {
-        let param = this.parameters[key]; // Allow creating of parameter from overrides incase method is
+        var param = this.parameters[key]; // Allow creating of parameter from overrides incase method is
         // called before SetTextures.
         // Todo: Remove this once proper sampler overrides are implemented
 
@@ -19907,10 +20258,10 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         }
 
         if (param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]) {
-          let doUpdate = false;
-          const overrides = options[key];
+          var doUpdate = false;
+          var overrides = options[key];
 
-          for (let prop in overrides) {
+          for (var prop in overrides) {
             if (overrides.hasOwnProperty(prop) && _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"].overrideProperties.includes(prop)) {
               if (overrides[prop] !== param[prop]) {
                 doUpdate = true;
@@ -19937,9 +20288,9 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   GetOverrides(out = {}) {
-    for (let key in this.parameters) {
+    for (var key in this.parameters) {
       if (this.parameters.hasOwnProperty(key)) {
-        const param = this.parameters[key];
+        var param = this.parameters[key];
 
         if (param && param instanceof _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"] && param.useAllOverrides) {
           out[key] = this.parameters[key].GetOverrides();
@@ -19994,14 +20345,14 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   static set(a, values, opt = {}) {
     if (!values) return false;
-    const {
+    var {
       parameters,
       textures,
       overrides,
       options,
       effectFilePath = ""
     } = values;
-    let updated = global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(a, values, ["name", "display", "autoParameter"]);
+    var updated = global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(a, values, ["name", "display", "autoParameter"]);
     if (parameters && a.SetParameters(parameters, true)) updated = true;
     if (overrides && a.SetOverrides(overrides, true)) updated = true;
     if (textures && a.SetTextures(textures, true)) updated = true;
@@ -20080,7 +20431,7 @@ class Tw2ConstantParameter {
    * @returns {Tw2Vector4Parameter}
    */
   static blackStruct(r) {
-    const item = new _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"](); // Temporary
+    var item = new _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"](); // Temporary
 
     Object.defineProperty(item, "isConstant", {
       value: true,
@@ -20195,9 +20546,9 @@ class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
 
 
   IsGood() {
-    const instanced = this.instanceGeometryResource,
-          isResGood = this.geometryResource && this.geometryResource.IsGood(),
-          isInstancedResGood = !instanced ? false : instanced.IsGood ? instanced.IsGood() : true;
+    var instanced = this.instanceGeometryResource,
+        isResGood = this.geometryResource && this.geometryResource.IsGood(),
+        isInstancedResGood = !instanced ? false : instanced.IsGood ? instanced.IsGood() : true;
     return isResGood && isInstancedResGood;
   }
   /**
@@ -20236,7 +20587,7 @@ class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
 
   GetBatches(mode, accumulator, perObjectData) {
     if (!this.IsGood() || !this.display) return false;
-    const getBatches = this.constructor.GetAreaBatches;
+    var getBatches = this.constructor.GetAreaBatches;
 
     switch (mode) {
       case global_engine__WEBPACK_IMPORTED_MODULE_2__["RM_ADDITIVE"]:
@@ -20305,7 +20656,7 @@ class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
 
   RenderAreas(meshIx, start, count, effect, technique) {
     if (!this.IsGood()) return;
-    const buffer = this.instanceGeometryResource.GetInstanceBuffer(this.instanceMeshIndex);
+    var buffer = this.instanceGeometryResource.GetInstanceBuffer(this.instanceMeshIndex);
 
     if (buffer) {
       this.geometryResource.RenderAreasInstanced(meshIx, start, count, effect, technique, buffer, this.instanceGeometryResource.GetInstanceDeclaration(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceStride(this.instanceMeshIndex), this.instanceGeometryResource.GetInstanceCount(this.instanceMeshIndex));
@@ -20334,7 +20685,7 @@ class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
 
 
   static from(values, options) {
-    const item = new Tw2InstancedMesh();
+    var item = new Tw2InstancedMesh();
     item.meshIndex = Object(global_util__WEBPACK_IMPORTED_MODULE_3__["get"])(options, "index", 0);
 
     if (values) {
@@ -20345,7 +20696,7 @@ class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
       }
       */
       Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "geometryResPath", "instanceGeometryResPath", "instanceMeshIndex"]);
-      const areaNames = ["additiveAreas", "decalAreas", "depthAreas", "distortionAreas", "opaqueAreas", "pickableAreas", "transparentAreas"];
+      var areaNames = ["additiveAreas", "decalAreas", "depthAreas", "distortionAreas", "opaqueAreas", "pickableAreas", "transparentAreas"];
       Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areaNames);
       _Tw2Mesh__WEBPACK_IMPORTED_MODULE_5__["Tw2Mesh"].createAreaIfExists(item, values, areaNames);
     }
@@ -20367,11 +20718,11 @@ class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass
 
 
   static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData) {
-    for (let i = 0; i < areas.length; ++i) {
-      const area = areas[i];
+    for (var i = 0; i < areas.length; ++i) {
+      var area = areas[i];
 
       if (area.effect && area.display) {
-        const batch = new _batch__WEBPACK_IMPORTED_MODULE_1__["Tw2InstancedMeshBatch"]();
+        var batch = new _batch__WEBPACK_IMPORTED_MODULE_1__["Tw2InstancedMeshBatch"]();
         batch.renderMode = mode;
         batch.perObjectData = perObjectData;
         batch.instanceMesh = mesh;
@@ -20530,7 +20881,7 @@ class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   GetBatches(mode, accumulator, perObjectData) {
     if (!this.IsGood() || !this.display) return false;
-    const getBatches = this.constructor.GetAreaBatches;
+    var getBatches = this.constructor.GetAreaBatches;
 
     switch (mode) {
       case global_engine__WEBPACK_IMPORTED_MODULE_1__["RM_ADDITIVE"]:
@@ -20614,11 +20965,11 @@ class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static GetAreaBatches(mesh, areas, mode, accumulator, perObjectData) {
-    for (let i = 0; i < areas.length; ++i) {
-      const area = areas[i];
+    for (var i = 0; i < areas.length; ++i) {
+      var area = areas[i];
 
       if (area.effect && area.display) {
-        const batch = new area.constructor.batchType();
+        var batch = new area.constructor.batchType();
         batch.renderMode = mode;
         batch.perObjectData = perObjectData;
         batch.geometryRes = mesh.geometryResource;
@@ -20641,15 +20992,15 @@ class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   static createAreaIfExists(dest, src, names) {
     names = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["toArray"])(names);
 
-    for (let i = 0; i < names.length; i++) {
-      const name = names[i];
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i];
 
       if (name in src && name in dest) {
-        for (let i = 0; i < src[name].length; i++) {
-          const type = src[name][i].__type || "Tw2MeshArea",
-                Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
-          dest[name].push(Constructor.from(src[name][i], {
-            index: i
+        for (var _i = 0; _i < src[name].length; _i++) {
+          var type = src[name][_i].__type || "Tw2MeshArea",
+              Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
+          dest[name].push(Constructor.from(src[name][_i], {
+            index: _i
           }));
         }
       }
@@ -20664,12 +21015,12 @@ class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static from(values, options) {
-    const item = new Tw2Mesh();
+    var item = new Tw2Mesh();
     item.index = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["get"])(options, "index", 0);
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "deferGeometryLoad", "geometryResPath", "meshIndex"]);
-      const areaNames = ["additiveAreas", "decalAreas", "depthAreas", "depthNormalAreas", "distortionAreas", "opaqueAreas", "opaquePrepassAreas", "pickableAreas", "transparentAreas"];
+      var areaNames = ["additiveAreas", "decalAreas", "depthAreas", "depthNormalAreas", "distortionAreas", "opaqueAreas", "opaquePrepassAreas", "pickableAreas", "transparentAreas"];
       Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item.visible, values.visible, areaNames);
       this.createAreaIfExists(item, values, areaNames);
     }
@@ -20770,7 +21121,7 @@ class Tw2MeshArea extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
 
 
   static from(values, options) {
-    const item = new this();
+    var item = new this();
     Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, options, "index");
 
     if (values) {
@@ -20975,8 +21326,8 @@ class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"
 
 
   Play(options = {}) {
-    let wasPaused = this.IsPaused();
-    let {
+    var wasPaused = this.IsPaused();
+    var {
       time = wasPaused ? this.time : 0,
       cycle = this.cycle,
       timeScale = this.timeScale,
@@ -21227,9 +21578,9 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   IsGood() {
-    let isGood = this.geometryResources.length > 0; // Cycle through geometry to keep alive
+    var isGood = this.geometryResources.length > 0; // Cycle through geometry to keep alive
 
-    for (let i = 0; i < this.geometryResources.length; i++) {
+    for (var i = 0; i < this.geometryResources.length; i++) {
       if (!this.geometryResources[i] || !this.geometryResources[i].IsGood()) {
         isGood = false;
       }
@@ -21237,8 +21588,8 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
     if (!isGood || !this.animations.length) return false;
 
-    for (let i = 0; i < this.animations.length; i++) {
-      if (!this.animations[i].IsGood()) {
+    for (var _i = 0; _i < this.animations.length; _i++) {
+      if (!this.animations[_i].IsGood()) {
         return false;
       }
     }
@@ -21273,7 +21624,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
   GetAnimationsByName(out = {}) {
     if (!this.IsLoaded()) return null;
 
-    for (let i = 0; i < this.animations.length; i++) {
+    for (var i = 0; i < this.animations.length; i++) {
       out[this.animations[i].name] = this.animations[i];
     }
 
@@ -21287,7 +21638,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   GetAnimation(name) {
-    for (let i = 0; i < this.animations.length; i++) {
+    for (var i = 0; i < this.animations.length; i++) {
       if (this.animations[i].name === name) {
         return this.animations[i];
       }
@@ -21316,7 +21667,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
       return;
     }
 
-    const animation = this.GetAnimation(name);
+    var animation = this.GetAnimation(name);
 
     if (animation) {
       animation.Play(options);
@@ -21329,9 +21680,9 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   GetPlayingAnimations() {
-    const result = [];
+    var result = [];
 
-    for (let i = 0; i < this.animations.length; i++) {
+    for (var i = 0; i < this.animations.length; i++) {
       if (this.animations[i].IsPlaying()) {
         result.push(this.animations[i].name);
       }
@@ -21357,7 +21708,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
     names = global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
 
-    for (let i = 0; i < this.animations.length; ++i) {
+    for (var i = 0; i < this.animations.length; ++i) {
       if (names.includes(this.animations[i].name)) {
         this.animations[i].Stop();
       }
@@ -21378,7 +21729,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
       return;
     }
 
-    for (let i = 0; i < this.animations.length; ++i) {
+    for (var i = 0; i < this.animations.length; ++i) {
       this.animations[i].Stop();
     }
   }
@@ -21400,7 +21751,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
     names = global__WEBPACK_IMPORTED_MODULE_0__["util"].toArray(names);
 
-    for (let i = 0; i < this.animations.length; ++i) {
+    for (var i = 0; i < this.animations.length; ++i) {
       if (!names.includes(this.animations[i].name)) {
         this.animations[i].Stop();
       }
@@ -21415,8 +21766,8 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
   SetGeometryResource(geometryResource) {
     this.models.splice(0);
 
-    for (let i = 0; i < this.animations.length; i++) {
-      const animation = this.animations[i];
+    for (var i = 0; i < this.animations.length; i++) {
+      var animation = this.animations[i];
       this.animations.splice(i, 1);
       i--;
       /**
@@ -21436,8 +21787,8 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
     this.meshBindings.splice(0);
 
-    for (let i = 0; i < this.geometryResources.length; ++i) {
-      this.geometryResources[i].UnregisterNotification(this);
+    for (var _i2 = 0; _i2 < this.geometryResources.length; ++_i2) {
+      this.geometryResources[_i2].UnregisterNotification(this);
     }
 
     this._isLoaded = false;
@@ -21466,10 +21817,10 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   ResetBoneTransforms() {
-    for (let i = 0; i < this.models.length; ++i) {
-      for (let j = 0; j < this.models[i].bones.length; ++j) {
-        const bone = this.models[i].bones[j],
-              boneRes = bone.boneRes;
+    for (var i = 0; i < this.models.length; ++i) {
+      for (var j = 0; j < this.models[i].bones.length; ++j) {
+        var bone = this.models[i].bones[j],
+            boneRes = bone.boneRes;
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(bone.localTransform, boneRes.localTransform);
 
         if (boneRes.parentIndex !== -1) {
@@ -21482,13 +21833,13 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
       }
     }
 
-    const id = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(Tw2AnimationController.global.mat4_0);
+    var id = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(Tw2AnimationController.global.mat4_0);
 
-    for (let i = 0; i < this.meshBindings.length; ++i) {
-      for (let j = 0; j < this.meshBindings[i].meshIndex.length; ++j) {
-        for (let k = 0; k * 16 < this.meshBindings[i].meshIndex[j].length; ++k) {
-          for (let m = 0; m < 16; ++m) {
-            this.meshBindings[i].meshIndex[j][k * 16 + m] = id[m];
+    for (var _i3 = 0; _i3 < this.meshBindings.length; ++_i3) {
+      for (var _j = 0; _j < this.meshBindings[_i3].meshIndex.length; ++_j) {
+        for (var k = 0; k * 16 < this.meshBindings[_i3].meshIndex[_j].length; ++k) {
+          for (var m = 0; m < 16; ++m) {
+            this.meshBindings[_i3].meshIndex[_j][k * 16 + m] = id[m];
           }
         }
       }
@@ -21511,7 +21862,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
       geometryResource = this.geometryResources[0];
     }
 
-    const meshBindings = Tw2AnimationController.FindMeshBindings(this, geometryResource);
+    var meshBindings = Tw2AnimationController.FindMeshBindings(this, geometryResource);
 
     if (meshBindings && meshBindings.meshIndex[meshIndex] !== undefined) {
       return meshBindings.meshIndex[meshIndex];
@@ -21528,10 +21879,10 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   FindBoneForMesh(name, meshIndex) {
-    const model = this.FindModelForMesh(meshIndex);
+    var model = this.FindModelForMesh(meshIndex);
 
     if (model) {
-      for (let i = 0; i < model.bones.length; i++) {
+      for (var i = 0; i < model.bones.length; i++) {
         if (model.bones[i].boneRes.name === name) {
           return model.bones[i];
         }
@@ -21561,10 +21912,10 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
       return null;
     }
 
-    const mesh = geometryResource.meshes[meshIndex];
+    var mesh = geometryResource.meshes[meshIndex];
 
-    for (let i = 0; i < this.models.length; ++i) {
-      for (let j = 0; j < this.models[i].modelRes.meshBindings.length; ++i) {
+    for (var i = 0; i < this.models.length; ++i) {
+      for (var j = 0; j < this.models[i].modelRes.meshBindings.length; ++i) {
         if (this.models[i].modelRes.meshBindings[j].mesh === mesh) {
           return this.models[i];
         }
@@ -21581,7 +21932,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   GetResources(out = []) {
-    for (let i = 0; i < this.geometryResources.length; i++) {
+    for (var i = 0; i < this.geometryResources.length; i++) {
       if (!out.includes(this.geometryResources[i])) {
         out.push(this.geometryResources[i]);
       }
@@ -21597,20 +21948,20 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
   OnResPrepared(res) {
     res.UnregisterNotification(this);
-    let found = this.geometryResources.includes(res); // Unknown resource ignore
+    var found = this.geometryResources.includes(res); // Unknown resource ignore
 
     if (!found) {
       return;
     }
 
-    for (let i = 0; i < this.geometryResources.length; ++i) {
+    for (var i = 0; i < this.geometryResources.length; ++i) {
       if (!this.geometryResources[i].IsGood()) {
         return;
       }
     }
 
-    for (let i = 0; i < this.geometryResources.length; ++i) {
-      Tw2AnimationController.DoRebuildCachedData(this, this.geometryResources[i]);
+    for (var _i4 = 0; _i4 < this.geometryResources.length; ++_i4) {
+      Tw2AnimationController.DoRebuildCachedData(this, this.geometryResources[_i4]);
     }
   }
   /**
@@ -21620,33 +21971,33 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   Update(dt) {
-    let wasPlaying = this._isPlaying;
+    var wasPlaying = this._isPlaying;
     this._isPlaying = false;
 
     if (!this.models || !this.update) {
       return;
     }
 
-    for (let i = 0; i < this.geometryResources.length; ++i) {
+    for (var i = 0; i < this.geometryResources.length; ++i) {
       this.geometryResources[i].KeepAlive();
     }
 
-    const g = Tw2AnimationController.global,
-          rotationMat = g.mat4_0,
-          orientation = g.quat_0,
-          position = g.vec3_0,
-          scale = g.mat3_0; //var updateBones = false;
+    var g = Tw2AnimationController.global,
+        rotationMat = g.mat4_0,
+        orientation = g.quat_0,
+        position = g.vec3_0,
+        scale = g.mat3_0; //var updateBones = false;
 
-    for (let i = 0; i < this.animations.length; ++i) {
-      const animation = this.animations[i];
+    for (var _i5 = 0; _i5 < this.animations.length; ++_i5) {
+      var animation = this.animations[_i5];
 
       if (animation.Update(dt)) {
         this._isPlaying = true;
-        const res = animation.animationRes;
+        var res = animation.animationRes;
 
-        for (let j = 0; j < animation.trackGroups.length; ++j) {
-          for (let k = 0; k < animation.trackGroups[j].transformTracks.length; ++k) {
-            const track = animation.trackGroups[j].transformTracks[k];
+        for (var j = 0; j < animation.trackGroups.length; ++j) {
+          for (var k = 0; k < animation.trackGroups[j].transformTracks.length; ++k) {
+            var track = animation.trackGroups[j].transformTracks[k];
 
             if (track.trackRes.position) {
               global__WEBPACK_IMPORTED_MODULE_0__["curve"].evaluate(track.trackRes.position, animation.time, position, animation.cycle, res.duration);
@@ -21677,21 +22028,21 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
       }
     }
 
-    for (let i = 0; i < this.models.length; ++i) {
-      for (let j = 0; j < this.models[i].bones.length; ++j) {
-        const bone = this.models[i].bones[j];
+    for (var _i6 = 0; _i6 < this.models.length; ++_i6) {
+      for (var _j2 = 0; _j2 < this.models[_i6].bones.length; ++_j2) {
+        var bone = this.models[_i6].bones[_j2];
 
         if (bone.boneRes.parentIndex !== -1) {
-          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.worldTransform, this.models[i].bones[bone.boneRes.parentIndex].worldTransform, bone.localTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.worldTransform, this.models[_i6].bones[bone.boneRes.parentIndex].worldTransform, bone.localTransform);
         } else {
           global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(bone.worldTransform, bone.localTransform);
         }
 
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(bone.offsetTransform, bone.worldTransform, bone.boneRes.worldTransformInv);
 
-        for (let a = 0; a < bone.bindingArrays.length; ++a) {
-          const ba = bone.bindingArrays[a],
-                tr = bone.offsetTransform;
+        for (var a = 0; a < bone.bindingArrays.length; ++a) {
+          var ba = bone.bindingArrays[a],
+              tr = bone.offsetTransform;
           ba.array[ba.offset + 0] = tr[0];
           ba.array[ba.offset + 1] = tr[4];
           ba.array[ba.offset + 2] = tr[8];
@@ -21724,12 +22075,12 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
      {
      this.geometryResources[i].RenderDebugInfo(debugHelper);
      }*/
-    for (let i = 0; i < this.models.length; ++i) {
-      for (let j = 0; j < this.models[i].bones.length; ++j) {
-        const b0 = this.models[i].bones[j];
+    for (var i = 0; i < this.models.length; ++i) {
+      for (var j = 0; j < this.models[i].bones.length; ++j) {
+        var b0 = this.models[i].bones[j];
 
         if (b0.boneRes.parentIndex >= 0) {
-          const b1 = this.models[i].bones[b0.boneRes.parentIndex];
+          var b1 = this.models[i].bones[b0.boneRes.parentIndex];
           debugHelper["AddLine"]([b0.worldTransform[12], b0.worldTransform[13], b0.worldTransform[14]], [b1.worldTransform[12], b1.worldTransform[13], b1.worldTransform[14]]);
         }
       }
@@ -21743,11 +22094,11 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   static AddAnimationsFromRes(controller, resource) {
-    for (let i = 0; i < resource.animations.length; ++i) {
-      let animation = null;
-      let added;
+    for (var i = 0; i < resource.animations.length; ++i) {
+      var animation = null;
+      var added = void 0;
 
-      for (let j = 0; j < controller.animations.length; ++j) {
+      for (var j = 0; j < controller.animations.length; ++j) {
         if (controller.animations[j].animationRes === resource.animations[i]) {
           animation = controller.animations[i];
           break;
@@ -21761,11 +22112,11 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
         added = true;
       }
 
-      for (let j = 0; j < animation.animationRes.trackGroups.length; ++j) {
-        let found = false;
+      for (var _j3 = 0; _j3 < animation.animationRes.trackGroups.length; ++_j3) {
+        var found = false;
 
-        for (let k = 0; k < animation.trackGroups.length; ++k) {
-          if (animation.trackGroups[k].trackGroupRes === animation.animationRes.trackGroups[j]) {
+        for (var k = 0; k < animation.trackGroups.length; ++k) {
+          if (animation.trackGroups[k].trackGroupRes === animation.animationRes.trackGroups[_j3]) {
             found = true;
             break;
           }
@@ -21775,24 +22126,24 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
           continue;
         }
 
-        let model = null;
+        var model = null;
 
-        for (let k = 0; k < controller.models.length; ++k) {
-          if (controller.models[k].modelRes.name === animation.animationRes.trackGroups[j].name) {
-            model = controller.models[k];
+        for (var _k = 0; _k < controller.models.length; ++_k) {
+          if (controller.models[_k].modelRes.name === animation.animationRes.trackGroups[_j3].name) {
+            model = controller.models[_k];
             break;
           }
         }
 
         if (model !== null) {
-          const group = new _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__["Tw2TrackGroup"]();
-          group.trackGroupRes = animation.animationRes.trackGroups[j];
+          var group = new _Tw2TrackGroup__WEBPACK_IMPORTED_MODULE_7__["Tw2TrackGroup"]();
+          group.trackGroupRes = animation.animationRes.trackGroups[_j3];
 
-          for (let k = 0; k < group.trackGroupRes.transformTracks.length; ++k) {
-            for (let m = 0; m < model.bones.length; ++m) {
-              if (model.bones[m].boneRes.name === group.trackGroupRes.transformTracks[k].name) {
-                const track = new _Tw2Track__WEBPACK_IMPORTED_MODULE_6__["Tw2Track"]();
-                track.trackRes = group.trackGroupRes.transformTracks[k];
+          for (var _k2 = 0; _k2 < group.trackGroupRes.transformTracks.length; ++_k2) {
+            for (var m = 0; m < model.bones.length; ++m) {
+              if (model.bones[m].boneRes.name === group.trackGroupRes.transformTracks[_k2].name) {
+                var track = new _Tw2Track__WEBPACK_IMPORTED_MODULE_6__["Tw2Track"]();
+                track.trackRes = group.trackGroupRes.transformTracks[_k2];
                 track.bone = model.bones[m];
                 group.transformTracks.push(track);
                 break;
@@ -21828,19 +22179,19 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   static AddModel(controller, modelRes) {
-    for (let i = 0; i < controller.models.length; ++i) {
+    for (var i = 0; i < controller.models.length; ++i) {
       if (controller.models[i].modelRes.name === modelRes.name) {
         return null;
       }
     }
 
-    const model = new _Tw2Model__WEBPACK_IMPORTED_MODULE_5__["Tw2Model"]();
+    var model = new _Tw2Model__WEBPACK_IMPORTED_MODULE_5__["Tw2Model"]();
     model.modelRes = modelRes;
-    const skeleton = modelRes.skeleton;
+    var skeleton = modelRes.skeleton;
 
     if (skeleton !== null) {
-      for (let j = 0; j < skeleton.bones.length; ++j) {
-        const bone = new _Tw2Bone__WEBPACK_IMPORTED_MODULE_3__["Tw2Bone"]();
+      for (var j = 0; j < skeleton.bones.length; ++j) {
+        var bone = new _Tw2Bone__WEBPACK_IMPORTED_MODULE_3__["Tw2Bone"]();
         bone.boneRes = skeleton.bones[j];
         model.bones.push(bone);
         model.bonesByName[bone.boneRes.name] = bone;
@@ -21860,7 +22211,7 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
 
   static FindMeshBindings(controller, resource) {
-    for (let i = 0; i < controller.meshBindings.length; ++i) {
+    for (var i = 0; i < controller.meshBindings.length; ++i) {
       if (controller.meshBindings[i].resource === resource) {
         return controller.meshBindings[i];
       }
@@ -21877,28 +22228,28 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
   static DoRebuildCachedData(controller, resource) {
     if (resource.meshes.length) {
-      for (let i = 0; i < resource.models.length; ++i) {
+      for (var i = 0; i < resource.models.length; ++i) {
         Tw2AnimationController.AddModel(controller, resource.models[i]);
       }
     }
 
-    for (let i = 0; i < controller.geometryResources.length; ++i) {
-      this.AddAnimationsFromRes(controller, controller.geometryResources[i]);
+    for (var _i7 = 0; _i7 < controller.geometryResources.length; ++_i7) {
+      this.AddAnimationsFromRes(controller, controller.geometryResources[_i7]);
     }
 
     if (resource.models.length === 0) {
-      for (let i = 0; i < resource.meshes.length; ++i) {
-        _resource__WEBPACK_IMPORTED_MODULE_1__["Tw2GeometryRes"].BindMeshToModel(resource.meshes[i], controller.geometryResources[0].models[0], resource);
+      for (var _i8 = 0; _i8 < resource.meshes.length; ++_i8) {
+        _resource__WEBPACK_IMPORTED_MODULE_1__["Tw2GeometryRes"].BindMeshToModel(resource.meshes[_i8], controller.geometryResources[0].models[0], resource);
       }
 
       resource.models.push(controller.geometryResources[0].models[0]);
     }
 
-    for (let i = 0; i < resource.models.length; ++i) {
-      let model = null;
+    for (var _i9 = 0; _i9 < resource.models.length; ++_i9) {
+      var model = null;
 
-      for (let j = 0; j < controller.models.length; ++j) {
-        if (controller.models[j].modelRes.name === resource.models[i].name) {
+      for (var j = 0; j < controller.models.length; ++j) {
+        if (controller.models[j].modelRes.name === resource.models[_i9].name) {
           model = controller.models[j];
           break;
         }
@@ -21908,9 +22259,9 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
         continue;
       }
 
-      for (let j = 0; j < resource.models[i].meshBindings.length; ++j) {
-        const meshIx = resource.meshes.indexOf(resource.models[i].meshBindings[j].mesh);
-        let meshBindings = Tw2AnimationController.FindMeshBindings(controller, resource);
+      for (var _j4 = 0; _j4 < resource.models[_i9].meshBindings.length; ++_j4) {
+        var meshIx = resource.meshes.indexOf(resource.models[_i9].meshBindings[_j4].mesh);
+        var meshBindings = Tw2AnimationController.FindMeshBindings(controller, resource);
 
         if (meshBindings === null) {
           meshBindings = new _Tw2MeshBinding__WEBPACK_IMPORTED_MODULE_8__["Tw2MeshBinding"]();
@@ -21918,12 +22269,12 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
           controller.meshBindings.push(meshBindings);
         }
 
-        meshBindings.meshIndex[meshIx] = new Float32Array(resource.models[i].meshBindings[j].bones.length * 12);
+        meshBindings.meshIndex[meshIx] = new Float32Array(resource.models[_i9].meshBindings[_j4].bones.length * 12);
 
-        for (let k = 0; k < resource.models[i].meshBindings[j].bones.length; ++k) {
-          for (let n = 0; n < model.bones.length; ++n) {
-            if (model.bones[n].boneRes.name === resource.models[i].meshBindings[j].bones[k].name) {
-              const boneBinding = new _Tw2BoneBinding__WEBPACK_IMPORTED_MODULE_4__["Tw2BoneBinding"]();
+        for (var k = 0; k < resource.models[_i9].meshBindings[_j4].bones.length; ++k) {
+          for (var n = 0; n < model.bones.length; ++n) {
+            if (model.bones[n].boneRes.name === resource.models[_i9].meshBindings[_j4].bones[k].name) {
+              var boneBinding = new _Tw2BoneBinding__WEBPACK_IMPORTED_MODULE_4__["Tw2BoneBinding"]();
               boneBinding.array = meshBindings.meshIndex[meshIx];
               boneBinding.offset = k * 12;
               model.bones[n].bindingArrays.push(boneBinding); //meshBindings.meshIndex[meshIx][k] = model.bones[n].offsetTransform;
@@ -21954,11 +22305,11 @@ class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2Bas
 
     if (controller.animations.length) {
       if (controller._pendingCommands.length) {
-        for (let i = 0; i < controller._pendingCommands.length; ++i) {
-          if (!controller._pendingCommands[i].args) {
-            controller._pendingCommands[i].func.apply(controller);
+        for (var _i10 = 0; _i10 < controller._pendingCommands.length; ++_i10) {
+          if (!controller._pendingCommands[_i10].args) {
+            controller._pendingCommands[_i10].func.apply(controller);
           } else {
-            controller._pendingCommands[i].func.apply(controller, controller._pendingCommands[i].args);
+            controller._pendingCommands[_i10].func.apply(controller, controller._pendingCommands[_i10].args);
           }
         }
       }
@@ -22496,7 +22847,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @ccp N/A
  */
 
-let Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Parameter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Parameter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Gets the parameter's constant buffer size
    * @returns {Number} 0 if invalid
@@ -22685,8 +23036,8 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
     if (this.resourcePath !== "") {
       if (this.resourcePath.indexOf("rgba:/") === 0) {
         if (!this.textureRes || this.textureRes.path !== this.resourcePath) {
-          const color = this.resourcePath.replace("rgba:/", "").split(","),
-                texture = global__WEBPACK_IMPORTED_MODULE_0__["device"].CreateSolidTexture([parseFloat(color[0]), parseFloat(color[1]), parseFloat(color[2]), color[3] !== undefined ? parseFloat(color[3]) : 255]);
+          var color = this.resourcePath.replace("rgba:/", "").split(","),
+              texture = global__WEBPACK_IMPORTED_MODULE_0__["device"].CreateSolidTexture([parseFloat(color[0]), parseFloat(color[1]), parseFloat(color[2]), color[3] !== undefined ? parseFloat(color[3]) : 255]);
           this.textureRes = new _resource_Tw2TextureRes__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureRes"]();
           this.textureRes.path = this.resourcePath;
           this.textureRes.Attach(texture);
@@ -22756,11 +23107,11 @@ class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw
     if (this.useAllOverrides) {
       this._sampler = this._sampler || new _sampler__WEBPACK_IMPORTED_MODULE_1__["Tw2SamplerState"]();
       this._sampler.forceAddressModes = this.forceAddressModes;
-      const {
+      var {
         wrapModes,
         gl
       } = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-            sampler = this._sampler;
+          sampler = this._sampler;
 
       if (this.filterMode === 1) {
         switch (this.mipFilterMode) {
@@ -22960,7 +23311,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   RebuildTransforms(opt) {
-    let force = opt ? opt.force : false,
+    var force = opt ? opt.force : false,
         skipUpdate = opt ? opt.skipUpdate : false;
 
     if (force || this._rebuildLocal) {
@@ -23149,7 +23500,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldEuler(out) {
-    const {
+    var {
       quat_0
     } = Tw2TransformParameter.global;
     this.GetWorldRotation(quat_0);
@@ -23163,7 +23514,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldAxisAngle(axis) {
-    const {
+    var {
       quat_0
     } = Tw2TransformParameter.global;
     this.RebuildTransforms();
@@ -23199,7 +23550,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetWorldMaxScale() {
-    const {
+    var {
       vec3_0
     } = Tw2TransformParameter.global;
     this.GetWorldScaling(vec3_0);
@@ -23220,7 +23571,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
       return global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformMat4(out, v, this._worldInverse);
     }
 
-    const {
+    var {
       mat4_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].invert(mat4_0, this._worldTransform);
@@ -23326,7 +23677,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   GetEuler(out) {
-    const {
+    var {
       quat_0
     } = Tw2TransformParameter.global;
     this.GetRotation(quat_0);
@@ -23365,7 +23716,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromValues(x, y, z, w) {
-    const {
+    var {
       quat_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].set(quat_0, x, y, z, w);
@@ -23381,7 +23732,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromAxes(view, right, up) {
-    const {
+    var {
       quat_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxes(quat_0, view, right, up);
@@ -23422,7 +23773,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromEulerValues(x, y, z) {
-    const {
+    var {
       vec3_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
@@ -23436,7 +23787,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetRotationFromMat4(m) {
-    const {
+    var {
       quat_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getRotation(quat_0, m);
@@ -23487,7 +23838,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   RotateOnAxisAngle(axis, radians) {
-    const {
+    var {
       quat_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["quat"].setAxisAngle(quat_0, axis, radians);
@@ -23515,7 +23866,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
   LookAt(v, flip) {
     this.RebuildTransforms();
-    const {
+    var {
       mat4_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(mat4_0, this._localTransform);
@@ -23539,7 +23890,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   LookAtWorld(v, flip) {
-    const {
+    var {
       vec3_0
     } = Tw2TransformParameter.global;
     this.GetWorldToLocal(vec3_0, v);
@@ -23603,7 +23954,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   TranslateOnAxis(axis, distance) {
-    const {
+    var {
       vec3_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].transformQuat(vec3_0, axis, this.rotation);
@@ -23683,7 +24034,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   SetScaleFromValues(x, y, z) {
-    const {
+    var {
       vec3_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
@@ -23763,7 +24114,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   ScaleValues(x, y, z) {
-    const {
+    var {
       vec3_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["vec3"].set(vec3_0, x, y, z);
@@ -23777,7 +24128,7 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
 
 
   ScaleMat4(m) {
-    const {
+    var {
       vec3_0
     } = Tw2TransformParameter.global;
     global_math__WEBPACK_IMPORTED_MODULE_1__["mat4"].getScaling(vec3_0, m);
@@ -23841,12 +24192,12 @@ class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["
     }
 
     this.init();
-    const {
+    var {
       vec3_0,
       vec3_1,
       quat_0
     } = this.global;
-    let rotation,
+    var rotation,
         translation,
         scaling,
         updated = false; // Transform has precedence to any other property
@@ -24431,9 +24782,11 @@ class Tw2VectorParameter extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCla
 
 
   GetValue(out = []) {
-    const value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
+    var value = this._constantBuffer ? this._constantBuffer.subarray(this._offset, this._offset + this.size) : this.value;
 
-    for (let i = 0; i < value.length; i++) out[i] = value[i];
+    for (var i = 0; i < value.length; i++) {
+      out[i] = value[i];
+    }
 
     return out;
   }
@@ -24511,7 +24864,7 @@ class Tw2VectorParameter extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseCla
 
 
   EqualsValue(value) {
-    for (let i = 0; i < this.size; i++) {
+    for (var i = 0; i < this.size; i++) {
       if (this.value[i] !== value[i]) {
         return false;
       }
@@ -24703,9 +25056,9 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   IsGood() {
-    let IsGood = 0;
+    var IsGood = 0;
 
-    for (let i = 0; i < this.steps.length; i++) {
+    for (var i = 0; i < this.steps.length; i++) {
       if (this.steps[i].IsGood()) {
         IsGood++;
       }
@@ -24719,7 +25072,7 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   KeepAlive() {
-    for (let i = 0; i < this.steps.length; i++) {
+    for (var i = 0; i < this.steps.length; i++) {
       this.steps[i].KeepAlive();
     }
   }
@@ -24731,7 +25084,7 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   GetResources(out = []) {
-    for (let i = 0; i < this.steps.length; i++) {
+    for (var i = 0; i < this.steps.length; i++) {
       this.steps[i].GetResources(out);
     }
 
@@ -24745,7 +25098,7 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   CreateItem(opt = {}) {
-    const item = _Tw2PostEffectStep__WEBPACK_IMPORTED_MODULE_4__["Tw2PostEffectStep"].from(opt);
+    var item = _Tw2PostEffectStep__WEBPACK_IMPORTED_MODULE_4__["Tw2PostEffectStep"].from(opt);
     this.AddItem(item);
     return item;
   }
@@ -24773,7 +25126,7 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   RemoveItem(item) {
-    const index = this.steps.indexOf(item);
+    var index = this.steps.indexOf(item);
 
     if (index !== -1) {
       item._onModified = null;
@@ -24787,7 +25140,7 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   ClearItems() {
-    for (let i = 0; i < this.steps.length; i++) {
+    for (var i = 0; i < this.steps.length; i++) {
       this.steps[i]._onModified = null;
     }
 
@@ -24853,10 +25206,10 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   Render() {
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          width = d.viewportWidth,
-          height = d.viewportHeight;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        width = d.viewportWidth,
+        height = d.viewportHeight;
 
     if (!this.IsGood() || !this.display || width <= 0 || height <= 0) {
       return false;
@@ -24877,12 +25230,12 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
       this._visibleSteps = [];
 
-      for (let i = 0; i < this.steps.length; ++i) {
-        const item = this.steps[i],
-              inputs = item.inputs,
-              effect = item.effect,
-              shader = effect.shader,
-              parameters = effect.parameters; // Auto create current blit
+      for (var i = 0; i < this.steps.length; ++i) {
+        var item = this.steps[i],
+            inputs = item.inputs,
+            effect = item.effect,
+            shader = effect.shader,
+            parameters = effect.parameters; // Auto create current blit
 
         if (shader.HasTexture("BlitCurrent") && !parameters.BlitCurrent) {
           parameters["BlitCurrent"] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"]("BlitCurrent", "rgba:/0,0,0,255");
@@ -24901,7 +25254,7 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
         } // Assign render targets to textures
 
 
-        for (let texture in inputs) {
+        for (var texture in inputs) {
           if (inputs.hasOwnProperty(texture)) {
             // Ensure input is supported
             if (!shader.HasTexture(texture)) {
@@ -24913,8 +25266,8 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
                 parameters[texture] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](texture);
               }
 
-              const parameter = parameters[texture],
-                    target = inputs[texture];
+              var parameter = parameters[texture],
+                  target = inputs[texture];
 
               if (target) {
                 parameter.SetTextureRes(this.CreateTarget(target, width, height).texture);
@@ -24932,8 +25285,8 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
             parameters["g_texelSize"] = new _parameter__WEBPACK_IMPORTED_MODULE_3__["Tw2Vector4Parameter"]("g_texelSize", [1, 1, 1, 1]);
           }
 
-          const size = parameters["g_texelSize"],
-                renderTarget = this.GetTarget(inputs.BlitCurrent);
+          var size = parameters["g_texelSize"],
+              renderTarget = this.GetTarget(inputs.BlitCurrent);
 
           if (renderTarget) {
             size.value[0] = 1.0 / renderTarget.width;
@@ -24965,20 +25318,20 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     gl.copyTexImage2D(gl.TEXTURE_2D, 0, d.alphaBlendBackBuffer ? gl.RGBA : gl.RGB, 0, 0, width, height, 0);
     gl.bindTexture(gl.TEXTURE_2D, null);
     d.SetStandardStates(global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_OPAQUE);
-    let didPost = 0;
+    var didPost = 0;
 
-    for (let i = 0; i < this._visibleSteps.length; ++i) {
-      const item = this._visibleSteps[i];
+    for (var _i = 0; _i < this._visibleSteps.length; ++_i) {
+      var _item = this._visibleSteps[_i];
 
-      if (item.display) {
-        if (item._renderTarget) {
-          item._renderTarget.Set();
+      if (_item.display) {
+        if (_item._renderTarget) {
+          _item._renderTarget.Set();
         } else {
           gl.bindFramebuffer(gl.FRAMEBUFFER, null);
           gl.viewport(0, 0, width, height);
         }
 
-        d.RenderFullScreenQuad(item.effect);
+        d.RenderFullScreenQuad(_item.effect);
         didPost++;
       }
     }
@@ -24993,11 +25346,11 @@ class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   static from(opt = {}) {
-    const postEffect = new this();
+    var postEffect = new this();
     Object(global_util__WEBPACK_IMPORTED_MODULE_5__["assignIfExists"])(postEffect, opt, ["name", "display", "index"]);
 
     if (opt.steps) {
-      for (let i = 0; i < opt.steps.length; i++) {
+      for (var i = 0; i < opt.steps.length; i++) {
         postEffect.CreateItem(opt.steps[i]);
       }
     }
@@ -25065,9 +25418,9 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
 
 
   IsGood() {
-    let IsGood = 0;
+    var IsGood = 0;
 
-    for (let i = 0; i < this.effects.length; i++) {
+    for (var i = 0; i < this.effects.length; i++) {
       if (this.effects[i].IsGood()) {
         IsGood++;
       }
@@ -25081,7 +25434,7 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
 
 
   KeepAlive() {
-    for (let i = 0; i < this.effects.length; i++) {
+    for (var i = 0; i < this.effects.length; i++) {
       this.effects[i].KeepAlive();
     }
   }
@@ -25093,7 +25446,7 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
 
 
   GetResources(out = []) {
-    for (let i = 0; i < this.effects.length; i++) {
+    for (var i = 0; i < this.effects.length; i++) {
       this.effects[i].GetResources(out);
     }
 
@@ -25107,7 +25460,7 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
 
 
   CreateItem(opt = {}) {
-    const item = _Tw2PostEffect__WEBPACK_IMPORTED_MODULE_0__["Tw2PostEffect"].from(opt);
+    var item = _Tw2PostEffect__WEBPACK_IMPORTED_MODULE_0__["Tw2PostEffect"].from(opt);
     this.AddItem(item);
     return item;
   }
@@ -25135,7 +25488,7 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
 
 
   RemoveItem(item) {
-    const index = this.effects.indexOf(item);
+    var index = this.effects.indexOf(item);
 
     if (index !== -1) {
       item._onModified = null;
@@ -25149,7 +25502,7 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
 
 
   ClearItems() {
-    for (let i = 0; i < this.effects.length; i++) {
+    for (var i = 0; i < this.effects.length; i++) {
       this.effects[i]._onModified = null;
       this.effects[i].ClearItems();
     }
@@ -25167,7 +25520,7 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
     if (this._dirty) {
       this._visibleEffects = [];
 
-      for (let i = 0; i < this.effects.length; i++) {
+      for (var i = 0; i < this.effects.length; i++) {
         if (this.effects[i].display) {
           this._visibleEffects.push(this.effects[i]);
         }
@@ -25180,8 +25533,8 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
       this._dirty = false;
     }
 
-    for (let i = 0; i < this.effects.length; i++) {
-      this.effects[i].Update(dt);
+    for (var _i = 0; _i < this.effects.length; _i++) {
+      this.effects[_i].Update(dt);
     }
   }
   /**
@@ -25196,9 +25549,9 @@ class Tw2PostEffectManager extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_M
       return false;
     }
 
-    let rendered = 0;
+    var rendered = 0;
 
-    for (let i = 0; i < this._visibleEffects.length; i++) {
+    for (var i = 0; i < this._visibleEffects.length; i++) {
       if (this._visibleEffects[i].Render()) {
         rendered++;
       }
@@ -25306,7 +25659,7 @@ class Tw2PostEffectStep extends global_class_Tw2BaseClass__WEBPACK_IMPORTED_MODU
 
 
   static from(opt = {}) {
-    const item = new this();
+    var item = new this();
     Object(global_util__WEBPACK_IMPORTED_MODULE_0__["assignIfExists"])(item, opt, ["name", "display", "target", "index"]);
 
     if (opt.inputs) {
@@ -25398,7 +25751,7 @@ class Tw2BinaryReader {
 
 
   ReadInt8() {
-    let val = this.data[this.cursor++];
+    var val = this.data[this.cursor++];
     if (val > 0x7F) val = val - 0xff - 1;
     return val;
   }
@@ -25418,7 +25771,7 @@ class Tw2BinaryReader {
 
 
   ReadInt16() {
-    let val = this.data[this.cursor++] + (this.data[this.cursor++] << 8);
+    var val = this.data[this.cursor++] + (this.data[this.cursor++] << 8);
     if (val > 0x7FFF) val = val - 0xffff - 1;
     return val;
   }
@@ -25438,7 +25791,7 @@ class Tw2BinaryReader {
 
 
   ReadInt32() {
-    let val = this.data[this.cursor++] + (this.data[this.cursor++] << 8) + (this.data[this.cursor++] << 16) + (this.data[this.cursor++] << 24 >>> 0);
+    var val = this.data[this.cursor++] + (this.data[this.cursor++] << 8) + (this.data[this.cursor++] << 16) + (this.data[this.cursor++] << 24 >>> 0);
     if (val > 0x7FFFFFFF) val = val - 0xffffffff - 1;
     return val;
   }
@@ -25449,13 +25802,13 @@ class Tw2BinaryReader {
 
 
   ReadFloat16() {
-    let b2 = this.data[this.cursor++],
+    var b2 = this.data[this.cursor++],
         b1 = this.data[this.cursor++];
-    const sign = 1 - 2 * (b1 >> 7); // sign = bit 0
+    var sign = 1 - 2 * (b1 >> 7); // sign = bit 0
 
-    const exp = (b1 >> 2 & 0x1f) - 15; // exponent = bits 1..5
+    var exp = (b1 >> 2 & 0x1f) - 15; // exponent = bits 1..5
 
-    const sig = (b1 & 3) << 8 | b2; // significand = bits 6..15
+    var sig = (b1 & 3) << 8 | b2; // significand = bits 6..15
 
     if (sig === 0 && exp === -15) return 0.0;
     return sign * (1 + sig * Math.pow(2, -10)) * Math.pow(2, exp);
@@ -25467,15 +25820,15 @@ class Tw2BinaryReader {
 
 
   ReadFloat32() {
-    let b4 = this.data[this.cursor++],
+    var b4 = this.data[this.cursor++],
         b3 = this.data[this.cursor++],
         b2 = this.data[this.cursor++],
         b1 = this.data[this.cursor++];
-    const sign = 1 - 2 * (b1 >> 7); // sign = bit 0
+    var sign = 1 - 2 * (b1 >> 7); // sign = bit 0
 
-    const exp = (b1 << 1 & 0xff | b2 >> 7) - 127; // exponent = bits 1..8
+    var exp = (b1 << 1 & 0xff | b2 >> 7) - 127; // exponent = bits 1..8
 
-    const sig = (b2 & 0x7f) << 16 | b3 << 8 | b4; // significand = bits 9..31
+    var sig = (b2 & 0x7f) << 16 | b3 << 8 | b4; // significand = bits 9..31
 
     if (sig === 0 && exp === -127) return 0.0;
     return sign * (1 + sig * Math.pow(2, -23)) * Math.pow(2, exp);
@@ -25487,10 +25840,10 @@ class Tw2BinaryReader {
 
 
   ReadString() {
-    const length = this.data[this.cursor++];
-    let str = "";
+    var length = this.data[this.cursor++];
+    var str = "";
 
-    for (let i = 0; i < length; ++i) {
+    for (var i = 0; i < length; ++i) {
       str += String.fromCharCode(this.data[this.cursor++]);
     }
 
@@ -25588,15 +25941,15 @@ class Tw2BlackBinaryReader {
 
 
   ReadCString() {
-    const data = this.data,
-          startOffset = this.cursor;
+    var data = this.data,
+        startOffset = this.cursor;
 
     while (this.ReadU8() !== 0) {// NO OPERATION
     }
 
-    const arrayOffset = data.byteOffset + startOffset,
-          arrayLength = this.cursor - startOffset - 1,
-          array = new Uint8Array(data.buffer, arrayOffset, arrayLength);
+    var arrayOffset = data.byteOffset + startOffset,
+        arrayLength = this.cursor - startOffset - 1,
+        array = new Uint8Array(data.buffer, arrayOffset, arrayLength);
     return Tw2BlackBinaryReader.stringDecoder.decode(array);
   }
   /**
@@ -25606,15 +25959,15 @@ class Tw2BlackBinaryReader {
 
 
   ReadCWString() {
-    const data = this.data,
-          startOffset = this.cursor;
+    var data = this.data,
+        startOffset = this.cursor;
 
     while (this.ReadU16() !== 0) {// NO OPERATION
     }
 
-    const arrayOffset = data.byteOffset + startOffset,
-          arrayLength = this.cursor - startOffset - 2,
-          array = new Uint8Array(data.buffer, arrayOffset, arrayLength);
+    var arrayOffset = data.byteOffset + startOffset,
+        arrayLength = this.cursor - startOffset - 2,
+        array = new Uint8Array(data.buffer, arrayOffset, arrayLength);
     return Tw2BlackBinaryReader.wstringDecoder.decode(array);
   }
   /**
@@ -25637,8 +25990,8 @@ class Tw2BlackBinaryReader {
       });
     }
 
-    const data = this.data,
-          value = new DataView(data.buffer, data.byteOffset + this.cursor, n);
+    var data = this.data,
+        value = new DataView(data.buffer, data.byteOffset + this.cursor, n);
     this.cursor += n;
     return value;
   }
@@ -25649,7 +26002,7 @@ class Tw2BlackBinaryReader {
 
 
   ReadF32() {
-    const value = this.data.getFloat32(this.cursor, true);
+    var value = this.data.getFloat32(this.cursor, true);
     this.cursor += 4;
     return value;
   }
@@ -25660,7 +26013,7 @@ class Tw2BlackBinaryReader {
 
 
   ReadF64() {
-    const value = this.data.getFloat64(this.cursor, true);
+    var value = this.data.getFloat64(this.cursor, true);
     this.cursor += 8;
     return value;
   }
@@ -25671,7 +26024,7 @@ class Tw2BlackBinaryReader {
 
 
   ReadStringU16() {
-    let value = this.ReadU16();
+    var value = this.ReadU16();
 
     if (value > this.stringTable.length) {
       throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrBinaryReaderReadError"]({
@@ -25688,7 +26041,7 @@ class Tw2BlackBinaryReader {
 
 
   ReadU8() {
-    let value = this.data.getUint8(this.cursor);
+    var value = this.data.getUint8(this.cursor);
     this.cursor += 1;
     return value;
   }
@@ -25699,7 +26052,7 @@ class Tw2BlackBinaryReader {
 
 
   ReadU16() {
-    let value = this.data.getUint16(this.cursor, true);
+    var value = this.data.getUint16(this.cursor, true);
     this.cursor += 2;
     return value;
   }
@@ -25717,9 +26070,9 @@ class Tw2BlackBinaryReader {
       });
     }
 
-    let value = new Uint16Array(n);
+    var value = new Uint16Array(n);
 
-    for (let i = 0; i < n; i++) {
+    for (var i = 0; i < n; i++) {
       value[i] = this.ReadU16();
     }
 
@@ -25732,7 +26085,7 @@ class Tw2BlackBinaryReader {
 
 
   ReadU32() {
-    let value = this.data.getUint32(this.cursor, true);
+    var value = this.data.getUint32(this.cursor, true);
     this.cursor += 4;
     return value;
   }
@@ -25750,9 +26103,9 @@ class Tw2BlackBinaryReader {
       });
     }
 
-    let value = new Uint32Array(n);
+    var value = new Uint32Array(n);
 
-    for (let i = 0; i < n; i++) {
+    for (var i = 0; i < n; i++) {
       value[i] = this.ReadU32();
     }
 
@@ -25858,45 +26211,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "structList", function() { return structList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromList", function() { return fromList; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
-/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 
 
 
-
-const TypeReader = {
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN]: notImplemented,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN]: boolean,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH]: path,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING]: string,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE]: byte,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT]: uint,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].USHORT]: ushort,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT]: float,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2]: vector2,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3]: vector3,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4]: vector4,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION]: vector4,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR]: color,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT]: object,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW]: rawObject,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST]: array,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN]: rawObject,
-  [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER]: indexBuffer
-};
-/**
- * Gets a black reader from a property type
- * @param {Number|String} type
- * @returns {Function}
- */
-
-function getReaderFromType(type) {
-  if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isString"])(type)) type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"][type.toUpperCase()];
-  if (type === undefined || TypeReader[type] === undefined) type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN;
-  return TypeReader[type];
-}
 /**
  * Reads a path
  * - Handles compatibilities so ccpwgl can either load newer files or try to fail gracefully
@@ -25904,17 +26224,16 @@ function getReaderFromType(type) {
  * @returns {String}
  */
 
-
 function path(reader) {
-  let path = reader.ReadStringU16(); // Because there are two sources for "res:" now we need to replace
+  var path = reader.ReadStringU16(); // Because there are two sources for "res:" now we need to replace
   // any references from the eve cdn with a new res path mapping
 
   if (path.indexOf("res:") === 0) {
     path = "cdn:" + path.substring(4);
   }
 
-  let ext = "";
-  const dot = path.lastIndexOf(".");
+  var ext = "";
+  var dot = path.lastIndexOf(".");
   if (dot !== -1) ext = path.substr(dot + 1).toLowerCase();
 
   switch (ext) {
@@ -25965,9 +26284,9 @@ function path(reader) {
  */
 
 function object(reader, id) {
-  const context = reader.context,
-        givenId = id !== undefined,
-        debugEnabled = global__WEBPACK_IMPORTED_MODULE_1__["tw2"].constructor.DEBUG_ENABLED;
+  var context = reader.context,
+      givenId = id !== undefined,
+      debugEnabled = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].constructor.DEBUG_ENABLED;
 
   if (!givenId) {
     id = reader.ReadU32();
@@ -25979,54 +26298,63 @@ function object(reader, id) {
     }
   }
 
-  const objectReader = reader.ReadBinaryReader(reader.ReadU32()),
-        type = objectReader.ReadStringU16(),
-        result = context.ConstructType(type);
+  var objectReader = reader.ReadBinaryReader(reader.ReadU32()),
+      type = objectReader.ReadStringU16(),
+      result = context.ConstructType(type),
+      properties = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasBlack(type) ? global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetBlack(type) : null;
 
   if (!givenId) {
     reader.references.set(id, result);
   }
 
-  if (!global__WEBPACK_IMPORTED_MODULE_1__["tw2"].HasBlack(type)) {
-    throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryObjectTypeNotFound"]({
+  if (!properties && !global__WEBPACK_IMPORTED_MODULE_0__["meta"].has("black", result)) {
+    throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryObjectTypeNotFound"]({
       type
     });
   }
 
-  let properties = global__WEBPACK_IMPORTED_MODULE_1__["tw2"].GetBlack(type);
-
   while (!objectReader.AtEnd()) {
-    let propertyName = objectReader.ReadStringU16();
+    var propertyName = objectReader.ReadStringU16(),
+        _reader = void 0; // Defined on object
 
-    if (properties.has(propertyName)) {
+
+    if (properties && properties.has(propertyName)) {
+      _reader = properties.get(propertyName);
+    } // Defined with meta data
+
+
+    if (!properties && global__WEBPACK_IMPORTED_MODULE_0__["meta"].has("black", result, propertyName)) {
+      _reader = global__WEBPACK_IMPORTED_MODULE_0__["meta"].get("black", result, propertyName);
+    }
+
+    if (_reader) {
+      if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(_reader)) {
+        if (debugEnabled) console.dir(result);
+        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
+          readError: "Invalid reader for property \"".concat(propertyName, "\" for \"").concat(type, "\"")
+        });
+      }
+
       try {
-        const reader = properties.get(propertyName);
-
-        if (reader.custom) {
-          reader(objectReader, result, propertyName);
+        if (_reader.custom) {
+          _reader(objectReader, result, propertyName);
         } else {
           // Ensure property is defined on object
           if (!(propertyName in result) && debugEnabled) {
             console.log("'".concat(type, "' missing property: '").concat(propertyName, "'"));
           }
 
-          result[propertyName] = reader(objectReader);
+          result[propertyName] = _reader(objectReader);
         }
       } catch (err) {
-        if (debugEnabled) {
-          console.dir(result);
-        }
-
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryReaderReadError"]({
+        if (debugEnabled) console.dir(result);
+        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
           message: "".concat(propertyName, " > ") + err.message
         });
       }
     } else {
-      if (debugEnabled) {
-        console.dir(result);
-      }
-
-      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryReaderReadError"]({
+      if (debugEnabled) console.dir(result);
+      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
         readError: "Unknown property \"".concat(propertyName, "\" for \"").concat(type, "\"")
       });
     }
@@ -26056,10 +26384,10 @@ function rawObject(reader) {
  */
 
 function array(reader) {
-  const result = [],
-        count = reader.ReadU32();
+  var result = [],
+      count = reader.ReadU32();
 
-  for (let i = 0; i < count; i++) {
+  for (var i = 0; i < count; i++) {
     result[i] = object(reader);
   }
 
@@ -26090,12 +26418,12 @@ function string(reader) {
  */
 
 function enums(reader) {
-  const value = reader.ReadStringU16();
-  const entry = value.split(",");
-  const out = {};
+  var value = reader.ReadStringU16();
+  var entry = value.split(",");
+  var out = {};
 
-  for (let i = 0; i < entry.length; i++) {
-    const split = entry[i].split("=");
+  for (var i = 0; i < entry.length; i++) {
+    var split = entry[i].split("=");
     out[split[0]] = Number(split[1]);
   }
 
@@ -26144,7 +26472,7 @@ function byte(reader) {
  */
 
 function vector2(reader) {
-  return global__WEBPACK_IMPORTED_MODULE_1__["vec2"].fromValues(reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_0__["vec2"].fromValues(reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a vector3
@@ -26153,7 +26481,7 @@ function vector2(reader) {
  */
 
 function vector3(reader) {
-  return global__WEBPACK_IMPORTED_MODULE_1__["vec3"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a color
@@ -26162,7 +26490,7 @@ function vector3(reader) {
  */
 
 function color(reader) {
-  return global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a vector4
@@ -26171,7 +26499,7 @@ function color(reader) {
  */
 
 function vector4(reader) {
-  return global__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads a matrix with 16 elements
@@ -26180,7 +26508,7 @@ function vector4(reader) {
  */
 
 function matrix(reader) {
-  return global__WEBPACK_IMPORTED_MODULE_1__["mat4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
+  return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromValues(reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32());
 }
 /**
  * Reads an index buffer
@@ -26189,8 +26517,8 @@ function matrix(reader) {
  */
 
 function indexBuffer(reader) {
-  const count = reader.ReadU32(),
-        byteSize = reader.ReadU16();
+  var count = reader.ReadU32(),
+      byteSize = reader.ReadU16();
 
   if (byteSize === 4) {
     return reader.ReadU32Array(count);
@@ -26217,12 +26545,12 @@ function struct(struct) {
 
 function structList(struct) {
   return function (reader) {
-    let count = reader.ReadU32(),
+    var count = reader.ReadU32(),
         byteSize = reader.ReadU16(),
         result = [];
 
-    for (let i = 0; i < count; i++) {
-      const structReader = reader.ReadBinaryReader(byteSize);
+    for (var i = 0; i < count; i++) {
+      var structReader = reader.ReadBinaryReader(byteSize);
       result[i] = struct.blackStruct(structReader);
       structReader.ExpectEnd("struct read to end");
     }
@@ -26240,31 +26568,31 @@ function structList(struct) {
  */
 
 function fromList(options) {
-  if (Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isString"])(options)) {
+  if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(options)) {
     options = {
       key: options
     };
   }
 
-  const {
+  var {
     key,
     struct,
     reroute
   } = options;
 
-  const handler = function (reader, parent, property) {
+  var handler = function (reader, parent, property) {
     // Allows rerouting of results to a new target property
-    const target = parent[reroute ? reroute : property]; // Target must be a plain object
+    var target = parent[reroute ? reroute : property]; // Target must be a plain object
 
-    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_3__["isPlain"])(target)) {
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(target)) {
       throw new Error("Target is not a plain object");
     }
 
-    const result = struct ? structList(struct)(reader) : array(reader);
+    var result = struct ? structList(struct)(reader) : array(reader);
 
-    for (let i = 0; i < result.length; i++) {
-      const item = result[i],
-            prop = result[i][key];
+    for (var i = 0; i < result.length; i++) {
+      var item = result[i],
+          prop = result[i][key];
 
       if (prop === undefined) {
         throw new Error("Array element property '".concat(key, "' is undefined"));
@@ -26289,7 +26617,7 @@ function fromList(options) {
  */
 
 function notImplemented(reader, target, property) {
-  throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrFeatureNotImplemented"]({
+  throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrFeatureNotImplemented"]({
     feature: "Black reader for property '".concat(property, "'")
   });
 }
@@ -26361,7 +26689,7 @@ class Tw2BlackReader {
       });
     }
 
-    const reader = new _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_1__["Tw2BlackBinaryReader"](this.data, this);
+    var reader = new _Tw2BlackBinaryReader__WEBPACK_IMPORTED_MODULE_1__["Tw2BlackBinaryReader"](this.data, this);
     if (reader.ReadU32() !== 0xB1ACF11E) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_2__["ErrBinaryFormat"]({
       formatError: "wrong FOURCC"
     });
@@ -26369,22 +26697,22 @@ class Tw2BlackReader {
       formatError: "wrong version"
     }); // String table
 
-    const stringsReader = reader.ReadBinaryReader(reader.ReadU32()),
-          stringsCount = stringsReader.ReadU16();
+    var stringsReader = reader.ReadBinaryReader(reader.ReadU32()),
+        stringsCount = stringsReader.ReadU16();
     this._stringTable = [];
 
-    for (let i = 0; i < stringsCount; i++) {
+    for (var i = 0; i < stringsCount; i++) {
       this._stringTable[i] = stringsReader.ReadCString();
     }
 
     stringsReader.ExpectEnd(); // Comments
 
-    const commentReader = reader.ReadBinaryReader(reader.ReadU32()),
-          commentCount = commentReader.ReadU16();
+    var commentReader = reader.ReadBinaryReader(reader.ReadU32()),
+        commentCount = commentReader.ReadU16();
     this._comments = [];
 
-    for (let i = 0; i < commentCount; i++) {
-      this._comments[i] = commentReader.ReadCWString();
+    for (var _i = 0; _i < commentCount; _i++) {
+      this._comments[_i] = commentReader.ReadCWString();
     }
 
     commentReader.ExpectEnd();
@@ -26412,7 +26740,7 @@ class Tw2BlackReader {
 
   ConstructType(type) {
     if (global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(type)) {
-      const Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
+      var Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(type);
       return new Constructor();
     } else if (Tw2BlackReader.DEBUG_ENABLED) {
       return {
@@ -26499,10 +26827,10 @@ class Tw2ObjectReader {
     this._reader.cursor += 6;
     this._stringTable = [];
 
-    const count = this._reader.ReadUInt32();
+    var count = this._reader.ReadUInt32();
 
-    for (let i = 0; i < count; ++i) {
-      const len = this._reader.ReadUInt16();
+    for (var i = 0; i < count; ++i) {
+      var len = this._reader.ReadUInt16();
 
       this._stringTable.push(String.fromCharCode.apply(null, this._reader.data.subarray(this._reader.cursor, this._reader.cursor + len)));
 
@@ -26543,7 +26871,7 @@ class Tw2ObjectReader {
       return data;
     }
 
-    let Constructor;
+    var Constructor;
 
     if (!global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasClass(data.type)) {
       if (Tw2ObjectReader.DEBUG_ENABLED) {
@@ -26557,9 +26885,9 @@ class Tw2ObjectReader {
       Constructor = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetClass(data.type);
     }
 
-    const object = new Constructor();
+    var object = new Constructor();
 
-    for (let k in data) {
+    for (var k in data) {
       if (data.hasOwnProperty(k) && k !== "type") {
         if (data[k].constructor === Object) {
           if (this.DEBUG_ENABLED) {
@@ -26567,7 +26895,7 @@ class Tw2ObjectReader {
           }
 
           if (object[k]) {
-            for (let key in data[k]) {
+            for (var key in data[k]) {
               if (data[k].hasOwnProperty(key)) {
                 object[k][key] = data[k][key];
               }
@@ -26614,7 +26942,7 @@ class Tw2ObjectReader {
 
 
   static ReadElementData(objReader, type) {
-    let offset, i, result, count, elementType;
+    var offset, i, result, count, elementType;
 
     switch (type & 0xf) {
       case this.ElementRawType.NULL:
@@ -26730,19 +27058,19 @@ class Tw2ObjectReader {
 
 
   static ReadElement(objReader) {
-    const type = objReader._reader.ReadUInt8();
+    var type = objReader._reader.ReadUInt8();
 
     if (type === this.REFERENCE_BIT) {
       return objReader._ids[objReader._reader.ReadUInt16()];
     }
 
-    let id;
+    var id;
 
     if ((type & this.ID_BIT) !== 0) {
       id = objReader._reader.ReadUInt16();
     }
 
-    const result = this.ReadElementData(objReader, type & 0x3F);
+    var result = this.ReadElementData(objReader, type & 0x3F);
 
     if ((type & this.ID_BIT) !== 0) {
       objReader._ids[id] = result;
@@ -26789,8 +27117,8 @@ Tw2ObjectReader.TypedArrays = {
   20: Float32Array,
   36: Float64Array
 };
-const Raw = Tw2ObjectReader.ElementRawType,
-      Size = Tw2ObjectReader.ElementSize;
+var Raw = Tw2ObjectReader.ElementRawType,
+    Size = Tw2ObjectReader.ElementSize;
 /**
  * Element types
  * @type {{}}
@@ -26917,8 +27245,8 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
     this.version = 0;
     this.stringTable = "";
     this.shaders = {};
-    const reader = new _reader__WEBPACK_IMPORTED_MODULE_0__["Tw2BinaryReader"](new Uint8Array(data));
-    let stringTable = "";
+    var reader = new _reader__WEBPACK_IMPORTED_MODULE_0__["Tw2BinaryReader"](new Uint8Array(data));
+    var stringTable = "";
     /**
      * ReadString
      * @returns {String}
@@ -26926,8 +27254,8 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
      */
 
     function ReadString() {
-      const offset = reader.ReadUInt32();
-      let end = offset;
+      var offset = reader.ReadUInt32();
+      var end = offset;
 
       while (stringTable.charCodeAt(end)) {
         ++end;
@@ -26936,7 +27264,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
       return stringTable.substr(offset, end - offset);
     }
 
-    const version = reader.ReadUInt32();
+    var version = reader.ReadUInt32();
 
     if (version < 2 || version > 8) {
       this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderVersion"]({
@@ -26946,7 +27274,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
       return;
     }
 
-    let headerSize, stringTableSize;
+    var headerSize, stringTableSize;
 
     if (version < 5) {
       headerSize = reader.ReadUInt32();
@@ -26961,7 +27289,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
 
 
       reader.ReadUInt32();
-      const offset = reader.ReadUInt32();
+      var offset = reader.ReadUInt32();
       reader.cursor = 2 * 4 + headerSize * 3 * 4;
       stringTableSize = reader.ReadUInt32();
       this.stringTableOffset = reader.cursor;
@@ -26972,10 +27300,10 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
       this.stringTableOffset = reader.cursor;
       stringTable = String.fromCharCode.apply(null, reader.data.subarray(reader.cursor, reader.cursor + stringTableSize));
       reader.cursor += stringTableSize;
-      const permutationCount = reader.ReadUInt8();
+      var permutationCount = reader.ReadUInt8();
 
-      for (let perm = 0; perm < permutationCount; ++perm) {
-        let permutation = {
+      for (var perm = 0; perm < permutationCount; ++perm) {
+        var permutation = {
           name: ReadString(),
           defaultOption: reader.ReadUInt8(),
           description: ReadString(),
@@ -26984,7 +27312,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
           optionCount: reader.ReadUInt8()
         };
 
-        for (let j = 0; j < permutation.optionCount; ++j) {
+        for (var j = 0; j < permutation.optionCount; ++j) {
           permutation.options[ReadString()] = j;
         }
 
@@ -27000,7 +27328,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
         return;
       }
 
-      for (let i = 0; i < headerSize; ++i) {
+      for (var i = 0; i < headerSize; ++i) {
         this.offsets.push({
           index: reader.ReadUInt32(),
           offset: reader.ReadUInt32(),
@@ -27030,15 +27358,15 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
       return null;
     }
 
-    let index = 0;
-    let multiplier = 1;
+    var index = 0;
+    var multiplier = 1;
 
-    for (let i = 0; i < this.permutations.length; ++i) {
-      let permutation = this.permutations[i];
-      let value = permutation.defaultOption;
+    for (var i = 0; i < this.permutations.length; ++i) {
+      var permutation = this.permutations[i];
+      var value = permutation.defaultOption;
 
       if (options.hasOwnProperty(permutation.name)) {
-        let valueName = options[permutation.name];
+        var valueName = options[permutation.name];
 
         if (!permutation.options.hasOwnProperty(valueName)) {
           this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderPermutationValue"]({
@@ -27061,7 +27389,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
     }
 
     this.reader.cursor = this.offsets[index].offset;
-    let shader = null;
+    var shader = null;
 
     try {
       shader = new _Tw2Shader__WEBPACK_IMPORTED_MODULE_2__["Tw2Shader"](this.reader, this.version, this.stringTable, this.stringTableOffset, this.path);
@@ -27164,12 +27492,12 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   RebuildBounds(fromVertex) {
-    const min = this.minBounds,
-          max = this.maxBounds;
+    var min = this.minBounds,
+        max = this.maxBounds;
     global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.empty(min, max);
 
-    for (let i = 0; i < this.meshes.length; i++) {
-      const mesh = this.meshes[i];
+    for (var i = 0; i < this.meshes.length; i++) {
+      var mesh = this.meshes[i];
       mesh.RebuildBounds(fromVertex);
       global__WEBPACK_IMPORTED_MODULE_0__["box3"].bounds.union(min, max, min, max, mesh.minBounds, mesh.maxBounds);
     }
@@ -27223,17 +27551,17 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   Prepare(data) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-          reader = new _reader__WEBPACK_IMPORTED_MODULE_1__["Tw2BinaryReader"](new Uint8Array(data));
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+        reader = new _reader__WEBPACK_IMPORTED_MODULE_1__["Tw2BinaryReader"](new Uint8Array(data));
     /* let fileVersion = */
 
     reader.ReadUInt8();
-    const meshCount = reader.ReadUInt8();
+    var meshCount = reader.ReadUInt8();
 
-    for (let meshIx = 0; meshIx < meshCount; ++meshIx) {
-      const mesh = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMesh"]();
+    for (var meshIx = 0; meshIx < meshCount; ++meshIx) {
+      var mesh = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMesh"]();
       mesh.name = reader.ReadString();
-      const buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.declaration, this.path);
+      var buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.declaration, this.path);
 
       if (buffer) {
         mesh.bufferLength = buffer.length;
@@ -27244,7 +27572,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         mesh.buffer = null;
       }
 
-      const indexes = Tw2GeometryRes.ReadIndexBuffer(reader);
+      var indexes = Tw2GeometryRes.ReadIndexBuffer(reader);
 
       if (indexes) {
         mesh.indexes = gl.createBuffer();
@@ -27255,10 +27583,10 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         mesh.indexes = null;
       }
 
-      const areaCount = reader.ReadUInt8();
+      var areaCount = reader.ReadUInt8();
 
-      for (let i = 0; i < areaCount; ++i) {
-        const area = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshArea"]();
+      for (var i = 0; i < areaCount; ++i) {
+        var area = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshArea"]();
         mesh.areas.push(area);
         area.name = reader.ReadString();
         area.start = reader.ReadUInt32() * indexes.BYTES_PER_ELEMENT;
@@ -27274,14 +27602,14 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         }
       }
 
-      const boneBindingCount = reader.ReadUInt8();
+      var boneBindingCount = reader.ReadUInt8();
       mesh.boneBindings = [];
 
-      for (let i = 0; i < boneBindingCount; ++i) {
-        mesh.boneBindings[i] = reader.ReadString();
+      for (var _i = 0; _i < boneBindingCount; ++_i) {
+        mesh.boneBindings[_i] = reader.ReadString();
       }
 
-      const annotationSetCount = reader.ReadUInt16();
+      var annotationSetCount = reader.ReadUInt16();
 
       if (annotationSetCount || this.systemMirror) {
         mesh.bufferData = buffer;
@@ -27291,11 +27619,11 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
       if (annotationSetCount) {
         mesh.blendShapes = [];
 
-        for (let i = 0; i < annotationSetCount; ++i) {
-          mesh.blendShapes[i] = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2BlendShapeData"]();
-          mesh.blendShapes[i].name = reader.ReadString();
-          mesh.blendShapes[i].buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.blendShapes[i].declaration, this.path);
-          mesh.blendShapes[i].indexes = Tw2GeometryRes.ReadIndexBuffer(reader);
+        for (var _i2 = 0; _i2 < annotationSetCount; ++_i2) {
+          mesh.blendShapes[_i2] = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2BlendShapeData"]();
+          mesh.blendShapes[_i2].name = reader.ReadString();
+          mesh.blendShapes[_i2].buffer = Tw2GeometryRes.ReadVertexBuffer(reader, mesh.blendShapes[_i2].declaration, this.path);
+          mesh.blendShapes[_i2].indexes = Tw2GeometryRes.ReadIndexBuffer(reader);
         }
       }
 
@@ -27323,18 +27651,18 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
     this.RebuildBounds();
-    const modelCount = reader.ReadUInt8();
+    var modelCount = reader.ReadUInt8();
 
-    for (let modelIx = 0; modelIx < modelCount; ++modelIx) {
-      const model = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryModel"]();
+    for (var modelIx = 0; modelIx < modelCount; ++modelIx) {
+      var model = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryModel"]();
       model.name = reader.ReadString();
       model.skeleton = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometrySkeleton"]();
-      const boneCount = reader.ReadUInt8();
+      var boneCount = reader.ReadUInt8();
 
-      for (let i = 0; i < boneCount; ++i) {
-        const bone = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryBone"]();
+      for (var _i3 = 0; _i3 < boneCount; ++_i3) {
+        var bone = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryBone"]();
         bone.name = reader.ReadString();
-        const flags = reader.ReadUInt8();
+        var flags = reader.ReadUInt8();
         bone.parentIndex = reader.ReadUInt8();
         if (bone.parentIndex === 255) bone.parentIndex = -1;
 
@@ -27351,80 +27679,80 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
         }
 
         if ((flags & 4) !== 0) {
-          for (let k = 0; k < 9; ++k) {
+          for (var k = 0; k < 9; ++k) {
             bone.scaleShear[k] = reader.ReadFloat32();
           }
         } else {
           global__WEBPACK_IMPORTED_MODULE_0__["mat3"].identity(bone.scaleShear);
         }
 
-        model.skeleton.bones[i] = bone;
+        model.skeleton.bones[_i3] = bone;
       }
 
-      for (let i = 0; i < model.skeleton.bones.length; ++i) {
-        model.skeleton.bones[i].UpdateTransform();
+      for (var _i4 = 0; _i4 < model.skeleton.bones.length; ++_i4) {
+        model.skeleton.bones[_i4].UpdateTransform();
 
-        if (model.skeleton.bones[i].parentIndex !== -1) {
-          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(model.skeleton.bones[i].worldTransform, model.skeleton.bones[model.skeleton.bones[i].parentIndex].worldTransform, model.skeleton.bones[i].localTransform);
+        if (model.skeleton.bones[_i4].parentIndex !== -1) {
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(model.skeleton.bones[_i4].worldTransform, model.skeleton.bones[model.skeleton.bones[_i4].parentIndex].worldTransform, model.skeleton.bones[_i4].localTransform);
         } else {
-          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(model.skeleton.bones[i].worldTransform, model.skeleton.bones[i].localTransform);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(model.skeleton.bones[_i4].worldTransform, model.skeleton.bones[_i4].localTransform);
         }
 
-        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(model.skeleton.bones[i].worldTransformInv, model.skeleton.bones[i].worldTransform);
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(model.skeleton.bones[_i4].worldTransformInv, model.skeleton.bones[_i4].worldTransform);
       }
 
-      const meshBindingCount = reader.ReadUInt8();
+      var meshBindingCount = reader.ReadUInt8();
 
-      for (let i = 0; i < meshBindingCount; ++i) {
-        const mesh = reader.ReadUInt8();
+      for (var _i5 = 0; _i5 < meshBindingCount; ++_i5) {
+        var _mesh = reader.ReadUInt8();
 
-        if (mesh < this.meshes.length) {
-          Tw2GeometryRes.BindMeshToModel(this.meshes[mesh], model, this);
+        if (_mesh < this.meshes.length) {
+          Tw2GeometryRes.BindMeshToModel(this.meshes[_mesh], model, this);
         }
       }
 
       this.models[this.models.length] = model;
     }
 
-    const animationCount = reader.ReadUInt8();
+    var animationCount = reader.ReadUInt8();
 
-    for (let i = 0; i < animationCount; ++i) {
-      const animation = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryAnimation"]();
+    for (var _i6 = 0; _i6 < animationCount; ++_i6) {
+      var animation = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryAnimation"]();
       animation.name = reader.ReadString();
       animation.duration = reader.ReadFloat32();
-      const groupCount = reader.ReadUInt8();
+      var groupCount = reader.ReadUInt8();
 
-      for (let j = 0; j < groupCount; ++j) {
-        const group = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryTrackGroup"]();
+      for (var j = 0; j < groupCount; ++j) {
+        var group = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryTrackGroup"]();
         group.name = reader.ReadString();
 
-        for (let m = 0; m < this.models.length; ++m) {
+        for (var m = 0; m < this.models.length; ++m) {
           if (this.models[m].name === group.name) {
             group.model = this.models[m];
             break;
           }
         }
 
-        const transformTrackCount = reader.ReadUInt8();
+        var transformTrackCount = reader.ReadUInt8();
 
-        for (let k = 0; k < transformTrackCount; ++k) {
-          const track = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryTransformTrack"]();
+        for (var _k = 0; _k < transformTrackCount; ++_k) {
+          var track = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryTransformTrack"]();
           track.name = reader.ReadString();
           track.orientation = Tw2GeometryRes.ReadCurve(reader);
           track.position = Tw2GeometryRes.ReadCurve(reader);
           track.scaleShear = Tw2GeometryRes.ReadCurve(reader);
 
           if (track.orientation) {
-            let lastX = 0;
-            let lastY = 0;
-            let lastZ = 0;
-            let lastW = 0;
+            var lastX = 0;
+            var lastY = 0;
+            var lastZ = 0;
+            var lastW = 0;
 
-            for (let n = 0; n < track.orientation.controls.length; n += 4) {
-              let x = track.orientation.controls[n];
-              let y = track.orientation.controls[n + 1];
-              let z = track.orientation.controls[n + 2];
-              let w = track.orientation.controls[n + 3];
+            for (var n = 0; n < track.orientation.controls.length; n += 4) {
+              var x = track.orientation.controls[n];
+              var y = track.orientation.controls[n + 1];
+              var z = track.orientation.controls[n + 2];
+              var w = track.orientation.controls[n + 3];
 
               if (lastX * x + lastY * y + lastZ * z + lastW * w < 0) {
                 track.orientation.controls[n] = -x;
@@ -27460,12 +27788,12 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   static BindMeshToModel(mesh, model, res) {
-    const binding = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshBinding"]();
+    var binding = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshBinding"]();
     binding.mesh = mesh;
 
-    for (let b = 0; b < binding.mesh.boneBindings.length; ++b) {
-      const name = binding.mesh.boneBindings[b],
-            bone = model.FindBoneByName(name);
+    for (var b = 0; b < binding.mesh.boneBindings.length; ++b) {
+      var name = binding.mesh.boneBindings[b],
+          bone = model.FindBoneByName(name);
 
       if (!bone) {
         throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshBoneNameInvalid"]({
@@ -27499,25 +27827,25 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RenderAreasInstanced(meshIx, start, count, effect, technique, instanceVB, instanceDecl, instanceStride, instanceCount) {
     this.KeepAlive();
     if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          mesh = this.meshes[meshIx],
-          passCount = effect.GetPassCount(technique);
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        mesh = this.meshes[meshIx],
+        passCount = effect.GetPassCount(technique);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
 
-    for (let pass = 0; pass < passCount; ++pass) {
+    for (var pass = 0; pass < passCount; ++pass) {
       effect.ApplyPass(technique, pass);
-      const passInput = effect.GetPassInput(technique, pass);
+      var passInput = effect.GetPassInput(technique, pass);
       if (passInput.elements.length === 0) continue;
       gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
       mesh.declaration.SetPartialDeclaration(d, passInput, mesh.declaration.stride);
       gl.bindBuffer(gl.ARRAY_BUFFER, instanceVB);
-      const resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, 8, 1);
+      var resetData = instanceDecl.SetPartialDeclaration(d, passInput, instanceStride, 8, 1);
       d.ApplyShadowState();
 
-      for (let i = 0; i < count; ++i) {
+      for (var i = 0; i < count; ++i) {
         if (i + start < mesh.areas.length) {
-          let area = mesh.areas[i + start],
+          var area = mesh.areas[i + start],
               areaStart = area.start,
               areaCount = area.count;
 
@@ -27560,16 +27888,16 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RenderAreas(meshIx, start, count, effect, technique) {
     this.KeepAlive();
     if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          mesh = this.meshes[meshIx] || this.meshes[0],
-          passCount = effect.GetPassCount(technique);
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        mesh = this.meshes[meshIx] || this.meshes[0],
+        passCount = effect.GetPassCount(technique);
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
 
-    for (let pass = 0; pass < passCount; ++pass) {
+    for (var pass = 0; pass < passCount; ++pass) {
       effect.ApplyPass(technique, pass);
-      const passInput = effect.GetPassInput(technique, pass);
+      var passInput = effect.GetPassInput(technique, pass);
 
       if (!mesh.declaration.SetDeclaration(d, passInput, mesh.declaration.stride)) {
         this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshEffectBinding"]({
@@ -27583,9 +27911,9 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
       d.ApplyShadowState();
 
-      for (let i = 0; i < count; ++i) {
+      for (var i = 0; i < count; ++i) {
         if (i + start < mesh.areas.length) {
-          let area = mesh.areas[i + start],
+          var area = mesh.areas[i + start],
               areaStart = area.start,
               areaCount = area.count;
 
@@ -27626,16 +27954,16 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RenderLines(meshIx, start, count, effect, technique) {
     this.KeepAlive();
     if (!this.IsGood() || !effect.IsGood() || meshIx >= this.meshes.length) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          mesh = this.meshes[meshIx],
-          passCount = effect.GetPassCount(technique);
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        mesh = this.meshes[meshIx],
+        passCount = effect.GetPassCount(technique);
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
 
-    for (let pass = 0; pass < passCount; ++pass) {
+    for (var pass = 0; pass < passCount; ++pass) {
       effect.ApplyPass(technique, pass);
-      const passInput = effect.GetPassInput(technique, pass);
+      var passInput = effect.GetPassInput(technique, pass);
 
       if (!mesh.declaration.SetDeclaration(d, passInput, mesh.declaration.stride)) {
         this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrGeometryMeshEffectBinding"]({
@@ -27649,9 +27977,9 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
       d.ApplyShadowState();
 
-      for (let i = 0; i < count; ++i) {
+      for (var i = 0; i < count; ++i) {
         if (i + start < mesh.areas.length) {
-          let area = mesh.areas[i + start],
+          var area = mesh.areas[i + start],
               areaStart = area.start,
               areaCount = area.count;
 
@@ -27688,13 +28016,13 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
   RenderDebugInfo(debugHelper) {
     if (!this.IsGood()) return false;
 
-    for (let i = 0; i < this.models.length; ++i) {
+    for (var i = 0; i < this.models.length; ++i) {
       if (this.models[i].skeleton) {
-        for (let j = 0; j < this.models[i].skeleton.bones.length; ++j) {
-          const b0 = this.models[i].skeleton.bones[j];
+        for (var j = 0; j < this.models[i].skeleton.bones.length; ++j) {
+          var b0 = this.models[i].skeleton.bones[j];
 
           if (b0.parentIndex >= 0) {
-            const b1 = this.models[i].skeleton.bones[b0.parentIndex];
+            var b1 = this.models[i].skeleton.bones[b0.parentIndex];
             debugHelper["AddLine"]([b0.worldTransform[12], b0.worldTransform[13], b0.worldTransform[14]], [b1.worldTransform[12], b1.worldTransform[13], b1.worldTransform[14]], [0, 0.7, 0, 1], [0, 0.7, 0, 1]);
           }
         }
@@ -27709,8 +28037,8 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   Unload(eventLog) {
-    for (let i = 0; i < this.meshes.length; ++i) {
-      const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    for (var i = 0; i < this.meshes.length; ++i) {
+      var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
       if (this.meshes[i].buffer) {
         gl.deleteBuffer(this.meshes[i].buffer);
@@ -27736,11 +28064,11 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   static ReadVertexBuffer(reader, declaration, path) {
-    const declCount = reader.ReadUInt8();
-    let vertexSize = 0;
+    var declCount = reader.ReadUInt8();
+    var vertexSize = 0;
 
-    for (let declIx = 0; declIx < declCount; ++declIx) {
-      let element = new _vertex__WEBPACK_IMPORTED_MODULE_2__["Tw2VertexElement"]();
+    for (var declIx = 0; declIx < declCount; ++declIx) {
+      var element = new _vertex__WEBPACK_IMPORTED_MODULE_2__["Tw2VertexElement"]();
       element.usage = reader.ReadUInt8();
       element.usageIndex = reader.ReadUInt8();
       element.fileType = reader.ReadUInt8();
@@ -27753,23 +28081,23 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
     declaration.RebuildHash();
     declaration.stride = vertexSize * 4;
-    const vertexCount = reader.ReadUInt32();
+    var vertexCount = reader.ReadUInt32();
     if (vertexCount === 0) return null;
-    const buffer = new Float32Array(vertexSize * vertexCount);
-    let index = 0;
+    var buffer = new Float32Array(vertexSize * vertexCount);
+    var index = 0;
 
-    for (let vtxIx = 0; vtxIx < vertexCount; ++vtxIx) {
-      for (let declIx = 0; declIx < declCount; ++declIx) {
-        let el = declaration.elements[declIx];
+    for (var vtxIx = 0; vtxIx < vertexCount; ++vtxIx) {
+      for (var _declIx = 0; _declIx < declCount; ++_declIx) {
+        var el = declaration.elements[_declIx];
 
         switch (el.fileType & 0xf) {
           case 0:
             if ((el.fileType & 0x10) !== 0) {
-              for (let i = 0; i < el.elements; ++i) {
+              for (var i = 0; i < el.elements; ++i) {
                 buffer[index++] = reader.ReadInt8() / 127.0;
               }
             } else {
-              for (let i = 0; i < el.elements; ++i) {
+              for (var _i7 = 0; _i7 < el.elements; ++_i7) {
                 buffer[index++] = reader.ReadInt8();
               }
             }
@@ -27778,11 +28106,11 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
           case 1:
             if ((el.fileType & 0x10) !== 0) {
-              for (let i = 0; i < el.elements; ++i) {
+              for (var _i8 = 0; _i8 < el.elements; ++_i8) {
                 buffer[index++] = reader.ReadInt8() / 32767.0;
               }
             } else {
-              for (let i = 0; i < el.elements; ++i) {
+              for (var _i9 = 0; _i9 < el.elements; ++_i9) {
                 buffer[index++] = reader.ReadInt16();
               }
             }
@@ -27790,21 +28118,21 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
             break;
 
           case 2:
-            for (let i = 0; i < el.elements; ++i) {
+            for (var _i10 = 0; _i10 < el.elements; ++_i10) {
               buffer[index++] = reader.ReadInt32();
             }
 
             break;
 
           case 3:
-            for (let i = 0; i < el.elements; ++i) {
+            for (var _i11 = 0; _i11 < el.elements; ++_i11) {
               buffer[index++] = reader.ReadFloat16();
             }
 
             break;
 
           case 4:
-            for (let i = 0; i < el.elements; ++i) {
+            for (var _i12 = 0; _i12 < el.elements; ++_i12) {
               buffer[index++] = reader.ReadFloat32();
             }
 
@@ -27812,11 +28140,11 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
           case 8:
             if ((el.fileType & 0x10) !== 0) {
-              for (let i = 0; i < el.elements; ++i) {
+              for (var _i13 = 0; _i13 < el.elements; ++_i13) {
                 buffer[index++] = reader.ReadUInt8() / 255.0;
               }
             } else {
-              for (let i = 0; i < el.elements; ++i) {
+              for (var _i14 = 0; _i14 < el.elements; ++_i14) {
                 buffer[index++] = reader.ReadUInt8();
               }
             }
@@ -27825,11 +28153,11 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
           case 9:
             if ((el.fileType & 0x10) !== 0) {
-              for (let i = 0; i < declaration.elements[declIx].elements; ++i) {
+              for (var _i15 = 0; _i15 < declaration.elements[_declIx].elements; ++_i15) {
                 buffer[index++] = reader.ReadUInt8() / 65535.0;
               }
             } else {
-              for (let i = 0; i < el.elements; ++i) {
+              for (var _i16 = 0; _i16 < el.elements; ++_i16) {
                 buffer[index++] = reader.ReadUInt16();
               }
             }
@@ -27837,7 +28165,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
             break;
 
           case 10:
-            for (let i = 0; i < el.elements; ++i) {
+            for (var _i17 = 0; _i17 < el.elements; ++_i17) {
               buffer[index++] = reader.ReadUInt32();
             }
 
@@ -27864,25 +28192,25 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   static ReadIndexBuffer(reader) {
-    const ibType = reader.ReadUInt8(),
-          indexCount = reader.ReadUInt32();
+    var ibType = reader.ReadUInt8(),
+        indexCount = reader.ReadUInt32();
 
     if (ibType === 0) {
-      const indexes = new Uint16Array(indexCount);
+      var indexes = new Uint16Array(indexCount);
 
-      for (let i = 0; i < indexCount; ++i) {
+      for (var i = 0; i < indexCount; ++i) {
         indexes[i] = reader.ReadUInt16();
       }
 
       return indexes;
     } else {
-      const indexes = new Uint32Array(indexCount);
+      var _indexes = new Uint32Array(indexCount);
 
-      for (let i = 0; i < indexCount; ++i) {
-        indexes[i] = reader.ReadUInt32();
+      for (var _i18 = 0; _i18 < indexCount; ++_i18) {
+        _indexes[_i18] = reader.ReadUInt32();
       }
 
-      return indexes;
+      return _indexes;
     }
   }
   /**
@@ -27892,23 +28220,23 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
 
 
   static ReadCurve(reader) {
-    const type = reader.ReadUInt8();
+    var type = reader.ReadUInt8();
     if (type === 0) return null;
-    const curve = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryCurve"]();
+    var curve = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryCurve"]();
     curve.dimension = reader.ReadUInt8();
     curve.degree = reader.ReadUInt8();
-    const knotCount = reader.ReadUInt32();
+    var knotCount = reader.ReadUInt32();
     curve.knots = new Float32Array(knotCount);
 
-    for (let i = 0; i < knotCount; ++i) {
+    for (var i = 0; i < knotCount; ++i) {
       curve.knots[i] = reader.ReadFloat32();
     }
 
-    const controlCount = reader.ReadUInt32();
+    var controlCount = reader.ReadUInt32();
     curve.controls = new Float32Array(controlCount);
 
-    for (let i = 0; i < controlCount; ++i) {
-      curve.controls[i] = reader.ReadFloat32();
+    for (var _i19 = 0; _i19 < controlCount; ++_i19) {
+      curve.controls[_i19] = reader.ReadFloat32();
     }
 
     return curve;
@@ -27982,7 +28310,7 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
    * @returns {Object}
    */
   AddObject(onResolved, onRejected) {
-    const err = this.GetLastError();
+    var err = this.GetLastError();
 
     if (err) {
       if (onRejected) {
@@ -28002,10 +28330,10 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
 
 
   Prepare(response) {
-    const dot = this.path.lastIndexOf(".");
+    var dot = this.path.lastIndexOf(".");
     if (dot === -1) return null;
-    const ext = this.path.substr(dot + 1);
-    let first;
+    var ext = this.path.substr(dot + 1);
+    var first;
 
     if (this._inPrepare === null) {
       this._view = response;
@@ -28031,7 +28359,7 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
     }
 
     while (this._inPrepare < this._objects.length) {
-      const object = this._objects[this._inPrepare];
+      var object = this._objects[this._inPrepare];
 
       try {
         if (first) {
@@ -28067,7 +28395,7 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
   OnError(err) {
     super.OnError(err);
 
-    for (let i = 0; i < this._objects.length; i++) {
+    for (var i = 0; i < this._objects.length; i++) {
       if (this._objects[i].onRejected) {
         this._objects[i].onRejected(err);
       }
@@ -28180,7 +28508,7 @@ class Tw2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
 
   SetPaths(highDetail = "", mediumDetail = "", lowDetail = "") {
-    let updated = false;
+    var updated = false;
 
     if (highDetail !== this.highDetailResPath) {
       this.highDetailResPath = highDetail;
@@ -28206,10 +28534,10 @@ class Tw2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
 
   GetLODResource(lod = 3) {
-    const high = this.highDetailResPath,
-          med = this.mediumDetailResPath,
-          low = this.lowDetailResPath;
-    let path;
+    var high = this.highDetailResPath,
+        med = this.mediumDetailResPath,
+        low = this.lowDetailResPath;
+    var path;
 
     if (lod > 2) {
       if (high) path = high;else if (med) path = med;else if (low) path = low;
@@ -28229,7 +28557,7 @@ class Tw2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"]
 
 
   static from(values) {
-    const item = new Tw2LodResource();
+    var item = new Tw2LodResource();
 
     if (values) {
       item.name = values.name || "";
@@ -28460,7 +28788,7 @@ class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE
 
 
   OnError(err = new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["Tw2Error"]()) {
-    let wasGood = this.IsLoaded() || this.IsPrepared();
+    var wasGood = this.IsLoaded() || this.IsPrepared();
 
     if (!this._errors.includes(err)) {
       this._errors.unshift(err);
@@ -28486,7 +28814,7 @@ class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE
 
 
   OnRequested(log) {
-    const stateName = this._state === Tw2Resource.State.NO_INIT ? "REQUESTED" : "RELOADING";
+    var stateName = this._state === Tw2Resource.State.NO_INIT ? "REQUESTED" : "RELOADING";
 
     if (this._SetState(Tw2Resource.State.REQUESTED)) {
       this._requested = Date.now();
@@ -28578,7 +28906,7 @@ class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE
      * @returns {Boolean}
      */
 
-    const handler = function (res, err) {
+    var handler = function (res, err) {
       if (res.HasCompleted()) {
         if (err) {
           if (onRejected) onRejected(err);
@@ -28602,7 +28930,7 @@ class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE
 
 
   static onNotification(resource, notification) {
-    let funcName, err;
+    var funcName, err;
 
     switch (resource._state) {
       case Tw2Resource.State.ERROR:
@@ -28734,8 +29062,8 @@ class Tw2Shader {
      * @private
      */
     function ReadString() {
-      const offset = reader.ReadUInt32();
-      let end = offset;
+      var offset = reader.ReadUInt32();
+      var end = offset;
 
       while (stringTable.charCodeAt(end)) {
         ++end;
@@ -28744,18 +29072,18 @@ class Tw2Shader {
       return stringTable.substr(offset, end - offset);
     }
 
-    const {
+    var {
       wrapModes,
       gl
     } = global__WEBPACK_IMPORTED_MODULE_0__["device"];
-    let techniqueCount = 1;
+    var techniqueCount = 1;
 
     if (version > 6) {
       techniqueCount = reader.ReadUInt8();
     }
 
-    for (let t = 0; t < techniqueCount; ++t) {
-      let technique = {
+    for (var t = 0; t < techniqueCount; ++t) {
+      var technique = {
         name: "Main",
         passes: []
       };
@@ -28765,30 +29093,30 @@ class Tw2Shader {
       }
 
       this.techniques[technique.name] = technique;
-      const passCount = reader.ReadUInt8();
+      var passCount = reader.ReadUInt8();
 
-      for (let passIx = 0; passIx < passCount; ++passIx) {
-        const pass = {};
+      for (var passIx = 0; passIx < passCount; ++passIx) {
+        var pass = {};
         pass.stages = [{}, {}];
-        const stageCount = reader.ReadUInt8();
-        let validShadowShader = true;
+        var stageCount = reader.ReadUInt8();
+        var validShadowShader = true;
 
-        for (let stageIx = 0; stageIx < stageCount; ++stageIx) {
-          const stage = {};
+        for (var stageIx = 0; stageIx < stageCount; ++stageIx) {
+          var stage = {};
           stage.inputDefinition = new _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
           stage.constants = [];
           stage.textures = [];
           stage.samplers = [];
-          const stageType = reader.ReadUInt8(),
-                inputCount = reader.ReadUInt8();
+          var stageType = reader.ReadUInt8(),
+              inputCount = reader.ReadUInt8();
           stage.stageType = stageType === 0 ? "vertex" : "fragment";
 
-          for (let inputIx = 0; inputIx < inputCount; ++inputIx) {
-            const usage = reader.ReadUInt8(),
-                  registerIndex = reader.ReadUInt8(),
-                  // unused
+          for (var inputIx = 0; inputIx < inputCount; ++inputIx) {
+            var usage = reader.ReadUInt8(),
+                registerIndex = reader.ReadUInt8(),
+                // unused
             usageIndex = reader.ReadUInt8(),
-                  usedMask = reader.ReadUInt8(); // unused
+                usedMask = reader.ReadUInt8(); // unused
 
             stage.inputDefinition.elements[inputIx] = _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
               usage,
@@ -28800,7 +29128,10 @@ class Tw2Shader {
           }
 
           stage.inputDefinition.RebuildHash();
-          let shaderSize, shaderCode, shadowShaderSize, shadowShaderCode;
+          var shaderSize = void 0,
+              shaderCode = void 0,
+              shadowShaderSize = void 0,
+              shadowShaderCode = void 0;
 
           if (version < 5) {
             shaderSize = reader.ReadUInt32();
@@ -28811,7 +29142,7 @@ class Tw2Shader {
             reader.cursor += shadowShaderSize;
           } else {
             shaderSize = reader.ReadUInt32();
-            let so = reader.ReadUInt32();
+            var so = reader.ReadUInt32();
             shaderCode = Tw2Shader.InspectShaderCode(stringTable.substr(so, shaderSize), path);
             shadowShaderSize = reader.ReadUInt32();
             so = reader.ReadUInt32();
@@ -28854,10 +29185,10 @@ class Tw2Shader {
           }
 
           stage.constantSize = 0;
-          const constantCount = reader.ReadUInt32();
+          var constantCount = reader.ReadUInt32();
 
-          for (let constantIx = 0; constantIx < constantCount; ++constantIx) {
-            const constant = {};
+          for (var constantIx = 0; constantIx < constantCount; ++constantIx) {
+            var constant = {};
             constant.name = ReadString();
             constant.offset = reader.ReadUInt32() / 4;
             constant.size = reader.ReadUInt32() / 4;
@@ -28868,34 +29199,34 @@ class Tw2Shader {
             constant.isAutoregister = reader.ReadUInt8();
             stage.constants[constantIx] = constant;
             if (Tw2Shader.ConstantIgnore.includes(constant.name)) continue;
-            const last = constant.offset + constant.size;
+            var last = constant.offset + constant.size;
             if (last > stage.constantSize) stage.constantSize = last;
           }
 
-          const constantValueSize = reader.ReadUInt32() / 4;
+          var constantValueSize = reader.ReadUInt32() / 4;
           stage.constantValues = new Float32Array(constantValueSize);
 
           if (version < 5) {
-            for (let i = 0; i < constantValueSize; ++i) {
+            for (var i = 0; i < constantValueSize; ++i) {
               stage.constantValues[i] = reader.ReadFloat32();
             }
           } else {
-            const co = reader.ReadUInt32(),
-                  bo = reader.cursor;
+            var co = reader.ReadUInt32(),
+                bo = reader.cursor;
             reader.cursor = stringTableOffset + co;
 
-            for (let i = 0; i < constantValueSize; ++i) {
-              stage.constantValues[i] = reader.ReadFloat32();
+            for (var _i = 0; _i < constantValueSize; ++_i) {
+              stage.constantValues[_i] = reader.ReadFloat32();
             }
 
             reader.cursor = bo;
           }
 
           stage.constantSize = Math.max(stage.constantSize, constantValueSize);
-          let textureCount = reader.ReadUInt8();
+          var textureCount = reader.ReadUInt8();
 
-          for (let textureIx = 0; textureIx < textureCount; ++textureIx) {
-            const texture = {};
+          for (var textureIx = 0; textureIx < textureCount; ++textureIx) {
+            var texture = {};
             texture.registerIndex = reader.ReadUInt8();
             texture.name = ReadString();
             texture.type = reader.ReadUInt8();
@@ -28904,10 +29235,10 @@ class Tw2Shader {
             stage.textures.push(texture);
           }
 
-          const samplerCount = reader.ReadUInt8();
+          var samplerCount = reader.ReadUInt8();
 
-          for (let samplerIx = 0; samplerIx < samplerCount; ++samplerIx) {
-            const s = new _sampler__WEBPACK_IMPORTED_MODULE_2__["Tw2SamplerState"]();
+          for (var samplerIx = 0; samplerIx < samplerCount; ++samplerIx) {
+            var s = new _sampler__WEBPACK_IMPORTED_MODULE_2__["Tw2SamplerState"]();
             s.registerIndex = reader.ReadUInt8();
             s.name = version >= 4 ? ReadString() : "";
             s._comparison = reader.ReadUInt8(); // not used
@@ -28971,7 +29302,7 @@ class Tw2Shader {
               s.anisotropy = Math.max(s.maxAnisotropy, 1);
             }
 
-            for (let n = 0; n < stage.textures.length; ++n) {
+            for (var n = 0; n < stage.textures.length; ++n) {
               if (stage.textures[n].registerIndex === s.registerIndex) {
                 s.samplerType = stage.textures[n].type === 4 ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
                 s.isVolume = stage.textures[n].type === 3;
@@ -28989,11 +29320,11 @@ class Tw2Shader {
         }
 
         pass.states = [];
-        const stateCount = reader.ReadUInt8();
+        var stateCount = reader.ReadUInt8();
 
-        for (let stateIx = 0; stateIx < stateCount; ++stateIx) {
-          const state = reader.ReadUInt32(),
-                value = reader.ReadUInt32();
+        for (var stateIx = 0; stateIx < stateCount; ++stateIx) {
+          var state = reader.ReadUInt32(),
+              value = reader.ReadUInt32();
           pass.states.push({
             "state": state,
             "value": value
@@ -29016,14 +29347,14 @@ class Tw2Shader {
       }
     }
 
-    const parameterCount = reader.ReadUInt16();
+    var parameterCount = reader.ReadUInt16();
 
-    for (let paramIx = 0; paramIx < parameterCount; ++paramIx) {
-      const name = ReadString(),
-            annotations = [],
-            annotationCount = reader.ReadUInt8();
+    for (var paramIx = 0; paramIx < parameterCount; ++paramIx) {
+      var name = ReadString(),
+          annotations = [],
+          annotationCount = reader.ReadUInt8();
 
-      for (let annotationIx = 0; annotationIx < annotationCount; ++annotationIx) {
+      for (var annotationIx = 0; annotationIx < annotationCount; ++annotationIx) {
         annotations[annotationIx] = {};
         annotations[annotationIx].name = ReadString();
         annotations[annotationIx].type = reader.ReadUInt8();
@@ -29057,11 +29388,11 @@ class Tw2Shader {
 
 
   ApplyPass(technique, pass) {
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl;
     pass = this.techniques[technique].passes[pass];
 
-    for (let i = 0; i < pass.states.length; ++i) {
+    for (var i = 0; i < pass.states.length; ++i) {
       d.SetRenderState(pass.states[i].state, pass.states[i].value);
     }
 
@@ -29113,17 +29444,17 @@ class Tw2Shader {
 
 
   static Has(techniques, type, name) {
-    for (const t in techniques) {
+    for (var t in techniques) {
       if (techniques.hasOwnProperty(t)) {
-        const technique = techniques[t];
+        var technique = techniques[t];
 
-        for (let p = 0; p < technique.passes.length; p++) {
-          const pass = technique.passes[p];
+        for (var p = 0; p < technique.passes.length; p++) {
+          var pass = technique.passes[p];
 
-          for (let s = 0; s < pass.stages.length; s++) {
-            const stage = pass.stages[s];
+          for (var s = 0; s < pass.stages.length; s++) {
+            var stage = pass.stages[s];
 
-            for (let i = 0; i < stage[type].length; i++) {
+            for (var i = 0; i < stage[type].length; i++) {
               if (stage[type][i].name === name) {
                 return true;
               }
@@ -29147,14 +29478,14 @@ class Tw2Shader {
 
 
   static CompileShader(stageType, prefix, shaderCode, path, skipError) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-          shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER),
-          ccpShaderBinary = global__WEBPACK_IMPORTED_MODULE_0__["device"].GetExtension("CCP_shader_binary");
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+        shader = gl.createShader(stageType === 0 ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER),
+        ccpShaderBinary = global__WEBPACK_IMPORTED_MODULE_0__["device"].GetExtension("CCP_shader_binary");
 
     if (ccpShaderBinary) {
       ccpShaderBinary["shaderBinary"](shader, shaderCode);
     } else {
-      let source = prefix + (global__WEBPACK_IMPORTED_MODULE_0__["util"].isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
+      var source = prefix + (global__WEBPACK_IMPORTED_MODULE_0__["util"].isString(shaderCode) ? shaderCode : String.fromCharCode.apply(null, shaderCode));
       source = source.substr(0, source.length - 1);
       gl.shaderSource(shader, source);
       gl.compileShader(shader);
@@ -29186,8 +29517,8 @@ class Tw2Shader {
 
 
   static CreateProgram(vertexShader, fragmentShader, pass, path, skipError) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-          program = {};
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+        program = {};
     program.program = gl.createProgram();
     gl.attachShader(program.program, vertexShader);
     gl.attachShader(program.program, fragmentShader);
@@ -29207,32 +29538,32 @@ class Tw2Shader {
     gl.useProgram(program.program);
     program.constantBufferHandles = [];
 
-    for (let j = 0; j < 16; ++j) {
+    for (var j = 0; j < 16; ++j) {
       program.constantBufferHandles[j] = gl.getUniformLocation(program.program, "cb" + j);
     }
 
     program.samplerHandles = [];
 
-    for (let j = 0; j < 16; ++j) {
-      program.samplerHandles[j] = gl.getUniformLocation(program.program, "s" + j);
-      gl.uniform1i(program.samplerHandles[j], j);
+    for (var _j = 0; _j < 16; ++_j) {
+      program.samplerHandles[_j] = gl.getUniformLocation(program.program, "s" + _j);
+      gl.uniform1i(program.samplerHandles[_j], _j);
     }
 
-    for (let j = 0; j < 16; ++j) {
-      program.samplerHandles[j + 12] = gl.getUniformLocation(program.program, "vs" + j);
-      gl.uniform1i(program.samplerHandles[j + 12], j + 12);
+    for (var _j2 = 0; _j2 < 16; ++_j2) {
+      program.samplerHandles[_j2 + 12] = gl.getUniformLocation(program.program, "vs" + _j2);
+      gl.uniform1i(program.samplerHandles[_j2 + 12], _j2 + 12);
     }
 
     program.input = new _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
 
-    for (let j = 0; j < pass.stages[0].inputDefinition.elements.length; ++j) {
-      const attr = "attr" + j;
-      let location = gl.getAttribLocation(program.program, attr);
+    for (var _j3 = 0; _j3 < pass.stages[0].inputDefinition.elements.length; ++_j3) {
+      var attr = "attr" + _j3;
+      var location = gl.getAttribLocation(program.program, attr);
 
       if (location >= 0) {
-        const el = _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
-          usage: pass.stages[0].inputDefinition.elements[j].usage,
-          usageIndex: pass.stages[0].inputDefinition.elements[j].usageIndex,
+        var el = _vertex__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
+          usage: pass.stages[0].inputDefinition.elements[_j3].usage,
+          usageIndex: pass.stages[0].inputDefinition.elements[_j3].usageIndex,
           location,
           attr
         });
@@ -29247,9 +29578,9 @@ class Tw2Shader {
     gl.uniform3f(program.shadowStateYFlip, 0, 0, 1);
     program.volumeSlices = [];
 
-    for (let j = 0; j < pass.stages[1].samplers.length; ++j) {
-      if (pass.stages[1].samplers[j].isVolume) {
-        program.volumeSlices[pass.stages[1].samplers[j].registerIndex] = gl.getUniformLocation(program.program, "s" + pass.stages[1].samplers[j].registerIndex + "sl");
+    for (var _j4 = 0; _j4 < pass.stages[1].samplers.length; ++_j4) {
+      if (pass.stages[1].samplers[_j4].isVolume) {
+        program.volumeSlices[pass.stages[1].samplers[_j4].registerIndex] = gl.getUniformLocation(program.program, "s" + pass.stages[1].samplers[_j4].registerIndex + "sl");
       }
     }
 
@@ -29265,11 +29596,11 @@ class Tw2Shader {
 
 
   static InspectShaderCode(code, path) {
-    const fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase(),
-          overrides = _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__[fileName];
+    var fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")).toLowerCase(),
+        overrides = _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__[fileName];
     if (!overrides) return code;
 
-    for (const key in overrides) {
+    for (var key in overrides) {
       if (overrides.hasOwnProperty(key)) {
         code = code.replace(key, overrides[key]);
       }
@@ -29337,18 +29668,18 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
    * @param {*|Image|arrayBuffer} data
    */
   Prepare(data) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
-    const format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
+    var gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
+    var format = "ccpGLFormat" in data ? data["ccpGLFormat"] : gl.RGBA;
 
     switch (this._extension) {
       case "cube":
         this.texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture);
-        const canvas = document.createElement("canvas");
+        var canvas = document.createElement("canvas");
         canvas.width = canvas.height = data.height;
-        const ctx = canvas.getContext("2d");
+        var ctx = canvas.getContext("2d");
 
-        for (let j = 0; j < 6; ++j) {
+        for (var j = 0; j < 6; ++j) {
           ctx.drawImage(data, j * canvas.width, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
           gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, format, format, gl.UNSIGNED_BYTE, canvas);
         }
@@ -29392,20 +29723,20 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
         */
 
       case "dds":
-        const ext = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
-              header = new Int32Array(data, 0, global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_LENGTH_INT"]),
-              isFourCC = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
-              isMagic = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MAGIC"]] === global__WEBPACK_IMPORTED_MODULE_2__["DDS_MAGIC"],
-              isCube = (header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS2"]] & global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"]) === global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"],
-              fourCC = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
-              mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
+        var ext = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
+            header = new Int32Array(data, 0, global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_LENGTH_INT"]),
+            isFourCC = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
+            isMagic = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_MAGIC"]] === global__WEBPACK_IMPORTED_MODULE_2__["DDS_MAGIC"],
+            isCube = (header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_CAPS2"]] & global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"]) === global__WEBPACK_IMPORTED_MODULE_2__["DDSCAPS2_CUBEMAP"],
+            fourCC = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
+            mipmaps = 1; //(header[DDS_HEADER_OFFSET_FLAGS] & DDSD_MIPMAPCOUNT) ?
         //Math.max(1, header[DDS_HEADER_OFFSET_MIPMAP_COUNT]) : 1;
         // Check compatibility
 
         if (!ext) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Compressed textures not supported by your device");
         if (!isMagic) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, missing magic number");
         if (!isFourCC) throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, missing FourCC code");
-        let width = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_WIDTH"]],
+        var width = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_WIDTH"]],
             height = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_HEIGHT"]],
             dataOffset = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_SIZE"]] + 4,
             blockBytes,
@@ -29428,7 +29759,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
             break;
 
           default:
-            const code = Tw2TextureRes.Int32ToFourCC(fourCC);
+            var code = Tw2TextureRes.Int32ToFourCC(fourCC);
             throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, ".concat(code, " unsupported"));
         }
 
@@ -29446,9 +29777,9 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
           this.texture = gl.createTexture();
           gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
-          for (let i = 0; i < mipmaps; ++i) {
-            const dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
-            const byteArray = new Uint8Array(data, dataOffset, dataLength);
+          for (var i = 0; i < mipmaps; ++i) {
+            var dataLength = Math.max(4, width) / 4 * Math.max(4, height) / 4 * blockBytes;
+            var byteArray = new Uint8Array(data, dataOffset, dataLength);
             gl.compressedTexImage2D(gl.TEXTURE_2D, i, internalFormat, width, height, 0, byteArray);
             dataOffset += dataLength;
             width *= 0.5;
@@ -29508,7 +29839,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
     }
 
     global__WEBPACK_IMPORTED_MODULE_2__["resMan"].AddPendingLoad(path);
-    const image = new Image();
+    var image = new Image();
     image.crossOrigin = "anonymous";
     /**
      * Fires on errors
@@ -29591,14 +29922,14 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
 
   Bind(sampler, slices) {
-    const d = global__WEBPACK_IMPORTED_MODULE_2__["device"],
-          gl = d.gl;
+    var d = global__WEBPACK_IMPORTED_MODULE_2__["device"],
+        gl = d.gl;
     this.KeepAlive();
-    let targetType = sampler.samplerType;
+    var targetType = sampler.samplerType;
     if (targetType !== (this.isCube ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D)) return;
 
     if (!this.texture) {
-      const texture = targetType === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
+      var texture = targetType === gl.TEXTURE_2D ? d.GetFallbackTexture() : d.GetFallbackCubeMap();
       gl.bindTexture(targetType, texture);
       return;
     }
@@ -29632,10 +29963,10 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
 
   static AddMipLevelSkipCount(path) {
-    const d = global__WEBPACK_IMPORTED_MODULE_2__["device"];
+    var d = global__WEBPACK_IMPORTED_MODULE_2__["device"];
 
     if (d.mipLevelSkipCount > 0) {
-      const index = path.lastIndexOf(".");
+      var index = path.lastIndexOf(".");
 
       if (index >= 0) {
         path = path.substr(0, index - 2) + "." + d.mipLevelSkipCount.toString() + path.substr(index);
@@ -29666,21 +29997,21 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
 
   static CreateImageFrom2DTexture(texture, width = 512, height = 512, format = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl.RGBA) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
-    const fb = gl.createFramebuffer();
+    var gl = global__WEBPACK_IMPORTED_MODULE_2__["device"].gl;
+    var fb = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-    const data = new Uint8Array(width * height * 4);
+    var data = new Uint8Array(width * height * 4);
     gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
     gl.deleteFramebuffer(fb);
-    const canvas = document.createElement("canvas");
+    var canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
-    const context = canvas.getContext("2d");
-    const imageData = context.createImageData(width, height);
+    var context = canvas.getContext("2d");
+    var imageData = context.createImageData(width, height);
     imageData.data.set(data);
     context.putImageData(imageData, 0, 0);
-    const img = new Image();
+    var img = new Image();
     img.src = canvas.toDataURL();
     return img;
   }
@@ -29794,7 +30125,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 
 
   Prepare(response) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     switch (this._extension) {
       case "mp4":
@@ -29928,10 +30259,10 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 
 
   Bind(sampler) {
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl;
     this.KeepAlive();
-    const targetType = sampler.samplerType;
+    var targetType = sampler.samplerType;
     if (targetType !== gl.TEXTURE_2D) return;
 
     if (!this.texture) {
@@ -29959,7 +30290,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
 /*!********************************!*\
   !*** ./core/resource/index.js ***!
   \********************************/
-/*! exports provided: Tw2TextureRes, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2VideoRes */
+/*! exports provided: Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2LodResource, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -30006,7 +30337,7 @@ __webpack_require__.r(__webpack_exports__);
 /*! exports provided: blinkinglightspool, boostervolumetric, fxarmorimpactv5, flarequad, default */
 /***/ (function(module) {
 
-module.exports = {"blinkinglightspool":{"r0.xy=r0.xx*c[0+a0.x].xy;":"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}","texcoord=r3.zzww*c[0+a0.x].zwzz;":"if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}"},"boostervolumetric":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<12;++i){"},"fxarmorimpactv5":{"for(int i=0;i<i0.x;++i){":"for(int i=0;i<255;++i){"},"flarequad":{"r1.xyz=r0.zzw*c[0+a0.x].xyx;":"if(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else if (a0.x==3){r1.xyz=r0.zzw*c[3].xyx;}else if(a0.x==4){r1.xyz=r0.zzw*c[4].xyx;}else if(a0.x==5){r1.xyz=r0.zzw*c[5].xyx;}","texcoord.xyw=r0.zzw*c[0+a0.x].zwz;":"if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}","r0.x=saturate(sqrt(abs(r0.x)));":"r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);"}};
+module.exports = JSON.parse("{\"blinkinglightspool\":{\"r0.xy=r0.xx*c[0+a0.x].xy;\":\"if(a0.x==0){r0.xy=r0.xx*c[0].xy;}else if(a0.x==1){r0.xy=r0.xx*c[1].xy;}else if(a0.x==2){r0.xy=r0.xx*c[2].xy;}else if(a0.x==3){r0.xy=r0.xx*c[3].xy;}else if(a0.x==4){r0.xy=r0.xx*c[4].xy;}\",\"texcoord=r3.zzww*c[0+a0.x].zwzz;\":\"if(a0.x==0){texcoord=r3.zzww*c[0].zwzz;}else if(a0.x==1){texcoord=r3.zzww*c[1].zwzz;}else if(a0.x==2){texcoord=r3.zzww*c[2].zwzz;}else if(a0.x==3){texcoord=r3.zzww*c[3].zwzz;}else if(a0.x==4){texcoord=r3.zzww*c[4].zwzz;}\"},\"boostervolumetric\":{\"for(int i=0;i<i0.x;++i){\":\"for(int i=0;i<12;++i){\"},\"fxarmorimpactv5\":{\"for(int i=0;i<i0.x;++i){\":\"for(int i=0;i<255;++i){\"},\"flarequad\":{\"r1.xyz=r0.zzw*c[0+a0.x].xyx;\":\"if(a0.x==0){r1.xyz=r0.zzw*c[0].xyx;}else if(a0.x==1){r1.xyz=r0.zzw*c[1].xyx;}else if(a0.x==2){r1.xyz=r0.zzw*c[2].xyx;}else if (a0.x==3){r1.xyz=r0.zzw*c[3].xyx;}else if(a0.x==4){r1.xyz=r0.zzw*c[4].xyx;}else if(a0.x==5){r1.xyz=r0.zzw*c[5].xyx;}\",\"texcoord.xyw=r0.zzw*c[0+a0.x].zwz;\":\"if(a0.x==0){texcoord.xyw=r0.zzw*c[0].zwz;}else if(a0.x==1){texcoord.xyw=r0.zzw*c[1].zwz;}else if(a0.x==2){texcoord.xyw=r0.zzw*c[2].zwz;}else if(a0.x==3){texcoord.xyw=r0.zzw*c[3].zwz;}else if(a0.x==4){texcoord.xyw=r0.zzw*c[4].zwz;}else if(a0.x==5){texcoord.xyw=r0.zzw*c[5].zwz;}\",\"r0.x=saturate(sqrt(abs(r0.x)));\":\"r0.x=clamp(sqrt(abs(r0.x)),0.0,1.0);\"}}");
 
 /***/ }),
 
@@ -30064,11 +30395,11 @@ class Tw2SamplerOverride {
     }
 
     this._sampler = new _Tw2SamplerState__WEBPACK_IMPORTED_MODULE_0__["Tw2SamplerState"]();
-    const sampler = this._sampler;
+    var sampler = this._sampler;
     sampler.registerIndex = originalSampler.registerIndex;
     sampler.name = originalSampler.name;
     sampler.forceAddressModes = this.forceAddressModes;
-    const {
+    var {
       wrapModes,
       gl
     } = device;
@@ -30222,10 +30553,10 @@ class Tw2SamplerState {
 
 
   Apply(device, hasMipMaps) {
-    const targetType = this.samplerType,
-          gl = device.gl,
-          ext = device.GetExtension("EXT_texture_filter_anisotropic"),
-          useAddress = hasMipMaps || this.forceAddressModes;
+    var targetType = this.samplerType,
+        gl = device.gl,
+        ext = device.GetExtension("EXT_texture_filter_anisotropic"),
+        useAddress = hasMipMaps || this.forceAddressModes;
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);
     gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
@@ -30441,7 +30772,7 @@ class Tw2VertexDeclaration {
   RebuildHash() {
     this.elementsSorted.splice(0, this.elementsSorted.length);
 
-    for (let i = 0; i < this.elements.length; ++i) {
+    for (var i = 0; i < this.elements.length; ++i) {
       this.elementsSorted.push(this.elements[i]);
     }
 
@@ -30456,8 +30787,8 @@ class Tw2VertexDeclaration {
 
 
   FindUsage(usage, usageIndex) {
-    for (let i = 0; i < this.elementsSorted.length; ++i) {
-      const e = this.elementsSorted[i];
+    for (var i = 0; i < this.elementsSorted.length; ++i) {
+      var e = this.elementsSorted[i];
 
       if (e.usage === usage) {
         if (e.usageIndex === usageIndex) return e;else if (e.usageIndex > usageIndex) return null;
@@ -30479,11 +30810,11 @@ class Tw2VertexDeclaration {
 
 
   SetDeclaration(device, inputDecl, stride) {
-    const gl = device.gl;
-    let index = 0;
+    var gl = device.gl;
+    var index = 0;
 
-    for (let i = 0; i < inputDecl.elementsSorted.length; ++i) {
-      const el = inputDecl.elementsSorted[i];
+    for (var i = 0; i < inputDecl.elementsSorted.length; ++i) {
+      var el = inputDecl.elementsSorted[i];
       if (el.location < 0) continue;
 
       while (true) {
@@ -30493,8 +30824,8 @@ class Tw2VertexDeclaration {
           break;
         }
 
-        const input = this.elementsSorted[index],
-              cmp = Tw2VertexDeclaration.CompareDeclarationElements(input, el);
+        var input = this.elementsSorted[index],
+            cmp = Tw2VertexDeclaration.CompareDeclarationElements(input, el);
 
         if (cmp > 0) {
           gl.disableVertexAttribArray(el.location);
@@ -30531,17 +30862,17 @@ class Tw2VertexDeclaration {
 
 
   SetPartialDeclaration(device, inputDecl, stride, usageOffset, divisor) {
-    const gl = device.gl,
-          resetData = [];
-    let index = 0;
+    var gl = device.gl,
+        resetData = [];
+    var index = 0;
 
-    for (let i = 0; i < inputDecl.elementsSorted.length; ++i) {
-      const el = inputDecl.elementsSorted[i];
+    for (var i = 0; i < inputDecl.elementsSorted.length; ++i) {
+      var el = inputDecl.elementsSorted[i];
       if (el.location < 0) continue;
 
       while (true) {
-        const input = this.elementsSorted[index],
-              cmp = Tw2VertexDeclaration.CompareDeclarationElements(input, el, usageOffset);
+        var input = this.elementsSorted[index],
+            cmp = Tw2VertexDeclaration.CompareDeclarationElements(input, el, usageOffset);
 
         if (cmp === 0) {
           if (input.customSetter) {
@@ -30591,7 +30922,7 @@ class Tw2VertexDeclaration {
 
   ResetInstanceDivisors(device, resetData) {
     if (resetData) {
-      for (let i = 0; i < resetData.length; ++i) {
+      for (var i = 0; i < resetData.length; ++i) {
         device.gl.vertexAttribDivisor(resetData[i], 0);
       }
     }
@@ -30622,12 +30953,12 @@ class Tw2VertexDeclaration {
 
 
   static from(values, opt) {
-    const item = new Tw2VertexDeclaration();
+    var item = new Tw2VertexDeclaration();
 
     if (values) {
-      let currentOffset = 0;
+      var currentOffset = 0;
 
-      for (let i = 0; i < values.length; i++) {
+      for (var i = 0; i < values.length; i++) {
         values[i].offset = currentOffset;
         item.elements.push(_Tw2VertexElement__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].from(values[i]));
         currentOffset += values[i].elements * 4;
@@ -30696,18 +31027,18 @@ class Tw2VertexElement {
 
 
   static from(values) {
-    const item = new Tw2VertexElement();
+    var item = new Tw2VertexElement();
 
     if (values) {
       // Compulsory
-      let {
+      var {
         usage,
         usageIndex
       } = values;
       item.usage = typeof usage === "string" ? this.Type[usage.toUpperCase()] : usage;
       item.usageIndex = usageIndex; // Optional
 
-      const {
+      var {
         elements = null,
         type = global__WEBPACK_IMPORTED_MODULE_0__["GL_FLOAT"],
         offset = 0,
@@ -30720,7 +31051,7 @@ class Tw2VertexElement {
       item.location = location;
       item.customSetter = customSetter; // Unused
 
-      const {
+      var {
         registerIndex = null,
         usedMask = null,
         attr = null
@@ -30877,12 +31208,12 @@ class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     if (this._isPlaying) {
       this.scaledTime += dt * this.scale;
 
-      for (let i = 0; i < this.curves.length; ++i) {
+      for (var i = 0; i < this.curves.length; ++i) {
         this.curves[i].UpdateValue(this.scaledTime);
       }
 
-      for (let i = 0; i < this.bindings.length; ++i) {
-        this.bindings[i].CopyValue();
+      for (var _i = 0; _i < this.bindings.length; ++_i) {
+        this.bindings[_i].CopyValue();
       }
     }
   }
@@ -30894,7 +31225,7 @@ class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   GetRangeByName(name) {
-    for (let i = 0; i < this.ranges.length; i++) {
+    for (var i = 0; i < this.ranges.length; i++) {
       if (this.ranges[i].name === name) {
         return this.ranges[i];
       }
@@ -30910,9 +31241,9 @@ class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   GetMaxCurveDuration() {
-    let length = 0;
+    var length = 0;
 
-    for (let i = 0; i < this.curves.length; ++i) {
+    for (var i = 0; i < this.curves.length; ++i) {
       if ("GetLength" in this.curves[i]) {
         length = Math.max(length, this.curves[i].GetLength());
       }
@@ -31074,7 +31405,7 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
     }
      */
 
-    let srcSwizzled = false,
+    var srcSwizzled = false,
         destSwizzled = false,
         srcSwizzle = this.sourceAttribute.substr(-2);
 
@@ -31118,7 +31449,7 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
       }
     }
 
-    let destSwizzle = this.destinationAttribute.substr(-2);
+    var destSwizzle = this.destinationAttribute.substr(-2);
 
     if (destSwizzle === ".x" || destSwizzle === ".r") {
       destSwizzled = true;
@@ -31160,8 +31491,8 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
       }
     }
 
-    const src = this.sourceObject[this.sourceAttribute],
-          dest = this.destinationObject[this.destinationAttribute]; // Targets must be defined
+    var src = this.sourceObject[this.sourceAttribute],
+        dest = this.destinationObject[this.destinationAttribute]; // Targets must be defined
 
     if (src === undefined) {
       throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrBindingValueUndefined"]({
@@ -31179,10 +31510,10 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
       });
     }
 
-    const srcIsArr = this._sourceIsArray = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(src),
-          destIsArr = this._destinationIsArray = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(dest),
-          con = Tw2ValueBinding;
-    let copyFunc;
+    var srcIsArr = this._sourceIsArray = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(src),
+        destIsArr = this._destinationIsArray = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isArrayLike"])(dest),
+        con = Tw2ValueBinding;
+    var copyFunc;
 
     if (srcIsArr === destIsArr && typeof src === typeof dest) {
       if (!srcIsArr) {
@@ -31263,7 +31594,7 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
 
 
   SetSource(obj, attr, element, isRGBA) {
-    const {
+    var {
       object,
       attribute
     } = this.constructor.GetTargets(obj, attr, element, isRGBA);
@@ -31281,7 +31612,7 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
 
 
   SetDestination(obj, attr, element, isRGBA) {
-    const {
+    var {
       object,
       attribute
     } = this.constructor.GetTargets(obj, attr, element, isRGBA);
@@ -31413,9 +31744,9 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
 
 
   static CopyArray(a) {
-    let count = Math.min(a.destinationObject[a.destinationAttribute].length, a.sourceObject[a.sourceAttribute].length);
+    var count = Math.min(a.destinationObject[a.destinationAttribute].length, a.sourceObject[a.sourceAttribute].length);
 
-    for (let i = 0; i < count; ++i) {
+    for (var i = 0; i < count; ++i) {
       a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute][i] * a.scale + a.offset[i];
     }
   }
@@ -31435,7 +31766,7 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
 
 
   static ReplicateValue(a) {
-    for (let i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i) {
+    for (var i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i) {
       a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute] * a.scale + a.offset[i];
     }
   }
@@ -31446,7 +31777,7 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
 
 
   static ReplicateElement(a) {
-    for (let i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i) {
+    for (var i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i) {
       a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute][a._sourceElement] * a.scale + a.offset[i];
     }
   }
@@ -31457,7 +31788,7 @@ class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"
 
 
   static ExtractPos(a) {
-    for (let i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i) {
+    for (var i = 0; i < a.destinationObject[a.destinationAttribute].length; ++i) {
       a.destinationObject[a.destinationAttribute][i] = a.sourceObject[a.sourceAttribute][i + 12] * a.scale + a.offset[i];
     }
   }
@@ -31876,7 +32207,7 @@ class Tw2CurveScalarKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve
    * @returns {Tw2CurveScalarKey}
    */
   static blackStruct(r) {
-    const item = new this();
+    var item = new this();
     item.time = r.ReadF32();
     item.value = r.ReadF32();
     item.startTangent = r.ReadF32();
@@ -32088,7 +32419,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {number} time
  */
 
-let Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2CurveKey extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2CurveKey extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -32103,7 +32434,7 @@ let Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, 
  * @property {String} name
  */
 
-let Tw2Curve = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class Tw2Curve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Curve = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class Tw2Curve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -32170,12 +32501,12 @@ let Tw2Curve = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _d
   static Sort2(curve) {
     if (curve.keys && curve.keys.length) {
       curve.keys.sort(Tw2Curve.Compare);
-      const back = curve.keys[curve.keys.length - 1];
+      var back = curve.keys[curve.keys.length - 1];
 
       if (back.time > curve.length) {
-        const preLength = curve.length,
-              endValue = curve.endValue,
-              endTangent = curve.endTangent;
+        var preLength = curve.length,
+            endValue = curve.endValue,
+            endTangent = curve.endTangent;
         curve.length = back.time;
         curve.endValue = back.value;
         curve.endTangent = back.leftTangent;
@@ -32201,9 +32532,9 @@ let Tw2Curve = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _d
       if (a.index > b.index) return 1;
       return 0;
     });
-    let length = 0;
+    var length = 0;
 
-    for (let i = 0; i < keys.length; i++) {
+    for (var i = 0; i < keys.length; i++) {
       keys[i].index = i;
 
       if (i === keys.length - 1) {
@@ -32404,7 +32735,7 @@ class Tw2EventCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
       return this.value;
     }
 
-    let before = this._time;
+    var before = this._time;
     this._time = time;
 
     if (this._time < before) {
@@ -32412,7 +32743,7 @@ class Tw2EventCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
     }
 
     if (this.extrapolation === Tw2EventCurve.Extrapolation.CYCLE) {
-      let now = this._time % this._length;
+      var now = this._time % this._length;
       if (now < before) this._currentKey = 0;
       this._time = now;
     }
@@ -32740,8 +33071,8 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
       return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.value);
     }
 
-    const firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
+    var firstKey = this.keys[0],
+        lastKey = this.keys[this.keys.length - 1];
 
     if (time >= lastKey.time) {
       switch (this.extrapolation) {
@@ -32770,7 +33101,7 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
       }
     }
 
-    let ck = this.keys[this._currentKey],
+    var ck = this.keys[this._currentKey],
         ck_1 = this.keys[this._currentKey - 1];
 
     while (time >= ck.time || time < ck_1.time) {
@@ -32780,7 +33111,7 @@ class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
       ck_1 = this.keys[this._currentKey - 1];
     }
 
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+    var nt = (time - ck_1.time) / (ck.time - ck_1.time);
 
     switch (ck_1.interpolation) {
       case Tw2ColorCurve.Interpolation.CONSTANT:
@@ -32947,7 +33278,7 @@ class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
       return this.Interpolate(time, null, null, value);
     }
 
-    let startKey = this.keys[0],
+    var startKey = this.keys[0],
         endKey = this.keys[this.keys.length - 1];
 
     if (time <= startKey.time) {
@@ -32956,7 +33287,7 @@ class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
       return this.Interpolate(time, endKey, null, value);
     }
 
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
+    for (var i = 0; i + 1 < this.keys.length; ++i) {
       startKey = this.keys[i];
       endKey = this.keys[i + 1];
       if (startKey.time <= time && endKey.time > time) break;
@@ -32976,7 +33307,7 @@ class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
 
   Interpolate(time, lastKey, nextKey, value) {
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(value, this.startValue);
-    let startValue = this.startValue,
+    var startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
         deltaTime = this.length;
@@ -33165,7 +33496,7 @@ class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curv
       return this.Interpolate(time, null, null, value);
     }
 
-    let startKey = this.keys[0],
+    var startKey = this.keys[0],
         endKey = this.keys[this.keys.length - 1];
 
     if (time <= startKey.time) {
@@ -33174,7 +33505,7 @@ class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curv
       return this.Interpolate(time, endKey, null, value);
     }
 
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
+    for (var i = 0; i + 1 < this.keys.length; ++i) {
       startKey = this.keys[i];
       endKey = this.keys[i + 1];
       if (startKey.time <= time && endKey.time > time) break;
@@ -33196,7 +33527,7 @@ class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curv
     value[0] = this.startValue[0];
     value[1] = this.startValue[1];
     value[2] = this.startValue[2];
-    let startValue = this.startValue,
+    var startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
         deltaTime = this.length;
@@ -33416,7 +33747,7 @@ class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Cur
       return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
     }
 
-    let key = 0;
+    var key = 0;
 
     if (time >= this.states[this.states.length - 1].time) {
       key = this.states.length - 1;
@@ -33428,9 +33759,9 @@ class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Cur
       }
     }
 
-    const vec3_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.vec3_0,
-          quat_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.quat_0;
-    const ck = this.states[key];
+    var vec3_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.vec3_0,
+        quat_0 = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global.quat_0;
+    var ck = this.states[key];
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay(vec3_0, ck.omega0, ck.torque, this.I, this.drag, time - ck.time);
     global__WEBPACK_IMPORTED_MODULE_0__["quat"].exp(quat_0, vec3_0);
     global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, this.states[key].rot0, quat_0);
@@ -33546,9 +33877,9 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
       return global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(value, this.value);
     }
 
-    const scratch = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global,
-          firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
+    var scratch = _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].global,
+        firstKey = this.keys[0],
+        lastKey = this.keys[this.keys.length - 1];
 
     if (time >= lastKey.time) {
       switch (this.extrapolation) {
@@ -33571,7 +33902,7 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
       }
     }
 
-    let ck = this.keys[this._currentKey],
+    var ck = this.keys[this._currentKey],
         ck_1 = this.keys[this._currentKey - 1];
 
     while (time >= ck.time || time < ck_1.time) {
@@ -33581,7 +33912,7 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
       ck_1 = this.keys[this._currentKey - 1];
     }
 
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+    var nt = (time - ck_1.time) / (ck.time - ck_1.time);
 
     switch (ck_1.interpolation) {
       case Tw2RotationCurve.Interpolation.CONSTANT:
@@ -33595,11 +33926,11 @@ class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"
         return value;
 
       case Tw2RotationCurve.Interpolation.HERMITE:
-        const collect = global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
-              arr = [ck_1.value, ck_1.right, ck.left, ck.value];
+        var collect = global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(scratch.quat_0),
+            arr = [ck_1.value, ck_1.right, ck.left, ck.value];
 
-        for (let i = 3; i > 0; i--) {
-          const power = global__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
+        for (var i = 3; i > 0; i--) {
+          var power = global__WEBPACK_IMPORTED_MODULE_0__["num"].biCumulative(nt, i);
           if (power > 1) global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, collect, arr[i]);
           value[0] = -arr[i - 1][0];
           value[1] = -arr[i - 1][1];
@@ -33746,8 +34077,8 @@ class Tw2ScalarCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] 
       return this.value;
     }
 
-    const firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
+    var firstKey = this.keys[0],
+        lastKey = this.keys[this.keys.length - 1];
 
     if (time >= lastKey.time) {
       switch (this.extrapolation) {
@@ -33776,7 +34107,7 @@ class Tw2ScalarCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] 
       }
     }
 
-    let ck = this.keys[this._currentKey],
+    var ck = this.keys[this._currentKey],
         ck_1 = this.keys[this._currentKey - 1];
 
     while (time >= ck.time || time < ck_1.time) {
@@ -33786,7 +34117,7 @@ class Tw2ScalarCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] 
       ck_1 = this.keys[this._currentKey - 1];
     }
 
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+    var nt = (time - ck_1.time) / (ck.time - ck_1.time);
 
     switch (ck_1.interpolation) {
       case Tw2ScalarCurve.Interpolation.CONSTANT:
@@ -33796,16 +34127,16 @@ class Tw2ScalarCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] 
         return ck_1.value * (1 - nt) + ck.value * nt;
 
       case Tw2ScalarCurve.Interpolation.HERMITE:
-        const k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
-              k2 = -2 * nt * nt * nt + 3 * nt * nt,
-              k1 = nt * nt * nt - 2 * nt * nt + nt,
-              k0 = nt * nt * nt - nt * nt;
+        var k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
+            k2 = -2 * nt * nt * nt + 3 * nt * nt,
+            k1 = nt * nt * nt - 2 * nt * nt + nt,
+            k0 = nt * nt * nt - nt * nt;
         return k3 * ck_1.value + k2 * ck.value + k1 * ck_1.right + k0 * ck.left;
 
       default:
-        const sq = Math.sqrt(ck_1.value / ck.value),
-              exponent = Math.exp(-time / ck_1.right),
-              ret = 1.0 + (sq - 1.0) * exponent;
+        var sq = Math.sqrt(ck_1.value / ck.value),
+            exponent = Math.exp(-time / ck_1.right),
+            ret = 1.0 + (sq - 1.0) * exponent;
         return ret * ret * ck.value;
     }
   }
@@ -33961,7 +34292,7 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
       return this.Interpolate(time, null, null);
     }
 
-    let startKey = this.keys[0],
+    var startKey = this.keys[0],
         endKey = this.keys[this.keys.length - 1];
 
     if (time <= startKey.time) {
@@ -33970,7 +34301,7 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
       return this.Interpolate(time, endKey, null);
     }
 
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
+    for (var i = 0; i + 1 < this.keys.length; ++i) {
       startKey = this.keys[i];
       endKey = this.keys[i + 1];
       if (startKey.time <= time && endKey.time > time) break;
@@ -33988,7 +34319,7 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
 
 
   Interpolate(time, lastKey, nextKey) {
-    let startValue = this.startValue,
+    var startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
         deltaTime = this.length;
@@ -34015,7 +34346,7 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
         return startValue + (endValue - startValue) * (time / deltaTime);
 
       case Tw2ScalarCurve2.Interpolation.HERMITE:
-        let inTangent = this.startTangent,
+        var inTangent = this.startTangent,
             outTangent = this.endTangent;
 
         if (lastKey && nextKey) {
@@ -34034,13 +34365,13 @@ class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"]
           deltaTime = this.length - lastKey.time;
         }
 
-        const s = time / deltaTime,
-              s2 = s * s,
-              s3 = s2 * s;
-        const c2 = -2.0 * s3 + 3.0 * s2,
-              c1 = 1.0 - c2,
-              c4 = s3 - s2,
-              c3 = s + c4 - s2;
+        var s = time / deltaTime,
+            s2 = s * s,
+            s3 = s2 * s;
+        var c2 = -2.0 * s3 + 3.0 * s2,
+            c1 = 1.0 - c2,
+            c4 = s3 - s2,
+            c3 = s + c4 - s2;
         return startValue * c1 + endValue * c2 + inTangent * c3 + outTangent * c4;
 
       default:
@@ -34272,7 +34603,7 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
       return this.Interpolate(time, null, null, value);
     }
 
-    let startKey = this.keys[0],
+    var startKey = this.keys[0],
         endKey = this.keys[this.keys.length - 1];
 
     if (time <= startKey.time) {
@@ -34281,7 +34612,7 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
       return this.Interpolate(time, endKey, null, value);
     }
 
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
+    for (var i = 0; i + 1 < this.keys.length; ++i) {
       startKey = this.keys[i];
       endKey = this.keys[i + 1];
       if (startKey.time <= time && endKey.time > time) break;
@@ -34301,7 +34632,7 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
 
   Interpolate(time, lastKey, nextKey, value) {
     global__WEBPACK_IMPORTED_MODULE_0__["vec2"].copy(value, this.startValue);
-    let startValue = this.startValue,
+    var startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
         deltaTime = this.length;
@@ -34330,7 +34661,7 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
         return value;
 
       case Tw2Vector2Curve.Interpolation.HERMITE:
-        let inTangent = this.startTangent,
+        var inTangent = this.startTangent,
             outTangent = this.endTangent;
 
         if (lastKey && nextKey) {
@@ -34349,13 +34680,13 @@ class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
           deltaTime = this.length - lastKey.time;
         }
 
-        const s = time / deltaTime,
-              s2 = s * s,
-              s3 = s2 * s;
-        const c2 = -2.0 * s3 + 3.0 * s2,
-              c1 = 1.0 - c2,
-              c4 = s3 - s2,
-              c3 = s + c4 - s2;
+        var s = time / deltaTime,
+            s2 = s * s,
+            s3 = s2 * s;
+        var c2 = -2.0 * s3 + 3.0 * s2,
+            c1 = 1.0 - c2,
+            c4 = s3 - s2,
+            c3 = s + c4 - s2;
         value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
         value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
         return value;
@@ -34512,7 +34843,7 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
       return this.Interpolate(time, null, null, value);
     }
 
-    let startKey = this.keys[0],
+    var startKey = this.keys[0],
         endKey = this.keys[this.keys.length - 1];
 
     if (time <= startKey.time) {
@@ -34521,7 +34852,7 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
       return this.Interpolate(time, endKey, null, value);
     }
 
-    for (let i = 0; i + 1 < this.keys.length; ++i) {
+    for (var i = 0; i + 1 < this.keys.length; ++i) {
       startKey = this.keys[i];
       endKey = this.keys[i + 1];
       if (startKey.time <= time && endKey.time > time) break;
@@ -34541,7 +34872,7 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
 
   Interpolate(time, lastKey, nextKey, value) {
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.startValue);
-    let startValue = this.startValue,
+    var startValue = this.startValue,
         endValue = this.endValue,
         interp = this.interpolation,
         deltaTime = this.length;
@@ -34571,7 +34902,7 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
         return value;
 
       case Tw2Vector3Curve.Interpolation.HERMITE:
-        let inTangent = this.startTangent,
+        var inTangent = this.startTangent,
             outTangent = this.endTangent;
 
         if (lastKey && nextKey) {
@@ -34590,13 +34921,13 @@ class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"]
           deltaTime = this.length - lastKey.time;
         }
 
-        const s = time / deltaTime,
-              s2 = s * s,
-              s3 = s2 * s;
-        const c2 = -2.0 * s3 + 3.0 * s2,
-              c1 = 1.0 - c2,
-              c4 = s3 - s2,
-              c3 = s + c4 - s2;
+        var s = time / deltaTime,
+            s2 = s * s,
+            s3 = s2 * s;
+        var c2 = -2.0 * s3 + 3.0 * s2,
+            c1 = 1.0 - c2,
+            c4 = s3 - s2,
+            c3 = s + c4 - s2;
         value[0] = startValue[0] * c1 + endValue[0] * c2 + inTangent[0] * c3 + outTangent[0] * c4;
         value[1] = startValue[1] * c1 + endValue[1] * c2 + inTangent[1] * c3 + outTangent[1] * c4;
         value[2] = startValue[2] * c1 + endValue[2] * c2 + inTangent[2] * c3 + outTangent[2] * c4;
@@ -34723,8 +35054,8 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
       return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(value, this.value);
     }
 
-    const firstKey = this.keys[0],
-          lastKey = this.keys[this.keys.length - 1];
+    var firstKey = this.keys[0],
+        lastKey = this.keys[this.keys.length - 1];
 
     if (time >= lastKey.time) {
       switch (this.extrapolation) {
@@ -34753,7 +35084,7 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
       }
     }
 
-    let ck = this.keys[this._currentKey],
+    var ck = this.keys[this._currentKey],
         ck_1 = this.keys[this._currentKey - 1];
 
     while (time >= ck.time || time < ck_1.time) {
@@ -34763,7 +35094,7 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
       ck_1 = this.keys[this._currentKey - 1];
     }
 
-    const nt = (time - ck_1.time) / (ck.time - ck_1.time);
+    var nt = (time - ck_1.time) / (ck.time - ck_1.time);
 
     switch (ck_1.interpolation) {
       case Tw2VectorCurve.Interpolation.CONSTANT:
@@ -34776,10 +35107,10 @@ class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] 
         return value;
 
       case Tw2VectorCurve.Interpolation.HERMITE:
-        const k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
-              k2 = -2 * nt * nt * nt + 3 * nt * nt,
-              k1 = nt * nt * nt - 2 * nt * nt + nt,
-              k0 = nt * nt * nt - nt * nt;
+        var k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
+            k2 = -2 * nt * nt * nt + 3 * nt * nt,
+            k1 = nt * nt * nt - 2 * nt * nt + nt,
+            k0 = nt * nt * nt - nt * nt;
         value[0] = k3 * ck_1.value[0] + k2 * ck.value[0] + k1 * ck_1.right[0] + k0 * ck.left[0];
         value[1] = k3 * ck_1.value[1] + k2 * ck.value[1] + k1 * ck_1.right[1] + k0 * ck.left[1];
         value[2] = k3 * ck_1.value[2] + k2 * ck.value[2] + k1 * ck_1.right[2] + k0 * ck.left[2];
@@ -35375,12 +35706,14 @@ class Tw2MayaAnimationEngine {
     if (!this._evalCache) {
       this._evalCache = new Array(this.curves.length);
 
-      for (let i = 0; i < this._evalCache.length; ++i) this._evalCache[i] = -1;
+      for (var i = 0; i < this._evalCache.length; ++i) {
+        this._evalCache[i] = -1;
+      }
     }
 
-    let animCurve = this.curves[curveIndex];
-    let firstSegment = animCurve[Tw2MayaAnimationEngine.AnimCurveFields.SEGMENT_OFFSET];
-    let segments = null;
+    var animCurve = this.curves[curveIndex];
+    var firstSegment = animCurve[Tw2MayaAnimationEngine.AnimCurveFields.SEGMENT_OFFSET];
+    var segments = null;
 
     if (animCurve[Tw2MayaAnimationEngine.AnimCurveFields.IS_WEIGHTED]) {
       segments = this.bezierSegments;
@@ -35417,7 +35750,7 @@ class Tw2MayaAnimationEngine {
 
 
   _EvaluateImpl(animCurve, segments, firstSegment, time) {
-    let withinInterval = false,
+    var withinInterval = false,
         nextSegment = null,
         lastSegment = null,
         index;
@@ -35438,7 +35771,7 @@ class Tw2MayaAnimationEngine {
           nextSegment = null;
         }
       } else if (this._evalCache[this._currentCurveIndex] > 0 && time < segments[lastSegment][Tw2MayaAnimationEngine.AnimSegment.TIME]) {
-        let prevSegment = firstSegment + this._evalCache[this._currentCurveIndex] - 1;
+        var prevSegment = firstSegment + this._evalCache[this._currentCurveIndex] - 1;
 
         if (time > segments[prevSegment][Tw2MayaAnimationEngine.AnimSegment.TIME]) {
           index = this._evalCache[this._currentCurveIndex];
@@ -35451,7 +35784,7 @@ class Tw2MayaAnimationEngine {
     }
 
     if (!withinInterval) {
-      let result = this._Find(animCurve, time, segments, firstSegment);
+      var result = this._Find(animCurve, time, segments, firstSegment);
 
       index = result[1];
 
@@ -35477,7 +35810,7 @@ class Tw2MayaAnimationEngine {
     }
 
     if (animCurve[Tw2MayaAnimationEngine.AnimCurveFields.IS_WEIGHTED]) {
-      let bSegment = segments[lastSegment];
+      var bSegment = segments[lastSegment];
 
       if (bSegment[Tw2MayaAnimationEngine.BezierSegment.IS_STEP]) {
         return bSegment[Tw2MayaAnimationEngine.BezierSegment.VALUE];
@@ -35488,7 +35821,7 @@ class Tw2MayaAnimationEngine {
 
         return segments[nextSegment][Tw2MayaAnimationEngine.BezierSegment.VALUE];
       } else {
-        let nextKeyTime = animCurve[Tw2MayaAnimationEngine.AnimCurveFields.END_TIME];
+        var nextKeyTime = animCurve[Tw2MayaAnimationEngine.AnimCurveFields.END_TIME];
 
         if (this._evalCache[this._currentCurveIndex] + 1 < animCurve[Tw2MayaAnimationEngine.AnimCurveFields.NUM_SEGMENTS]) {
           nextKeyTime = segments[nextSegment][Tw2MayaAnimationEngine.BezierSegment.TIME];
@@ -35497,7 +35830,7 @@ class Tw2MayaAnimationEngine {
         return this._EvaluateBezier(bSegment, time, nextKeyTime);
       }
     } else {
-      let hSegment = segments[lastSegment];
+      var hSegment = segments[lastSegment];
 
       if (hSegment[Tw2MayaAnimationEngine.HermiteSegment.IS_STEP]) {
         return hSegment[Tw2MayaAnimationEngine.HermiteSegment.VALUE];
@@ -35541,8 +35874,8 @@ class Tw2MayaAnimationEngine {
 
 
   _EvaluateHermite(segment, time) {
-    let t = time - segment[Tw2MayaAnimationEngine.HermiteSegment.TIME];
-    let coeff = segment[Tw2MayaAnimationEngine.HermiteSegment.COEFF];
+    var t = time - segment[Tw2MayaAnimationEngine.HermiteSegment.TIME];
+    var coeff = segment[Tw2MayaAnimationEngine.HermiteSegment.COEFF];
     return t * (t * (t * coeff[0] + coeff[1]) + coeff[2]) + coeff[3];
   }
   /**
@@ -35555,22 +35888,23 @@ class Tw2MayaAnimationEngine {
 
 
   _EvaluateBezier(segment, time, nextSegmentTime) {
-    let t, s;
+    var t, s;
     s = (time - segment[Tw2MayaAnimationEngine.BezierSegment.TIME]) / (nextSegmentTime - segment[Tw2MayaAnimationEngine.BezierSegment.TIME]);
 
     if (segment[Tw2MayaAnimationEngine.BezierSegment.IS_LINEAR]) {
       t = s;
     } else {
-      let poly = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-      poly[3] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][3];
-      poly[2] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][2];
-      poly[1] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][1];
-      poly[0] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][0] - s;
-      let roots = [];
-      if (global__WEBPACK_IMPORTED_MODULE_0__["curve"].polyZeroes(poly, 3, 0.0, 1, 1.0, 1, roots) === 1) t = roots[0];else t = 0.0;
+      var _poly = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+
+      _poly[3] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][3];
+      _poly[2] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][2];
+      _poly[1] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][1];
+      _poly[0] = segment[Tw2MayaAnimationEngine.BezierSegment.COEFF][0] - s;
+      var roots = [];
+      if (global__WEBPACK_IMPORTED_MODULE_0__["curve"].polyZeroes(_poly, 3, 0.0, 1, 1.0, 1, roots) === 1) t = roots[0];else t = 0.0;
     }
 
-    let poly = segment[Tw2MayaAnimationEngine.BezierSegment.POLYY];
+    var poly = segment[Tw2MayaAnimationEngine.BezierSegment.POLYY];
     return t * (t * (t * poly[3] + poly[2]) + poly[1]) + poly[0];
   }
   /**
@@ -35584,13 +35918,13 @@ class Tw2MayaAnimationEngine {
 
 
   _Find(animCurve, time, segments, firstSegment) {
-    let len, mid, low, high;
+    var len, mid, low, high;
     /* use a binary search to find the key */
 
-    let index = 0;
+    var index = 0;
     len = animCurve[Tw2MayaAnimationEngine.AnimCurveFields.NUM_SEGMENTS] + 1;
-    let segment = null;
-    let stime = 0.0;
+    var segment = null;
+    var stime = 0.0;
 
     if (len > 0) {
       low = 0;
@@ -35639,8 +35973,8 @@ class Tw2MayaAnimationEngine {
 
   GetLength(index) {
     if (index < 0 || index >= this.curves.length) return 0;
-    let curve = this.curves[index];
-    let firstSegment;
+    var curve = this.curves[index];
+    var firstSegment;
 
     if (curve[Tw2MayaAnimationEngine.AnimCurveFields.IS_WEIGHTED]) {
       firstSegment = this.bezierSegments[curve[Tw2MayaAnimationEngine.AnimCurveFields.SEGMENT_OFFSET]];
@@ -35773,12 +36107,12 @@ class Tw2MayaEulerRotationCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2C
       }
 
       if (this.updateQuaternion) {
-        const sinYaw = Math.sin(this.eulerValue[0] / 2),
-              cosYaw = Math.cos(this.eulerValue[0] / 2),
-              sinPitch = Math.sin(this.eulerValue[1] / 2),
-              cosPitch = Math.cos(this.eulerValue[1] / 2),
-              sinRoll = Math.sin(this.eulerValue[2] / 2),
-              cosRoll = Math.cos(this.eulerValue[2] / 2);
+        var sinYaw = Math.sin(this.eulerValue[0] / 2),
+            cosYaw = Math.cos(this.eulerValue[0] / 2),
+            sinPitch = Math.sin(this.eulerValue[1] / 2),
+            cosPitch = Math.cos(this.eulerValue[1] / 2),
+            sinRoll = Math.sin(this.eulerValue[2] / 2),
+            cosRoll = Math.cos(this.eulerValue[2] / 2);
         this.quatValue[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
         this.quatValue[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
         this.quatValue[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
@@ -36135,10 +36469,10 @@ class Tw2TransformTrack {
 
 
   FindTracks() {
-    let group = null;
+    var group = null;
 
-    for (let i = 0; i < this.res.animations.length; ++i) {
-      for (let j = 0; j < this.res.animations[i].trackGroups.length; ++j) {
+    for (var i = 0; i < this.res.animations.length; ++i) {
+      for (var j = 0; j < this.res.animations[i].trackGroups.length; ++j) {
         if (this.res.animations[i].trackGroups[j].name === this.group) {
           this.duration = this.res.animations[i].duration;
           group = this.res.animations[i].trackGroups[j];
@@ -36149,11 +36483,11 @@ class Tw2TransformTrack {
 
     if (!group) return;
 
-    for (let i = 0; i < group.transformTracks.length; ++i) {
-      if (this.name === group.transformTracks[i].name) {
-        this.positionCurve = group.transformTracks[i].position;
-        this.orientationCurve = group.transformTracks[i].orientation;
-        this.scaleCurve = group.transformTracks[i].scaleShear;
+    for (var _i = 0; _i < group.transformTracks.length; ++_i) {
+      if (this.name === group.transformTracks[_i].name) {
+        this.positionCurve = group.transformTracks[_i].position;
+        this.orientationCurve = group.transformTracks[_i].orientation;
+        this.scaleCurve = group.transformTracks[_i].scaleShear;
         break;
       }
     }
@@ -36207,10 +36541,10 @@ function Tw2WbgTrack() {
       return;
     }
 
-    for (let i = 0; i < self.geometryRes.animations.length; ++i) {
-      let animation = self.geometryRes.animations[i];
+    for (var i = 0; i < self.geometryRes.animations.length; ++i) {
+      var animation = self.geometryRes.animations[i];
 
-      for (let j = 0; j < animation.trackGroups.length; ++j) {
+      for (var j = 0; j < animation.trackGroups.length; ++j) {
         if (animation.trackGroups[j].name === self.group) {
           self._ApplyTracks(animation.trackGroups[j], animation.duration);
         }
@@ -36258,10 +36592,10 @@ function Tw2WbgTransformTrack() {
   this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   this.rotation[3] = 1;
   this.scale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-  let positionCurve = null;
-  let rotationCurve = null;
-  let scaleCurve = null;
-  let scaleShear = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+  var positionCurve = null;
+  var rotationCurve = null;
+  var scaleCurve = null;
+  var scaleShear = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   /**
    * _TracksReady
    * @returns {*}
@@ -36280,8 +36614,8 @@ function Tw2WbgTransformTrack() {
 
 
   this._ApplyTracks = function (trackGroup, duration) {
-    for (let i = 0; i < trackGroup.transformTracks.length; ++i) {
-      let track = trackGroup.transformTracks[i];
+    for (var i = 0; i < trackGroup.transformTracks.length; ++i) {
+      var track = trackGroup.transformTracks[i];
 
       if (track.name === this.name) {
         this.duration = duration;
@@ -36414,10 +36748,10 @@ class TriColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__[
 
 
   GetValueAt(time, value) {
-    const vec4_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec4_0;
+    var vec4_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec4_0;
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(vec4_0, 0, 0, 0, 0);
 
-    for (let i = 0; i < this.functions.length; i++) {
+    for (var i = 0; i < this.functions.length; i++) {
       this.functions[i].GetValueAt(time, value);
       global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
     }
@@ -36624,15 +36958,15 @@ class Tw2CurveEulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_
 
 
   GetValueAt(time, value) {
-    const yaw = this.yaw ? this.yaw.GetValueAt(time) : 0.0,
-          pitch = this.pitch ? this.pitch.GetValueAt(time) : 0.0,
-          roll = this.roll ? this.roll.GetValueAt(time) : 0.0;
-    const sinYaw = Math.sin(yaw / 2.0),
-          cosYaw = Math.cos(yaw / 2.0),
-          sinPitch = Math.sin(pitch / 2.0),
-          cosPitch = Math.cos(pitch / 2.0),
-          sinRoll = Math.sin(roll / 2.0),
-          cosRoll = Math.cos(roll / 2.0);
+    var yaw = this.yaw ? this.yaw.GetValueAt(time) : 0.0,
+        pitch = this.pitch ? this.pitch.GetValueAt(time) : 0.0,
+        roll = this.roll ? this.roll.GetValueAt(time) : 0.0;
+    var sinYaw = Math.sin(yaw / 2.0),
+        cosYaw = Math.cos(yaw / 2.0),
+        sinPitch = Math.sin(pitch / 2.0),
+        cosPitch = Math.cos(pitch / 2.0),
+        sinRoll = Math.sin(roll / 2.0),
+        cosRoll = Math.cos(roll / 2.0);
     value[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
     value[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
     value[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
@@ -36694,10 +37028,10 @@ class Tw2CurveSequencer extends _curve_Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw
    * @param {String} [childArray]
    */
   static Sort(sequencer, childArray = sequencer.constructor.childArray) {
-    let curves = sequencer[childArray];
+    var curves = sequencer[childArray];
 
     if (curves && curves.length) {
-      for (let i = 0; i < curves.length; i++) {
+      for (var i = 0; i < curves.length; i++) {
         if (curves[i] && "Sort" in curves[i]) {
           curves[i].Sort();
         }
@@ -36713,8 +37047,8 @@ class Tw2CurveSequencer extends _curve_Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw
 
   static Sort2(sequencer, childProperties = sequencer.constructor.childProperties) {
     if (childProperties) {
-      for (let i = 0; i < childProperties.length; i++) {
-        let curve = sequencer[childProperties[i]];
+      for (var i = 0; i < childProperties.length; i++) {
+        var curve = sequencer[childProperties[i]];
 
         if (curve && "Sort" in curve) {
           curve.Sort();
@@ -36731,10 +37065,10 @@ class Tw2CurveSequencer extends _curve_Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw
 
 
   static GetLengthFromKeys(sequencer, childArray = sequencer.constructor.childArray) {
-    const curveArray = sequencer[childArray];
-    let len = 0;
+    var curveArray = sequencer[childArray];
+    var len = 0;
 
-    for (let i = 0; i < curveArray.length; ++i) {
+    for (var i = 0; i < curveArray.length; ++i) {
       if ("GetLength" in curveArray[i]) {
         len = Math.max(len, curveArray[i].GetLength());
       }
@@ -36751,10 +37085,10 @@ class Tw2CurveSequencer extends _curve_Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw
 
 
   static GetLengthFromProperties(sequencer, childProperties = sequencer.constructor.childProperties) {
-    let len = 0;
+    var len = 0;
 
-    for (let i = 0; i < childProperties.length; i++) {
-      const curve = sequencer[childProperties[i]];
+    for (var i = 0; i < childProperties.length; i++) {
+      var curve = sequencer[childProperties[i]];
 
       if (curve && "GetLength" in curve) {
         len = Math.max(len, curve.GetLength());
@@ -36995,13 +37329,13 @@ class Tw2ColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__[
 
 
   GetValueAt(time, value) {
-    const vec4_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec4_0;
+    var vec4_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec4_0;
 
     switch (this.operator) {
       case Tw2ColorSequencer.Operator.MULTIPLY:
         global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 1, 1, 1, 1);
 
-        for (let i = 0; i < this.functions.length; ++i) {
+        for (var i = 0; i < this.functions.length; ++i) {
           this.functions[i].GetValueAt(time, vec4_0);
           global__WEBPACK_IMPORTED_MODULE_0__["vec4"].multiply(value, value, vec4_0);
         }
@@ -37011,8 +37345,9 @@ class Tw2ColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__[
       default:
         global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(value, 0, 0, 0, 0);
 
-        for (let i = 0; i < this.functions.length; ++i) {
-          this.functions[i].GetValueAt(time, vec4_0);
+        for (var _i = 0; _i < this.functions.length; ++_i) {
+          this.functions[_i].GetValueAt(time, vec4_0);
+
           global__WEBPACK_IMPORTED_MODULE_0__["vec4"].add(value, value, vec4_0);
         }
 
@@ -37106,15 +37441,15 @@ class Tw2EulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["
 
 
   GetValueAt(time, value) {
-    const yaw = this.yawCurve ? this.yawCurve.GetValueAt(time) : 0.0,
-          pitch = this.pitchCurve ? this.pitchCurve.GetValueAt(time) : 0.0,
-          roll = this.rollCurve ? this.rollCurve.GetValueAt(time) : 0.0;
-    const sinYaw = Math.sin(yaw / 2.0),
-          cosYaw = Math.cos(yaw / 2.0),
-          sinPitch = Math.sin(pitch / 2.0),
-          cosPitch = Math.cos(pitch / 2.0),
-          sinRoll = Math.sin(roll / 2.0),
-          cosRoll = Math.cos(roll / 2.0);
+    var yaw = this.yawCurve ? this.yawCurve.GetValueAt(time) : 0.0,
+        pitch = this.pitchCurve ? this.pitchCurve.GetValueAt(time) : 0.0,
+        roll = this.rollCurve ? this.rollCurve.GetValueAt(time) : 0.0;
+    var sinYaw = Math.sin(yaw / 2.0),
+        cosYaw = Math.cos(yaw / 2.0),
+        sinPitch = Math.sin(pitch / 2.0),
+        cosPitch = Math.cos(pitch / 2.0),
+        sinRoll = Math.sin(roll / 2.0),
+        cosRoll = Math.cos(roll / 2.0);
     value[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
     value[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
     value[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
@@ -37202,9 +37537,9 @@ class Tw2QuaternionSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE
 
   GetValueAt(time, value) {
     global__WEBPACK_IMPORTED_MODULE_0__["quat"].identity(value);
-    const quat_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.quat_0;
+    var quat_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.quat_0;
 
-    for (let i = 0; i < this.functions.length; ++i) {
+    for (var i = 0; i < this.functions.length; ++i) {
       this.functions[i].GetValueAt(time, quat_0);
       global__WEBPACK_IMPORTED_MODULE_0__["quat"].multiply(value, value, quat_0);
     }
@@ -37389,14 +37724,14 @@ class Tw2ScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__
 
 
   GetValueAt(time) {
-    let value;
+    var value;
 
     switch (this.operator) {
       case Tw2ScalarSequencer.Operator.MULTIPLY:
         value = 1;
 
-        for (let i = 0; i < this.functions.length; ++i) {
-          let v = this.functions[i].GetValueAt(time);
+        for (var i = 0; i < this.functions.length; ++i) {
+          var v = this.functions[i].GetValueAt(time);
 
           if (this.clamping) {
             v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
@@ -37410,14 +37745,14 @@ class Tw2ScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__
       default:
         value = 0;
 
-        for (let i = 0; i < this.functions.length; ++i) {
-          let v = this.functions[i].GetValueAt(time);
+        for (var _i = 0; _i < this.functions.length; ++_i) {
+          var _v = this.functions[_i].GetValueAt(time);
 
           if (this.clamping) {
-            v = Math.min(Math.max(v, this.inMinClamp), this.inMaxClamp);
+            _v = Math.min(Math.max(_v, this.inMinClamp), this.inMaxClamp);
           }
 
-          value += v;
+          value += _v;
         }
 
     }
@@ -37514,13 +37849,13 @@ class Tw2VectorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__
 
 
   GetValueAt(time, value) {
-    const vec3_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec3_0;
+    var vec3_0 = _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"].global.vec3_0;
 
     switch (this.operator) {
       case Tw2VectorSequencer.Operator.MULTIPLY:
         global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 1, 1, 1);
 
-        for (let i = 0; i < this.functions.length; ++i) {
+        for (var i = 0; i < this.functions.length; ++i) {
           this.functions[i].GetValueAt(time, vec3_0);
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(value, value, vec3_0);
         }
@@ -37530,8 +37865,9 @@ class Tw2VectorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__
       default:
         global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(value, 0, 0, 0);
 
-        for (let i = 0; i < this.functions.length; ++i) {
-          this.functions[i].GetValueAt(time, vec3_0);
+        for (var _i = 0; _i < this.functions.length; ++_i) {
+          this.functions[_i].GetValueAt(time, vec3_0);
+
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(value, value, vec3_0);
         }
 
@@ -37717,12 +38053,12 @@ class Tw2YPRSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["T
     if (this.YawCurve) this.YawPitchRoll[0] = this.YawCurve.GetValueAt(time);
     if (this.PitchCurve) this.YawPitchRoll[1] = this.PitchCurve.GetValueAt(time);
     if (this.RollCurve) this.YawPitchRoll[2] = this.RollCurve.GetValueAt(time);
-    const sinYaw = Math.sin(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
-          cosYaw = Math.cos(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
-          sinPitch = Math.sin(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
-          cosPitch = Math.cos(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
-          sinRoll = Math.sin(this.YawPitchRoll[2] / 180 * Math.PI / 2.0),
-          cosRoll = Math.cos(this.YawPitchRoll[2] / 180 * Math.PI / 2.0);
+    var sinYaw = Math.sin(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
+        cosYaw = Math.cos(this.YawPitchRoll[0] / 180 * Math.PI / 2.0),
+        sinPitch = Math.sin(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
+        cosPitch = Math.cos(this.YawPitchRoll[1] / 180 * Math.PI / 2.0),
+        sinRoll = Math.sin(this.YawPitchRoll[2] / 180 * Math.PI / 2.0),
+        cosRoll = Math.cos(this.YawPitchRoll[2] / 180 * Math.PI / 2.0);
     value[0] = sinYaw * cosPitch * sinRoll + cosYaw * sinPitch * cosRoll;
     value[1] = sinYaw * cosPitch * cosRoll - cosYaw * sinPitch * sinRoll;
     value[2] = cosYaw * cosPitch * sinRoll - sinYaw * sinPitch * cosRoll;
@@ -38080,7 +38416,7 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     // during scene rebuilds
 
     if (this.objects.length) {
-      for (let i = 0; i < this.objects.length; i++) {
+      for (var i = 0; i < this.objects.length; i++) {
         this.backgroundObjects.push(this.objects[i]);
       }
 
@@ -38164,10 +38500,10 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   KeepAlive() {
-    const res = this.GetResources();
+    var res = this.GetResources();
     this.GetChildResources(res);
 
-    for (let i = 0; i < res.length; i++) {
+    for (var i = 0; i < res.length; i++) {
       res[i].KeepAlive();
     }
   }
@@ -38179,7 +38515,7 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   GetResources(out = []) {
-    for (let i = 0; i < this.lensflares.length; i++) {
+    for (var i = 0; i < this.lensflares.length; i++) {
       this.lensflares[i].GetResources(out);
     }
 
@@ -38210,27 +38546,27 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   PerChildObject(funcName, ...args) {
-    for (let i = 0; i < this.planets.length; i++) {
+    for (var i = 0; i < this.planets.length; i++) {
       if (funcName in this.planets[i]) {
         this.planets[i][funcName](...args);
       }
     }
 
-    for (let i = 0; i < this.objects.length; i++) {
-      if (funcName in this.objects[i]) {
-        this.objects[i][funcName](...args);
+    for (var _i = 0; _i < this.objects.length; _i++) {
+      if (funcName in this.objects[_i]) {
+        this.objects[_i][funcName](...args);
       }
     }
 
-    for (let i = 0; i < this.backgroundObjects.length; i++) {
-      if (funcName in this.backgroundObjects[i]) {
-        this.backgroundObjects[i][funcName](...args);
+    for (var _i2 = 0; _i2 < this.backgroundObjects.length; _i2++) {
+      if (funcName in this.backgroundObjects[_i2]) {
+        this.backgroundObjects[_i2][funcName](...args);
       }
     }
 
-    for (let i = 0; i < this.lineSets.length; i++) {
-      if (funcName in this.lineSets[i]) {
-        this.lineSets[i][funcName](...args);
+    for (var _i3 = 0; _i3 < this.lineSets.length; _i3++) {
+      if (funcName in this.lineSets[_i3]) {
+        this.lineSets[_i3][funcName](...args);
       }
     }
   }
@@ -38254,7 +38590,7 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   Update(dt) {
-    for (let i = 0; i < this.curveSets.length; i++) {
+    for (var i = 0; i < this.curveSets.length; i++) {
       this.curveSets[i].Update(dt);
     }
 
@@ -38275,7 +38611,7 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   RenderBatches(mode, objectArray, accumulator = this._batches) {
-    for (let i = 0; i < objectArray.length; ++i) {
+    for (var i = 0; i < objectArray.length; ++i) {
       if ("GetBatches" in objectArray[i]) {
         objectArray[i].GetBatches(mode, accumulator);
       }
@@ -38289,10 +38625,10 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
   Render(dt) {
     this.ApplyPerFrameData();
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          g = EveSpaceScene.global,
-          tr = undefined,
-          show = this.visible;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        g = EveSpaceScene.global,
+        tr = undefined,
+        show = this.visible;
 
     if (show["environment"] && this.backgroundEffect) {
       d.SetStandardStates(d.RM_FULLSCREEN);
@@ -38300,16 +38636,16 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     }
 
     if (show.planets && this.planets.length) {
-      const tempProj = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_0, d.projection),
-            newProj = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_1, d.projection),
-            zn = 10000,
-            zf = 1e11;
+      var tempProj = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_0, d.projection),
+          newProj = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(g.mat4_1, d.projection),
+          zn = 10000,
+          zf = 1e11;
       newProj[10] = zf / (zn - zf);
       newProj[14] = zf * zn / (zn - zf);
       d.SetProjection(newProj, true);
       this.ApplyPerFrameData();
 
-      for (let i = 0; i < this.planets.length; ++i) {
+      for (var i = 0; i < this.planets.length; ++i) {
         if (this.planets[i].UpdateViewDependentData) {
           this.planets[i].UpdateViewDependentData(tr, dt);
         }
@@ -38337,38 +38673,38 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     }
 
     if (show.objects) {
-      for (let i = 0; i < this.objects.length; ++i) {
-        if (this.objects[i].UpdateViewDependentData) {
-          this.objects[i].UpdateViewDependentData(tr, dt);
+      for (var _i4 = 0; _i4 < this.objects.length; ++_i4) {
+        if (this.objects[_i4].UpdateViewDependentData) {
+          this.objects[_i4].UpdateViewDependentData(tr, dt);
         }
       }
     }
 
     if (show.backgroundObjects) {
-      for (let i = 0; i < this.backgroundObjects.length; i++) {
-        if (this.backgroundObjects[i].UpdateViewDependentData) {
-          this.backgroundObjects[i].UpdateViewDependentData(tr, dt);
+      for (var _i5 = 0; _i5 < this.backgroundObjects.length; _i5++) {
+        if (this.backgroundObjects[_i5].UpdateViewDependentData) {
+          this.backgroundObjects[_i5].UpdateViewDependentData(tr, dt);
         }
       }
     }
 
     if (show.lineSets) {
-      for (let i = 0; i < this.lineSets.length; i++) {
-        this.lineSets[i].UpdateViewDependentData(tr, dt);
+      for (var _i6 = 0; _i6 < this.lineSets.length; _i6++) {
+        this.lineSets[_i6].UpdateViewDependentData(tr, dt);
       }
     }
 
     if (show.lensflares) {
-      for (let i = 0; i < this.lensflares.length; ++i) {
-        this.lensflares[i].PrepareRender();
+      for (var _i7 = 0; _i7 < this.lensflares.length; ++_i7) {
+        this.lensflares[_i7].PrepareRender();
       }
     }
 
     this._batches.Clear();
 
     if (show.planets) {
-      for (let i = 0; i < this.planets.length; ++i) {
-        this.planets[i].GetZOnlyBatches(d.RM_OPAQUE, this._batches);
+      for (var _i8 = 0; _i8 < this.planets.length; ++_i8) {
+        this.planets[_i8].GetZOnlyBatches(d.RM_OPAQUE, this._batches);
       }
     }
 
@@ -38392,8 +38728,8 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     }
 
     if (show.lensflares) {
-      for (let i = 0; i < this.lensflares.length; ++i) {
-        this.lensflares[i].GetBatches(d.RM_ADDITIVE, this._batches);
+      for (var _i9 = 0; _i9 < this.lensflares.length; ++_i9) {
+        this.lensflares[_i9].GetBatches(d.RM_ADDITIVE, this._batches);
       }
     }
 
@@ -38406,8 +38742,8 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     this._batches.Render();
 
     if (show.lensflares) {
-      for (let i = 0; i < this.lensflares.length; ++i) {
-        this.lensflares[i].UpdateOccluders();
+      for (var _i10 = 0; _i10 < this.lensflares.length; ++_i10) {
+        this.lensflares[_i10].UpdateOccluders();
       }
     }
 
@@ -38429,21 +38765,21 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
 
 
   ApplyPerFrameData() {
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          g = EveSpaceScene.global,
-          envMapTransform = g.mat4_2,
-          sunDir = g.vec3_0,
-          show = this.visible; // Todo: Update from local transform??
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        g = EveSpaceScene.global,
+        envMapTransform = g.mat4_2,
+        sunDir = g.vec3_0,
+        show = this.visible; // Todo: Update from local transform??
 
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(envMapTransform, this.envMapRotation);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(envMapTransform, envMapTransform, this.envMapScaling);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(envMapTransform, envMapTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(sunDir, this.sunDirection);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(sunDir, sunDir);
-    let distance = this.fogEnd - this.fogStart;
+    var distance = this.fogEnd - this.fogStart;
     if (Math.abs(distance) < 1e-5) distance = 1e-5;
-    const f = 1.0 / distance;
-    const vs = this._perFrameVS;
+    var f = 1.0 / distance;
+    var vs = this._perFrameVS;
     vs.Set("FogFactors", [this.fogEnd * f, f, this.visible.fog ? this.fogMax : 0, 1]);
     vs.Set("ViewportAdjustment", [1, 1, 1, 1]);
     vs.Set("MiscSettings", [d.currentTime, 0, d.viewportWidth, d.viewportHeight]);
@@ -38456,7 +38792,7 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
     vs.Set("ProjectionMat", d.projectionTranspose);
     vs.Set("EnvMapRotationMat", envMapTransform);
     d.perFrameVSData = vs;
-    const ps = this._perFramePS;
+    var ps = this._perFramePS;
     ps.Set("ViewInverseTransposeMat", d.viewInverse);
     ps.Set("ViewMat", d.viewTranspose);
     ps.Set("EnvMapRotationMat", envMapTransform);
@@ -38484,9 +38820,9 @@ class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] 
      */
 
     d.perFramePSData = ps;
-    const envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
-          envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
-          envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
+    var envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
+        envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
+        envMap2 = this._envMap2Res && show.environmentBlur ? this._envMap2Res : this.GetEmptyTexture();
     global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EveSpaceSceneEnvMap").SetTextureRes(envMap);
     global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap1").SetTextureRes(envMap1);
     global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetVariable("EnvMap2").SetTextureRes(envMap2);
@@ -38763,7 +39099,7 @@ class EveAnimationStateTransition {
    * @returns {EveAnimationStateTransition}
    */
   static blackStruct(reader) {
-    const item = new EveAnimationStateTransition(); // Not sure of property name
+    var item = new EveAnimationStateTransition(); // Not sure of property name
 
     item.state = reader.ReadStringU16();
     reader.ExpectU8(0, "unknown content");
@@ -38840,7 +39176,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * Root EveChild class
  */
 
-let EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Per frame update
    * @param {number} dt
@@ -39084,7 +39420,7 @@ class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild
    * @returns {Array.<Tw2Resource>} [out]
    */
   GetResources(out = []) {
-    for (let i = 0; i < this.objects.length; i++) {
+    for (var i = 0; i < this.objects.length; i++) {
       this.objects[i].GetResources(out);
     }
 
@@ -39112,12 +39448,12 @@ class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild
     global__WEBPACK_IMPORTED_MODULE_1__["mat4"].copy(this._worldTransformLast, this._worldTransform);
     global__WEBPACK_IMPORTED_MODULE_1__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
 
-    for (let i = 0; i < this.curveSets.length; i++) {
+    for (var i = 0; i < this.curveSets.length; i++) {
       this.curveSets[i].Update(dt);
     }
 
-    for (let i = 0; i < this.objects.length; i++) {
-      this.objects[i].Update(dt, this._worldTransform);
+    for (var _i = 0; _i < this.objects.length; _i++) {
+      this.objects[_i].Update(dt, this._worldTransform);
     }
     /*
     for (let i = 0; i < this.lights.length; i++)
@@ -39137,7 +39473,7 @@ class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild
 
   GetBatches(mode, accumulator, perObjectData) {
     if (this.display) {
-      for (let i = 0; i < this.objects.length; i++) {
+      for (var i = 0; i < this.objects.length; i++) {
         this.objects[i].GetBatches(mode, accumulator, perObjectData);
       }
       /*
@@ -39233,7 +39569,7 @@ class EveChildExplosion extends _EveChild__WEBPACK_IMPORTED_MODULE_1__["EveChild
     if (this.localExplosion) this.localExplosion.GetResources(out);
     if (this.localExplosionShared) this.localExplosionShared.GetResources(out);
 
-    for (let i = 0; i < this.localExplosions.length; i++) {
+    for (var i = 0; i < this.localExplosions.length; i++) {
       this.localExplosions[i].GetResources(out);
     }
 
@@ -39668,12 +40004,12 @@ class EveChildParticleSystem extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["Eve
   GetResources(out = []) {
     if (this.mesh) this.mesh.GetResources(out);
 
-    for (let i = 0; i < this.particleEmitters.length; i++) {
+    for (var i = 0; i < this.particleEmitters.length; i++) {
       this.particleEmitters[i].GetResources(out);
     }
 
-    for (let i = 0; i < this.particleSystems.length; i++) {
-      this.particleSystems[i].GetResources(out);
+    for (var _i = 0; _i < this.particleSystems.length; _i++) {
+      this.particleSystems[_i].GetResources(out);
     }
 
     return out;
@@ -39694,12 +40030,12 @@ class EveChildParticleSystem extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["Eve
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
 
-    for (let i = 0; i < this.particleEmitters.length; ++i) {
+    for (var i = 0; i < this.particleEmitters.length; ++i) {
       this.particleEmitters[i].Update(dt);
     }
 
-    for (let i = 0; i < this.particleSystems.length; ++i) {
-      this.particleSystems[i].Update(dt);
+    for (var _i2 = 0; _i2 < this.particleSystems.length; ++_i2) {
+      this.particleSystems[_i2].Update(dt);
     }
   }
   /**
@@ -39896,7 +40232,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const {
+var {
   device
 } = global__WEBPACK_IMPORTED_MODULE_0__["tw2"];
 /**
@@ -39959,8 +40295,8 @@ class EveChildBillboard extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild
 
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransformLast, this._worldTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.localTransform);
-    const viewInverse = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.mat4_0,
-          finalScale = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.vec3_0;
+    var viewInverse = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.mat4_0,
+        finalScale = _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"].global.vec3_0;
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(viewInverse, device.eyePosition, this._worldTransform.subarray(12), [0, 1, 0]);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(viewInverse, viewInverse);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(finalScale, parentTransform);
@@ -40334,18 +40670,18 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   UpdateOccluders() {
     if (!this.doOcclusionQueries) return;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          g = EveLensflare.global;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        g = EveLensflare.global;
 
     if (!g.occluderLevels[0].texture || g.occluderLevels[0].width < this.occluders.length * 2) {
-      for (let i = 0; i < g.occluderLevels.length; ++i) {
+      for (var i = 0; i < g.occluderLevels.length; ++i) {
         g.occluderLevels[i].Create(this.occluders.length * 2, 1, false);
       }
     } // TODO: Is this deprecated?
 
 
-    for (let j = 0; j < this.flares.length; ++j) {
+    for (var j = 0; j < this.flares.length; ++j) {
       if ("_backBuffer" in this.flares[j]) {
         this.flares[j]._backBuffer.textureRes = g.occluderLevels.texture;
       }
@@ -40358,14 +40694,14 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     g.occluderLevels[g.occludedLevelIndex].Unset();
-    let samples = 1;
+    var samples = 1;
 
     if (d.antialiasing) {
       samples = d.msaaSamples;
       gl.sampleCoverage(1.0 / samples, false);
     }
 
-    for (let i = 0; i < this.occluders.length; ++i) {
+    for (var _i = 0; _i < this.occluders.length; ++_i) {
       d.SetRenderState(global__WEBPACK_IMPORTED_MODULE_0__["RS_COLORWRITEENABLE"], 8);
       gl.colorMask(false, false, false, true);
       gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -40376,7 +40712,8 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
         gl.sampleCoverage(0.25, false);
       }
 
-      this.occluders[i].UpdateValue(this._transform, i);
+      this.occluders[_i].UpdateValue(this._transform, _i);
+
       if (d.antialiasing) gl.disable(gl.SAMPLE_COVERAGE); // Copy back buffer into a texture
 
       if (!g.backBuffer.texture) g.backBuffer.Attach(gl.createTexture());
@@ -40394,19 +40731,19 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       gl.bindTexture(gl.TEXTURE_2D, null); // Collect samples
 
       g.occluderLevels[g.occludedLevelIndex].Set();
-      _EveOccluder__WEBPACK_IMPORTED_MODULE_2__["EveOccluder"].CollectSamples(g.backBuffer, i, g.occluderLevels[0].width / 2, samples);
+      _EveOccluder__WEBPACK_IMPORTED_MODULE_2__["EveOccluder"].CollectSamples(g.backBuffer, _i, g.occluderLevels[0].width / 2, samples);
       g.occluderLevels[g.occludedLevelIndex].Unset();
     }
 
     if (d.antialiasing) gl.sampleCoverage(1, false);
     g.occluderLevels[(g.occludedLevelIndex + 1) % g.occluderLevels.length].Set();
-    const pixels = new Uint8Array(g.occluderLevels[0].width * 4);
+    var pixels = new Uint8Array(g.occluderLevels[0].width * 4);
     gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     g.occluderLevels[(g.occludedLevelIndex + 1) % g.occluderLevels.length].Unset();
     this.occlusionIntensity = 1;
 
-    for (let i = 0; i < g.occluderLevels[0].width * 2; i += 4) {
-      this.occlusionIntensity *= pixels[i + 1] ? pixels[i] / pixels[i + 1] : 1;
+    for (var _i2 = 0; _i2 < g.occluderLevels[0].width * 2; _i2 += 4) {
+      this.occlusionIntensity *= pixels[_i2 + 1] ? pixels[_i2] / pixels[_i2 + 1] : 1;
     }
 
     this.backgroundOcclusionIntensity = this.occlusionIntensity;
@@ -40423,11 +40760,11 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   GetBatches(mode, accumulator, perObjectData) {
     if (this.display) {
-      const viewDir = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
+      var viewDir = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(EveLensflare.global.vec4_0, 0, 0, 1, 0);
       global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(viewDir, viewDir, global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
       if (global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(viewDir, this._direction) < 0) return;
 
-      for (let i = 0; i < this.flares.length; ++i) {
+      for (var i = 0; i < this.flares.length; ++i) {
         this.flares[i].GetBatches(mode, accumulator, perObjectData);
       }
 
@@ -40443,14 +40780,14 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   PrepareRender() {
     if (!this.display) return;
-    const g = EveLensflare.global,
-          viewDir = g.vec4_0,
-          cameraPos = g.vec3_0,
-          scaleMat = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
-          cameraSpacePos = g.vec3_2,
-          negDirVec = g.vec3_3,
-          negPos = g.vec3_1,
-          dist = g.vec4_1;
+    var g = EveLensflare.global,
+        viewDir = g.vec4_0,
+        cameraPos = g.vec3_0,
+        scaleMat = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
+        cameraSpacePos = g.vec3_2,
+        negDirVec = g.vec3_3,
+        negPos = g.vec3_1,
+        dist = g.vec4_1;
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(cameraPos, [0, 0, 0], global__WEBPACK_IMPORTED_MODULE_0__["device"].viewInverse);
 
     if (global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(this.position) === 0) {
@@ -40468,43 +40805,43 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].setTranslation(this._transform, cameraSpacePos);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(scaleMat, scaleMat, [this.occlusionIntensity, this.occlusionIntensity, 1]); //mat4.multiply(scaleMat, scaleMat, this._transform);
 
-    const dir = this._direction;
+    var dir = this._direction;
     global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("LensflareFxDirectionScale", [dir[0], dir[1], dir[2], 1]);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(dist, dir[0], dir[1], dir[2], 0);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, global__WEBPACK_IMPORTED_MODULE_0__["device"].view);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(dist, dist, global__WEBPACK_IMPORTED_MODULE_0__["device"].projection);
     dist[0] /= dist[3];
     dist[1] /= dist[3];
-    const distToEdge = 1 - Math.min(1 - Math.abs(dist[0]), 1 - Math.abs(dist[1])),
-          distToCenter = Math.sqrt(dist[0] * dist[0] + dist[1] * dist[1]),
-          radialAngle = Math.atan2(dist[1], dist[0]) + Math.PI;
+    var distToEdge = 1 - Math.min(1 - Math.abs(dist[0]), 1 - Math.abs(dist[1])),
+        distToCenter = Math.sqrt(dist[0] * dist[0] + dist[1] * dist[1]),
+        radialAngle = Math.atan2(dist[1], dist[0]) + Math.PI;
 
-    for (let i = 0; i < this.distanceToEdgeCurves.length; ++i) {
+    for (var i = 0; i < this.distanceToEdgeCurves.length; ++i) {
       this.distanceToEdgeCurves[i].UpdateValue(distToEdge);
     }
 
-    for (let i = 0; i < this.distanceToCenterCurves.length; ++i) {
-      this.distanceToCenterCurves[i].UpdateValue(distToCenter);
+    for (var _i3 = 0; _i3 < this.distanceToCenterCurves.length; ++_i3) {
+      this.distanceToCenterCurves[_i3].UpdateValue(distToCenter);
     }
 
-    for (let i = 0; i < this.radialAngleCurves.length; ++i) {
-      this.radialAngleCurves[i].UpdateValue(radialAngle);
+    for (var _i4 = 0; _i4 < this.radialAngleCurves.length; ++_i4) {
+      this.radialAngleCurves[_i4].UpdateValue(radialAngle);
     }
 
-    for (let i = 0; i < this.xDistanceToCenter.length; ++i) {
-      this.xDistanceToCenter[i].UpdateValue(dist[0] + 10);
+    for (var _i5 = 0; _i5 < this.xDistanceToCenter.length; ++_i5) {
+      this.xDistanceToCenter[_i5].UpdateValue(dist[0] + 10);
     }
 
-    for (let i = 0; i < this.yDistanceToCenter.length; ++i) {
-      this.yDistanceToCenter[i].UpdateValue(dist[1] + 10);
+    for (var _i6 = 0; _i6 < this.yDistanceToCenter.length; ++_i6) {
+      this.yDistanceToCenter[_i6].UpdateValue(dist[1] + 10);
     }
 
-    for (let i = 0; i < this.bindings.length; ++i) {
-      this.bindings[i].CopyValue();
+    for (var _i7 = 0; _i7 < this.bindings.length; ++_i7) {
+      this.bindings[_i7].CopyValue();
     }
 
-    for (let i = 0; i < this.flares.length; ++i) {
-      this.flares[i].UpdateViewDependentData(this._transform);
+    for (var _i8 = 0; _i8 < this.flares.length; ++_i8) {
+      this.flares[_i8].UpdateViewDependentData(this._transform);
     }
   }
   /**
@@ -40514,7 +40851,7 @@ class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   static init() {
     if (!EveLensflare.global) {
-      const g = EveLensflare.global = {};
+      var g = EveLensflare.global = {};
       g.vec3_0 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
       g.vec3_1 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
       g.vec3_2 = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -40627,12 +40964,12 @@ class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseC
   static createAreaEffects(dest, src, names) {
     names = Object(global_util__WEBPACK_IMPORTED_MODULE_3__["toArray"])(names);
 
-    for (let i = 0; i < names.length; i++) {
-      const name = names[i];
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i];
 
       if (name in src && name in dest) {
-        for (let i = 0; i < src[name].length; i++) {
-          dest[name].push(core__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"].from(src[name][i]));
+        for (var _i = 0; _i < src[name].length; _i++) {
+          dest[name].push(core__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"].from(src[name][_i]));
         }
       }
     }
@@ -40646,7 +40983,7 @@ class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseC
 
 
   static from(values, options) {
-    const item = new EveMeshOverlayEffect();
+    var item = new EveMeshOverlayEffect();
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "update"]);
@@ -40655,7 +40992,7 @@ class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseC
         item.curveSet = curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSet"].from(values.curveSet);
       }
 
-      const areas = ["additiveEffects", "distortionEffects", "opaqueEffects", "transparentEffects", "decalEffects"];
+      var areas = ["additiveEffects", "distortionEffects", "opaqueEffects", "transparentEffects", "decalEffects"];
 
       if (values.visible) {
         Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item.visible, values.visible, areas);
@@ -40691,10 +41028,10 @@ class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseC
 
   GetBatches(mode, accumulator, perObjectData, mesh) {
     if (!this.display || !mesh || !mesh.IsGood()) return;
-    const effects = this.GetEffects(mode);
+    var effects = this.GetEffects(mode);
 
-    for (let i = 0; i < effects.length; i++) {
-      const batch = new core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryBatch"]();
+    for (var i = 0; i < effects.length; i++) {
+      var batch = new core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryBatch"]();
       batch.renderMode = mode;
       batch.perObjectData = perObjectData;
       batch.geometryRes = mesh.geometryResource;
@@ -40802,13 +41139,13 @@ class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   UpdateValue(parentTransform, index) {
     if (!global__WEBPACK_IMPORTED_MODULE_0__["device"].alphaBlendBackBuffer) return;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          g = EveOccluder.global,
-          worldViewProj = g.mat4_0,
-          center = g.vec4_0;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        g = EveOccluder.global,
+        worldViewProj = g.mat4_0,
+        center = g.vec4_0;
     g.accumulator.Clear();
 
-    for (let i = 0; i < this.sprites.length; ++i) {
+    for (var i = 0; i < this.sprites.length; ++i) {
       this.sprites[i].UpdateViewDependentData(parentTransform);
       this.sprites[i].GetBatches(d.RM_DECAL, g.accumulator);
     }
@@ -40817,12 +41154,12 @@ class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     g.accumulator.Render();
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldViewProj, d.viewProjection, this.sprites[0].worldTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, [0, 0, 0, 1], worldViewProj);
-    const x0 = (center[0] / center[3] + 1) * 0.5,
-          y0 = (center[1] / center[3] + 1) * 0.5;
+    var x0 = (center[0] / center[3] + 1) * 0.5,
+        y0 = (center[1] / center[3] + 1) * 0.5;
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(center, 0.5, 0.5, 0, 1);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, center, worldViewProj);
-    const x1 = (center[0] / center[3] + 1) * 0.5,
-          y1 = (center[1] / center[3] + 1) * 0.5;
+    var x1 = (center[0] / center[3] + 1) * 0.5,
+        y1 = (center[1] / center[3] + 1) * 0.5;
     center[0] = x0;
     center[1] = y0;
     center[2] = x1 - x0;
@@ -40840,18 +41177,18 @@ class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static CollectSamples(tex, index, total, samples) {
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          g = this.global,
-          effect = g.effect,
-          vertexBuffer = g.vertexBuffer,
-          decl = g.decl;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        g = this.global,
+        effect = g.effect,
+        vertexBuffer = g.vertexBuffer,
+        decl = g.decl;
     if (!effect.effectRes || !effect.effectRes.IsGood()) return false;
     effect.parameters.BackBuffer.SetTextureRes(tex);
     effect.parameters.OccluderIndex.SetValue([index, total, samples]);
     d.SetStandardStates(d.RM_ADDITIVE);
     d.gl.bindBuffer(d.gl.ARRAY_BUFFER, vertexBuffer);
 
-    for (let pass = 0; pass < effect.GetPassCount("Main"); ++pass) {
+    for (var pass = 0; pass < effect.GetPassCount("Main"); ++pass) {
       effect.ApplyPass("Main", pass);
       if (decl.SetDeclaration(d, effect.GetPassInput("Main", pass), 16)) return false;
       d.ApplyShadowState();
@@ -40867,8 +41204,8 @@ class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
   static init() {
     if (EveOccluder.global) return;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          g = EveOccluder.global = {};
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        g = EveOccluder.global = {};
     g.mat4_0 = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     g.vec4_0 = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     g.accumulator = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
@@ -40892,13 +41229,13 @@ class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       elements: 2
     }]);
     g.decl.RebuildHash();
-    const vb = new Float32Array(255 * 6 * 4);
-    let index = 0;
+    var vb = new Float32Array(255 * 6 * 4);
+    var index = 0;
 
-    for (let i = 0; i < 16; ++i) {
-      for (let j = 0; j < 16; ++j) {
-        const x = (i + Math.random()) / 16 * 2 - 1,
-              y = (j + Math.random()) / 16 * 2 - 1;
+    for (var i = 0; i < 16; ++i) {
+      for (var j = 0; j < 16; ++j) {
+        var x = (i + Math.random()) / 16 * 2 - 1,
+            y = (j + Math.random()) / 16 * 2 - 1;
         vb[index++] = 1;
         vb[index++] = 1;
         vb[index++] = x;
@@ -41178,13 +41515,13 @@ class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   UpdateViewDependentData(parentTransform) {
     if (!this.display) return; // TODO: Handle parent scale....
 
-    const g = EveStretch.global,
-          directionVec = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(g.vec3_0, this._destinationPosition, this._sourcePosition),
-          m = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
-          x = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_1, 0, 0, 0),
-          up = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_2, 0, 0, 0),
-          s = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_1);
-    let scalingLength = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
+    var g = EveStretch.global,
+        directionVec = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(g.vec3_0, this._destinationPosition, this._sourcePosition),
+        m = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_0),
+        x = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_1, 0, 0, 0),
+        up = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(g.vec3_2, 0, 0, 0),
+        s = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(g.mat4_1);
+    var scalingLength = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec);
 
     if (this._useTransformsForStretch) {
@@ -41259,7 +41596,7 @@ class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   Update(dt) {
-    for (let i = 0; i < this.curveSets.length; ++i) {
+    for (var i = 0; i < this.curveSets.length; ++i) {
       this.curveSets[i].Update(dt);
     }
 
@@ -41277,7 +41614,7 @@ class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
       this.source.GetValueAt(this._time, this._destinationPosition);
     }
 
-    const directionVec = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(EveStretch.global.vec3_0, this._destinationPosition, this._sourcePosition);
+    var directionVec = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(EveStretch.global.vec3_0, this._destinationPosition, this._sourcePosition);
     this.length.value = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(directionVec);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(directionVec, directionVec); // Unused - typo?
 
@@ -41541,11 +41878,11 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
   Initialize() {
     this._firingDuration = this.GetCurveDuration();
 
-    for (let i = 0; i < this.stretch.length; ++i) {
+    for (var i = 0; i < this.stretch.length; ++i) {
       this._perMuzzleData[i] = new EvePerMuzzleData();
     }
 
-    const data = this._perMuzzleData;
+    var data = this._perMuzzleData;
     if (data.length > 0) data[0].constantDelay = this.firingDelay1;
     if (data.length > 1) data[1].constantDelay = this.firingDelay2;
     if (data.length > 2) data[2].constantDelay = this.firingDelay3;
@@ -41562,12 +41899,12 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
 
   GetCurveDuration() {
-    let maxDuration = 0;
+    var maxDuration = 0;
 
-    for (let i = 0; i < this.stretch.length; ++i) {
-      const stretch = this.stretch[i];
+    for (var i = 0; i < this.stretch.length; ++i) {
+      var stretch = this.stretch[i];
 
-      for (let j = 0; j < stretch.curveSets.length; ++j) {
+      for (var j = 0; j < stretch.curveSets.length; ++j) {
         maxDuration = Math.max(maxDuration, stretch.curveSets[j].GetMaxCurveDuration());
       }
     }
@@ -41622,7 +41959,7 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
 
   PrepareFiring(delay, muzzleID = -1) {
-    for (let i = 0; i < this.stretch.length; ++i) {
+    for (var i = 0; i < this.stretch.length; ++i) {
       if (muzzleID < 0 || muzzleID === i) {
         this._perMuzzleData[i].currentStartDelay = delay + this._perMuzzleData[i].constantDelay;
         this._perMuzzleData[i].started = false;
@@ -41645,10 +41982,10 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
 
   StartMuzzleEffect(muzzleID) {
-    const stretch = this.stretch[muzzleID];
+    var stretch = this.stretch[muzzleID];
 
-    for (let i = 0; i < stretch.curveSets.length; ++i) {
-      const curveSet = stretch.curveSets[i];
+    for (var i = 0; i < stretch.curveSets.length; ++i) {
+      var curveSet = stretch.curveSets[i];
 
       switch (curveSet.name) {
         case "play_start":
@@ -41671,11 +42008,11 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
 
   StopFiring() {
-    for (let j = 0; j < this.stretch.length; ++j) {
-      const stretch = this.stretch[j];
+    for (var j = 0; j < this.stretch.length; ++j) {
+      var stretch = this.stretch[j];
 
-      for (let i = 0; i < stretch.curveSets.length; ++i) {
-        const curveSet = stretch.curveSets[i];
+      for (var i = 0; i < stretch.curveSets.length; ++i) {
+        var curveSet = stretch.curveSets[i];
 
         switch (curveSet.name) {
           case "play_start":
@@ -41705,7 +42042,7 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
   UpdateViewDependentData(parentTransform) {
     // Eve Turret handles parentTransforms for muzzles
-    for (let i = 0; i < this.stretch.length; ++i) {
+    for (var i = 0; i < this.stretch.length; ++i) {
       this.stretch[i].UpdateViewDependentData(parentTransform);
     }
   }
@@ -41716,7 +42053,7 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
 
   Update(dt) {
-    for (let i = 0; i < this.stretch.length; ++i) {
+    for (var i = 0; i < this.stretch.length; ++i) {
       if (this._perMuzzleData[i].started) {
         this._perMuzzleData[i].elapsedTime += dt;
       }
@@ -41762,7 +42099,7 @@ class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
   GetBatches(mode, accumulator, perObjectData) {
     if (!this.display || !this._isFiring) return;
 
-    for (let i = 0; i < this.stretch.length; ++i) {
+    for (var i = 0; i < this.stretch.length; ++i) {
       if (this._perMuzzleData[i].started && (this._firingDuration >= this._perMuzzleData[i].elapsedTime || this.isLoopFiring)) {
         this.stretch[i].GetBatches(mode, accumulator, perObjectData);
       }
@@ -42416,7 +42753,7 @@ class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
 
 
   static from(opt = {}) {
-    const item = new this();
+    var item = new this();
     global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "type", "position1", "color1", "position2", "color2", "intermediatePosition", "width", "multiColor", "multiColorBorder", "overlayColor", "animationSpeed", "animationScale", "numOfSegments"]);
     return item;
   }
@@ -42522,9 +42859,9 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   get lineCount() {
-    let count = 0;
+    var count = 0;
 
-    for (let i = 0; i < this.items.length; i++) {
+    for (var i = 0; i < this.items.length; i++) {
       if (this.items[i].type !== EveCurveLineSetItem.Type.INVALID) {
         count += this.items[i].numOfSegments;
       }
@@ -42565,7 +42902,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   AddStraightLineFromRay(origin, direction, length, width, startColor, endColor) {
-    const line = this.AddStraightLine([0, 0, 0], [0, 0, 0], width, startColor, endColor);
+    var line = this.AddStraightLine([0, 0, 0], [0, 0, 0], width, startColor, endColor);
     line.ChangePositionFromRay(origin, direction, length);
     return line;
   }
@@ -42628,7 +42965,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   AddCurvedLineSph(start, end, center, middle, width, startColor, endColor) {
-    const g = EveCurveLineSet.global;
+    var g = EveCurveLineSet.global;
     return this.CreateItem({
       type: EveCurveLineSetItem.Type.CURVED,
       position1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_0, start, center),
@@ -42678,7 +43015,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   AddSpheredLineSph(start, end, center, middle, width, startColor, endColor) {
-    const g = EveCurveLineSet.global;
+    var g = EveCurveLineSet.global;
     return this.CreateItem({
       type: EveCurveLineSetItem.Type.SPHERED,
       position1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical(g.vec3_0, start, center),
@@ -42731,24 +43068,24 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     this.RebuildItems();
     this._vbSize = this.lineCount;
     this._dirty = false;
-    const visibleItems = this._visibleItems.length;
+    var visibleItems = this._visibleItems.length;
 
     if (!visibleItems) {
       super.Rebuild();
       return;
     }
 
-    const g = EveCurveLineSet.global,
-          data = new Float32Array(this._vbSize * 6 * this._vertexSize),
-          startDir = g.vec3_0,
-          endDir = g.vec3_1,
-          startDirNrm = g.vec3_2,
-          endDirNrm = g.vec3_3,
-          rotationAxis = g.vec3_4,
-          tangent1 = g.vec3_5,
-          tangent2 = g.vec3_6,
-          rotationMatrix = g.mat4_0;
-    let dir1 = g.vec3_7,
+    var g = EveCurveLineSet.global,
+        data = new Float32Array(this._vbSize * 6 * this._vertexSize),
+        startDir = g.vec3_0,
+        endDir = g.vec3_1,
+        startDirNrm = g.vec3_2,
+        endDirNrm = g.vec3_3,
+        rotationAxis = g.vec3_4,
+        tangent1 = g.vec3_5,
+        tangent2 = g.vec3_6,
+        rotationMatrix = g.mat4_0;
+    var dir1 = g.vec3_7,
         dir2 = g.vec3_8,
         pos1 = g.vec3_9,
         pos2 = g.vec3_10,
@@ -42757,8 +43094,8 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
         offset = 0,
         tmp;
 
-    for (let i = 0; i < visibleItems; ++i) {
-      const item = this._visibleItems[i];
+    for (var i = 0; i < visibleItems; ++i) {
+      var item = this._visibleItems[i];
 
       switch (item.type) {
         case EveCurveLineSetItem.Type.INVALID:
@@ -42775,15 +43112,15 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(startDirNrm, startDir);
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(endDirNrm, endDir);
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(rotationAxis, startDir, endDir);
-          const fullAngle = Math.acos(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(startDirNrm, endDirNrm)),
-                segmentAngle = fullAngle / item.numOfSegments;
+          var fullAngle = Math.acos(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(startDirNrm, endDirNrm)),
+              segmentAngle = fullAngle / item.numOfSegments;
           global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(rotationMatrix);
           global__WEBPACK_IMPORTED_MODULE_0__["mat4"].rotate(rotationMatrix, rotationMatrix, segmentAngle, rotationAxis);
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(dir1, startDir);
           global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(col1, item.color1);
 
-          for (let j = 0; j < this.lines[i].numOfSegments; ++j) {
-            const segmentFactor = (j + 1) / item.numOfSegments;
+          for (var j = 0; j < this.lines[i].numOfSegments; ++j) {
+            var segmentFactor = (j + 1) / item.numOfSegments;
             global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(dir2, dir1, rotationMatrix);
             col2[0] = item.color1[0] * (1 - segmentFactor) + item.color2[0] * segmentFactor;
             col2[1] = item.color1[1] * (1 - segmentFactor) + item.color2[1] * segmentFactor;
@@ -42809,14 +43146,15 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(pos1, item.position1);
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].copy(col1, item.color1);
 
-          for (let j = 0; j < item.numOfSegments; ++j) {
-            const segmentFactor = (j + 1) / item.numOfSegments;
-            global__WEBPACK_IMPORTED_MODULE_0__["vec3"].hermite(pos2, item.position1, tangent1, item.position2, tangent2, segmentFactor);
-            col2[0] = item.color1[0] * (1 - segmentFactor) + item.color2[0] * segmentFactor;
-            col2[1] = item.color1[1] * (1 - segmentFactor) + item.color2[1] * segmentFactor;
-            col2[2] = item.color1[2] * (1 - segmentFactor) + item.color2[2] * segmentFactor;
-            col2[3] = item.color1[3] * (1 - segmentFactor) + item.color2[3] * segmentFactor;
-            EveCurveLineSet.WriteLineVerticesToBuffer(this, pos1, col1, j / item.numOfSegments, pos2, col2, segmentFactor, i, data, offset);
+          for (var _j = 0; _j < item.numOfSegments; ++_j) {
+            var _segmentFactor = (_j + 1) / item.numOfSegments;
+
+            global__WEBPACK_IMPORTED_MODULE_0__["vec3"].hermite(pos2, item.position1, tangent1, item.position2, tangent2, _segmentFactor);
+            col2[0] = item.color1[0] * (1 - _segmentFactor) + item.color2[0] * _segmentFactor;
+            col2[1] = item.color1[1] * (1 - _segmentFactor) + item.color2[1] * _segmentFactor;
+            col2[2] = item.color1[2] * (1 - _segmentFactor) + item.color2[2] * _segmentFactor;
+            col2[3] = item.color1[3] * (1 - _segmentFactor) + item.color2[3] * _segmentFactor;
+            EveCurveLineSet.WriteLineVerticesToBuffer(this, pos1, col1, _j / item.numOfSegments, pos2, col2, _segmentFactor, i, data, offset);
             offset += 6 * this._vertexSize;
             tmp = pos1;
             pos1 = pos2;
@@ -42845,7 +43183,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   GetBatches(mode, accumulator) {
     if (!this.display || !this._vb) return;
-    let effect;
+    var effect;
 
     switch (mode) {
       case global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_TRANSPARENT:
@@ -42863,8 +43201,8 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
         effect = this.pickEffect;
     }
 
-    const batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"](),
-          worldTransform = EveCurveLineSet.global.mat4_0;
+    var batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"](),
+        worldTransform = EveCurveLineSet.global.mat4_0;
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldTransform, this.transform, this._parentTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), worldTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.ps.Get("WorldMat"), worldTransform);
@@ -42884,14 +43222,14 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   Render(batch, technique) {
     if (!batch.effect || !batch.effect.IsGood() || !this._vb) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vb);
-    let passCount = batch.effect.GetPassCount(technique);
+    var passCount = batch.effect.GetPassCount(technique);
 
-    for (let pass = 0; pass < passCount; ++pass) {
+    for (var pass = 0; pass < passCount; ++pass) {
       batch.effect.ApplyPass(technique, pass);
-      let passInput = batch.effect.GetPassInput(technique, pass);
+      var passInput = batch.effect.GetPassInput(technique, pass);
       if (!this._decl.SetDeclaration(d, passInput, this._decl.stride)) return false;
       d.ApplyShadowState();
       gl.drawArrays(gl.TRIANGLES, 0, this._vbSize * 6);
@@ -42935,7 +43273,7 @@ class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   static WriteLineVerticesToBuffer(lineSet, start, startColor, length1, end, endColor, length2, lineID, buffer, offset) {
-    const item = lineSet.items[lineID];
+    var item = lineSet.items[lineID];
     buffer[offset++] = start[0];
     buffer[offset++] = start[1];
     buffer[offset++] = start[2];
@@ -43205,8 +43543,8 @@ class EveCustomMask extends core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Tran
     var _this = this;
 
     return _asyncToGenerator(function* () {
-      const material = yield global__WEBPACK_IMPORTED_MODULE_0__["tw2"].eveSof.FetchMaterial(name);
-      const {
+      var material = yield global__WEBPACK_IMPORTED_MODULE_0__["tw2"].eveSof.FetchMaterial(name);
+      var {
         DiffuseColor,
         FresnelColor,
         Gloss
@@ -43230,7 +43568,7 @@ class EveCustomMask extends core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Tran
 
   UpdatePerObjectData(parentTransform, perObjectData, index, visible) {
     this.SetParentTransform(parentTransform);
-    const targets = this.display && visible ? this.targetMaterials : global__WEBPACK_IMPORTED_MODULE_0__["vec4"].ZERO;
+    var targets = this.display && visible ? this.targetMaterials : global__WEBPACK_IMPORTED_MODULE_0__["vec4"].ZERO;
     perObjectData.ps.Set("CustomMaskTarget" + index, targets);
     perObjectData.ps.SetIndex("CustomMaskMaterialID" + index, 0, this.materialIndex);
     perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
@@ -43434,7 +43772,7 @@ class EveLocator2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
 
 
   static from(values, options) {
-    const item = new EveLocator2();
+    var item = new EveLocator2();
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_1__["assignIfExists"])(item, values, ["transform", "name", "atlasIndex0", "atlasIndex1"]);
@@ -43501,7 +43839,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {Boolean} _dirty  - Identifies that the item is dirty
  */
 
-let EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class EveObjectSetItem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class EveObjectSetItem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.display = true;
@@ -43527,7 +43865,7 @@ let EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstr
  * @property {Boolean} _autoRebuild   - Auto rebuilds the object if a child is dirty
  */
 
-let EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class EveObjectSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2(_class3 = (_class4 = (_temp2 = _class5 = class EveObjectSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.autoRebuild = true;
@@ -43577,7 +43915,7 @@ let EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
 
 
   CreateItem(values = {}, skipUpdate, skipEvents) {
-    const item = this.constructor.Item.from(values);
+    var item = this.constructor.Item.from(values);
     this.AddItem(item, true, true);
 
     if (!skipEvents) {
@@ -43626,7 +43964,7 @@ let EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
 
 
   RemoveItem(item, skipUpdate, skipEvents) {
-    const index = this.items.indexOf(item);
+    var index = this.items.indexOf(item);
 
     if (index !== -1) {
       this.items.splice(index, 1);
@@ -43654,13 +43992,13 @@ let EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
 
 
   ClearItems(skipUpdate, skipEvents) {
-    let items;
+    var items;
 
     if (!skipEvents) {
       items = Array.from(this.items);
     }
 
-    for (let i = 0; i < this.items.length; i++) {
+    for (var i = 0; i < this.items.length; i++) {
       this.RemoveItem(this.items[i], true, true);
       i--;
     }
@@ -43681,8 +44019,8 @@ let EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
   RebuildItems() {
     this._visibleItems.splice(0);
 
-    for (let i = 0; i < this.items.length; i++) {
-      const item = this.items[i];
+    for (var i = 0; i < this.items.length; i++) {
+      var item = this.items[i];
 
       if (!item.has("modified", this.OnItemModified)) {
         this.emit("item_added", item);
@@ -43709,7 +44047,7 @@ let EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
 
 
   AreItemsDirty() {
-    for (let i = 0; i < this.items.length; i++) {
+    for (var i = 0; i < this.items.length; i++) {
       if (this.items[i]._dirty) {
         return true;
       }
@@ -43883,7 +44221,7 @@ class EvePlaneSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   static from(values) {
-    const item = new EvePlaneSetItem();
+    var item = new EvePlaneSetItem();
 
     if (values) {
       global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "boneIndex", "groupIndex", "position", "scaling", "rotation", "transform", "color", "layer1Transform", "layer2Transform", "layer1Scroll", "layer2Scroll", "maskAtlasID"]); // Allow alias for maskAtlasID
@@ -44004,28 +44342,28 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
     this.Unload(true);
     this.RebuildItems();
     this._dirty = false;
-    const itemCount = this._visibleItems.length;
+    var itemCount = this._visibleItems.length;
 
     if (!itemCount) {
       super.Rebuild();
       return;
     }
 
-    const vertexSize = 35,
-          mat4_0 = EvePlaneSet.global.mat4_0;
-    const array = new Float32Array(itemCount * 4 * vertexSize);
+    var vertexSize = 35,
+        mat4_0 = EvePlaneSet.global.mat4_0;
+    var array = new Float32Array(itemCount * 4 * vertexSize);
 
-    for (let i = 0; i < itemCount; ++i) {
-      const item = this._visibleItems[i],
-            offset = i * 4 * vertexSize;
+    for (var i = 0; i < itemCount; ++i) {
+      var item = this._visibleItems[i],
+          offset = i * 4 * vertexSize;
       array[offset + vertexSize - 3] = 0;
       array[offset + vertexSize + vertexSize - 3] = 1;
       array[offset + 2 * vertexSize + vertexSize - 3] = 2;
       array[offset + 3 * vertexSize + vertexSize - 3] = 3;
-      const itemTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(item.transform, item.rotation, item.position, item.scaling);
+      var itemTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(item.transform, item.rotation, item.position, item.scaling);
 
-      for (let j = 0; j < 4; ++j) {
-        const vtxOffset = offset + j * vertexSize;
+      for (var j = 0; j < 4; ++j) {
+        var vtxOffset = offset + j * vertexSize;
         array[vtxOffset] = itemTransform[0];
         array[vtxOffset + 1] = itemTransform[4];
         array[vtxOffset + 2] = itemTransform[8];
@@ -44067,17 +44405,18 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
     global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, this._vertexBuffer);
     global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bufferData(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, array, global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.STATIC_DRAW);
     global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.bindBuffer(global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.ARRAY_BUFFER, null);
-    const indexes = new Uint16Array(itemCount * 6);
+    var indexes = new Uint16Array(itemCount * 6);
 
-    for (let i = 0; i < itemCount; ++i) {
-      const offset = i * 6,
-            vtxOffset = i * 4;
-      indexes[offset] = vtxOffset;
-      indexes[offset + 1] = vtxOffset + 2;
-      indexes[offset + 2] = vtxOffset + 1;
-      indexes[offset + 3] = vtxOffset;
-      indexes[offset + 4] = vtxOffset + 3;
-      indexes[offset + 5] = vtxOffset + 2;
+    for (var _i = 0; _i < itemCount; ++_i) {
+      var _offset = _i * 6,
+          _vtxOffset = _i * 4;
+
+      indexes[_offset] = _vtxOffset;
+      indexes[_offset + 1] = _vtxOffset + 2;
+      indexes[_offset + 2] = _vtxOffset + 1;
+      indexes[_offset + 3] = _vtxOffset;
+      indexes[_offset + 4] = _vtxOffset + 3;
+      indexes[_offset + 5] = _vtxOffset + 2;
     }
 
     this._indexBuffer = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.createBuffer();
@@ -44097,7 +44436,7 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
 
   GetBatches(mode, accumulator, perObjectData) {
     if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._vertexBuffer && this._visibleItems.length) {
-      const batch = new EvePlaneSetBatch();
+      var batch = new EvePlaneSetBatch();
       batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       batch.planeSet = this;
       batch.perObjectData = perObjectData;
@@ -44112,13 +44451,13 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
 
   Render(technique) {
     if (!this.effect || !this.effect.IsGood() || !this._vertexBuffer || !this._indexBuffer) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl;
     d.SetStandardStates(d.RM_ADDITIVE);
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
-    for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
       this.effect.ApplyPass(technique, pass);
       if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), 140)) return false;
       d.ApplyShadowState();
@@ -44136,7 +44475,7 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
 
 
   static from(values, options) {
-    const item = new EvePlaneSet();
+    var item = new EvePlaneSet();
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "hideOnLowQuality"]);
@@ -44146,7 +44485,7 @@ class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectS
       }
 
       if (values.items) {
-        for (let i = 0; i < values.items.length; i++) {
+        for (var i = 0; i < values.items.length; i++) {
           item.CreateItem(values.items[i]);
         }
       }
@@ -44341,8 +44680,8 @@ class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCl
     this.Unload(true);
 
     if (this.indexBuffer) {
-      const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
-            indexes = new Uint16Array(this.indexBuffer);
+      var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+          indexes = new Uint16Array(this.indexBuffer);
       this._indexBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexes, gl.STATIC_DRAW);
@@ -44361,7 +44700,7 @@ class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCl
 
 
   GetBatches(mode, accumulator, perObjectData, counter) {
-    let effect;
+    var effect;
 
     switch (mode) {
       case global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_DECAL:
@@ -44382,16 +44721,16 @@ class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCl
     }
 
     if (effect.IsGood() && this._parentGeometry.IsGood()) {
-      const batch = new core___WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
+      var batch = new core___WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
 
       this._perObjectData.vs.Set("worldMatrix", perObjectData.vs.Get("WorldMat"));
 
       if (this.parentBoneIndex >= 0) {
-        const bones = perObjectData.vs.Get("JointMat"),
-              offset = this.parentBoneIndex * 12;
+        var bones = perObjectData.vs.Get("JointMat"),
+            offset = this.parentBoneIndex * 12;
 
         if (bones[offset] || bones[offset + 4] || bones[offset + 8]) {
-          const bone = this._perObjectData.vs.Get("parentBoneMatrix");
+          var bone = this._perObjectData.vs.Get("parentBoneMatrix");
 
           bone[0] = bones[offset];
           bone[1] = bones[offset + 4];
@@ -44435,11 +44774,11 @@ class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCl
 
 
   Render(batch, technique) {
-    const mesh = this._parentGeometry.meshes[0],
-          bkIB = mesh.indexes,
-          bkStart = mesh.areas[0].start,
-          bkCount = mesh.areas[0].count,
-          bkIndexType = mesh.indexType;
+    var mesh = this._parentGeometry.meshes[0],
+        bkIB = mesh.indexes,
+        bkStart = mesh.areas[0].start,
+        bkCount = mesh.areas[0].count,
+        bkIndexType = mesh.indexType;
     global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_DecalMatrix", this._transform);
     global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("u_InvDecalMatrix", this._transformInv);
     mesh.indexes = this._indexBuffer;
@@ -44463,7 +44802,7 @@ class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCl
 
 
   static from(values, options) {
-    const item = new EveSpaceObjectDecal();
+    var item = new EveSpaceObjectDecal();
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_2__["assignIfExists"])(item, values, ["name", "display", "pickable", "position", "rotation", "scaling", "groupIndex", "parentBoneIndex"]);
@@ -44476,7 +44815,7 @@ class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseCl
         item.pickEffect = core_mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from(values.pickEffect);
       }
 
-      const decalEffect = values.decalEffect || values.effect;
+      var decalEffect = values.decalEffect || values.effect;
 
       if (decalEffect) {
         item.decalEffect = core_mesh__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"].from(decalEffect);
@@ -44600,7 +44939,7 @@ class EveSpotlightSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["Ev
    * @returns {EveSpotlightSetItem}
    */
   static from(opt = {}) {
-    const item = new this();
+    var item = new this();
     global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "boosterGainInfluence", "boneIndex", "groupIndex", "coneIntensity", "spriteIntensity", "flareIntensity", "transform", "coneColor", "spriteColor", "flareColor", "spriteScale"]);
     return item;
   }
@@ -44706,27 +45045,27 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     this.Unload(true);
     this.RebuildItems();
     this._dirty = false;
-    const itemCount = this._visibleItems.length;
+    var itemCount = this._visibleItems.length;
 
     if (!itemCount) {
       super.Rebuild();
       return;
     }
 
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          vertCount = 4,
-          coneQuadCount = 4,
-          coneVertexCount = itemCount * coneQuadCount * vertCount,
-          vertexSize = 22,
-          coneIndices = [1, 0, 2, 3],
-          coneArray = new Float32Array(coneVertexCount * vertexSize);
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        vertCount = 4,
+        coneQuadCount = 4,
+        coneVertexCount = itemCount * coneQuadCount * vertCount,
+        vertexSize = 22,
+        coneIndices = [1, 0, 2, 3],
+        coneArray = new Float32Array(coneVertexCount * vertexSize);
 
-    for (let i = 0; i < itemCount; ++i) {
-      const item = this._visibleItems[i];
+    for (var i = 0; i < itemCount; ++i) {
+      var item = this._visibleItems[i];
 
-      for (let q = 0; q < coneQuadCount; ++q) {
-        for (let v = 0; v < vertCount; ++v) {
-          const offset = (i * coneQuadCount * vertCount + vertCount * q + v) * vertexSize;
+      for (var q = 0; q < coneQuadCount; ++q) {
+        for (var v = 0; v < vertCount; ++v) {
+          var offset = (i * coneQuadCount * vertCount + vertCount * q + v) * vertexSize;
           coneArray[offset] = item.coneColor[0] * item.coneIntensity * this.intensity;
           coneArray[offset + 1] = item.coneColor[1] * item.coneIntensity * this.intensity;
           coneArray[offset + 2] = item.coneColor[2] * item.coneIntensity * this.intensity;
@@ -44757,51 +45096,51 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     d.gl.bindBuffer(d.gl.ARRAY_BUFFER, this._coneVertexBuffer);
     d.gl.bufferData(d.gl.ARRAY_BUFFER, coneArray, d.gl.STATIC_DRAW);
     this._coneVertexBuffer.count = itemCount * coneQuadCount * 6;
-    const spriteQuadCount = 2,
-          spriteVertexCount = itemCount * spriteQuadCount * vertCount,
-          spriteArray = new Float32Array(spriteVertexCount * vertexSize),
-          spriteIndexes = [1, 0, 2, 3];
+    var spriteQuadCount = 2,
+        spriteVertexCount = itemCount * spriteQuadCount * vertCount,
+        spriteArray = new Float32Array(spriteVertexCount * vertexSize),
+        spriteIndexes = [1, 0, 2, 3];
 
-    for (let i = 0; i < itemCount; ++i) {
-      const item = this._visibleItems[i];
+    for (var _i = 0; _i < itemCount; ++_i) {
+      var _item = this._visibleItems[_i];
 
-      for (let q = 0; q < spriteQuadCount; ++q) {
-        for (let v = 0; v < vertCount; ++v) {
-          const offset = (i * spriteQuadCount * vertCount + vertCount * q + v) * vertexSize;
+      for (var _q = 0; _q < spriteQuadCount; ++_q) {
+        for (var _v = 0; _v < vertCount; ++_v) {
+          var _offset = (_i * spriteQuadCount * vertCount + vertCount * _q + _v) * vertexSize;
 
-          if (q % 2 === 0) {
-            spriteArray[offset] = item.spriteColor[0] * item.spriteIntensity * this.intensity;
-            spriteArray[offset + 1] = item.spriteColor[1] * item.spriteIntensity * this.intensity;
-            spriteArray[offset + 2] = item.spriteColor[2] * item.spriteIntensity * this.intensity;
-            spriteArray[offset + 3] = item.spriteColor[3];
-            spriteArray[offset + 16] = item.spriteScale[0];
-            spriteArray[offset + 17] = 1;
-            spriteArray[offset + 18] = 1;
+          if (_q % 2 === 0) {
+            spriteArray[_offset] = _item.spriteColor[0] * _item.spriteIntensity * this.intensity;
+            spriteArray[_offset + 1] = _item.spriteColor[1] * _item.spriteIntensity * this.intensity;
+            spriteArray[_offset + 2] = _item.spriteColor[2] * _item.spriteIntensity * this.intensity;
+            spriteArray[_offset + 3] = _item.spriteColor[3];
+            spriteArray[_offset + 16] = _item.spriteScale[0];
+            spriteArray[_offset + 17] = 1;
+            spriteArray[_offset + 18] = 1;
           } else {
-            spriteArray[offset] = item.flareColor[0] * item.flareIntensity * this.intensity;
-            spriteArray[offset + 1] = item.flareColor[1] * item.flareIntensity * this.intensity;
-            spriteArray[offset + 2] = item.flareColor[2] * item.flareIntensity * this.intensity;
-            spriteArray[offset + 3] = item.flareColor[3];
-            spriteArray[offset + 16] = 1;
-            spriteArray[offset + 17] = item.spriteScale[1];
-            spriteArray[offset + 18] = item.spriteScale[2];
+            spriteArray[_offset] = _item.flareColor[0] * _item.flareIntensity * this.intensity;
+            spriteArray[_offset + 1] = _item.flareColor[1] * _item.flareIntensity * this.intensity;
+            spriteArray[_offset + 2] = _item.flareColor[2] * _item.flareIntensity * this.intensity;
+            spriteArray[_offset + 3] = _item.flareColor[3];
+            spriteArray[_offset + 16] = 1;
+            spriteArray[_offset + 17] = _item.spriteScale[1];
+            spriteArray[_offset + 18] = _item.spriteScale[2];
           }
 
-          spriteArray[offset + 4] = item.transform[0];
-          spriteArray[offset + 5] = item.transform[4];
-          spriteArray[offset + 6] = item.transform[8];
-          spriteArray[offset + 7] = item.transform[12];
-          spriteArray[offset + 8] = item.transform[1];
-          spriteArray[offset + 9] = item.transform[5];
-          spriteArray[offset + 10] = item.transform[9];
-          spriteArray[offset + 11] = item.transform[13];
-          spriteArray[offset + 12] = item.transform[2];
-          spriteArray[offset + 13] = item.transform[6];
-          spriteArray[offset + 14] = item.transform[10];
-          spriteArray[offset + 15] = item.transform[14];
-          spriteArray[offset + 19] = q * vertCount + spriteIndexes[v];
-          spriteArray[offset + 20] = item.boneIndex;
-          spriteArray[offset + 21] = item.boosterGainInfluence ? 255 : 0;
+          spriteArray[_offset + 4] = _item.transform[0];
+          spriteArray[_offset + 5] = _item.transform[4];
+          spriteArray[_offset + 6] = _item.transform[8];
+          spriteArray[_offset + 7] = _item.transform[12];
+          spriteArray[_offset + 8] = _item.transform[1];
+          spriteArray[_offset + 9] = _item.transform[5];
+          spriteArray[_offset + 10] = _item.transform[9];
+          spriteArray[_offset + 11] = _item.transform[13];
+          spriteArray[_offset + 12] = _item.transform[2];
+          spriteArray[_offset + 13] = _item.transform[6];
+          spriteArray[_offset + 14] = _item.transform[10];
+          spriteArray[_offset + 15] = _item.transform[14];
+          spriteArray[_offset + 19] = _q * vertCount + spriteIndexes[_v];
+          spriteArray[_offset + 20] = _item.boneIndex;
+          spriteArray[_offset + 21] = _item.boosterGainInfluence ? 255 : 0;
         }
       }
     }
@@ -44810,17 +45149,18 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
     d.gl.bindBuffer(d.gl.ARRAY_BUFFER, this._spriteVertexBuffer);
     d.gl.bufferData(d.gl.ARRAY_BUFFER, spriteArray, d.gl.STATIC_DRAW);
     this._spriteVertexBuffer.count = itemCount * spriteQuadCount * 6;
-    const indexes = new Uint16Array(itemCount * coneQuadCount * 6);
+    var indexes = new Uint16Array(itemCount * coneQuadCount * 6);
 
-    for (let i = 0; i < itemCount * coneQuadCount; ++i) {
-      const offset = i * 6,
-            vtxOffset = i * 4;
-      indexes[offset] = vtxOffset;
-      indexes[offset + 1] = vtxOffset + 1;
-      indexes[offset + 2] = vtxOffset + 2;
-      indexes[offset + 3] = vtxOffset + 2;
-      indexes[offset + 4] = vtxOffset + 3;
-      indexes[offset + 5] = vtxOffset;
+    for (var _i2 = 0; _i2 < itemCount * coneQuadCount; ++_i2) {
+      var _offset2 = _i2 * 6,
+          vtxOffset = _i2 * 4;
+
+      indexes[_offset2] = vtxOffset;
+      indexes[_offset2 + 1] = vtxOffset + 1;
+      indexes[_offset2 + 2] = vtxOffset + 2;
+      indexes[_offset2 + 3] = vtxOffset + 2;
+      indexes[_offset2 + 4] = vtxOffset + 3;
+      indexes[_offset2 + 5] = vtxOffset;
     }
 
     this._indexBuffer = d.gl.createBuffer();
@@ -44840,7 +45180,7 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   GetBatches(mode, accumulator, perObjectData) {
     if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._indexBuffer && this._indexBuffer.count) {
-      const batch = new EveSpotlightSetBatch();
+      var batch = new EveSpotlightSetBatch();
       batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       batch.spotlightSet = this;
       batch.perObjectData = perObjectData;
@@ -44880,14 +45220,14 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
   static Render(spotlightSet, effect, technique, buffer) {
     if (!effect || !effect.IsGood() || !buffer || !spotlightSet._indexBuffer) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          stride = 22 * 4;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        stride = 22 * 4;
     d.SetStandardStates(d.RM_ADDITIVE);
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, spotlightSet._indexBuffer);
 
-    for (let pass = 0; pass < effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
       effect.ApplyPass(technique, pass);
       if (!spotlightSet._decl.SetDeclaration(d, effect.GetPassInput(technique, pass), stride)) return false;
       d.ApplyShadowState();
@@ -44905,7 +45245,7 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
 
 
   static from(values, options) {
-    const item = new EveSpotlightSet();
+    var item = new EveSpotlightSet();
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "display", "intensity"]);
@@ -44927,7 +45267,7 @@ class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObj
       }
 
       if (values.items) {
-        for (let i = 0; i < values.items.length; i++) {
+        for (var i = 0; i < values.items.length; i++) {
           item.CreateItem(values.items[i]);
         }
       }
@@ -45213,7 +45553,7 @@ class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
    * @returns {EveSpriteSetItem}
    */
   static from(values) {
-    const item = new this();
+    var item = new this();
 
     if (values) {
       global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale", "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor", "groupName"]);
@@ -45341,7 +45681,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   Unload(skipEvent) {
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this._vertexBuffer) {
       gl.deleteBuffer(this._vertexBuffer);
@@ -45370,14 +45710,14 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
   Rebuild() {
     this.RebuildItems();
     this._dirty = false;
-    const itemCount = this._visibleItems.length;
+    var itemCount = this._visibleItems.length;
 
     if (!itemCount) {
       super.Rebuild();
       return;
     }
 
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this.useQuads) {
       this._vertexBuffer = gl.createBuffer();
@@ -45388,19 +45728,19 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       return;
     }
 
-    const vertexSize = 13,
-          array = new Float32Array(itemCount * 4 * vertexSize);
+    var vertexSize = 13,
+        array = new Float32Array(itemCount * 4 * vertexSize);
 
-    for (let i = 0; i < itemCount; ++i) {
-      const item = this._visibleItems[i],
-            offset = i * 4 * vertexSize;
+    for (var i = 0; i < itemCount; ++i) {
+      var item = this._visibleItems[i],
+          offset = i * 4 * vertexSize;
       array[offset] = 0;
       array[offset + vertexSize] = 1;
       array[offset + 2 * vertexSize] = 2;
       array[offset + 3 * vertexSize] = 3;
 
-      for (let j = 0; j < 4; ++j) {
-        const vtxOffset = offset + j * vertexSize;
+      for (var j = 0; j < 4; ++j) {
+        var vtxOffset = offset + j * vertexSize;
         array[vtxOffset + 1] = item.boneIndex;
         array[vtxOffset + 2] = item.position[0];
         array[vtxOffset + 3] = item.position[1];
@@ -45420,17 +45760,18 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, array, gl.STATIC_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
-    const indexes = new Uint16Array(itemCount * 6);
+    var indexes = new Uint16Array(itemCount * 6);
 
-    for (let i = 0; i < itemCount; ++i) {
-      const offset = i * 6,
-            vtxOffset = i * 4;
-      indexes[offset] = vtxOffset;
-      indexes[offset + 1] = vtxOffset + 2;
-      indexes[offset + 2] = vtxOffset + 1;
-      indexes[offset + 3] = vtxOffset;
-      indexes[offset + 4] = vtxOffset + 3;
-      indexes[offset + 5] = vtxOffset + 2;
+    for (var _i = 0; _i < itemCount; ++_i) {
+      var _offset = _i * 6,
+          _vtxOffset = _i * 4;
+
+      indexes[_offset] = _vtxOffset;
+      indexes[_offset + 1] = _vtxOffset + 2;
+      indexes[_offset + 2] = _vtxOffset + 1;
+      indexes[_offset + 3] = _vtxOffset;
+      indexes[_offset + 4] = _vtxOffset + 3;
+      indexes[_offset + 5] = _vtxOffset + 2;
     }
 
     this._indexBuffer = gl.createBuffer();
@@ -45451,7 +45792,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   GetBatches(mode, accumulator, perObjectData, world) {
     if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length) {
-      const batch = new EveSpriteSetBatch();
+      var batch = new EveSpriteSetBatch();
       batch.world = world;
       batch.renderMode = global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE;
       batch.spriteSet = this;
@@ -45472,7 +45813,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   GetBoosterGlowBatches(mode, accumulator, perObjectData, world, boosterGain, warpIntensity) {
     if (this.display && mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE && this._vertexBuffer && this._visibleItems.length) {
-      const batch = new EveSpriteSetBatch();
+      var batch = new EveSpriteSetBatch();
       batch.boosterGlow = true;
       batch.world = world;
       batch.boosterGain = boosterGain;
@@ -45498,13 +45839,13 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     }
 
     if (!this.effect || !this.effect.IsGood() || !this._indexBuffer || !this._vertexBuffer) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl;
     d.SetStandardStates(d.RM_ADDITIVE);
     gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
-    for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
       this.effect.ApplyPass(technique, pass);
       if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), 52)) return false;
       d.ApplyShadowState();
@@ -45525,16 +45866,16 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   RenderBoosterGlow(technique, world, boosterGain, warpIntensity) {
     if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          pos = _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].global.vec3_0,
-          itemCount = this._visibleItems.length,
-          array = new Float32Array(17 * itemCount);
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        pos = _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].global.vec3_0,
+        itemCount = this._visibleItems.length,
+        array = new Float32Array(17 * itemCount);
     d.SetStandardStates(d.RM_ADDITIVE);
-    let index = 0;
+    var index = 0;
 
-    for (let i = 0; i < itemCount; ++i) {
-      const item = this._visibleItems[i];
+    for (var i = 0; i < itemCount; ++i) {
+      var item = this._visibleItems[i];
       global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(pos, item.position, world);
       array[index++] = pos[0];
       array[index++] = pos[1];
@@ -45558,16 +45899,16 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, array, gl.DYNAMIC_DRAW);
 
-    for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
       this.effect.ApplyPass(technique, pass);
-      const passInput = this.effect.GetPassInput(technique, pass);
+      var passInput = this.effect.GetPassInput(technique, pass);
       gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
 
       this._vdecl.SetPartialDeclaration(d, passInput, 4);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
 
-      const resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
+      var resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
 
       d.ApplyShadowState();
       gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
@@ -45588,20 +45929,20 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   RenderQuads(technique, world, perObjectData) {
     if (!this.effect || !this.effect.IsGood() || !this._instanceBuffer || !this._vertexBuffer) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl,
-          itemCount = this._visibleItems.length,
-          array = new Float32Array(17 * itemCount),
-          pos = _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].global.vec3_0,
-          bones = perObjectData.vs.Get("JointMat");
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl,
+        itemCount = this._visibleItems.length,
+        array = new Float32Array(17 * itemCount),
+        pos = _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"].global.vec3_0,
+        bones = perObjectData.vs.Get("JointMat");
     d.SetStandardStates(d.RM_ADDITIVE);
-    let index = 0;
+    var index = 0;
 
-    for (let i = 0; i < itemCount; ++i) {
-      const item = this._visibleItems[i];
+    for (var i = 0; i < itemCount; ++i) {
+      var item = this._visibleItems[i];
 
       if (this.skinned) {
-        const offset = item.boneIndex * 12;
+        var offset = item.boneIndex * 12;
         pos[0] = bones[offset] * item.position[0] + bones[offset + 1] * item.position[1] + bones[offset + 2] * item.position[2] + bones[offset + 3];
         pos[1] = bones[offset + 4] * item.position[0] + bones[offset + 5] * item.position[1] + bones[offset + 6] * item.position[2] + bones[offset + 7];
         pos[2] = bones[offset + 8] * item.position[0] + bones[offset + 9] * item.position[1] + bones[offset + 10] * item.position[2] + bones[offset + 11];
@@ -45632,16 +45973,16 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, array, gl.DYNAMIC_DRAW);
 
-    for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
       this.effect.ApplyPass(technique, pass);
-      const passInput = this.effect.GetPassInput(technique, pass);
+      var passInput = this.effect.GetPassInput(technique, pass);
       gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
 
       this._vdecl.SetPartialDeclaration(d, passInput, 4);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this._instanceBuffer);
 
-      const resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
+      var resetData = this._decl.SetPartialDeclaration(d, passInput, 17 * 4, 0, 1);
 
       d.ApplyShadowState();
       gl.drawArraysInstanced(gl.TRIANGLES, 0, 6, itemCount);
@@ -45660,7 +46001,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   static from(values, options) {
-    const item = new EveSpriteSet();
+    var item = new EveSpriteSet();
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["name", "intensity", "skinned", "useQuads"]);
@@ -45670,7 +46011,7 @@ class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       }
 
       if (values.items) {
-        for (let i = 0; i < values.items.length; i++) {
+        for (var i = 0; i < values.items.length; i++) {
           item.CreateItem(values.items[i]);
         }
       }
@@ -45984,7 +46325,7 @@ class EveTurretSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
 
   static from(opt = {}) {
-    const item = new this();
+    var item = new this();
     global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, opt, ["name", "display", "locatorName", "updateFromLocator", "position", "rotation", "canFireWhenHidden"]);
     item.UpdateValues();
     return item;
@@ -46146,9 +46487,9 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     if (!this.firingEffect) return;
 
     if (this.geometryResource && this.geometryResource.models.length) {
-      const model = this.geometryResource.models[0];
+      var model = this.geometryResource.models[0];
 
-      for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
+      for (var i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
         this.firingEffect.SetMuzzleBoneID(i, model.FindBoneByName(EveTurretSet.positionBoneSkeletonNames[i]));
       }
     }
@@ -46195,15 +46536,15 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   GetClosestTurret() {
-    let closestTurret = -1,
+    var closestTurret = -1,
         closestAngle = -2;
-    const g = EveTurretSet.global,
-          nrmToTarget = g.vec3_0,
-          nrmUp = g.vec4_0,
-          turretPosition = g.vec4_1;
+    var g = EveTurretSet.global,
+        nrmToTarget = g.vec3_0,
+        nrmUp = g.vec4_0,
+        turretPosition = g.vec4_1;
 
-    for (let i = 0; i < this.items.length; ++i) {
-      const item = this.items[i];
+    for (var i = 0; i < this.items.length; ++i) {
+      var item = this.items[i];
       if (!item.display && !item.canFireWhenHidden) continue;
       turretPosition[0] = item._localTransform[12];
       turretPosition[1] = item._localTransform[13];
@@ -46215,7 +46556,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(nrmUp, 0, 1, 0, 0);
       global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, item._localTransform);
       global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(nrmUp, nrmUp, this._parentTransform);
-      const angle = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(nrmUp, nrmToTarget);
+      var angle = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(nrmUp, nrmToTarget);
 
       if (angle > closestAngle) {
         closestTurret = this.items.indexOf(item);
@@ -46350,16 +46691,16 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   OnResPrepared(res) {
     this.geometryResource = res;
-    const instancedElement = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
+    var instancedElement = core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].from({
       usage: "TEXCOORD",
       usageIndex: 1,
       elements: 2
     }),
-          meshes = this.geometryResource.meshes,
-          active = this._activeAnimation,
-          inactive = this._inactiveAnimation;
+        meshes = this.geometryResource.meshes,
+        active = this._activeAnimation,
+        inactive = this._inactiveAnimation;
 
-    for (let i = 0; i < meshes.length; ++i) {
+    for (var i = 0; i < meshes.length; ++i) {
       meshes[i].declaration.elements.push(instancedElement);
       meshes[i].declaration.RebuildHash();
     }
@@ -46398,7 +46739,7 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   FindItemByLocatorName(name) {
-    for (let i = 0; i < this.items.length; i++) {
+    for (var i = 0; i < this.items.length; i++) {
       if (this.items[i].locatorName === name) {
         return this.items[i];
       }
@@ -46414,17 +46755,17 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
 
   UpdateItemsFromLocators(locators) {
-    const g = EveTurretSet.global,
-          toRemove = Array.from(this.items),
-          norm = g.mat4_0;
+    var g = EveTurretSet.global,
+        toRemove = Array.from(this.items),
+        norm = g.mat4_0;
 
-    for (let i = 0; i < locators.length; i++) {
-      const {
+    for (var i = 0; i < locators.length; i++) {
+      var {
         name,
         transform,
         bone = null
       } = locators[i];
-      let item = this.FindItemByLocatorName(name);
+      var item = this.FindItemByLocatorName(name);
 
       if (!item) {
         item = this.CreateItem({
@@ -46448,10 +46789,10 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
       }
     }
 
-    for (let i = 0; i < toRemove.length; i++) {
-      if (toRemove[i].locatorName) {
-        this.RemoveItem(toRemove[i]);
-        i--;
+    for (var _i = 0; _i < toRemove.length; _i++) {
+      if (toRemove[_i].locatorName) {
+        this.RemoveItem(toRemove[_i]);
+        _i--;
       }
     }
 
@@ -46518,29 +46859,29 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
           }
         }
 
-        const activeTurret = this.items[this._activeTurret];
+        var activeTurret = this.items[this._activeTurret];
 
         if (this._activeAnimation.models.length) {
-          const bones = this._activeAnimation.models[0].bonesByName;
+          var bones = this._activeAnimation.models[0].bonesByName;
 
-          for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
-            const transform = bones[EveTurretSet.positionBoneSkeletonNames[i]].worldTransform,
-                  out = this.firingEffect.GetMuzzleTransform(i);
+          for (var i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
+            var transform = bones[EveTurretSet.positionBoneSkeletonNames[i]].worldTransform,
+                out = this.firingEffect.GetMuzzleTransform(i);
             global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, activeTurret._localTransform, transform);
             global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(out, this._parentTransform, out);
           }
         } else {
-          for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
-            global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.firingEffect.GetMuzzleTransform(i), this._parentTransform, activeTurret._localTransform);
+          for (var _i2 = 0; _i2 < this.firingEffect.GetPerMuzzleEffectCount(); ++_i2) {
+            global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.firingEffect.GetMuzzleTransform(_i2), this._parentTransform, activeTurret._localTransform);
           }
         }
 
         if (this._fireCallbackPending) {
           if (this._fireCallback) {
-            const transforms = [];
+            var transforms = [];
 
-            for (let i = 0; i < this.firingEffect.GetPerMuzzleEffectCount(); ++i) {
-              transforms.push(this.firingEffect.GetMuzzleTransform(i));
+            for (var _i3 = 0; _i3 < this.firingEffect.GetPerMuzzleEffectCount(); ++_i3) {
+              transforms.push(this.firingEffect.GetMuzzleTransform(_i3));
             }
 
             this._fireCallback(this, transforms, activeTurret);
@@ -46567,12 +46908,12 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
     if (!this.turretEffect || !this.geometryResource || !this.display || !this._visibleItems.length) return;
 
     if (mode === global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_OPAQUE && this.visible.turrets) {
-      const transforms = this._inactiveAnimation.GetBoneMatrices(0);
+      var transforms = this._inactiveAnimation.GetBoneMatrices(0);
 
       if (transforms.length !== 0) {
         this.UpdatePerObjectData(this._perObjectDataInactive.vs, transforms);
         this._perObjectDataInactive.ps = perObjectData.ps;
-        const batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
+        var batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
         batch.renderMode = mode;
         batch.renderActive = false;
         batch.perObjectData = this._perObjectDataInactive;
@@ -46580,16 +46921,18 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
         accumulator.Commit(batch);
 
         if (this._state === EveTurretSet.State.FIRING) {
-          const transforms = this._activeAnimation.GetBoneMatrices(0);
+          var _transforms = this._activeAnimation.GetBoneMatrices(0);
 
-          if (transforms.length !== 0) {
-            this.UpdatePerObjectData(this._perObjectDataActive.vs, transforms, true);
+          if (_transforms.length !== 0) {
+            this.UpdatePerObjectData(this._perObjectDataActive.vs, _transforms, true);
             this._perObjectDataActive.ps = perObjectData.ps;
-            const batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
-            batch.renderActive = true;
-            batch.perObjectData = this._perObjectDataActive;
-            batch.geometryProvider = this;
-            accumulator.Commit(batch);
+
+            var _batch = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2ForwardingRenderBatch"]();
+
+            _batch.renderActive = true;
+            _batch.perObjectData = this._perObjectDataActive;
+            _batch.geometryProvider = this;
+            accumulator.Commit(_batch);
           }
         }
       }
@@ -46621,23 +46964,23 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   Render(batch, technique) {
     if (!this.turretEffect || !this.turretEffect.IsGood() || !this._visibleItems.length) return false;
-    let index = 0;
+    var index = 0;
 
-    const customSetter = function (el) {
+    var customSetter = function (el) {
       global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.disableVertexAttribArray(el.location);
       global__WEBPACK_IMPORTED_MODULE_0__["device"].gl.vertexAttrib2f(el.location, index, index);
     };
 
-    for (let i = 0; i < this.geometryResource.meshes.length; ++i) {
-      const decl = this.geometryResource.meshes[i].declaration;
+    for (var i = 0; i < this.geometryResource.meshes.length; ++i) {
+      var decl = this.geometryResource.meshes[i].declaration;
       decl.FindUsage(core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexElement"].Type.TEXCOORD, 1).customSetter = customSetter;
     }
 
-    let rendered = 0;
+    var rendered = 0;
 
     for (; index < this.items.length; ++index) {
       if (this.items[index].display) {
-        const isActive = this._state === EveTurretSet.State.FIRING && index === this._activeTurret;
+        var isActive = this._state === EveTurretSet.State.FIRING && index === this._activeTurret;
 
         if (batch.renderActive === isActive) {
           this.geometryResource.RenderAreas(0, 0, 1, this.turretEffect, technique);
@@ -46658,17 +47001,17 @@ class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObject
 
   UpdatePerObjectData(perObjectData, transforms, skipBoneCalculations) {
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(perObjectData.Get("shipMatrix"), this._parentTransform);
-    const transformCount = transforms.length / 12;
+    var transformCount = transforms.length / 12;
     perObjectData.Get("turretSetData")[0] = transformCount;
     perObjectData.Get("baseCutoffData")[0] = this.bottomClipHeight;
-    const translation = perObjectData.Get("turretTranslation"),
-          rotation = perObjectData.Get("turretRotation"),
-          pose = perObjectData.Get("turretPoseTransAndRot");
+    var translation = perObjectData.Get("turretTranslation"),
+        rotation = perObjectData.Get("turretRotation"),
+        pose = perObjectData.Get("turretPoseTransAndRot");
 
-    for (let i = 0; i < this._visibleItems.length; ++i) {
-      const item = this._visibleItems[i];
+    for (var i = 0; i < this._visibleItems.length; ++i) {
+      var item = this._visibleItems[i];
 
-      for (let j = 0; j < transformCount; ++j) {
+      for (var j = 0; j < transformCount; ++j) {
         pose[(i * transformCount + j) * 2 * 4] = transforms[j * 12 + 3];
         pose[(i * transformCount + j) * 2 * 4 + 1] = transforms[j * 12 + 7];
         pose[(i * transformCount + j) * 2 * 4 + 2] = transforms[j * 12 + 11];
@@ -46762,7 +47105,7 @@ EveTurretSet.perObjectData = {
 };
 
 EveTurretSet.mat3x4toquat = function () {
-  let m, q;
+  var m, q;
   return function (mm, index, out, outIndex) {
     if (!m) {
       m = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
@@ -47013,7 +47356,7 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
   GetDirection(out) {
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, this.transform[8], this.transform[9], this.transform[10]);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(out, out);
-    const scale = this.GetScale();
+    var scale = this.GetScale();
     if (scale < 3) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(out, out, scale / 3);
     return out;
   }
@@ -47024,7 +47367,7 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
 
 
   GetScale() {
-    const tr = this.transform;
+    var tr = this.transform;
     return Math.max(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[0], tr[1], tr[2]]), global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[4], tr[5], tr[6]]));
   }
   /**
@@ -47035,7 +47378,7 @@ class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveO
 
 
   static from(values) {
-    const item = new this();
+    var item = new this();
 
     if (values) {
       global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item.visible, values.visible, ["glow", "symHalo", "halo", "trail"]);
@@ -47129,23 +47472,23 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
 
   RebuildItems(skipUpdate) {
-    const glows = this.glows,
-          g = EveBoosterSet.global,
-          spritePos = g.vec3_0;
+    var glows = this.glows,
+        g = EveBoosterSet.global,
+        spritePos = g.vec3_0;
     if (glows) glows.ClearItems();
     this._visibleItems = [];
 
-    for (let i = 0; i < this.items.length; i++) {
-      const item = this.items[i]; //item.SetParent(this);
+    for (var i = 0; i < this.items.length; i++) {
+      var item = this.items[i]; //item.SetParent(this);
 
       if (item.display) {
         this._visibleItems.push(item);
 
         if (glows) {
-          const src = item.customValues && item.customValues.display ? item.customValues : this,
-                pos = item.GetPosition(g.vec3_1),
-                dir = item.GetDirection(g.vec3_2),
-                scale = item.GetScale();
+          var src = item.customValues && item.customValues.display ? item.customValues : this,
+              pos = item.GetPosition(g.vec3_1),
+              dir = item.GetDirection(g.vec3_2),
+              scale = item.GetScale();
 
           if (this.visible.glows && item.visible.glow) {
             glows.CreateItem({
@@ -47201,7 +47544,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
 
   FindItemByLocatorName(locatorName) {
-    for (let i = 0; i < this.items.length; i++) {
+    for (var i = 0; i < this.items.length; i++) {
       if (this.items[i].locatorName && this.items[i].locatorName === locatorName) {
         return this.items[i];
       }
@@ -47216,16 +47559,16 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
 
   UpdateItemsFromLocators(locators) {
-    const items = Array.from(this.items);
+    var items = Array.from(this.items);
 
-    for (let i = 0; i < locators.length; i++) {
-      const {
+    for (var i = 0; i < locators.length; i++) {
+      var {
         name,
         transform,
         atlasIndex0,
         atlasIndex1
       } = locators[i];
-      let item = this.FindItemByLocatorName(name);
+      var item = this.FindItemByLocatorName(name);
 
       if (!item) {
         this.CreateItem({
@@ -47248,10 +47591,10 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
       }
     }
 
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].locatorName !== null) {
-        this.RemoveItem(items[i]);
-        i--;
+    for (var _i = 0; _i < items.length; _i++) {
+      if (items[_i].locatorName !== null) {
+        this.RemoveItem(items[_i]);
+        _i--;
       }
     }
 
@@ -47310,7 +47653,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
   Rebuild() {
     this.RebuildItems();
-    const itemCount = this._visibleItems.length;
+    var itemCount = this._visibleItems.length;
     this._dirty = false;
 
     if (!itemCount) {
@@ -47318,17 +47661,17 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
       return;
     }
 
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          box = EveBoosterSet._box,
-          data = new Float32Array(itemCount * box.length * 6 * 28),
-          order = [0, 3, 1, 3, 2, 1];
-    let index = 0;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        box = EveBoosterSet._box,
+        data = new Float32Array(itemCount * box.length * 6 * 28),
+        order = [0, 3, 1, 3, 2, 1];
+    var index = 0;
 
-    for (let i = 0; i < itemCount; ++i) {
-      const item = this._visibleItems[i];
+    for (var i = 0; i < itemCount; ++i) {
+      var item = this._visibleItems[i];
 
-      for (let b = 0; b < box.length; ++b) {
-        for (let j = 0; j < order.length; ++j) {
+      for (var b = 0; b < box.length; ++b) {
+        for (var j = 0; j < order.length; ++j) {
           data[index++] = box[b][order[j]][0];
           data[index++] = box[b][order[j]][1];
           data[index++] = box[b][order[j]][2];
@@ -47367,7 +47710,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
     if (!this.display || mode !== global__WEBPACK_IMPORTED_MODULE_0__["device"].RM_ADDITIVE || !this._positions || !this._visibleItems.length) return;
 
     if (this.effect) {
-      const batch = new EveBoosterBatch();
+      var batch = new EveBoosterBatch();
       global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._parentTransform);
 
       this._perObjectData.vs.Set("Shipdata", perObjectData.vs.Get("Shipdata"));
@@ -47392,11 +47735,11 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
   Render(technique) {
     if (!this.effect || !this.effect.IsGood() || !this._positions) return false;
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          gl = d.gl;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        gl = d.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER, this._positions);
 
-    for (let pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < this.effect.GetPassCount(technique); ++pass) {
       this.effect.ApplyPass(technique, pass);
       if (!this._decl.SetDeclaration(d, this.effect.GetPassInput(technique, pass), 112)) return false;
       d.ApplyShadowState();
@@ -47414,7 +47757,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
 
 
   static from(values, options) {
-    const item = new EveBoosterSet();
+    var item = new EveBoosterSet();
 
     if (values) {
       Object(global_util__WEBPACK_IMPORTED_MODULE_3__["assignIfExists"])(item, values, ["alwaysOn", "glowColor", "glowScale", "haloColor", "haloScaleX", "haloScaleY", "maxVel", "symHaloScale", "trailColor", "trailSize", "warpGlowColor", "name", "display", "glowDistance", "haloDistance", "symHaloDistance", "warpHaloColor"]); // Allow for ccp spelling mistakes
@@ -47436,7 +47779,7 @@ class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjec
       }
 
       if (values.items) {
-        for (let i = 0; i < values.items.length; i++) {
+        for (var i = 0; i < values.items.length; i++) {
           item.CreateItem(values.items[i]);
         }
       }
@@ -47716,11 +48059,11 @@ class EveMissileWarhead extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["
 
   Update(dt, missilePosition, missileTarget) {
     if (this._state === EveMissileWarhead.State.IN_FLIGHT) {
-      const g = _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global,
-            position = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(g.vec3_0, this._transform),
-            tmp = g.vec3_1,
-            x = g.vec3_2,
-            y = g.vec3_3;
+      var g = _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global,
+          position = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(g.vec3_0, this._transform),
+          tmp = g.vec3_1,
+          x = g.vec3_2,
+          y = g.vec3_3;
       this._time += dt;
 
       if (this._time > this.durationEjectPhase) {
@@ -47740,7 +48083,7 @@ class EveMissileWarhead extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["
         this._transform[14] += tmp[2];
       }
 
-      const z = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(tmp, this._velocity);
+      var z = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(tmp, this._velocity);
 
       if (Math.abs(z[0]) < 0.99) {
         global__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(x, z, [1, 0, 0]);
@@ -47886,7 +48229,7 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
       }
     }
 
-    for (let i = 0; i < this.warheads.length; ++i) {
+    for (var i = 0; i < this.warheads.length; ++i) {
       this.warheads[0].Launch(turretTransforms[i]);
     }
   }
@@ -47898,7 +48241,7 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
 
 
   GetResources(out = []) {
-    for (let i = 0; i < this.warheads.length; ++i) {
+    for (var i = 0; i < this.warheads.length; ++i) {
       this.warheads[i].GetResources(out);
     }
 
@@ -47910,7 +48253,7 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
 
 
   UpdateViewDependentData() {
-    for (let i = 0; i < this.warheads.length; ++i) {
+    for (var i = 0; i < this.warheads.length; ++i) {
       this.warheads[i].UpdateViewDependentData();
     }
   }
@@ -47921,8 +48264,8 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
 
 
   Update(dt) {
-    const tmp = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(_legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this._target, this._position),
-          distance = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(tmp);
+    var tmp = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(_legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this._target, this._position),
+        distance = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(tmp);
 
     if (distance > 0.1) {
       global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(tmp, tmp);
@@ -47930,19 +48273,20 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
       global__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(this._position, this._position, tmp);
     }
 
-    for (let i = 0; i < this.curveSets.length; ++i) {
+    for (var i = 0; i < this.curveSets.length; ++i) {
       this.curveSets[i].Update(dt);
     }
 
-    let checkDead = false;
+    var checkDead = false;
 
-    for (let i = 0; i < this.warheads.length; ++i) {
-      const _state = this.warheads[i]._state;
-      this.warheads[i].Update(dt, this._position, this._target);
+    for (var _i = 0; _i < this.warheads.length; ++_i) {
+      var _state = this.warheads[_i]._state;
 
-      if (_state !== EveMissileWarhead.State.DEAD && this.warheads[i]._state === EveMissileWarhead.State.DEAD) {
+      this.warheads[_i].Update(dt, this._position, this._target);
+
+      if (_state !== EveMissileWarhead.State.DEAD && this.warheads[_i]._state === EveMissileWarhead.State.DEAD) {
         if (this._warheadExplosionCallback) {
-          this._warheadExplosionCallback(this.warheads[i]);
+          this._warheadExplosionCallback(this.warheads[_i]);
         }
 
         checkDead = true;
@@ -47950,8 +48294,8 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
     }
 
     if (checkDead && this._missileFinishedCallback) {
-      for (let i = 0; i < this.warheads.length; ++i) {
-        if (this.warheads[i]._state !== EveMissileWarhead.State.DEAD) {
+      for (var _i2 = 0; _i2 < this.warheads.length; ++_i2) {
+        if (this.warheads[_i2]._state !== EveMissileWarhead.State.DEAD) {
           return;
         }
       }
@@ -47969,7 +48313,7 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
   GetBatches(mode, accumulator) {
     if (!this.display) return;
 
-    for (let i = 0; i < this.warheads.length; ++i) {
+    for (var i = 0; i < this.warheads.length; ++i) {
       this.warheads[i].GetBatches(mode, accumulator);
     }
   }
@@ -47981,7 +48325,7 @@ class EveMissile extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObje
 
 
   static CloneWarhead(sourceWarhead) {
-    const warhead = new EveMissileWarhead();
+    var warhead = new EveMissileWarhead();
     warhead.mesh = sourceWarhead.mesh;
     warhead.spriteSet = sourceWarhead.spriteSet;
     return warhead;
@@ -48423,7 +48767,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
   GetResources(out = []) {
     if (this.mesh) this.mesh.GetResources(out);
 
-    for (let i = 0; i < this.children.length; i++) {
+    for (var i = 0; i < this.children.length; i++) {
       this.children[i].GetResources(out);
     }
 
@@ -48436,12 +48780,12 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
 
   UpdateViewDependentData(parentTransform) {
-    const d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
-          g = _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global,
-          finalScale = g.vec3_0,
-          parentScale = g.vec3_1,
-          dir = g.vec3_2,
-          viewInv = d.viewInverse;
+    var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        g = _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global,
+        finalScale = g.vec3_0,
+        parentScale = g.vec3_1,
+        dir = g.vec3_2,
+        viewInv = d.viewInverse;
 
     if (!parentTransform) {
       parentTransform = g.mat4_ID;
@@ -48454,7 +48798,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
     switch (this.modifier) {
       case EveTransform.Modifier.BILLBOARD:
       case EveTransform.Modifier.SIMPLE_HALO:
-        const dirNorm = g.vec3_3;
+        var dirNorm = g.vec3_3;
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
         global__WEBPACK_IMPORTED_MODULE_0__["vec3"].multiply(finalScale, this.scaling, parentScale);
 
@@ -48462,7 +48806,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(dir, d.GetEyePosition(dir), this.worldTransform.subarray(12));
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dirNorm, this.worldTransform.subarray(8));
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dir, dir);
-          let scale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dir, dirNorm);
+          var scale = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dir, dirNorm);
           if (scale < 0) scale = 0;
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(finalScale, finalScale, scale * scale);
         }
@@ -48479,7 +48823,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
         break;
 
       case EveTransform.Modifier.EVE_CAMERA_ROTATION:
-        const translation = g.vec3_3;
+        var translation = g.vec3_3;
         global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(translation, this.translation, parentTransform);
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.localTransform, this.rotation, translation, this.scaling);
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, viewInv, this.localTransform);
@@ -48490,14 +48834,14 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
       case EveTransform.Modifier.EVE_CAMERA_ROTATION_ALIGNED:
       case EveTransform.Modifier.EVE_SIMPLE_HALO:
-        const camFwd = g.vec3_3,
-              right = g.vec3_4,
-              up = g.vec3_5,
-              forward = g.vec3_6,
-              dirToCamNorm = g.vec3_7,
-              parentT = g.mat4_0,
-              alignMat = g.mat4_1,
-              rotationT = g.mat4_2; // 3 4 3 3 3 4 3 3
+        var camFwd = g.vec3_3,
+            right = g.vec3_4,
+            up = g.vec3_5,
+            forward = g.vec3_6,
+            dirToCamNorm = g.vec3_7,
+            parentT = g.mat4_0,
+            alignMat = g.mat4_1,
+            rotationT = g.mat4_2; // 3 4 3 3 3 4 3 3
 
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].translate(this.worldTransform, parentTransform, this.translation);
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(parentT, parentTransform);
@@ -48531,10 +48875,12 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
         if (this.modifier === EveTransform.Modifier.EVE_SIMPLE_HALO) {
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(forward, this.worldTransform.subarray(8));
           global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(dirToCamNorm, dir);
-          let scale = -global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dirToCamNorm, forward);
-          if (scale < 0) scale = 0;
+
+          var _scale = -global__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(dirToCamNorm, forward);
+
+          if (_scale < 0) _scale = 0;
           global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, this.worldTransform, alignMat);
-          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(this.worldTransform, this.worldTransform, [this.scaling[0] * scale, this.scaling[1] * scale, this.scaling[2] * scale]);
+          global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(this.worldTransform, this.worldTransform, [this.scaling[0] * _scale, this.scaling[1] * _scale, this.scaling[2] * _scale]);
         } else {
           global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(this.worldTransform, this.worldTransform, this.scaling);
           global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, this.worldTransform, alignMat);
@@ -48543,7 +48889,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
         break;
 
       case EveTransform.Modifier.LOOK_AT_CAMERA:
-        const lookAt = g.mat4_0;
+        var lookAt = g.mat4_0;
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAt(lookAt, viewInv.subarray(12), this.worldTransform.subarray(12), [0, 1, 0]);
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(lookAt, lookAt);
@@ -48563,7 +48909,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
         global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.worldTransform, parentTransform, this.localTransform);
     }
 
-    for (let i = 0; i < this.children.length; ++i) {
+    for (var i = 0; i < this.children.length; ++i) {
       this.children[i].UpdateViewDependentData(this.worldTransform);
     }
   }
@@ -48574,20 +48920,20 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
 
   Update(dt) {
-    for (let i = 0; i < this.children.length; ++i) {
+    for (var i = 0; i < this.children.length; ++i) {
       this.children[i].Update(dt);
     }
 
-    for (let i = 0; i < this.particleEmitters.length; ++i) {
-      this.particleEmitters[i].Update(dt);
+    for (var _i = 0; _i < this.particleEmitters.length; ++_i) {
+      this.particleEmitters[_i].Update(dt);
     }
 
-    for (let i = 0; i < this.particleSystems.length; ++i) {
-      this.particleSystems[i].Update(dt);
+    for (var _i2 = 0; _i2 < this.particleSystems.length; ++_i2) {
+      this.particleSystems[_i2].Update(dt);
     }
 
-    for (let i = 0; i < this.curveSets.length; ++i) {
-      this.curveSets[i].Update(dt);
+    for (var _i3 = 0; _i3 < this.curveSets.length; ++_i3) {
+      this.curveSets[_i3].Update(dt);
     }
   }
   /**
@@ -48614,7 +48960,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
     }
 
     if (this.visible.children) {
-      for (let i = 0; i < this.children.length; ++i) {
+      for (var i = 0; i < this.children.length; ++i) {
         this.children[i].GetBatches(mode, accumulator, perObjectData);
       }
     }
@@ -48626,7 +48972,7 @@ class EveTransform extends _legacy_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveOb
 
   static Multiply3x3(a, b, c) {
     c || (c = b);
-    let d = b[0],
+    var d = b[0],
         e = b[1];
     b = b[2];
     c[0] = a[0] * d + a[4] * e + a[8] * b;
@@ -48797,7 +49143,7 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
 
   GetResources(out = []) {
-    for (let i = 0; i < this.effectChildren.length; ++i) {
+    for (var i = 0; i < this.effectChildren.length; ++i) {
       this.effectChildren[i].GetResources(out);
     }
 
@@ -48809,7 +49155,7 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
 
   Start() {
-    for (let i = 0; i < this.curveSets.length; ++i) {
+    for (var i = 0; i < this.curveSets.length; ++i) {
       this.curveSets[i].Play();
     }
   }
@@ -48819,7 +49165,7 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
 
   Stop() {
-    for (let i = 0; i < this.curveSets.length; ++i) {
+    for (var i = 0; i < this.curveSets.length; ++i) {
       this.curveSets[i].Stop();
     }
   }
@@ -48845,12 +49191,12 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
 
 
   Update(dt) {
-    for (let i = 0; i < this.curveSets.length; ++i) {
+    for (var i = 0; i < this.curveSets.length; ++i) {
       this.curveSets[i].Update(dt);
     }
 
-    for (let i = 0; i < this.effectChildren.length; ++i) {
-      this.effectChildren[i].Update(dt, this._worldTransform);
+    for (var _i = 0; _i < this.effectChildren.length; ++_i) {
+      this.effectChildren[_i].Update(dt, this._worldTransform);
     }
   }
   /**
@@ -48863,7 +49209,7 @@ class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"]
   GetBatches(mode, accumulator) {
     if (!this.display) return;
 
-    for (let i = 0; i < this.effectChildren.length; ++i) {
+    for (var i = 0; i < this.effectChildren.length; ++i) {
       this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
     }
   }
@@ -48889,7 +49235,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 
 /* eslint no-unused-vars:0 */
 
-let EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class EveObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.name = "";
@@ -49007,7 +49353,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
    * @param {function} [onLoaded]             - an optional callback which is fired when the planet has loaded
    */
   Create(options = {}, onLoaded) {
-    const {
+    var {
       name = "",
       itemID = 0,
       resPath,
@@ -49021,7 +49367,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     this.heightMapResPath2 = heightMap2;
     this.highDetail.children = [];
     this.heightDirty = true;
-    let loadingParts = 1;
+    var loadingParts = 1;
     if (resPath) loadingParts++;
     if (atmospherePath) loadingParts++;
     /**
@@ -49072,7 +49418,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
 
 
   UpdateLod(frustum) {
-    const {
+    var {
       scaling,
       translation
     } = this.highDetail;
@@ -49126,7 +49472,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
       return;
     }
 
-    for (let prop in obj) {
+    for (var prop in obj) {
       if (obj.hasOwnProperty(prop)) {
         if (global__WEBPACK_IMPORTED_MODULE_0__["util"].isObjectLike(obj[prop])) {
           this.GetPlanetResources(obj[prop], visited, result);
@@ -49183,7 +49529,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
 
   GetBatches(mode, accumulator) {
     if (this.display && this.heightDirty && this.watchedResources.length && this.heightMapResPath1 !== "") {
-      for (let i = 0; i < this.watchedResources.length; ++i) {
+      for (var i = 0; i < this.watchedResources.length; ++i) {
         if (this.watchedResources[i] && !this.watchedResources[i].IsGood()) return;
       }
 
@@ -49191,13 +49537,13 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
       this.CreateHeightMap();
       this.heightDirty = false;
 
-      for (let i = 0; i < this.lockedResources.length; ++i) {
-        if (!this.lockedResources[i]) continue;
-        this.lockedResources[i].doNotPurge--;
+      for (var _i = 0; _i < this.lockedResources.length; ++_i) {
+        if (!this.lockedResources[_i]) continue;
+        this.lockedResources[_i].doNotPurge--;
       }
 
-      const mainMesh = this.highDetail.children[0].mesh;
-      let originalEffect = null;
+      var mainMesh = this.highDetail.children[0].mesh;
+      var originalEffect = null;
 
       if (mainMesh.transparentAreas.length) {
         originalEffect = mainMesh.transparentAreas[0].effect;
@@ -49237,7 +49583,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     planet.highDetail.children.unshift(obj);
     planet.lockedResources.splice(0);
     planet.GetPlanetResources(planet.highDetail, [], planet.lockedResources);
-    let mainMesh = planet.highDetail.children[0].mesh,
+    var mainMesh = planet.highDetail.children[0].mesh,
         originalEffect = null,
         resPath;
 
@@ -49254,7 +49600,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     resPath = resPath.replace(".fx", "BlitHeight.fx");
     planet.watchedResources.splice(0);
 
-    for (let param in originalEffect.parameters) {
+    for (var param in originalEffect.parameters) {
       if (originalEffect.parameters.hasOwnProperty(param)) {
         planet.effectHeight.parameters[param] = originalEffect.parameters[param];
 
@@ -49264,7 +49610,7 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
       }
     }
 
-    for (let i = 0; i < planet.highDetail.children[0].children.length; ++i) {
+    for (var i = 0; i < planet.highDetail.children[0].children.length; ++i) {
       mainMesh = planet.highDetail.children[0].children[i].mesh;
       if (!mainMesh) continue;
       originalEffect = null;
@@ -49277,23 +49623,23 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
         continue;
       }
 
-      for (let param in originalEffect.parameters) {
-        if (originalEffect.parameters.hasOwnProperty(param)) {
-          planet.effectHeight.parameters[param] = originalEffect.parameters[param];
+      for (var _param in originalEffect.parameters) {
+        if (originalEffect.parameters.hasOwnProperty(_param)) {
+          planet.effectHeight.parameters[_param] = originalEffect.parameters[_param];
 
-          if ("textureRes" in originalEffect.parameters[param]) {
-            planet.watchedResources.push(originalEffect.parameters[param].textureRes);
+          if ("textureRes" in originalEffect.parameters[_param]) {
+            planet.watchedResources.push(originalEffect.parameters[_param].textureRes);
           }
         }
       }
     }
 
-    const NormalHeight1 = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight1", planet.heightMapResPath1);
+    var NormalHeight1 = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight1", planet.heightMapResPath1);
     NormalHeight1.Initialize();
     planet.watchedResources.push(NormalHeight1.textureRes);
     planet.lockedResources.push(NormalHeight1.textureRes);
     planet.effectHeight.parameters.NormalHeight1 = NormalHeight1;
-    const NormalHeight2 = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight2", planet.heightMapResPath2);
+    var NormalHeight2 = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2TextureParameter"]("NormalHeight2", planet.heightMapResPath2);
     NormalHeight2.Initialize();
     planet.watchedResources.push(NormalHeight2.textureRes);
     planet.lockedResources.push(NormalHeight2.textureRes);
@@ -49306,12 +49652,12 @@ class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
     planet.heightMap.Create(2048, 1024, false);
     planet.watchedResources.push(planet.effectHeight.effectRes);
 
-    for (let i = 0; i < planet.lockedResources.length; ++i) {
-      if (!planet.lockedResources[i]) continue;
-      planet.lockedResources[i].doNotPurge++;
+    for (var _i2 = 0; _i2 < planet.lockedResources.length; ++_i2) {
+      if (!planet.lockedResources[_i2]) continue;
+      planet.lockedResources[_i2].doNotPurge++;
 
-      if (planet.lockedResources[i].IsPurged()) {
-        planet.lockedResources[i].Reload();
+      if (planet.lockedResources[_i2].IsPurged()) {
+        planet.lockedResources[_i2].Reload();
       }
     }
   }
@@ -49378,7 +49724,7 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
   GetResources(out = []) {
     super.GetResources(out);
 
-    for (let i = 0; i < this.turretSets.length; i++) {
+    for (var i = 0; i < this.turretSets.length; i++) {
       this.turretSets[i].GetResources(out);
     }
 
@@ -49404,7 +49750,7 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
 
 
   RebuildTurretPositions() {
-    for (let i = 0; i < this.turretSets.length; i++) {
+    for (var i = 0; i < this.turretSets.length; i++) {
       this.RebuildTurretSet(i);
     }
   }
@@ -49421,14 +49767,14 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
     }
 
     if (this.turretSets[index] === undefined) return;
-    const turretSet = this.turretSets[index],
-          prefix = turretSet.locatorName,
-          count = this.GetLocatorCount(prefix),
-          locators = [];
+    var turretSet = this.turretSets[index],
+        prefix = turretSet.locatorName,
+        count = this.GetLocatorCount(prefix),
+        locators = [];
 
-    for (let j = 0; j < count; ++j) {
-      const name = prefix + String.fromCharCode("a".charCodeAt(0) + j),
-            locator = this.FindLocatorByName(name);
+    for (var j = 0; j < count; ++j) {
+      var name = prefix + String.fromCharCode("a".charCodeAt(0) + j),
+          locator = this.FindLocatorByName(name);
 
       if (locator) {
         locator.FindBone(this.animation);
@@ -49448,7 +49794,7 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
   UpdateViewDependentData(parentTransform, dt) {
     super.UpdateViewDependentData(parentTransform, dt);
 
-    for (let i = 0; i < this.turretSets.length; ++i) {
+    for (var i = 0; i < this.turretSets.length; ++i) {
       this.turretSets[i].UpdateViewDependentData(this._worldTransform);
     }
   }
@@ -49469,7 +49815,7 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
       this.boosters.Update(dt, this._worldTransform, this._worldSpriteScale);
     }
 
-    for (let i = 0; i < this.turretSets.length; ++i) {
+    for (var i = 0; i < this.turretSets.length; ++i) {
       if (this.turretSets[i]._locatorDirty) {
         this.RebuildTurretSet(i);
       }
@@ -49496,13 +49842,13 @@ class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_0__["EveSpaceObje
 
       if (this.visible.turretSets) {
         if (this.lod > 1) {
-          for (let i = 0; i < this.turretSets.length; ++i) {
+          for (var i = 0; i < this.turretSets.length; ++i) {
             this.turretSets[i].GetBatches(mode, accumulator, this._perObjectData, this.visible.firingEffects);
           }
         } else if (this.visible.firingEffects) {
-          for (let i = 0; i < this.turretSets.length; ++i) {
-            if (this.turretSets[i].firingEffect) {
-              this.turretSets[i].firingEffect.GetBatches(mode, accumulator, this._perObjectData);
+          for (var _i = 0; _i < this.turretSets.length; ++_i) {
+            if (this.turretSets[_i].firingEffect) {
+              this.turretSets[_i].firingEffect.GetBatches(mode, accumulator, this._perObjectData);
             }
           }
         }
@@ -49635,7 +49981,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
     if (this.mesh) {
       this.animation.SetGeometryResource(this.mesh.geometryResource);
 
-      for (let i = 0; i < this.decals.length; ++i) {
+      for (var i = 0; i < this.decals.length; ++i) {
         this.decals[i].SetParentGeometry(this.mesh.geometryResource);
       }
     }
@@ -49693,10 +50039,10 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
     if (!this._useLOD) {
       this.lod = 3;
     } else {
-      const center = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
+      var center = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
 
       if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
-        const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
+        var size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
 
         if (size <= EveSpaceObject.LOD_THRESHOLD_NONE) {
           this.lod = 0;
@@ -49735,13 +50081,13 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
   FindTurretPrefixes(out = []) {
     function add(match) {
       if (!match) return false;
-      const name = match[0].substring(0, match[0].length - 1);
+      var name = match[0].substring(0, match[0].length - 1);
       if (!out.includes(name)) out.push(name);
       return true;
     }
 
-    for (let i = 0; i < this.locators.length; i++) {
-      const name = this.locators[i].name;
+    for (var i = 0; i < this.locators.length; i++) {
+      var name = this.locators[i].name;
 
       if (!add(/^locator_turret_([0-9]+)[a-z]$/i.exec(name))) {
         add(/^locator_xl_([0-9]+)[a-z]$/i.exec(name));
@@ -49759,7 +50105,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   GetLocatorCount(prefix) {
-    const locators = this.FindLocatorsByPrefix(prefix);
+    var locators = this.FindLocatorsByPrefix(prefix);
     return locators.length;
   }
   /**
@@ -49770,7 +50116,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   FindLocatorJointByName(name) {
-    const locator = this.FindLocatorBoneByName(name);
+    var locator = this.FindLocatorBoneByName(name);
     return locator ? locator.worldTransform : null;
   }
   /**
@@ -49781,7 +50127,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   FindLocatorTransformByName(name) {
-    const locator = this.FindLocatorByName(name);
+    var locator = this.FindLocatorByName(name);
     return locator ? locator.transform : null;
   }
   /**
@@ -49792,7 +50138,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   HasLocatorPrefix(prefix) {
-    for (let i = 0; i < this.locators.length; i++) {
+    for (var i = 0; i < this.locators.length; i++) {
       if (this.locators[i].name.indexOf(prefix) === 0) {
         return true;
       }
@@ -49818,7 +50164,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   FindLocatorByName(name) {
-    for (let i = 0; i < this.locators.length; i++) {
+    for (var i = 0; i < this.locators.length; i++) {
       if (this.locators[i].name === name) {
         return this.locators[i];
       }
@@ -49835,7 +50181,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
 
   FindLocatorsByPrefix(prefix, out = []) {
-    for (let i = 0; i < this.locators.length; i++) {
+    for (var i = 0; i < this.locators.length; i++) {
       if (this.locators[i].name.indexOf(prefix) === 0) {
         out.push(this.locators[i]);
       }
@@ -49859,15 +50205,15 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
     this._worldSpriteScale = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis(this._worldTransform);
 
-    for (let i = 0; i < this.children.length; ++i) {
+    for (var i = 0; i < this.children.length; ++i) {
       this.children[i].UpdateViewDependentData(this._worldTransform);
     }
 
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMatLast"), this._worldTransform);
 
-    const center = this._perObjectData.vs.Get("EllipsoidCenter"),
-          radii = this._perObjectData.vs.Get("EllipsoidRadii");
+    var center = this._perObjectData.vs.Get("EllipsoidCenter"),
+        radii = this._perObjectData.vs.Get("EllipsoidRadii");
 
     if (this.shapeEllipsoidRadius[0] > 0) {
       center[0] = this.shapeEllipsoidCenter[0];
@@ -49877,7 +50223,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
       radii[1] = this.shapeEllipsoidRadius[1];
       radii[2] = this.shapeEllipsoidRadius[2];
     } else if (this.mesh && this.mesh.IsGood()) {
-      const {
+      var {
         maxBounds,
         minBounds
       } = this.mesh.geometryResource;
@@ -49887,16 +50233,16 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
       global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
     }
 
-    for (let i = 0; i < this.customMasks.length; ++i) {
-      this.customMasks[i].UpdatePerObjectData(this._worldTransform, this._perObjectData, i, this.visible.customMasks);
+    for (var _i = 0; _i < this.customMasks.length; ++_i) {
+      this.customMasks[_i].UpdatePerObjectData(this._worldTransform, this._perObjectData, _i, this.visible.customMasks);
     }
 
     if (this.animation.animations.length) {
       this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
     }
 
-    for (let i = 0; i < this.lineSets.length; ++i) {
-      this.lineSets[i].UpdateViewDependentData(this._worldTransform);
+    for (var _i2 = 0; _i2 < this.lineSets.length; ++_i2) {
+      this.lineSets[_i2].UpdateViewDependentData(this._worldTransform);
     }
   }
   /**
@@ -49907,36 +50253,36 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
   Update(dt) {
     if (this.lod > 0) {
-      for (let i = 0; i < this.spriteSets.length; ++i) {
+      for (var i = 0; i < this.spriteSets.length; ++i) {
         this.spriteSets[i].Update(dt, this._worldSpriteScale);
       }
 
-      for (let i = 0; i < this.planeSets.length; i++) {
-        this.planeSets[i].Update(dt);
+      for (var _i3 = 0; _i3 < this.planeSets.length; _i3++) {
+        this.planeSets[_i3].Update(dt);
       }
 
-      for (let i = 0; i < this.spotlightSets.length; i++) {
-        this.spotlightSets[i].Update(dt);
+      for (var _i4 = 0; _i4 < this.spotlightSets.length; _i4++) {
+        this.spotlightSets[_i4].Update(dt);
       }
 
-      for (let i = 0; i < this.children.length; ++i) {
-        this.children[i].Update(dt);
+      for (var _i5 = 0; _i5 < this.children.length; ++_i5) {
+        this.children[_i5].Update(dt);
       }
 
-      for (let i = 0; i < this.effectChildren.length; ++i) {
-        this.effectChildren[i].Update(dt, this._worldTransform, this.lod);
+      for (var _i6 = 0; _i6 < this.effectChildren.length; ++_i6) {
+        this.effectChildren[_i6].Update(dt, this._worldTransform, this.lod);
       }
 
-      for (let i = 0; i < this.curveSets.length; ++i) {
-        this.curveSets[i].Update(dt);
+      for (var _i7 = 0; _i7 < this.curveSets.length; ++_i7) {
+        this.curveSets[_i7].Update(dt);
       }
 
-      for (let i = 0; i < this.overlayEffects.length; ++i) {
-        this.overlayEffects[i].Update(dt);
+      for (var _i8 = 0; _i8 < this.overlayEffects.length; ++_i8) {
+        this.overlayEffects[_i8].Update(dt);
       }
 
-      for (let i = 0; i < this.lineSets.length; i++) {
-        this.lineSets[i].Update(dt);
+      for (var _i9 = 0; _i9 < this.lineSets.length; _i9++) {
+        this.lineSets[_i9].Update(dt);
       }
 
       this.animation.Update(dt);
@@ -49951,7 +50297,7 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
   GetBatches(mode, accumulator) {
     if (this.display) {
-      const show = this.visible;
+      var show = this.visible;
 
       if (show.mesh && this.mesh && this.lod > 0) {
         this.mesh.GetBatches(mode, accumulator, this._perObjectData);
@@ -49959,52 +50305,53 @@ class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"
 
       if (this.lod > 1) {
         if (show.spriteSets) {
-          for (let i = 0; i < this.spriteSets.length; i++) {
+          for (var i = 0; i < this.spriteSets.length; i++) {
             this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
           }
         }
 
         if (show.spotlightSets) {
-          for (let i = 0; i < this.spotlightSets.length; i++) {
-            this.spotlightSets[i].GetBatches(mode, accumulator, this._perObjectData);
+          for (var _i10 = 0; _i10 < this.spotlightSets.length; _i10++) {
+            this.spotlightSets[_i10].GetBatches(mode, accumulator, this._perObjectData);
           }
         }
 
         if (show.planeSets) {
-          for (let i = 0; i < this.planeSets.length; i++) {
-            this.planeSets[i].GetBatches(mode, accumulator, this._perObjectData);
+          for (var _i11 = 0; _i11 < this.planeSets.length; _i11++) {
+            this.planeSets[_i11].GetBatches(mode, accumulator, this._perObjectData);
           }
         }
 
         if (show.decals) {
-          for (let i = 0; i < this.decals.length; i++) {
-            this.decals[i].GetBatches(mode, accumulator, this._perObjectData, show.killmarks ? this.killCount : 0);
+          for (var _i12 = 0; _i12 < this.decals.length; _i12++) {
+            this.decals[_i12].GetBatches(mode, accumulator, this._perObjectData, show.killmarks ? this.killCount : 0);
           }
         }
 
         if (show.lineSets) {
-          for (let i = 0; i < this.lineSets.length; i++) {
-            this.lineSets[i].GetBatches(mode, accumulator);
+          for (var _i13 = 0; _i13 < this.lineSets.length; _i13++) {
+            this.lineSets[_i13].GetBatches(mode, accumulator);
           }
         }
 
         if (show.overlayEffects && this.mesh && this.mesh.IsGood()) {
-          for (let i = 0; i < this.overlayEffects.length; i++) {
-            this.overlayEffects[i].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
+          for (var _i14 = 0; _i14 < this.overlayEffects.length; _i14++) {
+            this.overlayEffects[_i14].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
           }
         }
       }
 
       if (show.children) {
-        for (let i = 0; i < this.children.length; i++) {
-          this.children[i].GetBatches(mode, accumulator, this._perObjectData);
+        for (var _i15 = 0; _i15 < this.children.length; _i15++) {
+          this.children[_i15].GetBatches(mode, accumulator, this._perObjectData);
         }
       }
 
       if (show.effectChildren) {
-        for (let i = 0; i < this.effectChildren.length; i++) {
-          this.effectChildren[i]._parentLod = this.lod;
-          this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
+        for (var _i16 = 0; _i16 < this.effectChildren.length; _i16++) {
+          this.effectChildren[_i16]._parentLod = this.lod;
+
+          this.effectChildren[_i16].GetBatches(mode, accumulator, this._perObjectData);
         }
       }
     }
@@ -50552,7 +50899,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @param {Boolean} _debug
  */
 
-let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class = (_temp = class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"] {
+var Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class = (_temp = class Tw2Library extends _class__WEBPACK_IMPORTED_MODULE_1__["Tw2EventEmitter"] {
   /**
    * Alias for device.gl
    * @returns {*}
@@ -50646,11 +50993,11 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
       type: new Map()
     };
     this._debug = false;
-    let eveSof;
+    var eveSof;
     Object.defineProperty(this, "eveSof", {
       get: () => {
         if (!eveSof) {
-          const Constructor = this.GetClass("EveSOF");
+          var Constructor = this.GetClass("EveSOF");
           eveSof = new Constructor(this);
         }
 
@@ -50713,7 +51060,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
     if (options.render) {
       this.on("tick", options.render);
 
-      const tick = () => {
+      var tick = () => {
         this.RequestAnimationFrame(tick);
         this.StartFrame();
         this.EndFrame();
@@ -50791,7 +51138,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
     if (options.debug) this.SetDebug(true);
     if (options.resMan) this.resMan.Register(options.resMan);
     if (options.device) this.device.Register(options.device);
-    const {
+    var {
       store
     } = options;
 
@@ -50801,7 +51148,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
         setStoreKeyValues(this, "type", store.type);
       }
 
-      for (const key in store) {
+      for (var key in store) {
         if (store.hasOwnProperty(key) && key !== "type") {
           setStoreKeyValues(this, key, store[key]);
         }
@@ -50953,7 +51300,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
-      let result;
+      var result;
 
       if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isDNA"])(resPath)) {
         result = yield _this2.eveSof.FetchObject(resPath);
@@ -50997,10 +51344,10 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
     }
 
     expectedConstructor = Object(_util__WEBPACK_IMPORTED_MODULE_4__["toArray"])(expectedConstructor);
-    let isGood;
+    var isGood;
 
-    for (let i = 0; i < expectedConstructor.length; i++) {
-      let Constructor = expectedConstructor[i],
+    for (var i = 0; i < expectedConstructor.length; i++) {
+      var Constructor = expectedConstructor[i],
           exclude = false;
 
       if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isString"])(Constructor)) {
@@ -51070,7 +51417,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
 
   GetVariableValue(name, out) {
-    const variable = this.GetVariable(name);
+    var variable = this.GetVariable(name);
     if (variable.GetValue) return variable.GetValue(out);
     throw new Error("Variable missing 'GetValue' method");
   }
@@ -51099,7 +51446,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
 
   SetVariableValue(name, value, opt) {
-    const variable = this.GetVariable(name);
+    var variable = this.GetVariable(name);
     if (variable.SetValue) return variable.SetValue(value, opt);
     throw new Error("Variable missing 'SetValue' method");
   }
@@ -51208,7 +51555,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
 
   SetClass(name, Constructor) {
-    const Value = setStoreKey(this, "class", name, Constructor, {
+    var Value = setStoreKey(this, "class", name, Constructor, {
       isValue: _util__WEBPACK_IMPORTED_MODULE_4__["isFunction"]
     });
     Tw2Library.prototype[name] = Value;
@@ -51291,7 +51638,7 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
       isValue(a) {
         if (!Object(_util__WEBPACK_IMPORTED_MODULE_4__["isArray"])(a)) return false;
 
-        for (let i = 0; i < a.length; i++) {
+        for (var i = 0; i < a.length; i++) {
           if (!Object(_util__WEBPACK_IMPORTED_MODULE_4__["isString"])(a[i])) return false;
         }
 
@@ -51331,9 +51678,9 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
 
   GetTypeByValue(value) {
-    const types = this._store.type;
+    var types = this._store.type;
 
-    for (let [key, type] of types) {
+    for (var [key, type] of types) {
       if ("isValue" in type && type.isValue(value)) return type;
     }
 
@@ -51362,11 +51709,11 @@ let Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
 
 function lazyLoadClass(library, propertyName, className, ...args) {
-  let value;
+  var value;
   Object.defineProperty(library, propertyName, {
     get: function () {
       if (!value) {
-        const Constructor = library.GetClass(className);
+        var Constructor = library.GetClass(className);
         value = new Constructor(...args);
       }
 
@@ -51400,7 +51747,7 @@ function validateStore(library, storeType) {
 
 function hasStoreKey(library, storeType, key, options) {
   validateStore(library, storeType);
-  const store = library._store[storeType];
+  var store = library._store[storeType];
   return store.has(key) || options && options.isClassName && Object(_util__WEBPACK_IMPORTED_MODULE_4__["isTr2OrTri"])(key) && store.has(Object(_util__WEBPACK_IMPORTED_MODULE_4__["toTw2"])(key));
 }
 /**
@@ -51415,16 +51762,16 @@ function hasStoreKey(library, storeType, key, options) {
 
 function getStoreKey(library, storeType, key, options) {
   validateStore(library, storeType);
-  const store = library._store[storeType];
+  var store = library._store[storeType];
 
   if (store.has(key)) {
     return library._store[storeType].get(key);
   } // Allow substituting of Tr2 and Tri names
   else if (options && options.isClassName && Object(_util__WEBPACK_IMPORTED_MODULE_4__["isTr2OrTri"])(key)) {
-      const newKey = Object(_util__WEBPACK_IMPORTED_MODULE_4__["toTw2"])(key);
+      var newKey = Object(_util__WEBPACK_IMPORTED_MODULE_4__["toTw2"])(key);
 
       if (store.has(newKey)) {
-        const Substitute = store.get(newKey);
+        var Substitute = store.get(newKey);
         library.emit("store.substituted", storeType, newKey, Substitute, key);
         return Substitute;
       }
@@ -51498,7 +51845,7 @@ function setStoreKey(library, storeType, key, value, options) {
 
 function setStoreKeyValues(library, storeType, values) {
   // Use the library method for setting in case of custom stuff(tm)
-  const setFunction = "Set" + storeType.charAt(0).toUpperCase() + storeType.substring(1);
+  var setFunction = "Set" + storeType.charAt(0).toUpperCase() + storeType.substring(1);
 
   if (!library[setFunction]) {
     throw new Error("Invalid store value setter '".concat(setFunction, "'"));
@@ -51506,8 +51853,8 @@ function setStoreKeyValues(library, storeType, values) {
 
   values = Object(_util__WEBPACK_IMPORTED_MODULE_4__["toArray"])(values);
 
-  for (let i = 0; i < values.length; i++) {
-    for (const key in values[i]) {
+  for (var i = 0; i < values.length; i++) {
+    for (var key in values[i]) {
       if (values[i].hasOwnProperty(key)) {
         library[setFunction](key, values[i][key]);
       }
@@ -51515,10 +51862,10 @@ function setStoreKeyValues(library, storeType, values) {
   }
 }
 
-const tw2 = new Tw2Library(),
-      // Temporarily export resMan and device
+var tw2 = new Tw2Library(),
+    // Temporarily export resMan and device
 resMan = tw2.resMan,
-      device = tw2.device;
+    device = tw2.device;
 
 
 /***/ }),
@@ -51547,7 +51894,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * Tw2BaseClass
  */
 
-let Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class = (_class2 = (_temp = _class3 = class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
+var Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class = (_class2 = (_temp = _class3 = class Tw2BaseClass extends _Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2EventEmitter"] {
   constructor() {
     super();
     Tw2BaseClass.defineID(this);
@@ -51670,11 +52017,11 @@ let Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class
   Traverse(callback, parent, path = "", visited = new Set()) {
     if (visited.has(this)) return;
     visited.add(this);
-    const result = callback(this, parent, path);
+    var result = callback(this, parent, path);
     if (result) return result;
 
     function onChild(child, parent, path) {
-      let result;
+      var result;
 
       if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(child.Traverse)) {
         result = child.Traverse(callback, parent, path, visited);
@@ -51699,7 +52046,7 @@ let Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class
 
   static copy(a, b, opt = {}) {
     opt.verb = "copy";
-    const values = this.get(b, {}, {
+    var values = this.get(b, {}, {
       skipIDs: true
     });
     return this.set(a, values, opt);
@@ -51714,7 +52061,7 @@ let Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class
 
 
   static clone(a, opt = {}) {
-    const values = this.get(a, {}, {
+    var values = this.get(a, {}, {
       skipIDs: true
     });
     return this.from(values, opt);
@@ -51733,8 +52080,8 @@ let Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class
       return values;
     }
 
-    const item = new this();
-    let hasInitialize = "Initialize" in item;
+    var item = new this();
+    var hasInitialize = "Initialize" in item;
 
     if (values && Object.keys(values)) {
       this.set(item, values, {
@@ -51803,22 +52150,22 @@ let Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class
  */
 
 function perChild(obj, callback, path = "") {
-  const {
+  var {
     list,
     type
   } = getKeys(obj);
 
   if (list) {
-    for (let i = 0; i < list.length; i++) {
-      const key = list[i],
-            arr = obj[key];
+    for (var i = 0; i < list.length; i++) {
+      var key = list[i],
+          arr = obj[key];
 
-      for (let x = 0; x < arr.length; x++) {
-        const item = arr[x];
+      for (var x = 0; x < arr.length; x++) {
+        var item = arr[x];
 
         if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
-          let currentPath = "".concat(path, "/").concat(key, "/").concat(x);
-          const result = callback(item, obj, currentPath);
+          var currentPath = "".concat(path, "/").concat(key, "/").concat(x);
+          var result = callback(item, obj, currentPath);
           if (result) return result;
         }
       }
@@ -51826,14 +52173,16 @@ function perChild(obj, callback, path = "") {
   }
 
   if (type) {
-    for (let i = 0; i < type.length; i++) {
-      const key = type[i],
-            item = obj[key];
+    for (var _i = 0; _i < type.length; _i++) {
+      var _key = type[_i],
+          _item = obj[_key];
 
-      if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(item)) {
-        let currentPath = "".concat(path, "/").concat(key);
-        const result = callback(item, obj, currentPath);
-        if (result) return result;
+      if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isObjectObject"])(_item)) {
+        var _currentPath = "".concat(path, "/").concat(_key);
+
+        var _result = callback(_item, obj, _currentPath);
+
+        if (_result) return _result;
       }
     }
   }
@@ -51850,7 +52199,7 @@ function getKeys(obj) {
     return obj.constructor.__keys;
   }
 
-  const keys = obj.constructor.__keys = {};
+  var keys = obj.constructor.__keys = {};
 
   function add(name, key) {
     if (!keys[name]) {
@@ -51862,14 +52211,14 @@ function getKeys(obj) {
     }
   }
 
-  for (const key in obj) {
+  for (var key in obj) {
     if (obj.hasOwnProperty(key)) {
       // Don't cache privates
       if (key.charAt(0) === "_") {
         continue;
       }
 
-      const value = obj[key];
+      var value = obj[key];
 
       if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isPrimary"])(value)) {
         add("primary", key);
@@ -51912,7 +52261,7 @@ __webpack_require__.r(__webpack_exports__);
  * @type {WeakMap<object, *>}
  */
 
-const PRIVATE = new WeakMap();
+var PRIVATE = new WeakMap();
 /**
  * Tw2EventEmitter
  */
@@ -51925,7 +52274,7 @@ class Tw2EventEmitter {
    * @returns {Tw2EventEmitter}
    */
   emit(eventName, ...args) {
-    const events = PRIVATE.get(this);
+    var events = PRIVATE.get(this);
     if (!events) return this;
     eventName = eventName.toLowerCase();
 
@@ -51952,12 +52301,12 @@ class Tw2EventEmitter {
   add(options) {
     if (!options) return this;
 
-    for (let key in options) {
+    for (var key in options) {
       if (options.hasOwnProperty(key)) {
-        let listener = options[key],
+        var listener = options[key],
             eventName = key,
-            context,
-            once; // Append ".once" to event name to fire only once
+            context = void 0,
+            once = void 0; // Append ".once" to event name to fire only once
 
         if (key.indexOf(".once") !== -1) {
           if (key.lastIndexOf(".once") === key.length - 5) {
@@ -51995,7 +52344,7 @@ class Tw2EventEmitter {
 
 
   on(eventName, listener, context = undefined, once = false) {
-    let events = PRIVATE.get(this);
+    var events = PRIVATE.get(this);
 
     if (!events) {
       events = {};
@@ -52042,16 +52391,16 @@ class Tw2EventEmitter {
 
 
   off(eventName, listener) {
-    const events = PRIVATE.get(this);
+    var events = PRIVATE.get(this);
     if (!events) return this; // Remove listener from all events
 
     if (eventName === "*") {
-      for (const eventName in events) {
-        if (events.hasOwnProperty(eventName)) {
-          events[eventName].delete(listener);
+      for (var _eventName in events) {
+        if (events.hasOwnProperty(_eventName)) {
+          events[_eventName].delete(listener);
 
-          if (events[eventName].size === 0) {
-            Reflect.deleteProperty(events, eventName);
+          if (events[_eventName].size === 0) {
+            Reflect.deleteProperty(events, _eventName);
           }
         }
       }
@@ -52097,19 +52446,25 @@ class Tw2EventEmitter {
 
 
   unbind(target, eventName) {
+    var _this = this;
+
     if (!target) return this;
-    const events = PRIVATE.get(this);
+    var events = PRIVATE.get(this);
     if (events) return; // Unbind all events
 
     if (eventName === "*") {
-      for (const e in events) {
+      var _loop = function (e) {
         if (events.hasOwnProperty(e)) {
           events[e].forEach((value, listener) => {
             if (listener._target === target) {
-              this.off(e, listener);
+              _this.off(e, listener);
             }
           });
         }
+      };
+
+      for (var e in events) {
+        _loop(e);
       }
 
       return this;
@@ -52136,11 +52491,11 @@ class Tw2EventEmitter {
 
 
   has(eventName, listener) {
-    const events = PRIVATE.get(this);
+    var events = PRIVATE.get(this);
     if (!events) return false; // Check all events
 
     if (eventName === "*") {
-      for (const key in events) {
+      for (var key in events) {
         if (events.hasOwnProperty(key)) {
           if (events[key].has(listener)) {
             return true;
@@ -52165,13 +52520,13 @@ class Tw2EventEmitter {
 
 
   del(eventName) {
-    const events = PRIVATE.get(this);
+    var events = PRIVATE.get(this);
     if (!events) return this; // Clear all
 
     if (eventName === "*") {
       this.emit("kill");
 
-      for (const e in events) {
+      for (var e in events) {
         if (events.hasOwnProperty(e)) {
           events[e].clear();
           Reflect.deleteProperty(events, e);
@@ -52267,7 +52622,7 @@ class Tw2Notifications {
   UpdateNotifications(funcName, err) {
     if (this._notifications) {
       this._notifications.forEach(notification => {
-        let remove = false;
+        var remove = false;
 
         if (Object(_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(notification)) {
           remove = notification(this, err, funcName);
@@ -52749,7 +53104,7 @@ __webpack_require__.r(__webpack_exports__);
     Property Types
 
  */
-const Type = {
+var Type = {
   UNKNOWN: 0,
   BOOLEAN: 1,
   STRING: 10,
@@ -52774,7 +53129,7 @@ const Type = {
   MATRIX4: 61,
   INDEX_BUFFER: 62
 };
-const TypeCategory = {
+var TypeCategory = {
   UNKNOWN: 0,
   BOOLEAN: 1,
   STRING: 2,
@@ -52785,7 +53140,7 @@ const TypeCategory = {
   ARRAY: 7,
   TYPED: 8
 };
-const TypeTypeCategory = {
+var TypeTypeCategory = {
   [Type.UNKNOWN]: TypeCategory.UNKNOWN,
   [Type.BOOLEAN]: TypeCategory.BOOLEAN,
   [Type.STRING]: TypeCategory.STRING,
@@ -52808,7 +53163,7 @@ const TypeTypeCategory = {
   [Type.MATRIX4]: TypeCategory.TYPED,
   [Type.INDEX_BUFFER]: TypeCategory.TYPED
 };
-const TypeLength = {
+var TypeLength = {
   [Type.VECTOR2]: 2,
   [Type.VECTOR3]: 3,
   [Type.VECTOR4]: 4,
@@ -52823,47 +53178,47 @@ const TypeLength = {
 
 */
 
-const GL_COLOR_BUFFER_BIT = 16384;
-const GL_DEPTH_BUFFER_BIT = 256;
-const GL_STENCIL_BUFFER_BIT = 1024;
-const GL_TEXTURE_2D = 3553;
-const GL_TEXTURE_CUBE_MAP = 34067;
-const GL_TEXTURE_3D = 32879;
-const GL_TEXTURE_MAG_FILTER = 10240;
-const GL_TEXTURE_MIN_FILTER = 10241;
-const GL_TEXTURE_WRAP_S = 10242;
-const GL_TEXTURE_WRAP_T = 10243;
-const GL_BYTE = 5120;
-const GL_UNSIGNED_BYTE = 5121;
-const GL_SHORT = 5122;
-const GL_UNSIGNED_SHORT = 5123;
-const GL_INT = 5124;
-const GL_UNSIGNED_INT = 5125;
-const GL_FLOAT = 5126;
-const GL_HALF_FLOAT_OES = 36193; //webgl only
+var GL_COLOR_BUFFER_BIT = 16384;
+var GL_DEPTH_BUFFER_BIT = 256;
+var GL_STENCIL_BUFFER_BIT = 1024;
+var GL_TEXTURE_2D = 3553;
+var GL_TEXTURE_CUBE_MAP = 34067;
+var GL_TEXTURE_3D = 32879;
+var GL_TEXTURE_MAG_FILTER = 10240;
+var GL_TEXTURE_MIN_FILTER = 10241;
+var GL_TEXTURE_WRAP_S = 10242;
+var GL_TEXTURE_WRAP_T = 10243;
+var GL_BYTE = 5120;
+var GL_UNSIGNED_BYTE = 5121;
+var GL_SHORT = 5122;
+var GL_UNSIGNED_SHORT = 5123;
+var GL_INT = 5124;
+var GL_UNSIGNED_INT = 5125;
+var GL_FLOAT = 5126;
+var GL_HALF_FLOAT_OES = 36193; //webgl only
 
-const GL_HALF_FLOAT = 5131; //webgl2
+var GL_HALF_FLOAT = 5131; //webgl2
 
-const GL_DEPTH_COMPONENT16 = 33189; //webgl2
+var GL_DEPTH_COMPONENT16 = 33189; //webgl2
 
-const GL_DEPTH_COMPONENT24 = 33190; //webgl2
+var GL_DEPTH_COMPONENT24 = 33190; //webgl2
 
-const GL_DEPTH_COMPONENT32F = 36012; //webgl2
+var GL_DEPTH_COMPONENT32F = 36012; //webgl2
 
-const GL_FLOAT_VEC2 = 35664;
-const GL_FLOAT_VEC3 = 35665;
-const GL_FLOAT_VEC4 = 35666;
-const GL_INT_VEC2 = 35667;
-const GL_INT_VEC3 = 35668;
-const GL_INT_VEC4 = 35669;
-const GL_BOOL = 35670;
-const GL_BOOL_VEC2 = 35671;
-const GL_BOOL_VEC3 = 35672;
-const GL_BOOL_VEC4 = 35673;
-const GL_FLOAT_MAT2 = 35674;
-const GL_FLOAT_MAT3 = 35675;
-const GL_FLOAT_MAT4 = 35676;
-const GL_TYPE_LENGTH = {
+var GL_FLOAT_VEC2 = 35664;
+var GL_FLOAT_VEC3 = 35665;
+var GL_FLOAT_VEC4 = 35666;
+var GL_INT_VEC2 = 35667;
+var GL_INT_VEC3 = 35668;
+var GL_INT_VEC4 = 35669;
+var GL_BOOL = 35670;
+var GL_BOOL_VEC2 = 35671;
+var GL_BOOL_VEC3 = 35672;
+var GL_BOOL_VEC4 = 35673;
+var GL_FLOAT_MAT2 = 35674;
+var GL_FLOAT_MAT3 = 35675;
+var GL_FLOAT_MAT4 = 35676;
+var GL_TYPE_LENGTH = {
   [GL_FLOAT]: 1,
   [GL_INT]: 1,
   [GL_BYTE]: 1,
@@ -52880,126 +53235,126 @@ const GL_TYPE_LENGTH = {
   [GL_FLOAT_MAT3]: 9,
   [GL_FLOAT_MAT4]: 16
 };
-const GL_SAMPLER_2D = 35678;
-const GL_SAMPLER_3D = 35679;
-const GL_SAMPLER_CUBE = 35680;
-const GL_DEPTH_COMPONENT = 6402;
-const GL_ALPHA = 6406;
-const GL_RGB = 6407;
-const GL_RGBA = 6408;
-const GL_LUMINANCE = 6409;
-const GL_LUMINANCE_ALPHA = 6410;
-const GL_DEPTH_STENCIL = 34041;
-const GL_UNSIGNED_INT_24_8_WEBGL = 34042;
-const GL_R8 = 33321; //webgl2
+var GL_SAMPLER_2D = 35678;
+var GL_SAMPLER_3D = 35679;
+var GL_SAMPLER_CUBE = 35680;
+var GL_DEPTH_COMPONENT = 6402;
+var GL_ALPHA = 6406;
+var GL_RGB = 6407;
+var GL_RGBA = 6408;
+var GL_LUMINANCE = 6409;
+var GL_LUMINANCE_ALPHA = 6410;
+var GL_DEPTH_STENCIL = 34041;
+var GL_UNSIGNED_INT_24_8_WEBGL = 34042;
+var GL_R8 = 33321; //webgl2
 
-const GL_R16F = 33325; //webgl2
+var GL_R16F = 33325; //webgl2
 
-const GL_R32F = 33326; //webgl2
+var GL_R32F = 33326; //webgl2
 
-const GL_R8UI = 33330; //webgl2
+var GL_R8UI = 33330; //webgl2
 
-const GL_RG8 = 33323; //webgl2
+var GL_RG8 = 33323; //webgl2
 
-const GL_RG16F = 33327; //webgl2
+var GL_RG16F = 33327; //webgl2
 
-const GL_RG32F = 33328; //webgl2
+var GL_RG32F = 33328; //webgl2
 
-const GL_RGB8 = 32849; //webgl2
+var GL_RGB8 = 32849; //webgl2
 
-const GL_SRGB8 = 35905; //webgl2
+var GL_SRGB8 = 35905; //webgl2
 
-const GL_RGB565 = 36194; //webgl2
+var GL_RGB565 = 36194; //webgl2
 
-const GL_R11F_G11F_B10F = 35898; //webgl2
+var GL_R11F_G11F_B10F = 35898; //webgl2
 
-const GL_RGB9_E5 = 35901; //webgl2
+var GL_RGB9_E5 = 35901; //webgl2
 
-const GL_RGB16F = 34843; //webgl2
+var GL_RGB16F = 34843; //webgl2
 
-const GL_RGB32F = 34837; //webgl2
+var GL_RGB32F = 34837; //webgl2
 
-const GL_RGB8UI = 36221; //webgl2
+var GL_RGB8UI = 36221; //webgl2
 
-const GL_RGBA8 = 32856; //webgl2
+var GL_RGBA8 = 32856; //webgl2
 
-const GL_RGB5_A1 = 32855; //webgl2
+var GL_RGB5_A1 = 32855; //webgl2
 
-const GL_RGBA16F = 34842; //webgl2
+var GL_RGBA16F = 34842; //webgl2
 
-const GL_RGBA32F = 34836; //webgl2
+var GL_RGBA32F = 34836; //webgl2
 
-const GL_RGBA8UI = 36220; //webgl2
+var GL_RGBA8UI = 36220; //webgl2
 
-const GL_RGBA16I = 36232; //webgl2
+var GL_RGBA16I = 36232; //webgl2
 
-const GL_RGBA16UI = 36214; //webgl2
+var GL_RGBA16UI = 36214; //webgl2
 
-const GL_RGBA32I = 36226; //webgl2
+var GL_RGBA32I = 36226; //webgl2
 
-const GL_RGBA32UI = 36208; //webgl2
+var GL_RGBA32UI = 36208; //webgl2
 
-const GL_NEAREST = 9728;
-const GL_LINEAR = 9729;
-const GL_NEAREST_MIPMAP_NEAREST = 9984;
-const GL_LINEAR_MIPMAP_NEAREST = 9985;
-const GL_NEAREST_MIPMAP_LINEAR = 9986;
-const GL_LINEAR_MIPMAP_LINEAR = 9987;
-const GL_REPEAT = 10497;
-const GL_CLAMP_TO_EDGE = 33071;
-const GL_MIRRORED_REPEAT = 33648;
-const GL_ZERO = 0;
-const GL_ONE = 1;
-const GL_SRC_COLOR = 768;
-const GL_ONE_MINUS_SRC_COLOR = 769;
-const GL_SRC_ALPHA = 770;
-const GL_ONE_MINUS_SRC_ALPHA = 771;
-const GL_DST_ALPHA = 772;
-const GL_ONE_MINUS_DST_ALPHA = 773;
-const GL_DST_COLOR = 774;
-const GL_ONE_MINUS_DST_COLOR = 775;
-const GL_SRC_ALPHA_SATURATE = 776;
-const GL_CONSTANT_COLOR = 32769;
-const GL_ONE_MINUS_CONSTANT_COLOR = 32770;
-const GL_CONSTANT_ALPHA = 32771;
-const GL_ONE_MINUS_CONSTANT_ALPHA = 32772;
-const GL_VERTEX_SHADER = 35633;
-const GL_FRAGMENT_SHADER = 35632;
-const GL_FRONT = 1028;
-const GL_BACK = 1029;
-const GL_FRONT_AND_BACK = 1032;
-const GL_NEVER = 512;
-const GL_LESS = 513;
-const GL_EQUAL = 514;
-const GL_LEQUAL = 515;
-const GL_GREATER = 516;
-const GL_NOTEQUAL = 517;
-const GL_GEQUAL = 518;
-const GL_ALWAYS = 519;
-const GL_KEEP = 7680;
-const GL_REPLACE = 7681;
-const GL_INCR = 7682;
-const GL_DECR = 7683;
-const GL_INCR_WRAP = 34055;
-const GL_DECR_WRAP = 34056;
-const GL_INVERT = 5386;
-const GL_STREAM_DRAW = 35040;
-const GL_STATIC_DRAW = 35044;
-const GL_DYNAMIC_DRAW = 35048;
-const GL_ARRAY_BUFFER = 34962;
-const GL_ELEMENT_ARRAY_BUFFER = 34963;
-const GL_POINTS = 0;
-const GL_LINES = 1;
-const GL_LINE_LOOP = 2;
-const GL_LINE_STRIP = 3;
-const GL_TRIANGLES = 4;
-const GL_TRIANGLE_STRIP = 5;
-const GL_TRIANGLE_FAN = 6;
-const GL_CW = 2304;
-const GL_CCW = 2305;
-const GL_CULL_FACE = 2884;
-const GL_DEPTH_TEST = 2929;
-const GL_BLEND = 3042;
+var GL_NEAREST = 9728;
+var GL_LINEAR = 9729;
+var GL_NEAREST_MIPMAP_NEAREST = 9984;
+var GL_LINEAR_MIPMAP_NEAREST = 9985;
+var GL_NEAREST_MIPMAP_LINEAR = 9986;
+var GL_LINEAR_MIPMAP_LINEAR = 9987;
+var GL_REPEAT = 10497;
+var GL_CLAMP_TO_EDGE = 33071;
+var GL_MIRRORED_REPEAT = 33648;
+var GL_ZERO = 0;
+var GL_ONE = 1;
+var GL_SRC_COLOR = 768;
+var GL_ONE_MINUS_SRC_COLOR = 769;
+var GL_SRC_ALPHA = 770;
+var GL_ONE_MINUS_SRC_ALPHA = 771;
+var GL_DST_ALPHA = 772;
+var GL_ONE_MINUS_DST_ALPHA = 773;
+var GL_DST_COLOR = 774;
+var GL_ONE_MINUS_DST_COLOR = 775;
+var GL_SRC_ALPHA_SATURATE = 776;
+var GL_CONSTANT_COLOR = 32769;
+var GL_ONE_MINUS_CONSTANT_COLOR = 32770;
+var GL_CONSTANT_ALPHA = 32771;
+var GL_ONE_MINUS_CONSTANT_ALPHA = 32772;
+var GL_VERTEX_SHADER = 35633;
+var GL_FRAGMENT_SHADER = 35632;
+var GL_FRONT = 1028;
+var GL_BACK = 1029;
+var GL_FRONT_AND_BACK = 1032;
+var GL_NEVER = 512;
+var GL_LESS = 513;
+var GL_EQUAL = 514;
+var GL_LEQUAL = 515;
+var GL_GREATER = 516;
+var GL_NOTEQUAL = 517;
+var GL_GEQUAL = 518;
+var GL_ALWAYS = 519;
+var GL_KEEP = 7680;
+var GL_REPLACE = 7681;
+var GL_INCR = 7682;
+var GL_DECR = 7683;
+var GL_INCR_WRAP = 34055;
+var GL_DECR_WRAP = 34056;
+var GL_INVERT = 5386;
+var GL_STREAM_DRAW = 35040;
+var GL_STATIC_DRAW = 35044;
+var GL_DYNAMIC_DRAW = 35048;
+var GL_ARRAY_BUFFER = 34962;
+var GL_ELEMENT_ARRAY_BUFFER = 34963;
+var GL_POINTS = 0;
+var GL_LINES = 1;
+var GL_LINE_LOOP = 2;
+var GL_LINE_STRIP = 3;
+var GL_TRIANGLES = 4;
+var GL_TRIANGLE_STRIP = 5;
+var GL_TRIANGLE_FAN = 6;
+var GL_CW = 2304;
+var GL_CCW = 2305;
+var GL_CULL_FACE = 2884;
+var GL_DEPTH_TEST = 2929;
+var GL_BLEND = 3042;
 /*
 
     Direct 3D and CCP
@@ -53007,244 +53362,244 @@ const GL_BLEND = 3042;
 */
 // Render Mode
 
-const RM_ANY = -1;
-const RM_OPAQUE = 0;
-const RM_DECAL = 1;
-const RM_TRANSPARENT = 2;
-const RM_ADDITIVE = 3;
-const RM_DEPTH = 4;
-const RM_FULLSCREEN = 5;
-const RM_PICKABLE = 6;
-const RM_DISTORTION = 7; // Render States
+var RM_ANY = -1;
+var RM_OPAQUE = 0;
+var RM_DECAL = 1;
+var RM_TRANSPARENT = 2;
+var RM_ADDITIVE = 3;
+var RM_DEPTH = 4;
+var RM_FULLSCREEN = 5;
+var RM_PICKABLE = 6;
+var RM_DISTORTION = 7; // Render States
 
-const RS_ZENABLE = 7; // D3DZBUFFERTYPE (or TRUE/FALSE for legacy)
+var RS_ZENABLE = 7; // D3DZBUFFERTYPE (or TRUE/FALSE for legacy)
 
-const RS_FILLMODE = 8; // D3DFILLMODE
+var RS_FILLMODE = 8; // D3DFILLMODE
 
-const RS_SHADEMODE = 9; // D3DSHADEMODE
+var RS_SHADEMODE = 9; // D3DSHADEMODE
 
-const RS_ZWRITEENABLE = 14; // TRUE to enable z writes
+var RS_ZWRITEENABLE = 14; // TRUE to enable z writes
 
-const RS_ALPHATESTENABLE = 15; // TRUE to enable alpha tests
+var RS_ALPHATESTENABLE = 15; // TRUE to enable alpha tests
 
-const RS_LASTPIXEL = 16; // TRUE for last-pixel on lines
+var RS_LASTPIXEL = 16; // TRUE for last-pixel on lines
 
-const RS_SRCBLEND = 19; // D3DBLEND
+var RS_SRCBLEND = 19; // D3DBLEND
 
-const RS_DESTBLEND = 20; // D3DBLEND
+var RS_DESTBLEND = 20; // D3DBLEND
 
-const RS_CULLMODE = 22; // D3DCULL
+var RS_CULLMODE = 22; // D3DCULL
 
-const RS_ZFUNC = 23; // D3DCMPFUNC
+var RS_ZFUNC = 23; // D3DCMPFUNC
 
-const RS_ALPHAREF = 24; // D3DFIXED
+var RS_ALPHAREF = 24; // D3DFIXED
 
-const RS_ALPHAFUNC = 25; // D3DCMPFUNC
+var RS_ALPHAFUNC = 25; // D3DCMPFUNC
 
-const RS_DITHERENABLE = 26; // TRUE to enable dithering
+var RS_DITHERENABLE = 26; // TRUE to enable dithering
 
-const RS_ALPHABLENDENABLE = 27; // TRUE to enable alpha blending
+var RS_ALPHABLENDENABLE = 27; // TRUE to enable alpha blending
 
-const RS_FOGENABLE = 28; // TRUE to enable fog blending
+var RS_FOGENABLE = 28; // TRUE to enable fog blending
 
-const RS_SPECULARENABLE = 29; // TRUE to enable specular
+var RS_SPECULARENABLE = 29; // TRUE to enable specular
 
-const RS_FOGCOLOR = 34; // D3DCOLOR
+var RS_FOGCOLOR = 34; // D3DCOLOR
 
-const RS_FOGTABLEMODE = 35; // D3DFOGMODE
+var RS_FOGTABLEMODE = 35; // D3DFOGMODE
 
-const RS_FOGSTART = 36; // Fog start (for both vertex and pixel fog)
+var RS_FOGSTART = 36; // Fog start (for both vertex and pixel fog)
 
-const RS_FOGEND = 37; // Fog end
+var RS_FOGEND = 37; // Fog end
 
-const RS_FOGDENSITY = 38; // Fog density
+var RS_FOGDENSITY = 38; // Fog density
 
-const RS_RANGEFOGENABLE = 48; // Enables range-based fog
+var RS_RANGEFOGENABLE = 48; // Enables range-based fog
 
-const RS_STENCILENABLE = 52; // BOOL enable/disable stenciling
+var RS_STENCILENABLE = 52; // BOOL enable/disable stenciling
 
-const RS_STENCILFAIL = 53; // D3DSTENCILOP to do if stencil test fails
+var RS_STENCILFAIL = 53; // D3DSTENCILOP to do if stencil test fails
 
-const RS_STENCILZFAIL = 54; // D3DSTENCILOP to do if stencil test passes and Z test fails
+var RS_STENCILZFAIL = 54; // D3DSTENCILOP to do if stencil test passes and Z test fails
 
-const RS_STENCILPASS = 55; // D3DSTENCILOP to do if both stencil and Z tests pass
+var RS_STENCILPASS = 55; // D3DSTENCILOP to do if both stencil and Z tests pass
 
-const RS_STENCILFUNC = 56; // D3DCMPFUNC fn.  Stencil Test passes if ((ref & mask) stencilfn (stencil & mask)) is true
+var RS_STENCILFUNC = 56; // D3DCMPFUNC fn.  Stencil Test passes if ((ref & mask) stencilfn (stencil & mask)) is true
 
-const RS_STENCILREF = 57; // Reference value used in stencil test
+var RS_STENCILREF = 57; // Reference value used in stencil test
 
-const RS_STENCILMASK = 58; // Mask value used in stencil test
+var RS_STENCILMASK = 58; // Mask value used in stencil test
 
-const RS_STENCILWRITEMASK = 59; // Write mask applied to values written to stencil buffer
+var RS_STENCILWRITEMASK = 59; // Write mask applied to values written to stencil buffer
 
-const RS_TEXTUREFACTOR = 60; // D3DCOLOR used for multi-texture blend
+var RS_TEXTUREFACTOR = 60; // D3DCOLOR used for multi-texture blend
 
-const RS_WRAP0 = 128; // wrap for 1st texture coord. set
+var RS_WRAP0 = 128; // wrap for 1st texture coord. set
 
-const RS_WRAP1 = 129; // wrap for 2nd texture coord. set
+var RS_WRAP1 = 129; // wrap for 2nd texture coord. set
 
-const RS_WRAP2 = 130; // wrap for 3rd texture coord. set
+var RS_WRAP2 = 130; // wrap for 3rd texture coord. set
 
-const RS_WRAP3 = 131; // wrap for 4th texture coord. set
+var RS_WRAP3 = 131; // wrap for 4th texture coord. set
 
-const RS_WRAP4 = 132; // wrap for 5th texture coord. set
+var RS_WRAP4 = 132; // wrap for 5th texture coord. set
 
-const RS_WRAP5 = 133; // wrap for 6th texture coord. set
+var RS_WRAP5 = 133; // wrap for 6th texture coord. set
 
-const RS_WRAP6 = 134; // wrap for 7th texture coord. set
+var RS_WRAP6 = 134; // wrap for 7th texture coord. set
 
-const RS_WRAP7 = 135; // wrap for 8th texture coord. set
+var RS_WRAP7 = 135; // wrap for 8th texture coord. set
 
-const RS_CLIPPING = 136;
-const RS_LIGHTING = 137;
-const RS_AMBIENT = 139;
-const RS_FOGVERTEXMODE = 140;
-const RS_COLORVERTEX = 141;
-const RS_LOCALVIEWER = 142;
-const RS_NORMALIZENORMALS = 143;
-const RS_DIFFUSEMATERIALSOURCE = 145;
-const RS_SPECULARMATERIALSOURCE = 146;
-const RS_AMBIENTMATERIALSOURCE = 147;
-const RS_EMISSIVEMATERIALSOURCE = 148;
-const RS_VERTEXBLEND = 151;
-const RS_CLIPPLANEENABLE = 152;
-const RS_POINTSIZE = 154; // float point size
+var RS_CLIPPING = 136;
+var RS_LIGHTING = 137;
+var RS_AMBIENT = 139;
+var RS_FOGVERTEXMODE = 140;
+var RS_COLORVERTEX = 141;
+var RS_LOCALVIEWER = 142;
+var RS_NORMALIZENORMALS = 143;
+var RS_DIFFUSEMATERIALSOURCE = 145;
+var RS_SPECULARMATERIALSOURCE = 146;
+var RS_AMBIENTMATERIALSOURCE = 147;
+var RS_EMISSIVEMATERIALSOURCE = 148;
+var RS_VERTEXBLEND = 151;
+var RS_CLIPPLANEENABLE = 152;
+var RS_POINTSIZE = 154; // float point size
 
-const RS_POINTSIZE_MIN = 155; // float point size min threshold
+var RS_POINTSIZE_MIN = 155; // float point size min threshold
 
-const RS_POINTSPRITEENABLE = 156; // BOOL point texture coord control
+var RS_POINTSPRITEENABLE = 156; // BOOL point texture coord control
 
-const RS_POINTSCALEENABLE = 157; // BOOL point size scale enable
+var RS_POINTSCALEENABLE = 157; // BOOL point size scale enable
 
-const RS_POINTSCALE_A = 158; // float point attenuation A value
+var RS_POINTSCALE_A = 158; // float point attenuation A value
 
-const RS_POINTSCALE_B = 159; // float point attenuation B value
+var RS_POINTSCALE_B = 159; // float point attenuation B value
 
-const RS_POINTSCALE_C = 160; // float point attenuation C value
+var RS_POINTSCALE_C = 160; // float point attenuation C value
 
-const RS_MULTISAMPLEANTIALIAS = 161; // BOOL - set to do FSAA with multisample buffer
+var RS_MULTISAMPLEANTIALIAS = 161; // BOOL - set to do FSAA with multisample buffer
 
-const RS_MULTISAMPLEMASK = 162; // DWORD - per-sample enable/disable
+var RS_MULTISAMPLEMASK = 162; // DWORD - per-sample enable/disable
 
-const RS_PATCHEDGESTYLE = 163; // Sets whether patch edges will use float style tessellation
+var RS_PATCHEDGESTYLE = 163; // Sets whether patch edges will use float style tessellation
 
-const RS_DEBUGMONITORTOKEN = 165; // DEBUG ONLY - token to debug monitor
+var RS_DEBUGMONITORTOKEN = 165; // DEBUG ONLY - token to debug monitor
 
-const RS_POINTSIZE_MAX = 166; // float point size max threshold
+var RS_POINTSIZE_MAX = 166; // float point size max threshold
 
-const RS_INDEXEDVERTEXBLENDENABLE = 167;
-const RS_COLORWRITEENABLE = 168; // per-channel write enable
+var RS_INDEXEDVERTEXBLENDENABLE = 167;
+var RS_COLORWRITEENABLE = 168; // per-channel write enable
 
-const RS_TWEENFACTOR = 170; // float tween factor
+var RS_TWEENFACTOR = 170; // float tween factor
 
-const RS_BLENDOP = 171; // D3DBLENDOP setting
+var RS_BLENDOP = 171; // D3DBLENDOP setting
 
-const RS_POSITIONDEGREE = 172; // NPatch position interpolation degree. D3DDEGREE_LINEAR or D3DDEGREE_CUBIC (default)
+var RS_POSITIONDEGREE = 172; // NPatch position interpolation degree. D3DDEGREE_LINEAR or D3DDEGREE_CUBIC (default)
 
-const RS_NORMALDEGREE = 173; // NPatch normal interpolation degree. D3DDEGREE_LINEAR (default) or D3DDEGREE_QUADRATIC
+var RS_NORMALDEGREE = 173; // NPatch normal interpolation degree. D3DDEGREE_LINEAR (default) or D3DDEGREE_QUADRATIC
 
-const RS_SCISSORTESTENABLE = 174;
-const RS_SLOPESCALEDEPTHBIAS = 175;
-const RS_ANTIALIASEDLINEENABLE = 176;
-const RS_TWOSIDEDSTENCILMODE = 185; // BOOL enable/disable 2 sided stenciling
+var RS_SCISSORTESTENABLE = 174;
+var RS_SLOPESCALEDEPTHBIAS = 175;
+var RS_ANTIALIASEDLINEENABLE = 176;
+var RS_TWOSIDEDSTENCILMODE = 185; // BOOL enable/disable 2 sided stenciling
 
-const RS_CCW_STENCILFAIL = 186; // D3DSTENCILOP to do if ccw stencil test fails
+var RS_CCW_STENCILFAIL = 186; // D3DSTENCILOP to do if ccw stencil test fails
 
-const RS_CCW_STENCILZFAIL = 187; // D3DSTENCILOP to do if ccw stencil test passes and Z test fails
+var RS_CCW_STENCILZFAIL = 187; // D3DSTENCILOP to do if ccw stencil test passes and Z test fails
 
-const RS_CCW_STENCILPASS = 188; // D3DSTENCILOP to do if both ccw stencil and Z tests pass
+var RS_CCW_STENCILPASS = 188; // D3DSTENCILOP to do if both ccw stencil and Z tests pass
 
-const RS_CCW_STENCILFUNC = 189; // D3DCMPFUNC fn.  ccw Stencil Test passes if ((ref & mask) stencilfn (stencil & mask)) is true
+var RS_CCW_STENCILFUNC = 189; // D3DCMPFUNC fn.  ccw Stencil Test passes if ((ref & mask) stencilfn (stencil & mask)) is true
 
-const RS_COLORWRITEENABLE1 = 190; // Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS
+var RS_COLORWRITEENABLE1 = 190; // Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS
 
-const RS_COLORWRITEENABLE2 = 191; // Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS
+var RS_COLORWRITEENABLE2 = 191; // Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS
 
-const RS_COLORWRITEENABLE3 = 192; // Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS
+var RS_COLORWRITEENABLE3 = 192; // Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS
 
-const RS_BLENDFACTOR = 193; // D3DCOLOR used for a constant blend factor during alpha blending for devices that support D3DPBLENDCAPS_BLENDFACTOR
+var RS_BLENDFACTOR = 193; // D3DCOLOR used for a constant blend factor during alpha blending for devices that support D3DPBLENDCAPS_BLENDFACTOR
 
-const RS_SRGBWRITEENABLE = 194; // Enable rendertarget writes to be DE-linearized to SRGB (for formats that expose D3DUSAGE_QUERY_SRGBWRITE)
+var RS_SRGBWRITEENABLE = 194; // Enable rendertarget writes to be DE-linearized to SRGB (for formats that expose D3DUSAGE_QUERY_SRGBWRITE)
 
-const RS_DEPTHBIAS = 195;
-const RS_SEPARATEALPHABLENDENABLE = 206; // TRUE to enable a separate blending function for the alpha channel
+var RS_DEPTHBIAS = 195;
+var RS_SEPARATEALPHABLENDENABLE = 206; // TRUE to enable a separate blending function for the alpha channel
 
-const RS_SRCBLENDALPHA = 207; // SRC blend factor for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE
+var RS_SRCBLENDALPHA = 207; // SRC blend factor for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE
 
-const RS_DESTBLENDALPHA = 208; // DST blend factor for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE
+var RS_DESTBLENDALPHA = 208; // DST blend factor for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE
 
-const RS_BLENDOPALPHA = 209; // Blending operation for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE */// Cull Modes
+var RS_BLENDOPALPHA = 209; // Blending operation for the alpha channel when RS_SEPARATEDESTALPHAENABLE is TRUE */// Cull Modes
 
-const CULL_NONE = 1;
-const CULL_CW = 2;
-const CULL_CCW = 3; // Compare
+var CULL_NONE = 1;
+var CULL_CW = 2;
+var CULL_CCW = 3; // Compare
 
-const CMP_NEVER = 1;
-const CMP_LESS = 2;
-const CMP_EQUAL = 3;
-const CMP_LEQUAL = 4;
-const CMP_GREATER = 5;
-const CMP_NOTEQUAL = 6;
-const CMP_GREATEREQUAL = 7;
-const CMP_ALWAYS = 8; // Blend
+var CMP_NEVER = 1;
+var CMP_LESS = 2;
+var CMP_EQUAL = 3;
+var CMP_LEQUAL = 4;
+var CMP_GREATER = 5;
+var CMP_NOTEQUAL = 6;
+var CMP_GREATEREQUAL = 7;
+var CMP_ALWAYS = 8; // Blend
 
-const BLEND_ZERO = 1;
-const BLEND_ONE = 2;
-const BLEND_SRCCOLOR = 3;
-const BLEND_INVSRCCOLOR = 4;
-const BLEND_SRCALPHA = 5;
-const BLEND_INVSRCALPHA = 6;
-const BLEND_DESTALPHA = 7;
-const BLEND_INVDESTALPHA = 8;
-const BLEND_DESTCOLOR = 9;
-const BLEND_INVDESTCOLOR = 10;
-const BLEND_SRCALPHASAT = 11;
-const BLEND_BOTHSRCALPHA = 12;
-const BLEND_BOTHINVSRCALPHA = 13;
-const BLEND_BLENDFACTOR = 14;
-const BLEND_INVBLENDFACTOR = 15; // Blend Operations
+var BLEND_ZERO = 1;
+var BLEND_ONE = 2;
+var BLEND_SRCCOLOR = 3;
+var BLEND_INVSRCCOLOR = 4;
+var BLEND_SRCALPHA = 5;
+var BLEND_INVSRCALPHA = 6;
+var BLEND_DESTALPHA = 7;
+var BLEND_INVDESTALPHA = 8;
+var BLEND_DESTCOLOR = 9;
+var BLEND_INVDESTCOLOR = 10;
+var BLEND_SRCALPHASAT = 11;
+var BLEND_BOTHSRCALPHA = 12;
+var BLEND_BOTHINVSRCALPHA = 13;
+var BLEND_BLENDFACTOR = 14;
+var BLEND_INVBLENDFACTOR = 15; // Blend Operations
 
-const BLENDOP_ADD = 1;
-const BLENDOP_SUBTRACT = 2;
-const BLENDOP_REVSUBTRACT = 3;
-const BLENDOP_MIN = 4;
-const BLENDOP_MAX = 5; // Texture format aliases
+var BLENDOP_ADD = 1;
+var BLENDOP_SUBTRACT = 2;
+var BLENDOP_REVSUBTRACT = 3;
+var BLENDOP_MIN = 4;
+var BLENDOP_MAX = 5; // Texture format aliases
 
-const TF_ALPHA = 0;
-const TF_LUMINANCE = 1;
-const TF_LUMINANCE_ALPHA = 2;
-const TF_RGB = 4;
-const TF_RGBA = 5;
-const TF_RED = 6;
-const TF_R = 6;
-const TF_RG = 7;
-const TF_RED_INTEGER = 8;
-const TF_R_INTEGER = 8;
-const TF_RG_INTEGER = 9;
-const TF_RGB_INTEGER = 10;
-const TF_RGBA_INTEGER = 11; // Texture types aliases
+var TF_ALPHA = 0;
+var TF_LUMINANCE = 1;
+var TF_LUMINANCE_ALPHA = 2;
+var TF_RGB = 4;
+var TF_RGBA = 5;
+var TF_RED = 6;
+var TF_R = 6;
+var TF_RG = 7;
+var TF_RED_INTEGER = 8;
+var TF_R_INTEGER = 8;
+var TF_RG_INTEGER = 9;
+var TF_RGB_INTEGER = 10;
+var TF_RGBA_INTEGER = 11; // Texture types aliases
 
-const TT_UNSIGNED_BYTE = 0;
-const TT_UNSIGNED_INT = 0;
-const TT_FLOAT = 1;
-const TT_HALF_FLOAT = 2;
-const TT_BYTE = 3;
-const TT_SHORT = 4;
-const TT_UNSIGNED_SHORT = 5;
-const TT_INT = 6;
-const TT_UNSIGNED_INTEGER = 7;
-const TT_UNSIGNED_SHORT_4_4_4_4 = 8;
-const TT_UNSIGNED_SHORT_5_5_5_1 = 9;
-const TT_UNSIGNED_SHORT_5_6_5 = 10;
-const TT_UNSIGNED_INT_2_10_10_10_REV = 11;
-const TT_UNSIGNED_INT_24_8 = 12;
-const TT_UNSIGNED_INT_10F_11F_11F_REV = 13;
-const TT_UNSIGNED_INT_5_9_9_9_REV = 14;
-const TT_FLOAT_32_UNSIGNED_INT_24_8_REV = 15; // Texture Wrap modes
+var TT_UNSIGNED_BYTE = 0;
+var TT_UNSIGNED_INT = 0;
+var TT_FLOAT = 1;
+var TT_HALF_FLOAT = 2;
+var TT_BYTE = 3;
+var TT_SHORT = 4;
+var TT_UNSIGNED_SHORT = 5;
+var TT_INT = 6;
+var TT_UNSIGNED_INTEGER = 7;
+var TT_UNSIGNED_SHORT_4_4_4_4 = 8;
+var TT_UNSIGNED_SHORT_5_5_5_1 = 9;
+var TT_UNSIGNED_SHORT_5_6_5 = 10;
+var TT_UNSIGNED_INT_2_10_10_10_REV = 11;
+var TT_UNSIGNED_INT_24_8 = 12;
+var TT_UNSIGNED_INT_10F_11F_11F_REV = 13;
+var TT_UNSIGNED_INT_5_9_9_9_REV = 14;
+var TT_FLOAT_32_UNSIGNED_INT_24_8_REV = 15; // Texture Wrap modes
 
-const WrapModes = [0, GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE]; // Blend Table
+var WrapModes = [0, GL_REPEAT, GL_MIRRORED_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE]; // Blend Table
 
-const BlendTable = [-1, // --
+var BlendTable = [-1, // --
 GL_ZERO, // D3DBLEND_ZERO
 GL_ONE, // D3DBLEND_ONE
 GL_SRC_COLOR, // D3DBLEND_SRCCOLOR
@@ -53262,12 +53617,12 @@ GL_CONSTANT_COLOR, // D3DBLEND_BLENDFACTOR
 GL_ONE_MINUS_CONSTANT_COLOR // D3DBLEND_INVBLENDFACTOR
 ]; // Filter mode conversions
 
-const FilterMode = {
+var FilterMode = {
   [GL_NEAREST]: 1,
   [GL_LINEAR]: 2
 }; // Mip filter mode conversions
 
-const MipFilterMode = {
+var MipFilterMode = {
   [GL_NEAREST]: 0,
   [GL_LINEAR]: 0,
   [GL_NEAREST_MIPMAP_NEAREST]: 1,
@@ -53282,59 +53637,59 @@ const MipFilterMode = {
 
 */
 
-const DDS_MAGIC = 0x20534444;
-const DDSD_CAPS = 0x1;
-const DDSD_HEIGHT = 0x2;
-const DDSD_WIDTH = 0x4;
-const DDSD_PITCH = 0x8;
-const DDSD_PIXELFORMAT = 0x1000;
-const DDSD_MIPMAPCOUNT = 0x20000;
-const DDSD_LINEARSIZE = 0x80000;
-const DDSD_DEPTH = 0x800000;
-const DDSCAPS_COMPLEX = 0x8;
-const DDSCAPS_MIPMAP = 0x400000;
-const DDSCAPS_TEXTURE = 0x1000;
-const DDSCAPS2_CUBEMAP = 0x200;
-const DDSCAPS2_CUBEMAP_POSITIVEX = 0x400;
-const DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800;
-const DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000;
-const DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000;
-const DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000;
-const DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000;
-const DDSCAPS2_VOLUME = 0x200000;
-const DDPF_ALPHAPIXELS = 0x1;
-const DDPF_ALPHA = 0x2;
-const DDPF_FOURCC = 0x4;
-const DDPF_RGB = 0x40;
-const DDPF_YUV = 0x200;
-const DDPF_LUMINANCE = 0x20000;
-const DDS_HEADER_LENGTH_INT = 31;
-const DDS_HEADER_OFFSET_MAGIC = 0;
-const DDS_HEADER_OFFSET_SIZE = 1;
-const DDS_HEADER_OFFSET_FLAGS = 2;
-const DDS_HEADER_OFFSET_HEIGHT = 3;
-const DDS_HEADER_OFFSET_WIDTH = 4;
-const DDS_HEADER_OFFSET_MIPMAP_COUNT = 7;
-const DDS_HEADER_OFFSET_PF_FLAGS = 20;
-const DDS_HEADER_OFFSET_PF_FOURCC = 21;
-const DDS_HEADER_OFFSET_RGB_BPP = 22;
-const DDS_HEADER_OFFSET_R_MASK = 23;
-const DDS_HEADER_OFFSET_G_MASK = 24;
-const DDS_HEADER_OFFSET_B_MASK = 25;
-const DDS_HEADER_OFFSET_A_MASK = 26;
-const DDS_HEADER_OFFSET_CAPS1 = 27;
-const DDS_HEADER_OFFSET_CAPS2 = 28;
-const DDS_HEADER_OFFSET_CAPS3 = 29;
-const DDS_HEADER_OFFSET_CAPS4 = 30;
-const DDS_HEADER_OFFSET_DXGI_FORMAT = 32;
-const FOURCC_DXT1 = 827611204;
-const FOURCC_DXT5 = 894720068;
-const FOURCC_DXT3 = 861165636;
-const FOURCC_DXT10 = 827611204;
-const FOURCC_D3DFMT_R16G16B16A16F = 113;
-const FOURCC_D3DFMT_R32G32B32A32F = 116;
-const DXGI_FORMAT_R16G16B16A16_FLOAT = 10;
-const DXGI_FORMAT_B8G8R8X8_UNORM = 88;
+var DDS_MAGIC = 0x20534444;
+var DDSD_CAPS = 0x1;
+var DDSD_HEIGHT = 0x2;
+var DDSD_WIDTH = 0x4;
+var DDSD_PITCH = 0x8;
+var DDSD_PIXELFORMAT = 0x1000;
+var DDSD_MIPMAPCOUNT = 0x20000;
+var DDSD_LINEARSIZE = 0x80000;
+var DDSD_DEPTH = 0x800000;
+var DDSCAPS_COMPLEX = 0x8;
+var DDSCAPS_MIPMAP = 0x400000;
+var DDSCAPS_TEXTURE = 0x1000;
+var DDSCAPS2_CUBEMAP = 0x200;
+var DDSCAPS2_CUBEMAP_POSITIVEX = 0x400;
+var DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800;
+var DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000;
+var DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000;
+var DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000;
+var DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000;
+var DDSCAPS2_VOLUME = 0x200000;
+var DDPF_ALPHAPIXELS = 0x1;
+var DDPF_ALPHA = 0x2;
+var DDPF_FOURCC = 0x4;
+var DDPF_RGB = 0x40;
+var DDPF_YUV = 0x200;
+var DDPF_LUMINANCE = 0x20000;
+var DDS_HEADER_LENGTH_INT = 31;
+var DDS_HEADER_OFFSET_MAGIC = 0;
+var DDS_HEADER_OFFSET_SIZE = 1;
+var DDS_HEADER_OFFSET_FLAGS = 2;
+var DDS_HEADER_OFFSET_HEIGHT = 3;
+var DDS_HEADER_OFFSET_WIDTH = 4;
+var DDS_HEADER_OFFSET_MIPMAP_COUNT = 7;
+var DDS_HEADER_OFFSET_PF_FLAGS = 20;
+var DDS_HEADER_OFFSET_PF_FOURCC = 21;
+var DDS_HEADER_OFFSET_RGB_BPP = 22;
+var DDS_HEADER_OFFSET_R_MASK = 23;
+var DDS_HEADER_OFFSET_G_MASK = 24;
+var DDS_HEADER_OFFSET_B_MASK = 25;
+var DDS_HEADER_OFFSET_A_MASK = 26;
+var DDS_HEADER_OFFSET_CAPS1 = 27;
+var DDS_HEADER_OFFSET_CAPS2 = 28;
+var DDS_HEADER_OFFSET_CAPS3 = 29;
+var DDS_HEADER_OFFSET_CAPS4 = 30;
+var DDS_HEADER_OFFSET_DXGI_FORMAT = 32;
+var FOURCC_DXT1 = 827611204;
+var FOURCC_DXT5 = 894720068;
+var FOURCC_DXT3 = 861165636;
+var FOURCC_DXT10 = 827611204;
+var FOURCC_D3DFMT_R16G16B16A16F = 113;
+var FOURCC_D3DFMT_R32G32B32A32F = 116;
+var DXGI_FORMAT_R16G16B16A16_FLOAT = 10;
+var DXGI_FORMAT_B8G8R8X8_UNORM = 88;
 /*
 
     Browser and Vendors
@@ -53346,37 +53701,37 @@ const DXGI_FORMAT_B8G8R8X8_UNORM = 88;
  * @type {String[]}
  */
 
-const VendorRequestAnimationFrame = ["requestAnimationFrame", "webkitRequestAnimationFrame", "mozRequestAnimationFrame", "oRequestAnimationFrame", "msRequestAnimationFrame"];
+var VendorRequestAnimationFrame = ["requestAnimationFrame", "webkitRequestAnimationFrame", "mozRequestAnimationFrame", "oRequestAnimationFrame", "msRequestAnimationFrame"];
 /**
  * Vendor cancel animation frame names
  * @type {String[]}
  */
 
-const VendorCancelAnimationFrame = ["cancelAnimationFrame", "webkitRequestAnimationFrame", "mozRequestAnimationFrame", "oRequestAnimationFrame", "msRequestAnimationFrame"];
+var VendorCancelAnimationFrame = ["cancelAnimationFrame", "webkitRequestAnimationFrame", "mozRequestAnimationFrame", "oRequestAnimationFrame", "msRequestAnimationFrame"];
 /**
  * Vendor request full screen
  * @type {String[]}
  */
 
-const VendorRequestFullScreen = ["requestFullscreen", "webkitRequestFullscreen", "mozRequestFullScreen", "msRequestFullscreen"];
+var VendorRequestFullScreen = ["requestFullscreen", "webkitRequestFullscreen", "mozRequestFullScreen", "msRequestFullscreen"];
 /**
  * Vendor exit full screen
  * @type {String[]}
  */
 
-const VendorExitFullScreen = ["exitFullscreen", "webkitExitFullscreen", "mozCancelFullScreen", "msExitFullscreen"];
+var VendorExitFullScreen = ["exitFullscreen", "webkitExitFullscreen", "mozCancelFullScreen", "msExitFullscreen"];
 /**
  * Vendor get full screen element
  * @type {String[]}
  */
 
-const VendorGetFullScreenElement = ["fullscreenElement", "webkitFullscreenElement", "mozFullScreenElement", "msFullscreenElement"];
+var VendorGetFullScreenElement = ["fullscreenElement", "webkitFullscreenElement", "mozFullScreenElement", "msFullscreenElement"];
 /**
  * Webgl vendor prefixes
  * @type {String[]}
  */
 
-const VendorWebglPrefixes = ["", "MOZ_", "WEBKIT_", "WEBGL_"];
+var VendorWebglPrefixes = ["", "MOZ_", "WEBKIT_", "WEBGL_"];
 
 /***/ }),
 
@@ -53588,18 +53943,18 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     params.webgl2 = this.enableWebgl2;
     params.xrCompatible = this.enableWebxr;
     params.antialiasing = this.enableAntialiasing ? Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "antialiasing", true) : false;
-    const gl = this.gl = Tw2Device.CreateContext(params, canvas);
+    var gl = this.gl = Tw2Device.CreateContext(params, canvas);
     this.msg("debug", "Webgl".concat(this.glVersion, " context created"));
 
-    const returnFalse = () => false,
-          returnTrue = () => true;
+    var returnFalse = () => false,
+        returnTrue = () => true;
 
     if (this.glVersion === 1) {
       this.GetExtension("OES_standard_derivatives");
       this.GetExtension("OES_element_index_uint");
       this.GetExtension("OES_texture_float");
       this.GetExtension("EXT_shader_texture_lod");
-      const iArray = this.GetExtension("ANGLE_instanced_arrays");
+      var iArray = this.GetExtension("ANGLE_instanced_arrays");
       gl.drawElementsInstanced = iArray ? iArray["drawElementsInstancedANGLE"].bind(iArray) : returnFalse;
       gl.drawArraysInstanced = iArray ? iArray["drawArraysInstancedANGLE"].bind(iArray) : returnFalse;
       gl.vertexAttribDivisor = iArray ? iArray["vertexAttribDivisorANGLE"].bind(iArray) : returnFalse;
@@ -53608,18 +53963,18 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
       gl.hasInstancedArrays = returnTrue;
     }
 
-    const anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
+    var anisotropicFilterExt = this.GetExtension("EXT_texture_filter_anisotropic");
 
     if (anisotropicFilterExt) {
       anisotropicFilterExt.maxAnisotropy = gl.getParameter(anisotropicFilterExt["MAX_TEXTURE_MAX_ANISOTROPY_EXT"]);
     } // CCP mobile shader binary (is this depreciated?)
 
 
-    const ccpShaderBinary = this.GetExtension("CCP_shader_binary");
+    var ccpShaderBinary = this.GetExtension("CCP_shader_binary");
 
     if (ccpShaderBinary) {
-      const renderer = gl.getParameter(this.gl.RENDERER),
-            maliVer = renderer.match(/Mali-(\w+).*/);
+      var renderer = gl.getParameter(this.gl.RENDERER),
+          maliVer = renderer.match(/Mali-(\w+).*/);
 
       if (maliVer) {
         this.effectDir = "/effect.gles2.mali" + maliVer[1] + "/";
@@ -53631,7 +53986,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     this.msaaSamples = this.gl.getParameter(this.gl.SAMPLES);
     this.antialiasing = this.msaaSamples > 1;
     this.Resize();
-    const vertices = [1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0];
+    var vertices = [1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0];
     this._quadBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -53727,8 +54082,8 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
       this.Resize();
     }
 
-    const previousTime = this.previousTime === null ? 0 : this.previousTime,
-          now = this.now;
+    var previousTime = this.previousTime === null ? 0 : this.previousTime,
+        now = this.now;
     this.currentTime = (now - this.startTime) * 0.001;
     this.dt = this.previousTime === null ? 0 : (now - this.previousTime) * 0.001;
     this.previousTime = now;
@@ -53795,10 +54150,10 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
 
   GetTargetResolution(out = _math__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()) {
-    const aspectRatio = this.projection[0] ? this.projection[5] / this.projection[0] : 0.0;
-    let aspectAdjustment = 1.0;
+    var aspectRatio = this.projection[0] ? this.projection[5] / this.projection[0] : 0.0;
+    var aspectAdjustment = 1.0;
     if (aspectRatio > 1.6) aspectAdjustment = aspectRatio / 1.6;
-    const fov = 2.0 * Math.atan(aspectAdjustment / this.projection[5]);
+    var fov = 2.0 * Math.atan(aspectAdjustment / this.projection[5]);
     out[0] = this.viewportWidth;
     out[1] = this.viewportHeight;
     out[2] = fov;
@@ -53844,9 +54199,9 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
   GetExtension(extension) {
     if (!(extension in this._extensions)) {
-      let ext;
+      var ext;
 
-      for (let i = 0; i < _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"].length; i++) {
+      for (var i = 0; i < _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"].length; i++) {
         ext = this.gl.getExtension(_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorWebglPrefixes"][i] + extension);
         if (ext) break;
         ext = null;
@@ -53891,8 +54246,8 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
 
   CreateSolidTexture(rgba = [0, 0, 0, 0]) {
-    const gl = this.gl,
-          texture = this.gl.createTexture();
+    var gl = this.gl,
+        texture = this.gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -53910,11 +54265,11 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
 
   CreateSolidCube(rgba = [0, 0, 0, 0]) {
-    const gl = this.gl,
-          texture = this.gl.createTexture();
+    var gl = this.gl,
+        texture = this.gl.createTexture();
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 
-    for (let j = 0; j < 6; ++j) {
+    for (var j = 0; j < 6; ++j) {
       gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(rgba));
     }
 
@@ -53936,10 +54291,10 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
   RenderFullScreenQuad(effect, technique = "Main") {
     if (!effect || !effect.IsGood()) return false;
-    const gl = this.gl;
+    var gl = this.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER, this._quadBuffer);
 
-    for (let pass = 0; pass < effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
       effect.ApplyPass(technique, pass);
       if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
       this.ApplyShadowState();
@@ -53979,21 +54334,21 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
   RenderCameraSpaceQuad(effect, technique = "Main") {
     if (!effect || !effect.IsGood()) return false;
-    const vertices = new Float32Array([1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0]);
-    const projInv = this.projectionInverse;
+    var vertices = new Float32Array([1.0, 1.0, 0.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 0.0, 0.0]);
+    var projInv = this.projectionInverse;
 
-    for (let i = 0; i < 4; ++i) {
-      const vec = vertices.subarray(i * 6, i * 6 + 4);
+    for (var i = 0; i < 4; ++i) {
+      var vec = vertices.subarray(i * 6, i * 6 + 4);
       _math__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(vec, vec, projInv);
       _math__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(vec, vec, 1 / vec[3]);
       vec[3] = 1;
     }
 
-    const gl = this.gl;
+    var gl = this.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER, this._cameraQuadBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-    for (let pass = 0; pass < effect.GetPassCount(technique); ++pass) {
+    for (var pass = 0; pass < effect.GetPassCount(technique); ++pass) {
       effect.ApplyPass(technique, pass);
       if (!this._quadDecl.SetDeclaration(this, effect.GetPassInput(technique, pass), 24)) return false;
       this.ApplyShadowState();
@@ -54010,7 +54365,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
 
   SetRenderState(state, value) {
-    const gl = this.gl;
+    var gl = this.gl;
     this._currentRenderMode = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RM_ANY"];
 
     switch (state) {
@@ -54106,10 +54461,10 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 
 
   ApplyShadowState() {
-    const gl = this.gl;
+    var gl = this.gl;
 
     if (this._alphaBlendState.dirty) {
-      let blendOp = gl.FUNC_ADD;
+      var blendOp = gl.FUNC_ADD;
 
       if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_SUBTRACT"]) {
         blendOp = gl.FUNC_SUBTRACT;
@@ -54117,11 +54472,11 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
         blendOp = gl.FUNC_REVERSE_SUBTRACT;
       }
 
-      const srcBlend = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]]],
-            destBlend = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]]];
+      var srcBlend = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLEND"]]],
+          destBlend = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLEND"]]];
 
       if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SEPARATEALPHABLENDENABLE"]]) {
-        let blendOpAlpha = gl.FUNC_ADD;
+        var blendOpAlpha = gl.FUNC_ADD;
 
         if (this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_BLENDOP"]] === _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BLENDOP_SUBTRACT"]) {
           blendOpAlpha = gl.FUNC_SUBTRACT;
@@ -54129,8 +54484,8 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
           blendOpAlpha = gl.FUNC_REVERSE_SUBTRACT;
         }
 
-        const srcBlendAlpha = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]]],
-              destBlendAlpha = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]]];
+        var srcBlendAlpha = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_SRCBLENDALPHA"]]],
+            destBlendAlpha = _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["BlendTable"][this._alphaBlendState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_DESTBLENDALPHA"]]];
         gl.blendEquationSeparate(blendOp, blendOpAlpha);
         gl.blendFuncSeparate(srcBlend, destBlend, srcBlendAlpha, destBlendAlpha);
       } else {
@@ -54146,7 +54501,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
       this._depthOffsetState.dirty = false;
     }
 
-    let alphaTestFunc, invertedAlphaTest, alphaTestRef;
+    var alphaTestFunc, invertedAlphaTest, alphaTestRef;
 
     if (this.shadowHandles && this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHATESTENABLE"]]) {
       switch (this._alphaTestState.states[_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["RS_ALPHAFUNC"]]) {
@@ -54201,7 +54556,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
           break;
       }
 
-      const clipPlaneEnable = 0;
+      var clipPlaneEnable = 0;
       gl.uniform4f(this.shadowHandles.shadowStateInt, invertedAlphaTest, alphaTestRef, alphaTestFunc, clipPlaneEnable); //this._shadowStateBuffers
     }
   }
@@ -54340,10 +54695,10 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
       canvas = document.createElement("canvas");
     }
 
-    const contextTypes = params.webgl2 ? ["webgl2"] : ["webgl", "experimental-webgl"];
-    let context = null;
+    var contextTypes = params.webgl2 ? ["webgl2"] : ["webgl", "experimental-webgl"];
+    var context = null;
 
-    for (let contextType of contextTypes) {
+    for (var contextType of contextTypes) {
       context = canvas.getContext(contextType, params);
       if (context) break;
     }
@@ -54373,7 +54728,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
         throw new core__WEBPACK_IMPORTED_MODULE_6__["ErrWebxrNotSupported"]();
       }
 
-      let device;
+      var device;
 
       try {
         device = yield navigator.xr["requestDevice"]();
@@ -54412,12 +54767,12 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
 } // Render Modes
 
 Tw2Device.RequestAnimationFrame = function () {
-  const request = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorRequestAnimationFrame"]);
+  var request = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorRequestAnimationFrame"]);
   return callback => request(callback);
 }();
 
 Tw2Device.CancelAnimationFrame = function () {
-  const cancel = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorCancelAnimationFrame"]);
+  var cancel = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(window, _Tw2Constant__WEBPACK_IMPORTED_MODULE_5__["VendorCancelAnimationFrame"]);
   return id => cancel(id);
 }();
 
@@ -54572,7 +54927,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
       if (!log.hide) {
         if (!this._throttled) this._throttled = {};
         if (!this._throttled[log.type]) this._throttled[log.type] = [];
-        const t = this._throttled[log.type];
+        var t = this._throttled[log.type];
 
         if (!t.includes(log.message)) {
           t.unshift(log.message);
@@ -54586,11 +54941,11 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
 
     if (!log.hide || this._debugMode) {
       // Optional details
-      let subMessage = "";
+      var subMessage = "";
       if (log.path && !log.message.includes(log.path)) subMessage += "'".concat(log.path, "' ");
       if (log.time) subMessage += "in ".concat(log.time.toFixed(3), " secs ");
       if (log.detail) subMessage += "(".concat(log.detail, ") ");
-      let header = "".concat(this.name, " ").concat(log.name, ":");
+      var header = "".concat(this.name, " ").concat(log.name, ":");
 
       if (log.err || log.data) {
         console.group(header, log.message, subMessage);
@@ -54603,7 +54958,7 @@ class Tw2Logger extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_0__["Tw2
     } // Manage log history
 
 
-    const logsToKeep = this._debugMode ? 1000 : this.history;
+    var logsToKeep = this._debugMode ? 1000 : this.history;
 
     if (logsToKeep) {
       this._logs.unshift(log);
@@ -54763,7 +55118,7 @@ class Tw2MotherLode {
 
 
   Clear(onClear) {
-    for (const key in this._loadedObjects) {
+    for (var key in this._loadedObjects) {
       if (this._loadedObjects.hasOwnProperty(key)) {
         if (onClear) onClear(this._loadedObjects[key]);
         this.Remove(key);
@@ -54797,9 +55152,9 @@ class Tw2MotherLode {
 
 
   PurgeInactive(curFrame, frameLimit, frameDistance) {
-    for (const path in this._loadedObjects) {
+    for (var path in this._loadedObjects) {
       if (this._loadedObjects.hasOwnProperty(path)) {
-        const res = this._loadedObjects[path]; // Don't purge
+        var res = this._loadedObjects[path]; // Don't purge
 
         if (res.doNotPurge) {
           continue;
@@ -54811,7 +55166,7 @@ class Tw2MotherLode {
           continue;
         }
 
-        let detail; // Has errors
+        var detail = void 0; // Has errors
 
         if (res.HasErrors()) {
           detail = "errored";
@@ -54939,7 +55294,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     path
   })) {
     path = Tw2ResMan.NormalizePath(path);
-    const res = this.motherLode.Find(path);
+    var res = this.motherLode.Find(path);
     if (res) return res.OnError(err);
     this.OnPathEvent(path, "error", err);
     return err;
@@ -54953,8 +55308,8 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   OnPathEvent(path, eventName, log = {}) {
-    const res = this.motherLode.Find(path),
-          err = Object(_util__WEBPACK_IMPORTED_MODULE_4__["isError"])(log) ? log : undefined;
+    var res = this.motherLode.Find(path),
+        err = Object(_util__WEBPACK_IMPORTED_MODULE_4__["isError"])(log) ? log : undefined;
 
     if (err) {
       this.motherLode.AddError(path, err);
@@ -55014,12 +55369,12 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     }
 
     this._prepareBudget = this.maxPrepareTime;
-    const startTime = device.now;
+    var startTime = device.now;
 
     while (this._prepareQueue.length) {
-      const res = this._prepareQueue[0][0],
-            data = this._prepareQueue[0][1],
-            xml = this._prepareQueue[0][2];
+      var res = this._prepareQueue[0][0],
+          data = this._prepareQueue[0][1],
+          xml = this._prepareQueue[0][2];
 
       this._prepareQueue.shift();
 
@@ -55070,7 +55425,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   GetResource(path, onResolved, onRejected) {
-    let res;
+    var res;
     path = Tw2ResMan.NormalizePath(path); // Check if already loaded
 
     res = this.motherLode.Find(path);
@@ -55081,7 +55436,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     }
 
     try {
-      const Constructor = this.GetResourceConstructor(path);
+      var Constructor = this.GetResourceConstructor(path);
       res = new Constructor();
     } catch (err) {
       this.OnPathError(path, err);
@@ -55120,7 +55475,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
   GetObject(path, onResolved, onRejected) {
     path = Tw2ResMan.NormalizePath(path); // Check if already loaded
 
-    let res = this.motherLode.Find(path);
+    var res = this.motherLode.Find(path);
 
     if (res) {
       res.AddObject(onResolved, onRejected);
@@ -55164,7 +55519,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
     }
 
     try {
-      const url = this.BuildUrl(res.path);
+      var url = this.BuildUrl(res.path);
       res.OnRequested(eventLog);
 
       if (res.DoCustomLoad && res.DoCustomLoad(url, Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(url))) {
@@ -55201,7 +55556,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   RemovePendingLoad(url) {
-    const index = this._pendingLoads.indexOf(url);
+    var index = this._pendingLoads.indexOf(url);
 
     if (index !== -1) {
       this._pendingLoads.splice(index, 1);
@@ -55255,11 +55610,11 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
         if (err.text) {
           return err.text().then(text => {
-            let {
+            var {
               status,
               statusText
             } = err;
-            let json;
+            var json;
 
             try {
               json = JSON.parse(text);
@@ -55300,7 +55655,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       });
     }
 
-    const extension = Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(path);
+    var extension = Object(_util__WEBPACK_IMPORTED_MODULE_4__["getPathExtension"])(path);
 
     if (extension === null) {
       throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUndefined"]({
@@ -55308,7 +55663,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       });
     }
 
-    const Constructor = this.tw2.GetExtension(extension);
+    var Constructor = this.tw2.GetExtension(extension);
 
     if (!Constructor) {
       throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourceExtensionUnregistered"]({
@@ -55329,7 +55684,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
 
 
   BuildUrl(path) {
-    const prefixIndex = path.indexOf(":/");
+    var prefixIndex = path.indexOf(":/");
 
     if (prefixIndex === -1) {
       throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUndefined"]({
@@ -55337,13 +55692,13 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
       });
     }
 
-    const prefix = path.substr(0, prefixIndex);
+    var prefix = path.substr(0, prefixIndex);
 
     if (prefix === "http" || prefix === "https") {
       return path;
     }
 
-    const fullPrefix = this.tw2.GetPath(prefix);
+    var fullPrefix = this.tw2.GetPath(prefix);
 
     if (!fullPrefix) {
       throw new core__WEBPACK_IMPORTED_MODULE_3__["ErrResourcePrefixUnregistered"]({
@@ -56936,11 +57291,11 @@ __webpack_require__.r(__webpack_exports__);
  * @typedef {Float32Array} box3
  */
 
-const box3 = {
+var box3 = {
   bounds: {}
 }; // Scratch
 
-let mat4_0 = null,
+var mat4_0 = null,
     box3_0 = null,
     vec3_A = null;
 /**
@@ -56992,14 +57347,14 @@ box3.addPoint = function (out, a, p) {
 
 
 box3.addPoints = function (out, a, points) {
-  let minX = a[0],
+  var minX = a[0],
       minY = a[1],
       minZ = a[2],
       maxX = a[3],
       maxY = a[4],
       maxZ = a[5];
 
-  for (let i = 0; i < points.length; i++) {
+  for (var i = 0; i < points.length; i++) {
     minX = Math.min(minX, points[i][0]);
     minY = Math.min(minY, points[i][1]);
     minZ = Math.min(minZ, points[i][2]);
@@ -57025,7 +57380,7 @@ box3.addPoints = function (out, a, points) {
 
 
 box3.clone = function (a) {
-  let out = new Float32Array(6);
+  var out = new Float32Array(6);
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
@@ -57149,7 +57504,7 @@ box3.create = function () {
 
 
 box3.distanceToPoint = function (a, p) {
-  let x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
+  var x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
       y = Math.max(a[1], Math.min(a[4], p[1])) - p[1],
       z = Math.max(a[2], Math.min(a[5], p[2])) - p[2];
   return Math.sqrt(x * x + y * y + z * z);
@@ -57166,7 +57521,7 @@ box3.distanceToPoint = function (a, p) {
 
 
 box3.distanceToValues = function (a, px, py, pz) {
-  let x = Math.max(a[0], Math.min(a[3], px)) - px,
+  var x = Math.max(a[0], Math.min(a[3], px)) - px,
       y = Math.max(a[1], Math.min(a[4], py)) - py,
       z = Math.max(a[2], Math.min(a[5], pz)) - pz;
   return Math.sqrt(x * x + y * y + z * z);
@@ -57214,13 +57569,13 @@ box3.bounds.empty = function (min, max) {
 
 
 box3.equals = function (a, b) {
-  let a0 = a[0],
+  var a0 = a[0],
       a1 = a[1],
       a2 = a[2],
       a3 = a[3],
       a4 = a[4],
       a5 = a[5];
-  let b0 = b[0],
+  var b0 = b[0],
       b1 = b[1],
       b2 = b[2],
       b3 = b[3],
@@ -57239,13 +57594,13 @@ box3.equals = function (a, b) {
 
 
 box3.equalsBounds = function (a, min, max) {
-  let a0 = a[0],
+  var a0 = a[0],
       a1 = a[1],
       a2 = a[2],
       a3 = a[3],
       a4 = a[4],
       a5 = a[5];
-  let b0 = min[0],
+  var b0 = min[0],
       b1 = min[1],
       b2 = min[2],
       b3 = max[0],
@@ -57460,7 +57815,7 @@ box3.fromPositionSize = function (out, position, size) {
 box3.fromPoints = function (out, points) {
   box3.empty(out);
 
-  for (let i = 0; i < points.length; i++) {
+  for (var i = 0; i < points.length; i++) {
     out[0] = Math.min(out[0], points[i][0]);
     out[1] = Math.min(out[1], points[i][1]);
     out[2] = Math.min(out[2], points[i][2]);
@@ -57521,7 +57876,7 @@ box3.fromSph3 = function (out, sphere) {
 
 
 box3.fromValues = function (minx, miny, minz, maxx, maxy, maxz) {
-  const out = box3.create();
+  var out = box3.create();
   out[0] = minx;
   out[1] = miny;
   out[2] = minz;
@@ -57614,7 +57969,7 @@ box3.getPosition = function (out, a) {
 
 
 box3.radius = function (a) {
-  let sX = a[3] - a[0],
+  var sX = a[3] - a[0],
       sY = a[4] - a[1],
       sZ = a[5] - a[2];
   return Math.sqrt(sX * sX + sY * sY + sZ * sZ) * 0.5;
@@ -57694,7 +58049,7 @@ box3.intersectsBounds = function (a, min, max) {
 
 
 box3.intersectsNormalConstant = function (a, normal, constant) {
-  let tMin, tMax;
+  var tMin, tMax;
 
   if (normal[0] > 0) {
     tMin = normal[0] * a[0];
@@ -57772,7 +58127,7 @@ box3.intersectsValues = function (a, px, py, pz) {
 
 
 box3.intersectsPositionRadius = function (a, position, radius) {
-  let x = Math.max(a[0], Math.min(a[3], position[0])) - position[0],
+  var x = Math.max(a[0], Math.min(a[3], position[0])) - position[0],
       y = Math.max(a[1], Math.min(a[4], position[1])) - position[1],
       z = Math.max(a[2], Math.min(a[5], position[2])) - position[2];
   return x * x + y * y + z * z <= radius * radius;
@@ -57787,7 +58142,7 @@ box3.intersectsPositionRadius = function (a, position, radius) {
 
 
 box3.intersectsSph3 = function (a, sphere) {
-  let x = Math.max(a[0], Math.min(a[3], sphere[0])) - sphere[0],
+  var x = Math.max(a[0], Math.min(a[3], sphere[0])) - sphere[0],
       y = Math.max(a[1], Math.min(a[4], sphere[1])) - sphere[1],
       z = Math.max(a[2], Math.min(a[5], sphere[2])) - sphere[2];
   return x * x + y * y + z * z <= sphere[3] * sphere[3];
@@ -57850,7 +58205,7 @@ box3.set = function (out, aX, aY, aZ, bX, bY, bZ) {
 
 
 box3.squaredDistanceToPoint = function (a, p) {
-  let x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
+  var x = Math.max(a[0], Math.min(a[3], p[0])) - p[0],
       y = Math.max(a[1], Math.min(a[4], p[1])) - p[1],
       z = Math.max(a[2], Math.min(a[5], p[2])) - p[2];
   return x * x + y * y + z * z;
@@ -57864,7 +58219,7 @@ box3.squaredDistanceToPoint = function (a, p) {
 
 
 box3.surfaceArea = function (a) {
-  let aa = a[3] - a[0],
+  var aa = a[3] - a[0],
       h = a[4] - a[1],
       d = a[5] - a[2];
   return 2 * (aa * (h + d) + h * d);
@@ -57918,7 +58273,7 @@ box3.toBounds = function (a, outMin, outMax) {
 
 
 box3.toObjectBounds = function (a, obj, m) {
-  const has = obj.minBounds || obj._boundingBox;
+  var has = obj.minBounds || obj._boundingBox;
 
   if (!has) {
     console.dir(obj);
@@ -57972,15 +58327,15 @@ box3.toObjectPositionRadius = function (a, obj, m) {
 
 
 box3.toPoints = function (a, points = []) {
-  const ax = a[0],
-        ay = a[1],
-        az = a[2],
-        bx = a[3],
-        by = a[4],
-        bz = a[5],
-        x = bx + Math.abs(ax),
-        y = by + Math.abs(ay),
-        z = bz + Math.abs(az);
+  var ax = a[0],
+      ay = a[1],
+      az = a[2],
+      bx = a[3],
+      by = a[4],
+      bz = a[5],
+      x = bx + Math.abs(ax),
+      y = by + Math.abs(ay),
+      z = bz + Math.abs(az);
   points.push([bx + 0, by + 0, bz + 0]);
   points.push([bx - x, by + 0, bz + 0]);
   points.push([bx + 0, by + 0, bz - z]);
@@ -58000,7 +58355,7 @@ box3.toPoints = function (a, points = []) {
 
 
 box3.toPositionRadius = function (a, outCenter) {
-  let sX = a[3] - a[0],
+  var sX = a[3] - a[0],
       sY = a[4] - a[1],
       sZ = a[5] - a[2];
   outCenter[0] = (a[0] + a[3]) * 0.5;
@@ -58018,7 +58373,7 @@ box3.toPositionRadius = function (a, outCenter) {
 
 
 box3.bounds.toPositionRadius = function (minBounds, maxBounds, outCenter) {
-  let sX = maxBounds[0] - minBounds[0],
+  var sX = maxBounds[0] - minBounds[0],
       sY = maxBounds[1] - minBounds[1],
       sZ = maxBounds[2] - minBounds[2];
   outCenter[0] = (minBounds[0] + maxBounds[0]) * 0.5;
@@ -58146,7 +58501,7 @@ box3.bounds.union = function (outMin, outMax, aMin, aMax, bMin, bMax) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "curve", function() { return curve; });
-const curve = {};
+var curve = {};
 /**
  * Evaluates a curve
  *
@@ -58162,11 +58517,11 @@ const curve = {};
  */
 
 curve.evaluate = function (curve, time, value, cycle, duration) {
-  let count = curve.knots.length;
-  let knot = count - 1;
-  let t = 0;
+  var count = curve.knots.length;
+  var knot = count - 1;
+  var t = 0;
 
-  for (let i = 0; i < curve.knots.length; ++i) {
+  for (var i = 0; i < curve.knots.length; ++i) {
     if (curve.knots[i] > time) {
       knot = i;
       break;
@@ -58174,12 +58529,12 @@ curve.evaluate = function (curve, time, value, cycle, duration) {
   }
 
   if (curve.degree === 0) {
-    for (let i = 0; i < curve.dimension; ++i) {
-      value[i] = curve.controls[knot * curve.dimension + i];
+    for (var _i = 0; _i < curve.dimension; ++_i) {
+      value[_i] = curve.controls[knot * curve.dimension + _i];
     }
   } else if (curve.degree === 1) {
-    let knot0 = cycle ? (knot + count - 1) % count : knot === 0 ? 0 : knot - 1;
-    let dt = curve.knots[knot] - curve.knots[knot0];
+    var knot0 = cycle ? (knot + count - 1) % count : knot === 0 ? 0 : knot - 1;
+    var dt = curve.knots[knot] - curve.knots[knot0];
 
     if (dt < 0) {
       dt += duration;
@@ -58189,19 +58544,19 @@ curve.evaluate = function (curve, time, value, cycle, duration) {
       t = (time - curve.knots[curve.knots.length - 1]) / dt;
     }
 
-    for (let i = 0; i < curve.dimension; ++i) {
-      value[i] = curve.controls[knot0 * curve.dimension + i] * (1 - t) + curve.controls[knot * curve.dimension + i] * t;
+    for (var _i2 = 0; _i2 < curve.dimension; ++_i2) {
+      value[_i2] = curve.controls[knot0 * curve.dimension + _i2] * (1 - t) + curve.controls[knot * curve.dimension + _i2] * t;
     }
   } else {
-    let k_2 = cycle ? (knot + count - 2) % count : knot === 0 ? 0 : knot - 2;
-    let k_1 = cycle ? (knot + count - 1) % count : knot === 0 ? 0 : knot - 1;
-    let p1 = k_2 * curve.dimension;
-    let p2 = k_1 * curve.dimension;
-    let p3 = knot * curve.dimension;
-    let ti_2 = curve.knots[k_2];
-    let ti_1 = curve.knots[k_1];
-    let ti = curve.knots[knot];
-    let ti1 = curve.knots[(knot + 1) % count];
+    var k_2 = cycle ? (knot + count - 2) % count : knot === 0 ? 0 : knot - 2;
+    var k_1 = cycle ? (knot + count - 1) % count : knot === 0 ? 0 : knot - 1;
+    var p1 = k_2 * curve.dimension;
+    var p2 = k_1 * curve.dimension;
+    var p3 = knot * curve.dimension;
+    var ti_2 = curve.knots[k_2];
+    var ti_1 = curve.knots[k_1];
+    var ti = curve.knots[knot];
+    var ti1 = curve.knots[(knot + 1) % count];
 
     if (ti_2 > ti) {
       ti += duration;
@@ -58219,21 +58574,21 @@ curve.evaluate = function (curve, time, value, cycle, duration) {
       ti1 += duration;
     }
 
-    let tmti_1 = time - ti_1;
-    let tmti_2 = time - ti_2;
-    let dL0 = ti - ti_1;
-    let dL1_1 = ti - ti_2;
-    let dL1_2 = ti1 - ti_1;
-    let L0 = tmti_1 / dL0;
-    let L1_1 = tmti_2 / dL1_1;
-    let L1_2 = tmti_1 / dL1_2;
-    let ci_2 = L1_1 + L0 - L0 * L1_1;
-    let ci = L0 * L1_2;
-    let ci_1 = ci_2 - ci;
+    var tmti_1 = time - ti_1;
+    var tmti_2 = time - ti_2;
+    var dL0 = ti - ti_1;
+    var dL1_1 = ti - ti_2;
+    var dL1_2 = ti1 - ti_1;
+    var L0 = tmti_1 / dL0;
+    var L1_1 = tmti_2 / dL1_1;
+    var L1_2 = tmti_1 / dL1_2;
+    var ci_2 = L1_1 + L0 - L0 * L1_1;
+    var ci = L0 * L1_2;
+    var ci_1 = ci_2 - ci;
     ci_2 = 1 - ci_2;
 
-    for (let i = 0; i < curve.dimension; ++i) {
-      value[i] = ci_2 * curve.controls[p1 + i] + ci_1 * curve.controls[p2 + i] + ci * curve.controls[p3 + i];
+    for (var _i3 = 0; _i3 < curve.dimension; ++_i3) {
+      value[_i3] = ci_2 * curve.controls[p1 + _i3] + ci_1 * curve.controls[p2 + _i3] + ci * curve.controls[p3 + _i3];
     }
   }
 };
@@ -58248,9 +58603,11 @@ curve.evaluate = function (curve, time, value, cycle, duration) {
 
 
 curve.ag_horner1 = function (P, deg, s) {
-  let h = P[deg];
+  var h = P[deg];
 
-  while (--deg >= 0) h = s * h + P[deg];
+  while (--deg >= 0) {
+    h = s * h + P[deg];
+  }
 
   return h;
 };
@@ -58268,12 +58625,12 @@ curve.ag_horner1 = function (P, deg, s) {
 
 
 curve.ag_zeroin2 = function (a, b, fa, fb, tol, pars) {
-  let test;
-  let c, d, e, fc, del, m, machtol, p, q, r, s;
+  var test;
+  var c, d, e, fc, del, m, machtol, p, q, r, s;
   /* initialization */
 
   machtol = 1.192092896e-07;
-  let label1 = true;
+  var label1 = true;
   /* start iteration */
 
   while (true) {
@@ -58365,7 +58722,7 @@ curve.ag_zeroin2 = function (a, b, fa, fb, tol, pars) {
 
 
 curve.ag_zeroin = function (a, b, tol, pars) {
-  let fa, fb;
+  var fa, fb;
   fa = curve.ag_horner1(pars.p, pars.deg, a);
   if (Math.abs(fa) < 1.192092896e-07) return a;
   fb = curve.ag_horner1(pars.p, pars.deg, b);
@@ -58387,8 +58744,8 @@ curve.ag_zeroin = function (a, b, tol, pars) {
 
 
 curve.polyZeroes = function (Poly, deg, a, a_closed, b, b_closed, Roots) {
-  let i, left_ok, right_ok, nr, ndr, skip;
-  let e,
+  var i, left_ok, right_ok, nr, ndr, skip;
+  var e,
       f,
       s,
       pe,
@@ -58400,7 +58757,7 @@ curve.polyZeroes = function (Poly, deg, a, a_closed, b, b_closed, Roots) {
       d_x = new Array(22),
       dr,
       dr_x = new Array(22);
-  let ply = {
+  var ply = {
     p: [],
     deg: 0
   };
@@ -58425,7 +58782,9 @@ curve.polyZeroes = function (Poly, deg, a, a_closed, b, b_closed, Roots) {
   /* determine true degree */
 
 
-  while (Math.abs(p[deg]) < tol) deg--;
+  while (Math.abs(p[deg]) < tol) {
+    deg--;
+  }
   /* Identically zero poly already caught so constant fn !== 0 */
 
 
@@ -58451,7 +58810,9 @@ curve.polyZeroes = function (Poly, deg, a, a_closed, b, b_closed, Roots) {
       ply.deg = deg;
       /* compute derivative */
 
-      for (i = 1; i <= deg; i++) d[i - 1] = i * p[i];
+      for (i = 1; i <= deg; i++) {
+        d[i - 1] = i * p[i];
+      }
       /* find roots of derivative */
 
 
@@ -58595,7 +58956,7 @@ __webpack_require__.r(__webpack_exports__);
  * @typedef {Float32Array} lne3
  */
 
-const lne3 = {};
+var lne3 = {};
 /**
  * Line3 End methods
  *
@@ -58632,24 +58993,24 @@ lne3.clone = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].clone;
  */
 
 lne3.closestPointToPointParameter = function () {
-  let vec3_0, vec3_1;
+  var vec3_0, vec3_1;
   return function (a, point, clampToLine) {
     if (!vec3_0) {
       vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
       vec3_1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     }
 
-    let startP = vec3_0;
-    let startEnd = vec3_1;
+    var startP = vec3_0;
+    var startEnd = vec3_1;
     startP[0] = point[0] - a[0];
     startP[1] = point[1] - a[1];
     startP[2] = point[2] - a[2];
     startEnd[0] = a[3] - a[0];
     startEnd[1] = a[4] - a[1];
     startEnd[2] = a[5] - a[2];
-    let startEnd2 = startEnd[0] * startEnd[0] + startEnd[1] * startEnd[1] + startEnd[2] * startEnd[2];
-    let startEnd_startP = startEnd[0] * startP[0] + startEnd[1] * startP[1] + startEnd[2] * startP[2];
-    let t = startEnd_startP / startEnd2;
+    var startEnd2 = startEnd[0] * startEnd[0] + startEnd[1] * startEnd[1] + startEnd[2] * startEnd[2];
+    var startEnd_startP = startEnd[0] * startP[0] + startEnd[1] * startP[1] + startEnd[2] * startP[2];
+    var t = startEnd_startP / startEnd2;
     if (clampToLine) t = Math.max(0, Math.min(1, t));
     return t;
   };
@@ -58847,8 +59208,8 @@ lne3.getStart = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].getMin;
  */
 
 lne3.intersectsNormalConstant = function (a, n, c) {
-  let startSign = n[0] * a[0] + n[1] * a[1] + n[2] * a[2] + c;
-  let endSign = n[0] * a[3] + n[1] * a[4] + n[2] * a[5] + c;
+  var startSign = n[0] * a[0] + n[1] * a[1] + n[2] * a[2] + c;
+  var endSign = n[0] * a[3] + n[1] * a[4] + n[2] * a[5] + c;
   return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
 };
 /**
@@ -58860,7 +59221,7 @@ lne3.intersectsNormalConstant = function (a, n, c) {
 
 
 lne3.length = function (a) {
-  let x = a[0] - a[3],
+  var x = a[0] - a[3],
       y = a[1] - a[4],
       z = a[2] - a[5];
   return Math.sqrt(x * x + y * y + z * z);
@@ -58888,7 +59249,7 @@ lne3.set = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].set;
  */
 
 lne3.squaredLength = function (a) {
-  let x = a[0] - a[3],
+  var x = a[0] - a[3],
       y = a[1] - a[4],
       z = a[2] - a[5];
   return x * x + y * y + z * z;
@@ -58924,7 +59285,7 @@ lne3.toStartEnd = _box3__WEBPACK_IMPORTED_MODULE_1__["box3"].toBounds;
  */
 
 lne3.transformMat4 = function (out, a, m) {
-  let ax = a[0],
+  var ax = a[0],
       ay = a[1],
       az = a[2],
       bx = a[3],
@@ -59064,10 +59425,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].arcFromForward = function () {
-  let vec3_0;
+  var vec3_0;
   return function arcFromForward(out, v) {
     if (!vec3_0) vec3_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
-    const norm = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(vec3_0, v);
+    var norm = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(vec3_0, v);
     gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity(out);
 
     if (norm[2] < -0.99999) {
@@ -59080,7 +59441,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].arcFromForward = function () {
       return out;
     }
 
-    const h = (1 + norm[2]) / (norm[0] * norm[0] + norm[1] * norm[1]);
+    var h = (1 + norm[2]) / (norm[0] * norm[0] + norm[1] * norm[1]);
     out[0] = h * norm[1] * norm[1] - norm[2];
     out[1] = -h * norm[0] * norm[1];
     out[2] = norm[0];
@@ -59141,7 +59502,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromMat3 = function (out, m) {
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAtGL = function () {
-  let vec3_0, vec3_1, vec3_2;
+  var vec3_0, vec3_1, vec3_2;
   return function lookAtGL(out, eye, center, up) {
     if (!vec3_0) {
       vec3_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -59193,16 +59554,16 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].lookAtGL = function () {
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis = function (a) {
-  let m11 = a[0];
-  let m12 = a[4];
-  let m13 = a[8];
-  let m21 = a[1];
-  let m22 = a[5];
-  let m23 = a[9];
-  let m31 = a[2];
-  let m32 = a[6];
-  let m33 = a[10];
-  let x = m11 * m11 + m12 * m12 + m13 * m13,
+  var m11 = a[0];
+  var m12 = a[4];
+  var m13 = a[8];
+  var m21 = a[1];
+  var m22 = a[5];
+  var m23 = a[9];
+  var m31 = a[2];
+  var m32 = a[6];
+  var m33 = a[10];
+  var x = m11 * m11 + m12 * m12 + m13 * m13,
       y = m21 * m21 + m22 * m22 + m23 * m23,
       z = m31 * m31 + m32 * m32 + m33 * m33;
   return Math.sqrt(Math.max(x, y, z));
@@ -59219,8 +59580,8 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis = function (a) {
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].perspectiveGL = function (out, fovY, aspect, near, far) {
-  let fH = Math.tan(fovY / 360 * Math.PI) * near;
-  let fW = fH * aspect;
+  var fH = Math.tan(fovY / 360 * Math.PI) * near;
+  var fW = fH * aspect;
   gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].frustum(out, -fW, fW, -fH, fH, near, far);
   return out;
 };
@@ -59295,7 +59656,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vec4__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vec4 */ "./global/math/vec4.js");
 
 
-const noise = {};
+var noise = {};
 /**
  * Generates turbulent noise
  *
@@ -59309,37 +59670,37 @@ const noise = {};
  */
 
 noise.turbulence = function () {
-  const s_noiseLookup = [],
-        s_permutations = [],
-        s_globalNoiseTemps = [];
-  let s_initialized = false;
+  var s_noiseLookup = [],
+      s_permutations = [],
+      s_globalNoiseTemps = [];
+  var s_initialized = false;
   /**
    * Initializes noise
    */
 
   function initialize() {
-    for (let i = 0; i < 256; i++) {
-      s_noiseLookup[i] = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-      s_permutations[i] = i;
+    for (var _i = 0; _i < 256; _i++) {
+      s_noiseLookup[_i] = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].fromValues(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+      s_permutations[_i] = _i;
     }
 
-    let i = 256;
+    var i = 256;
 
     while (--i) {
-      const tmp = s_permutations[i],
-            index = Math.floor(Math.random() * 256);
+      var tmp = s_permutations[i],
+          index = Math.floor(Math.random() * 256);
       s_permutations[i] = s_permutations[index];
       s_permutations[index] = tmp;
     }
 
-    for (let i = 0; i < 256; i++) {
-      s_permutations[256 + i] = s_permutations[i];
-      s_noiseLookup[256 + i] = s_noiseLookup[i];
-      s_noiseLookup[256 * 2 + i] = s_noiseLookup[i];
+    for (var _i2 = 0; _i2 < 256; _i2++) {
+      s_permutations[256 + _i2] = s_permutations[_i2];
+      s_noiseLookup[256 + _i2] = s_noiseLookup[_i2];
+      s_noiseLookup[256 * 2 + _i2] = s_noiseLookup[_i2];
     }
 
-    for (let i = 0; i < 15; ++i) {
-      s_globalNoiseTemps[i] = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    for (var _i3 = 0; _i3 < 15; ++_i3) {
+      s_globalNoiseTemps[_i3] = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     }
 
     s_initialized = true;
@@ -59351,43 +59712,43 @@ noise.turbulence = function () {
     pos_1 += 4096;
     pos_2 += 4096;
     pos_3 += 4096;
-    let a_0 = Math.floor(pos_0),
+    var a_0 = Math.floor(pos_0),
         a_1 = Math.floor(pos_1),
         a_2 = Math.floor(pos_2),
         a_3 = Math.floor(pos_3);
-    const t_0 = pos_0 - a_0,
-          t_1 = pos_1 - a_1,
-          t_2 = pos_2 - a_2,
-          t_3 = pos_3 - a_3;
+    var t_0 = pos_0 - a_0,
+        t_1 = pos_1 - a_1,
+        t_2 = pos_2 - a_2,
+        t_3 = pos_3 - a_3;
     a_0 &= 255;
     a_1 &= 255;
     a_2 &= 255;
     a_3 &= 255;
-    const b_0 = a_0 + 1,
-          b_1 = a_1 + 1,
-          b_2 = a_2 + 1,
-          b_3 = a_3 + 1;
-    const i = s_permutations[a_0],
-          j = s_permutations[b_0];
-    const b00 = s_permutations[i + a_1],
-          b10 = s_permutations[j + a_1],
-          b01 = s_permutations[i + b_1],
-          b11 = s_permutations[j + b_1];
-    let c00 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[0], s_noiseLookup[b00 + a_2 + a_3], s_noiseLookup[b10 + a_2 + a_3], t_0);
-    let c10 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[1], s_noiseLookup[b01 + a_2 + a_3], s_noiseLookup[b11 + a_2 + a_3], t_0);
-    let c01 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[2], s_noiseLookup[b00 + b_2 + a_3], s_noiseLookup[b10 + b_2 + a_3], t_0);
-    let c11 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[3], s_noiseLookup[b00 + b_2 + a_3], s_noiseLookup[b10 + b_2 + a_3], t_0);
-    let c0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[4], c00, c10, t_1);
-    let c1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[5], c01, c11, t_1);
-    const c = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[6], c0, c1, t_2);
+    var b_0 = a_0 + 1,
+        b_1 = a_1 + 1,
+        b_2 = a_2 + 1,
+        b_3 = a_3 + 1;
+    var i = s_permutations[a_0],
+        j = s_permutations[b_0];
+    var b00 = s_permutations[i + a_1],
+        b10 = s_permutations[j + a_1],
+        b01 = s_permutations[i + b_1],
+        b11 = s_permutations[j + b_1];
+    var c00 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[0], s_noiseLookup[b00 + a_2 + a_3], s_noiseLookup[b10 + a_2 + a_3], t_0);
+    var c10 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[1], s_noiseLookup[b01 + a_2 + a_3], s_noiseLookup[b11 + a_2 + a_3], t_0);
+    var c01 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[2], s_noiseLookup[b00 + b_2 + a_3], s_noiseLookup[b10 + b_2 + a_3], t_0);
+    var c11 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[3], s_noiseLookup[b00 + b_2 + a_3], s_noiseLookup[b10 + b_2 + a_3], t_0);
+    var c0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[4], c00, c10, t_1);
+    var c1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[5], c01, c11, t_1);
+    var c = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[6], c0, c1, t_2);
     c00 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[7], s_noiseLookup[b00 + a_2 + b_3], s_noiseLookup[b10 + a_2 + b_3], t_0);
     c10 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[8], s_noiseLookup[b01 + a_2 + b_3], s_noiseLookup[b11 + a_2 + b_3], t_0);
     c01 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[9], s_noiseLookup[b00 + b_2 + b_3], s_noiseLookup[b10 + b_2 + b_3], t_0);
     c11 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[10], s_noiseLookup[b00 + b_2 + b_3], s_noiseLookup[b10 + b_2 + b_3], t_0);
     c0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[11], c00, c10, t_1);
     c1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[12], c01, c11, t_1);
-    const d = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[13], c0, c1, t_2);
-    const r = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[14], c, d, t_3);
+    var d = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[13], c0, c1, t_2);
+    var r = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].lerp(s_globalNoiseTemps[14], c, d, t_3);
     out[0] += r[0] * power;
     out[1] += r[1] * power;
     out[2] += r[2] * power;
@@ -59403,7 +59764,7 @@ noise.turbulence = function () {
 
 
 noise.perlin1 = function () {
-  let p_initialized = false,
+  var p_initialized = false,
       p_B = 0x100,
       p_BM = 0xff,
       p_N = 0x1000,
@@ -59416,7 +59777,7 @@ noise.perlin1 = function () {
   function initialize() {
     p_p = new Array(p_B + p_B + 2);
     p_g1 = new Array(p_B + p_B + 2);
-    let i = 0,
+    var i = 0,
         j = 0,
         k = 0;
 
@@ -59441,12 +59802,12 @@ noise.perlin1 = function () {
 
   return function perlin1(a) {
     if (!p_initialized) initialize();
-    let t = a + p_N,
+    var t = a + p_N,
         bx0 = Math.floor(t) & p_BM,
         bx1 = bx0 + 1 & p_BM,
         rx0 = t - Math.floor(t),
         rx1 = rx0 - 1;
-    let sx = rx0 * rx0 * (3.0 - 2.0 * rx0),
+    var sx = rx0 * rx0 * (3.0 - 2.0 * rx0),
         u = rx0 * p_g1[p_p[bx0]],
         v = rx1 * p_g1[p_p[bx1]];
     return u + sx * (v - u);
@@ -59464,11 +59825,11 @@ noise.perlin1 = function () {
 
 
 noise.perlin1D = function (x, alpha, beta, n) {
-  let sum = 0,
+  var sum = 0,
       p = x,
       scale = 1;
 
-  for (let i = 0; i < n; ++i) {
+  for (var i = 0; i < n; ++i) {
     sum += noise.perlin1(p) / scale;
     scale *= alpha;
     p *= beta;
@@ -59489,7 +59850,7 @@ noise.perlin1D = function (x, alpha, beta, n) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "num", function() { return num; });
-const num = {};
+var num = {};
 num.EPSILON = 0.000001;
 num.RAD2DEG = 180 / Math.PI;
 num.DEG2RAD = Math.PI / 180;
@@ -59505,7 +59866,7 @@ num.PI = Math.PI;
 
 num.biCumulative = function (t, order) {
   if (order === 1) {
-    const some = 1.0 - t;
+    var some = 1.0 - t;
     return 1.0 - some * some * some;
   } else if (order === 2) {
     return 3.0 * t * t - 2.0 * t * t * t;
@@ -59540,7 +59901,7 @@ num.clamp = function (a, min, max) {
 
 
 num.decimalPlaces = function (a) {
-  let match = ("" + a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+  var match = ("" + a).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
   return match ? Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0)) : 0;
 };
 /**
@@ -59573,14 +59934,14 @@ num.degreesUnwrapped = function (a) {
 
 
 num.dwordToFloat = function (value) {
-  const b4 = value & 0xff,
-        b3 = (value & 0xff00) >> 8,
-        b2 = (value & 0xff0000) >> 16,
-        b1 = (value & 0xff000000) >> 24,
-        sign = 1 - 2 * (b1 >> 7),
-        // sign = bit 0
+  var b4 = value & 0xff,
+      b3 = (value & 0xff00) >> 8,
+      b2 = (value & 0xff0000) >> 16,
+      b1 = (value & 0xff000000) >> 24,
+      sign = 1 - 2 * (b1 >> 7),
+      // sign = bit 0
   exp = (b1 << 1 & 0xff | b2 >> 7) - 127,
-        // exponent = bits 1..8
+      // exponent = bits 1..8
   sig = (b2 & 0x7f) << 16 | b3 << 8 | b4; // significand = bits 9..31
 
   if (sig === 0 && exp === -127) return 0.0;
@@ -59646,9 +60007,9 @@ num.fract = function (a) {
 
 
 num.fromHalfFloat = function (a) {
-  const s = (a & 0x8000) >> 15,
-        e = (a & 0x7C00) >> 10,
-        f = a & 0x03FF;
+  var s = (a & 0x8000) >> 15,
+      e = (a & 0x7C00) >> 10,
+      f = a & 0x03FF;
 
   if (e === 0) {
     return (s ? -1 : 1) * Math.pow(2, -14) * (f / Math.pow(2, 10));
@@ -59857,9 +60218,9 @@ num.nearestPowerOfTwo = function (a) {
 
 
 num.normalizeInt = function (value, start, end, precision) {
-  let width = end - start;
-  let offsetValue = value - start;
-  let result = offsetValue - offsetValue / width * width + start;
+  var width = end - start;
+  var offsetValue = value - start;
+  var result = offsetValue - offsetValue / width * width + start;
   return precision === undefined ? result : Number(result.toFixed(precision));
 };
 /**
@@ -59874,9 +60235,9 @@ num.normalizeInt = function (value, start, end, precision) {
 
 
 num.normalizeFloat = function (value, start, end, precision) {
-  let width = end - start;
-  let offsetValue = value - start;
-  let result = offsetValue - Math.floor(offsetValue / width) * width + start;
+  var width = end - start;
+  var offsetValue = value - start;
+  var result = offsetValue - Math.floor(offsetValue / width) * width + start;
   return precision === undefined ? result : Number(result.toFixed(precision));
 };
 /**
@@ -59985,7 +60346,7 @@ num.smootherStep = function (a, min, max) {
 
 
 num.toHalfFloat = function () {
-  let floatView, int32View;
+  var floatView, int32View;
   return function (a) {
     if (!floatView) {
       floatView = new Float32Array(1);
@@ -59993,14 +60354,14 @@ num.toHalfFloat = function () {
     }
 
     floatView[0] = a;
-    const x = int32View[0];
-    let bits = x >> 16 & 0x8000;
+    var x = int32View[0];
+    var bits = x >> 16 & 0x8000;
     /* Get the sign */
 
-    let m = x >> 12 & 0x07ff;
+    var m = x >> 12 & 0x07ff;
     /* Keep one extra bit for rounding */
 
-    let e = x >> 23 & 0xff;
+    var e = x >> 23 & 0xff;
     /* Using int is faster here */
 
     /* If zero, or denormal, or exponent underflows too much for a denormal half, return signed zero. */
@@ -60094,7 +60455,7 @@ __webpack_require__.r(__webpack_exports__);
  * @typedef {Float32Array} pln
  */
 
-const pln = {};
+var pln = {};
 /**
  * Returns a subarray of a plane's normal
  *
@@ -60211,7 +60572,7 @@ pln.equals = _vec4__WEBPACK_IMPORTED_MODULE_2__["vec4"].equals;
  */
 
 pln.equalsNormalConstant = function (a, normal, constant) {
-  let a0 = a[0],
+  var a0 = a[0],
       a1 = a[1],
       a2 = a[2],
       a3 = a[3],
@@ -60288,7 +60649,7 @@ pln.fromNormalConstant = function (out, n, c) {
 
 
 pln.fromCoplanarPoints = function (out, a, b, c) {
-  let ax = c[0] - b[0],
+  var ax = c[0] - b[0],
       ay = c[1] - b[1],
       az = c[2] - b[2],
       bx = a[0] - b[0],
@@ -60299,7 +60660,7 @@ pln.fromCoplanarPoints = function (out, a, b, c) {
       y = az * bx - ax * bz,
       z = ax * by - ay * bx; // normalize
 
-  let len = x * x + y * y + z * z;
+  var len = x * x + y * y + z * z;
 
   if (len > 0) {
     len = 1 / Math.sqrt(len);
@@ -60362,7 +60723,7 @@ pln.getCoplanarPoint = function (out, a) {
 
 
 pln.getIntersectLne3 = function (out, a, l) {
-  let lsx = l[0],
+  var lsx = l[0],
       lsy = l[1],
       lsz = l[2],
       lex = l[3],
@@ -60373,11 +60734,11 @@ pln.getIntersectLne3 = function (out, a, l) {
   out[1] = 0;
   out[2] = 0; // Get line delta
 
-  let dirX = lex - lsx,
+  var dirX = lex - lsx,
       dirY = ley - lsy,
       dirZ = lez - lsz; // Get dot of the plane normal and line delta
 
-  let den = a[0] * dirX + a[1] * dirY + a[2] * dirZ;
+  var den = a[0] * dirX + a[1] * dirY + a[2] * dirZ;
 
   if (den === 0) {
     // Check if distance to the line start is 0
@@ -60391,7 +60752,7 @@ pln.getIntersectLne3 = function (out, a, l) {
     throw new Error("Denominator error");
   }
 
-  let t = (lsx * a[0] + lsy * a[1] + lsz * a[2] + a[3]) / den;
+  var t = (lsx * a[0] + lsy * a[1] + lsz * a[2] + a[3]) / den;
 
   if (t < 0 || t > 1) {
     throw new Error("Normalization error");
@@ -60415,7 +60776,7 @@ pln.getIntersectLne3 = function (out, a, l) {
 
 
 pln.getIntersectStartEnd = function () {
-  let vec6_0;
+  var vec6_0;
   return function (out, a, lineStart, lineEnd) {
     if (!vec6_0) {
       vec6_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
@@ -60451,7 +60812,7 @@ pln.getNormal = function (out, a) {
 
 
 pln.getOrthoPoint = function (out, a, p) {
-  let pMag = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + a[3];
+  var pMag = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + a[3];
   _vec3__WEBPACK_IMPORTED_MODULE_1__["vec3"].multiplyScalar(out, a, pMag);
   return out;
 };
@@ -60483,7 +60844,7 @@ pln.getProjectedPoint = function (out, a, p) {
 
 
 pln.intersectsBounds = function () {
-  let vec6_0;
+  var vec6_0;
   return function (a, min, max) {
     if (!vec6_0) {
       vec6_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
@@ -60516,8 +60877,8 @@ pln.intersectsBox3 = function (a, b) {
 
 
 pln.intersectsLne3 = function (a, l) {
-  let startSign = a[0] * l[0] + a[1] * l[1] + a[2] * l[2] + a[3];
-  let endSign = a[0] * l[3] + a[1] * l[4] + a[2] * l[5] + a[3];
+  var startSign = a[0] * l[0] + a[1] * l[1] + a[2] * l[2] + a[3];
+  var endSign = a[0] * l[3] + a[1] * l[4] + a[2] * l[5] + a[3];
   return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
 };
 /**
@@ -60531,7 +60892,7 @@ pln.intersectsLne3 = function (a, l) {
 
 
 pln.intersectsPositionRadius = function (a, position, radius) {
-  let dot = position[0] * a[0] + position[1] * a[1] + position[2] * a[2];
+  var dot = position[0] * a[0] + position[1] * a[1] + position[2] * a[2];
   return Math.abs(dot - a[3]) <= radius;
 };
 /**
@@ -60544,7 +60905,7 @@ pln.intersectsPositionRadius = function (a, position, radius) {
 
 
 pln.intersectsSph3 = function (a, s) {
-  let dot = s[0] * a[0] + s[1] * a[1] + s[2] * a[2];
+  var dot = s[0] * a[0] + s[1] * a[1] + s[2] * a[2];
   return Math.abs(dot - a[3]) <= s[3];
 };
 /**
@@ -60558,8 +60919,8 @@ pln.intersectsSph3 = function (a, s) {
 
 
 pln.intersectsStartEnd = function (a, start, end) {
-  let startSign = a[0] * start[0] + a[1] * start[1] + a[2] * start[2] + a[3];
-  let endSign = a[0] * end[0] + a[1] * end[1] + a[2] * end[2] + a[3];
+  var startSign = a[0] * start[0] + a[1] * start[1] + a[2] * start[2] + a[3];
+  var endSign = a[0] * end[0] + a[1] * end[1] + a[2] * end[2] + a[3];
   return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
 };
 /**
@@ -60588,10 +60949,10 @@ pln.negate = function (out, a) {
 
 
 pln.normalize = function (out, a) {
-  let x = a[0],
+  var x = a[0],
       y = a[1],
       z = a[2];
-  let len = x * x + y * y + z * z;
+  var len = x * x + y * y + z * z;
 
   if (len > 0) {
     len = 1 / Math.sqrt(len);
@@ -60660,7 +61021,7 @@ pln.toArray = function (a, arr, offset = 0) {
 
 
 pln.transformMat4 = function () {
-  let mat4_0;
+  var mat4_0;
   return function (out, a, m, nMatrix) {
     if (!nMatrix && !mat4_0) {
       mat4_0 = _mat3__WEBPACK_IMPORTED_MODULE_3__["mat3"].create();
@@ -60668,22 +61029,22 @@ pln.transformMat4 = function () {
 
     nMatrix = nMatrix || _mat3__WEBPACK_IMPORTED_MODULE_3__["mat3"].normalFromMat4(mat4_0, m); // Coplanar Point
 
-    let cpX = a[0] * -a[3],
+    var cpX = a[0] * -a[3],
         cpY = a[1] * -a[3],
         cpZ = a[2] * -a[3]; // Create reference point from Coplanar Point transformed by the affine mat4
 
-    let rX = m[0] * cpX + m[4] * cpY + m[8] * cpZ + m[12],
+    var rX = m[0] * cpX + m[4] * cpY + m[8] * cpZ + m[12],
         rY = m[1] * cpX + m[5] * cpY + m[9] * cpZ + m[13],
         rZ = m[2] * cpX + m[6] * cpY + m[10] * cpZ + m[14]; // Transform plane normal by normal matrix
 
-    let nX = a[0],
+    var nX = a[0],
         nY = a[1],
         nZ = a[2];
-    let pX = nX * nMatrix[0] + nY * nMatrix[3] + nZ * nMatrix[6],
+    var pX = nX * nMatrix[0] + nY * nMatrix[3] + nZ * nMatrix[6],
         pY = nX * nMatrix[1] + nY * nMatrix[4] + nZ * nMatrix[7],
         pZ = nX * nMatrix[2] + nY * nMatrix[5] + nZ * nMatrix[8]; // Normalize plane normal
 
-    let len = pX * pX + pY * pY + pZ * pZ;
+    var len = pX * pX + pY * pY + pZ * pZ;
 
     if (len > 0) {
       len = 1 / Math.sqrt(len);
@@ -60745,7 +61106,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].exp = function (out, a) {
-  let norm = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+  var norm = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
 
   if (norm) {
     out[0] = Math.sin(norm) * a[0] / norm;
@@ -60771,7 +61132,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].exp = function (out, a) {
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].ln = function (out, q) {
-  let norm = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].length(q);
+  var norm = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].length(q);
 
   if (norm > 1.0001 || norm < 0.99999) {
     out[0] = q[0];
@@ -60782,7 +61143,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].ln = function (out, q) {
     norm = Math.sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2]);
 
     if (norm) {
-      let theta = Math.atan2(norm, q[3]) / norm;
+      var theta = Math.atan2(norm, q[3]) / norm;
       out[0] = theta * q[0];
       out[1] = theta * q[1];
       out[2] = theta * q[2];
@@ -60850,7 +61211,7 @@ __webpack_require__.r(__webpack_exports__);
  * @typedef {Float32Array} ray3
  */
 
-const ray3 = {};
+var ray3 = {};
 /**
  * Gets a subarray of a ray3's origin vector
  * @property {box3} a
@@ -60930,15 +61291,15 @@ ray3.distance = function (a, p) {
 
 
 ray3.distanceNormalConstant = function (a, n, c) {
-  let den = n[0] * a[3] + n[1] * a[4] + n[2] * a[5];
-  let dist = a[0] * n[0] + a[1] * n[1] + a[2] * n[2] + c;
+  var den = n[0] * a[3] + n[1] * a[4] + n[2] * a[5];
+  var dist = a[0] * n[0] + a[1] * n[1] + a[2] * n[2] + c;
 
   if (den === 0) {
     if (dist === 0) return 0;
     throw new Error("Determinant error"); //return null;
   }
 
-  let t = -dist / den;
+  var t = -dist / den;
   return t >= 0 ? t : null;
 };
 /**
@@ -60952,15 +61313,15 @@ ray3.distanceNormalConstant = function (a, n, c) {
 
 
 ray3.distancePln = function (a, p) {
-  let den = p[0] * a[3] + p[1] * a[4] + p[2] * a[5];
-  let dist = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + p[3];
+  var den = p[0] * a[3] + p[1] * a[4] + p[2] * a[5];
+  var dist = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + p[3];
 
   if (den === 0) {
     if (dist === 0) return 0;
     throw new Error("Determinant error"); //return null;
   }
 
-  let t = -dist / den;
+  var t = -dist / den;
   return t >= 0 ? t : null;
 };
 /**
@@ -61052,10 +61413,10 @@ ray3.fromStartEnd = function (out, start, end) {
 
 ray3.fromPerspective = function (out, coords, m, viewport) {
   // Convert view port co-ordinates
-  let x = (coords[0] - viewport[0]) * 2.0 / viewport[2] - 1.0,
+  var x = (coords[0] - viewport[0]) * 2.0 / viewport[2] - 1.0,
       y = (coords[1] - viewport[1]) * 2.0 / viewport[3] - 1.0; // Calculate w
 
-  let oW = m[3] * x + m[7] * y + m[11] * -1 + m[15],
+  var oW = m[3] * x + m[7] * y + m[11] * -1 + m[15],
       dW = m[3] * x + m[7] * y + m[11] * 1 + m[15]; // Check for perspective divide error
 
   if (oW === 0.0 || dW === 0.0) {
@@ -61083,8 +61444,8 @@ ray3.fromPerspective = function (out, coords, m, viewport) {
 
 
 ray3.unproject = function (out, mouse, viewport, invProjView) {
-  const start = [mouse[0], mouse[1], 0],
-        end = [mouse[0], mouse[1], 1];
+  var start = [mouse[0], mouse[1], 0],
+      end = [mouse[0], mouse[1], 1];
   _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject(start, start, viewport, invProjView);
   _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject(end, end, viewport, invProjView);
   ray3.fromStartEnd(out, start, end);
@@ -61126,10 +61487,10 @@ ray3.getDirection = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMax;
  */
 
 ray3.getClosestPointToPoint = function (out, a, p) {
-  let x = p[0] - a[0],
+  var x = p[0] - a[0],
       y = p[1] - a[1],
       z = p[2] - a[2];
-  let dirDist = x * a[3] + y * a[4] + z * a[5];
+  var dirDist = x * a[3] + y * a[4] + z * a[5];
 
   if (dirDist < 0) {
     out[0] = a[0];
@@ -61142,7 +61503,7 @@ ray3.getClosestPointToPoint = function (out, a, p) {
   return out;
 };
 /**
- * Sets a vec3 with the intersection point of a ray3 and boxes" components
+ * Sets a vec3 with the intersection point of a ray3 and boxes' components
  * - Returns null if there was no intersection, or the receiving vec3 if there was
  *
  * @author three.js authors (converted)
@@ -61155,8 +61516,8 @@ ray3.getClosestPointToPoint = function (out, a, p) {
 
 
 ray3.getIntersectBounds = function (out, a, min, max) {
-  let tMin, tMax, tyMin, tyMax, tzMin, tzMax;
-  let invDirX = 1 / a[3],
+  var tMin, tMax, tyMin, tyMax, tzMin, tzMax;
+  var invDirX = 1 / a[3],
       invDirY = 1 / a[4],
       invDirZ = 1 / a[5];
 
@@ -61207,7 +61568,7 @@ ray3.getIntersectBounds = function (out, a, min, max) {
 
 
 ray3.getIntersectBox3 = function () {
-  let vec3_0, vec3_1;
+  var vec3_0, vec3_1;
   return function (out, a, b) {
     if (!vec3_0) {
       vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -61216,7 +61577,7 @@ ray3.getIntersectBox3 = function () {
 
     _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMin(vec3_0, b);
     _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMax(vec3_1, b);
-    return _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getIntersectBounds(out, a, vec3_0, vec3_1);
+    return ray3.getIntersectBounds(out, a, vec3_0, vec3_1);
   };
 }();
 /**
@@ -61233,7 +61594,7 @@ ray3.getIntersectBox3 = function () {
 
 
 ray3.getIntersectTri3 = function () {
-  let vec3_0, vec3_1, vec3_2;
+  var vec3_0, vec3_1, vec3_2;
   return function (out, a, f, bfc) {
     if (!vec3_0) {
       vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -61263,7 +61624,7 @@ ray3.getIntersectTri3 = function () {
 
 
 ray3.getIntersectVertices = function () {
-  let vec3_0, vec3_1, vec3_2, vec3_3, vec3_4, vec3_5;
+  var vec3_0, vec3_1, vec3_2, vec3_3, vec3_4, vec3_5;
   return function (out, a, vertA, vertB, vertC, bfc) {
     if (!vec3_0) {
       vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -61274,14 +61635,14 @@ ray3.getIntersectVertices = function () {
       vec3_5 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     }
 
-    let o = ray3.getOrigin(vec3_4, a);
-    let d = ray3.getDirection(vec3_5, a);
-    let diff = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_0, o, vertA);
-    let e1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_1, vertB, vertA);
-    let e2 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_2, vertC, vertA);
-    let n = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(vec3_3, e1, e2);
-    let DdN = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, n);
-    let sign;
+    var o = ray3.getOrigin(vec3_4, a);
+    var d = ray3.getDirection(vec3_5, a);
+    var diff = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_0, o, vertA);
+    var e1 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_1, vertB, vertA);
+    var e2 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(vec3_2, vertC, vertA);
+    var n = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(vec3_3, e1, e2);
+    var DdN = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, n);
+    var sign;
 
     if (DdN > 0) {
       if (bfc) return null;
@@ -61292,13 +61653,13 @@ ray3.getIntersectVertices = function () {
     } else return null;
 
     _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(e2, diff, e2);
-    let b1 = sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, e2);
+    var b1 = sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, e2);
     if (b1 < 0) return null;
     _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].cross(e1, e1, diff);
-    let b2 = sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, e1);
+    var b2 = sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(d, e1);
     if (b2 < 0) return null;
     if (b1 + b2 > DdN) return null;
-    let QdN = -sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(diff, n);
+    var QdN = -sign * _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].dot(diff, n);
     if (QdN < 0) return null;
     return ray3.get(out, a, QdN / DdN);
   };
@@ -61316,7 +61677,7 @@ ray3.getIntersectVertices = function () {
 
 
 ray3.getIntersectNormalConstant = function (out, a, n, c) {
-  let t = ray3.distanceNormalConstant(a, n, c);
+  var t = ray3.distanceNormalConstant(a, n, c);
   return t !== null ? ray3.get(out, a, t) : null;
 };
 /**
@@ -61331,7 +61692,7 @@ ray3.getIntersectNormalConstant = function (out, a, n, c) {
 
 
 ray3.getIntersectPln = function (out, a, p) {
-  let t = ray3.distancePln(a, p);
+  var t = ray3.distancePln(a, p);
   return t !== null ? ray3.get(out, a, t) : null;
 };
 /**
@@ -61348,7 +61709,7 @@ ray3.getIntersectPln = function (out, a, p) {
 
 
 ray3.getIntersectPositionRadius = function () {
-  let sph3_0;
+  var sph3_0;
   return function (out, a, p, r) {
     if (!sph3_0) sph3_0 = _sph3__WEBPACK_IMPORTED_MODULE_3__["sph3"].create();
     _sph3__WEBPACK_IMPORTED_MODULE_3__["sph3"].from(sph3_0, p, r);
@@ -61368,16 +61729,16 @@ ray3.getIntersectPositionRadius = function () {
 
 
 ray3.getIntersectSph3 = function (out, a, s) {
-  let x = s[0] - a[0],
+  var x = s[0] - a[0],
       y = s[1] - a[1],
       z = s[2] - a[2],
       r2 = s[3] * s[3];
-  let tca = x * a[3] + y * a[4] + z * a[5];
-  let d2 = x * x + y * y + z * z - tca * tca;
+  var tca = x * a[3] + y * a[4] + z * a[5];
+  var d2 = x * x + y * y + z * z - tca * tca;
   if (d2 > r2) return null;
-  let thc = Math.sqrt(r2 - d2);
-  let t0 = tca - thc;
-  let t1 = tca + thc;
+  var thc = Math.sqrt(r2 - d2);
+  var t0 = tca - thc;
+  var t1 = tca + thc;
   if (t0 < 0 && t1 < 0) return null;
   if (t0 < 0) return ray3.get(out, a, t1);
   return ray3.get(out, a, t0);
@@ -61401,7 +61762,7 @@ ray3.getOrigin = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].getMin;
  */
 
 ray3.intersectsBox3 = function () {
-  let vec3_0;
+  var vec3_0;
   return function (a, b) {
     if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     return ray3.vec3_0 = ray3.getIntersectBox3(vec3_0, a, b) !== null;
@@ -61418,7 +61779,7 @@ ray3.intersectsBox3 = function () {
 
 
 ray3.intersectsBounds = function () {
-  let vec3_0;
+  var vec3_0;
   return function intersectsBounds(a, min, max) {
     if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     return ray3.getIntersectBounds(vec3_0, a, min, max) !== null;
@@ -61435,7 +61796,7 @@ ray3.intersectsBounds = function () {
 
 
 ray3.intersectsNormalConstant = function (a, n, c) {
-  let dist = a[0] * n[0] + a[1] * n[1] + a[2] * n[2] + c;
+  var dist = a[0] * n[0] + a[1] * n[1] + a[2] * n[2] + c;
   return dist === 0 ? true : (n[0] * a[3] + n[1] * a[4] + n[2] * a[5]) * dist < 0;
 };
 /**
@@ -61448,7 +61809,7 @@ ray3.intersectsNormalConstant = function (a, n, c) {
 
 
 ray3.intersectsPln = function (a, p) {
-  let dist = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + p[3];
+  var dist = a[0] * p[0] + a[1] * p[1] + a[2] * p[2] + p[3];
   return dist === 0 ? true : (p[0] * a[3] + p[1] * a[4] + p[2] * a[5]) * dist < 0;
 };
 /**
@@ -61508,11 +61869,11 @@ ray3.normalize = function (out, a) {
   out[0] = a[0];
   out[1] = a[1];
   out[2] = a[2];
-  let x = a[3],
+  var x = a[3],
       y = a[4],
       z = a[5]; // Normalize the direction
 
-  let len = x * x + y * y + z * z;
+  var len = x * x + y * y + z * z;
 
   if (len > 0) {
     len = 1 / Math.sqrt(len);
@@ -61582,7 +61943,7 @@ ray3.SORT = function (a, b) {
 
 
 ray3.squaredDistance = function () {
-  let vec3_0, vec3_1;
+  var vec3_0, vec3_1;
   return function distanceSquared(a, p) {
     if (!vec3_0) {
       vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -61592,7 +61953,7 @@ ray3.squaredDistance = function () {
     vec3_0[0] = p[0] - a[0];
     vec3_0[1] = p[1] - a[1];
     vec3_0[2] = p[2] - a[2];
-    let dirDist = vec3_0[0] * a[3] + vec3_0[1] * a[4] + vec3_0[2] * a[5];
+    var dirDist = vec3_0[0] * a[3] + vec3_0[1] * a[4] + vec3_0[2] * a[5];
 
     if (dirDist < 0) {
       ray3.getOrigin(vec3_1, a);
@@ -61642,14 +62003,14 @@ ray3.toOriginDirection = function (a, origin, direction) {
 
 
 ray3.transformMat4 = function (out, a, m) {
-  let oX = a[0],
+  var oX = a[0],
       oY = a[1],
       oZ = a[2],
       dX = a[3] + a[0],
       dY = a[4] + a[1],
       dZ = a[5] + a[2]; // Calculate w
 
-  let oW = m[3] * oX + m[7] * oY + m[11] * oZ + m[15] || 1.0,
+  var oW = m[3] * oX + m[7] * oY + m[11] * oZ + m[15] || 1.0,
       dW = m[3] * dX + m[7] * dY + m[11] * dZ + m[15] || 1.0; // Transform origin
 
   out[0] = (m[0] * oX + m[4] * oY + m[8] * oZ + m[12]) / oW;
@@ -61706,9 +62067,9 @@ __webpack_require__.r(__webpack_exports__);
  * @typedef {Float32Array} sph3
  */
 
-const sph3 = {}; // Scratch
+var sph3 = {}; // Scratch
 
-let sph3_0 = null;
+var sph3_0 = null;
 /**
  * Returns a subarray containing the position component of the sph3
  * - Why does webpack fail to resolve this if referencing pln.normal?
@@ -61735,7 +62096,7 @@ sph3.clone = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].clone;
  */
 
 sph3.containsPoint = function (a, p) {
-  let x = p[0] - a[0],
+  var x = p[0] - a[0],
       y = p[1] - a[1],
       z = p[2] - a[2];
   return x * x + y * y + z * z <= a[3] * a[3];
@@ -61766,7 +62127,7 @@ sph3.create = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].create;
  */
 
 sph3.distance = function (a, b) {
-  let x = b[0] - a[0],
+  var x = b[0] - a[0],
       y = b[1] - a[1],
       z = b[2] - a[2],
       rii = b[3] + a[3];
@@ -61782,7 +62143,7 @@ sph3.distance = function (a, b) {
 
 
 sph3.distanceToPoint = function (a, p) {
-  let x = p[0] - a[0],
+  var x = p[0] - a[0],
       y = p[1] - a[1],
       z = p[2] - a[2];
   return Math.sqrt(x * x + y * y + z * z) - a[3];
@@ -61858,7 +62219,7 @@ sph3.extract = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].extract;
  */
 
 sph3.fromBox3 = function (out, b) {
-  let sX = b[3] - b[0],
+  var sX = b[3] - b[0],
       sY = b[4] - b[1],
       sZ = b[5] - b[2];
   out[0] = (b[0] + b[3]) * 0.5;
@@ -61878,7 +62239,7 @@ sph3.fromBox3 = function (out, b) {
 
 
 sph3.fromBounds = function (out, min, max) {
-  let sX = max[0] - min[0],
+  var sX = max[0] - min[0],
       sY = max[1] - min[1],
       sZ = max[2] - min[2];
   out[0] = (min[0] + max[0]) * 0.5;
@@ -61999,7 +62360,7 @@ sph3.getClampedPoint = function (out, a, p) {
   out[0] = p[0];
   out[1] = p[1];
   out[2] = p[2];
-  let x = a[0] - p[0],
+  var x = a[0] - p[0],
       y = a[1] - p[1],
       z = a[2] - p[2];
 
@@ -62051,10 +62412,10 @@ sph3.getPosition = _pln__WEBPACK_IMPORTED_MODULE_3__["pln"].getNormal;
  */
 
 sph3.intersectsSph3 = function (a, b) {
-  let x = b[0] - a[0],
+  var x = b[0] - a[0],
       y = b[1] - a[1],
       z = b[2] - a[2];
-  let radii = a[3] + b[3];
+  var radii = a[3] + b[3];
   return x * x + y * y + z * z <= radii * radii;
 };
 /**
@@ -62080,7 +62441,7 @@ sph3.intersectsBox3 = function (a, b) {
 
 
 sph3.intersectsBounds = function (a, min, max) {
-  let x = Math.max(min[0], Math.min(max[0], a[0])) - a[0],
+  var x = Math.max(min[0], Math.min(max[0], a[0])) - a[0],
       y = Math.max(min[1], Math.min(max[1], a[1])) - a[1],
       z = Math.max(min[2], Math.min(max[2], a[2])) - a[2];
   return x * x + y * y + z * z <= a[3] * a[3];
@@ -62096,10 +62457,10 @@ sph3.intersectsBounds = function (a, min, max) {
 
 
 sph3.intersectsPositionRadius = function (a, p, r) {
-  let x = p[0] - a[0],
+  var x = p[0] - a[0],
       y = p[1] - a[1],
       z = p[2] - a[2];
-  let radii = a[3] + r;
+  var radii = a[3] + r;
   return x * x + y * y + z * z <= radii * radii;
 };
 /**
@@ -62125,7 +62486,7 @@ sph3.intersectsPln = function (a, p) {
 
 
 sph3.intersectsNormalConstant = function (a, n, c) {
-  let dot = a[0] * n[0] + a[1] * n[1] + a[2] * n[2];
+  var dot = a[0] * n[0] + a[1] * n[1] + a[2] * n[2];
   return Math.abs(dot - c) <= a[3];
 };
 /**
@@ -62180,7 +62541,7 @@ sph3.setArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].setArray;
  */
 
 sph3.setPoints = function () {
-  let box3_0;
+  var box3_0;
   return function (out, points, position) {
     if (!box3_0) box3_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
 
@@ -62195,10 +62556,10 @@ sph3.setPoints = function () {
       out[2] = (box3_0[2] + box3_0[5]) * 0.5;
     }
 
-    let maxSquaredRadius = 0;
+    var maxSquaredRadius = 0;
 
-    for (let i = 0; i < points.length; i++) {
-      let x = out[0] - points[i][0],
+    for (var i = 0; i < points.length; i++) {
+      var x = out[0] - points[i][0],
           y = out[1] - points[i][1],
           z = out[2] - points[i][2];
       maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
@@ -62218,7 +62579,7 @@ sph3.setPoints = function () {
 
 
 sph3.squaredDistance = function (a, b) {
-  let x = b[0] - a[0],
+  var x = b[0] - a[0],
       y = b[1] - a[1],
       z = b[2] - a[2],
       r = b[3] + a[3];
@@ -62234,7 +62595,7 @@ sph3.squaredDistance = function (a, b) {
 
 
 sph3.squaredDistanceToPoint = function (a, p) {
-  let x = p[0] - a[0],
+  var x = p[0] - a[0],
       y = p[1] - a[1],
       z = p[2] - a[2];
   return x * x + y * y + z * z - a[3];
@@ -62261,7 +62622,7 @@ sph3.toArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].toArray;
  */
 
 sph3.toObjectBounds = function (a, obj, m) {
-  const has = obj.minBounds || obj._boundingBox;
+  var has = obj.minBounds || obj._boundingBox;
 
   if (!has) {
     throw new Error("Invalid object bounds");
@@ -62317,10 +62678,10 @@ sph3.toObjectPositionRadius = function (a, obj, m) {
 
 
 sph3.transformMat4 = function (out, a, m) {
-  let x = a[0],
+  var x = a[0],
       y = a[1],
       z = a[2];
-  let sX = m[0] * m[0] + m[1] * m[1] + m[2] * m[2],
+  var sX = m[0] * m[0] + m[1] * m[1] + m[2] * m[2],
       sY = m[4] * m[4] + m[5] * m[5] + m[6] * m[6],
       sZ = m[8] * m[8] + m[9] * m[9] + m[10] * m[10];
   out[0] = m[0] * x + m[4] * y + m[8] * z + m[12];
@@ -62372,7 +62733,7 @@ __webpack_require__.r(__webpack_exports__);
  * @typedef {Float32Array} tri3
  */
 
-const tri3 = {};
+var tri3 = {};
 /**
  * Gets a subarray of a tri3's first vertex
  *
@@ -62408,14 +62769,14 @@ tri3.$v3 = function (a) {
 
 
 tri3.area = function (a) {
-  let ax = a[7] - a[3],
+  var ax = a[7] - a[3],
       ay = a[8] - a[4],
       az = a[9] - a[5],
       bx = a[0] - a[3],
       by = a[1] - a[4],
       bz = a[2] - a[5]; // Cross product
 
-  let x = ax * bz - az * by,
+  var x = ax * bz - az * by,
       y = az * bx - ax * bz,
       z = ax * by - ay * bx; // Return half length
 
@@ -62429,7 +62790,7 @@ tri3.area = function (a) {
 
 
 tri3.create = function () {
-  let out = new Float32Array(9);
+  var out = new Float32Array(9);
   out[0] = 0;
   out[1] = 0;
   out[2] = 0;
@@ -62459,7 +62820,7 @@ tri3.clone = _mat3__WEBPACK_IMPORTED_MODULE_1__["mat3"].clone;
  */
 
 tri3.contains = function () {
-  let vec3_0;
+  var vec3_0;
   return function (a, point) {
     if (!vec3_0) vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     tri3.getBaryCentricCoordinates(vec3_0, a, point);
@@ -62520,7 +62881,7 @@ tri3.fromArray = _mat3__WEBPACK_IMPORTED_MODULE_1__["mat3"].fromArray;
  */
 
 tri3.getBaryCentricCoordinates = function (out, a, point) {
-  let ax = a[7] - a[0],
+  var ax = a[7] - a[0],
       ay = a[8] - a[1],
       az = a[9] - a[2],
       bx = a[3] - a[0],
@@ -62529,12 +62890,12 @@ tri3.getBaryCentricCoordinates = function (out, a, point) {
       cx = point[0] - a[0],
       cy = point[1] - a[1],
       cz = point[2] - a[2];
-  let dot00 = ax[0] * ax[0] + ay[1] * ay[1] + az[2] * az[2],
+  var dot00 = ax[0] * ax[0] + ay[1] * ay[1] + az[2] * az[2],
       dot01 = ax[0] * bx[0] + ay[1] * by[1] + az[2] * bz[2],
       dot02 = ax[0] * cx[0] + ay[1] * cy[1] + az[2] * cz[2],
       dot11 = bx[0] * bx[0] + by[1] * by[1] + bz[2] * bz[2],
       dot12 = bx[0] * cx[0] + by[1] * cy[1] + bz[2] * cz[2];
-  let denom = dot00 * dot11 - dot01 * dot01;
+  var denom = dot00 * dot11 - dot01 * dot01;
 
   if (denom === 0) {
     out[0] = -2;
@@ -62542,9 +62903,9 @@ tri3.getBaryCentricCoordinates = function (out, a, point) {
     out[2] = -1;
     throw new Error("Denominator error");
   } else {
-    let invDenom = 1 / denom;
-    let u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    let v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+    var invDenom = 1 / denom;
+    var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
     out[0] = 1 - u - v;
     out[1] = v;
     out[2] = u;
@@ -62563,7 +62924,7 @@ tri3.getBaryCentricCoordinates = function (out, a, point) {
 
 
 tri3.getClosestEdgeToPoint = function () {
-  let v0, v1, edgeList;
+  var v0, v1, edgeList;
   return function getClosestEdgeToPoint(out, a, point) {
     if (!v0) {
       v0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -62572,7 +62933,7 @@ tri3.getClosestEdgeToPoint = function () {
     } // Get the closest point on the triangle to the supplied point
 
 
-    let closestPointOnTriangle = tri3.getClosestPointToPoint(v0, a, point); // Convert the triangle's vertices to edges
+    var closestPointOnTriangle = tri3.getClosestPointToPoint(v0, a, point); // Convert the triangle's vertices to edges
 
     _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].set(edgeList[0], a[0], a[1], a[2], a[3], a[4], a[5]); // vert a - vert b
 
@@ -62580,12 +62941,12 @@ tri3.getClosestEdgeToPoint = function () {
 
     _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].set(edgeList[2], a[6], a[7], a[8], a[0], a[1], a[2]); // vert c - vert a
 
-    let minDistance = Infinity;
+    var minDistance = Infinity;
 
-    for (let i = 0; i < edgeList.length; i++) {
+    for (var i = 0; i < edgeList.length; i++) {
       // Get the closest point on the triangles edge to the closest point on the triangle to the supplied point
-      let closestPointOnLine = _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].getClosestPointToPoint(v1, edgeList[i], closestPointOnTriangle, true);
-      let distance = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(closestPointOnLine, closestPointOnTriangle);
+      var closestPointOnLine = _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].getClosestPointToPoint(v1, edgeList[i], closestPointOnTriangle, true);
+      var distance = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(closestPointOnLine, closestPointOnTriangle);
 
       if (distance < minDistance) {
         minDistance = distance;
@@ -62613,7 +62974,7 @@ tri3.getClosestEdgeToPoint = function () {
 
 
 tri3.getClosestPointToPoint = function () {
-  let plane, edgeList, projectedPoint, closestPoint, vec3_0, vec3_1, vec3_2;
+  var plane, edgeList, projectedPoint, closestPoint, vec3_0, vec3_1, vec3_2;
   return function getClosestPointToPoint(out, a, point) {
     if (!plane) {
       plane = _pln__WEBPACK_IMPORTED_MODULE_2__["pln"].create();
@@ -62643,11 +63004,11 @@ tri3.getClosestPointToPoint = function () {
         _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].set(edgeList[0], a[0], a[1], a[2], a[3], a[4], a[5]);
         _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].set(edgeList[1], a[3], a[4], a[5], a[6], a[7], a[8]);
         _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].set(edgeList[2], a[6], a[7], a[8], a[0], a[1], a[2]);
-        let minDistance = Infinity;
+        var minDistance = Infinity;
 
-        for (let i = 0; i < edgeList.length; i++) {
+        for (var i = 0; i < edgeList.length; i++) {
           _lne3__WEBPACK_IMPORTED_MODULE_3__["lne3"].getClosestPointToPoint(closestPoint, edgeList[i], projectedPoint, true);
-          let distance = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(projectedPoint, closestPoint);
+          var distance = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(projectedPoint, closestPoint);
 
           if (distance < minDistance) {
             minDistance = distance;
@@ -62672,7 +63033,7 @@ tri3.getClosestPointToPoint = function () {
 
 
 tri3.getClosestVertexToPoint = function () {
-  let vec3_0, vec3_1, vec3_2;
+  var vec3_0, vec3_1, vec3_2;
   return function (out, a, point) {
     if (!vec3_0) {
       vec3_0 = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -62682,14 +63043,14 @@ tri3.getClosestVertexToPoint = function () {
 
 
     tri3.getClosestPointToPoint(out, a, point);
-    let minDistance = Infinity,
+    var minDistance = Infinity,
         distance,
         x,
         y,
         z,
         vertices = [tri3.getV1(vec3_0, a), tri3.getV2(vec3_1, a), tri3.getV3(vec3_2, a)]; // Find the closest triangle vertex
 
-    for (let i = 0; i < vertices.length; i++) {
+    for (var i = 0; i < vertices.length; i++) {
       distance = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].squaredDistance(vertices[i], out);
 
       if (distance < minDistance) {
@@ -62716,7 +63077,7 @@ tri3.getClosestVertexToPoint = function () {
 
 
 tri3.getMidpoint = function (out, a) {
-  let s = 1 / 3;
+  var s = 1 / 3;
   out[0] = (a[0] + a[3] + a[6]) * s;
   out[1] = (a[1] + a[4] + a[7]) * s;
   out[2] = (a[2] + a[5] + a[8]) * s;
@@ -62732,18 +63093,18 @@ tri3.getMidpoint = function (out, a) {
 
 
 tri3.getNormal = function (out, a) {
-  let ax = a[7] - a[3],
+  var ax = a[7] - a[3],
       ay = a[8] - a[4],
       az = a[9] - a[5],
       bx = a[0] - a[3],
       by = a[1] - a[4],
       bz = a[2] - a[5]; // Get cross product
 
-  let x = ay * bz - az * by,
+  var x = ay * bz - az * by,
       y = az * bx - ax * bz,
       z = ax * by - ay * bx; // Normalize
 
-  let len = x * x + y * y + z * z;
+  var len = x * x + y * y + z * z;
 
   if (len > 0) {
     len = 1 / Math.sqrt(len);
@@ -63045,7 +63406,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].directionFromQuat = function (out
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].directionFromMat4 = function () {
-  let quat_0;
+  var quat_0;
   return function directionFromMat4Axis(out, axis, m) {
     if (!quat_0) quat_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(quat_0, m);
@@ -63088,7 +63449,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.DEFAULT_ORDER = "XYZ";
  */
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromQuat = function () {
-  let mat4_0;
+  var mat4_0;
   return function fromQuat(out, q, order = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.DEFAULT_ORDER) {
     if (!mat4_0) mat4_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     gl_matrix__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(mat4_0, q);
@@ -63107,16 +63468,16 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromQuat = function () {
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromMat4 = function (out, m, order = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.DEFAULT_ORDER) {
-  const m11 = m[0],
-        m12 = m[4],
-        m13 = m[8],
-        m21 = m[1],
-        m22 = m[5],
-        m23 = m[9],
-        m31 = m[2],
-        m32 = m[6],
-        m33 = m[10];
-  const clamp = _num__WEBPACK_IMPORTED_MODULE_1__["num"].clamp;
+  var m11 = m[0],
+      m12 = m[4],
+      m13 = m[8],
+      m21 = m[1],
+      m22 = m[5],
+      m23 = m[9],
+      m31 = m[2],
+      m32 = m[6],
+      m33 = m[10];
+  var clamp = _num__WEBPACK_IMPORTED_MODULE_1__["num"].clamp;
 
   if (order === "XYZ") {
     out[1] = Math.asin(clamp(m13, -1, 1));
@@ -63203,15 +63564,15 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.fromMat4 = function (out, m
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.getQuat = function (out, euler, order = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].euler.DEFAULT_ORDER) {
-  const x = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(euler[0]),
-        y = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(euler[1]),
-        z = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(euler[2]);
-  const cosYaw = Math.cos(x / 2),
-        cosPitch = Math.cos(y / 2),
-        cosRoll = Math.cos(z / 2),
-        sinYaw = Math.sin(x / 2),
-        sinPitch = Math.sin(y / 2),
-        sinRoll = Math.sin(z / 2);
+  var x = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(euler[0]),
+      y = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(euler[1]),
+      z = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(euler[2]);
+  var cosYaw = Math.cos(x / 2),
+      cosPitch = Math.cos(y / 2),
+      cosRoll = Math.cos(z / 2),
+      sinYaw = Math.sin(x / 2),
+      sinPitch = Math.sin(y / 2),
+      sinRoll = Math.sin(z / 2);
 
   if (order === "XYZ") {
     out[0] = sinYaw * cosPitch * cosRoll + cosYaw * sinPitch * sinRoll;
@@ -63282,9 +63643,9 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].exponentialDecay = function (out,
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical = function (out, spherical, center) {
-  const phi = spherical[0],
-        theta = spherical[1],
-        radius = spherical[2];
+  var phi = spherical[0],
+      theta = spherical[1],
+      radius = spherical[2];
   out[0] = radius * Math.sin(phi) * Math.sin(theta);
   out[1] = radius * Math.cos(theta);
   out[2] = radius * Math.cos(phi) * Math.sin(theta);
@@ -63306,7 +63667,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromSpherical = function (out, sp
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].getSpherical = function (out, a) {
-  let phi = 0,
+  var phi = 0,
       theta = 0,
       radius = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(a);
 
@@ -63373,14 +63734,14 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].polarToCartesian = function (out,
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].project = function (out, a, m, viewport) {
-  let x = a[0],
+  var x = a[0],
       y = a[1],
       z = a[2];
-  let outX = m[0] * x + m[4] * y + m[8] * z + m[12],
+  var outX = m[0] * x + m[4] * y + m[8] * z + m[12],
       outY = m[1] * x + m[5] * y + m[9] * z + m[13],
       perD = m[3] * x + m[7] * y + m[11] * z + m[15];
-  let projectionX = (outX / perD + 1) / 2;
-  let projectionY = 1 - (outY / perD + 1) / 2;
+  var projectionX = (outX / perD + 1) / 2;
+  var projectionY = 1 - (outY / perD + 1) / 2;
   out[0] = projectionX * viewport[2] + viewport[0];
   out[1] = projectionY * viewport[3] + viewport[1];
   out[2] = perD;
@@ -63460,13 +63821,13 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtractScalar = function (out, a
 
 
 gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unproject = function () {
-  let vec4_0;
+  var vec4_0;
   return function unProject(out, a, invViewProj, viewport) {
     if (!vec4_0) {
       vec4_0 = gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     }
 
-    let x = a[0],
+    var x = a[0],
         y = a[1],
         z = a[2];
     vec4_0[0] = (x - viewport[0]) * 2.0 / viewport[2] - 1.0;
@@ -63639,7 +64000,7 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].subtractScalar = function (out, a
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return abstract; });
 /* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
 
 
 /**
@@ -63647,7 +64008,7 @@ __webpack_require__.r(__webpack_exports__);
  * @type {ClassDecorator|MethodDecorator}
  */
 
-const abstract = Object(_meta__WEBPACK_IMPORTED_MODULE_1__["create"])(false, {
+var abstract = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
   class({
     target
   }) {
@@ -63678,7 +64039,7 @@ const abstract = Object(_meta__WEBPACK_IMPORTED_MODULE_1__["create"])(false, {
     return descriptor;
   }
 
-});
+})();
 
 /***/ }),
 
@@ -63686,96 +64047,146 @@ const abstract = Object(_meta__WEBPACK_IMPORTED_MODULE_1__["create"])(false, {
 /*!*******************************!*\
   !*** ./global/meta/@black.js ***!
   \*******************************/
-/*! exports provided: black, blackReader, blackStruct, blackFromList */
+/*! exports provided: list, object, plain, unknown, boolean, string, path, expression, float, uint, byte, ushort, raw, array, vector2, vector3, vector4, color, quaternion, matrix4, indexBuffer, fromList, struct */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "black", function() { return black; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "blackReader", function() { return blackReader; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "blackStruct", function() { return blackStruct; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "blackFromList", function() { return blackFromList; });
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _util_type__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/type */ "./global/util/type.js");
-/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "list", function() { return list; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return unknown; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "path", function() { return path; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return expression; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "float", function() { return float; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return uint; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return byte; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return ushort; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return raw; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "array", function() { return array; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return vector2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return vector3; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector4", function() { return vector4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "color", function() { return color; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "quaternion", function() { return quaternion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return matrix4; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return indexBuffer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromList", function() { return fromList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "struct", function() { return struct; });
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony import */ var _util_type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../util/type */ "./global/util/type.js");
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
+/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
 
 
 
 
-/**
- * Identifies that a property is read by black reader
- * - It will use the type defined by the "meta.type" decorator
- * @type {PropertyDecorator}
- */
 
-const black = Object(_meta__WEBPACK_IMPORTED_MODULE_3__["create"])(false, {
-  property({
+
+function blackHandler({
+  target,
+  property,
+  descriptor
+}, type, typeOf, reader) {
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["typeHandler"])({
     target,
-    property
-  }) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_3__["set"])("black", true, target, property);
-  }
+    property,
+    descriptor
+  }, type, typeOf);
+  Object(_meta__WEBPACK_IMPORTED_MODULE_4__["set"])("black", reader, target, property);
+  Object(_meta__WEBPACK_IMPORTED_MODULE_4__["set"])("black", true, target);
+}
 
-});
-/**
- * Identifies the black reader a property should use
- * @type {PropertyDecorator}
- */
-
-const blackReader = Object(_meta__WEBPACK_IMPORTED_MODULE_3__["create"])(true, {
-  property({
-    target,
-    property
-  }, reader) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_3__["set"])("black", reader, target, property);
-  }
-
-});
-/**
- * Identifies that the black property is a struct
- * - Pass an array containing a function to identify a struct list
- * - Pass a function to identify a struct
- * @type {PropertyDecorator}
- */
-
-const blackStruct = Object(_meta__WEBPACK_IMPORTED_MODULE_3__["create"])(true, {
-  property({
-    target,
-    property
-  }, value) {
-    let handler; // list
-
-    if (Object(_util_type__WEBPACK_IMPORTED_MODULE_1__["isArray"])(value)) {
-      if (Object(_util_type__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value[0])) {
-        handler = Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["structList"])(value[0]);
-      }
-    } // object
-    else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_1__["isFunction"])(value)) {
-        handler = Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["struct"])(value);
-      }
-
-    if (!handler) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrInvalidDecoratorUsage"]({
-        reason: "Could not identify struct type"
-      });
+function createType(type, reader) {
+  return Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["decorate"])({
+    property({
+      target,
+      property,
+      descriptor
+    }, typeOf) {
+      blackHandler({
+        target,
+        property,
+        descriptor
+      }, type, typeOf, reader);
     }
 
-    Object(_meta__WEBPACK_IMPORTED_MODULE_3__["set"])("black", handler, target, property);
+  });
+}
+
+var list = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].LIST, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"]);
+var object = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].OBJECT, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["object"]);
+var plain = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["notImplemented"]);
+var unknown = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].UNKNOWN, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["notImplemented"])();
+var boolean = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].BOOLEAN, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["boolean"])();
+var string = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].STRING, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"])();
+var path = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PATH, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["path"])();
+var expression = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].EXPRESSION, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["string"])();
+var float = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].FLOAT, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["float"])();
+var uint = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].UINT, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["uint"])();
+var byte = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].BYTE, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["byte"])();
+var ushort = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].USHORT, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["ushort"])();
+var raw = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].RAW, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["rawObject"])();
+var array = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].ARRAY, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["array"])();
+var vector2 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].VECTOR2, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector2"])();
+var vector3 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].VECTOR3, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector3"])();
+var vector4 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].VECTOR4, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"])();
+var color = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].COLOR, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["color"])();
+var quaternion = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].QUATERNION, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["vector4"])();
+var matrix4 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].MATRIX4, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["matrix"])();
+var indexBuffer = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].INDEX_BUFFER, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["indexBuffer"])();
+var fromList = Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["decorate"])({
+  property({
+    target,
+    property,
+    descriptor
+  }, options, typeOf) {
+    blackHandler({
+      target,
+      property,
+      descriptor
+    }, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN, typeOf, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["fromList"](options));
   }
 
 });
-/**
- * Defines a black reader which results in a plain object from an array or struct list
- * @type {PropertyDecorator}
- */
-
-const blackFromList = Object(_meta__WEBPACK_IMPORTED_MODULE_3__["create"])(true, {
+var struct = Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["decorate"])({
   property({
     target,
-    property
-  }, options) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_3__["set"])("black", Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_2__["fromList"])(options), target, property);
+    property,
+    descriptor
+  }, value, typeOf) {
+    var reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["notImplemented"],
+        type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].UNKNOWN; // list
+
+    if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isArray"])(value)) {
+      if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(value[0])) {
+        reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["structList"](value[0]);
+        type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].LIST;
+      }
+    } // plain from list, using passed value as the source property key
+    else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isString"])(value)) {
+        reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["fromList"]({
+          key: value
+        });
+        type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN;
+      } // plain from list
+      else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(value)) {
+          reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["fromList"](value);
+          type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN;
+        } // object
+        else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(value)) {
+            reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["struct"](value);
+            type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].OBJECT;
+          }
+
+    blackHandler({
+      target,
+      property,
+      descriptor
+    }, type, typeOf, reader);
   }
 
 });
@@ -63793,8 +64204,10 @@ const blackFromList = Object(_meta__WEBPACK_IMPORTED_MODULE_3__["create"])(true,
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
 /* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
 
-const notImplemented = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["create"])(false, {
+
+var notImplemented = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
   handler({
     target,
     property
@@ -63802,7 +64215,7 @@ const notImplemented = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["create"])(fals
     Object(_meta__WEBPACK_IMPORTED_MODULE_0__["set"])("notImplemented", true, target, property);
   }
 
-});
+})();
 
 /***/ }),
 
@@ -63817,67 +64230,27 @@ const notImplemented = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["create"])(fals
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return singleton; });
 /* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
 
 
-const singleton = Object(_meta__WEBPACK_IMPORTED_MODULE_1__["create"])(false, {
+var singleton = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
   class({
     target
   }) {
-    let count = 0;
+    var count = 0;
     return class Singleton extends target {
       constructor(...args) {
         count++;
-
-        if (count > 1) {
-          throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrSingletonInstantiation"]({
-            class: target.name
-          });
-        }
-
+        if (count > 1) throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrSingletonInstantiation"]({
+          class: target.name
+        });
         super(...args);
       }
 
     };
   }
 
-});
-
-/***/ }),
-
-/***/ "./global/meta/@stage.js":
-/*!*******************************!*\
-  !*** ./global/meta/@stage.js ***!
-  \*******************************/
-/*! exports provided: stage1, stage2, stage3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stage1", function() { return stage1; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stage2", function() { return stage2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stage3", function() { return stage3; });
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
-
-
-function createStage(stage) {
-  return Object(_meta__WEBPACK_IMPORTED_MODULE_0__["create"])(false, {
-    class({
-      target
-    }) {
-      Object(_meta__WEBPACK_IMPORTED_MODULE_0__["set"])("stage", stage, target);
-      target.__isStaging = stage;
-    }
-
-  });
-} // Partial implementation, won't throw errors
-
-
-const stage1 = createStage(1); // Partial implementation, likely to throw errors
-
-const stage2 = createStage(2); // Not implemented, will throw errors if used
-
-const stage3 = createStage(3);
+})();
 
 /***/ }),
 
@@ -63885,15 +64258,14 @@ const stage3 = createStage(3);
 /*!******************************!*\
   !*** ./global/meta/@type.js ***!
   \******************************/
-/*! exports provided: type, listOf, objectOf, plainOf, unknown, boolean, string, path, expression, float, uint, byte, object, raw, list, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, plain */
+/*! exports provided: list, object, plain, unknown, boolean, string, path, expression, float, uint, ushort, byte, raw, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "type", function() { return type; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "listOf", function() { return listOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "objectOf", function() { return objectOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plainOf", function() { return plainOf; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "list", function() { return list; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return unknown; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
@@ -63901,10 +64273,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return expression; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "float", function() { return float; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return uint; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return ushort; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return byte; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return raw; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "list", function() { return list; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "array", function() { return array; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return vector2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return vector3; });
@@ -63914,114 +64285,207 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matrix3", function() { return matrix3; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return matrix4; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return indexBuffer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _util_type__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/type */ "./global/util/type.js");
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
+
+
+/**
+ * Creates a property type decorator
+ * @param {String|Number} type
+ * @returns {*}
+ */
+
+function createType(type) {
+  return Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
+    property({
+      target,
+      property,
+      descriptor
+    }, typeOf) {
+      Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["typeHandler"])({
+        target,
+        property,
+        descriptor
+      }, type, typeOf);
+    }
+
+  });
+}
+
+var list = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST);
+var object = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT);
+var plain = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN);
+var unknown = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN)();
+var boolean = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN)();
+var string = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING)();
+var path = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH)();
+var expression = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].EXPRESSION)();
+var float = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT)();
+var uint = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT)();
+var ushort = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].USHORT)();
+var byte = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE)();
+var raw = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW)();
+var array = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].ARRAY)();
+var vector2 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2)();
+var vector3 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3)();
+var vector4 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4)();
+var color = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR)();
+var quaternion = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION)();
+var matrix3 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX3)();
+var matrix4 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX4)();
+var indexBuffer = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER)();
+
+/***/ }),
+
+/***/ "./global/meta/helpers.js":
+/*!********************************!*\
+  !*** ./global/meta/helpers.js ***!
+  \********************************/
+/*! exports provided: decorate, typeHandler */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "decorate", function() { return decorate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "typeHandler", function() { return typeHandler; });
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../meta */ "./global/meta/index.js");
+/* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
 
 
 
+
+var invalidUsage = {
+  class: () => {
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
+      reason: "class"
+    });
+  },
+  method: () => {
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
+      reason: "method"
+    });
+  },
+  property: () => {
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
+      reason: "property"
+    });
+  }
+};
+/**
+ * Ensures descriptors always have default values
+ * - Babel doesn't always handle correctly
+ * @param {*} d
+ * @returns {*}
+ */
+
+function handleDescriptor(d) {
+  if (d) {
+    if (d.writable === undefined) d.writable = true;
+    if (d.enumerable === undefined) d.enumerable = true;
+    if (d.configurable === undefined) d.configurable = true;
+  }
+
+  return d;
+}
+/**
+ *
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {string}
+ */
+
+
+function getTargetType(target, property) {
+  return !property ? "class" : Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(target[property]) ? "method" : "property";
+}
+/**
+ * Normalizes decorator handlers
+ * @param options
+ * @returns {{method: *, property: *, class: *}}
+ */
+
+
+function normalizeHandlers(options) {
+  if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(options)) options = {
+    handler: options
+  };
+  if (!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(options)) throw new ReferenceError("Invalid options object");
+
+  function createHandler(type, options) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(options[type])) return options[type];
+    return options[type] && Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(options.handler) ? options.handler : invalidUsage[type];
+  }
+
+  return {
+    class: createHandler("class", options),
+    method: createHandler("method", options),
+    property: createHandler("property", options)
+  };
+}
+/**
+ * Creates a decorator
+ * @param {Object|Function} options
+ * @param {Function} [options.class]
+ * @param {Function} [options.property]
+ * @param {Function} [options.method]
+ * @param {*} [value] - An optional predefined value to pass
+ * @returns {*}
+ */
+
+
+function decorate(options, value) {
+  var handlers = normalizeHandlers(options);
+  return function (...args) {
+    return function (target, property, descriptor) {
+      console.group();
+      console.dir(target);
+      if (property) console.dir(property);
+      if (descriptor) console.dir(descriptor);
+      console.groupEnd();
+      if (descriptor) handleDescriptor(descriptor);
+      var targetType = getTargetType(target, property); // Predefined value
+
+      if (value !== undefined) {
+        return handlers[targetType]({
+          target,
+          property,
+          descriptor
+        }, value, ...args);
+      }
+
+      return handlers[targetType]({
+        target,
+        property,
+        descriptor
+      }, ...args);
+    };
+  };
+}
 /**
  * Handles property type meta data
  * @param {*} target
  * @param {String} property
  * @param {PropertyDescriptor }descriptor
  * @param {String|Number} type
+ * @param {Array|String} typeOf
  * @param {Array} [childTypes]
  */
 
-function handleType(target, property, descriptor, type, childTypes) {
-  console.log("Handling type", type, "on property", property); // Allow type to be passed as a string
-
-  if (Object(_util_type__WEBPACK_IMPORTED_MODULE_1__["isString"])(type)) type = _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"][type.toUpperCase()];
-  if (type === undefined) type = _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN; // Update meta data
-
+function typeHandler({
+  target,
+  property,
+  descriptor
+}, type, typeOf) {
+  if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isString"])(type)) type = _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"][type.toUpperCase()];
+  if (type === undefined) type = _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].UNKNOWN;
   Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("type", type, target, property);
-  if (childTypes && childTypes.length) Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("childTypes", childTypes, target, property); // Automatic meta data
-
+  if (typeOf) Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("typeOf", Object(global_util__WEBPACK_IMPORTED_MODULE_0__["toArray"])(typeOf), target, property);
   if (property.charAt(0) === "_") Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("private", true, target, property);
   if (descriptor.value === null) Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("nullable", true, target, property);
+  return type;
 }
-/**
- * Type decorator
- */
-
-
-const type = Object(_meta__WEBPACK_IMPORTED_MODULE_2__["create"])(true, {
-  class({
-    target
-  }, name, ...childTypes) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("type", name, target);
-    if (childTypes && childTypes.length) Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("childTypes", childTypes, target);
-  },
-
-  parameter({
-    target,
-    property,
-    descriptor
-  }, type, ...childTypes) {
-    handleType(target, property, descriptor, type, childTypes);
-  }
-
-});
-/**
- * Type factory
- */
-
-function createType(type) {
-  return Object(_meta__WEBPACK_IMPORTED_MODULE_2__["create"])(false, {
-    parameter({
-      target,
-      property,
-      descriptor
-    }) {
-      handleType(target, property, descriptor, type);
-    }
-
-  });
-}
-/**
- * Object Type factory
- */
-
-
-function createTypeOf(type) {
-  return Object(_meta__WEBPACK_IMPORTED_MODULE_2__["create"])(true, {
-    parameter({
-      target,
-      property,
-      descriptor
-    }, ...childTypes) {
-      handleType(target, property, descriptor, type, childTypes);
-    }
-
-  });
-}
-
-const listOf = createTypeOf(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST);
-const objectOf = createTypeOf(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT);
-const plainOf = createTypeOf(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN);
-const unknown = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN);
-const boolean = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN);
-const string = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING);
-const path = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH);
-const expression = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].EXPRESSION);
-const float = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT);
-const uint = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT);
-const byte = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE);
-const object = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT);
-const raw = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW);
-const list = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST);
-const array = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].ARRAY);
-const vector2 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2);
-const vector3 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3);
-const vector4 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4);
-const color = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR);
-const quaternion = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION);
-const matrix3 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX3);
-const matrix4 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX4);
-const indexBuffer = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER);
-const plain = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN);
 
 /***/ }),
 
@@ -64029,101 +64493,89 @@ const plain = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"
 /*!******************************!*\
   !*** ./global/meta/index.js ***!
   \******************************/
-/*! exports provided: add, set, has, hasOwn, get, getOwn, create, abstract, notImplemented, type, listOf, objectOf, plainOf, unknown, boolean, string, path, expression, float, uint, byte, object, raw, list, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, plain, black, blackReader, blackStruct, blackFromList, stage1, stage2, stage3, singleton */
+/*! exports provided: black, data, set, has, hasOwn, get, getOwn, del, keys, ownKeys, values, ownValues, abstract, notImplemented, list, object, plain, unknown, boolean, string, path, expression, float, uint, ushort, byte, raw, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, singleton */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "add", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["add"]; });
+/* harmony import */ var _black__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./@black */ "./global/meta/@black.js");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "black", function() { return _black__WEBPACK_IMPORTED_MODULE_0__; });
+/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "data", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["data"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["set"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["set"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "has", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["has"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "has", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["has"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasOwn", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["hasOwn"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasOwn", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["hasOwn"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["get"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["get"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwn", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["getOwn"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwn", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["getOwn"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "create", function() { return _meta__WEBPACK_IMPORTED_MODULE_0__["create"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "del", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["del"]; });
 
-/* harmony import */ var _abstract__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./@abstract */ "./global/meta/@abstract.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return _abstract__WEBPACK_IMPORTED_MODULE_1__["abstract"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "keys", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["keys"]; });
 
-/* harmony import */ var _notImplemented__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./@notImplemented */ "./global/meta/@notImplemented.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return _notImplemented__WEBPACK_IMPORTED_MODULE_2__["notImplemented"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ownKeys", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["ownKeys"]; });
 
-/* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./@type */ "./global/meta/@type.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "type", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["type"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "values", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["values"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "listOf", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["listOf"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ownValues", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["ownValues"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "objectOf", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["objectOf"]; });
+/* harmony import */ var _abstract__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./@abstract */ "./global/meta/@abstract.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return _abstract__WEBPACK_IMPORTED_MODULE_2__["abstract"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plainOf", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["plainOf"]; });
+/* harmony import */ var _notImplemented__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./@notImplemented */ "./global/meta/@notImplemented.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return _notImplemented__WEBPACK_IMPORTED_MODULE_3__["notImplemented"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["unknown"]; });
+/* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./@type */ "./global/meta/@type.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "list", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["list"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["boolean"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "object", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["object"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "string", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["string"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["plain"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "path", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["path"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["unknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["expression"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["boolean"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "float", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["float"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "string", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["string"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["uint"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "path", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["path"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["byte"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["expression"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "object", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["object"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "float", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["float"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["raw"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["uint"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "list", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["list"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["ushort"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "array", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["array"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["byte"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["vector2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["raw"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["vector3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "array", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["array"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector4", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["vector4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["vector2"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "color", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["color"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["vector3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quaternion", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["quaternion"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector4", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["vector4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix3", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["matrix3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "color", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["color"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["matrix4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quaternion", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["quaternion"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["indexBuffer"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix3", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["matrix3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return _type__WEBPACK_IMPORTED_MODULE_3__["plain"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["matrix4"]; });
 
-/* harmony import */ var _black__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./@black */ "./global/meta/@black.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "black", function() { return _black__WEBPACK_IMPORTED_MODULE_4__["black"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return _type__WEBPACK_IMPORTED_MODULE_4__["indexBuffer"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "blackReader", function() { return _black__WEBPACK_IMPORTED_MODULE_4__["blackReader"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "blackStruct", function() { return _black__WEBPACK_IMPORTED_MODULE_4__["blackStruct"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "blackFromList", function() { return _black__WEBPACK_IMPORTED_MODULE_4__["blackFromList"]; });
-
-/* harmony import */ var _stage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./@stage */ "./global/meta/@stage.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "stage1", function() { return _stage__WEBPACK_IMPORTED_MODULE_5__["stage1"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "stage2", function() { return _stage__WEBPACK_IMPORTED_MODULE_5__["stage2"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "stage3", function() { return _stage__WEBPACK_IMPORTED_MODULE_5__["stage3"]; });
-
-/* harmony import */ var _singleton__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./@singleton */ "./global/meta/@singleton.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return _singleton__WEBPACK_IMPORTED_MODULE_6__["singleton"]; });
+/* harmony import */ var _singleton__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./@singleton */ "./global/meta/@singleton.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return _singleton__WEBPACK_IMPORTED_MODULE_5__["singleton"]; });
 
 
 
@@ -64139,22 +64591,33 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./global/meta/meta.js ***!
   \*****************************/
-/*! exports provided: add, set, has, hasOwn, get, getOwn, create */
+/*! exports provided: data, set, has, hasOwn, get, getOwn, del, keys, ownKeys, values, ownValues */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "add", function() { return add; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "data", function() { return data; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "has", function() { return has; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasOwn", function() { return hasOwn; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOwn", function() { return getOwn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "create", function() { return create; });
-/* harmony import */ var _util_type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/type */ "./global/util/type.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "del", function() { return del; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "keys", function() { return keys; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ownKeys", function() { return ownKeys; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "values", function() { return values; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ownValues", function() { return ownValues; });
+/**
+ * meta
+ * @description Wraps Reflect.metadata
+ * @module
+ */
 
-
+/**
+ * Meta data prefix
+ * @type {string}
+ */
+var PREFIX = "tw2:";
 /**
  * Turns a string into a meta data name
  * @param {String} name
@@ -64162,32 +64625,26 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function getMetaName(name) {
-  return "tw2:".concat(name);
+  return "".concat(PREFIX).concat(name);
 }
 /**
- * Meta data decorator
- * @param {String} name         - The meta data type
- * @param {*} [value=true]      - The meta data's value (defaults to true)
- * @returns {PropertyDecorator}
- * @example
- *
- *     @meta.add("black")
- *     @meta.add("type", "Boolean")
- *     @meta.add("desc", "Toggles displaying the object")
- *     display = true;
- *
+ * Defines meta data as a decorator
+ * @param {String|Object} key
+ * @param {*} [value=true]
+ * @returns {PropertyDecorator|ClassDecorator|MethodDecorator}
  */
 
 
-function add(name, value = true) {
-  return Reflect.metadata(getMetaName(name), value);
+function data(key, value = true) {
+  return Reflect.metadata(getMetaName(key), value);
 }
 /**
  * Defines meta data
  * @param {String} name
  * @param {*} value
  * @param {*} target
- * @param{String} [property]
+ * @param {String} [property]
+ * @returns {*} value
  */
 
 function set(name, value, target, property) {
@@ -64238,148 +64695,90 @@ function getOwn(name, target, property) {
   return Reflect.getOwnMetadata(getMetaName(name), target, property);
 }
 /**
- * Handler for undefined descriptor values
- * - Babel doesn't always add true as defaults
- * @param {PropertyDescriptor} d
- * @returns {PropertyDescriptor} d
+ * Removes/deletes meta data
+ * @param {String} key
+ * @param {*} target
+ * @param {String} property
+ * @returns {boolean}
  */
 
-function handleDescriptor(d) {
-  if (d.writable === undefined) d.writable = true;
-  if (d.enumerable === undefined) d.enumerable = true;
-  if (d.configurable === undefined) d.configurable = true;
-  return d;
+function del(key, target, property) {
+  return Reflect.deleteMetadata(getMetaName(key), target, property);
 }
 /**
- * Descriptor error messages
- * @type {{METHOD: string, CLASS: string, PARAMETER: string}}
+ * Gets only valid meta data keys
+ * @param {Array<String>} array
+ * @returns {Array<String>}
  */
 
+function getValidKeys(array) {
+  var out = [];
 
-const Failmessage = {
-  CLASS: "Decorator not applicable to classes",
-  METHOD: "Decorator not applicable to methods",
-  PARAMETER: "Decorator not applicable to parameters"
-};
-/**
- * Decorator factory
- * TODO: Make this cleaner
- * @param {Boolean} hasArguments
- * @param {Object} options
- * @param {Boolean} [options.hasArguments]
- * @param {Function} [options.class]
- * @param {Function} [options.method]
- * @param {Function} [options.parameter]
- * @param {Function} [options.handler]
- * @returns {PropertyDecorator|ClassDecorator|MethodDecorator}
- */
-
-function create(hasArguments, options) {
-  if (hasArguments) {
-    return function (...args) {
-      return function (target, property, descriptor) {
-        let message;
-
-        if (!property) {
-          if (options.class) {
-            return options.class({
-              target
-            }, ...args);
-          }
-
-          message = Failmessage.CLASS;
-        } else {
-          if (Object(_util_type__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(target[property])) {
-            if (options.method) {
-              const result = options.method({
-                target,
-                property,
-                descriptor
-              }, ...args);
-              handleDescriptor(descriptor);
-              return result;
-            }
-
-            message = Failmessage.METHOD;
-          } else if (options.parameter) {
-            const result = options.parameter({
-              target,
-              property,
-              descriptor
-            }, ...args);
-            handleDescriptor(descriptor);
-            return result;
-          } else {
-            message = Failmessage.PARAMETER;
-          }
-        }
-
-        if (options.handler) {
-          return options.handler({
-            target,
-            property,
-            descriptor
-          }, ...args);
-        }
-
-        message += " (".concat(property ? property : target.name, ")");
-        throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
-          message
-        });
-      };
-    };
-  } else {
-    return function (target, property, descriptor) {
-      let message;
-
-      if (!property) {
-        if (options.class) {
-          return options.class({
-            target
-          });
-        }
-
-        message = Failmessage.CLASS;
-      } else {
-        if (Object(_util_type__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(target[property])) {
-          if (options.method) {
-            const result = options.method({
-              target,
-              property,
-              descriptor
-            });
-            handleDescriptor(descriptor);
-            return result;
-          }
-
-          message = Failmessage.METHOD;
-        } else if (options.parameter) {
-          const result = options.parameter({
-            target,
-            property,
-            descriptor
-          });
-          handleDescriptor(descriptor);
-          return result;
-        } else {
-          message = Failmessage.PARAMETER;
-        }
-      }
-
-      if (options.handler) {
-        return options.handler({
-          target,
-          property,
-          descriptor
-        });
-      }
-
-      message += " (".concat(property ? property : target.name, ")");
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
-        message
-      });
-    };
+  for (var i = 0; i < array.length; i++) {
+    if (array[i].indexOf(PREFIX) === 0) {
+      out.push(array[i].replace(PREFIX, ""));
+    }
   }
+
+  return out;
+}
+/**
+ * Gets meta data keys
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {[]}
+ */
+
+
+function keys(target, property) {
+  return getValidKeys(Reflect.getMetadataKeys(target, property));
+}
+/**
+ * Gets own meta data keys
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {[]}
+ */
+
+function ownKeys(target, property) {
+  return getValidKeys(Reflect.getOwnMetadataKeys(target, property));
+}
+/**
+ *
+ * @param {*} target
+ * @param {String} property
+ * @param {Function} keyFunc
+ * @param {Function} getFunc
+ */
+
+function getAllValidValues(target, property, keyFunc, getFunc) {
+  var metaKeys = keyFunc(target, property),
+      out = {};
+  metaKeys.forEach(key => {
+    var result = getFunc(key, target, property);
+    if (result !== undefined) out[key] = result;
+  });
+  return out;
+}
+/**
+ * Gets all meta data values
+ * @param {*} target
+ * @param {String} [property]
+ */
+
+
+function values(target, property) {
+  return getAllValidValues(target, property, keys, get);
+}
+/**
+ * Gets all own metadata values
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {Object}
+ */
+
+function ownValues(target, property) {
+  return getAllValidValues(target, property, ownKeys, getOwn);
 }
 
 /***/ }),
@@ -64410,9 +64809,9 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function addToArray(arr, ...args) {
-  let added = false;
+  var added = false;
 
-  for (let i = 0; i < args.length; i++) {
+  for (var i = 0; i < args.length; i++) {
     if (arr.indexOf(args[i]) === -1) {
       arr.push(args[i]);
       added = true;
@@ -64432,7 +64831,7 @@ function addToArray(arr, ...args) {
  */
 
 function findElementByPropertyValue(arr, property, value, err) {
-  const index = findIndexByPropertyValue(arr, property, value, err);
+  var index = findIndexByPropertyValue(arr, property, value, err);
   return arr[index];
 }
 /**
@@ -64446,7 +64845,7 @@ function findElementByPropertyValue(arr, property, value, err) {
  */
 
 function findIndexByPropertyValue(arr, property, value, err) {
-  for (let i = 0; i < arr.length; i++) {
+  for (var i = 0; i < arr.length; i++) {
     if (property in arr[i] && arr[i][property] === value) {
       return i;
     }
@@ -64468,7 +64867,7 @@ function findIndexByPropertyValue(arr, property, value, err) {
  */
 
 function perArrayChild(arr, funcName, ...args) {
-  for (let i = 0; i < arr.length; i++) {
+  for (var i = 0; i < arr.length; i++) {
     if (funcName in arr[i]) {
       arr[i][funcName](...args);
     }
@@ -64482,10 +64881,10 @@ function perArrayChild(arr, funcName, ...args) {
  */
 
 function removeFromArray(arr, ...args) {
-  let removed = false;
+  var removed = false;
 
-  for (let i = 0; i < args.length; i++) {
-    const index = arr.indexOf(args[i]);
+  for (var i = 0; i < args.length; i++) {
+    var index = arr.indexOf(args[i]);
 
     if (index !== -1) {
       arr.splice(index, 1);
@@ -64649,7 +65048,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function getPathExtension(path) {
-  const dot = path.lastIndexOf(".");
+  var dot = path.lastIndexOf(".");
   if (dot === -1) return null;
   return path.substr(dot + 1);
 }
@@ -64691,17 +65090,17 @@ __webpack_require__.r(__webpack_exports__);
 function assignIfExists(dest, src, attrs) {
   if (!src) return false;
   attrs = Object(_arr__WEBPACK_IMPORTED_MODULE_1__["toArray"])(attrs);
-  let assigned = false;
+  var assigned = false;
 
-  for (let i = 0; i < attrs.length; i++) {
-    const attr = attrs[i];
+  for (var i = 0; i < attrs.length; i++) {
+    var attr = attrs[i];
     if (src[attr] === undefined) continue;
     assigned = true;
 
     if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(dest[attr])) {
       if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(dest[attr])) {
         if (dest[attr].length !== src[attr].length) {
-          const Constructor = dest[attr].constructor;
+          var Constructor = dest[attr].constructor;
           dest[attr] = new Constructor(src[attr]);
         } else {
           dest[attr].set(src[attr]);
@@ -64709,13 +65108,13 @@ function assignIfExists(dest, src, attrs) {
       } else {
         dest[attr].splice(0);
 
-        for (let i = 0; i < src[attr].length; i++) {
-          dest[attr].push(src[attr][i]);
+        for (var _i = 0; _i < src[attr].length; _i++) {
+          dest[attr].push(src[attr][_i]);
         }
       }
     } else if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(src[attr])) {
-      const Constructor = src[attr].constructor;
-      dest[attr] = new Constructor(src[attr]);
+      var _Constructor = src[attr].constructor;
+      dest[attr] = new _Constructor(src[attr]);
     } else {
       dest[attr] = src[attr];
     }
@@ -64736,7 +65135,7 @@ function get(src, prop, defaultValue) {
     return src[prop] !== undefined ? src[prop] : defaultValue;
   }
 
-  for (let i = 0; i < prop.length; i++) {
+  for (var i = 0; i < prop.length; i++) {
     if (src[prop[i]] !== undefined) {
       return src[prop[i]];
     }
@@ -64764,12 +65163,12 @@ function get(src, prop, defaultValue) {
  */
 
 function template(str, obj = {}) {
-  const literals = str.match(/%([^%]+)?%/g) || [];
+  var literals = str.match(/%([^%]+)?%/g) || [];
 
-  for (let i = 0; i < literals.length; i++) {
-    const literal = literals[i],
-          split = literal.substring(1, literal.length - 1).split("="),
-          value = split[0] in obj ? obj[split[0]] : split[1];
+  for (var i = 0; i < literals.length; i++) {
+    var literal = literals[i],
+        split = literal.substring(1, literal.length - 1).split("="),
+        value = split[0] in obj ? obj[split[0]] : split[1];
     str = str.replace(literal, value);
   }
 
@@ -64799,7 +65198,7 @@ function isVectorEqual(a, b) {
   if (a === b) return true;
   if (a.length !== b.length) return false;
 
-  for (let i = 0; i < a.length; i++) {
+  for (var i = 0; i < a.length; i++) {
     if (!_math__WEBPACK_IMPORTED_MODULE_2__["num"].equals(a[i], b[i])) return false;
   }
 
@@ -64822,18 +65221,18 @@ function isEqual(a, b) {
   if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isVector"])(a)) return Object(_type__WEBPACK_IMPORTED_MODULE_0__["isVector"])(b) ? isVectorEqual(a, b) : false;
   if (!Object(_type__WEBPACK_IMPORTED_MODULE_0__["isObjectObject"])(a) || !Object(_type__WEBPACK_IMPORTED_MODULE_0__["isObjectObject"])(b)) return false;
   if (a.constructor !== b.constructor) return false;
-  const aKeys = Object.keys(a),
-        bKeys = Object.keys(b);
+  var aKeys = Object.keys(a),
+      bKeys = Object.keys(b);
   if (aKeys.length !== bKeys.length) return false;
 
-  for (let i = 0; i < aKeys.length; i++) {
-    let key = aKeys[i];
+  for (var i = 0; i < aKeys.length; i++) {
+    var key = aKeys[i];
     if (!b.hasOwnProperty(key)) return false;
     if (!isEqual(a[key], b[key])) return false;
   }
 
-  for (let i = 0; i < bKeys.length; i++) {
-    if (a.hasOwnProperty(bKeys[i])) return false;
+  for (var _i2 = 0; _i2 < bKeys.length; _i2++) {
+    if (a.hasOwnProperty(bKeys[_i2])) return false;
   }
 
   return true;
@@ -64883,14 +65282,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isVector4", function() { return isVector4; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isMatrix3", function() { return isMatrix3; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isMatrix4", function() { return isMatrix4; });
-const toString = Object.prototype.toString;
+var toString = Object.prototype.toString;
 /**
  * Checks if a value is an array
  * @param {*} a
  * @returns {Boolean}
  */
 
-const isArray = Array.isArray;
+var isArray = Array.isArray;
 /**
  * Checks if a value is an array or a typed array
  * @param {*} a
@@ -64939,9 +65338,9 @@ function isDescriptor(a) {
     return false;
   }
 
-  const keys = ["value", "initializer", "get", "set"];
+  var keys = ["value", "initializer", "get", "set"];
 
-  for (let i = 0, l = keys.length; i < l; i++) {
+  for (var i = 0, l = keys.length; i < l; i++) {
     if (a.hasOwnProperty(keys[i])) {
       return true;
     }
@@ -65009,7 +65408,7 @@ function isNull(a) {
  */
 
 function isObject(a) {
-  const type = typeof a;
+  var type = typeof a;
   return a !== null && (type === "object" || type === "function");
 }
 /**
@@ -65046,7 +65445,7 @@ function isPlain(a) {
     return true;
   }
 
-  let proto = a;
+  var proto = a;
 
   while (Object.getPrototypeOf(proto) !== null) {
     proto = Object.getPrototypeOf(proto);
@@ -65175,7 +65574,7 @@ function isVector(a) {
     }
 
     if (isArray(a)) {
-      for (let i = 0; i < a.length; i++) {
+      for (var i = 0; i < a.length; i++) {
         if (!isNumber(a[i])) return false;
       }
 
@@ -65247,17 +65646,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getURLInteger", function() { return getURLInteger; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getURLFloat", function() { return getURLFloat; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getURLBoolean", function() { return getURLBoolean; });
-const url = {},
-      query = window.location.search.substring(1),
-      split = query.split("&");
+var url = {},
+    query = window.location.search.substring(1),
+    split = query.split("&");
 
-for (let i = 0; i < split.length; i++) {
-  const result = split[i].split("="),
-        key = result[0].toLowerCase(),
-        value = unescape(result[1]);
+for (var i = 0; i < split.length; i++) {
+  var result = split[i].split("="),
+      key = result[0].toLowerCase(),
+      value = unescape(result[1]);
 
   if (key) {
-    let v = value.toLowerCase();
+    var v = value.toLowerCase();
     url[key] = v === "true" ? true : v === "false" ? false : value;
   }
 }
@@ -65332,19 +65731,19 @@ __webpack_require__.r(__webpack_exports__);
  * Identifies if UUIDs should be used for ID generation
  * @type {?Boolean}
  */
-let USE_UUID = null;
+var USE_UUID = null;
 /**
  * Internal object count
  * @type {number}
  */
 
-let OBJECT_COUNT = 0;
+var OBJECT_COUNT = 0;
 /**
  * Stores uuid scratch
  * @type {?Array}
  */
 
-let LUT = null;
+var LUT = null;
 /**
  * Generates a UUID
  * @author Three.js
@@ -65352,10 +65751,10 @@ let LUT = null;
  */
 
 function generateUUID() {
-  const d0 = Math.random() * 0xffffffff | 0,
-        d1 = Math.random() * 0xffffffff | 0,
-        d2 = Math.random() * 0xffffffff | 0,
-        d3 = Math.random() * 0xffffffff | 0;
+  var d0 = Math.random() * 0xffffffff | 0,
+      d1 = Math.random() * 0xffffffff | 0,
+      d2 = Math.random() * 0xffffffff | 0,
+      d3 = Math.random() * 0xffffffff | 0;
   return LUT[d0 & 0xff] + LUT[d0 >> 8 & 0xff] + LUT[d0 >> 16 & 0xff] + LUT[d0 >> 24 & 0xff] + "-" + LUT[d1 & 0xff] + LUT[d1 >> 8 & 0xff] + "-" + LUT[d1 >> 16 & 0x0f | 0x40] + LUT[d1 >> 24 & 0xff] + "-" + LUT[d2 & 0x3f | 0x80] + LUT[d2 >> 8 & 0xff] + "-" + LUT[d2 >> 16 & 0xff] + LUT[d2 >> 24 & 0xff] + LUT[d3 & 0xff] + LUT[d3 >> 8 & 0xff] + LUT[d3 >> 16 & 0xff] + LUT[d3 >> 24 & 0xff];
 }
 /**
@@ -65377,7 +65776,7 @@ function enableUUID(bool) {
   if (bool) {
     LUT = [];
 
-    for (let i = 0; i < 256; i++) {
+    for (var i = 0; i < 256; i++) {
       LUT[i] = (i < 16 ? "0" : "") + i.toString(16).toUpperCase();
     }
   }
@@ -65410,97 +65809,99 @@ function generateID() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ccpwgl_int", function() { return ccpwgl_int; });
-/* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.symbol.description */ "../node_modules/core-js/modules/es.symbol.description.js");
-/* harmony import */ var core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_description__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var core_js_modules_es_symbol_async_iterator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.symbol.async-iterator */ "../node_modules/core-js/modules/es.symbol.async-iterator.js");
-/* harmony import */ var core_js_modules_es_symbol_async_iterator__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_async_iterator__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var core_js_modules_es_array_flat__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es.array.flat */ "../node_modules/core-js/modules/es.array.flat.js");
-/* harmony import */ var core_js_modules_es_array_flat__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_flat__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var core_js_modules_es_array_flat_map__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es.array.flat-map */ "../node_modules/core-js/modules/es.array.flat-map.js");
-/* harmony import */ var core_js_modules_es_array_flat_map__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_flat_map__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var core_js_modules_es_array_iterator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es.array.iterator */ "../node_modules/core-js/modules/es.array.iterator.js");
-/* harmony import */ var core_js_modules_es_array_iterator__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_iterator__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var core_js_modules_es_array_reverse__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core-js/modules/es.array.reverse */ "../node_modules/core-js/modules/es.array.reverse.js");
-/* harmony import */ var core_js_modules_es_array_reverse__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_reverse__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var core_js_modules_es_array_sort__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core-js/modules/es.array.sort */ "../node_modules/core-js/modules/es.array.sort.js");
-/* harmony import */ var core_js_modules_es_array_sort__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_sort__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var core_js_modules_es_array_unscopables_flat__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core-js/modules/es.array.unscopables.flat */ "../node_modules/core-js/modules/es.array.unscopables.flat.js");
-/* harmony import */ var core_js_modules_es_array_unscopables_flat__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_unscopables_flat__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var core_js_modules_es_array_unscopables_flat_map__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! core-js/modules/es.array.unscopables.flat-map */ "../node_modules/core-js/modules/es.array.unscopables.flat-map.js");
-/* harmony import */ var core_js_modules_es_array_unscopables_flat_map__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_unscopables_flat_map__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var core_js_modules_es_array_buffer_constructor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! core-js/modules/es.array-buffer.constructor */ "../node_modules/core-js/modules/es.array-buffer.constructor.js");
-/* harmony import */ var core_js_modules_es_array_buffer_constructor__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_buffer_constructor__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var core_js_modules_es_array_buffer_slice__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! core-js/modules/es.array-buffer.slice */ "../node_modules/core-js/modules/es.array-buffer.slice.js");
-/* harmony import */ var core_js_modules_es_array_buffer_slice__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_buffer_slice__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var core_js_modules_es_number_parse_float__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! core-js/modules/es.number.parse-float */ "../node_modules/core-js/modules/es.number.parse-float.js");
-/* harmony import */ var core_js_modules_es_number_parse_float__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_number_parse_float__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var core_js_modules_es_object_define_getter__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! core-js/modules/es.object.define-getter */ "../node_modules/core-js/modules/es.object.define-getter.js");
-/* harmony import */ var core_js_modules_es_object_define_getter__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_define_getter__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var core_js_modules_es_object_define_setter__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! core-js/modules/es.object.define-setter */ "../node_modules/core-js/modules/es.object.define-setter.js");
-/* harmony import */ var core_js_modules_es_object_define_setter__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_define_setter__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var core_js_modules_es_object_from_entries__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! core-js/modules/es.object.from-entries */ "../node_modules/core-js/modules/es.object.from-entries.js");
-/* harmony import */ var core_js_modules_es_object_from_entries__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_from_entries__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var core_js_modules_es_object_lookup_getter__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! core-js/modules/es.object.lookup-getter */ "../node_modules/core-js/modules/es.object.lookup-getter.js");
-/* harmony import */ var core_js_modules_es_object_lookup_getter__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_lookup_getter__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var core_js_modules_es_object_lookup_setter__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! core-js/modules/es.object.lookup-setter */ "../node_modules/core-js/modules/es.object.lookup-setter.js");
-/* harmony import */ var core_js_modules_es_object_lookup_setter__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_lookup_setter__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! core-js/modules/es.promise */ "../node_modules/core-js/modules/es.promise.js");
-/* harmony import */ var core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! core-js/modules/es.promise.finally */ "../node_modules/core-js/modules/es.promise.finally.js");
-/* harmony import */ var core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise_finally__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony import */ var core_js_modules_es_string_pad_end__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! core-js/modules/es.string.pad-end */ "../node_modules/core-js/modules/es.string.pad-end.js");
-/* harmony import */ var core_js_modules_es_string_pad_end__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_pad_end__WEBPACK_IMPORTED_MODULE_19__);
-/* harmony import */ var core_js_modules_es_string_pad_start__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! core-js/modules/es.string.pad-start */ "../node_modules/core-js/modules/es.string.pad-start.js");
-/* harmony import */ var core_js_modules_es_string_pad_start__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_pad_start__WEBPACK_IMPORTED_MODULE_20__);
-/* harmony import */ var core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! core-js/modules/es.string.replace */ "../node_modules/core-js/modules/es.string.replace.js");
-/* harmony import */ var core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_21__);
-/* harmony import */ var core_js_modules_es_string_trim__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! core-js/modules/es.string.trim */ "../node_modules/core-js/modules/es.string.trim.js");
-/* harmony import */ var core_js_modules_es_string_trim__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_trim__WEBPACK_IMPORTED_MODULE_22__);
-/* harmony import */ var core_js_modules_es_string_trim_end__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! core-js/modules/es.string.trim-end */ "../node_modules/core-js/modules/es.string.trim-end.js");
-/* harmony import */ var core_js_modules_es_string_trim_end__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_trim_end__WEBPACK_IMPORTED_MODULE_23__);
-/* harmony import */ var core_js_modules_es_string_trim_start__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! core-js/modules/es.string.trim-start */ "../node_modules/core-js/modules/es.string.trim-start.js");
-/* harmony import */ var core_js_modules_es_string_trim_start__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_trim_start__WEBPACK_IMPORTED_MODULE_24__);
-/* harmony import */ var core_js_modules_es_typed_array_float32_array__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! core-js/modules/es.typed-array.float32-array */ "../node_modules/core-js/modules/es.typed-array.float32-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_float32_array__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_float32_array__WEBPACK_IMPORTED_MODULE_25__);
-/* harmony import */ var core_js_modules_es_typed_array_float64_array__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! core-js/modules/es.typed-array.float64-array */ "../node_modules/core-js/modules/es.typed-array.float64-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_float64_array__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_float64_array__WEBPACK_IMPORTED_MODULE_26__);
-/* harmony import */ var core_js_modules_es_typed_array_int8_array__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! core-js/modules/es.typed-array.int8-array */ "../node_modules/core-js/modules/es.typed-array.int8-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_int8_array__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_int8_array__WEBPACK_IMPORTED_MODULE_27__);
-/* harmony import */ var core_js_modules_es_typed_array_int16_array__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! core-js/modules/es.typed-array.int16-array */ "../node_modules/core-js/modules/es.typed-array.int16-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_int16_array__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_int16_array__WEBPACK_IMPORTED_MODULE_28__);
-/* harmony import */ var core_js_modules_es_typed_array_int32_array__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! core-js/modules/es.typed-array.int32-array */ "../node_modules/core-js/modules/es.typed-array.int32-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_int32_array__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_int32_array__WEBPACK_IMPORTED_MODULE_29__);
-/* harmony import */ var core_js_modules_es_typed_array_uint8_array__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint8-array */ "../node_modules/core-js/modules/es.typed-array.uint8-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_uint8_array__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint8_array__WEBPACK_IMPORTED_MODULE_30__);
-/* harmony import */ var core_js_modules_es_typed_array_uint8_clamped_array__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint8-clamped-array */ "../node_modules/core-js/modules/es.typed-array.uint8-clamped-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_uint8_clamped_array__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint8_clamped_array__WEBPACK_IMPORTED_MODULE_31__);
-/* harmony import */ var core_js_modules_es_typed_array_uint16_array__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint16-array */ "../node_modules/core-js/modules/es.typed-array.uint16-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_uint16_array__WEBPACK_IMPORTED_MODULE_32___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint16_array__WEBPACK_IMPORTED_MODULE_32__);
-/* harmony import */ var core_js_modules_es_typed_array_uint32_array__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint32-array */ "../node_modules/core-js/modules/es.typed-array.uint32-array.js");
-/* harmony import */ var core_js_modules_es_typed_array_uint32_array__WEBPACK_IMPORTED_MODULE_33___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint32_array__WEBPACK_IMPORTED_MODULE_33__);
-/* harmony import */ var core_js_modules_es_typed_array_from__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! core-js/modules/es.typed-array.from */ "../node_modules/core-js/modules/es.typed-array.from.js");
-/* harmony import */ var core_js_modules_es_typed_array_from__WEBPACK_IMPORTED_MODULE_34___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_from__WEBPACK_IMPORTED_MODULE_34__);
-/* harmony import */ var core_js_modules_es_typed_array_of__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! core-js/modules/es.typed-array.of */ "../node_modules/core-js/modules/es.typed-array.of.js");
-/* harmony import */ var core_js_modules_es_typed_array_of__WEBPACK_IMPORTED_MODULE_35___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_of__WEBPACK_IMPORTED_MODULE_35__);
-/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each */ "../node_modules/core-js/modules/web.dom-collections.for-each.js");
-/* harmony import */ var core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_36___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each__WEBPACK_IMPORTED_MODULE_36__);
-/* harmony import */ var core_js_modules_web_dom_collections_iterator__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! core-js/modules/web.dom-collections.iterator */ "../node_modules/core-js/modules/web.dom-collections.iterator.js");
-/* harmony import */ var core_js_modules_web_dom_collections_iterator__WEBPACK_IMPORTED_MODULE_37___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_iterator__WEBPACK_IMPORTED_MODULE_37__);
-/* harmony import */ var core_js_modules_web_immediate__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! core-js/modules/web.immediate */ "../node_modules/core-js/modules/web.immediate.js");
-/* harmony import */ var core_js_modules_web_immediate__WEBPACK_IMPORTED_MODULE_38___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_immediate__WEBPACK_IMPORTED_MODULE_38__);
-/* harmony import */ var core_js_modules_web_queue_microtask__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! core-js/modules/web.queue-microtask */ "../node_modules/core-js/modules/web.queue-microtask.js");
-/* harmony import */ var core_js_modules_web_queue_microtask__WEBPACK_IMPORTED_MODULE_39___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_queue_microtask__WEBPACK_IMPORTED_MODULE_39__);
-/* harmony import */ var core_js_modules_web_url__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! core-js/modules/web.url */ "../node_modules/core-js/modules/web.url.js");
-/* harmony import */ var core_js_modules_web_url__WEBPACK_IMPORTED_MODULE_40___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_url__WEBPACK_IMPORTED_MODULE_40__);
-/* harmony import */ var core_js_modules_web_url_to_json__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! core-js/modules/web.url.to-json */ "../node_modules/core-js/modules/web.url.to-json.js");
-/* harmony import */ var core_js_modules_web_url_to_json__WEBPACK_IMPORTED_MODULE_41___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_url_to_json__WEBPACK_IMPORTED_MODULE_41__);
-/* harmony import */ var core_js_modules_web_url_search_params__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! core-js/modules/web.url-search-params */ "../node_modules/core-js/modules/web.url-search-params.js");
-/* harmony import */ var core_js_modules_web_url_search_params__WEBPACK_IMPORTED_MODULE_42___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_url_search_params__WEBPACK_IMPORTED_MODULE_42__);
-/* harmony import */ var reflect_metadata__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! reflect-metadata */ "../node_modules/reflect-metadata/Reflect.js");
-/* harmony import */ var reflect_metadata__WEBPACK_IMPORTED_MODULE_43___default = /*#__PURE__*/__webpack_require__.n(reflect_metadata__WEBPACK_IMPORTED_MODULE_43__);
-/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! ./config */ "./config.js");
-/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./global */ "./global/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _global__WEBPACK_IMPORTED_MODULE_45__["tw2"]; });
+/* harmony import */ var core_js_modules_es_symbol_description_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.symbol.description.js */ "../node_modules/core-js/modules/es.symbol.description.js");
+/* harmony import */ var core_js_modules_es_symbol_description_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_description_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var core_js_modules_es_symbol_async_iterator_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.symbol.async-iterator.js */ "../node_modules/core-js/modules/es.symbol.async-iterator.js");
+/* harmony import */ var core_js_modules_es_symbol_async_iterator_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_symbol_async_iterator_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var core_js_modules_es_array_flat_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es.array.flat.js */ "../node_modules/core-js/modules/es.array.flat.js");
+/* harmony import */ var core_js_modules_es_array_flat_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_flat_js__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var core_js_modules_es_array_flat_map_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core-js/modules/es.array.flat-map.js */ "../node_modules/core-js/modules/es.array.flat-map.js");
+/* harmony import */ var core_js_modules_es_array_flat_map_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_flat_map_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var core_js_modules_es_array_iterator_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core-js/modules/es.array.iterator.js */ "../node_modules/core-js/modules/es.array.iterator.js");
+/* harmony import */ var core_js_modules_es_array_iterator_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_iterator_js__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var core_js_modules_es_array_reverse_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! core-js/modules/es.array.reverse.js */ "../node_modules/core-js/modules/es.array.reverse.js");
+/* harmony import */ var core_js_modules_es_array_reverse_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_reverse_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var core_js_modules_es_array_sort_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core-js/modules/es.array.sort.js */ "../node_modules/core-js/modules/es.array.sort.js");
+/* harmony import */ var core_js_modules_es_array_sort_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_sort_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var core_js_modules_es_array_unscopables_flat_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core-js/modules/es.array.unscopables.flat.js */ "../node_modules/core-js/modules/es.array.unscopables.flat.js");
+/* harmony import */ var core_js_modules_es_array_unscopables_flat_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_unscopables_flat_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var core_js_modules_es_array_unscopables_flat_map_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! core-js/modules/es.array.unscopables.flat-map.js */ "../node_modules/core-js/modules/es.array.unscopables.flat-map.js");
+/* harmony import */ var core_js_modules_es_array_unscopables_flat_map_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_unscopables_flat_map_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var core_js_modules_es_array_buffer_constructor_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! core-js/modules/es.array-buffer.constructor.js */ "../node_modules/core-js/modules/es.array-buffer.constructor.js");
+/* harmony import */ var core_js_modules_es_array_buffer_constructor_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_buffer_constructor_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var core_js_modules_es_array_buffer_slice_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! core-js/modules/es.array-buffer.slice.js */ "../node_modules/core-js/modules/es.array-buffer.slice.js");
+/* harmony import */ var core_js_modules_es_array_buffer_slice_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_buffer_slice_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var core_js_modules_es_math_hypot_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! core-js/modules/es.math.hypot.js */ "../node_modules/core-js/modules/es.math.hypot.js");
+/* harmony import */ var core_js_modules_es_math_hypot_js__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_math_hypot_js__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var core_js_modules_es_number_parse_float_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! core-js/modules/es.number.parse-float.js */ "../node_modules/core-js/modules/es.number.parse-float.js");
+/* harmony import */ var core_js_modules_es_number_parse_float_js__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_number_parse_float_js__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var core_js_modules_es_object_define_getter_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! core-js/modules/es.object.define-getter.js */ "../node_modules/core-js/modules/es.object.define-getter.js");
+/* harmony import */ var core_js_modules_es_object_define_getter_js__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_define_getter_js__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var core_js_modules_es_object_define_setter_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! core-js/modules/es.object.define-setter.js */ "../node_modules/core-js/modules/es.object.define-setter.js");
+/* harmony import */ var core_js_modules_es_object_define_setter_js__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_define_setter_js__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var core_js_modules_es_object_from_entries_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! core-js/modules/es.object.from-entries.js */ "../node_modules/core-js/modules/es.object.from-entries.js");
+/* harmony import */ var core_js_modules_es_object_from_entries_js__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_from_entries_js__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var core_js_modules_es_object_lookup_getter_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! core-js/modules/es.object.lookup-getter.js */ "../node_modules/core-js/modules/es.object.lookup-getter.js");
+/* harmony import */ var core_js_modules_es_object_lookup_getter_js__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_lookup_getter_js__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var core_js_modules_es_object_lookup_setter_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! core-js/modules/es.object.lookup-setter.js */ "../node_modules/core-js/modules/es.object.lookup-setter.js");
+/* harmony import */ var core_js_modules_es_object_lookup_setter_js__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_object_lookup_setter_js__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! core-js/modules/es.promise.js */ "../node_modules/core-js/modules/es.promise.js");
+/* harmony import */ var core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise_js__WEBPACK_IMPORTED_MODULE_18__);
+/* harmony import */ var core_js_modules_es_promise_finally_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! core-js/modules/es.promise.finally.js */ "../node_modules/core-js/modules/es.promise.finally.js");
+/* harmony import */ var core_js_modules_es_promise_finally_js__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_promise_finally_js__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var core_js_modules_es_string_pad_end_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! core-js/modules/es.string.pad-end.js */ "../node_modules/core-js/modules/es.string.pad-end.js");
+/* harmony import */ var core_js_modules_es_string_pad_end_js__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_pad_end_js__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var core_js_modules_es_string_pad_start_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! core-js/modules/es.string.pad-start.js */ "../node_modules/core-js/modules/es.string.pad-start.js");
+/* harmony import */ var core_js_modules_es_string_pad_start_js__WEBPACK_IMPORTED_MODULE_21___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_pad_start_js__WEBPACK_IMPORTED_MODULE_21__);
+/* harmony import */ var core_js_modules_es_string_replace_js__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! core-js/modules/es.string.replace.js */ "../node_modules/core-js/modules/es.string.replace.js");
+/* harmony import */ var core_js_modules_es_string_replace_js__WEBPACK_IMPORTED_MODULE_22___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_replace_js__WEBPACK_IMPORTED_MODULE_22__);
+/* harmony import */ var core_js_modules_es_string_trim_js__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! core-js/modules/es.string.trim.js */ "../node_modules/core-js/modules/es.string.trim.js");
+/* harmony import */ var core_js_modules_es_string_trim_js__WEBPACK_IMPORTED_MODULE_23___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_trim_js__WEBPACK_IMPORTED_MODULE_23__);
+/* harmony import */ var core_js_modules_es_string_trim_end_js__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! core-js/modules/es.string.trim-end.js */ "../node_modules/core-js/modules/es.string.trim-end.js");
+/* harmony import */ var core_js_modules_es_string_trim_end_js__WEBPACK_IMPORTED_MODULE_24___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_trim_end_js__WEBPACK_IMPORTED_MODULE_24__);
+/* harmony import */ var core_js_modules_es_string_trim_start_js__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! core-js/modules/es.string.trim-start.js */ "../node_modules/core-js/modules/es.string.trim-start.js");
+/* harmony import */ var core_js_modules_es_string_trim_start_js__WEBPACK_IMPORTED_MODULE_25___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_trim_start_js__WEBPACK_IMPORTED_MODULE_25__);
+/* harmony import */ var core_js_modules_es_typed_array_float32_array_js__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! core-js/modules/es.typed-array.float32-array.js */ "../node_modules/core-js/modules/es.typed-array.float32-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_float32_array_js__WEBPACK_IMPORTED_MODULE_26___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_float32_array_js__WEBPACK_IMPORTED_MODULE_26__);
+/* harmony import */ var core_js_modules_es_typed_array_float64_array_js__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! core-js/modules/es.typed-array.float64-array.js */ "../node_modules/core-js/modules/es.typed-array.float64-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_float64_array_js__WEBPACK_IMPORTED_MODULE_27___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_float64_array_js__WEBPACK_IMPORTED_MODULE_27__);
+/* harmony import */ var core_js_modules_es_typed_array_int8_array_js__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! core-js/modules/es.typed-array.int8-array.js */ "../node_modules/core-js/modules/es.typed-array.int8-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_int8_array_js__WEBPACK_IMPORTED_MODULE_28___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_int8_array_js__WEBPACK_IMPORTED_MODULE_28__);
+/* harmony import */ var core_js_modules_es_typed_array_int16_array_js__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! core-js/modules/es.typed-array.int16-array.js */ "../node_modules/core-js/modules/es.typed-array.int16-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_int16_array_js__WEBPACK_IMPORTED_MODULE_29___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_int16_array_js__WEBPACK_IMPORTED_MODULE_29__);
+/* harmony import */ var core_js_modules_es_typed_array_int32_array_js__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! core-js/modules/es.typed-array.int32-array.js */ "../node_modules/core-js/modules/es.typed-array.int32-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_int32_array_js__WEBPACK_IMPORTED_MODULE_30___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_int32_array_js__WEBPACK_IMPORTED_MODULE_30__);
+/* harmony import */ var core_js_modules_es_typed_array_uint8_array_js__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint8-array.js */ "../node_modules/core-js/modules/es.typed-array.uint8-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_uint8_array_js__WEBPACK_IMPORTED_MODULE_31___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint8_array_js__WEBPACK_IMPORTED_MODULE_31__);
+/* harmony import */ var core_js_modules_es_typed_array_uint8_clamped_array_js__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint8-clamped-array.js */ "../node_modules/core-js/modules/es.typed-array.uint8-clamped-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_uint8_clamped_array_js__WEBPACK_IMPORTED_MODULE_32___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint8_clamped_array_js__WEBPACK_IMPORTED_MODULE_32__);
+/* harmony import */ var core_js_modules_es_typed_array_uint16_array_js__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint16-array.js */ "../node_modules/core-js/modules/es.typed-array.uint16-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_uint16_array_js__WEBPACK_IMPORTED_MODULE_33___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint16_array_js__WEBPACK_IMPORTED_MODULE_33__);
+/* harmony import */ var core_js_modules_es_typed_array_uint32_array_js__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! core-js/modules/es.typed-array.uint32-array.js */ "../node_modules/core-js/modules/es.typed-array.uint32-array.js");
+/* harmony import */ var core_js_modules_es_typed_array_uint32_array_js__WEBPACK_IMPORTED_MODULE_34___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_uint32_array_js__WEBPACK_IMPORTED_MODULE_34__);
+/* harmony import */ var core_js_modules_es_typed_array_from_js__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! core-js/modules/es.typed-array.from.js */ "../node_modules/core-js/modules/es.typed-array.from.js");
+/* harmony import */ var core_js_modules_es_typed_array_from_js__WEBPACK_IMPORTED_MODULE_35___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_from_js__WEBPACK_IMPORTED_MODULE_35__);
+/* harmony import */ var core_js_modules_es_typed_array_of_js__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! core-js/modules/es.typed-array.of.js */ "../node_modules/core-js/modules/es.typed-array.of.js");
+/* harmony import */ var core_js_modules_es_typed_array_of_js__WEBPACK_IMPORTED_MODULE_36___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_typed_array_of_js__WEBPACK_IMPORTED_MODULE_36__);
+/* harmony import */ var core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! core-js/modules/web.dom-collections.for-each.js */ "../node_modules/core-js/modules/web.dom-collections.for-each.js");
+/* harmony import */ var core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_37___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_for_each_js__WEBPACK_IMPORTED_MODULE_37__);
+/* harmony import */ var core_js_modules_web_dom_collections_iterator_js__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! core-js/modules/web.dom-collections.iterator.js */ "../node_modules/core-js/modules/web.dom-collections.iterator.js");
+/* harmony import */ var core_js_modules_web_dom_collections_iterator_js__WEBPACK_IMPORTED_MODULE_38___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_dom_collections_iterator_js__WEBPACK_IMPORTED_MODULE_38__);
+/* harmony import */ var core_js_modules_web_immediate_js__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! core-js/modules/web.immediate.js */ "../node_modules/core-js/modules/web.immediate.js");
+/* harmony import */ var core_js_modules_web_immediate_js__WEBPACK_IMPORTED_MODULE_39___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_immediate_js__WEBPACK_IMPORTED_MODULE_39__);
+/* harmony import */ var core_js_modules_web_queue_microtask_js__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! core-js/modules/web.queue-microtask.js */ "../node_modules/core-js/modules/web.queue-microtask.js");
+/* harmony import */ var core_js_modules_web_queue_microtask_js__WEBPACK_IMPORTED_MODULE_40___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_queue_microtask_js__WEBPACK_IMPORTED_MODULE_40__);
+/* harmony import */ var core_js_modules_web_url_js__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! core-js/modules/web.url.js */ "../node_modules/core-js/modules/web.url.js");
+/* harmony import */ var core_js_modules_web_url_js__WEBPACK_IMPORTED_MODULE_41___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_url_js__WEBPACK_IMPORTED_MODULE_41__);
+/* harmony import */ var core_js_modules_web_url_to_json_js__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! core-js/modules/web.url.to-json.js */ "../node_modules/core-js/modules/web.url.to-json.js");
+/* harmony import */ var core_js_modules_web_url_to_json_js__WEBPACK_IMPORTED_MODULE_42___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_url_to_json_js__WEBPACK_IMPORTED_MODULE_42__);
+/* harmony import */ var core_js_modules_web_url_search_params_js__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! core-js/modules/web.url-search-params.js */ "../node_modules/core-js/modules/web.url-search-params.js");
+/* harmony import */ var core_js_modules_web_url_search_params_js__WEBPACK_IMPORTED_MODULE_43___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_web_url_search_params_js__WEBPACK_IMPORTED_MODULE_43__);
+/* harmony import */ var reflect_metadata__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! reflect-metadata */ "../node_modules/reflect-metadata/Reflect.js");
+/* harmony import */ var reflect_metadata__WEBPACK_IMPORTED_MODULE_44___default = /*#__PURE__*/__webpack_require__.n(reflect_metadata__WEBPACK_IMPORTED_MODULE_44__);
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! ./config */ "./config.js");
+/* harmony import */ var _global__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! ./global */ "./global/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "tw2", function() { return _global__WEBPACK_IMPORTED_MODULE_46__["tw2"]; });
 
 
 
@@ -65548,8 +65949,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-_global__WEBPACK_IMPORTED_MODULE_45__["tw2"].Register(_config__WEBPACK_IMPORTED_MODULE_44__["config"]);
-const ccpwgl_int = _global__WEBPACK_IMPORTED_MODULE_45__["tw2"];
+
+_global__WEBPACK_IMPORTED_MODULE_46__["tw2"].Register(_config__WEBPACK_IMPORTED_MODULE_45__["config"]);
+var ccpwgl_int = _global__WEBPACK_IMPORTED_MODULE_46__["tw2"];
 
 
 /***/ }),
@@ -66247,7 +66649,7 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
   UpdateElementDeclaration() {
     this._isValid = false;
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this._vb) {
       gl.deleteBuffer(this._vb);
@@ -66264,10 +66666,10 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
     this._declaration = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2VertexDeclaration"]();
     this._buffers = [null, null];
 
-    for (let i = 0; i < this.elements.length; ++i) {
-      const bufferIndex = this.elements[i].usedByGPU ? 0 : 1,
-            src = this.elements[i];
-      const el = _element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].from({
+    for (var i = 0; i < this.elements.length; ++i) {
+      var bufferIndex = this.elements[i].usedByGPU ? 0 : 1,
+          src = this.elements[i];
+      var el = _element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].from({
         elementType: src.elementType,
         customName: src.customName,
         dimension: src.GetDimension(),
@@ -66287,7 +66689,7 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
       this._elements.push(el);
 
       if (bufferIndex === 0) {
-        const d = this.elements[i].GetDeclaration();
+        var d = this.elements[i].GetDeclaration();
         d.offset = el.startOffset * 4;
 
         this._declaration.elements.push(d);
@@ -66296,17 +66698,19 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
     this._declaration.RebuildHash();
 
-    for (let i = 0; i < this._elements.length; ++i) {
-      const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-      this._elements[i].vertexStride = this._vertexStride[bufferIndex];
+    for (var _i = 0; _i < this._elements.length; ++_i) {
+      var _bufferIndex = this._elements[_i].usedByGPU ? 0 : 1;
+
+      this._elements[_i].vertexStride = this._vertexStride[_bufferIndex];
     }
 
     this._instanceStride[0] = this._vertexStride[0] * 4;
     this._instanceStride[1] = this._vertexStride[1] * 4;
 
-    for (let i = 0; i < this._elements.length; ++i) {
-      const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-      this._elements[i].instanceStride = this._instanceStride[bufferIndex];
+    for (var _i2 = 0; _i2 < this._elements.length; ++_i2) {
+      var _bufferIndex2 = this._elements[_i2].usedByGPU ? 0 : 1;
+
+      this._elements[_i2].instanceStride = this._instanceStride[_bufferIndex2];
     }
 
     this._buffers = [null, null];
@@ -66323,9 +66727,10 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
       this._buffers[1] = new Float32Array(this._instanceStride[1] * this.maxParticleCount);
     }
 
-    for (let i = 0; i < this._elements.length; ++i) {
-      const bufferIndex = this._elements[i].usedByGPU ? 0 : 1;
-      this._elements[i].buffer = this._buffers[bufferIndex];
+    for (var _i3 = 0; _i3 < this._elements.length; ++_i3) {
+      var _bufferIndex3 = this._elements[_i3].usedByGPU ? 0 : 1;
+
+      this._elements[_i3].buffer = this._buffers[_bufferIndex3];
     }
 
     if (this.requiresSorting) {
@@ -66389,11 +66794,11 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
     dt = Math.min(dt, 0.1);
 
     if (this.applyAging && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.LIFETIME)) {
-      const lifetime = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.LIFETIME),
-            position = this.emitParticleOnDeathEmitter ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) : null,
-            velocity = this.emitParticleOnDeathEmitter ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY) : null;
+      var lifetime = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.LIFETIME),
+          position = this.emitParticleOnDeathEmitter ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) : null,
+          velocity = this.emitParticleOnDeathEmitter ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY) : null;
 
-      for (let i = 0; i < this._aliveCount; ++i) {
+      for (var i = 0; i < this._aliveCount; ++i) {
         lifetime.buffer[lifetime.offset] += dt / lifetime.buffer[lifetime.offset + 1];
 
         if (lifetime.buffer[lifetime.offset] > 1) {
@@ -66404,7 +66809,7 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
           this._aliveCount--;
 
           if (i < this._aliveCount) {
-            for (let j = 0; j < 2; ++j) {
+            for (var j = 0; j < 2; ++j) {
               if (this._buffers[j]) {
                 this._buffers[j].set(this._buffers[j].subarray(this._instanceStride[j] * this._aliveCount, this._instanceStride[j] * this._aliveCount + this._instanceStride[j]), i * this._instanceStride[j]);
               }
@@ -66423,54 +66828,54 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
       lifetime.dirty = true;
     }
 
-    const vec3_0 = Tw2ParticleSystem.global.vec3_0;
+    var vec3_0 = Tw2ParticleSystem.global.vec3_0;
 
     if (this.updateSimulation && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY)) {
-      const hasForces = this.applyForce && this.forces.length;
+      var hasForces = this.applyForce && this.forces.length;
 
-      for (let i = 0; i < this.forces.length; ++i) {
-        this.forces[i].Update(dt);
+      for (var _i4 = 0; _i4 < this.forces.length; ++_i4) {
+        this.forces[_i4].Update(dt);
       }
 
-      const position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
-            velocity = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY),
-            mass = hasForces ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.MASS) : null;
+      var _position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
+          _velocity = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY),
+          mass = hasForces ? this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.MASS) : null;
 
-      for (let i = 0; i < this._aliveCount; ++i) {
+      for (var _i5 = 0; _i5 < this._aliveCount; ++_i5) {
         if (hasForces) {
-          const amass = mass ? mass.buffer[mass.offset] : 1,
-                force = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, 0, 0, 0);
+          var amass = mass ? mass.buffer[mass.offset] : 1,
+              force = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(vec3_0, 0, 0, 0);
 
-          for (let j = 0; j < this.forces.length; ++j) {
-            this.forces[j].ApplyForce(position, velocity, force, dt, amass);
+          for (var _j = 0; _j < this.forces.length; ++_j) {
+            this.forces[_j].ApplyForce(_position, _velocity, force, dt, amass);
           }
 
           if (mass) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(force, force, 1 / mass.buffer[mass.offset]);
-          velocity.buffer[velocity.offset] += force[0] * dt;
-          velocity.buffer[velocity.offset + 1] += force[1] * dt;
-          velocity.buffer[velocity.offset + 2] += force[2] * dt;
+          _velocity.buffer[_velocity.offset] += force[0] * dt;
+          _velocity.buffer[_velocity.offset + 1] += force[1] * dt;
+          _velocity.buffer[_velocity.offset + 2] += force[2] * dt;
         }
 
-        position.buffer[position.offset] += velocity.buffer[velocity.offset] * dt;
-        position.buffer[position.offset + 1] += velocity.buffer[velocity.offset + 1] * dt;
-        position.buffer[position.offset + 2] += velocity.buffer[velocity.offset + 2] * dt;
+        _position.buffer[_position.offset] += _velocity.buffer[_velocity.offset] * dt;
+        _position.buffer[_position.offset + 1] += _velocity.buffer[_velocity.offset + 1] * dt;
+        _position.buffer[_position.offset + 2] += _velocity.buffer[_velocity.offset + 2] * dt;
 
         if (this.emitParticleDuringLifeEmitter) {
-          this.emitParticleDuringLifeEmitter.SpawnParticles(position, velocity, dt);
+          this.emitParticleDuringLifeEmitter.SpawnParticles(_position, _velocity, dt);
         }
 
-        position.offset += position.instanceStride;
-        velocity.offset += velocity.instanceStride;
+        _position.offset += _position.instanceStride;
+        _velocity.offset += _velocity.instanceStride;
         if (mass) mass.offset += mass.instanceStride;
       }
 
-      position.dirty = true;
-      velocity.dirty = true;
+      _position.dirty = true;
+      _velocity.dirty = true;
     }
 
     if (this.updateSimulation && this.constraints.length) {
-      for (let i = 0; i < this.constraints.length; ++i) {
-        this.constraints[i].ApplyConstraint(this._buffers, this._instanceStride, this._aliveCount, dt);
+      for (var _i6 = 0; _i6 < this.constraints.length; ++_i6) {
+        this.constraints[_i6].ApplyConstraint(this._buffers, this._instanceStride, this._aliveCount, dt);
       }
     }
 
@@ -66479,18 +66884,18 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
     }
 
     if (this.emitParticleDuringLifeEmitter && !(this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY)) && this.updateSimulation) {
-      const position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
-            velocity = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY);
+      var _position2 = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
+          _velocity2 = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.VELOCITY);
 
-      for (let i = 0; i < this._aliveCount; ++i) {
-        this.emitParticleDuringLifeEmitter.SpawnParticles(position, velocity, 1);
-        if (position) position.offset += position.instanceStride;
-        if (velocity) velocity.offset += velocity.instanceStride;
+      for (var _i7 = 0; _i7 < this._aliveCount; ++_i7) {
+        this.emitParticleDuringLifeEmitter.SpawnParticles(_position2, _velocity2, 1);
+        if (_position2) _position2.offset += _position2.instanceStride;
+        if (_velocity2) _velocity2.offset += _velocity2.instanceStride;
       }
     }
 
-    for (let i = 0; i < this._elements.length; ++i) {
-      const el = this._elements[i];
+    for (var _i8 = 0; _i8 < this._elements.length; ++_i8) {
+      var el = this._elements[_i8];
       el.offset = el.startOffset;
 
       if (el.dirty) {
@@ -66509,7 +66914,7 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
   GetBoundingBox(aabbMin, aabbMax) {
     if (this._aliveCount && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION)) {
-      const position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION);
+      var position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION);
       aabbMin[0] = position.buffer[position.offset];
       aabbMin[1] = position.buffer[position.offset + 1];
       aabbMin[2] = position.buffer[position.offset + 2];
@@ -66517,7 +66922,7 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
       aabbMax[1] = position.buffer[position.offset + 1];
       aabbMax[2] = position.buffer[position.offset + 2];
 
-      for (let i = 0; i < this._aliveCount; ++i) {
+      for (var i = 0; i < this._aliveCount; ++i) {
         aabbMin[0] = Math.min(aabbMin[0], position.buffer[position.offset]);
         aabbMin[1] = Math.min(aabbMin[1], position.buffer[position.offset + 1]);
         aabbMin[2] = Math.min(aabbMin[2], position.buffer[position.offset + 2]);
@@ -66539,15 +66944,15 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
 
   _Sort() {
-    const eye = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(Tw2ParticleSystem.global.mat4_0, global__WEBPACK_IMPORTED_MODULE_0__["device"].projection, global__WEBPACK_IMPORTED_MODULE_0__["device"].view),
-          //device.viewInverse;
+    var eye = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(Tw2ParticleSystem.global.mat4_0, global__WEBPACK_IMPORTED_MODULE_0__["device"].projection, global__WEBPACK_IMPORTED_MODULE_0__["device"].view),
+        //device.viewInverse;
     position = this.GetElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION),
-          count = this._aliveCount,
-          distances = this._distancesBuffer;
+        count = this._aliveCount,
+        distances = this._distancesBuffer;
 
-    for (let i = 0; i < count; ++i) {
-      const o0 = position.offset + position.instanceStride * i;
-      let dd = position.buffer[o0] - eye[12],
+    for (var i = 0; i < count; ++i) {
+      var o0 = position.offset + position.instanceStride * i;
+      var dd = position.buffer[o0] - eye[12],
           l0 = dd * dd;
       dd = position.buffer[o0 + 1] - eye[13];
       l0 += dd * dd;
@@ -66573,15 +66978,15 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
       if (a >= count) return 1;
       if (b >= count) return -1;
-      const l0 = distances[a],
-            l1 = distances[b];
+      var l0 = distances[a],
+          l1 = distances[b];
       if (l0 < l1) return 1;
       if (l0 > l1) return -1;
       return 0;
     }
 
-    for (let i = 0; i < this.maxParticleCount; ++i) {
-      this._sortedIndexes[i] = i;
+    for (var _i9 = 0; _i9 < this.maxParticleCount; ++_i9) {
+      this._sortedIndexes[_i9] = _i9;
     }
 
     this._sortedIndexes.sort(sortItems);
@@ -66594,19 +66999,19 @@ class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClas
 
   GetInstanceBuffer() {
     if (this._aliveCount === 0) return undefined;
-    const gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl;
 
     if (this.requiresSorting && this.HasElement(_element__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleElement"].Type.POSITION) && this._buffers) {
       this._Sort();
 
-      const stride = this._instanceStride[0],
-            gpuBuffer = this._buffers[0];
+      var stride = this._instanceStride[0],
+          gpuBuffer = this._buffers[0];
 
-      for (let i = 0; i < this._aliveCount; ++i) {
-        const toOffset = i * stride,
-              fromOffset = this._sortedIndexes[i] * stride;
+      for (var i = 0; i < this._aliveCount; ++i) {
+        var toOffset = i * stride,
+            fromOffset = this._sortedIndexes[i] * stride;
 
-        for (let j = 0; j < stride; ++j) {
+        for (var j = 0; j < stride; ++j) {
           this._sortedBuffer[toOffset + j] = gpuBuffer[j + fromOffset];
         }
       }
@@ -66708,7 +67113,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {Number} reflectionNoise                        -
  */
 
-let Tr2PlaneConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tr2PlaneConstraint extends _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleConstraint"] {
+var Tr2PlaneConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tr2PlaneConstraint extends _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleConstraint"] {
   constructor(...args) {
     super(...args);
     this.generators = [];
@@ -66768,7 +67173,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @property {String} name
  */
 
-let Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = class Tw2ParticleConstraint extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = class Tw2ParticleConstraint extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Applies constraints
    * @param {Array} buffers
@@ -66854,10 +67259,10 @@ class Tw2ParticleElement {
 
 
   static from(values) {
-    const item = new Tw2ParticleElement();
+    var item = new Tw2ParticleElement();
 
     if (values) {
-      const type = values.elementType;
+      var type = values.elementType;
       item.elementType = typeof type === "string" ? this.Type[type.toUpperCase()] : type;
       item.customName = values.customName;
       item.dimension = values.dimension;
@@ -66951,7 +67356,7 @@ class Tw2ParticleElementDeclaration extends global__WEBPACK_IMPORTED_MODULE_2__[
 
 
   GetDeclaration() {
-    let usage;
+    var usage;
 
     switch (this.elementType) {
       case _Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.LIFETIME:
@@ -66999,7 +67404,7 @@ class Tw2ParticleElementDeclaration extends global__WEBPACK_IMPORTED_MODULE_2__[
 /*!***********************************!*\
   !*** ./particle/element/index.js ***!
   \***********************************/
-/*! exports provided: Tw2ParticleElement, Tw2ParticleElementDeclaration */
+/*! exports provided: Tw2ParticleElementDeclaration, Tw2ParticleElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67299,7 +67704,7 @@ class Tw2DynamicEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_0__
     this._isValid = false;
     if (!this.particleSystem) return;
 
-    for (let i = 0; i < this.generators.length; ++i) {
+    for (var i = 0; i < this.generators.length; ++i) {
       if (!this.generators[i].Bind(this.particleSystem)) return;
     }
 
@@ -67316,14 +67721,14 @@ class Tw2DynamicEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_0__
   SpawnParticles(position, velocity, rateModifier) {
     if (!this._isValid) return;
     this._accumulatedRate += this.rate * rateModifier;
-    const count = Math.floor(this._accumulatedRate);
+    var count = Math.floor(this._accumulatedRate);
     this._accumulatedRate -= count;
 
-    for (let i = 0; i < count; ++i) {
-      const index = this.particleSystem.BeginSpawnParticle();
+    for (var i = 0; i < count; ++i) {
+      var index = this.particleSystem.BeginSpawnParticle();
       if (index === null) break;
 
-      for (let j = 0; j < this.generators.length; ++j) {
+      for (var j = 0; j < this.generators.length; ++j) {
         this.generators[j].Generate(position, velocity, index);
       }
 
@@ -67367,7 +67772,7 @@ var _dec, _class, _temp;
  * @property {Tw2ParticleSystem} particleSystem
  */
 
-let Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2ParticleEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_temp = class Tw2ParticleEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this.particleSystem = null;
@@ -67504,18 +67909,18 @@ class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__[
 
 
   Update() {
-    const res = this.geometryResource;
+    var res = this.geometryResource;
 
     if (!this._spawned && this.particleSystem && res && res.IsGood() && // TODO: Why does this need an isPrepared && isLoaded check??
     res.meshes.length > this.meshIndex && res.meshes[this.meshIndex].bufferData) {
       this._spawned = true;
-      const mesh = res.meshes[this.meshIndex],
-            elts = this.particleSystem.elements,
-            inputs = new Array(elts.length);
+      var mesh = res.meshes[this.meshIndex],
+          elts = this.particleSystem.elements,
+          inputs = new Array(elts.length);
 
-      for (let i = 0; i < elts.length; ++i) {
-        const d = elts[i].GetDeclaration(),
-              input = mesh.declaration.FindUsage(d.usage, d.usageIndex - 8);
+      for (var i = 0; i < elts.length; ++i) {
+        var d = elts[i].GetDeclaration(),
+            input = mesh.declaration.FindUsage(d.usage, d.usageIndex - 8);
 
         if (input === null) {
           res.OnError(new core__WEBPACK_IMPORTED_MODULE_1__["ErrGeometryMeshMissingParticleElement"]({
@@ -67540,17 +67945,17 @@ class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__[
         inputs[i] = input.offset / 4;
       }
 
-      const vertexCount = mesh.bufferData.length / mesh.declaration.stride * 4;
+      var vertexCount = mesh.bufferData.length / mesh.declaration.stride * 4;
 
-      for (let i = 0; i < vertexCount; ++i) {
-        const index = this.particleSystem.BeginSpawnParticle();
+      for (var _i = 0; _i < vertexCount; ++_i) {
+        var index = this.particleSystem.BeginSpawnParticle();
         if (index === null) break;
 
-        for (let j = 0; j < this.particleSystem._elements.length; ++j) {
-          const e = this.particleSystem._elements[j];
+        for (var j = 0; j < this.particleSystem._elements.length; ++j) {
+          var e = this.particleSystem._elements[j];
 
-          for (let k = 0; k < e.dimension; ++k) {
-            e.buffer[e.instanceStride * index + e.startOffset + k] = mesh.bufferData[inputs[j] + k + i * mesh.declaration.stride / 4];
+          for (var k = 0; k < e.dimension; ++k) {
+            e.buffer[e.instanceStride * index + e.startOffset + k] = mesh.bufferData[inputs[j] + k + _i * mesh.declaration.stride / 4];
           }
         }
 
@@ -67653,7 +68058,7 @@ class Tr2ForceSphereVolume extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0_
 
   Update(dt) {
     // Todo: Implement Update
-    for (let i = 0; i < this.forces.length; i++) {
+    for (var i = 0; i < this.forces.length; i++) {
       this.forces[i].Update(dt);
     }
   }
@@ -67787,7 +68192,7 @@ class Tw2ParticleAttractorForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
    * @param {Number} [mass]               - unused
    */
   ApplyForce(position, velocity, force, dt, mass) {
-    const vec3_0 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_0;
+    var vec3_0 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_0;
     vec3_0[0] = this.position[0] - position.buffer[position.offset];
     vec3_0[1] = this.position[1] - position.buffer[position.offset + 1];
     vec3_0[2] = this.position[2] - position.buffer[position.offset + 2];
@@ -67952,9 +68357,9 @@ class Tw2ParticleFluidDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
    * @param {Number} [mass]               - unused
    */
   ApplyForce(position, velocity, force, dt, mass) {
-    const vec3_0 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_0,
-          vec3_1 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_1,
-          speed = Math.sqrt(velocity.buffer[velocity.offset] * velocity.buffer[velocity.offset] + velocity.buffer[velocity.offset + 1] * velocity.buffer[velocity.offset + 1] + velocity.buffer[velocity.offset + 2] * velocity.buffer[velocity.offset + 2]);
+    var vec3_0 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_0,
+        vec3_1 = _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec3_1,
+        speed = Math.sqrt(velocity.buffer[velocity.offset] * velocity.buffer[velocity.offset] + velocity.buffer[velocity.offset + 1] * velocity.buffer[velocity.offset + 1] + velocity.buffer[velocity.offset + 2] * velocity.buffer[velocity.offset + 2]);
     vec3_0[0] = velocity.buffer[velocity.offset] * -speed * this.drag;
     vec3_0[1] = velocity.buffer[velocity.offset + 1] * -speed * this.drag;
     vec3_0[2] = velocity.buffer[velocity.offset + 2] * -speed * this.drag;
@@ -67962,7 +68367,7 @@ class Tw2ParticleFluidDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODU
     vec3_1[0] += velocity.buffer[velocity.offset];
     vec3_1[1] += velocity.buffer[velocity.offset + 1];
     vec3_1[2] += velocity.buffer[velocity.offset + 2];
-    const dot = velocity.buffer[velocity.offset] * vec3_1[0] + velocity.buffer[velocity.offset + 1] * vec3_1[1] + velocity.buffer[velocity.offset + 2] * vec3_1[2];
+    var dot = velocity.buffer[velocity.offset] * vec3_1[0] + velocity.buffer[velocity.offset + 1] * vec3_1[1] + velocity.buffer[velocity.offset + 2] * vec3_1[2];
 
     if (dot < 0) {
       force[0] = -velocity.buffer[velocity.offset] / dt / mass;
@@ -68009,7 +68414,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @ccp N/A
  */
 
-let Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleForce extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleForce extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Applies forces
    * @param {Tw2ParticleElement} position - Position
@@ -68143,16 +68548,16 @@ class Tw2ParticleTurbulenceForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MOD
    */
   ApplyForce(position, velocity, force, dt, mass) {
     if (this.noiseLevel === 0) return;
-    let pos_0 = position.buffer[position.offset] * this.frequency[0],
+    var pos_0 = position.buffer[position.offset] * this.frequency[0],
         pos_1 = position.buffer[position.offset + 1] * this.frequency[1],
         pos_2 = position.buffer[position.offset + 2] * this.frequency[2],
         pos_3 = this._time * this.frequency[3];
-    let sum = 0,
+    var sum = 0,
         power = 0.5,
         frequency = 1 / this.noiseRatio;
-    const out = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec4_0, 0, 0, 0, 0);
+    var out = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"].global.vec4_0, 0, 0, 0, 0);
 
-    for (let i = 0; i < this.noiseLevel; ++i) {
+    for (var i = 0; i < this.noiseLevel; ++i) {
       global__WEBPACK_IMPORTED_MODULE_0__["noise"].turbulence(out, pos_0, pos_1, pos_2, pos_3, power);
       sum += power;
       pos_0 *= frequency;
@@ -68259,7 +68664,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
  * @class
  */
 
-let Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleAttributeGenerator extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleAttributeGenerator extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Binds a particle system element to the generator
    * @param {Tw2ParticleSystem} ps
@@ -68330,7 +68735,7 @@ class Tw2RandomIntegerAttributeGenerator extends _Tw2ParticleAttributeGenerator_
    * @returns {Boolean} True if successfully bound
    */
   Bind(ps) {
-    for (let i = 0; i < ps._elements.length; ++i) {
+    for (var i = 0; i < ps._elements.length; ++i) {
       if (ps._elements[i].elementType === this.elementType && (this.elementType !== _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM || ps._elements[i].customName === this.customName)) {
         this._element = ps._elements[i];
         return true;
@@ -68348,7 +68753,7 @@ class Tw2RandomIntegerAttributeGenerator extends _Tw2ParticleAttributeGenerator_
 
 
   Generate(position, velocity, index) {
-    for (let i = 0; i < this._element.dimension; ++i) {
+    for (var i = 0; i < this._element.dimension; ++i) {
       this._element.buffer[this._element.instanceStride * index + this._element.startOffset + i] = Math.floor(this.minRange[i] + Math.random() * (this.maxRange[i] - this.minRange[i]) + 0.5);
     }
   }
@@ -68410,7 +68815,7 @@ class Tw2RandomUniformAttributeGenerator extends _Tw2ParticleAttributeGenerator_
    * @returns {Boolean} True if successfully bound
    */
   Bind(ps) {
-    for (let i = 0; i < ps._elements.length; ++i) {
+    for (var i = 0; i < ps._elements.length; ++i) {
       if (ps._elements[i].elementType === this.elementType && (this.elementType !== _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.CUSTOM || ps._elements[i].customName === this.customName)) {
         this._element = ps._elements[i];
         return true;
@@ -68428,7 +68833,7 @@ class Tw2RandomUniformAttributeGenerator extends _Tw2ParticleAttributeGenerator_
 
 
   Generate(position, velocity, index) {
-    for (let i = 0; i < this._element.dimension; ++i) {
+    for (var i = 0; i < this._element.dimension; ++i) {
       this._element.buffer[this._element.instanceStride * index + this._element.startOffset + i] = this.minRange[i] + Math.random() * (this.maxRange[i] - this.minRange[i]);
     }
   }
@@ -68521,7 +68926,7 @@ class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__W
     this._position = null;
     this._velocity = null;
 
-    for (let i = 0; i < ps._elements.length; ++i) {
+    for (var i = 0; i < ps._elements.length; ++i) {
       if (ps._elements[i].elementType === _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.POSITION && this.controlPosition) {
         this._position = ps._elements[i];
       } else if (ps._elements[i].elementType === _element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type.VELOCITY && this.controlVelocity) {
@@ -68540,17 +68945,17 @@ class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__W
 
 
   Generate(position, velocity, index) {
-    const phi = (this.minPhi + Math.random() * (this.maxPhi - this.minPhi)) / 180 * Math.PI,
-          theta = (this.minTheta + Math.random() * (this.maxTheta - this.minTheta)) / 180 * Math.PI,
-          rv = _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"].global.vec3_0;
+    var phi = (this.minPhi + Math.random() * (this.maxPhi - this.minPhi)) / 180 * Math.PI,
+        theta = (this.minTheta + Math.random() * (this.maxTheta - this.minTheta)) / 180 * Math.PI,
+        rv = _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"].global.vec3_0;
     rv[0] = Math.sin(phi) * Math.cos(theta);
     rv[1] = -Math.cos(phi);
     rv[2] = Math.sin(phi) * Math.sin(theta);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformQuat(rv, rv, this.rotation);
 
     if (this._velocity) {
-      const speed = this.minSpeed + Math.random() * (this.maxSpeed - this.minSpeed),
-            offset = this._velocity.instanceStride * index + this._velocity.startOffset;
+      var speed = this.minSpeed + Math.random() * (this.maxSpeed - this.minSpeed),
+          offset = this._velocity.instanceStride * index + this._velocity.startOffset;
       this._velocity.buffer[offset] = rv[0] * speed;
       this._velocity.buffer[offset + 1] = rv[1] * speed;
       this._velocity.buffer[offset + 2] = rv[2] * speed;
@@ -68572,10 +68977,11 @@ class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__W
         rv[2] += position.buffer[position.offset + 2];
       }
 
-      const offset = this._position.instanceStride * index + this._position.startOffset;
-      this._position.buffer[offset] = rv[0];
-      this._position.buffer[offset + 1] = rv[1];
-      this._position.buffer[offset + 2] = rv[2];
+      var _offset = this._position.instanceStride * index + this._position.startOffset;
+
+      this._position.buffer[_offset] = rv[0];
+      this._position.buffer[_offset + 1] = rv[1];
+      this._position.buffer[_offset + 2] = rv[2];
     }
   }
   /**
@@ -68627,7 +69033,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./particle/index.js ***!
   \***************************/
-/*! exports provided: Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tw2ParticleElementDeclaration, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
+/*! exports provided: Tw2ParticleElementDeclaration, Tr2GpuParticleSystem, Tw2ParticleSystem, Tr2PlaneConstraint, Tw2ParticleElement, Tr2GpuSharedEmitter, Tr2GpuUniqueEmitter, Tw2StaticEmitter, Tw2DynamicEmitter, Tr2ForceSphereVolume, Tr2ParticleVortexForce, Tw2ParticleAttractorForce, Tw2ParticleDirectForce, Tw2ParticleDragForce, Tw2ParticleFluidDragForce, Tw2ParticleSpring, Tw2ParticleTurbulenceForce, Tw2RandomIntegerAttributeGenerator, Tw2RandomUniformAttributeGenerator, Tw2SphereShapeAttributeGenerator */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -68636,9 +69042,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return _constraint__WEBPACK_IMPORTED_MODULE_0__["Tr2PlaneConstraint"]; });
 
 /* harmony import */ var _element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./element */ "./particle/element/index.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"]; });
-
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElementDeclaration", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElementDeclaration"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleElement", function() { return _element__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"]; });
 
 /* harmony import */ var _emitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./emitter */ "./particle/emitter/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tr2GpuSharedEmitter", function() { return _emitter__WEBPACK_IMPORTED_MODULE_2__["Tr2GpuSharedEmitter"]; });
@@ -68716,7 +69122,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 function EveSOF(tw2) {
   var _this = this;
 
-  const self = this;
+  var self = this;
   var data = null;
   var spriteEffect = null;
   this.SKIP_EMPTY_ITEMS = true;
@@ -68848,17 +69254,17 @@ function EveSOF(tw2) {
   }
 
   function FillMeshAreas(areas, areasName, hull, faction, race, pattern, commands, shaderOverride, masks) {
-    const hullAreas = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, areasName, []);
+    var hullAreas = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, areasName, []);
 
-    for (let i = 0; i < hullAreas.length; ++i) {
-      const area = hullAreas[i],
-            effect = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"](); // Use references to custom mask parameters - do not recreate them
+    for (var i = 0; i < hullAreas.length; ++i) {
+      var area = hullAreas[i],
+          effect = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"](); // Use references to custom mask parameters - do not recreate them
 
-      for (let i = 0; i < 2; i++) {
-        const mask = masks[i];
+      for (var _i = 0; _i < 2; _i++) {
+        var mask = masks[_i];
 
         if (mask) {
-          const {
+          var {
             PatternMaskMap,
             DiffuseColor,
             FresnelColor,
@@ -68869,16 +69275,16 @@ function EveSOF(tw2) {
           effect.parameters[FresnelColor.name] = FresnelColor;
           effect.parameters[Gloss.name] = Gloss;
         } else {
-          console.error("Missing mask " + i);
+          console.error("Missing mask " + _i);
         }
       }
 
       effect.effectFilePath = data["generic"]["areaShaderLocation"] + ModifyShaderPath(shaderOverride ? shaderOverride : area.shader, hull["isSkinned"]);
-      const names = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
+      var names = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "parameters", []);
 
-      for (let j = 0; j < names.length; ++j) {
-        const name = names[j];
-        let param = GetOverridenParameter(name, area, commands, race);
+      for (var j = 0; j < names.length; ++j) {
+        var name = names[j];
+        var param = GetOverridenParameter(name, area, commands, race);
         param = param || Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data.generic.hullAreas, area.name, {}), "parameters", {}), name);
         param = param || Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race.hullAreas, area.name, {}), "parameters", {}), name);
         param = param || Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction.areas, area.name, {}), "parameters", {}), name);
@@ -68893,47 +69299,47 @@ function EveSOF(tw2) {
         }
       }
 
-      const hullTextures = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textures", {});
+      var hullTextures = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "textures", {});
 
-      for (let name in hullTextures) {
-        if (hullTextures.hasOwnProperty(name)) {
-          const path = ModifyTextureResPath(hullTextures[name], name, area, faction, commands);
+      for (var _name in hullTextures) {
+        if (hullTextures.hasOwnProperty(_name)) {
+          var path = ModifyTextureResPath(hullTextures[_name], _name, area, faction, commands);
 
-          if (effect.parameters[name]) {
-            effect.parameters[name].SetValue(path);
+          if (effect.parameters[_name]) {
+            effect.parameters[_name].SetValue(path);
           } else {
-            effect.parameters[name] = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, path);
+            effect.parameters[_name] = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](_name, path);
           }
         }
       } // Only create pattern parameters if they don't already exist
 
 
-      for (let j = 0; j < pattern.layers.length; ++j) {
-        const textureName = pattern.layers[j] ? pattern.layers[j].textureName : "";
+      for (var _j = 0; _j < pattern.layers.length; ++_j) {
+        var textureName = pattern.layers[_j] ? pattern.layers[_j].textureName : "";
 
         if (textureName && !effect.parameters[textureName]) {
-          const patternTex = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](pattern.layers[j].textureName);
-          patternTex.resourcePath = pattern.layers[j].textureResFilePath;
+          var patternTex = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](pattern.layers[_j].textureName);
+          patternTex.resourcePath = pattern.layers[_j].textureResFilePath;
           patternTex.useAllOverrides = true;
-          patternTex.addressUMode = GetAddressMode(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeU", 0));
-          patternTex.addressVMode = GetAddressMode(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[j], "projectionTypeV", 0));
+          patternTex.addressUMode = GetAddressMode(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[_j], "projectionTypeU", 0));
+          patternTex.addressVMode = GetAddressMode(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(pattern.layers[_j], "projectionTypeV", 0));
           patternTex.Initialize();
-          effect.parameters[pattern.layers[j].textureName] = patternTex;
+          effect.parameters[pattern.layers[_j].textureName] = patternTex;
         }
       }
 
-      const defaultTextures = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
+      var defaultTextures = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["areaShaders"], area.shader, {}), "defaultTextures", {});
 
-      for (let name in defaultTextures) {
-        if (defaultTextures.hasOwnProperty(name)) {
-          if (!(name in effect.parameters)) {
-            effect.parameters[name] = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](name, defaultTextures[name]);
+      for (var _name2 in defaultTextures) {
+        if (defaultTextures.hasOwnProperty(_name2)) {
+          if (!(_name2 in effect.parameters)) {
+            effect.parameters[_name2] = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2TextureParameter"](_name2, defaultTextures[_name2]);
           }
         }
       }
 
       effect.Initialize();
-      const newArea = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]();
+      var newArea = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2MeshArea"]();
       newArea.name = area.name;
       newArea.effect = effect;
       newArea.index = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(area, "index", 0);
@@ -68943,7 +69349,7 @@ function EveSOF(tw2) {
   }
 
   function SetupMesh(ship, hull, faction, race, commands, pattern) {
-    const mesh = ship.mesh || new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]();
+    var mesh = ship.mesh || new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Mesh"]();
     mesh.geometryResPath = hull["geometryResFilePath"];
 
     if (ship.mesh !== mesh) {
@@ -68955,10 +69361,10 @@ function EveSOF(tw2) {
       mesh.EmptyAreas();
     }
 
-    const masks = ship.customMasks;
+    var masks = ship.customMasks;
     masks[0] = masks[0] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
     masks[1] = masks[1] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
-    const args = [hull, faction, race, pattern, commands, undefined, masks];
+    var args = [hull, faction, race, pattern, commands, undefined, masks];
     FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "opaqueAreas", []), "opaqueAreas", ...args);
     FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "transparentAreas", []), "transparentAreas", ...args);
     FillMeshAreas(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(mesh, "additiveAreas", []), "additiveAreas", ...args);
@@ -68980,16 +69386,16 @@ function EveSOF(tw2) {
   }
 
   function SetupPattern(hull, race, commands) {
-    const pattern = {
+    var pattern = {
       patterns: [],
       layers: []
     }; // Requested pattern
 
     if ("pattern" in commands) {
       // Layers
-      let l = {};
+      var l = {};
 
-      for (let i = 0; i < data.pattern.length; ++i) {
+      for (var i = 0; i < data.pattern.length; ++i) {
         if (data.pattern[i].name === commands.pattern[0]) {
           l = data.pattern[i];
           break;
@@ -68998,13 +69404,13 @@ function EveSOF(tw2) {
 
       pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
       pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {}));
-      const projections = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "projections", []); // Projections
+      var projections = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "projections", []); // Projections
 
-      let p = {};
+      var p = {};
 
-      for (let i = 0; i < projections.length; ++i) {
-        if (projections[i].name === hull.name) {
-          p = projections[i];
+      for (var _i2 = 0; _i2 < projections.length; ++_i2) {
+        if (projections[_i2].name === hull.name) {
+          p = projections[_i2];
           break;
         }
       }
@@ -69014,13 +69420,15 @@ function EveSOF(tw2) {
     } // Default pattern
     else {
         // Layers
-        const l = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "defaultPattern", {});
-        pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer1", {}));
-        pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(l, "layer2", {})); // Projections
+        var _l = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "defaultPattern", {});
 
-        const p = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "defaultPattern", {});
-        pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer1", {}));
-        pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(p, "transformLayer2", {}));
+        pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(_l, "layer1", {}));
+        pattern.layers.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(_l, "layer2", {})); // Projections
+
+        var _p = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "defaultPattern", {});
+
+        pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(_p, "transformLayer1", {}));
+        pattern.patterns.push(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(_p, "transformLayer2", {}));
       }
 
     return pattern;
@@ -69043,23 +69451,23 @@ function EveSOF(tw2) {
   }
 
   function SetupCustomMasks(ship, pattern = {}) {
-    const {
+    var {
       patterns = [],
       layers = []
     } = pattern;
 
-    for (let i = 0; i < 2; ++i) {
-      const p = patterns[i] || {},
-            l = layers[i] || {}; // Default pattern values
+    for (var i = 0; i < 2; ++i) {
+      var p = patterns[i] || {},
+          l = layers[i] || {}; // Default pattern values
 
-      const {
+      var {
         rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
         scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1),
         position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         isMirrored = false
       } = p; // Default layer values
 
-      const {
+      var {
         display = !!layers[i].textureName,
         materialSource = 0,
         textureName = "PatternMask".concat(i + 1, "Map"),
@@ -69071,7 +69479,7 @@ function EveSOF(tw2) {
         isTargetMtl3 = true,
         isTargetMtl4 = true
       } = l;
-      const mask = ship.customMasks[i] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
+      var mask = ship.customMasks[i] || new _eve__WEBPACK_IMPORTED_MODULE_4__["EveCustomMask"]();
       mask.name = "Pattern".concat(i + 1);
       mask.display = display;
       global__WEBPACK_IMPORTED_MODULE_0__["quat"].copy(mask.rotation, rotation);
@@ -69080,7 +69488,7 @@ function EveSOF(tw2) {
       global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(mask.targetMaterials, isTargetMtl1 ? 1 : 0, isTargetMtl2 ? 1 : 0, isTargetMtl3 ? 1 : 0, isTargetMtl4 ? 1 : 0);
       mask.materialIndex = materialSource;
       mask.isMirrored = !!isMirrored;
-      const {
+      var {
         PatternMaskMap,
         DiffuseColor,
         FresnelColor,
@@ -69092,7 +69500,7 @@ function EveSOF(tw2) {
       PatternMaskMap.addressUMode = GetAddressMode(projectionTypeU);
       PatternMaskMap.addressVMode = GetAddressMode(projectionTypeV);
       PatternMaskMap.Initialize();
-      const prefix = "PMtl".concat(i + 1);
+      var prefix = "PMtl".concat(i + 1);
       DiffuseColor.name = "".concat(prefix, "DiffuseColor");
       FresnelColor.name = "".concat(prefix, "FresnelColor");
       Gloss.name = "".concat(prefix, "Gloss");
@@ -69112,17 +69520,17 @@ function EveSOF(tw2) {
 
 
   function SetupDecals(ship, hull, faction = {}) {
-    const hullDecals = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "hullDecals", []);
+    var hullDecals = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "hullDecals", []);
 
-    for (let i = 0; i < hullDecals.length; ++i) {
-      const src = hullDecals[i],
-            factionDecal = getGroupIndex(faction.decals, src.groupIndex);
+    for (var i = 0; i < hullDecals.length; ++i) {
+      var src = hullDecals[i],
+          factionDecal = getGroupIndex(faction.decals, src.groupIndex);
       if (factionDecal && !factionDecal.isVisible) continue;
-      const shader = factionDecal ? factionDecal.shader || src.shader : src.shader;
+      var shader = factionDecal ? factionDecal.shader || src.shader : src.shader;
       if (!shader) continue;
-      const effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + shader,
-            parameters = Object.assign({}, src.parameters),
-            // Should src.shader actually be shader?
+      var effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + shader,
+          parameters = Object.assign({}, src.parameters),
+          // Should src.shader actually be shader?
       textures = Object.assign(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["decalShaders"], src.shader, {}), "defaultTextures", {}));
 
       if (factionDecal) {
@@ -69157,7 +69565,7 @@ function EveSOF(tw2) {
 
   function getGroupIndex(src, groupIndex = -1) {
     if (!src) return null;
-    const groupName = "group".concat(groupIndex);
+    var groupName = "group".concat(groupIndex);
     return src[groupName] ? src[groupName] : null;
   }
   /**
@@ -69169,21 +69577,21 @@ function EveSOF(tw2) {
 
 
   function SetupSpriteSets(ship, hull, faction) {
-    const hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spriteSets", []),
-          factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spriteSets", {});
+    var hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spriteSets", []),
+        factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spriteSets", {});
 
-    for (let i = 0; i < hullSets.length; ++i) {
-      const hullSet = hullSets[i],
-            hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
-            items = [];
+    for (var i = 0; i < hullSets.length; ++i) {
+      var hullSet = hullSets[i],
+          hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
+          items = [];
 
-      for (let j = 0; j < hullSetItems.length; j++) {
-        const item = Object.assign({
+      for (var j = 0; j < hullSetItems.length; j++) {
+        var item = Object.assign({
           blinkRate: 0.1,
           maxScale: 10,
           minScale: 1
         }, hullSetItems[j]),
-              factionSet = getGroupIndex(factionSets, item.groupIndex);
+            factionSet = getGroupIndex(factionSets, item.groupIndex);
         /*
         // const item = Object.assign({}, hullData[j]);
         // Source data is the same as the input data
@@ -69224,10 +69632,10 @@ function EveSOF(tw2) {
     }
   }
 
-  const EFF_SPOTLIGHT_CONE = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
-  const EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
-  const EFF_SPOTLIGHT_GLOW = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
-  const EFF_SPOTLIGHT_GLOW_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
+  var EFF_SPOTLIGHT_CONE = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx";
+  var EFF_SPOTLIGHT_CONE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx";
+  var EFF_SPOTLIGHT_GLOW = "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx";
+  var EFF_SPOTLIGHT_GLOW_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx";
   /**
    * Sets up spotlight sets
    * @param ship
@@ -69236,18 +69644,18 @@ function EveSOF(tw2) {
    */
 
   function SetupSpotlightSets(ship, hull, faction) {
-    const hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spotlightSets", []),
-          factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spotlightSets", {});
+    var hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "spotlightSets", []),
+        factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "spotlightSets", {});
 
-    for (let i = 0; i < hullSets.length; ++i) {
-      const hullSet = hullSets[i],
-            hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
-            isSkinned = hullSet.skinned,
-            items = []; // Get spotlight items
+    for (var i = 0; i < hullSets.length; ++i) {
+      var hullSet = hullSets[i],
+          hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
+          isSkinned = hullSet.skinned,
+          items = []; // Get spotlight items
 
-      for (let j = 0; j < hullSetItems.length; ++j) {
-        const item = Object.assign({}, hullSetItems[j]),
-              factionSet = getGroupIndex(factionSets, item.groupIndex);
+      for (var j = 0; j < hullSetItems.length; ++j) {
+        var item = Object.assign({}, hullSetItems[j]),
+            factionSet = getGroupIndex(factionSets, item.groupIndex);
         /*
         // const item = Object.assign({}, hullData[j]);
         // Source data is the same as the input data
@@ -69294,8 +69702,8 @@ function EveSOF(tw2) {
     }
   }
 
-  const EFF_PLANE = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
-  const EFF_PLANE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
+  var EFF_PLANE = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
+  var EFF_PLANE_SKINNED = "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx";
   /**
    * Sets up booster sets
    * @param ship
@@ -69304,19 +69712,19 @@ function EveSOF(tw2) {
    */
 
   function SetupPlaneSets(ship, hull, faction) {
-    const hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "planeSets", []),
-          factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "planeSets", {});
+    var hullSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "planeSets", []),
+        factionSets = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(faction, "planeSets", {});
 
-    for (let i = 0; i < hullSets.length; ++i) {
-      const hullSet = hullSets[i],
-            hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
-            items = []; // Get plane items
+    for (var i = 0; i < hullSets.length; ++i) {
+      var hullSet = hullSets[i],
+          hullSetItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "items", []),
+          items = []; // Get plane items
 
-      for (let j = 0; j < hullSetItems.length; ++j) {
-        const item = Object.assign({
+      for (var j = 0; j < hullSetItems.length; ++j) {
+        var item = Object.assign({
           boneIndex: -1
         }, hullSetItems[j]),
-              factionSet = getGroupIndex(factionSets, item.groupIndex);
+            factionSet = getGroupIndex(factionSets, item.groupIndex);
         /*
         const item = {};
         item.name = src.name;                       // ""
@@ -69357,11 +69765,11 @@ function EveSOF(tw2) {
     }
   }
 
-  const EFF_BOOSTER_VOLUMETRIC = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
-  const EFF_BOOSTER_GLOW_SKINNED = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
-  const TEX_NOISE = "res:/Texture/global/noise.dds.0.png";
-  const TEX_NOISE_32_CUBE = "res:/Texture/Global/noise32cube_volume.dds.0.png";
-  const TEX_WHITE_SHARP = "res:/Texture/Particle/whitesharp.dds.0.png";
+  var EFF_BOOSTER_VOLUMETRIC = "res:/Graphics/Effect/Managed/Space/Booster/BoosterVolumetric.fx";
+  var EFF_BOOSTER_GLOW_SKINNED = "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx";
+  var TEX_NOISE = "res:/Texture/global/noise.dds.0.png";
+  var TEX_NOISE_32_CUBE = "res:/Texture/Global/noise32cube_volume.dds.0.png";
+  var TEX_WHITE_SHARP = "res:/Texture/Particle/whitesharp.dds.0.png";
   /**
    * Sets up boosters
    * @param ship
@@ -69371,12 +69779,12 @@ function EveSOF(tw2) {
 
   function SetupBoosters(ship, hull, race) {
     if (!hull.booster) return;
-    const zero = [0, 0, 0, 0],
-          raceBooster = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "booster", {}),
-          hullBooster = hull["booster"],
-          hullBoosterItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBooster, "items", []);
+    var zero = [0, 0, 0, 0],
+        raceBooster = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(race, "booster", {}),
+        hullBooster = hull["booster"],
+        hullBoosterItems = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullBooster, "items", []);
 
-    for (let i = 0; i < hullBoosterItems.length; ++i) {
+    for (var i = 0; i < hullBoosterItems.length; ++i) {
       ship.locators.push(_eve__WEBPACK_IMPORTED_MODULE_4__["EveLocator2"].from({
         name: "locator_booster_" + (i + 1),
         transform: hullBoosterItems[i].transform,
@@ -69453,9 +69861,9 @@ function EveSOF(tw2) {
 
 
   function SetupLocators(ship, hull) {
-    const hullLocators = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "locatorTurrets", []);
+    var hullLocators = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "locatorTurrets", []);
 
-    for (let i = 0; i < hullLocators.length; ++i) {
+    for (var i = 0; i < hullLocators.length; ++i) {
       ship.locators.push(_eve__WEBPACK_IMPORTED_MODULE_4__["EveLocator2"].from(hullLocators[i]));
     }
   }
@@ -69506,10 +69914,10 @@ function EveSOF(tw2) {
       };
     }
 
-    const children = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "children", []);
+    var children = Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "children", []);
 
-    for (let i = 0; i < children.length; ++i) {
-      const resPath = children[i]["redFilePath"];
+    for (var i = 0; i < children.length; ++i) {
+      var resPath = children[i]["redFilePath"];
 
       if (resPath) {
         tw2.resMan.GetObject(resPath, onChildLoaded(children[i]));
@@ -69669,7 +70077,7 @@ function EveSOF(tw2) {
 
 
   this.FetchSOF = function () {
-    let sofPromise = null;
+    var sofPromise = null;
     /**
      * Gets sof data asynchronously
      * @returns {Promise}
@@ -69699,6 +70107,16 @@ function EveSOF(tw2) {
       })
     );
   }();
+
+  function getIndexOfName(array, name) {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i].name === name) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
   /**
    * Extends the sof data object with patterns from a space object factory file
    * @param {String} [resPath] - The resource path to a source space object factory file
@@ -69711,12 +70129,35 @@ function EveSOF(tw2) {
   function () {
     var _ref3 = _asyncToGenerator(function* (resPath) {
       if (!resPath) {
-        return Promise.reject(new Error("Invalid respath: undefined"));
+        throw new Error("Invalid respath: undefined");
       }
 
-      const currentSof = yield this.FetchSOF(),
-            extendSof = yield tw2.FetchObject(resPath);
-      currentSof.pattern = currentSof.pattern.concat(extendSof.pattern);
+      var currentSof = yield this.FetchSOF(),
+          extendSof = yield tw2.FetchObject(resPath);
+      var patterns;
+
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(extendSof.pattern)) {
+        patterns = extendSof.pattern;
+      } else {
+        patterns = [];
+
+        for (var key in extendSof.pattern) {
+          if (extendSof.pattern.hasOwnProperty(key)) {
+            patterns.push(extendSof.pattern[key]);
+          }
+        }
+      } // Unflattened patterns
+
+
+      for (var i = 0; i < patterns.length; i++) {
+        var index = getIndexOfName(patterns[i].name);
+
+        if (index === -1) {
+          currentSof.pattern.push(patterns[i]);
+        } else {
+          currentSof.pattern[index] = patterns[i];
+        }
+      }
     });
 
     return function (_x4) {
@@ -69735,17 +70176,27 @@ function EveSOF(tw2) {
   function () {
     var _ref4 = _asyncToGenerator(function* (resPath) {
       if (!resPath) {
-        return Promise.reject(new Error("Invalid respath: undefined"));
+        throw new Error("Invalid respath: undefined");
       }
 
-      const currentSof = yield this.FetchSOF(),
-            extendSof = yield tw2.FetchObject(resPath);
-      const materials = extendSof.material;
+      var currentSof = yield this.FetchSOF(),
+          extendSof = yield tw2.FetchObject(resPath),
+          materials = extendSof.material;
 
       if (resPath.includes(".black")) {
-        extendSof.material.forEach(material => {
-          currentSof.material[material.name] = material.Assign();
-        });
+        // New sof, unflattened
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(materials)) {
+          materials.forEach(material => {
+            currentSof.material[material.name] = material.Assign();
+          });
+        } // New sof, flattened
+        else {
+            for (var key in materials) {
+              if (materials.hasOwnProperty(key)) {
+                currentSof.material[key] = materials[key].Assign();
+              }
+            }
+          }
       } else {
         Object.assign(currentSof.material, extendSof.material);
       }
@@ -69762,11 +70213,11 @@ function EveSOF(tw2) {
    */
 
 
-  const getSofObject =
+  var getSofObject =
   /*#__PURE__*/
   function () {
     var _ref5 = _asyncToGenerator(function* (name) {
-      const sof = yield _this.FetchSOF();
+      var sof = yield _this.FetchSOF();
       if (sof[name]) return sof[name];
       throw new Error("Invalid sof object (".concat(name, ")"));
     });
@@ -69784,14 +70235,14 @@ function EveSOF(tw2) {
    */
 
 
-  const getSofObjectKey =
+  var getSofObjectKey =
   /*#__PURE__*/
   function () {
     var _ref6 = _asyncToGenerator(function* (name, key, ErrorConstructor) {
-      const sofObject = yield getSofObject(name);
+      var sofObject = yield getSofObject(name);
 
       if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
-        for (let i = 0; i < sofObject.length; i++) {
+        for (var i = 0; i < sofObject.length; i++) {
           if (sofObject[key].name === name) {
             return sofObject[key];
           }
@@ -69820,24 +70271,24 @@ function EveSOF(tw2) {
    */
 
 
-  const getSofObjectValueDescriptions =
+  var getSofObjectValueDescriptions =
   /*#__PURE__*/
   function () {
     var _ref7 = _asyncToGenerator(function* (name) {
-      const sofObject = yield getSofObject(name),
-            out = {};
+      var sofObject = yield getSofObject(name),
+          out = {};
 
       if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
-        for (let i = 0; i < sofObject.length; i++) {
-          out[sofObject[i].name] = sofObject[i].description || "";
+        for (var i = 0; i < sofObject.length; i++) {
+          out[sofObject[i].name] = sofObject[i].description || sofObject[i].name;
         }
 
         return out;
       }
 
-      for (const key in sofObject) {
+      for (var key in sofObject) {
         if (sofObject.hasOwnProperty(key)) {
-          out[key] = sofObject[key].description || "";
+          out[key] = sofObject[key].description || sofObject[key].name;
         }
       }
 
@@ -69855,18 +70306,18 @@ function EveSOF(tw2) {
    */
 
 
-  const getHullProjection =
+  var getHullProjection =
   /*#__PURE__*/
   function () {
     var _ref8 = _asyncToGenerator(function* (hull, patternData) {
       yield _this.FetchHull(hull);
-      const {
+      var {
         projections = []
       } = patternData;
 
-      for (let i = 0; i < projections.length; i++) {
+      for (var i = 0; i < projections.length; i++) {
         if (projections[i].name === hull) {
-          const out = {};
+          var out = {};
           out.name = patternData.name;
           out.layer1 = patternData.layer1;
           out.layer2 = patternData.layer2;
@@ -69896,33 +70347,33 @@ function EveSOF(tw2) {
         throw new Error("Invalid DNA (".concat(dna, ")"));
       }
 
-      const parts = dna.split(":"),
-            commands = {};
+      var parts = dna.split(":"),
+          commands = {};
 
-      for (let i = 3; i < parts.length; ++i) {
-        const subParts = parts[i].split("?");
+      for (var i = 3; i < parts.length; ++i) {
+        var subParts = parts[i].split("?");
         commands[subParts[0]] = subParts[1].split(";");
       }
 
-      const hull = yield _this.FetchHull(parts[0]),
-            faction = yield _this.FetchFaction(parts[1]),
-            race = yield _this.FetchRace(parts[2]); // Ensure we have valid materials
+      var hull = yield _this.FetchHull(parts[0]),
+          faction = yield _this.FetchFaction(parts[1]),
+          race = yield _this.FetchRace(parts[2]); // Ensure we have valid materials
 
       if (commands.mesh) {
-        for (let i = 0; i < commands.mesh.length; i++) {
-          yield _this.FetchMaterial(commands.mesh[i]);
+        for (var _i3 = 0; _i3 < commands.mesh.length; _i3++) {
+          yield _this.FetchMaterial(commands.mesh[_i3]);
         }
       } // Ensure we have valid materials
 
 
       if (commands.pattern && commands.pattern.length > 1) {
-        for (let i = 1; i < commands.pattern.length; i++) {
-          yield _this.FetchMaterial(commands.pattern[i]);
+        for (var _i4 = 1; _i4 < commands.pattern.length; _i4++) {
+          yield _this.FetchMaterial(commands.pattern[_i4]);
         }
       }
 
-      const ship = new (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"])(),
-            pattern = SetupPattern(hull, race, commands);
+      var ship = new (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hull, "buildClass", 0) === 2 ? _eve__WEBPACK_IMPORTED_MODULE_4__["EveSpaceObject"] : _eve__WEBPACK_IMPORTED_MODULE_4__["EveShip"])(),
+          pattern = SetupPattern(hull, race, commands);
       SetupCustomMasks(ship, pattern); // Custom masks must be first
 
       SetupMesh(ship, hull, faction, race, commands, pattern);
@@ -69932,7 +70383,7 @@ function EveSOF(tw2) {
       SetupPlaneSets(ship, hull, faction);
       SetupBoosters(ship, hull, race);
       SetupLocators(ship, hull);
-      const curves = SetupAnimations(ship, hull);
+      var curves = SetupAnimations(ship, hull);
       SetupChildren(ship, hull, curves[0], curves[1]);
       SetupInstancedMeshes(ship, hull, faction, race, commands, pattern);
       ship.Initialize();
@@ -69983,8 +70434,8 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref12 = _asyncToGenerator(function* (hull, pattern) {
-      const patternData = yield _this.FetchPattern(pattern),
-            found = getHullProjection(hull, patternData);
+      var patternData = yield _this.FetchPattern(pattern),
+          found = getHullProjection(hull, patternData);
       if (found) return found;
       throw new Error("Invalid pattern for hull (".concat(hull, ":").concat(pattern, ")"));
     });
@@ -70004,10 +70455,10 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref13 = _asyncToGenerator(function* (hull) {
-      const patterns = yield getSofObject("pattern");
-      let out = [];
+      var patterns = yield getSofObject("pattern");
+      var out = [];
       patterns.forEach(pattern => {
-        for (let i = 0; i < pattern.projections.length; i++) {
+        for (var i = 0; i < pattern.projections.length; i++) {
           if (pattern.projections[i].name === hull) {
             out.push(pattern.name);
             break;
@@ -70033,8 +70484,8 @@ function EveSOF(tw2) {
   /*#__PURE__*/
   function () {
     var _ref14 = _asyncToGenerator(function* (dna) {
-      const hull = dna.split(":")[0],
-            data = yield _this.FetchHull(hull);
+      var hull = dna.split(":")[0],
+          data = yield _this.FetchHull(hull);
       return data.buildClass === 2 ? 2 : 1;
     });
 
@@ -70169,8 +70620,18 @@ function EveSOF(tw2) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return EveSOFData; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core */ "./core/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
 
 
 /**
@@ -70184,14 +70645,19 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Array.<EveSOFDataRace>} race         -
  */
 
-class EveSOFData {
+var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.fromList("name"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object(), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.fromList("name"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.fromList("name"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.fromList("name"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.fromList("name"), (_class = (_temp = class EveSOFData {
   constructor() {
-    this.faction = [];
-    this.generic = null;
-    this.hull = [];
-    this.material = [];
-    this.pattern = [];
-    this.race = [];
+    _initializerDefineProperty(this, "faction", _descriptor, this);
+
+    _initializerDefineProperty(this, "generic", _descriptor2, this);
+
+    _initializerDefineProperty(this, "hull", _descriptor3, this);
+
+    _initializerDefineProperty(this, "material", _descriptor4, this);
+
+    _initializerDefineProperty(this, "pattern", _descriptor5, this);
+
+    _initializerDefineProperty(this, "race", _descriptor6, this);
   }
 
   /**
@@ -70217,7 +70683,7 @@ class EveSOFData {
 
 
   GetHull(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFHullNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.hull, "name", name, core__WEBPACK_IMPORTED_MODULE_2__["ErrSOFHullNotFound"]);
   }
   /**
    * Gets hull names
@@ -70237,7 +70703,7 @@ class EveSOFData {
 
 
   HasHull(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.hull, "name", name);
   }
   /**
    * Gets a hull's build class
@@ -70257,9 +70723,9 @@ class EveSOFData {
 
   GetHullPatternNames(name) {
     this.GetHull(name);
-    let patternNames = [];
+    var patternNames = [];
 
-    for (let i = 0; i < this.pattern.length; i++) {
+    for (var i = 0; i < this.pattern.length; i++) {
       if (this.pattern[i].HasProjection(name)) {
         patternNames.push(this.pattern[i].name);
       }
@@ -70276,7 +70742,7 @@ class EveSOFData {
 
 
   HasHullPattern(hullName, patternName) {
-    const hull = this.GetHull(hullName);
+    var hull = this.GetHull(hullName);
     return this.HasPattern(patternName) ? this.GetPattern(patternName).HasProjection(hull.name) : false;
   }
   /**
@@ -70288,7 +70754,7 @@ class EveSOFData {
 
 
   GetHullPattern(hullName, patternName) {
-    const hull = this.GetHull(hullName);
+    var hull = this.GetHull(hullName);
     return this.GetPattern(patternName).GetHullPattern(hullName);
   }
   /**
@@ -70299,7 +70765,7 @@ class EveSOFData {
 
 
   GetFaction(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFFactionNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.faction, "name", name, core__WEBPACK_IMPORTED_MODULE_2__["ErrSOFFactionNotFound"]);
   }
   /**
    * Gets faction names
@@ -70319,7 +70785,7 @@ class EveSOFData {
 
 
   HasFaction(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.faction, "name", name);
   }
   /**
    * Gets a race
@@ -70329,7 +70795,7 @@ class EveSOFData {
 
 
   GetRace(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFRaceNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.race, "name", name, core__WEBPACK_IMPORTED_MODULE_2__["ErrSOFRaceNotFound"]);
   }
   /**
    * Gets race names
@@ -70349,7 +70815,7 @@ class EveSOFData {
 
 
   HasRace(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.race, "name", name);
   }
   /**
    * Gets a material
@@ -70359,7 +70825,7 @@ class EveSOFData {
 
 
   GetMaterial(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFMaterialNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.material, "name", name, core__WEBPACK_IMPORTED_MODULE_2__["ErrSOFMaterialNotFound"]);
   }
   /**
    * Gets material names
@@ -70379,7 +70845,7 @@ class EveSOFData {
 
 
   HasMaterial(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.material, "name", name);
   }
   /**
    * Gets a pattern
@@ -70389,7 +70855,7 @@ class EveSOFData {
 
 
   GetPattern(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFPatternNotFound"]);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.pattern, "name", name, core__WEBPACK_IMPORTED_MODULE_2__["ErrSOFPatternNotFound"]);
   }
   /**
    * Gets pattern names
@@ -70409,7 +70875,7 @@ class EveSOFData {
 
 
   HasPattern(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name);
+    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["findElementByPropertyValue"])(this.pattern, "name", name);
   }
   /**
    * Gets the names from a sof array
@@ -70420,9 +70886,9 @@ class EveSOFData {
 
 
   static GetNames(arr, out = {}) {
-    const getDescription = !Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(out);
+    var getDescription = !Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(out);
 
-    for (let i = 0; i < arr.length; i++) {
+    for (var i = 0; i < arr.length; i++) {
       if (getDescription) {
         out[arr[i].name] = arr[i].description || "";
       } else {
@@ -70436,18 +70902,50 @@ class EveSOFData {
 
     return out;
   }
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
 
-
-  static black(r) {
-    return [["faction", r.array], ["generic", r.object], ["hull", r.array], ["material", r.array], ["pattern", r.array], ["race", r.array]];
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "faction", [_dec], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
   }
-
-}
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "generic", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "hull", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "material", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "pattern", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "race", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+})), _class));
 
 /***/ }),
 
@@ -70861,10 +71359,10 @@ class EveSOFDataGeneric {
    * @returns {Tw2Effect}
    */
   CreateEffect(shader, isAnimated, assignable) {
-    const parameters = {},
-          textures = {},
-          overrides = {},
-          effectFilePath = this.GetShaderPath(shader.shader || shader.effectFilePath, isAnimated);
+    var parameters = {},
+        textures = {},
+        overrides = {},
+        effectFilePath = this.GetShaderPath(shader.shader || shader.effectFilePath, isAnimated);
 
     function assignObject(dest, src) {
       if (!src) return; // Sof object array
@@ -70912,9 +71410,9 @@ class EveSOFDataGeneric {
 
 
   GetShaderPath(shader, isAnimated) {
-    const prefix = this.GetShaderPrefix(isAnimated);
+    var prefix = this.GetShaderPrefix(isAnimated);
     if (shader.charAt(0) !== "/") shader += "/";
-    const index = shader.lastIndexOf("/");
+    var index = shader.lastIndexOf("/");
     return shader.substring(0, index + 1) + prefix + shader.substring(index + 1);
   }
   /**
@@ -70964,9 +71462,9 @@ class EveSOFDataGeneric {
 
 
   GetMaterialPrefixes() {
-    const out = [];
+    var out = [];
 
-    for (let i = 0; i < this.materialPrefixes.length; i++) {
+    for (var i = 0; i < this.materialPrefixes.length; i++) {
       out.push(this.materialPrefixes[i].str);
     }
 
@@ -70979,9 +71477,9 @@ class EveSOFDataGeneric {
 
 
   GetPatternMaterialPrefixes() {
-    const out = [];
+    var out = [];
 
-    for (let i = 0; i < this.patternMaterialPrefixes.length; i++) {
+    for (var i = 0; i < this.patternMaterialPrefixes.length; i++) {
       out.push(this.patternMaterialPrefixes[i].str);
     }
 
@@ -70995,7 +71493,7 @@ class EveSOFDataGeneric {
 
 
   GetMaterialPrefix(index) {
-    let offByOne = index - 1;
+    var offByOne = index - 1;
 
     if (this.materialPrefixes[offByOne] === undefined) {
       throw new ErrSOFMaterialPrefixNotFound({
@@ -71013,7 +71511,7 @@ class EveSOFDataGeneric {
 
 
   GetPatternMaterialPrefix(index) {
-    let offByOne = index - 1;
+    var offByOne = index - 1;
 
     if (this.patternMaterialPrefixes[offByOne] === undefined) {
       throw new ErrSOFPatternMaterialPrefixNotFound({
@@ -71703,6 +72201,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} angleX    -
  * @property {Number} angleY    -
  * @property {Number} boneIndex -
+ * @property {*} lightOverride  -
  * @property {vec3} position    -
  * @property {quat} rotation    -
  * @property {vec3} scaling     -
@@ -71715,6 +72214,7 @@ class EveSOFDataHullBanner {
     this.angleX = 0;
     this.angleY = 0;
     this.boneIndex = -1;
+    this.lightOverride = null;
     this.position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
     this.rotation = global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
     this.scaling = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
@@ -71727,7 +72227,34 @@ class EveSOFDataHullBanner {
    * @returns {*[]}
    */
   static black(r) {
-    return [["angleX", r.float], ["angleY", r.float], ["angleZ", r.float], ["boneIndex", r.uint], ["name", r.string], ["position", r.vector3], ["rotation", r.vector4], ["scaling", r.vector3], ["usage", r.uint]];
+    return [["angleX", r.float], ["angleY", r.float], ["angleZ", r.float], ["boneIndex", r.uint], ["lightOverride", r.object], ["name", r.string], ["position", r.vector3], ["rotation", r.vector4], ["scaling", r.vector3], ["usage", r.uint]];
+  }
+
+}
+
+/***/ }),
+
+/***/ "./sof/hull/EveSOFDataHullBannerLight.js":
+/*!***********************************************!*\
+  !*** ./sof/hull/EveSOFDataHullBannerLight.js ***!
+  \***********************************************/
+/*! exports provided: EveSOFDataHullBannerLight */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBannerLight", function() { return EveSOFDataHullBannerLight; });
+/**
+ * EveSOFDataHullBannerLight
+ */
+class EveSOFDataHullBannerLight {
+  /**
+   * Black definition
+   * @param {*} r
+   * @returns {*[]}
+   */
+  static black(r) {
+    return [];
   }
 
 }
@@ -71790,6 +72317,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} atlasIndex1 -
  * @property {vec4} functionality -
  * @property {Boolean} hasTrail   -
+ * @property {Number} lightScale  -
  * @property {mat4} transform     -
  */
 
@@ -71799,6 +72327,7 @@ class EveSOFDataHullBoosterItem {
     this.atlasIndex1 = 0;
     this.functionality = global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
     this.hasTrail = false;
+    this.lightScale = 1;
     this.transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 
@@ -71808,7 +72337,7 @@ class EveSOFDataHullBoosterItem {
    * @returns {*[]}
    */
   static black(r) {
-    return [["atlasIndex0", r.uint], ["atlasIndex1", r.uint], ["functionality", r.vector4], ["hasTrail", r.boolean], ["transform", r.matrix]];
+    return [["atlasIndex0", r.uint], ["atlasIndex1", r.uint], ["functionality", r.vector4], ["hasTrail", r.boolean], ["lightScale", r.float], ["transform", r.matrix]];
   }
 
 }
@@ -72770,7 +73299,7 @@ class EveSOFDataHullSpriteSetItem {
 /*!***************************!*\
   !*** ./sof/hull/index.js ***!
   \***************************/
-/*! exports provided: EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem */
+/*! exports provided: EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -72787,74 +73316,78 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveSOFDataHullBanner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveSOFDataHullBanner */ "./sof/hull/EveSOFDataHullBanner.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBanner", function() { return _EveSOFDataHullBanner__WEBPACK_IMPORTED_MODULE_3__["EveSOFDataHullBanner"]; });
 
-/* harmony import */ var _EveSOFDataHullBooster__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSOFDataHullBooster */ "./sof/hull/EveSOFDataHullBooster.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBooster", function() { return _EveSOFDataHullBooster__WEBPACK_IMPORTED_MODULE_4__["EveSOFDataHullBooster"]; });
+/* harmony import */ var _EveSOFDataHullBannerLight__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./EveSOFDataHullBannerLight */ "./sof/hull/EveSOFDataHullBannerLight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBannerLight", function() { return _EveSOFDataHullBannerLight__WEBPACK_IMPORTED_MODULE_4__["EveSOFDataHullBannerLight"]; });
 
-/* harmony import */ var _EveSOFDataHullBoosterItem__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSOFDataHullBoosterItem */ "./sof/hull/EveSOFDataHullBoosterItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBoosterItem", function() { return _EveSOFDataHullBoosterItem__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataHullBoosterItem"]; });
+/* harmony import */ var _EveSOFDataHullBooster__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./EveSOFDataHullBooster */ "./sof/hull/EveSOFDataHullBooster.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBooster", function() { return _EveSOFDataHullBooster__WEBPACK_IMPORTED_MODULE_5__["EveSOFDataHullBooster"]; });
 
-/* harmony import */ var _EveSOFDataHullChild__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFDataHullChild */ "./sof/hull/EveSOFDataHullChild.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return _EveSOFDataHullChild__WEBPACK_IMPORTED_MODULE_6__["EveSOFDataHullChild"]; });
+/* harmony import */ var _EveSOFDataHullBoosterItem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./EveSOFDataHullBoosterItem */ "./sof/hull/EveSOFDataHullBoosterItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBoosterItem", function() { return _EveSOFDataHullBoosterItem__WEBPACK_IMPORTED_MODULE_6__["EveSOFDataHullBoosterItem"]; });
 
-/* harmony import */ var _EveSOFDataHullController__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOFDataHullController */ "./sof/hull/EveSOFDataHullController.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullController", function() { return _EveSOFDataHullController__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullController"]; });
+/* harmony import */ var _EveSOFDataHullChild__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./EveSOFDataHullChild */ "./sof/hull/EveSOFDataHullChild.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullChild", function() { return _EveSOFDataHullChild__WEBPACK_IMPORTED_MODULE_7__["EveSOFDataHullChild"]; });
 
-/* harmony import */ var _EveSOFDataHullDecalSet__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EveSOFDataHullDecalSet */ "./sof/hull/EveSOFDataHullDecalSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecalSet", function() { return _EveSOFDataHullDecalSet__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataHullDecalSet"]; });
+/* harmony import */ var _EveSOFDataHullController__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./EveSOFDataHullController */ "./sof/hull/EveSOFDataHullController.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullController", function() { return _EveSOFDataHullController__WEBPACK_IMPORTED_MODULE_8__["EveSOFDataHullController"]; });
 
-/* harmony import */ var _EveSOFDataHullDecalSetItem__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./EveSOFDataHullDecalSetItem */ "./sof/hull/EveSOFDataHullDecalSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecalSetItem", function() { return _EveSOFDataHullDecalSetItem__WEBPACK_IMPORTED_MODULE_9__["EveSOFDataHullDecalSetItem"]; });
+/* harmony import */ var _EveSOFDataHullDecalSet__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./EveSOFDataHullDecalSet */ "./sof/hull/EveSOFDataHullDecalSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecalSet", function() { return _EveSOFDataHullDecalSet__WEBPACK_IMPORTED_MODULE_9__["EveSOFDataHullDecalSet"]; });
 
-/* harmony import */ var _EveSOFDataHullHazeSet__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./EveSOFDataHullHazeSet */ "./sof/hull/EveSOFDataHullHazeSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSet", function() { return _EveSOFDataHullHazeSet__WEBPACK_IMPORTED_MODULE_10__["EveSOFDataHullHazeSet"]; });
+/* harmony import */ var _EveSOFDataHullDecalSetItem__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./EveSOFDataHullDecalSetItem */ "./sof/hull/EveSOFDataHullDecalSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecalSetItem", function() { return _EveSOFDataHullDecalSetItem__WEBPACK_IMPORTED_MODULE_10__["EveSOFDataHullDecalSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullHazeSetItem__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./EveSOFDataHullHazeSetItem */ "./sof/hull/EveSOFDataHullHazeSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSetItem", function() { return _EveSOFDataHullHazeSetItem__WEBPACK_IMPORTED_MODULE_11__["EveSOFDataHullHazeSetItem"]; });
+/* harmony import */ var _EveSOFDataHullHazeSet__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./EveSOFDataHullHazeSet */ "./sof/hull/EveSOFDataHullHazeSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSet", function() { return _EveSOFDataHullHazeSet__WEBPACK_IMPORTED_MODULE_11__["EveSOFDataHullHazeSet"]; });
 
-/* harmony import */ var _EveSOFDataHullLightSet__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./EveSOFDataHullLightSet */ "./sof/hull/EveSOFDataHullLightSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSet", function() { return _EveSOFDataHullLightSet__WEBPACK_IMPORTED_MODULE_12__["EveSOFDataHullLightSet"]; });
+/* harmony import */ var _EveSOFDataHullHazeSetItem__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./EveSOFDataHullHazeSetItem */ "./sof/hull/EveSOFDataHullHazeSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullHazeSetItem", function() { return _EveSOFDataHullHazeSetItem__WEBPACK_IMPORTED_MODULE_12__["EveSOFDataHullHazeSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullLightSetItem__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./EveSOFDataHullLightSetItem */ "./sof/hull/EveSOFDataHullLightSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return _EveSOFDataHullLightSetItem__WEBPACK_IMPORTED_MODULE_13__["EveSOFDataHullLightSetItem"]; });
+/* harmony import */ var _EveSOFDataHullLightSet__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./EveSOFDataHullLightSet */ "./sof/hull/EveSOFDataHullLightSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSet", function() { return _EveSOFDataHullLightSet__WEBPACK_IMPORTED_MODULE_13__["EveSOFDataHullLightSet"]; });
 
-/* harmony import */ var _EveSOFDataHullLightSetSpotLight__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./EveSOFDataHullLightSetSpotLight */ "./sof/hull/EveSOFDataHullLightSetSpotLight.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return _EveSOFDataHullLightSetSpotLight__WEBPACK_IMPORTED_MODULE_14__["EveSOFDataHullLightSetSpotLight"]; });
+/* harmony import */ var _EveSOFDataHullLightSetItem__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./EveSOFDataHullLightSetItem */ "./sof/hull/EveSOFDataHullLightSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return _EveSOFDataHullLightSetItem__WEBPACK_IMPORTED_MODULE_14__["EveSOFDataHullLightSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullLightSetTexturedPointLight__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./EveSOFDataHullLightSetTexturedPointLight */ "./sof/hull/EveSOFDataHullLightSetTexturedPointLight.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetTexturedPointLight", function() { return _EveSOFDataHullLightSetTexturedPointLight__WEBPACK_IMPORTED_MODULE_15__["EveSOFDataHullLightSetTexturedPointLight"]; });
+/* harmony import */ var _EveSOFDataHullLightSetSpotLight__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./EveSOFDataHullLightSetSpotLight */ "./sof/hull/EveSOFDataHullLightSetSpotLight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return _EveSOFDataHullLightSetSpotLight__WEBPACK_IMPORTED_MODULE_15__["EveSOFDataHullLightSetSpotLight"]; });
 
-/* harmony import */ var _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./EveSOFDataHullLocator */ "./sof/hull/EveSOFDataHullLocator.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_16__["EveSOFDataHullLocator"]; });
+/* harmony import */ var _EveSOFDataHullLightSetTexturedPointLight__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./EveSOFDataHullLightSetTexturedPointLight */ "./sof/hull/EveSOFDataHullLightSetTexturedPointLight.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetTexturedPointLight", function() { return _EveSOFDataHullLightSetTexturedPointLight__WEBPACK_IMPORTED_MODULE_16__["EveSOFDataHullLightSetTexturedPointLight"]; });
 
-/* harmony import */ var _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./EveSOFDataHullLocatorSet */ "./sof/hull/EveSOFDataHullLocatorSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_17__["EveSOFDataHullLocatorSet"]; });
+/* harmony import */ var _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./EveSOFDataHullLocator */ "./sof/hull/EveSOFDataHullLocator.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocator", function() { return _EveSOFDataHullLocator__WEBPACK_IMPORTED_MODULE_17__["EveSOFDataHullLocator"]; });
 
-/* harmony import */ var _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSet */ "./sof/hull/EveSOFDataHullPlaneSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_18__["EveSOFDataHullPlaneSet"]; });
+/* harmony import */ var _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./EveSOFDataHullLocatorSet */ "./sof/hull/EveSOFDataHullLocatorSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLocatorSet", function() { return _EveSOFDataHullLocatorSet__WEBPACK_IMPORTED_MODULE_18__["EveSOFDataHullLocatorSet"]; });
 
-/* harmony import */ var _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSetItem */ "./sof/hull/EveSOFDataHullPlaneSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_19__["EveSOFDataHullPlaneSetItem"]; });
+/* harmony import */ var _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSet */ "./sof/hull/EveSOFDataHullPlaneSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSet", function() { return _EveSOFDataHullPlaneSet__WEBPACK_IMPORTED_MODULE_19__["EveSOFDataHullPlaneSet"]; });
 
-/* harmony import */ var _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./EveSOFDataHullSoundEmitter */ "./sof/hull/EveSOFDataHullSoundEmitter.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSoundEmitter", function() { return _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_20__["EveSOFDataHullSoundEmitter"]; });
+/* harmony import */ var _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./EveSOFDataHullPlaneSetItem */ "./sof/hull/EveSOFDataHullPlaneSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return _EveSOFDataHullPlaneSetItem__WEBPACK_IMPORTED_MODULE_20__["EveSOFDataHullPlaneSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSet */ "./sof/hull/EveSOFDataHullSpotlightSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_21__["EveSOFDataHullSpotlightSet"]; });
+/* harmony import */ var _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./EveSOFDataHullSoundEmitter */ "./sof/hull/EveSOFDataHullSoundEmitter.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSoundEmitter", function() { return _EveSOFDataHullSoundEmitter__WEBPACK_IMPORTED_MODULE_21__["EveSOFDataHullSoundEmitter"]; });
 
-/* harmony import */ var _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSetItem */ "./sof/hull/EveSOFDataHullSpotlightSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_22__["EveSOFDataHullSpotlightSetItem"]; });
+/* harmony import */ var _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSet */ "./sof/hull/EveSOFDataHullSpotlightSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSet", function() { return _EveSOFDataHullSpotlightSet__WEBPACK_IMPORTED_MODULE_22__["EveSOFDataHullSpotlightSet"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSet */ "./sof/hull/EveSOFDataHullSpriteLineSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_23__["EveSOFDataHullSpriteLineSet"]; });
+/* harmony import */ var _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./EveSOFDataHullSpotlightSetItem */ "./sof/hull/EveSOFDataHullSpotlightSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpotlightSetItem", function() { return _EveSOFDataHullSpotlightSetItem__WEBPACK_IMPORTED_MODULE_23__["EveSOFDataHullSpotlightSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSetItem */ "./sof/hull/EveSOFDataHullSpriteLineSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_24__["EveSOFDataHullSpriteLineSetItem"]; });
+/* harmony import */ var _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSet */ "./sof/hull/EveSOFDataHullSpriteLineSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSet", function() { return _EveSOFDataHullSpriteLineSet__WEBPACK_IMPORTED_MODULE_24__["EveSOFDataHullSpriteLineSet"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSet */ "./sof/hull/EveSOFDataHullSpriteSet.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_25__["EveSOFDataHullSpriteSet"]; });
+/* harmony import */ var _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./EveSOFDataHullSpriteLineSetItem */ "./sof/hull/EveSOFDataHullSpriteLineSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteLineSetItem", function() { return _EveSOFDataHullSpriteLineSetItem__WEBPACK_IMPORTED_MODULE_25__["EveSOFDataHullSpriteLineSetItem"]; });
 
-/* harmony import */ var _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSetItem */ "./sof/hull/EveSOFDataHullSpriteSetItem.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_26__["EveSOFDataHullSpriteSetItem"]; });
+/* harmony import */ var _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSet */ "./sof/hull/EveSOFDataHullSpriteSet.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSet", function() { return _EveSOFDataHullSpriteSet__WEBPACK_IMPORTED_MODULE_26__["EveSOFDataHullSpriteSet"]; });
+
+/* harmony import */ var _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./EveSOFDataHullSpriteSetItem */ "./sof/hull/EveSOFDataHullSpriteSetItem.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSpriteSetItem", function() { return _EveSOFDataHullSpriteSetItem__WEBPACK_IMPORTED_MODULE_27__["EveSOFDataHullSpriteSetItem"]; });
+
 
 
 
@@ -72890,7 +73423,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************!*\
   !*** ./sof/index.js ***!
   \**********************/
-/*! exports provided: EveSOFData, EveSOF, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
+/*! exports provided: EveSOFData, EveSOF, EveSOFDataFaction, EveSOFDataFactionChild, EveSOFDataFactionColorSet, EveSOFDataFactionPlaneSet, EveSOFDataFactionSpotlightSet, EveSOFDataFactionVisibilityGroupSet, EveSOFDataGeneric, ErrSOFAreaShaderNotFound, ErrSOFDecalShaderNotFound, ErrSOFMaterialPrefixNotFound, ErrSOFPatternMaterialPrefixNotFound, EveSOFDataGenericDamage, EveSOFDataGenericDecalShader, EveSOFDataGenericHullDamage, EveSOFDataGenericShader, EveSOFDataGenericString, EveSOFDataGenericSwarm, EveSOFDataGenericVariant, EveSOFDataHull, EveSOFDataHullAnimation, EveSOFDataHullArea, EveSOFDataHullBanner, EveSOFDataHullBannerLight, EveSOFDataHullBooster, EveSOFDataHullBoosterItem, EveSOFDataHullChild, EveSOFDataHullController, EveSOFDataHullDecalSet, EveSOFDataHullDecalSetItem, EveSOFDataHullHazeSet, EveSOFDataHullHazeSetItem, EveSOFDataHullLightSet, EveSOFDataHullLightSetItem, EveSOFDataHullLightSetSpotLight, EveSOFDataHullLightSetTexturedPointLight, EveSOFDataHullLocator, EveSOFDataHullLocatorSet, EveSOFDataHullPlaneSet, EveSOFDataHullPlaneSetItem, EveSOFDataHullSoundEmitter, EveSOFDataHullSpotlightSet, EveSOFDataHullSpotlightSetItem, EveSOFDataHullSpriteLineSet, EveSOFDataHullSpriteLineSetItem, EveSOFDataHullSpriteSet, EveSOFDataHullSpriteSetItem, EveSOFDataPattern, ErrSOFProjectionNotFound, EveSOFDataPatternLayer, EveSOFDataPatternPerHull, EveSOFDataPatternTransform, EveSOFDataRace, EveSOFDataRaceDamage, EveSOFDataArea, EveSOFDataAreaMaterial, EveSOFDataBooster, EveSOFDataBoosterShape, EveSOFDataInstancedMesh, EveSOFDataLogo, EveSOFDataLogoSet, EveSOFDataMaterial, EveSOFDataParameter, EveSOFDataTexture, EveSOFDataTransform */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -72941,6 +73474,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullArea", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullArea"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBanner", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullBanner"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBannerLight", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullBannerLight"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullBooster", function() { return _hull__WEBPACK_IMPORTED_MODULE_2__["EveSOFDataHullBooster"]; });
 
@@ -73082,7 +73617,7 @@ class EveSOFDataPattern {
    * @returns {*}
    */
   GetHullPattern(hullName) {
-    const projection = this.GetProjection(hullName);
+    var projection = this.GetProjection(hullName);
     return {
       name: this.name,
       layer1: this.layer1,
@@ -73109,7 +73644,7 @@ class EveSOFDataPattern {
 
 
   GetProjection(name) {
-    for (let i = 0; i < this.projections.length; i++) {
+    for (var i = 0; i < this.projections.length; i++) {
       if (this.projections[i].name === name) {
         return this.projections[i];
       }
@@ -73742,7 +74277,7 @@ class EveSOFDataInstancedMeshInstanceReader {
   }
 
   static blackStruct(reader) {
-    let data = [reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32()];
+    var data = [reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32(), reader.ReadF32()];
     return new EveSOFDataInstancedMeshInstanceReader(data);
   }
 
@@ -74873,9 +75408,9 @@ class Tr2ControllerFloatVariable {
    * @returns {string}
    */
   GetEnumsAsString() {
-    let str = [];
+    var str = [];
 
-    for (const string in this.enumValues) {
+    for (var string in this.enumValues) {
       if (this.enumValues.hasOwnProperty(string)) {
         str.push("".concat(string, "=").concat(this.enumValues[string]));
       }
