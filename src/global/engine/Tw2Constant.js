@@ -27,7 +27,8 @@ export const Type = {
     QUATERNION: 59,
     MATRIX3: 60,
     MATRIX4: 61,
-    INDEX_BUFFER: 62
+    INDEX_BUFFER: 62,
+    ENUM: 70,
 };
 
 export const TypeCategory = {
@@ -39,7 +40,8 @@ export const TypeCategory = {
     PLAIN: 5,
     LIST: 6,
     ARRAY: 7,
-    TYPED: 8
+    TYPED: 8,
+    ENUM: 9
 };
 
 export const TypeTypeCategory = {
@@ -52,6 +54,7 @@ export const TypeTypeCategory = {
     [Type.UINT]: TypeCategory.NUMBER,
     [Type.USHORT]: TypeCategory.NUMBER,
     [Type.FLOAT]: TypeCategory.NUMBER,
+    [Type.ENUM]: TypeCategory.NUMBER,
     [Type.OBJECT]: TypeCategory.OBJECT,
     [Type.RAW]: TypeCategory.OBJECT,
     [Type.LIST]: TypeCategory.LIST,
@@ -64,6 +67,7 @@ export const TypeTypeCategory = {
     [Type.MATRIX3]: TypeCategory.TYPED,
     [Type.MATRIX4]: TypeCategory.TYPED,
     [Type.INDEX_BUFFER]: TypeCategory.TYPED,
+    [Type.ENUM]: TypeCategory.ENUM
 };
 
 export const TypeLength = {

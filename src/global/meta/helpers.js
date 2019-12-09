@@ -1,6 +1,6 @@
 import { isFunction, isPlain, isString, toArray } from "global/util";
 import { ErrInvalidDecoratorUsage } from "core/Tw2Error";
-import { set } from "../meta";
+import { has, get, set } from "../meta";
 import { Type } from "../engine/Tw2Constant";
 
 const invalidUsage = {
@@ -15,9 +15,9 @@ const invalidUsage = {
  * @param {*} d
  * @returns {*}
  */
-function handleDescriptor(d)
+export function handleDescriptor(d)
 {
-    if (d)
+    if (d && !d.set && !d.get)
     {
         if (d.writable === undefined) d.writable = true;
         if (d.enumerable === undefined) d.enumerable = true;
@@ -50,7 +50,8 @@ function normalizeHandlers(options)
     function createHandler(type, options)
     {
         if (isFunction(options[type])) return options[type];
-        return options[type] && isFunction(options.handler) ? options.handler : invalidUsage[type];
+        if (options[type] === false) return invalidUsage[type];
+        return isFunction(options.handler) ? options.handler : invalidUsage[type];
     }
 
     return {
@@ -80,13 +81,16 @@ export function decorate(options, value)
             if (descriptor) handleDescriptor(descriptor);
             const targetType = getTargetType(target, property);
 
+            const decoratorObject = { target, property, descriptor };
+            if (targetType !== "class") decoratorObject.Constructor = target.constructor;
+
             // Predefined value
             if (value !== undefined)
             {
-                return handlers[targetType]({ target, property, descriptor }, value, ...args);
+                return handlers[targetType](decoratorObject, value, ...args);
             }
 
-            return handlers[targetType]({ target, property, descriptor }, ...args);
+            return handlers[targetType](decoratorObject, ...args);
         };
     };
 }
@@ -102,11 +106,24 @@ export function decorate(options, value)
  */
 export function typeHandler({ target, property, descriptor }, type, typeOf)
 {
+    // Convert type strings to enum values
     if (isString(type)) type = Type[type.toUpperCase()];
     if (type === undefined) type = Type.UNKNOWN;
+
     set("type", type, target, property);
+
     if (typeOf) set("typeOf", toArray(typeOf), target, property);
-    if (property.charAt(0) === "_") set("private", true, target, property);
-    if (descriptor.value === null) set("nullable", true, target, property);
+    if (property.charAt(0) === "_") set("isPrivate", true, target, property);
+    if (descriptor.value === null) set("isNullable", true, target, property);
+
+    /*
+    // Keep track of a classes's props
+    const { constructor } = target;
+    const props = has("props", constructor) ? get("props", constructor) : [];
+    if (!props.includes(property)) props.push(property);
+    props.sort();
+    set("props", props, constructor);
+    */
+
     return type;
 }

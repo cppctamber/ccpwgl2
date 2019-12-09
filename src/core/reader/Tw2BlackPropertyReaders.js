@@ -2,6 +2,46 @@ import { vec2, vec3, vec4, mat4, tw2, meta } from "global";
 import { ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError, ErrFeatureNotImplemented } from "../Tw2Error";
 import { isFunction, isPlain, isString } from "global/util";
 
+import { Type } from "global/engine/Tw2Constant";
+
+const TypeReader = {
+    [Type.UNKNOWN]: notImplemented,
+    [Type.BOOLEAN]: boolean,
+    [Type.PATH]: path,
+    [Type.STRING]: string,
+    [Type.BYTE]: byte,
+    [Type.UINT]: uint,
+    [Type.USHORT]: ushort,
+    [Type.FLOAT]: float,
+    [Type.VECTOR2]: vector2,
+    [Type.VECTOR3]: vector3,
+    [Type.VECTOR4]: vector4,
+    [Type.QUATERNION]: vector4,
+    [Type.MATRIX4]: matrix,
+    [Type.COLOR]: color,
+    [Type.OBJECT]: object,
+    [Type.RAW]: rawObject,
+    [Type.LIST]: array,
+    [Type.ARRAY]: array,
+    [Type.PLAIN]: rawObject,
+    [Type.INDEX_BUFFER]: indexBuffer,
+    [Type.ENUM] : enums
+};
+
+/**
+ * Gets a black reader from a property type
+ * @param {Number|String|Function} type
+ * @returns {Function}
+ */
+function getReaderFromType(type)
+{
+    if (isFunction(type)) return type;
+    if (isString(type)) type = Type[type.toUpperCase()];
+    if (type === undefined || TypeReader[type] === undefined) type = Type.UNKNOWN;
+    return TypeReader[type];
+}
+
+
 /**
  * Reads a path
  * - Handles compatibilities so ccpwgl can either load newer files or try to fail gracefully
@@ -118,9 +158,20 @@ export function object(reader, id)
         }
 
         // Defined with meta data
-        if (!properties && meta.has("black", result, propertyName))
+        if (!reader && meta.has("black", result, propertyName))
         {
             reader = meta.get("black", result, propertyName);
+        }
+
+        // Try to use type definition if all else fails
+        if (debugEnabled)
+        {
+            if (!reader && meta.has("type", result, propertyName))
+            {
+                const propertyType = meta.get("type", result, propertyName) || 0;
+                reader = getReaderFromType(propertyType);
+                console.log(`Identifying reader from property '${propertyName}' type: ${propertyType.toString()}`);
+            }
         }
 
         if (reader)

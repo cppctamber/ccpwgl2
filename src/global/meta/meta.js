@@ -1,3 +1,5 @@
+import { isPlain } from "global/util";
+
 /**
  * Meta data prefix
  * @type {string}
@@ -15,14 +17,31 @@ function getMetaName(name)
 }
 
 /**
- * Defines meta data as a decorator
- * @param {String|Object} key
- * @param {*} [value=true]
- * @returns {PropertyDecorator|ClassDecorator|MethodDecorator}
+ * Provides similar functionality to Reflect.metadata
+ * @param {String} a
+ * @param {*} value
+ * @returns {Function}
  */
-export function data(key, value = true)
+export function data(a, value=true)
 {
-    return Reflect.metadata(getMetaName(key), value);
+    return function(target, property)
+    {
+        if (isPlain(a))
+        {
+            // Not properly supported
+            for (const key in a)
+            {
+                if (a.hasOwnProperty(key))
+                {
+                    set(key, a[key], target, property);
+                }
+            }
+        }
+        else
+        {
+            set(a, value, target, property);
+        }
+    };
 }
 
 /**

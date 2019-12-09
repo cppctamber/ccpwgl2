@@ -8,7 +8,7 @@ function blackHandler({ target, property, descriptor }, type, typeOf, reader)
 {
     typeHandler({ target, property, descriptor }, type, typeOf);
     set("black", reader, target, property);
-    set("black", true, target);
+    set("black", true, target.constructor);
 }
 
 function createType(type, reader)
@@ -21,9 +21,13 @@ function createType(type, reader)
     });
 }
 
-export const list = createType(Type.LIST, readers.array);
-export const object = createType(Type.OBJECT, readers.object);
-export const plain = createType(Type.PLAIN, readers.notImplemented);
+export const listOf = createType(Type.LIST, readers.array);
+export const objectOf = createType(Type.OBJECT, readers.object);
+export const plainOf = createType(Type.PLAIN, readers.notImplemented);
+
+export const list = createType(Type.LIST, readers.array)();
+export const object = createType(Type.OBJECT, readers.object)();
+export const plain = createType(Type.PLAIN, readers.notImplemented)();
 
 export const unknown = createType(Type.UNKNOWN, readers.notImplemented)();
 export const boolean = createType(Type.BOOLEAN, readers.boolean)();
@@ -49,7 +53,7 @@ export const fromList = decorate({
     {
         blackHandler({ target, property, descriptor }, Type.PLAIN, typeOf, readers.fromList(options));
     }
-})
+});
 
 export const struct = decorate({
 

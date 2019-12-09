@@ -16,9 +16,13 @@ function createType(type)
     });
 }
 
-export const list = createType(Type.LIST);
-export const object = createType(Type.OBJECT);
-export const plain = createType(Type.PLAIN);
+export const listOf = createType(Type.LIST);
+export const objectOf = createType(Type.OBJECT);
+export const plainOf = createType(Type.PLAIN);
+
+export const list = createType(Type.LIST)();
+export const object = createType(Type.OBJECT)();
+export const plain = createType(Type.PLAIN)();
 
 export const unknown = createType(Type.UNKNOWN)();
 export const boolean = createType(Type.BOOLEAN)();
@@ -39,3 +43,5 @@ export const quaternion = createType(Type.QUATERNION)();
 export const matrix3 = createType(Type.MATRIX3)();
 export const matrix4 = createType(Type.MATRIX4)();
 export const indexBuffer = createType(Type.INDEX_BUFFER)();
+
+export const enumerable = createType(Type.ENUM);
