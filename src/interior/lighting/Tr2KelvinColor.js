@@ -1,36 +1,21 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * Tr2KelvinColor
- * TODO: Do we need this class?
- * TODO: Implement
  *
  * @property {Number} temperature -
  * @property {Number} tint        -
  */
+@meta.ccp("Tr2KelvinColor")
+@meta.notImplemented
 export class Tr2KelvinColor extends Tw2BaseClass
 {
 
+    @meta.black.float
     temperature = 0;
+
+    @meta.black.float
     tint = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "temperature", r.float ],
-            [ "tint", r.float ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

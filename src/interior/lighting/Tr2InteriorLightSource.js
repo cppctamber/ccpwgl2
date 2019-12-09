@@ -1,10 +1,8 @@
-import { vec3, vec4 } from "global";
-import { Tw2BaseClass } from "global";
+import { meta, vec3, vec4, Tw2BaseClass } from "global";
+
 
 /**
  * Tr2InteriorLightSource
- * TODO: Do we need this class?
- * TODO: Implement
  *
  * @property {String} name                -
  * @property {vec4} color                 -
@@ -19,49 +17,45 @@ import { Tw2BaseClass } from "global";
  * @property {Number} radius              -
  * @property {Boolean} useKelvinColor     -
  */
+@meta.ccp("Tr2InteriorLightSource")
+@meta.notImplemented
 export class Tr2InteriorLightSource extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.float
     coneAlphaInner = 0;
+
+    @meta.black.float
     coneAlphaOuter = 0;
+
+    @meta.black.vector3
     coneDirection = vec3.create();
+
+    @meta.black.float
     falloff = 0;
+
+    @meta.black.float
     importanceBias = 0;
+
+    @meta.black.float
     importanceScale = 0;
+
+    @meta.black.object
     kelvinColor = null;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.float
     radius = 0;
+
+    @meta.black.boolean
     useKelvinColor = false;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "color", r.vector4 ],
-            [ "coneAlphaInner", r.float ],
-            [ "coneAlphaOuter", r.float ],
-            [ "coneDirection", r.vector3 ],
-            [ "falloff", r.float ],
-            [ "importanceBias", r.float ],
-            [ "importanceScale", r.float ],
-            [ "kelvinColor", r.object ],
-            [ "name", r.string ],
-            [ "position", r.vector3 ],
-            [ "radius", r.float ],
-            [ "useKelvinColor", r.boolean ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

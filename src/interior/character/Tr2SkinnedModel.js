@@ -1,42 +1,29 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * Tr2SkinnedModel
- * TODO: Do we need this class?
- * TODO: Implement
  *
  * @property {String} name            -
  * @property {String} geometryResPath -
- * @property {Array.<Mesh>} meshes    -
+ * @property {Array}  meshes          -
  * @property {String} skeletonName    -
  */
+@meta.ccp("Tr2SkinnedModel")
+@meta.notImplemented
 export class Tr2SkinnedModel extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.path
     geometryResPath = "";
+
+    @meta.black.list
     meshes = [];
+
+    @meta.black.string
     skeletonName = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "geometryResPath", r.string ],
-            [ "meshes", r.array ],
-            [ "name", r.string ],
-            [ "skeletonName", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
