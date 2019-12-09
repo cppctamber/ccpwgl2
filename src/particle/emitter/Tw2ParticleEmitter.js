@@ -1,9 +1,9 @@
 /* eslint no-unused-vars:0 */
 import { meta, Tw2BaseClass } from "global";
 
+
 /**
  * Particle Emitter base class
- * @ccp N/A
  *
  * @property {Tw2ParticleSystem} particleSystem
  */
@@ -11,6 +11,7 @@ import { meta, Tw2BaseClass } from "global";
 export class Tw2ParticleEmitter extends Tw2BaseClass
 {
 
+    @meta.object
     particleSystem = null;
 
 
@@ -30,7 +31,10 @@ export class Tw2ParticleEmitter extends Tw2BaseClass
      */
     GetResources(out = [])
     {
-        if (this.particleSystem) this.particleSystem.GetResources(out);
+        if (this.particleSystem)
+        {
+            this.particleSystem.GetResources(out);
+        }
         return out;
     }
 

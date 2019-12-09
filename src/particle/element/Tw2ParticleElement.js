@@ -1,3 +1,18 @@
+import { meta } from "global";
+
+
+/**
+ * Particle type
+ * @type {{POSITION: number, VELOCITY: number, MASS: number, CUSTOM: number, LIFETIME: number}}
+ */
+const ParticleType = {
+    LIFETIME: 0,
+    POSITION: 1,
+    VELOCITY: 2,
+    MASS: 3,
+    CUSTOM: 4
+};
+
 /**
  * Tw2ParticleElement
  *
@@ -12,21 +27,41 @@
  * @property {number} instanceStride
  * @property {number} vertexStride
  * @property {Boolean} dirty
- * @class
  */
 export class Tw2ParticleElement
 {
 
+    @meta.enumerable(ParticleType)
     elementType = null;
+
+    @meta.string
     customName = null;
+
+    @meta.uint
     dimension = null;
+
+    @meta.uint
     usageIndex = null;
+
+    @meta.boolean
     usedByGPU = null;
+
     buffer = null;
+
+    @meta.uint
     startOffset = 0;
+
+    @meta.uint
     offset = 0;
+
+    @meta.uint
     instanceStride = 0;
+
+    @meta.uint
     vertexStride = 0;
+
+    @meta.boolean
+    @meta.isPrivate
     dirty = false;
 
     /**
@@ -63,13 +98,7 @@ export class Tw2ParticleElement
      * Particle element types
      * @type {{LIFETIME: number, POSITION: number, VELOCITY: number, MASS: number, CUSTOM: number}}
      */
-    static Type = {
-        LIFETIME: 0,
-        POSITION: 1,
-        VELOCITY: 2,
-        MASS: 3,
-        CUSTOM: 4
-    };
+    static Type = ParticleType;
 
     /**
      * Particle element type map

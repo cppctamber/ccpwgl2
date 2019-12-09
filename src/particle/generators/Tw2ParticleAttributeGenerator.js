@@ -1,6 +1,7 @@
 /* eslint no-unused-vars:0 */
 import { meta, vec3, Tw2BaseClass } from "global";
 
+
 /**
  * Tw2ParticleAttributeGenerator base class
  *
@@ -11,6 +12,7 @@ import { meta, vec3, Tw2BaseClass } from "global";
 @meta.abstract
 export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
 {
+
     /**
      * Binds a particle system element to the generator
      * @param {Tw2ParticleSystem} ps

@@ -1,62 +1,26 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
+
 
 /**
  * Tr2ParticleVortexForce
- * Todo: Implement
- * @ccp Tr2ParticleVortexForce
  *
  * @property {vec3} axis        -
  * @property {Number} magnitude -
  * @property {vec3} position    -
  */
+@meta.ccp("Tr2ParticleVortexForce")
+@meta.notImplemented
 export class Tr2ParticleVortexForce extends Tw2ParticleForce
 {
 
+    @meta.black.vector3
     axis = vec3.create();
+
+    @meta.black.float
     magnitude = 0;
+
+    @meta.black.vector3
     position = vec3.create();
-
-    /**
-     * Applies force
-     * @param {Tw2ParticleElement} position - Position
-     * @param {Tw2ParticleElement} velocity - Velocity
-     * @param {Tw2ParticleElement} force    - force
-     * @param {Number} [dt]                 - unused
-     * @param {Number} [mass]               - unused
-     */
-    ApplyForce(position, velocity, force, dt, mass)
-    {
-        // Todo: Implement ApplyForce
-    }
-
-    /**
-     * Per frame update
-     * @param {Number} dt
-     */
-    Update(dt)
-    {
-        // Todo: Implement Update
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "axis", r.vector3 ],
-            [ "magnitude", r.float ],
-            [ "position", r.vector3 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

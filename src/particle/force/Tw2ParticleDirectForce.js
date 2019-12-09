@@ -1,15 +1,17 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
+
 
 /**
  * Tw2ParticleDirectForce
- * @ccp Tr2ParticleDirectForce
  *
  * @property {vec3} force
  */
+@meta.ccp("Tr2ParticleDirectForce")
 export class Tw2ParticleDirectForce extends Tw2ParticleForce
 {
 
+    @meta.black.vector3
     force = vec3.create();
 
 
@@ -17,25 +19,13 @@ export class Tw2ParticleDirectForce extends Tw2ParticleForce
      * Applies force
      * @param {Tw2ParticleElement} position - Position
      * @param {Tw2ParticleElement} velocity - Velocity
-     * @param {Tw2ParticleElement} force    - force
+     * @param {vec3} force                  - force
      * @param {Number} [dt]                 - unused
      * @param {Number} [mass]               - unused
      */
     ApplyForce(position, velocity, force, dt, mass)
     {
         vec3.add(force, force, this.force);
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "force", r.vector3 ]
-        ];
     }
 
 }

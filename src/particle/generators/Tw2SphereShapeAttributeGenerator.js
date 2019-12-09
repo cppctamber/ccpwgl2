@@ -1,14 +1,10 @@
-import { vec3, quat } from "global";
+import { vec3, quat, meta } from "global";
 import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
+
 /**
  * Tw2SphereShapeAttributeGenerator
- * TODO: Is "controlPosition" deprecated?
- * TODO: Is "controlVelocity" deprecated?
- * TODO: Implement "distributionExponent"
- * TODO: Implement "customName"
- * @ccp Tr2SphereShapeAttributeGenerator
  *
  * @property {String} customName             -
  * @property {Boolean} controlPosition       -
@@ -28,26 +24,58 @@ import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
  * @property {?Tw2ParticleElement} _position -
  * @property {?Tw2ParticleElement}_velocity  -
  */
+@meta.ccp("Tr2SphereShapeAttributeGenerator")
 export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
+    @meta.black.string
     customName = "";
+
+    @meta.black.float
+    @meta.notImplemented
     distributionExponent = 0;
+
+    @meta.black.float
     maxPhi = 360;
+
+    @meta.black.float
     maxRadius = 0;
+
+    @meta.black.float
     maxSpeed = 0;
+
+    @meta.black.float
     maxTheta = 360;
+
+    @meta.black.float
     minPhi = 0;
+
+    @meta.black.float
     minRadius = 0;
+
+    @meta.black.float
     minSpeed = 0;
+
+    @meta.black.float
     minTheta = 0;
+
+    @meta.black.float
     parentVelocityFactor = 1;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.quaternion
     rotation = quat.create();
 
-    //ccpwgl
+    @meta.boolean
+    @meta.todo("Is this deprecated?")
     controlPosition = true;
+
+    @meta.boolean
+    @meta.todo("Is this deprecated?")
     controlVelocity = true;
+
     _position = null;
     _velocity = null;
 
@@ -130,35 +158,5 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
             this._position.buffer[offset + 2] = rv[2];
         }
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "customName", r.string ],
-            [ "distributionExponent", r.float ],
-            [ "maxPhi", r.float ],
-            [ "maxRadius", r.float ],
-            [ "maxSpeed", r.float ],
-            [ "maxTheta", r.float ],
-            [ "minPhi", r.float ],
-            [ "minRadius", r.float ],
-            [ "minSpeed", r.float ],
-            [ "minTheta", r.float ],
-            [ "parentVelocityFactor", r.float ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

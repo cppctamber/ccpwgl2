@@ -1,9 +1,8 @@
-import { Tw2BaseClass } from "global";
+import { meta } from "global";
+
 
 /**
  * Tr2GpuParticleSystem
- * TODO: Implement
- * @ccp Tr2GpuParticleSystem
  *
  * @property {Tw2Effect} clear             -
  * @property {Tw2Effect} emit              -
@@ -15,18 +14,39 @@ import { Tw2BaseClass } from "global";
  * @property {Tw2Effect} sortStep          -
  * @property {Tw2Effect} update            -
  */
-export class Tr2GpuParticleSystem extends Tw2BaseClass
+@meta.ccp("Tr2GpuParticleSystem")
+@meta.notImplemented
+export class Tr2GpuParticleSystem
 {
 
+    @meta.black.object
     clear = null;
+
+    @meta.black.object
+    @meta.todo("Handle conflict with Tw2BaseClass.emit")
     emit = null;
+
+    @meta.black.object
     render = null;
+
+    @meta.black.object
     setDrawParameters = null;
+
+    @meta.black.object
     setSortParameters = null;
+
+    @meta.black.object
     sort = null;
+
+    @meta.black.object
     sortInner = null;
+
+    @meta.black.object
     sortStep = null;
+
+    @meta.black.object
     update = null;
+
 
     /**
      * Gets object resources
@@ -46,31 +66,5 @@ export class Tr2GpuParticleSystem extends Tw2BaseClass
         if (this.update) this.update.GetResources(out);
         return out;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "clear", r.object ],
-            [ "emit", r.object ],
-            [ "render", r.object ],
-            [ "setDrawParameters", r.object ],
-            [ "setSortParameters", r.object ],
-            [ "sort", r.object ],
-            [ "sortInner", r.object ],
-            [ "sortStep", r.object ],
-            [ "update", r.object ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

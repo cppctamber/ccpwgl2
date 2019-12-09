@@ -1,9 +1,9 @@
 /* eslint no-unused-vars:0 */
 import { meta, vec3, vec4, Tw2BaseClass } from "global";
 
+
 /**
  * Tw2ParticleForce base class
- * @ccp N/A
  */
 @meta.abstract
 export class Tw2ParticleForce extends Tw2BaseClass
@@ -13,7 +13,7 @@ export class Tw2ParticleForce extends Tw2BaseClass
      * Applies forces
      * @param {Tw2ParticleElement} position - Position
      * @param {Tw2ParticleElement} velocity - Velocity
-     * @param {Tw2ParticleElement} force    - force
+     * @param {vec3} force                  - force
      * @param {Number} [dt]                 - unused
      * @param {Number} [mass]               - unused
      */
@@ -27,10 +27,9 @@ export class Tw2ParticleForce extends Tw2BaseClass
      * Per frame update (Called before ApplyForce)
      * @param {number} dt - delta time
      */
-    //@meta.abstract
     Update(dt)
     {
-
+        // Optional, not needed on all forces
     }
 
     /**

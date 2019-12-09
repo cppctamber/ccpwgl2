@@ -1,66 +1,90 @@
-import { vec3, mat4, util, device, Tw2BaseClass } from "global";
+import { meta, vec3, mat4, device, Tw2BaseClass } from "global";
 import { Tw2VertexDeclaration } from "core";
 import { Tw2ParticleElement } from "./element";
 
+
 /**
  * Tw2ParticleSystem
- * TODO: Identify where "aabbMin" is used
- * TODO: Identify where "aabbMax" is used
- * TODO: Is "isGlobal" deprecated, it isn't used anywhere
- * TODO: Is "peakAliveCount" deprecated, it isn't used anywhere
- * TODO: Implement "useSimTimeRebase"
- * @ccp Tr2ParticleSystem
  *
- * @property {String} name                                                      - The particle system's name
- * @property {Boolean} applyAging                                               - Applies aging
- * @property {Boolean} applyForce                                               - Applies particle forces
- * @property {Array.<Tw2ParticleConstraint>} constraints                        - Particle constraints
- * @property {Array.<Tr2ParticleElementDeclaration>} elements                   - Particle elements
- * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleDuringLifeEmitter - Particle emitter called when alive
- * @property {ParticleEmitter|ParticleEmitterGPU} emitParticleOnDeathEmitter    - Particle emitter called when dead
- * @property {Array.<Tw2ParticleForce>} forces                                  - Particle forces
- * @property {Boolean} isGlobal                                                 - unused?
- * @property {Number} maxParticleCount                                          - Maximum particle count
- * @property {number} peakAliveCount                                            - unused?
- * @property {Boolean} requiresSorting                                          - Identifies that particles require sorting
- * @property {Boolean} updateBoundingBox                                        - Identifies that bounds require updating
- * @property {Boolean} updateSimulation                                         - Identifies that forces an constraints are used
- * @property {Boolean} useSimTimeRebase                                         -
- * @property {vec3} _aabbMin                                                    - Axis aligned bounding box min
- * @property {vec3} _aabbMax                                                    - Axis aligned bounding box max
- * @property {number} _aliveCount                                               - The current particle count
- * @property {Boolean} _bufferDirty                                             - Identifies that buffers require rebuilding
- * @property {Array} _buffers                                                   -
- * @property {Tw2VertexDeclaration} _declaration                                - Instance declaration
- * @property {Array<Tw2ParticleElement>} _elements                              -
- * @property {Array} _instanceStride                                            -
- * @property {Boolean} _isValid                                                 - Identifies that the particle system is good
- * @property {Float32Array} _distancesBuffer                                    -
- * @property {Float32Array} _sortedBuffer                                       -
- * @property {Array} _sortedIndexes                                             -
- * @property {Array<Tw2ParticleElement>} _stdElements                           - Standard particle elements
- * @property {WebGLBuffer} _vb                                                  - Vertex buffer
- * @property {Array} _vertexStride                                              - Vertex stride
+ * @property {String} name                                      - The particle system's name
+ * @property {Boolean} applyAging                               - Applies aging
+ * @property {Boolean} applyForce                               - Applies particle forces
+ * @property {Array.<Tw2ParticleConstraint>} constraints        - Particle constraints
+ * @property {Array.<Tw2ParticleElementDeclaration>} elements   - Particle elements
+ * @property {Tw2ParticleEmitter} emitParticleDuringLifeEmitter - Particle emitter called when alive
+ * @property {Tw2ParticleEmitter} emitParticleOnDeathEmitter    - Particle emitter called when dead
+ * @property {Array.<Tw2ParticleForce>} forces                  - Particle forces
+ * @property {Boolean} isGlobal                                 - unused?
+ * @property {Number} maxParticleCount                          - Maximum particle count
+ * @property {number} peakAliveCount                            - unused?
+ * @property {Boolean} requiresSorting                          - Identifies that particles require sorting
+ * @property {Boolean} updateBoundingBox                        - Identifies that bounds require updating
+ * @property {Boolean} updateSimulation                         - Identifies that forces an constraints are used
+ * @property {Boolean} useSimTimeRebase                         -
+ * @property {vec3} _aabbMin                                    - Axis aligned bounding box min
+ * @property {vec3} _aabbMax                                    - Axis aligned bounding box max
+ * @property {number} _aliveCount                               - The current particle count
+ * @property {Boolean} _bufferDirty                             - Identifies that buffers require rebuilding
+ * @property {Array} _buffers                                   -
+ * @property {Tw2VertexDeclaration} _declaration                - Instance declaration
+ * @property {Array<Tw2ParticleElement>} _elements              -
+ * @property {Array} _instanceStride                            -
+ * @property {Boolean} _isValid                                 - Identifies that the particle system is good
+ * @property {Float32Array} _distancesBuffer                    -
+ * @property {Float32Array} _sortedBuffer                       -
+ * @property {Array} _sortedIndexes                             -
+ * @property {Array<Tw2ParticleElement>} _stdElements           - Standard particle elements
+ * @property {WebGLBuffer} _vb                                  - Vertex buffer
+ * @property {Array} _vertexStride                              - Vertex stride
  */
+@meta.ccp("Tr2ParticleSystem")
 export class Tw2ParticleSystem extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.boolean
     applyAging = true;
+
+    @meta.black.boolean
     applyForce = true;
+
+    @meta.black.list
     constraints = [];
+
+    @meta.black.list
     elements = [];
+
+    @meta.black.object
     emitParticleDuringLifeEmitter = null;
+
+    @meta.black.object
     emitParticleOnDeathEmitter = null;
+
+    @meta.black.list
     forces = [];
+
+    @meta.black.uint
     maxParticleCount = 0;
+
+    @meta.black.boolean
     requiresSorting = false;
+
+    @meta.black.boolean
     updateBoundingBox = false;
+
+    @meta.black.boolean
     updateSimulation = true;
+
+    @meta.black.boolean
+    @meta.notImplemented
     useSimTimeRebase = false;
 
-    // ccpwgl
+    @meta.todo("This is unused, remove it?")
     isGlobal = false;
+
+    @meta.todo("This is unused, remove it?")
     peakAliveCount = 0;
 
     _aabbMin = vec3.create();
@@ -78,6 +102,7 @@ export class Tw2ParticleSystem extends Tw2BaseClass
     _stdElements = [ null, null, null, null ];
     _vb = null;
     _vertexStride = [ null, null ];
+
 
     /**
      * Constructor
@@ -564,42 +589,17 @@ export class Tw2ParticleSystem extends Tw2BaseClass
      */
     static init()
     {
-        if (!Tw2ParticleSystem.global)
-        {
-            Tw2ParticleSystem.global = {
-                vec3_0: vec3.create(),
-                mat4_0: mat4.create()
-            };
-        }
+        if (Tw2ParticleElement.global) return;
+
+        Tw2ParticleSystem.global = {
+            vec3_0: vec3.create(),
+            mat4_0: mat4.create()
+        };
     }
 
     /**
      * Global and scratch variables
      */
     static global = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "constraints", r.array ],
-            [ "name", r.string ],
-            [ "applyAging", r.boolean ],
-            [ "applyForce", r.boolean ],
-            [ "elements", r.array ],
-            [ "emitParticleDuringLifeEmitter", r.object ],
-            [ "emitParticleOnDeathEmitter", r.object ],
-            [ "forces", r.array ],
-            [ "maxParticleCount", r.uint ],
-            [ "requiresSorting", r.boolean ],
-            [ "updateBoundingBox", r.boolean ],
-            [ "updateSimulation", r.boolean ],
-            [ "useSimTimeRebase", r.boolean ]
-        ];
-    }
 
 }

@@ -1,17 +1,21 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
+
 
 /**
  * Tw2ParticleAttractorForce
- * @ccp Tr2ParticleAttractorForce
  *
  * @property {number} magnitude
  * @property {vec3} position
  */
+@meta.ccp("Tr2ParticleAttractorForce")
 export class Tw2ParticleAttractorForce extends Tw2ParticleForce
 {
 
+    @meta.black.float
     magnitude = 0;
+
+    @meta.black.vector3
     position = vec3.create();
 
 
@@ -19,7 +23,7 @@ export class Tw2ParticleAttractorForce extends Tw2ParticleForce
      * Applies force
      * @param {Tw2ParticleElement} position - Position
      * @param {Tw2ParticleElement} velocity - Velocity
-     * @param {Tw2ParticleElement} force    - force
+     * @param {vec3} force                  - force
      * @param {Number} [dt]                 - unused
      * @param {Number} [mass]               - unused
      */
@@ -34,19 +38,6 @@ export class Tw2ParticleAttractorForce extends Tw2ParticleForce
         vec3.normalize(vec3_0, vec3_0);
         vec3.scale(vec3_0, vec3_0, this.magnitude);
         vec3.add(force, force, vec3_0);
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "magnitude", r.float ],
-            [ "position", r.vector3 ]
-        ];
     }
 
 }

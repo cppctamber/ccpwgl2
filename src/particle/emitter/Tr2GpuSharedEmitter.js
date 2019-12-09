@@ -1,10 +1,9 @@
-import { vec3, vec4 } from "global";
+import { meta, vec3, vec4 } from "global";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
+
 
 /**
  * Tr2GpuSharedEmitter
- * TODO: Implement
- * @ccp Tr2GpuSharedEmitter
  *
  * @property {String} name                         -
  * @property {Number} angle                        -
@@ -28,7 +27,7 @@ import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
  * @property {Number} maxSpeed                     -
  * @property {Number} minLifeTime                  -
  * @property {Number} minSpeed                     -
- * @property {Tw2GpuParticleSystem} particleSystem -
+ * @property {Tr2GpuParticleSystem} particleSystem -
  * @property {vec3} position                       -
  * @property {Number} radius                       -
  * @property {Number} rate                         -
@@ -40,91 +39,108 @@ import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
  * @property {Number} turbulenceFrequency          -
  * @property {Number} velocityStretchRotation      -
  */
+@meta.ccp("Tr2GpuSharedEmitter")
+@meta.notImplemented
 export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
 {
-    // ccp
+
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     angle = 0;
+
+    @meta.black.vector3
     attractorPosition = vec3.create();
+
+    @meta.black.float
     attractorStrength = 0;
+
+    @meta.black.color
     color0 = vec4.create();
+
+    @meta.black.color
     color1 = vec4.create();
+
+    @meta.black.color
     color2 = vec4.create();
+
+    @meta.black.color
     color3 = vec4.create();
+
+    @meta.black.float
     colorMidpoint = 0;
+
+    @meta.black.boolean
     continuousEmitter = false;
+
+    @meta.black.vector3
     direction = vec3.create();
+
+    @meta.black.float
     drag = 0;
+
+    @meta.black.float
     emissionDensity = 0;
+
+    @meta.black.float
     gravity = 0;
+
+    @meta.black.float
     inheritVelocity = 0;
+
+    @meta.black.float
     innerAngle = 0;
+
+    @meta.black.float
     maxDisplacement = 0;
+
+    @meta.black.float
     maxEmissionDensity = 0;
+
+    @meta.black.float
     maxLifeTime = 0;
+
+    @meta.black.float
     maxSpeed = 0;
+
+    @meta.black.float
     minLifeTime = 0;
+
+    @meta.black.float
     minSpeed = 0;
+
+    @meta.black.object
     particleSystem = null;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.float
     radius = 0;
+
+    @meta.black.float
     rate = 0;
+
+    @meta.black.boolean
     scaledByParent = false;
+
+    @meta.black.float
     sizeVariance = 0;
+
+    @meta.black.vector3
     sizes = vec3.create();
+
+    @meta.black.uint
     textureIndex = 0;
+
+    @meta.black.float
     turbulenceAmplitude = 0;
+
+    @meta.black.float
     turbulenceFrequency = 0;
+
+    @meta.black.float
     velocityStretchRotation = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "particleSystem", r.object ],
-            [ "angle", r.float ],
-            [ "attractorPosition", r.vector3 ],
-            [ "attractorStrength", r.float ],
-            [ "color0", r.vector4 ],
-            [ "color1", r.vector4 ],
-            [ "color2", r.vector4 ],
-            [ "color3", r.vector4 ],
-            [ "colorMidpoint", r.float ],
-            [ "continuousEmitter", r.boolean ],
-            [ "direction", r.vector3 ],
-            [ "drag", r.float ],
-            [ "emissionDensity", r.float ],
-            [ "gravity", r.float ],
-            [ "maxDisplacement", r.float ],
-            [ "maxEmissionDensity", r.float ],
-            [ "maxLifeTime", r.float ],
-            [ "maxSpeed", r.float ],
-            [ "minLifeTime", r.float ],
-            [ "minSpeed", r.float ],
-            [ "position", r.vector3 ],
-            [ "inheritVelocity", r.float ],
-            [ "innerAngle", r.float ],
-            [ "radius", r.float ],
-            [ "rate", r.float ],
-            [ "sizeVariance", r.float ],
-            [ "sizes", r.vector3 ],
-            [ "scaledByParent", r.boolean ],
-            [ "textureIndex", r.uint ],
-            [ "turbulenceAmplitude", r.float ],
-            [ "turbulenceFrequency", r.float ],
-            [ "velocityStretchRotation", r.float ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

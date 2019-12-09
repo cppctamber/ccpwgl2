@@ -1,6 +1,7 @@
 /* eslint no-unused-vars:0 */
 import { meta, Tw2BaseClass } from "global";
 
+
 /**
  * Tw2ParticleConstraint base class
  * - Not implemented yet

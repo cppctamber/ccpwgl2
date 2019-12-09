@@ -1,15 +1,17 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
+
 
 /**
  * Tw2ParticleFluidDragForce
- * @ccp Tr2ParticleFluidDragForce
  *
  * @property {number} drag
  */
+@meta.ccp("Tr2ParticleFluidDragForce")
 export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
 {
 
+    @meta.black.float
     drag = 0.1;
 
 
@@ -17,7 +19,7 @@ export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
      * Applies force
      * @param {Tw2ParticleElement} position - Position
      * @param {Tw2ParticleElement} velocity - Velocity
-     * @param {Tw2ParticleElement} force    - force
+     * @param {vec3} force                  - force
      * @param {Number} [dt]                 - unused
      * @param {Number} [mass]               - unused
      */
@@ -56,18 +58,6 @@ export class Tw2ParticleFluidDragForce extends Tw2ParticleForce
         {
             vec3.copy(force, vec3_0);
         }
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "drag", r.float ]
-        ];
     }
 
 }

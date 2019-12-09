@@ -1,11 +1,10 @@
 import { Tw2VertexElement } from "core";
 import { Tw2ParticleElement } from "./Tw2ParticleElement";
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * Tw2ParticleElementDeclaration
- * TODO: Handle "elementType" if passed a string by .black format
- * @ccp Tr2ParticleElementDeclaration
  *
  * @property {String} customName  -
  * @property {Number} dimension   -
@@ -13,14 +12,23 @@ import { Tw2BaseClass } from "global";
  * @property {Number} usageIndex  -
  * @property {Boolean} usedByGPU  -
  */
+@meta.ccp("Tr2ParticleElementDeclaration")
 export class Tw2ParticleElementDeclaration extends Tw2BaseClass
 {
 
-    // ccp
+    @meta.black.string
     customName = "";
+
+    @meta.black.uint
     dimension = 1;
-    elementType = 4;
+
+    @meta.black.uint
+    elementType = Tw2ParticleElement.Type.CUSTOM;
+
+    @meta.black.uint
     usageIndex = 0;
+
+    @meta.black.boolean
     usedByGPU = true;
 
 
@@ -81,22 +89,6 @@ export class Tw2ParticleElementDeclaration extends Tw2BaseClass
             usageIndex: this.usageIndex,
             elements: this.GetDimension()
         });
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "customName", r.string ],
-            [ "dimension", r.uint ],
-            [ "elementType", r.uint ],
-            [ "usageIndex", r.uint ],
-            [ "usedByGPU", r.boolean ]
-        ];
     }
 
 }

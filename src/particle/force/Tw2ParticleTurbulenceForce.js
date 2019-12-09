@@ -1,9 +1,9 @@
-import { vec3, vec4, noise } from "global";
+import { meta, vec3, vec4, noise } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
+
 
 /**
  * Tw2ParticleTurbulenceForce
- * @ccp Tr2ParticleTurbulenceForce
  *
  * @property {vec3} amplitude    -
  * @property {vec4} frequency    -
@@ -11,12 +11,20 @@ import { Tw2ParticleForce } from "./Tw2ParticleForce";
  * @property {Number} noiseRatio -
  * @property {number} _time      -
  */
+@meta.ccp("Tr2ParticleTurbulenceForce")
 export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
 {
 
+    @meta.black.vector3
     amplitude = vec3.fromValues(1, 1, 1);
+
+    @meta.black.vector4
     frequency = vec4.fromValues(1, 1, 1, 1);
+
+    @meta.black.float
     noiseLevel = 3;
+
+    @meta.black.float
     noiseRatio = 0.5;
 
     _time = 0;
@@ -24,9 +32,9 @@ export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
 
     /**
      * Applies force
-     * @param {Tw2ParticleElement} position - Position
-     * @param {Tw2ParticleElement} velocity - Velocity
-     * @param {Tw2ParticleElement} force    - force
+     * @param {Tw2ParticleElement} position - position
+     * @param {Tw2ParticleElement} velocity - velocity
+     * @param {vec3} force                  - force
      * @param {Number} [dt]                 - unused
      * @param {Number} [mass]               - unused
      */
@@ -68,21 +76,6 @@ export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
     Update(dt)
     {
         this._time += dt;
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "amplitude", r.vector3 ],
-            [ "frequency", r.vector4 ],
-            [ "noiseLevel", r.float ],
-            [ "noiseRatio", r.float ]
-        ];
     }
 
 }

@@ -1,26 +1,38 @@
-import { resMan, } from "global";
+import { meta, resMan, } from "global";
 import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticleElement } from "core";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
 /**
  * Tw2StaticEmitter
- * @ccp Tr2StaticEmitter
  *
- * @property {String} name                     -
- * @property {Tw2GeometryRes} geometryResource -
- * @property {Number} geometryIndex            -
- * @property {Boolean} _spawned                -
+ * @property {String} name                      -
+ * @property {Tw2GeometryRes} geometryResource  -
+ * @property {Number} geometryIndex             -
+ * @property {Tw2ParticleSystem} particleSystem -
+ * @property {Boolean} _spawned                 -
  */
+@meta.ccp("Tr2StaticEmitter")
 export class Tw2StaticEmitter extends Tw2ParticleEmitter
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.path
     geometryResourcePath = "";
+
+    @meta.black.uint
     meshIndex = 0;
 
-    // ccpwgl
+    @meta.black.object
+    particleSystem = null;
+
+    @meta.object
+    @meta.todo("Make property private")
     geometryResource = null;
+
+
     _spawned = false;
 
     /**
@@ -156,21 +168,6 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
                 this.particleSystem.EndSpawnParticle();
             }
         }
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "particleSystem", r.object ],
-            [ "geometryResourcePath", r.string ],
-            [ "meshIndex", r.uint ],
-        ];
     }
 
 }
