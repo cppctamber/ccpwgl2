@@ -141,7 +141,7 @@ export function object(reader, id)
         reader.references.set(id, result);
     }
 
-    if (!properties && !meta.has("black", result))
+    if (!properties && !meta.has("black", result.constructor))
     {
         throw new ErrBinaryObjectTypeNotFound({ type });
     }
