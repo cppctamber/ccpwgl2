@@ -1,3 +1,4 @@
+import { meta } from "global";
 import { Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -7,15 +8,24 @@ import { Tw2Curve } from "../Tw2Curve";
  * @property {number} min
  * @property {number} max
  * @property {Boolean} hold
- * @class
  */
+@meta.type("Tw2RandomConstantCurve")
 export class Tw2RandomConstantCurve extends Tw2Curve
 {
 
+    @meta.float
+    @meta.isPrivate
     value = 0;
+
+    @meta.float
     min = 0;
+
+    @meta.float
     max = 1;
+
+    @meta.boolean
     hold = true;
+
 
     /**
      * Sorts the curve

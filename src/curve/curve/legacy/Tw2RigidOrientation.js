@@ -1,4 +1,4 @@
-import { vec3, quat } from "global";
+import { vec3, quat, meta } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -7,13 +7,18 @@ import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
  * @property {quat} rot0
  * @property {vec3} omega0
  * @property {vec3} torque
- * @class
  */
+@meta.type("Tw2Torque")
 export class Tw2Torque extends Tw2CurveKey
 {
 
+    @meta.quaternion
     rot0 = quat.create();
+
+    @meta.vector4
     omega0 = vec3.create();
+
+    @meta.vector4
     torque = vec3.create();
 
 }
@@ -29,17 +34,32 @@ export class Tw2Torque extends Tw2CurveKey
  * @property {number} start
  * @property {Array.<Tw2Torque>} states
  * @property {number} length
- * @class
  */
+@meta.type("Tw2RigidOrientation")
 export class Tw2RigidOrientation extends Tw2Curve
 {
 
+    @meta.string
     name = "";
+
+    @meta.float
     I = 1;
+
+    @meta.float
     drag = 1;
+
+    @meta.quaternion
+    @meta.isPrivate
     value = quat.create();
+
+    @meta.float
     start = 0;
+
+    @meta.list
     states = [];
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 

@@ -1,3 +1,4 @@
+import { meta } from "global";
 import { Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -9,12 +10,21 @@ import { Tw2Curve } from "../Tw2Curve";
  * @property {number} scale
  * @property {number} speed
  */
+@meta.type("Tw2SineCurve")
 export class Tw2SineCurve extends Tw2Curve
 {
 
+    @meta.float
+    @meta.isPrivate
     value = 0;
+
+    @meta.float
     offset = 0;
+
+    @meta.float
     scale = 1;
+
+    @meta.float
     speed = 1;
 
     /**

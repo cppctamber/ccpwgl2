@@ -1,8 +1,8 @@
+import { meta } from "global";
 import { Tw2Curve, Tw2CurveKey } from "./Tw2Curve";
 
 /**
  * Tw2CurveScalarKey
- * @ccp N/A
  *
  * @param {Number} endTangent
  * @param {Number} extrapolation
@@ -11,14 +11,26 @@ import { Tw2Curve, Tw2CurveKey } from "./Tw2Curve";
  * @param {Number} startTangent
  * @param {Number} value
  */
+@meta.type("Tw2CurveScalarKey")
 export class Tw2CurveScalarKey extends Tw2CurveKey
 {
 
+    @meta.float
     endTangent = 0.0;
+
+    @meta.uint
     extrapolation = 0;
+
+    @meta.uint
     index = 0;
+
+    @meta.uint
     interpolation = 1;
+
+    @meta.float
     startTangent = 0.0;
+
+    @meta.float
     value = 0.0;
 
 
@@ -45,15 +57,6 @@ export class Tw2CurveScalarKey extends Tw2CurveKey
 
 /**
  * Tr2CurveScalar
- * TODO: implement extrapolationAfter
- * TODO: implement extrapolationBefore
- * TODO: implement timeOffset
- * TODO: implement timeScale
- * TODO: Get Extrapolation types from CCP
- * TODO: Get Interpolation types from CCP
- * TODO: implement GetValueAt
- * TODO: implement UpdateValue
- * @ccp Tr2CurveScalar
  *
  * @property {String} name                -
  * @property {Number} extrapolationAfter  -
@@ -62,18 +65,33 @@ export class Tw2CurveScalarKey extends Tw2CurveKey
  * @property {Number} timeOffset          -
  * @property {Number} timeScale           -
  */
+@meta.notImplemented
+@meta.type("Tr2CurveScalar", true)
 export class Tr2CurveScalar extends Tw2Curve
 {
 
+    @meta.black.uint
     extrapolationAfter = 0;
+
+    @meta.black.uint
     extrapolationBefore = 0;
+
+    @meta.black.list
     keys = [];
+
+    @meta.black.float
     timeOffset = 0;
+
+    @meta.black.float
     timeScale = 0;
+
+    @meta.float
+    @meta.isPrivate
     currentValue = 0;
 
-    // ccpwgl
+
     _length = 0;
+
 
     /**
      * Sorts the curve
@@ -134,28 +152,5 @@ export class Tr2CurveScalar extends Tw2Curve
      * @type {?{ string: number}}
      */
     static Extrapolation = {};
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "timeOffset", r.float ],
-            [ "timeScale", r.float ],
-            [ "extrapolationAfter", r.uint ],
-            [ "extrapolationBefore", r.uint ],
-            [ "keys", r.structList(Tw2CurveScalarKey) ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

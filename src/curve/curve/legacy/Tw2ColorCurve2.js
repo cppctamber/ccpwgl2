@@ -1,4 +1,4 @@
-import { vec4 } from "global";
+import { meta, vec4 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -9,14 +9,21 @@ import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
  * @property {vec4} leftTangent
  * @property {vec4} rightTangent
  * @property {number} interpolation
- * @class
  */
+@meta.type("Tw2ColorKey2")
 export class Tw2ColorKey2 extends Tw2CurveKey
 {
 
+    @meta.vector4
     value = vec4.create();
+
+    @meta.vector4
     leftTangent = vec4.create();
+
+    @meta.vector4
     rightTangent = vec4.create();
+
+    @meta.uint
     interpolation = 1;
 
 }
@@ -36,22 +43,47 @@ export class Tw2ColorKey2 extends Tw2CurveKey
  * @property {vec4} endTangent
  * @property {number} interpolation
  * @property {Array.<Tw2ColorKey2>} keys
- * @class
  */
+@meta.type("Tw2ColorCurve2")
 export class Tw2ColorCurve2 extends Tw2Curve
 {
 
+    @meta.boolean
     cycle = false;
+
+    @meta.boolean
     reversed = false;
+
+    @meta.float
     timeOffset = 0;
+
+    @meta.float
     timeScale = 1;
+
+    @meta.vector4
     startValue = vec4.fromValues(0, 0, 0, 1);
+
+    @meta.vector4
+    @meta.isPrivate
     currentValue = vec4.fromValues(0, 0, 0, 1);
+
+    @meta.vector4
     endValue = vec4.fromValues(0, 0, 0, 1);
+
+    @meta.vector4
     startTangent = vec4.create();
+
+    @meta.vector4
     endTangent = vec4.create();
+
+    @meta.uint
     interpolation = 1;
+
+    @meta.list
     keys = [];
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 

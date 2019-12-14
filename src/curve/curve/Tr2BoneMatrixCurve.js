@@ -1,30 +1,17 @@
+import { meta } from "global";
 import { Tw2Curve } from "./Tw2Curve";
 
 /**
  * Tr2BoneMatrixCurve
- * TODO: Implement
  *
  * @property {String} name
  */
+@meta.notImplemented
+@meta.type("Tr2BoneMatrixCurve", true)
 export class Tr2BoneMatrixCurve extends Tw2Curve
 {
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
+    @meta.black.string
+    name = "";
 
 }

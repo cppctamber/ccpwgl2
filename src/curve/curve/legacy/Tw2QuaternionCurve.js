@@ -1,4 +1,4 @@
-import { vec4, quat } from "global";
+import { meta, vec4, quat } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -8,14 +8,21 @@ import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
  * @property {vec4} leftTangent
  * @property {vec4} rightTangent
  * @property {number} interpolation
- * @class
  */
+@meta.type("Tw2QuaternionKey2")
 export class Tw2QuaternionKey2 extends Tw2CurveKey
 {
 
+    @meta.quaternion
     value = quat.create();
+
+    @meta.vector4
     leftTangent = vec4.create();
+
+    @meta.vector4
     rightTangent = vec4.create();
+
+    @meta.uint
     interpolation = 1;
 
 }
@@ -36,22 +43,47 @@ export class Tw2QuaternionKey2 extends Tw2CurveKey
  * @property {number} interpolation
  * @property {Array.<Tw2QuaternionKey>} keys
  * @property {number} length
- * @class
  */
+@meta.type("Tw2QuaternionCurve")
 export class Tw2QuaternionCurve extends Tw2Curve
 {
 
+    @meta.boolean
     cycle = false;
+
+    @meta.boolean
     reversed = false;
+
+    @meta.float
     timeOffset = 0;
+
+    @meta.float
     timeScale = 1;
+
+    @meta.quaternion
     startValue = quat.create();
+
+    @meta.quaternion
+    @meta.isPrivate
     currentValue = quat.create();
+
+    @meta.quaternion
     endValue = quat.create();
+
+    @meta.vector4
     startTangent = vec4.create();
+
+    @meta.vector4
     endTangent = vec4.create();
+
+    @meta.uint
     interpolation = 1;
+
+    @meta.list
     keys = [];
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 

@@ -12,7 +12,10 @@ import { meta, vec3, vec4, quat, Tw2BaseClass } from "global";
 export class Tw2CurveKey extends Tw2BaseClass
 {
 
+    @meta.string
     name = "";
+
+    @meta.float
     time = 0;
 
 }
@@ -21,13 +24,13 @@ export class Tw2CurveKey extends Tw2BaseClass
 /**
  * Tw2Curve base class
  *
- * @property {number|String} _id
  * @property {String} name
  */
 @meta.abstract
 export class Tw2Curve extends Tw2BaseClass
 {
 
+    @meta.string
     name = "";
 
     /**
@@ -41,7 +44,7 @@ export class Tw2Curve extends Tw2BaseClass
     /**
      * Sorts the curve
      */
-    @meta.abstract
+    //@meta.abstract
     Sort()
     {
 

@@ -1,4 +1,4 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -8,15 +8,21 @@ import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
  * @property {vec3} left
  * @property {vec3} right
  * @property {number} interpolation
- * @inherits Tw2CurveKey
- * @class
  */
+@meta.type("Tw2VectorKey")
 export class Tw2VectorKey extends Tw2CurveKey
 {
 
+    @meta.vector3
     value = vec3.create();
+
+    @meta.vector3
     left = vec3.create();
+
+    @meta.vector3
     right = vec3.create();
+
+    @meta.uint
     interpolation = 0;
 
 }
@@ -32,17 +38,30 @@ export class Tw2VectorKey extends Tw2CurveKey
  * @property {Array.<Tw2VectorKey>} keys
  * @property {number} _currentKey
  * @property {number} length
- * @class
  */
+@meta.type("Tw2VectorCurve")
 export class Tw2VectorCurve extends Tw2Curve
 {
 
+    @meta.float
     start = 0;
+
+    @meta.vector3
+    @meta.isPrivate
     value = vec3.create();
+
+    @meta.uint
     extrapolation = 0;
+
+    @meta.list
     keys = [];
-    _currentKey = 1;
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
+
+
+    _currentKey = 1;
 
 
     /**

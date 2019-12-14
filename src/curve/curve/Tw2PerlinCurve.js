@@ -1,9 +1,8 @@
+import { meta, noise } from "global";
 import { Tw2Curve } from "./Tw2Curve";
-import { noise } from "global/math";
 
 /**
  * Perlin curve
- * @ccp TriPerlinCurve
  *
  * @property {Number} N      -
  * @property {Number} alpha  -
@@ -13,15 +12,33 @@ import { noise } from "global/math";
  * @property {Number} speed  -
  * @property {Number} value  -
  */
+@meta.type("Tw2PerlinCurve", "TriPerlinCurve")
 export class Tw2PerlinCurve extends Tw2Curve
 {
 
-    N = 0;
+    @meta.black.string
+    name = "";
+
+    @meta.black.float
     alpha = 0;
+
+    @meta.black.float
     beta = 0;
+
+    @meta.black.uint
+    N = 0;
+
+    @meta.black.float
     offset = 0;
+
+    @meta.black.float
     scale = 0;
+
+    @meta.black.float
     speed = 0;
+
+    @meta.black.float
+    @meta.isPrivate
     value = 0;
 
     /**
@@ -78,24 +95,5 @@ export class Tw2PerlinCurve extends Tw2Curve
      * @type {number}
      */
     static curveType = Tw2Curve.Type.CURVE_NO_KEYS;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "alpha", r.float ],
-            [ "beta", r.float ],
-            [ "N", r.uint ],
-            [ "name", r.string ],
-            [ "offset", r.float ],
-            [ "scale", r.float ],
-            [ "speed", r.float ],
-            [ "value", r.float ]
-        ];
-    }
 
 }

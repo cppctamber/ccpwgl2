@@ -1,16 +1,21 @@
-import { vec4 } from "global";
+import { meta, vec4 } from "global";
 import { Tw2Curve } from "./Tw2Curve";
 
 /**
  * Constant curve
- * TODO: Is this a curve or a key?
- * @ccp Tr2CurveConstant
  *
  * @property {vec4} value  -
  */
+@meta.notImplemented
+@meta.type("Tw2CurveConstant", true)
+@meta.todo("Is this a curve or a key?")
 export class Tw2CurveConstant extends Tw2Curve
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.vector4
     value = vec4.create();
 
     /**
@@ -63,24 +68,5 @@ export class Tw2CurveConstant extends Tw2Curve
      * @type {?number}
      */
     static curveType = Tw2Curve.Type.CURVE_NO_KEYS;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "value", r.vector4 ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

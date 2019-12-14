@@ -1,4 +1,4 @@
-import { vec2 } from "global";
+import { meta, vec2 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -8,14 +8,21 @@ import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
  * @property {vec2} leftTangent
  * @property {vec2} rightTangent
  * @property {number} interpolation
- * @class
  */
+@meta.type("Tw2Vector2Key")
 export class Tw2Vector2Key extends Tw2CurveKey
 {
 
+    @meta.vector2
     value = vec2.create();
+
+    @meta.vector2
     leftTangent = vec2.create();
+
+    @meta.vector2
     rightTangent = vec2.create();
+
+    @meta.uint
     interpolation = 1;
 
 }
@@ -36,22 +43,47 @@ export class Tw2Vector2Key extends Tw2CurveKey
  * @property {number} interpolation
  * @property {Array.<Tw2Vector2Key>} keys
  * @property {number} length
- * @class
  */
+@meta.type("Tw2Vector2Curve")
 export class Tw2Vector2Curve extends Tw2Curve
 {
 
+    @meta.boolean
     cycle = false;
+
+    @meta.boolean
     reversed = false;
+
+    @meta.float
     timeOffset = 0;
+
+    @meta.float
     timeScale = 1;
+
+    @meta.vector2
     startValue = vec2.create();
+
+    @meta.vector2
+    @meta.isPrivate
     currentValue = vec2.create();
+
+    @meta.vector2
     endValue = vec2.create();
+
+    @meta.vector2
     startTangent = vec2.create();
+
+    @meta.vector2
     endTangent = vec2.create();
+
+    @meta.uint
     interpolation = 1;
+
+    @meta.list
     keys = [];
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 

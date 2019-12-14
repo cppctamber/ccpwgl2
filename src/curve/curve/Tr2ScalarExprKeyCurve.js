@@ -1,9 +1,8 @@
+import { meta } from "global";
 import { Tw2Curve, Tw2CurveKey } from "./Tw2Curve";
 
 /**
  * Tr2ScalarExprKey
- * TODO: Implement
- * @ccp Tr2ScalarExprKey
  *
  * @property {Number} input1
  * @property {Number} input2
@@ -15,44 +14,38 @@ import { Tw2Curve, Tw2CurveKey } from "./Tw2Curve";
  * @property {String} timeExpression
  * @property {Number} value
  */
+@meta.notImplemented
+@meta.type("Tr2ScalarExprKey", true)
 export class Tr2ScalarExprKey extends Tw2CurveKey
 {
 
+    @meta.black.float
     input1 = -1;
+
+    @meta.black.float
     input2 = -1;
+
+    @meta.black.float
     input3 = -1;
+
+    @meta.black.uint
     interpolation = 0;
+
+    @meta.black.float
     left = 0;
+
+    @meta.black.float
     right = 0;
+
+    @meta.black.float
     time = 0;
+
+    @meta.black.expression
     timeExpression = "";
+
+    @meta.black.float
+    @meta.isPrivate
     value = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "input1", r.float ],
-            [ "input2", r.float ],
-            [ "input3", r.float ],
-            [ "interpolation", r.uint ],
-            [ "left", r.float ],
-            [ "right", r.float ],
-            [ "time", r.float ],
-            [ "timeExpression", r.string ],
-            [ "value", r.float ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
 
@@ -65,31 +58,18 @@ export class Tr2ScalarExprKey extends Tw2CurveKey
  * @property {Number} interpolation         -
  * @property {Array<Tr2ScalarExprKey>} keys -
  */
+@meta.notImplemented
+@meta.type("Tr2ScalarExprKeyCurve", true)
 export class Tr2ScalarExprKeyCurve extends Tw2Curve
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.uint
     interpolation = 0;
+
+    @meta.black.list
     keys = [];
-
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "interpolation", r.uint ],
-            [ "keys", r.array ],
-            [ "name", r.string ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

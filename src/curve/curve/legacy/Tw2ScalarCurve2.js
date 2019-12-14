@@ -1,3 +1,4 @@
+import { meta } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 /**
@@ -7,14 +8,21 @@ import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
  * @property {number} leftTangent
  * @property {number} rightTangent
  * @property {number} interpolation
- * @class
  */
+@meta.type("Tw2ScalarKey2")
 export class Tw2ScalarKey2 extends Tw2CurveKey
 {
 
+    @meta.float
     value = 0;
+
+    @meta.float
     leftTangent = 0;
+
+    @meta.float
     rightTangent = 0;
+
+    @meta.uint
     interpolation = 1;
 
 }
@@ -35,22 +43,47 @@ export class Tw2ScalarKey2 extends Tw2CurveKey
  * @property {number} interpolation
  * @property {Array.<Tw2ScalarKey2>} keys
  * @property {number} length
- * @class
  */
+@meta.type("Tw2ScalarCurve2")
 export class Tw2ScalarCurve2 extends Tw2Curve
 {
 
+    @meta.boolean
     cycle = false;
+
+    @meta.boolean
     reversed = false;
+
+    @meta.float
     timeOffset = 0;
+
+    @meta.float
     timeScale = 1;
+
+    @meta.float
     startValue = 0;
+
+    @meta.float
+    @meta.isPrivate
     currentValue = 0;
+
+    @meta.float
     endValue = 0;
+
+    @meta.float
     startTangent = 0;
+
+    @meta.float
     endTangent = 0;
+
+    @meta.uint
     interpolation = 1;
+
+    @meta.list
     keys = [];
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 
