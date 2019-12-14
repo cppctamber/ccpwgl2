@@ -1,5 +1,5 @@
 import { ErrAbstractClass, ErrAbstractMethod, ErrSingletonInstantiation } from "core/Tw2Error";
-import { decorate } from "./helpers";
+import { decorate, typeHandler } from "./helpers";
 import { set, get, has } from "./meta";
 
 export const abstract = decorate({
@@ -19,11 +19,11 @@ export const abstract = decorate({
             }
         };
     },
-    method({ property, descriptor })
+    method({ target, property, descriptor })
     {
         descriptor.value = function()
         {
-            throw new ErrAbstractMethod({ method: property });
+            throw new ErrAbstractMethod({ class: this.constructor.name, method: property });
         };
         return descriptor;
     }
@@ -49,6 +49,27 @@ export const ccp = decorate({
     class({ target }, value)
     {
         set("ccp", value, target);
+    }
+});
+
+/**
+ * Creates a property type decorator
+ * @param {String|Number} type
+ * @returns {*}
+ */
+export const type = decorate({
+    class({ target }, type, ccpType)
+    {
+        set("type", type, target);
+        if (ccpType)
+        {
+            if (ccpType === true) ccpType = type;
+            set("ccp", ccpType, target);
+        }
+    },
+    property({ target, property, descriptor }, type, typeOf)
+    {
+        typeHandler({ target, property, descriptor }, type, typeOf);
     }
 });
 
@@ -125,7 +146,7 @@ export const isNullable = decorate({
 
 export const test = decorate({
     class: false,
-    handler({ target, property, descriptor }, string)
+    handler({ target, property, descriptor }, string="Test decorator")
     {
         console.dir(target);
         console.dir(property);
