@@ -1,13 +1,10 @@
 import { Tw2GeometryBatch, Tw2Effect } from "core";
 import { Tw2CurveSet } from "curve";
-import { Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM_DISTORTION, store } from "global";
-import { assignIfExists, toArray } from "global/util";
+import { meta, util, Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM_DISTORTION } from "global";
 
 
 /**
  * Constructor for Overlay Effects
- * TODO: Implement "distortionEffects"
- * TODO: Identify if "decalEffects" is deprecated
  *
  * @property {String} name                          - The overlay effect's name
  * @property {Array.<Tw2Effect>} additiveEffects    - Additive overlay effects
@@ -25,20 +22,40 @@ import { assignIfExists, toArray } from "global/util";
  * @property {Boolean} visible.additiveEffects      - Enables/ disables additive effect batch accumulation
  * @property {Boolean} visible.distortionEffects    - Currently not supported
  */
+@meta.type("EveMeshOverlayEffect", true)
 export class EveMeshOverlayEffect extends Tw2BaseClass
 {
-    // ccp
+
+    @meta.black.string
     name = "";
+
+    @meta.black.list
     additiveEffects = [];
+
+    @meta.black.object
     curveSet = null;
+
+    @meta.list
+    @meta.todo("Deprecated?")
+    decalEffects = [];
+
+    @meta.boolean
+    display = true;
+
+    @meta.notImplemented
+    @meta.black.list
     distortionEffects = [];
+
+    @meta.black.list
     opaqueEffects = [];
+
+    @meta.black.list
     transparentEffects = [];
 
-    // ccpwgl
-    decalEffects = [];
-    display = true;
+    @meta.boolean
     update = true;
+
+    @meta.plain
     visible = {
         opaqueEffects: true,
         decalEffects: true,
@@ -46,68 +63,6 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
         additiveEffects: true,
         distortionEffects: true
     };
-
-    /**
-     * Creates an area's effects
-     * @param {EveMeshOverlayEffect} dest
-     * @param {*} src
-     * @param {String|String[]} names
-     */
-    static createAreaEffects(dest, src, names)
-    {
-        names = toArray(names);
-        for (let i = 0; i < names.length; i++)
-        {
-            const name = names[i];
-            if (name in src && name in dest)
-            {
-                for (let i = 0; i < src[name].length; i++)
-                {
-                    dest[name].push(Tw2Effect.from(src[name][i]));
-                }
-            }
-        }
-    }
-
-    /**
-     * Creates a mesh from an object
-     * @param {*} [values]
-     * @param {*} [options]
-     * @returns {EveMeshOverlayEffect}
-     */
-    static from(values, options)
-    {
-        const item = new EveMeshOverlayEffect();
-
-        if (values)
-        {
-            assignIfExists(item, values, [ "name", "display", "update" ]);
-
-            if (values.curveSet)
-            {
-                item.curveSet = Tw2CurveSet.from(values.curveSet);
-            }
-
-            const areas = [
-                "additiveEffects", "distortionEffects", "opaqueEffects", "transparentEffects", "decalEffects"
-            ];
-
-            if (values.visible)
-            {
-                assignIfExists(item.visible, values.visible, areas);
-            }
-
-            this.createAreaEffects(item, values, areas);
-
-        }
-
-        if (!options || !options.skipUpdate)
-        {
-            // No Op
-        }
-
-        return item;
-    }
 
     /**
      * Per frame update
@@ -182,26 +137,65 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
     }
 
     /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
+     * Creates an area's effects
+     * @param {EveMeshOverlayEffect} dest
+     * @param {*} src
+     * @param {String|String[]} names
      */
-    static black(r)
+    static createAreaEffects(dest, src, names)
     {
-        return [
-            [ "additiveEffects", r.array ],
-            [ "curveSet", r.object ],
-            [ "distortionEffects", r.array ],
-            [ "name", r.string ],
-            [ "opaqueEffects", r.array ],
-            [ "transparentEffects", r.array ],
-        ];
+        names = util.toArray(names);
+        for (let i = 0; i < names.length; i++)
+        {
+            const name = names[i];
+            if (name in src && name in dest)
+            {
+                for (let i = 0; i < src[name].length; i++)
+                {
+                    dest[name].push(Tw2Effect.from(src[name][i]));
+                }
+            }
+        }
     }
 
     /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
+     * Creates a mesh from an object
+     * @param {*} [values]
+     * @param {*} [options]
+     * @returns {EveMeshOverlayEffect}
      */
-    static __isStaging = 1;
+    static from(values, options)
+    {
+        const item = new EveMeshOverlayEffect();
+
+        if (values)
+        {
+            util.assignIfExists(item, values, [ "name", "display", "update" ]);
+
+            if (values.curveSet)
+            {
+                item.curveSet = Tw2CurveSet.from(values.curveSet);
+            }
+
+            const areas = [
+                "additiveEffects", "distortionEffects", "opaqueEffects", "transparentEffects", "decalEffects"
+            ];
+
+            if (values.visible)
+            {
+                util.assignIfExists(item.visible, values.visible, areas);
+            }
+
+            this.createAreaEffects(item, values, areas);
+
+        }
+
+        if (!options || !options.skipUpdate)
+        {
+            // No Op
+        }
+
+        return item;
+    }
 
 }

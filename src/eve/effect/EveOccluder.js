@@ -1,19 +1,20 @@
-import { vec4, mat4, util, device, tw2, Tw2BaseClass } from "global";
+import { meta, vec4, mat4, tw2, Tw2BaseClass } from "global";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 /**
  * EveOccluder
- * TODO: Handle device
- * TODO: Handle device specific global variables (Tw2VertexDeclaration, Tw2Effect)
- * TODO: Handle store
  *
  * @property {String} name                  -
  * @property {Array.<EveTransform>} sprites -
  */
+@meta.type("EveOccluder", true)
 export class EveOccluder extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.list
     sprites = [];
 
 
@@ -33,10 +34,10 @@ export class EveOccluder extends Tw2BaseClass
      */
     UpdateValue(parentTransform, index)
     {
-        if (!device.alphaBlendBackBuffer) return;
+        if (!tw2.device.alphaBlendBackBuffer) return;
 
         const
-            d = device,
+            d = tw2.device,
             g = EveOccluder.global,
             worldViewProj = g.mat4_0,
             center = g.vec4_0;
@@ -86,7 +87,7 @@ export class EveOccluder extends Tw2BaseClass
     static CollectSamples(tex, index, total, samples)
     {
         const
-            d = device,
+            d = tw2.device,
             g = this.global,
             effect = g.effect,
             vertexBuffer = g.vertexBuffer,
@@ -118,7 +119,7 @@ export class EveOccluder extends Tw2BaseClass
         if (EveOccluder.global) return;
 
         const
-            d = device,
+            d = tw2.device,
             g = EveOccluder.global = {};
 
         g.mat4_0 = mat4.create();
@@ -192,18 +193,5 @@ export class EveOccluder extends Tw2BaseClass
      * @type {*}
      */
     static global = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "sprites", r.array ]
-        ];
-    }
 
 }

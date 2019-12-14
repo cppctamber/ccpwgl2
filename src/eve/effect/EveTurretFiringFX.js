@@ -1,4 +1,4 @@
-import { vec3, mat4, util, Tw2BaseClass } from "global";
+import { meta, vec3, mat4, Tw2BaseClass } from "global";
 
 /**
  * EvePerMuzzleData
@@ -11,9 +11,9 @@ import { vec3, mat4, util, Tw2BaseClass } from "global";
  * @property {Boolean} readyToStart
  * @property {Boolean} started
  */
-export class EvePerMuzzleData extends Tw2BaseClass
+class EvePerMuzzleData
 {
-    //ccpwgl
+
     constantDelay = 0;
     currentStartDelay = 0;
     elapsedTime = 0;
@@ -26,18 +26,7 @@ export class EvePerMuzzleData extends Tw2BaseClass
 
 /**
  * EveTurretFiringFX
- * TODO: Implement "boneName",
- * TODO: Implement "destinationObserver",
- * TODO: Implement "firingDurationOverride",
- * TODO: Implement "firingPeakTime",
- * TODO: Implement "maxRadius",
- * TODO: Implement "minRadius",
- * TODO: Implement "scaleEffectTarget",
- * TODO: Implement "sourceObserver",
- * TODO: Implement "startCurveSet",
- * TODO: Implement "stopCurveSet"
- * TODO: Are the firing delays 5,6,7 and 8 deprecated
- *
+
  * @property {String} name                             -
  * @property {String} boneName                         -
  * @property {TriObserverLocal} destinationObserver    -
@@ -70,40 +59,105 @@ export class EvePerMuzzleData extends Tw2BaseClass
  * @property {Boolean} _isFiring                       - Identifies if the firing fx is firing
  * @property {Array.<EvePerMuzzleData>} _perMuzzleData -
  */
+@meta.type("EveTurretFiringFX", true)
+@meta.stage(2)
 export class EveTurretFiringFX extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.string
     boneName = "";
+
+    @meta.boolean
+    display = true;
+
+    @meta.notImplemented
+    @meta.black.object
     destinationObserver = null;
+
+    @meta.black.float
     firingDelay1 = 0;
+
+    @meta.black.float
     firingDelay2 = 0;
+
+    @meta.black.float
     firingDelay3 = 0;
+
+    @meta.black.float
     firingDelay4 = 0;
+
+    @meta.float
+    @meta.todo("Deprecated?")
+    firingDelay5 = 0;
+
+    @meta.float
+    @meta.todo("Deprecated?")
+    firingDelay6 = 0;
+
+    @meta.float
+    @meta.todo("Deprecated?")
+    firingDelay7 = 0;
+
+    @meta.float
+    @meta.todo("Deprecated?")
+    firingDelay8 = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     firingDurationOverride = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     firingPeakTime = 0;
+
+    @meta.black.boolean
     isLoopFiring = false;
+
+    @meta.notImplemented
+    @meta.black.float
     maxRadius = 0;
+
+    @meta.black.float
     maxScale = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     minRadius = 0;
+
+    @meta.black.float
     minScale = 0;
+
+    @meta.notImplemented
+    @meta.black.boolean
     scaleEffectTarget = false;
+
+    @meta.notImplemented
+    @meta.black.object
     sourceObserver = null;
+
+    @meta.notImplemented
+    @meta.black.object
     startCurveSet = null;
+
+    @meta.notImplemented
+    @meta.black.object
     stopCurveSet = null;
+
+    @meta.black.list
     stretch = [];
+
+    @meta.black.boolean
     useMuzzleTransform = false;
 
-    // ccpwgl
-    display = true;
-    firingDelay5 = 0;
-    firingDelay6 = 0;
-    firingDelay7 = 0;
-    firingDelay8 = 0;
+
     _endPosition = vec3.create();
     _firingDuration = 0;
     _isFiring = false;
     _perMuzzleData = [];
+
 
     /**
      * Initializes the turret firing fx
@@ -355,42 +409,5 @@ export class EveTurretFiringFX extends Tw2BaseClass
             }
         }
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boneName", r.string ],
-            [ "destinationObserver", r.object ],
-            [ "firingDelay1", r.float ],
-            [ "firingDelay2", r.float ],
-            [ "firingDelay3", r.float ],
-            [ "firingDelay4", r.float ],
-            [ "firingDurationOverride", r.float ],
-            [ "firingPeakTime", r.float ],
-            [ "isLoopFiring", r.boolean ],
-            [ "maxRadius", r.float ],
-            [ "maxScale", r.float ],
-            [ "minRadius", r.float ],
-            [ "minScale", r.float ],
-            [ "name", r.string ],
-            [ "scaleEffectTarget", r.boolean ],
-            [ "sourceObserver", r.object ],
-            [ "startCurveSet", r.object ],
-            [ "stopCurveSet", r.object ],
-            [ "stretch", r.array ],
-            [ "useMuzzleTransform", r.boolean ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

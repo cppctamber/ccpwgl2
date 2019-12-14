@@ -1,17 +1,9 @@
-import { vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE } from "global";
+import { vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE, meta } from "global";
 import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 
 /**
  * EveLensFlare
- * TODO: Handle store
- * TODO: Handle device
- * TODO: Handle device specific global variables (TextureRes, Tw2RenderTarget)
- * TODO: Identify if "curveSets" is deprecated, it never gets used
- * TODO: Identify if "flares" array is deprecated, newer files don't look to have child flares
- * TODO: Identify if "_backBuffer" is deprecated, it never gets used
- * TODO: Identify if "backgroundOccluders" should be implemented
- * TODO: Occluder doesn't work for center most flares, which can be seen through ships
  *
  * @property {String} name                              -
  * @property {Boolean} display                          -
@@ -37,31 +29,74 @@ import { EveOccluder } from "./EveOccluder";
  * @property {mat4} _transform                          -
  * @property {*} _backBuffer                            -
  */
+@meta.type("EveLensflare", true)
 export class EveLensflare extends Tw2BaseClass
 {
-    // ccp
+
+    @meta.black.string
     name = "";
+
+    @meta.notImplemented
+    @meta.black.list
     backgroundOccluders = [];
+
+    @meta.black.list
     bindings = [];
+
+    @meta.black.list
     distanceToCenterCurves = [];
+
+    @meta.black.list
     distanceToEdgeCurves = [];
+
+    @meta.black.object
     mesh = null;
+
+    @meta.black.list
     occluders = [];
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.list
     radialAngleCurves = [];
+
+    @meta.black.list
     xDistanceToCenter = [];
+
+    @meta.black.list
     yDistanceToCenter = [];
+
+    @meta.black.list
     zDistanceToCenter = [];
 
-    // ccpwgl
+    @meta.boolean
     display = true;
+
+    @meta.boolean
     update = true;
+
+    @meta.boolean
     doOcclusionQueries = true;
+
+    @meta.float
     cameraFactor = 20;
+
+    @meta.list
+    @meta.todo("Deprecated?")
     flares = [];
+
+    @meta.float
     occlusionIntensity = 1;
+
+    @meta.float
     backgroundOcclusionIntensity = 1;
+
+    @meta.list
+    @meta.todo("Deprecated?")
     curveSets = [];
+
+
     _direction = vec3.create();
     _transform = mat4.create();
     _backBuffer = null;
@@ -327,41 +362,5 @@ export class EveLensflare extends Tw2BaseClass
      * @type {*}
      */
     static global = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "backgroundOccluders", r.array ],
-            [ "bindings", r.array ],
-            [ "distanceToCenterCurves", r.array ],
-            [ "distanceToEdgeCurves", r.array ],
-            [ "mesh", r.object ],
-            [ "name", r.string ],
-            [ "occluders", r.array ],
-            [ "position", r.vector3 ],
-            [ "radialAngleCurves", r.array ],
-            [ "xDistanceToCenter", r.array ],
-            [ "yDistanceToCenter", r.array ],
-            [ "zDistanceToCenter", r.array ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
-
-    /**
-     * Identifies the object is a lensflare
-     * @type {boolean}
-     * @private
-     */
-    static __isLensflare = true;
 
 }

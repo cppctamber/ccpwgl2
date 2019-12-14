@@ -1,4 +1,4 @@
-import { vec3, mat4, util, Tw2BaseClass } from "global";
+import { meta, vec3, mat4, Tw2BaseClass } from "global";
 import { Tw2Float } from "core";
 
 /**
@@ -31,26 +31,61 @@ import { Tw2Float } from "core";
  * @property {number} _time                     - The current stretch time
  * @property {Boolean} _useTransformsForStretch - Toggles using transforms for stretch objects
  */
+@meta.type("EveStretch", true)
 export class EveStretch extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.list
     curveSets = [];
+
+    @meta.boolean
+    display = true;
+
+    @meta.black.object
     dest = null;
+
+    @meta.black.object
     destObject = null;
+
+    @meta.black.object
     length = new Tw2Float();
+
+    @meta.notImplemented
+    @meta.black.object
     moveCompletion = null;
+
+    @meta.notImplemented
+    @meta.black.object
     moveObject = null;
+
+    @meta.notImplemented
+    @meta.black.object
     progressCurve = null;
+
+    @meta.black.object
     source = null;
+
+    @meta.notImplemented
+    @meta.black.list
     sourceLights = [];
+
+    @meta.black.object
     sourceObject = null;
+
+    @meta.black.object
     stretchObject = null;
+
+    @meta.boolean
+    update = true;
+
+    @meta.notImplemented
+    @meta.black.boolean
     useCurveLod = false;
 
-    // ccpwgl
-    display = true;
-    update = true;
+
     _destinationPosition = vec3.create();
     _displayDestObject = true;
     _displaySourceObject = true;
@@ -59,7 +94,6 @@ export class EveStretch extends Tw2BaseClass
     _sourcePosition = vec3.create();
     _sourceTransform = null;
     _time = 0;
-
     _useParentMatrix = false;
 
 
@@ -357,35 +391,5 @@ export class EveStretch extends Tw2BaseClass
      * @type {*}
      */
     static global = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "curveSets", r.array ],
-            [ "dest", r.object ],
-            [ "destObject", r.object ],
-            [ "length", r.object ],
-            [ "moveCompletion", r.object ],
-            [ "moveObject", r.object ],
-            [ "name", r.string ],
-            [ "progressCurve", r.object ],
-            [ "source", r.object ],
-            [ "sourceLights", r.array ],
-            [ "sourceObject", r.object ],
-            [ "stretchObject", r.object ],
-            [ "useCurveLod", r.boolean ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

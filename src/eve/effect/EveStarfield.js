@@ -1,4 +1,4 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 /**
  * EveStarfield
@@ -13,16 +13,33 @@ import { Tw2BaseClass } from "global";
  * @property {Number} numStars          -
  * @property {Number} seed              -
  */
+@meta.notImplemented
+@meta.type("EveStarfield", true)
 export class EveStarfield extends Tw2BaseClass
 {
 
+    @meta.black.object
     effect = null;
+
+    @meta.black.float
     maxDist = 0;
+
+    @meta.black.float
     maxFlashRate = 0;
+
+    @meta.black.float
     minDist = 0;
+
+    @meta.black.float
     minFlashIntensity = 0;
+
+    @meta.black.float
     minFlashRate = 0;
+
+    @meta.black.uint
     numStars = 0;
+
+    @meta.black.uint
     seed = 0;
 
     /**

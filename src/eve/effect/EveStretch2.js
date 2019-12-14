@@ -1,8 +1,7 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 /**
  * EveStretch2
- * TODO: Implement
  *
  * @property {String} name          -
  * @property {*} destinationEmitter -
@@ -13,41 +12,33 @@ import { Tw2BaseClass } from "global";
  * @property {*} sourceLight        -
  * @property {Number} quadCount     -
  */
+@meta.notImplemented
+@meta.type("EveStretch2", true)
 export class EveStretch2 extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.object
     destinationEmitter = null;
+
+    @meta.black.object
     destinationLight = null;
+
+    @meta.black.object
     effect = null;
+
+    @meta.black.object
     loop = null;
+
+    @meta.black.object
     sourceEmitter = null;
+
+    @meta.black.object
     sourceLight = null;
+
+    @meta.black.uint
     quadCount = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "destinationEmitter", r.object ],
-            [ "destinationLight", r.object ],
-            [ "effect", r.object ],
-            [ "loop", r.object ],
-            [ "name", r.string ],
-            [ "sourceEmitter", r.object ],
-            [ "sourceLight", r.object ],
-            [ "quadCount", r.uint ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
