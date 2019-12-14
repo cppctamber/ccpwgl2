@@ -1,22 +1,39 @@
-import { quat } from "global";
+import { meta, quat } from "global";
 import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveEulerRotationExpression
- * TODO: Implement
- * @ccp Tr2CurveEulerRotationExpression
  *
+ * @property {Array} inputs            -
  * @property {String} expressionPitch  -
  * @property {String} expressionRoll   -
  * @property {String} expressionYaw    -
+ * @property {quat} currentValue       -
  */
+@meta.notImplemented
+@meta.type("Tr2CurveEulerRotationExpression", true)
 export class Tr2CurveEulerRotationExpression extends Tw2CurveExpression
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.list
+    inputs = [];
+
+    @meta.black.expression
     expressionPitch = "";
+
+    @meta.black.expression
     expressionRoll = "";
+
+    @meta.black.expression
     expressionYaw = "";
+
+    @meta.black.quaternion
+    @meta.isPrivate
     currentValue = quat.create();
+
 
     /**
      * The expressions's curve input dimension
@@ -42,27 +59,5 @@ export class Tr2CurveEulerRotationExpression extends Tw2CurveExpression
      */
     static childProperties = [ "expressionPitch", "expressionRoll", "expressionYaw" ];
 
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "inputs", r.array ],
-            [ "name", r.string ],
-            [ "expressionYaw", r.string ],
-            [ "expressionPitch", r.string ],
-            [ "expressionRoll", r.string ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

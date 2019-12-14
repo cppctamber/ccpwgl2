@@ -1,22 +1,42 @@
 import { Tw2CurveExpression } from "./Tw2CurveExpression";
+import { meta } from "global/index";
 
 /**
  * Tr2CurveScalarExpression
- * TODO: Implement
- * @ccp Tr2CurveScalarExpression
  *
  * @property {String} expression       -
  * @property {Number} input1           -
  * @property {Number} input2           -
  * @property {Number} input3           -
  */
+@meta.notImplemented
+@meta.type("Tr2CurveScalarExpression", true)
 export class Tr2CurveScalarExpression extends Tw2CurveExpression
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.list
+    inputs = [];
+
+    @meta.black.expression
     expression = "";
-    input1 = -1; // What should be the default value?
-    input2 = -1; // What should be the default value?
-    input3 = -1; // What should be the default value?
+
+    @meta.black.float
+    @meta.todo("Figure out the default value")
+    input1 = -1;
+
+    @meta.black.float
+    @meta.todo("Figure out the default value")
+    input2 = -1;
+
+    @meta.black.float
+    @meta.todo("Figure out the default value")
+    input3 = -1;
+
+    @meta.float
+    @meta.isPrivate
     currentValue = 0;
 
     /**
@@ -42,28 +62,5 @@ export class Tr2CurveScalarExpression extends Tw2CurveExpression
      * @type {?Array.<string>}
      */
     static childProperties = [ "expression" ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "inputs", r.array ],
-            [ "name", r.string ],
-            [ "expression", r.string ],
-            [ "input1", r.float ],
-            [ "input2", r.float ],
-            [ "input3", r.float ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

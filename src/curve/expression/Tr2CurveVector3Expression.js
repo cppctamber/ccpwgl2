@@ -1,22 +1,37 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 /**
  * Tr2CurveVector3Expression
- * TODO: Implement
- * @ccp Tr2CurveVector3Expression
  *
  * @property {String} expressionX -
  * @property {String} expressionY -
  * @property {String} expressionZ -
  */
+@meta.notImplemented
+@meta.type("Tr2CurveVector3Expression")
 export class Tr2CurveVector3Expression extends Tw2CurveExpression
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.list
+    inputs = [];
+
+    @meta.black.expression
     expressionX = "";
+
+    @meta.black.expression
     expressionY = "";
+
+    @meta.black.expression
     expressionZ = "";
+
+    @meta.vector3
+    @meta.isPrivate
     currentValue = vec3.create();
+
 
     /**
      * The expressions's curve input dimension
@@ -41,27 +56,5 @@ export class Tr2CurveVector3Expression extends Tw2CurveExpression
      * @type {?Array.<string>}
      */
     static childProperties = [ "expressionX", "expressionY", "expressionZ" ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "inputs", r.array ],
-            [ "name", r.string ],
-            [ "expressionX", r.string ],
-            [ "expressionY", r.string ],
-            [ "expressionZ", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
