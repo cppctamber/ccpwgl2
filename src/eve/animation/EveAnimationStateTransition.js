@@ -1,16 +1,22 @@
+import { meta } from "global";
+
 /**
  * EveAnimationStateTransition
- * TODO: Figure out the correct properties for this class
- * @ccp N/A
  *
  * @property {String} state
  * @property {String} transition
  */
+@meta.notImplemented
+@meta.type("EveAnimationStateTransition")
 export class EveAnimationStateTransition
 {
 
+    @meta.string
     state = "";
+
+    @meta.string
     transition = "";
+
 
     /**
      * Black structure reader

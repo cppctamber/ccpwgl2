@@ -1,41 +1,38 @@
+import { meta } from "global";
 import { EveAnimationStateTransition } from "./EveAnimationStateTransition";
+
 
 /**
  * EveAnimationState
- * TODO: Identify array children type of "initCommands" property
  *
  * @property {String} name                                    -
  * @property {EveAnimation} animation                         -
  * @property {Array<EveAnimationCurve>} curves                -
  * @property {Array<EveAnimationCommand>} commands            -
- * @property {Array<*>} initCommands                          -
+ * @property {Array<EveAnimationCommand>} initCommands        -
  * @property {Array<EveAnimationStateTransition>} transitions -
  */
+@meta.notImplemented
+@meta.type("EveAnimationState", true)
 export class EveAnimationState
 {
 
+    @meta.black.string
     name = "";
-    animation = null;
-    curves = [];
-    commands = [];
-    initCommands = [];
-    transitions = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "animation", r.object ],
-            [ "curves", r.array ],
-            [ "commands", r.array ],
-            [ "initCommands", r.array ],
-            [ "transitions", r.structList(EveAnimationStateTransition) ],
-        ];
-    }
+    @meta.black.object
+    animation = null;
+
+    @meta.black.list
+    curves = [];
+
+    @meta.black.list
+    commands = [];
+
+    @meta.black.list
+    initCommands = [];
+
+    @meta.black.struct([EveAnimationStateTransition])
+    transitions = [];
 
 }

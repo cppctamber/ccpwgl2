@@ -1,24 +1,18 @@
+import { meta } from "global";
+
+
 /**
  * EveAnimationCommand
- * TODO: Identify default value of "command" property
  *
- * @property {Number} command - The command's number/ id
+ * @property {Number} command
  */
+@meta.notImplemented
+@meta.type("EveAnimationCommand", true)
 export class EveAnimationCommand
 {
 
+    @meta.black.uint
+    @meta.todo("Identify default value")
     command = -1;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "command", r.uint ]
-        ];
-    }
 
 }

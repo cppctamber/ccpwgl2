@@ -1,27 +1,21 @@
+import { meta } from "global";
+
 /**
  * EveAnimation
- * TODO: Identify default value for "loop" property
  *
  * @property {String} name  - The animation's name
  * @property {Number} loops - The amount of time the animation should loop
  */
+@meta.notImplemented
+@meta.type("EveAnimation", true)
 export class EveAnimation
 {
 
+    @meta.black.string
     name = "";
-    loops = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "loops", r.uint ]
-        ];
-    }
+    @meta.black.uint
+    @meta.todo("Figure out the default value?")
+    loops = 0;
 
 }

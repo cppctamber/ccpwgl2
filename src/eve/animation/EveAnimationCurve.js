@@ -1,23 +1,17 @@
+import { meta } from "global";
+
+
 /**
  * EveAnimationCurve
  *
- * @property {String} name - The name of the target animation curve?
+ * @property {String} name -
  */
+@meta.notImplemented
+@meta.type("EveAnimationCurve", true)
 export class EveAnimationCurve
 {
 
+    @meta.black.string
     name = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ]
-        ];
-    }
 
 }
