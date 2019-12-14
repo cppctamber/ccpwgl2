@@ -1,24 +1,40 @@
+import { meta, vec4 } from "global";
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { vec4 } from "global";
 
 /**
  * Tw2CurveColor
- * @ccp Tr2CurveColor
  *
+ * @property {string} name       -
  * @property {Tr2CurveScalar} r  -
  * @property {Tr2CurveScalar} g  -
  * @property {Tr2CurveScalar} b  -
  * @property {Tr2CurveScalar} a  -
  * @property {vec4} currentValue -
  */
+@meta.type("Tw2CurveColor", "Tr2CurveColor")
+@meta.stage(2)
 export class Tw2CurveColor extends Tw2CurveSequencer
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.raw
     r = null;
+
+    @meta.black.raw
     g = null;
+
+    @meta.black.raw
     b = null;
+
+    @meta.black.raw
     a = null;
-    currentValue = vec4.fromValues(0, 0, 0, 0);
+
+    @meta.color
+    @meta.isPrivate
+    currentValue = vec4.create();
+
 
     /**
      * Sorts the sequencer
@@ -90,27 +106,5 @@ export class Tw2CurveColor extends Tw2CurveSequencer
      * @type {?Array.<string>}
      */
     static childProperties = [ "r", "g", "b", "a" ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "r", r.rawObject ],
-            [ "g", r.rawObject ],
-            [ "b", r.rawObject ],
-            [ "a", r.rawObject ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
 
 }

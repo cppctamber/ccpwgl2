@@ -1,19 +1,27 @@
-import { vec4 } from "global";
+import { meta, vec4 } from "global";
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
 /**
  * Color sequencer
- * TODO: Can't rename to Tw2ColorSequencer as a legacy one already exists
- * @ccp TriColorSequencer
  *
  * @property {String} name                                   -
  * @property {Array.<Tw2Curve|Tw2CurveExpression>} functions -
  * @property {vec4} value                                    -
  */
+@meta.type("TriColorSequencer", true)
+@meta.todo("Make backwards compatible with old Tw2ColorSequencer")
+@meta.stage(2)
 export class TriColorSequencer extends Tw2CurveSequencer
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.list
     functions = [];
+
+    @meta.vector4
+    @meta.isPrivate
     value = vec4.create();
 
     /**
@@ -91,25 +99,5 @@ export class TriColorSequencer extends Tw2CurveSequencer
      * @type {String}
      */
     static childArray = "functions";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "functions", r.array ],
-            [ "name", r.string ],
-            [ "value", r.vector4 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
 
 }

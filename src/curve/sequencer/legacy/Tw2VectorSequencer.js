@@ -1,4 +1,4 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
@@ -9,14 +9,22 @@ import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
  * @property {vec3} value
  * @property {number} operator
  * @property {Array.<Tw2Curve>} functions
- * @class
  */
+@meta.type("Tw2VectorSequencer")
 export class Tw2VectorSequencer extends Tw2CurveSequencer
 {
 
+    @meta.float
     start = 0;
+
+    @meta.vector3
+    @meta.isPrivate
     value = vec3.create();
+
+    @meta.uint
     operator = 0;
+
+    @meta.list
     functions = [];
 
 

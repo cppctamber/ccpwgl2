@@ -1,3 +1,4 @@
+import { meta } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
@@ -12,18 +13,34 @@ import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
  * @property {number} outMinClamp
  * @property {number} outMaxClamp
  * @property {Boolean} clamping
- * @class
  */
+@meta.type("Tw2ScalarSequencer")
 export class Tw2ScalarSequencer extends Tw2CurveSequencer
 {
 
+    @meta.float
+    @meta.isPrivate
     value = 0;
+
+    @meta.uint
     operator = 0;
+
+    @meta.list
     functions = [];
+
+    @meta.float
     inMinClamp = 0;
+
+    @meta.float
     inMaxClamp = 1;
+
+    @meta.float
     outMinClamp = 0;
+
+    @meta.float
     outMaxClamp = 1;
+
+    @meta.boolean
     clamping = false;
 
 

@@ -1,21 +1,33 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { quat } from "global";
+import { meta, quat } from "global";
 
 /**
  * Euler to Quaternion sequencer
- * @ccp Tr2CurveEulerRotation
  *
  * @property {Tr2CurveScalar} pitch -
  * @property {Tr2CurveScalar} roll  -
  * @property {Tr2CurveScalar} yaw   -
  * @property {quat} currentValue
  */
+@meta.type("Tw2CurveEulerRotation", "Tr2CurveEulerRotation")
+@meta.stage(2)
 export class Tw2CurveEulerRotation extends Tw2CurveSequencer
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.raw
     pitch = null;
+
+    @meta.black.raw
     roll = null;
+
+    @meta.black.raw
     yaw = null;
+
+    @meta.quaternion
+    @meta.isPrivate
     currentValue = quat.create();
 
     /**
@@ -102,26 +114,5 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
      * @type {string[]}
      */
     static childProperties = [ "yaw", "pitch", "roll" ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "pitch", r.rawObject ],
-            [ "roll", r.rawObject ],
-            [ "yaw", r.rawObject ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
 
 }

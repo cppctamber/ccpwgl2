@@ -1,22 +1,35 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 
 /**
  * Vector3 curve sequencer
- * @ccp Tr2CurveVector3
  *
  * @property {Tr2CurveScalar} x -
  * @property {Tr2CurveScalar} y -
  * @property {Tr2CurveScalar} z -
  * @property {vec3} currentValue      -
  */
+@meta.type("Tw2CurveVector3", "Tr2CurveVector3")
+@meta.stage(2)
 export class Tw2CurveVector3 extends Tw2CurveSequencer
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.raw
     x = null;
+
+    @meta.black.raw
     y = null;
+
+    @meta.black.raw
     z = null;
+
+    @meta.vector3
+    @meta.isPrivate
     currentValue = vec3.create();
+
 
     /**
      * Sorts the sequencer
@@ -87,27 +100,5 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
      * @type {String[]}
      */
     static childProperties = [ "x", "y", "z" ];
-
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "x", r.rawObject ],
-            [ "y", r.rawObject ],
-            [ "z", r.rawObject ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
 
 }

@@ -1,4 +1,4 @@
-import { quat } from "global";
+import { meta, quat } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 /**
@@ -8,13 +8,19 @@ import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
  * @property {number} start
  * @property {quat} value
  * @property {Array<Tw2Curve>} functions
- * @class
  */
+@meta.type("Tw2QuaternionSequencer")
 export class Tw2QuaternionSequencer extends Tw2CurveSequencer
 {
 
+    @meta.float
     start = 0;
+
+    @meta.quaternion
+    @meta.isPrivate
     value = quat.create();
+
+    @meta.list
     functions = [];
 
 
