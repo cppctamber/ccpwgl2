@@ -1,4 +1,4 @@
-import { vec3, quat, mat4, curve, util, resMan } from "global";
+import { meta, vec3, quat, mat4, curve, util, resMan } from "global";
 
 /**
  * Tw2WbgTrack
@@ -13,13 +13,15 @@ import { vec3, quat, mat4, curve, util, resMan } from "global";
  */
 export function Tw2WbgTrack()
 {
-    this._id = util.generateID();
+
     this.name = "";
     this.geometryResPath = "";
     this.geometryRes = null;
     this.group = "";
     this.duration = 0;
     this.cycle = false;
+
+    this._id = util.generateID();
 
     /**
      * SetCurves
@@ -69,6 +71,8 @@ export function Tw2WbgTrack()
     };
 }
 
+meta.set("type", "Tw2WbgTrack", Tw2WbgTrack);
+
 /**
  * Tw2WbgTransformTrack
  *
@@ -76,10 +80,6 @@ export function Tw2WbgTrack()
  * @property {vec3} translation
  * @property {quat} rotation
  * @property {vec3} scale
- * @variable {*} positionCurve
- * @variable {*} rotationCurve
- * @variable {*} scaleCurve
- * @variable {mat4} scaleShear
  */
 export function Tw2WbgTransformTrack()
 {
@@ -88,6 +88,7 @@ export function Tw2WbgTransformTrack()
     this.rotation = quat.create();
     this.rotation[3] = 1;
     this.scale = vec3.create();
+
     let positionCurve = null;
     let rotationCurve = null;
     let scaleCurve = null;
@@ -159,3 +160,5 @@ export function Tw2WbgTransformTrack()
  * @prototype
  */
 Tw2WbgTransformTrack.prototype = new Tw2WbgTrack();
+
+meta.set("type", "Tw2WbgTransformTrack", Tw2WbgTransformTrack);

@@ -1,4 +1,4 @@
-import { vec3, quat } from "global";
+import { meta, vec3, quat } from "global";
 import { Tw2Curve } from "curve";
 
 /**
@@ -13,18 +13,36 @@ import { Tw2Curve } from "curve";
  * @property {Boolean} updateQuaternion
  * @property {quat} quatValue
  * @property {number} length
- * @class
  */
+@meta.type("Tw2MayaEulerRotationCurve")
 export class Tw2MayaEulerRotationCurve extends Tw2Curve
 {
 
+    @meta.float
     xIndex = -1;
+
+    @meta.float
     yIndex = -1;
+
+    @meta.float
     zIndex = -1;
+
+    @meta.object
     animationEngine = null;
+
+    @meta.vector3
+    @meta.isPrivate
     eulerValue = vec3.create();
+
+    @meta.boolean
     updateQuaternion = false;
+
+    @meta.quaternion
+    @meta.isPrivate
     quatValue = quat.create();
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 

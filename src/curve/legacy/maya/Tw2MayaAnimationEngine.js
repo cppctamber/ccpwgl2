@@ -1,4 +1,4 @@
-import { curve, util, vec4 } from "global";
+import { meta, curve, util, vec4 } from "global";
 import { ErrFeatureNotImplemented } from "core";
 
 /**
@@ -12,13 +12,21 @@ import { ErrFeatureNotImplemented } from "core";
  * @property {number} _currentCurveIndex
  * @property _evalCache
  */
+@meta.type("Tw2MayaAnimationEngine")
 export class Tw2MayaAnimationEngine
 {
 
-    _id = util.generateID();
+    @meta.list
     curves = [];
+
+    @meta.list
     hermiteSegments = [];
+
+    @meta.list
     bezierSegments = [];
+
+
+    _id = util.generateID();
     _currentCurveIndex = 0;
     _evalCache = null;
 

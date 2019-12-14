@@ -1,4 +1,4 @@
-import { curve, vec3, quat, mat4, util, resMan } from "global";
+import { meta, curve, vec3, quat, mat4, util, resMan } from "global";
 
 /**
  * Tw2TransformTrack
@@ -17,26 +17,52 @@ import { curve, vec3, quat, mat4, util, resMan } from "global";
  * @property orientationCurve
  * @property scaleCurve
  * @property {mat4} _scaleShear
- * @class
  */
+@meta.type("Tw2TransformTrack")
 export class Tw2TransformTrack
 {
 
-    _id = util.generateID();
+    @meta.string
     name = "";
+
+    @meta.path
     resPath = "";
+
+    @meta.object
     res = null;
+
+    @meta.string
     group = "";
+
+    @meta.boolean
     cycle = false;
+
+    @meta.float
     duration = 0;
+
+    @meta.vector3
     translation = vec3.create();
+
+    @meta.quaternion
     rotation = quat.create();
+
+    @meta.vector3
     scale = vec3.fromValues(0, 0, 0);
+
+    @meta.matrix4
     scaleShear = mat4.create();
+
+    @meta.object
     positionCurve = null;
+
+    @meta.object
     orientationCurve = null;
+
+    @meta.object
     scaleCurve = null;
 
+
+    _id = util.generateID();
 
     /**
      * Initializes the Curve

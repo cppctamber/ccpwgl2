@@ -1,3 +1,4 @@
+import { meta } from "global";
 import { Tw2Curve } from "curve";
 
 /**
@@ -7,14 +8,23 @@ import { Tw2Curve } from "curve";
  * @property {null|Tw2MayaAnimationEngine} animationEngine
  * @property {number} value
  * @property {number} length
- * @class
  */
+@meta.type("Tw2MayaScalarCurve")
 export class Tw2MayaScalarCurve extends Tw2Curve
 {
 
+    @meta.float
     index = -1;
+
+    @meta.object
     animationEngine = null;
+
+    @meta.float
+    @meta.isPrivate
     value = 0;
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 

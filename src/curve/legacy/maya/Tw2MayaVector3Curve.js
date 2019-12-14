@@ -1,4 +1,4 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2Curve } from "curve";
 
 /**
@@ -12,14 +12,28 @@ import { Tw2Curve } from "curve";
  * @property {vec3} value
  * @property {number} length
  */
+@meta.type("Tw2MayaVector3Curve")
 export class Tw2MayaVector3Curve extends Tw2Curve
 {
 
+    @meta.float
     xIndex = -1;
+
+    @meta.float
     yIndex = -1;
+
+    @meta.float
     zIndex = -1;
+
+    @meta.object
     animationEngine = null;
+
+    @meta.vector3
+    @meta.isPrivate
     value = vec3.create();
+
+    @meta.float
+    @meta.isPrivate
     length = 0;
 
 
