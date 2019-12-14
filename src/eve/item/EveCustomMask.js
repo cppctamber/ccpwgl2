@@ -1,10 +1,9 @@
-import { vec4, mat4, tw2 } from "global";
+import { meta, vec3, quat, vec4, mat4, tw2 } from "global";
 import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from "core/parameter";
 
 
 /**
  * Custom mask for patterns
- * @ccp EveCustomMask
  *
  * @property {Boolean} display             - Toggles mask visibility
  * @property {Boolean} isMirrored          - Identifies if the mask is mirrored
@@ -13,15 +12,34 @@ import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from 
  * @property {vec4} targetMaterials        - The target materials this mask is for
  * @property {mat4} _worldInverseTranspose - The custom mask's final matrix
  */
+@meta.type("EveCustomMask", true)
+@meta.stage(1)
 export class EveCustomMask extends Tw2TransformParameter
 {
-    // ccp
+
+    @meta.boolean
+    display = true;
+
+    @meta.boolean
+    isMirrored = false;
+
+    @meta.black.byte
     materialIndex = 0;
+
+    @meta.black.vector3
+    position = vec3.create();
+
+    @meta.black.quaternion
+    rotation = quat.create();
+
+    @meta.black.vector3
+    scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.vector4
     targetMaterials = vec4.create();
 
-    //ccpwgl
-    display = true;
-    isMirrored = false;
+    @meta.object
+    @meta.todo("Move to direct class properties")
     parameters = {
         PatternMaskMap: new Tw2TextureParameter("PatternMaskMap"),
         DiffuseColor: new Tw2Vector4Parameter("DiffuseColor"),
@@ -29,7 +47,9 @@ export class EveCustomMask extends Tw2TransformParameter
         Gloss: new Tw2Vector4Parameter("Gloss")
     };
 
+
     _worldInverseTranspose = mat4.create();
+
 
     /**
      * Sets a sof material by name
@@ -61,27 +81,5 @@ export class EveCustomMask extends Tw2TransformParameter
         perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
         perObjectData.vs.Set("CustomMaskMatrix" + index, this._worldInverseTranspose);
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "materialIndex", r.byte ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "targetMaterials", r.vector4 ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

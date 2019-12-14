@@ -1,13 +1,11 @@
-import { vec3, vec4, mat4, util, device } from "global";
+import { meta, vec3, vec4, mat4, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2PerObjectData, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./../EveObjectSet";
-import { assignIfExists, get } from "global/util";
 import { Tw2Effect } from "core/mesh";
 import { EveSpriteSet } from "../EveSpriteSet";
 
 /**
  * Booster render batch
- * @ccp N/A
  *
  * @property {EveBoosterSet} boosters
  */
@@ -31,8 +29,6 @@ export class EveBoosterBatch extends Tw2RenderBatch
 
 /**
  * Booster
- * TODO: Is this deprecated?
- * @ccp N/A
  *
  * @property {Number} atlas0             - The booster's atlas index 0
  * @property {Number} atlas1             - The booster's atlas index 1
@@ -48,16 +44,32 @@ export class EveBoosterBatch extends Tw2RenderBatch
  * @property {Boolean} visible.trail     - Toggles trail visibility (not implemented)
  * @property {Number} wavePhase          - A random seed which affects the booster wave pattern
  */
+@meta.type("EveBoosterSetItem")
 export class EveBoosterSetItem extends EveObjectSetItem
 {
 
+    @meta.uint
     atlas0 = 0;
+
+    @meta.uint
     atlas1 = 0;
+
+    @meta.plain
     customValues = null;
+
+    @meta.string
     locatorName = null;
+
+    @meta.float
     seed = Math.random() * 7;
+
+    @meta.matrix4
     transform = mat4.create();
+
+    @meta.boolean
     updateFromLocator = false;
+
+    @meta.plain
     visible = {
         glow: true,
         symHalo: true,
@@ -65,6 +77,8 @@ export class EveBoosterSetItem extends EveObjectSetItem
         trail: true,
         customValues: true
     };
+
+    @meta.float
     wavePhase = Math.random();
 
     /**
@@ -124,8 +138,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
 
 /**
  * Booster set
- * TODO: Is this deprecated?
- * @ccp EveBoosterSet
+ *
  * @property {Number} maxVel                   - (Not implemented)
  * @property {Boolean} alwaysOn                - (Not implemented)
  * @property {Tw2Effect} effect                - The booster's booster effect
@@ -153,30 +166,65 @@ export class EveBoosterSetItem extends EveObjectSetItem
  * @property {Tw2VertexDeclaration} _decl      - The booster set's vertex declarations
  * @property {Tw2PerObjectData} _perObjectData - The booster set's shader data
  * @property {Boolean} _locatorDirty           - Identifies that the booster set needs to be rebuilt from locators
- * @class
  */
+@meta.type("EveBoosterSet", true)
 export class EveBoosterSet extends EveObjectSet
 {
-    // ccp
+
+    @meta.notImplemented
+    @meta.boolean
     alwaysOn = true;
+
+    @meta.object
     effect = null;
+
+    @meta.color
     glowColor = vec4.create();
+
+    @meta.object
     glows = null;
+
+    @meta.float
     glowScale = 1.0;
+
+    @meta.color
     haloColor = vec4.create();
+
+    @meta.float
     haloScaleX = 1.0;
+
+    @meta.float
     haloScaleY = 1.0;
+
+    @meta.notImplemented
+    @meta.float
     maxVel = 250;
+
+    @meta.float
     symHaloScale = 1.0;
+
+    @meta.color
     trailColor = vec4.create();
+
+    @meta.vector4
     trailSize = vec4.create();
+
+    @meta.color
     warpGlowColor = vec4.create();
+
+    @meta.color
     warpHaloColor = vec4.create();
 
-    // ccpwgl
+    @meta.float
     glowDistance = 2.5;
+
+    @meta.float
     haloDistance = 3.01;
+
+    @meta.float
     symHaloDistance = 3;
+
+    @meta.plain
     visible = {
         glows: true,
         symHalos: true,
@@ -525,7 +573,7 @@ export class EveBoosterSet extends EveObjectSet
         const item = new EveBoosterSet();
         if (values)
         {
-            assignIfExists(item, values, [
+            util.assignIfExists(item, values, [
                 "alwaysOn", "glowColor", "glowScale", "haloColor", "haloScaleX", "haloScaleY",
                 "maxVel", "symHaloScale", "trailColor", "trailSize", "warpGlowColor",
                 "name", "display", "glowDistance", "haloDistance", "symHaloDistance", "warpHaloColor"
@@ -539,7 +587,7 @@ export class EveBoosterSet extends EveObjectSet
 
             if (values.visible)
             {
-                assignIfExists(item.visible, values.visible, [ "glows", "symHalos", "halos", "trails" ]);
+                util.assignIfExists(item.visible, values.visible, [ "glows", "symHalos", "halos", "trails" ]);
             }
 
             if (values.effect)

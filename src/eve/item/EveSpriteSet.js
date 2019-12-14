@@ -1,4 +1,4 @@
-import { vec3, vec4, util, device } from "global";
+import { vec3, vec4, util, device, meta } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists } from "global/util";
@@ -6,7 +6,6 @@ import { Tw2Effect } from "core/mesh";
 
 /**
  * Sprite set render batch
- * @ccp N/A
  *
  * @property {Boolean} boosterGlow
  * @property {EveSpriteSet} spriteSet
@@ -45,7 +44,6 @@ export class EveSpriteSetBatch extends Tw2RenderBatch
 
 /**
  * Sprite
- * @ccp EveSpriteSetItem
  *
  * @property {String} name       -
  * @property {Number} blinkPhase -
@@ -58,22 +56,46 @@ export class EveSpriteSetBatch extends Tw2RenderBatch
  * @property {vec3} position     -
  * @property {vec4} warpColor    -
  */
+@meta.type("EveSpriteSetItem", true)
 export class EveSpriteSetItem extends EveObjectSetItem
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     blinkPhase = 0;
+
+    @meta.black.float
     blinkRate = 0;
+
+    @meta.black.uint
     boneIndex = 0;
+
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.float
     falloff = 0;
+
+    @meta.black.float
     maxScale = 0;
+
+    @meta.black.float
     minScale = 0;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.color
     warpColor = vec4.create();
 
     // ccpwgl
+    @meta.uint
     groupIndex = -1;            // Retain from EveSOF?
+
+    @meta.string
+    @meta.todo("Remove this, and reference the name using the group index")
     groupName = "";
 
     /**
@@ -95,33 +117,11 @@ export class EveSpriteSetItem extends EveObjectSetItem
         return item;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "blinkPhase", r.float ],
-            [ "blinkRate", r.float ],
-            [ "boneIndex", r.uint ],
-            [ "color", r.color ],
-            [ "falloff", r.float ],
-            [ "maxScale", r.float ],
-            [ "minScale", r.float ],
-            [ "name", r.string ],
-            [ "position", r.vector3 ],
-            [ "warpColor", r.color ]
-        ];
-    }
-
 }
 
 
 /**
  * Sprite set
- * @ccp EveSpriteSet
  *
  * @property {String} name                      - The sprite set's name
  * @property {Tw2Effect} effect                 - The sprite set's effect
@@ -134,16 +134,26 @@ export class EveSpriteSetItem extends EveObjectSetItem
  * @property {Tw2VertexDeclaration} _decl       - The sprite set's vertex declarations
  * @property {Tw2VertexDeclaration} _vdecl      -
  */
+@meta.type("EveSpriteSet", true)
 export class EveSpriteSet extends EveObjectSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.object
     effect = null;
+
+    @meta.black.float
     intensity = 0;
+
+    @meta.black.boolean
     skinned = false;
 
-    // ccpwgl
+    @meta.boolean
     useQuads = null;
+
+
     _time = 0;
     _vertexBuffer = null;
     _indexBuffer = null;
@@ -152,10 +162,13 @@ export class EveSpriteSet extends EveObjectSet
     _vdecl = Tw2VertexDeclaration.from([ { usage: "TEXCOORD", usageType: 5, elements: 1 } ]);
     _worldSpriteScale = 1;
 
+
     /**
      * Alias for this.items
      * @returns {Array}
      */
+    @meta.black.list
+    @meta.todo("Update parent class and replace with direct value")
     get sprites()
     {
         return this.items;
@@ -626,21 +639,5 @@ export class EveSpriteSet extends EveObjectSet
         { usage: "COLOR", usageIndex: 0, elements: 4 },
         { usage: "COLOR", usageIndex: 1, elements: 4 }
     ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "effect", r.object ],
-            [ "name", r.string ],
-            [ "intensity", r.float ],
-            [ "skinned", r.boolean ],
-            [ "sprites", r.array ]
-        ];
-    }
 
 }

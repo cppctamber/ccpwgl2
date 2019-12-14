@@ -1,14 +1,9 @@
-import { vec3, quat, mat4, util, device, tw2, Tw2BaseClass } from "global";
-import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "core/";
-import { assignIfExists } from "global/util";
+import { meta, vec3, quat, mat4, util, device, tw2, Tw2BaseClass } from "global";
+import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "core";
 import { Tw2Effect } from "core/mesh";
 
 /**
  * Decal
- * TODO: Make "PickEffect" shared
- * TODO: Identify if "groupIndex" is deprecated
- * TODO: Identify if "parentBoneIndex" is deprecated - Doesn't seem to be on the new SOF anywhere and is required
- * @ccp EveSpaceObjectDecal
  *
  * @property {String} name                     - Decal name
  * @property {Tw2Effect} decalEffect           - Decal effect
@@ -24,32 +19,56 @@ import { Tw2Effect } from "core/mesh";
  * @property {WebGLBuffer} _indexBuffer        - Decal index buffer
  * @property {Tw2GeometryRes} _parentGeometry  - Decal's parent geometry
  * @property {Tw2PerObjectData} _perObjectData - Decal per object data
- * @property {mat4} _transform                 - Decal local transform
- * @property {mat4} _transformInv              - Decal local transform inverse
+ * @property {mat4} _localTransform                 - Decal local transform
+ * @property {mat4} _localTransformInverse              - Decal local transform inverse
  */
+@meta.type("EveSpaceObjectDecal", true)
 export class EveSpaceObjectDecal extends Tw2BaseClass
 {
-    // ccp
+    
+    @meta.black.string
     name = "";
+    
+    @meta.black.object
     decalEffect = null;
+
+    @meta.boolean
+    display = true;
+
+    @meta.uint
+    @meta.todo("Identify if deprecated, this may only be needed if created a SOF object from a decal")
+    groupIndex = -1;
+    
+    @meta.black.indexBuffer
     indexBuffer = [];
+
+    @meta.uint
+    @meta.todo("Identify if deprecated, Doesn't seem to be on the new SOF anywhere but it is required, maybe default to 0?")
+    parentBoneIndex = -1;
+
+    @meta.boolean
+    pickable = true;
+
+    @meta.object
+    pickEffect = null;
+    
+    @meta.black.vector3
     position = vec3.create();
+    
+    @meta.black.quaternion
     rotation = quat.create();
+    
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    // ccpwgl
-    display = true;
-    groupIndex = -1;
-    parentBoneIndex = -1;
-    pickable = true;
-    pickEffect = null;
 
+    _dirty = true;
     _indexBuffer = null;
+    _localTransform = mat4.create();
+    _localTransformInverse = mat4.create();
     _parentGeometry = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObjectDecal.perObjectData);
-    _transform = mat4.create();
-    _transformInv = mat4.create();
-    _dirty = true;
+
 
     /**
      * Initializes the decal
@@ -77,8 +96,8 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
      */
     OnValueChanged()
     {
-        mat4.fromRotationTranslationScale(this._transform, this.rotation, this.position, this.scaling);
-        mat4.invert(this._transformInv, this._transform);
+        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.position, this.scaling);
+        mat4.invert(this._localTransformInverse, this._localTransform);
     }
 
     /**
@@ -193,8 +212,8 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             }
 
             mat4.invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
-            mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._transform);
-            mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._transformInv);
+            mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
+            mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
 
             this._perObjectData.ps.Get("displayData")[0] = counter || 0;
             this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
@@ -221,8 +240,8 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             bkCount = mesh.areas[0].count,
             bkIndexType = mesh.indexType;
 
-        tw2.SetVariableValue("u_DecalMatrix", this._transform);
-        tw2.SetVariableValue("u_InvDecalMatrix", this._transformInv);
+        tw2.SetVariableValue("u_DecalMatrix", this._localTransform);
+        tw2.SetVariableValue("u_InvDecalMatrix", this._localTransformInverse);
 
         mesh.indexes = this._indexBuffer;
         mesh.areas[0].start = 0;
@@ -248,7 +267,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
 
         if (values)
         {
-            assignIfExists(item, values, [
+            util.assignIfExists(item, values, [
                 "name", "display", "pickable",
                 "position", "rotation", "scaling",
                 "groupIndex", "parentBoneIndex"
@@ -296,22 +315,5 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             [ "shipData", 4 * 3 ]
         ]
     };
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "decalEffect", r.object ],
-            [ "name", r.string ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "indexBuffer", r.indexBuffer ]
-        ];
-    }
 
 }

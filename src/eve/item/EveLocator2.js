@@ -1,28 +1,36 @@
-import { mat4, Tw2BaseClass } from "global";
-import { assignIfExists } from "global/util";
+import { meta, mat4, util, Tw2BaseClass } from "global";
 
 /**
  * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
- * TODO: Make bone private and update all uses
- * TODO: Properties "atlasIndex0" and "atlasIndex1" may be for internal use only
- * @ccp EveLocator2
  *
  * @property {?number} atlasIndex0          - A booster locator's atlasIndex0
  * @property {?number} atlasIndex1          - A booster locator's atlasIndex1
  * @property {mat4} transform               - The locator's transform
  * @property {?Tw2Bone} _bone               - A turret locator's bone
  */
+@meta.stage(1)
+@meta.type("EveLocator2", true)
 export class EveLocator2 extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.matrix4
     transform = mat4.create();
 
-    // EveLocator only?
+    @meta.uint
+    @meta.isNullable
+    @meta.todo("Move to EveLocator only?")
     atlasIndex0 = null;
+
+    @meta.uint
+    @meta.isNullable
+    @meta.todo("Move to EveLocator only?")
     atlasIndex1 = null;
 
-    // ccpwgl
+    @meta.isPrivate
+    @meta.todo("Replace all usages with private property")
     bone = null;
 
     /**
@@ -47,7 +55,7 @@ export class EveLocator2 extends Tw2BaseClass
         const item = new EveLocator2();
         if (values)
         {
-            assignIfExists(item, values, [ "transform", "name", "atlasIndex0", "atlasIndex1" ]);
+            util.assignIfExists(item, values, [ "transform", "name", "atlasIndex0", "atlasIndex1" ]);
         }
         return item;
     }
@@ -64,25 +72,10 @@ export class EveLocator2 extends Tw2BaseClass
         XL_TURRET: "locator_xl"
     };
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "transform", r.matrix ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
-
 }
 
-export { EveLocator2 as EveLocator };
+@meta.type("EveLocator", true)
+export class EveLocator extends EveLocator2
+{
+
+}

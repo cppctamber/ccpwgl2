@@ -1,4 +1,4 @@
-import { vec3, vec4, mat4, util, device, Tw2BaseClass } from "global";
+import { meta, vec3, vec4, mat4, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists, isFunction } from "global/util";
@@ -28,8 +28,6 @@ export class EveSpotlightSetBatch extends Tw2RenderBatch
 
 /**
  * Spotlight
- * TODO: Identify if "boosterGainInfluence" is deprecated
- * @ccp EveSpotlightSetItem
  *
  * @property {String} name                  - The spotlight's name
  * @property {mat4} transform               - The spotlight's transform
@@ -44,24 +42,49 @@ export class EveSpotlightSetBatch extends Tw2RenderBatch
  * @property {Number} spriteIntensity       - Scales the spotlight's sprite colour, set by an object's sof Faction
  * @property {Number} flareIntensity        - Scales the spotlight's flare colour, set by an object's sof Faction
  */
+@meta.type("EveSpotlightSetItem", true)
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
-    // ccp
-    name = "";
-    coneColor = vec4.create();
-    flareColor = vec4.create();
-    spriteColor = vec4.create();
-    spriteScale = vec3.fromValues(1, 1, 1);
-    transform = mat4.create();
 
-    // ccpwgl
+    @meta.black.string
+    name = "";
+
+    @meta.float
     boosterGainInfluence = 0;
+
+    @meta.uint
     boneIndex = 0;                  // retain from EveSOF?
+
+    @meta.black.color
+    coneColor = vec4.create();
+
+    @meta.float
+    coneIntensity = 0;              // Non-standard Faction intensity
+
+    @meta.boolean
     display = true;
-    groupIndex = -1;                // retain from EveSOF?
-    coneIntensity = 0;              // Faction intensity
-    spriteIntensity = 0;            // Faction intensity
-    flareIntensity = 0;             // faction intensity
+
+    @meta.black.color
+    flareColor = vec4.create();
+
+    @meta.float
+    flareIntensity = 0;             // Non-standard faction intensity
+
+    @meta.uint
+    @meta.todo("Identify if deprecated, only needed if creating a SOF object from the spotlight")
+    groupIndex = -1;
+
+    @meta.black.color
+    spriteColor = vec4.create();
+
+    @meta.float
+    spriteIntensity = 0;            // Non-standard Faction intensity
+
+    @meta.black.color
+    spriteScale = vec3.fromValues(1, 1, 1);
+
+    @meta.black.matrix4
+    transform = mat4.create();
 
 
     /**
@@ -80,30 +103,11 @@ export class EveSpotlightSetItem extends EveObjectSetItem
         return item;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "coneColor", r.color ],
-            [ "flareColor", r.color ],
-            [ "name", r.string ],
-            [ "spriteColor", r.color ],
-            [ "spriteScale", r.vector3 ],
-            [ "transform", r.matrix ]
-        ];
-    }
-
 }
 
 
 /**
  * Spotlight set
- * Todo: Implement "intensity"
- * @ccp EveSpotlightSet
  *
  * @property {String} name                                - The spotlight set's name
  * @property {Tw2Effect} coneEffect                       - The spotlight set's cone effect
@@ -115,24 +119,35 @@ export class EveSpotlightSetItem extends EveObjectSetItem
  * @property {WebGLBuffer} _indexBuffer                   - Index buffer for the spotlight set
  * @property {Tw2VertexDeclaration} _decl                 - The spotlight set's vertex declarations
  */
+@meta.type("EveSpotlightSet", true)
 export class EveSpotlightSet extends EveObjectSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.object
     coneEffect = null;
+
+    @meta.black.object
     glowEffect = null;
+
+    @meta.black.float
     intensity = 1;
 
-    // ccpwgl
+
     _coneVertexBuffer = null;
-    _spriteVertexBuffer = null;
-    _indexBuffer = null;
     _decl = Tw2VertexDeclaration.from(EveSpotlightSet.vertexDeclarations);
+    _indexBuffer = null;
+    _spriteVertexBuffer = null;
+
 
     /**
      * Alias for this.items
      * @returns {Array}
      */
+    @meta.black.list
+    @meta.todo("Update parent class and replace with direct value")
     get spotlightItems()
     {
         return this.items;
@@ -485,22 +500,6 @@ export class EveSpotlightSet extends EveObjectSet
         { usage: "TEXCOORD", usageIndex: 3, elements: 3 },
         { usage: "TEXCOORD", usageIndex: 4, elements: 3 }
     ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "coneEffect", r.object ],
-            [ "glowEffect", r.object ],
-            [ "intensity", r.float ],
-            [ "name", r.string ],
-            [ "spotlightItems", r.array ]
-        ];
-    }
 
 }
 

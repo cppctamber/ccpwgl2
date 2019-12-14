@@ -1,9 +1,7 @@
-import { quat, vec3, mat4, Tw2BaseClass } from "global";
+import { meta, quat, vec3, mat4, Tw2BaseClass } from "global";
 
 /**
  * EveBanner
- * TODO: Implement
- * @ccp EveBanner
  *
  * @property {Number} angleX    -
  * @property {Number} angleY    -
@@ -13,20 +11,39 @@ import { quat, vec3, mat4, Tw2BaseClass } from "global";
  * @property {vec3} scaling     -
  * @property {Number} usage     -
  */
+@meta.type("EveBanner", true)
+@meta.notImplemented
 export class EveBanner extends Tw2BaseClass
 {
 
-    // ccp
+    @meta.string
+    name = "";
+
+    @meta.float
     angleX = 0;
+
+    @meta.float
     angleY = 0;
+
+    @meta.uint
     boneIndex = 0;
+
+    @meta.boolean
+    display = true;
+
+    @meta.vector3
     position = vec3.create();
+
+    @meta.quaternion
     rotation = quat.create();
+
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.uint
     usage = 0;
 
-    //ccpwgl
-    display = true;
+    @meta.matrix4
     transform = mat4.create();
 
     /**

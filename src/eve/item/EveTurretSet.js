@@ -1,4 +1,4 @@
-import { vec3, vec4, quat, mat4, util, resMan, device } from "global";
+import { meta, vec3, vec4, quat, mat4, util, resMan, device } from "global";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,
@@ -10,7 +10,6 @@ import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**
  * EveTurretSetItem
- * @ccp N/A
  *
  * @property {Boolean} isJoint              - Identifies if the turret is on a joint
  * @property {?String} locatorName          - The item's locator name
@@ -22,18 +21,30 @@ import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
  * @property {mat4} _localTransform         - The turret's local transform
  * @property {quat} _localRotation          - the turret's local rotation
  */
+@meta.type("EveTurretSetItem")
 export class EveTurretSetItem extends EveObjectSetItem
 {
-    // ccpwgl
+
+    @meta.string
     locatorName = null;
+
+    @meta.boolean
     updateFromLocator = false;
+
+    @meta.boolean
     canFireWhenHidden = false;
+
+    @meta.vector3
     position = vec3.create();
+
+    @meta.quaternion
     rotation = quat.create();
+
 
     _bone = null;
     _localTransform = mat4.create();
     _localRotation = quat.create();
+
 
     /**
      * Fires on value changes
@@ -81,24 +92,6 @@ export class EveTurretSetItem extends EveObjectSetItem
 
 /**
  * EveTurretSet
- * @ccp EveTurretSet
- * TODO: Implement property "bottomClipHeight",
- * TODO: Implement property "chooseRandomLocator",
- * TODO: Implement property "cyclingFireGroupCount",
- * TODO: Implement property "impactSize",
- * TODO: Implement property "laserMissBehaviour",
- * TODO: Implement property "maxCyclingFirePos",
- * TODO: Implement property "projectileMissBehaviour",
- * TODO: Implement property "sysBoneHeight",
- * TODO: Implement property "sysBonePitch01Factor",
- * TODO: Implement property "sysBonePitch02Factor",
- * TODO: Implement property "sysBonePitchFactor",
- * TODO: Implement property "sysBonePitchMax",
- * TODO: Implement property "sysBonePitchMin",
- * TODO: Implement property "sysBonePitchOffset",
- * TODO: Implement property "updatePitchPose",
- * TODO: Implement property "useDynamicBounds",
- * TODO: Implement property "useRandomFiringDelay"
  *
  * @property {Number} bottomClipHeight                  -
  * @property {vec4} boundingSphere                      -
@@ -141,39 +134,110 @@ export class EveTurretSetItem extends EveObjectSetItem
  * @property {Tw2PerObjectData} _perObjectDataInactive  -
  * @property {Number} _recheckTimeLeft                  -
  */
+@meta.type("EveTurretSet", true)
+@meta.stage(1)
 export class EveTurretSet extends EveObjectSet
 {
-    // ccp
+
+    @meta.black.string
+    name = "";
+
+    @meta.notImplemented
+    @meta.black.float
     bottomClipHeight = 0;
+
+    @meta.black.vector4
     boundingSphere = vec4.create();
+
+    @meta.notImplemented
+    @meta.black.boolean
     chooseRandomLocator = false;
+
+    @meta.notImplemented
+    @meta.black.uint
     cyclingFireGroupCount = 0;
+
+    @meta.black.path
     firingEffectResPath = "";
+
+    @meta.black.path
     geometryResPath = "";
+
+    @meta.notImplemented
+    @meta.black.float
     impactSize = 0;
+
+    @meta.notImplemented
+    @meta.black.boolean
     laserMissBehaviour = false;
+
+    @meta.black.string
     locatorName = "";
+
+    @meta.notImplemented
+    @meta.black.uint
     maxCyclingFirePos = 0;
+
+    @meta.notImplemented
+    @meta.black.boolean
     projectileMissBehaviour = false;
+
+    @meta.notImplemented
+    @meta.black.float
     sysBoneHeight = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     sysBonePitch01Factor = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     sysBonePitch02Factor = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     sysBonePitchFactor = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     sysBonePitchMax = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     sysBonePitchMin = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     sysBonePitchOffset = 0;
+
+    @meta.black.object
     turretEffect = null;
+
+    @meta.notImplemented
+    @meta.black.boolean
     updatePitchPose = false;
+
+    @meta.notImplemented
+    @meta.black.boolean
     useDynamicBounds = false;
+
+    @meta.notImplemented
+    @meta.black.boolean
     useRandomFiringDelay = false;
 
-    // ccpwgl
+    @meta.object
     firingEffect = null;
+
+    @meta.object
+    @meta.todo("Make private")
     geometryResource = null;
+
+    @meta.plain
     visible = {
         turrets: true,
         firingEffects: true
     };
+
 
     _activeAnimation = new Tw2AnimationController();
     _activeTurret = -1;
@@ -190,10 +254,12 @@ export class EveTurretSet extends EveObjectSet
     _targetPosition = vec3.create();
     _recheckTimeLeft = 0;
 
+
     /**
      * Alias for this.items
      * @returns {Array}
      */
+    @meta.todo("Update parent class and replace with direct value")
     get turrets()
     {
         return this.items;
@@ -964,45 +1030,5 @@ export class EveTurretSet extends EveObjectSet
             out[outIndex + 3] = q[3];
         };
     })();
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "bottomClipHeight", r.float ],
-            [ "boundingSphere", r.vector4 ],
-            [ "chooseRandomLocator", r.boolean ],
-            [ "cyclingFireGroupCount", r.uint ],
-            [ "firingEffectResPath", r.path ],
-            [ "geometryResPath", r.path ],
-            [ "impactSize", r.float ],
-            [ "laserMissBehaviour", r.boolean ],
-            [ "locatorName", r.string ],
-            [ "maxCyclingFirePos", r.uint ],
-            [ "projectileMissBehaviour", r.boolean ],
-            [ "sysBoneHeight", r.float ],
-            [ "sysBonePitchMax", r.float ],
-            [ "sysBonePitchMin", r.float ],
-            [ "sysBonePitchFactor", r.float ],
-            [ "sysBonePitch01Factor", r.float ],
-            [ "sysBonePitch02Factor", r.float ],
-            [ "sysBonePitchOffset", r.float ],
-            [ "turretEffect", r.object ],
-            [ "updatePitchPose", r.boolean ],
-            [ "useDynamicBounds", r.boolean ],
-            [ "useRandomFiringDelay", r.boolean ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

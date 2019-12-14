@@ -1,4 +1,4 @@
-import { vec3, quat, mat4 } from "global";
+import { vec3, quat, mat4, meta } from "global";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**
@@ -6,6 +6,7 @@ import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
  *
  * @property {EveSpriteLineSet} spriteLineSet
  */
+@meta.notImplemented
 export class EveSpriteLineSetBatch
 {
 
@@ -24,8 +25,7 @@ export class EveSpriteLineSetBatch
 
 /**
  * Sprite line
- * Todo: Is this actually a class?
- * @ccp ???
+ * TODO: Is this actually a class?
  *
  * @property {Number} blinkPhase      -
  * @property {Number} blinkPhaseShift -
@@ -43,27 +43,59 @@ export class EveSpriteLineSetBatch
  * @property {Number} spacing         -
  * @property {mat4} transform         -
  */
+@meta.notImplemented
+@meta.type("EveSpriteLineSetItem")
 export class EveSpriteLineSetItem extends EveObjectSetItem
 {
-    // ccp
+
+    @meta.float
     blinkPhase = 0;
+
+    @meta.float
     blinkPhaseShift = 0;
+
+    @meta.float
     blinkRate = 0;
+
+    @meta.uint
     boneIndex = 0;
+
+    @meta.uint
     colorType = 0;
+
+    @meta.float
     falloff = 0;
+
+    @meta.float
     intensity = 0;
+
+    @meta.boolean
     isCircle = false;
+
+    @meta.float
     maxScale = 0;
+
+    @meta.float
     minScale = 0;
+
+    @meta.vector3
     position = vec3.create();
+
+    @meta.quaternion
     rotation = quat.create();
+
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.float
     spacing = 0;
 
-    // ccpwgl
+    @meta.boolean
     display = true;
+
+    @meta.matrix4
     transform = mat4.create();
+
     _dirty = true;
 
     /**
@@ -80,49 +112,13 @@ export class EveSpriteLineSetItem extends EveObjectSetItem
 
 /**
  * Sprite line set
- * @TODO: Is this actually a class?
- * @ccp ???
+ * TODO: Is this actually a class?
  *
  * @property {Array<EveSpriteLineSetItem>} items
  */
+@meta.notImplemented
+@meta.type("EveSpriteLineSet")
 export class EveSpriteLineSet extends EveObjectSet
 {
-
-    /**
-     * Unloads the sprite line set's buffers
-     */
-    Unload()
-    {
-        // TODO: Unload
-    }
-
-    /**
-     * Rebuilds the sprite line set's buffers
-     */
-    Rebuild()
-    {
-        // TODO: Rebuild
-    }
-
-    /**
-     * Gets the sprite line set's render batches
-     * @param {Number} mode
-     * @param {Tw2BatchAccumulator} accumulator
-     * @param {Tw2PerObjectData} perObjectData
-     */
-    GetBatches(mode, accumulator, perObjectData)
-    {
-        // TODO: GetBatches
-    }
-
-    /**
-     * Renders the sprite line set
-     * @param {String} technique - technique name
-     * @returns {Boolean}        - true if rendered
-     */
-    Render(technique)
-    {
-        // TODO: Render
-    }
 
 }

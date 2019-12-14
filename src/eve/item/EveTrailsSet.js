@@ -1,13 +1,13 @@
-import { resMan, Tw2BaseClass } from "global";
+import { meta, resMan, Tw2BaseClass } from "global";
 import { Tw2RenderBatch } from "core/batch";
 
 /**
  * EveTrailSetRenderBatch
  * TODO: Implement (Probably a forwarding render batch or geometry render batch)
- * @ccp N/A
  *
  * @property {EveTrailsSet} trailsSet
  */
+@meta.notImplemented
 export class EveTrailSetRenderBatch extends Tw2RenderBatch
 {
 
@@ -26,23 +26,29 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
 
 /**
  * Trails set
- * Todo: Implement
- * @ccp EveTrailSet
  *
  * @property {Tw2Effect} effect           -
  * @property {String} geometryResPath     -
  * @property {Boolean} display            -
  * @property {Tw2GeometryRes} geometryRes -
  */
+@meta.notImplemented
+@meta.type("EveTrailSet", true)
 export class EveTrailsSet extends Tw2BaseClass
 {
 
+    @meta.black.object
     effect = null;
+
+    @meta.black.path
     geometryResPath = "";
 
-    //ccpwgl
+    @meta.boolean
     display = true;
-    geometryRes = null;
+
+
+    _geometryRes = null;
+
 
     /**
      * Initializes the object
@@ -51,7 +57,7 @@ export class EveTrailsSet extends Tw2BaseClass
     {
         if (this.geometryResPath)
         {
-            this.geometryRes = resMan.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
+            this._geometryRes = resMan.GetResource(this.geometryResPath, res => this.OnResPrepared(res));
         }
     }
 
@@ -76,76 +82,12 @@ export class EveTrailsSet extends Tw2BaseClass
             this.effect.GetResources(out);
         }
 
-        if (this.geometryRes && !out.includes(this.geometryRes))
+        if (this._geometryRes && !out.includes(this._geometryRes))
         {
-            out.push(this.geometryRes);
+            out.push(this._geometryRes);
         }
 
         return out;
     }
-
-    /**
-     * Per frame update
-     * @param {Number} dt - delta time
-     */
-    Update(dt)
-    {
-        //TODO: Implement
-    }
-
-    /**
-     * Unloads the object's buffers
-     */
-    Unload()
-    {
-        // TODO: Unload buffers
-    }
-
-    /**
-     * Rebuilds the haze set's buffers
-     */
-    Rebuild()
-    {
-        // TODO: Rebuild buffers
-    }
-
-    /**
-     * Gets the plane set's render batches
-     * @param {Number} mode
-     * @param {Tw2BatchAccumulator} accumulator
-     * @param {Tw2PerObjectData} perObjectData
-     */
-    GetBatches(mode, accumulator, perObjectData)
-    {
-        // TODO: GetBatches
-    }
-
-    /**
-     * Renders the haze set
-     * @param {String} technique - technique name
-     */
-    Render(technique)
-    {
-        // TODO: Render
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "effect", r.object ],
-            [ "geometryResPath", r.path ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

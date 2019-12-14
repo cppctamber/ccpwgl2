@@ -1,12 +1,10 @@
-import { vec3, vec4, quat, mat4, util, device } from "global";
+import { meta, vec3, vec4, quat, mat4, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
-import { assignIfExists, get } from "global/util";
 import { Tw2Effect } from "core/mesh";
 
 /**
  * Plane set render batch
- * @ccp N/A
  * @property {EvePlaneSet} planeSet
  */
 export class EvePlaneSetBatch extends Tw2RenderBatch
@@ -29,12 +27,8 @@ export class EvePlaneSetBatch extends Tw2RenderBatch
 
 /**
  * Plane set item
- * TODO: Identify if "boneIndex" is deprecated
- * TODO: Identify if "groupIndex" is deprecated
- * TODO: Replace "transform" with "localTransform" ?
  * If "boneIndex" and "groupIndex" are just used by the EveSOF, we may need to record this information if
  * we are going to convert this object back into a EveSOF object
- * @ccp EvePlaneSetItem
  *
  * @property {String} name          -
  * @property {vec4} color           -
@@ -51,31 +45,75 @@ export class EvePlaneSetBatch extends Tw2RenderBatch
  * @property {Number} groupIndex    -
  * @property {mat4} transform       -
  */
+@meta.type("EvePlaneSetItem", true)
 export class EvePlaneSetItem extends EveObjectSetItem
 {
-    // ccp
+
+    @meta.black.string
     name = "";
+
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.vector4
     layer1Scroll = vec4.create();
+
+    @meta.black.vector4
     layer1Transform = vec4.create();
+
+    @meta.black.vector4
     layer2Scroll = vec4.create();
+
+    @meta.black.vector4
     layer2Transform = vec4.create();
+
+    @meta.black.uint
     maskAtlasID = 0;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    // ccpwgl
+    @meta.uint
+    @meta.todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated")
     boneIndex = 0; // Should this be -1 by default?
+
+    @meta.uint
+    @meta.todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated")
     groupIndex = -1;
-    transform = mat4.create();
+
+
+    _localTransform = mat4.create();
+
+    /**
+     * Alias for maskAtlasID
+     * @returns {number}
+     */
+    get maskMapAtlasIndex()
+    {
+        return this.maskAtlasID;
+    }
+
+    /**
+     * Alias for maskAtlasID
+     * @param {number} value
+     */
+    set maskMapAtlasIndex(value)
+    {
+        this.maskAtlasID = value;
+    }
 
     /**
      * Fires on value changes
      */
     OnValueChanged()
     {
-        mat4.fromRotationTranslationScale(this.transform, this.rotation, this.translation, this.scaling);
+        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
         this._dirty = true;
     }
 
@@ -91,7 +129,7 @@ export class EvePlaneSetItem extends EveObjectSetItem
         if (values)
         {
             util.assignIfExists(item, values, [
-                "name", "display", "boneIndex", "groupIndex", "position", "scaling", "rotation", "transform",
+                "name", "display", "boneIndex", "groupIndex", "position", "scaling", "rotation",
                 "color", "layer1Transform", "layer2Transform", "layer1Scroll", "layer2Scroll", "maskAtlasID"
             ]);
 
@@ -104,35 +142,11 @@ export class EvePlaneSetItem extends EveObjectSetItem
         return item;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "color", r.color ],
-            [ "layer1Scroll", r.vector4 ],
-            [ "layer1Transform", r.vector4 ],
-            [ "layer2Scroll", r.vector4 ],
-            [ "layer2Transform", r.vector4 ],
-            [ "maskAtlasID", r.uint ],
-            [ "name", r.string ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-        ];
-    }
-
 }
 
 
 /**
  * Plane set
- * Todo: Implement "hideOnLowQuality"
- * Todo: Implement "pickBufferID" (Assuming we will add picking)
- * @ccp EvePlaneSet
  *
  * @property {String} name                     -
  * @property {Tw2Effect} effect                -
@@ -145,15 +159,25 @@ export class EvePlaneSetItem extends EveObjectSetItem
  * @property {WebGLBuffer} _indexBuffer        -
  * @property {Tw2VertexDeclaration} _decl      -
  */
+@meta.type("EvePlaneSet", true)
 export class EvePlaneSet extends EveObjectSet
 {
-    // ccp
+
+    @meta.black.string
     name = "";
+
+    @meta.black.object
     effect = null;
+
+    @meta.black.boolean
+    @meta.notImplemented
     hideOnLowQuality = false;
+
+    @meta.black.byte
+    @meta.notImplemented
     pickBufferID = 0;
 
-    // ccpwgl
+
     _time = 0;
     _vertexBuffer = null;
     _indexBuffer = null;
@@ -163,6 +187,8 @@ export class EvePlaneSet extends EveObjectSet
      * Alias for this.items
      * @returns {Array}
      */
+    @meta.black.list
+    @meta.todo("Update parent class and replace with direct value")
     get planes()
     {
         return this.items;
@@ -251,7 +277,7 @@ export class EvePlaneSet extends EveObjectSet
             array[offset + 2 * vertexSize + vertexSize - 3] = 2;
             array[offset + 3 * vertexSize + vertexSize - 3] = 3;
 
-            const itemTransform = mat4.fromRotationTranslationScale(item.transform, item.rotation, item.position, item.scaling);
+            const itemTransform = mat4.fromRotationTranslationScale(item._localTransform, item.rotation, item.position, item.scaling);
 
             for (let j = 0; j < 4; ++j)
             {
@@ -383,7 +409,7 @@ export class EvePlaneSet extends EveObjectSet
         const item = new EvePlaneSet();
         if (values)
         {
-            assignIfExists(item, values, [ "name", "display", "hideOnLowQuality" ]);
+            util.assignIfExists(item, values, [ "name", "display", "hideOnLowQuality" ]);
 
             if (values.effect)
             {
@@ -427,21 +453,5 @@ export class EvePlaneSet extends EveObjectSet
         { usage: "TEXCOORD", usageIndex: 6, elements: 4 },
         { usage: "TEXCOORD", usageIndex: 7, elements: 3 }
     ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "effect", r.object ],
-            [ "hideOnLowQuality", r.boolean ],
-            [ "name", r.string ],
-            [ "pickBufferID", r.byte ],
-            [ "planes", r.array ]
-        ];
-    }
 
 }

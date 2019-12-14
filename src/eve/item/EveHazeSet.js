@@ -1,13 +1,13 @@
-import { quat, vec3, mat4, Tw2BaseClass } from "global";
+import { meta, quat, vec3, mat4 } from "global";
 import { Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 /**
  * Haze set render batch
- * @ccp N/A
  *
  * @property {EveHazeSet} hazeSet
  */
+@meta.notImplemented
 export class EveHazeSetBatch extends Tw2RenderBatch
 {
 
@@ -27,7 +27,6 @@ export class EveHazeSetBatch extends Tw2RenderBatch
 
 /**
  * Haze item
- * @ccp EveHazeSetItem
  *
  * @property {Boolean} boosterGainInfluence -
  * @property {Number} colorType             -
@@ -40,28 +39,47 @@ export class EveHazeSetBatch extends Tw2RenderBatch
  * @property {Number} sourceSize            -
  * @property {mat4} transform               - Item's local transform
  */
+@meta.notImplemented
+@meta.type("EveHazeSetItem", true)
 export class EveHazeSetItem extends EveObjectSetItem
 {
-    // ccp
+
+    @meta.boolean
     boosterGainInfluence = false;
+
+    @meta.uint
     colorType = 0;
+
+    @meta.float
     hazeBrightness = 0;
+
+    @meta.float
     hazeFalloff = 0;
+
+    @meta.vector3
     position = vec3.create();
+
+    @meta.quaternion
     rotation = quat.create();
+
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.float
     sourceBrightness = 0;
+
+    @meta.float
     sourceSize = 0;
 
-    // ccpwgl
-    transform = mat4.create();
+
+    _transform = mat4.create();
 
     /**
      * Fires on value changes
      */
     OnValueChanged()
     {
-        mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
+        mat4.fromRotationTranslationScale(this._transform, this.rotation, this.position, this.scaling);
         this._dirty = true;
     }
 
@@ -70,46 +88,10 @@ export class EveHazeSetItem extends EveObjectSetItem
 
 /**
  * Haze set
- * TODO: Implement
- * @ccp EveHazeSet
  */
+@meta.notImplemented
+@meta.type("EveHazeSet", true)
 export class EveHazeSet extends EveObjectSet
 {
-
-    /**
-     * Unloads the object's buffers
-     */
-    Unload()
-    {
-        // TODO: Unload buffers
-    }
-
-    /**
-     * Rebuilds the haze set's buffers
-     */
-    Rebuild()
-    {
-        // TODO: Rebuild buffers
-    }
-
-    /**
-     * Gets the plane set's render batches
-     * @param {Number} mode
-     * @param {Tw2BatchAccumulator} accumulator
-     * @param {Tw2PerObjectData} perObjectData
-     */
-    GetBatches(mode, accumulator, perObjectData)
-    {
-        // TODO: GetBatches
-    }
-
-    /**
-     * Renders the haze set
-     * @param {String} technique - technique name
-     */
-    Render(technique)
-    {
-        // TODO: Render
-    }
 
 }

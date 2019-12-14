@@ -3,7 +3,6 @@ import { meta, vec3, vec4, mat4, Tw2BaseClass } from "global";
 
 /**
  * EveObjectSetItem base class
- * @ccp N/A
  *
  * @property {Boolean} display - Toggles the set item's visibility
  * @property {Boolean} _dirty  - Identifies that the item is dirty
@@ -12,7 +11,9 @@ import { meta, vec3, vec4, mat4, Tw2BaseClass } from "global";
 export class EveObjectSetItem extends Tw2BaseClass
 {
 
+    @meta.boolean
     display = true;
+
     _dirty = true;
 
     /**
@@ -27,7 +28,6 @@ export class EveObjectSetItem extends Tw2BaseClass
 
 /**
  * EveObjectSet base class
- * @ccp N/A
  *
  * @property {Boolean} display        - Toggles set visibility
  * @property {Array<*>} items         - The set's items
@@ -38,10 +38,17 @@ export class EveObjectSetItem extends Tw2BaseClass
 @meta.abstract
 export class EveObjectSet extends Tw2BaseClass
 {
-    // ccpwgl
+
+    @meta.boolean
     autoRebuild = true;
+
+    @meta.boolean
     display = true;
+
+    @meta.list
     items = [];
+
+
     _dirty = true;
     _visibleItems = [];
 
