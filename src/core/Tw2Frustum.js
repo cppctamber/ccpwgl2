@@ -1,24 +1,21 @@
-import { vec3, vec4, mat4 } from "global";
+import { meta, vec3, vec4, mat4 } from "global";
 
 /**
  * Tw2Frustum
  *
- * @property {Array.<vec4>} planes
- * @property {vec3} viewPos
- * @property {vec3} viewDir
- * @property {Number} halfWidthProjection
- * @class
+ * @property {Array.<vec4>} _planes
+ * @property {vec3} _viewPos
+ * @property {vec3} _viewDir
+ * @property {Number} _halfWidthProjection
  */
+@meta.type("Tw2Frustum")
 export class Tw2Frustum
 {
 
-    planes = [
-        vec4.create(), vec4.create(), vec4.create(),
-        vec4.create(), vec4.create(), vec4.create()
-    ];
-    viewPos = vec3.create();
-    viewDir = vec3.create();
-    halfWidthProjection = 1;
+    _halfWidthProjection = 1;
+    _planes = [ vec4.create(), vec4.create(), vec4.create(), vec4.create(), vec4.create(), vec4.create() ];
+    _viewPos = vec3.create();
+    _viewDir = vec3.create();
 
 
     /**
@@ -35,48 +32,51 @@ export class Tw2Frustum
         const mat4_0 = Tw2Frustum.global.mat4_0;
 
         const viewInv = viewInverse ? viewInverse : mat4.invert(mat4_0, view);
-        this.viewPos.set(viewInv.subarray(12, 14));
-        this.viewDir.set(viewInv.subarray(8, 10));
-        this.halfWidthProjection = proj[0] * viewportSize * 0.5;
+        this._viewPos.set(viewInv.subarray(12, 14));
+        this._viewDir.set(viewInv.subarray(8, 10));
+        this._halfWidthProjection = proj[0] * viewportSize * 0.5;
 
-        const viewProj = viewProjection ? viewProjection : mat4.multiply(mat4_0, proj, view);
-        this.planes[0][0] = viewProj[2];
-        this.planes[0][1] = viewProj[6];
-        this.planes[0][2] = viewProj[10];
-        this.planes[0][3] = viewProj[14];
+        const
+            viewProj = viewProjection ? viewProjection : mat4.multiply(mat4_0, proj, view),
+            p = this._planes;
 
-        this.planes[1][0] = viewProj[3] + viewProj[0];
-        this.planes[1][1] = viewProj[7] + viewProj[4];
-        this.planes[1][2] = viewProj[11] + viewProj[8];
-        this.planes[1][3] = viewProj[15] + viewProj[12];
+        p[0][0] = viewProj[2];
+        p[0][1] = viewProj[6];
+        p[0][2] = viewProj[10];
+        p[0][3] = viewProj[14];
 
-        this.planes[2][0] = viewProj[3] - viewProj[1];
-        this.planes[2][1] = viewProj[7] - viewProj[5];
-        this.planes[2][2] = viewProj[11] - viewProj[9];
-        this.planes[2][3] = viewProj[15] - viewProj[13];
+        p[1][0] = viewProj[3] + viewProj[0];
+        p[1][1] = viewProj[7] + viewProj[4];
+        p[1][2] = viewProj[11] + viewProj[8];
+        p[1][3] = viewProj[15] + viewProj[12];
 
-        this.planes[3][0] = viewProj[3] - viewProj[0];
-        this.planes[3][1] = viewProj[7] - viewProj[4];
-        this.planes[3][2] = viewProj[11] - viewProj[8];
-        this.planes[3][3] = viewProj[15] - viewProj[12];
+        p[2][0] = viewProj[3] - viewProj[1];
+        p[2][1] = viewProj[7] - viewProj[5];
+        p[2][2] = viewProj[11] - viewProj[9];
+        p[2][3] = viewProj[15] - viewProj[13];
 
-        this.planes[4][0] = viewProj[3] + viewProj[1];
-        this.planes[4][1] = viewProj[7] + viewProj[5];
-        this.planes[4][2] = viewProj[11] + viewProj[9];
-        this.planes[4][3] = viewProj[15] + viewProj[13];
+        p[3][0] = viewProj[3] - viewProj[0];
+        p[3][1] = viewProj[7] - viewProj[4];
+        p[3][2] = viewProj[11] - viewProj[8];
+        p[3][3] = viewProj[15] - viewProj[12];
 
-        this.planes[5][0] = viewProj[3] - viewProj[2];
-        this.planes[5][1] = viewProj[7] - viewProj[6];
-        this.planes[5][2] = viewProj[11] - viewProj[10];
-        this.planes[5][3] = viewProj[15] - viewProj[14];
+        p[4][0] = viewProj[3] + viewProj[1];
+        p[4][1] = viewProj[7] + viewProj[5];
+        p[4][2] = viewProj[11] + viewProj[9];
+        p[4][3] = viewProj[15] + viewProj[13];
+
+        p[5][0] = viewProj[3] - viewProj[2];
+        p[5][1] = viewProj[7] - viewProj[6];
+        p[5][2] = viewProj[11] - viewProj[10];
+        p[5][3] = viewProj[15] - viewProj[14];
 
         for (let i = 0; i < 6; ++i)
         {
-            let len = vec3.length(this.planes[i]);
-            this.planes[i][0] /= len;
-            this.planes[i][1] /= len;
-            this.planes[i][2] /= len;
-            this.planes[i][3] /= len;
+            let len = vec3.length(p[i]);
+            p[i][0] /= len;
+            p[i][1] /= len;
+            p[i][2] /= len;
+            p[i][3] /= len;
         }
     }
 
@@ -89,9 +89,11 @@ export class Tw2Frustum
      */
     IsSphereVisible(center, radius)
     {
+        const p = this._planes;
+
         for (let i = 0; i < 6; ++i)
         {
-            if (this.planes[i][0] * center[0] + this.planes[i][1] * center[1] + this.planes[i][2] * center[2] + this.planes[i][3] < -radius)
+            if (p[i][0] * center[0] + p[i][1] * center[1] + p[i][2] * center[2] + p[i][3] < -radius)
             {
                 return false;
             }
@@ -108,16 +110,16 @@ export class Tw2Frustum
      */
     GetPixelSizeAcross(center, radius)
     {
-        const d = vec3.subtract(Tw2Frustum.global.vec3_0, this.viewPos, center);
+        const d = vec3.subtract(Tw2Frustum.global.vec3_0, this._viewPos, center);
 
-        let depth = vec3.dot(this.viewDir, d),
+        let depth = vec3.dot(this._viewDir, d),
             epsilon = 1e-5;
 
         if (depth < epsilon) depth = epsilon;
         if (radius < epsilon) return 0;
 
         let ratio = radius / depth;
-        return ratio * this.halfWidthProjection * 2;
+        return ratio * this._halfWidthProjection * 2;
     }
 
     /**

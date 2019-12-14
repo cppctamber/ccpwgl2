@@ -1,4 +1,4 @@
-import { Tw2BaseClass, device } from "global";
+import { Tw2BaseClass, device, meta } from "global";
 import { Tw2VertexDeclaration } from "./vertex";
 import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleElementDeclaration";
 
@@ -13,7 +13,9 @@ import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleEleme
  * @property {WebGLBuffer} _vb
  * @property {Number} _vertexStride
  */
-export class Tr2RuntimeInstanceData extends Tw2BaseClass
+@meta.type("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData")
+@meta.data("black")
+export class Tw2RuntimeInstanceData extends Tw2BaseClass
 {
 
     _count = 0;
@@ -219,16 +221,6 @@ export class Tr2RuntimeInstanceData extends Tw2BaseClass
     GetInstanceCount()
     {
         return this._count;
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [];
     }
 
 }

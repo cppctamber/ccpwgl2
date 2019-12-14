@@ -1,33 +1,16 @@
-import { vec3 } from "global";
-import { Tw2BaseClass } from "global";
+import { meta, vec3, Tw2BaseClass } from "global";
 
 /**
  * TriObserverLocal
- * Todo: Implement
  *
  * @property {vec3} front -
  */
+@meta.notImplemented
+@meta.type("TriObserverLocal")
 export class TriObserverLocal extends Tw2BaseClass
 {
 
+    @meta.black.vector3
     front = vec3.create();
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "front", r.vector3 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

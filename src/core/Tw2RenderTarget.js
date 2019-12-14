@@ -1,4 +1,4 @@
-import { util, device } from "global";
+import { meta, util, tw2 } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 /**
@@ -12,27 +12,53 @@ import { Tw2TextureRes } from "./resource/Tw2TextureRes";
  * @property {?Boolean} hasDepth               - toggles depth
  * @property {WebGLFramebuffer} _frameBuffer   - the render target's webgl frame buffer
  * @property {WebGLRenderbuffer} _renderBuffer - the render target's webgl render buffer
- * @class
  */
+@meta.type("Tw2RenderTarget")
 export class Tw2RenderTarget
 {
 
-    _id = util.generateID();
+    @meta.string
     name = "";
+
+    @meta.object
+    @meta.isPrivate
+    @meta.todo("Make private")
     texture = null;
-    width = null;
-    height = null;
-    hasDepth = null;
+
+    @meta.float
+    @meta.isPrivate
+    @meta.todo("Make private")
+    width = 0;
+
+    @meta.float
+    @meta.isPrivate
+    @meta.todo("Make private")
+    height = 0;
+
+    @meta.boolean
+    @meta.isPrivate
+    @meta.todo("Make private")
+    hasDepth = false;
+
+    _id = util.generateID();
     _frameBuffer = null;
     _renderBuffer = null;
 
+    /**
+     * Checks if the render target is good
+     * @returns {null}
+     */
+    IsGood()
+    {
+        return this._frameBuffer && this._renderBuffer && this.texture;
+    }
 
     /**
      * Destroys the render target's webgl buffers and textures
      */
     Destroy()
     {
-        const gl = device.gl;
+        const { gl } = tw2.device;
 
         if (this.texture)
         {
@@ -51,6 +77,10 @@ export class Tw2RenderTarget
             gl.deleteFramebuffer(this._frameBuffer);
             this._frameBuffer = null;
         }
+
+        this.hasDepth = false;
+        this.width = 0;
+        this.height = 0;
     }
 
     /**
@@ -62,7 +92,7 @@ export class Tw2RenderTarget
      */
     Create(width, height, hasDepth)
     {
-        const gl = device.gl;
+        const { gl } = tw2.device;
 
         this.Destroy();
         this.texture = new Tw2TextureRes();
@@ -106,8 +136,9 @@ export class Tw2RenderTarget
      */
     Set()
     {
-        device.gl.bindFramebuffer(device.gl.FRAMEBUFFER, this._frameBuffer);
-        device.gl.viewport(0, 0, this.width, this.height);
+        const { gl } = tw2.device;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._frameBuffer);
+        gl.viewport(0, 0, this.width, this.height);
     }
 
     /**
@@ -115,8 +146,9 @@ export class Tw2RenderTarget
      */
     Unset()
     {
-        device.gl.bindFramebuffer(device.gl.FRAMEBUFFER, null);
-        device.gl.viewport(0, 0, device.viewportWidth, device.viewportHeight);
+        const { gl, viewportWidth, viewportHeight } = tw2.device;
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, viewportWidth, viewportHeight);
     }
 
 }

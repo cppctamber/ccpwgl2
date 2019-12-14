@@ -13,7 +13,7 @@ export * from "./value";
 export * from "./vertex";
 
 export * from "./Tr2DistanceTracker";
-export * from "./Tr2RuntimeInstanceData";
+export * from "./Tw2RuntimeInstanceData";
 export * from "./TriObserverLocal";
 export * from "./Tw2Error";
 export * from "./Tw2Frustum";

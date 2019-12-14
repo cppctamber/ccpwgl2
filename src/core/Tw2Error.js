@@ -1,4 +1,4 @@
-import { isFunction, isPlain, template } from "global/util";
+import { isFunction, template } from "global/util";
 
 const HAS_CAPTURE_STACK_TRACE = isFunction(Error["captureStackTrace"]);
 
@@ -8,7 +8,6 @@ const HAS_CAPTURE_STACK_TRACE = isFunction(Error["captureStackTrace"]);
  * @property {String} name    - The error's name
  * @property {String} message - The error's message
  * @property {Object} data    - Optional error data
- * @class
  */
 export class Tw2Error extends Error
 {
@@ -466,7 +465,7 @@ export class ErrAbstractMethod extends Tw2Error
 {
     constructor(data)
     {
-        super(data, "Abstract class method not implemented on child class (%method%)");
+        super(data, "Abstract class method not implemented on class '%class%': (%method%)");
     }
 }
 
