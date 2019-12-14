@@ -1,10 +1,7 @@
-import { util, Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 /**
  * Curve set
- * TODO: Implement useSimTimeRebase
- * TODO: Implement ranges - Are these read only or do they need to relate back to an AnimationRes some how?
- * @ccp TriCurveSet
  *
  * @property {Array.<Tw2ValueBinding>} bindings                             -
  * @property {Array.<Tw2Curve|Tw2CurveExpression|Tw2CurveSequencer>} curves -
@@ -15,19 +12,38 @@ import { util, Tw2BaseClass } from "global";
  * @property {Boolean} _isPlaying                                           -
  * @property {Number} _scaledTime                                           -
  */
+@meta.type("Tw2CurveSet", "TriCurveSet")
 export class Tw2CurveSet extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.list
     bindings = [];
+
+    @meta.black.list
     curves = [];
+
+    @meta.black.boolean
     playOnLoad = true;
+
+    @meta.notImplemented
+    @meta.black.list
     ranges = [];
+
+    @meta.black.float
     scale = 1;
+
+    @meta.notImplemented
     useSimTimeRebase = false;
 
+    @meta.float
     scaledTime = 0;         // Used in old models
+
+
     _isPlaying = false;
+
 
     /**
      * Initializes the Tw2CurveSet
@@ -122,24 +138,6 @@ export class Tw2CurveSet extends Tw2BaseClass
             }
         }
         return length;
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "bindings", r.array ],
-            [ "curves", r.array ],
-            [ "name", r.string ],
-            [ "playOnLoad", r.boolean ],
-            [ "ranges", r.array ],
-            [ "scale", r.float ],
-            [ "useSimTimeRebase", r.boolean ]
-        ];
     }
 
 }

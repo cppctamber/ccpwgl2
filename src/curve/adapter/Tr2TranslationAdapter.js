@@ -7,6 +7,8 @@ import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
  * @property {Tw2Curve} curve -
  * @property {vec3} value     -
  */
+@meta.notImplemented
+@meta.type("Tr2TranslationAdapter", true)
 export class Tr2TranslationAdapter extends Tw2CurveAdapter
 {
 

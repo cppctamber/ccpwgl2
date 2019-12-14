@@ -1,4 +1,4 @@
-import { quat, util, vec4, Tw2BaseClass } from "global";
+import { meta, vec4, Tw2BaseClass } from "global";
 import { Tw2Vector4Parameter } from "core/parameter";
 import { isArrayLike, isBoolean, isNumber } from "global/util";
 import { ErrBindingType, ErrBindingValueUndefined, ErrBindingReference } from "core/Tw2Error";
@@ -9,7 +9,6 @@ import { ErrBindingType, ErrBindingValueUndefined, ErrBindingReference } from "c
  * TODO: Looks like there are less swizzles than before, might be able to simplify this class (eg if v1,v2,v3,v4 gone)
  * TODO: Handle utility functions
  * TODO: Figure out a way of telling if a source/destination is RGBA when building from a UI rather than a swizzle
- * @ccp TriValueBinding
  *
  * @property {String} name                 -
  * @property {String} destinationAttribute -
@@ -26,17 +25,32 @@ import { ErrBindingType, ErrBindingValueUndefined, ErrBindingReference } from "c
  * @property {Boolean} _sourceIsArray      -
  * @property {Boolean} _sourceIsRGBA       -
  */
+@meta.type("Tw2ValueBinding", "TriValueBinding")
 export class Tw2ValueBinding extends Tw2BaseClass
 {
+
+    @meta.black.string
     name = "";
+
+    @meta.black.string
     destinationAttribute = "";
+
+    @meta.black.object
     destinationObject = null;
+
+    @meta.black.vector4
     offset = vec4.create();
+
+    @meta.black.float
     scale = 1;
+
+    @meta.black.string
     sourceAttribute = "";
+
+    @meta.black.object
     sourceObject = null;
 
-    // ccpwgl
+
     _copyFunc = null;
     _destinationElement = null;
     _destinationIsArray = null;
@@ -44,6 +58,7 @@ export class Tw2ValueBinding extends Tw2BaseClass
     _sourceElement = null;
     _sourceIsArray = null;
     _sourceIsRGBA = null;
+
 
     /**
      * Initializes the binding
@@ -566,21 +581,4 @@ export class Tw2ValueBinding extends Tw2BaseClass
         a.destinationObject[a.destinationAttribute] = a.sourceObject[a.sourceAttribute] ? 1 : 0;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "destinationObject", r.object ],
-            [ "destinationAttribute", r.string ],
-            [ "name", r.string ],
-            [ "offset", r.vector4 ],
-            [ "scale", r.float ],
-            [ "sourceObject", r.object ],
-            [ "sourceAttribute", r.string ]
-        ];
-    }
 }
