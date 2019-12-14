@@ -1,8 +1,8 @@
+import { meta } from "global";
 import { Tw2Curve } from "../curve/Tw2Curve";
 
 /**
  * Tw2CurveAdapter
- * @ccp n/a
  *
  * @property {String} name
  * @property {Tw2Curve} curve
@@ -11,8 +11,13 @@ import { Tw2Curve } from "../curve/Tw2Curve";
 export class Tw2CurveAdapter extends Tw2Curve
 {
 
+    @meta.string
     name = "";
+
+    @meta.object
     curve = null;
+
+    @meta.unknown
     value = null;
 
     /**

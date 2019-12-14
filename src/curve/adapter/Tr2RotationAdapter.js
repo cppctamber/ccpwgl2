@@ -1,15 +1,21 @@
 import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
-import { vec4 } from "global";
+import { meta, vec4 } from "global";
 
 /**
  * Tr2RotationAdapter
- * @ccp Tr2RotationAdapter
  *
- * @property {vec4} value - rotation
+ * @property {Tw2Curve} curve -
+ * @property {vec4} value     -
  */
+@meta.notImplemented
+@meta.type("Tr2RotationAdapter")
 export class Tr2RotationAdapter extends Tw2CurveAdapter
 {
 
+    @meta.black.object
+    curve = null;
+
+    @meta.black.vector4
     value = vec4.create();
 
     /**
@@ -32,24 +38,5 @@ export class Tr2RotationAdapter extends Tw2CurveAdapter
      * @type {number}
      */
     static outputDimension = 4;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "curve", r.object ],
-            [ "value", r.vector4 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

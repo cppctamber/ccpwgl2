@@ -1,16 +1,21 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
 
 /**
  * Tr2TranslationAdapter
- * @ccp Tr2TranslationAdapter
  *
- * @property {vec3} value - translation
+ * @property {Tw2Curve} curve -
+ * @property {vec3} value     -
  */
 export class Tr2TranslationAdapter extends Tw2CurveAdapter
 {
 
+    @meta.black.object
+    curve = null;
+
+    @meta.black.vector3
     value = vec3.create();
+
 
     /**
      * Gets value at a given time
@@ -32,24 +37,5 @@ export class Tr2TranslationAdapter extends Tw2CurveAdapter
      * @type {number}
      */
     static outputDimension = 3;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "curve", r.object ],
-            [ "value", r.vector3 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
