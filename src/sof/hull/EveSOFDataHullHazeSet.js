@@ -1,28 +1,17 @@
-/**
- * EveSOFDataHullHazeSet
- *
- * @property {String} name                             -
- * @property {Array.<EveSOFDataHullHazeSetItem>} items -
- * @property {Number} visibilityGroup                  -
- */
+import { meta } from "global/index";
+
+
+@meta.type("EveSOFDataHullHazeSet", true)
 export class EveSOFDataHullHazeSet
 {
 
+    @meta.black.string
     name = "";
-    items = [];
-    visibilityGroup = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "items", r.array ],
-            [ "name", r.string ],
-            [ "visibilityGroup", r.string ]
-        ];
-    }
+    @meta.black.listOf("EveSOFDataHullHazeSetItem")
+    items = [];
+
+    @meta.black.string
+    visibilityGroup = "";
+
 }

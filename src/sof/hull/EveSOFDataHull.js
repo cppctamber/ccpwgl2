@@ -1,132 +1,122 @@
-import { vec3, vec4 } from "global";
+import { meta, vec3, vec4 } from "global";
 
-/**
- * EveSOFDataHull
- *
- * @property {String} name                                        -
- * @property {Array.<EveSOFDataHullArea>} additiveAreas           -
- * @property {Array.<EveSOFDataHullAnimation>} animations         -
- * @property {vec3} audioPosition                                 -
- * @property {Array.<EveSOFDataHullBanner>} banners               -
- * @property {EveSOFDataHullBooster} booster                      -
- * @property {vec4} boundingSphere                                -
- * @property {Number} buildClass                                  -
- * @property {Boolean} castShadow                                 -
- * @property {String} category                                    -
- * @property {Array.<EveSOFDataHullChild>} children               -
- * @property {Array.<EveSOFDataHullController>} controllers       -
- * @property {Array.<EveSOFDataHullArea>} decalAreas              -
- * @property {Array.<EveSOFDataHullDecalSet>} decalSets           -
- * @property {EveSOFDataPatternPerHull} defaultPattern            -
- * @property {String} description                                 -
- * @property {Array.<EveSOFDataHullArea>} distortionAreas         -
- * @property {Boolean} enableDynamicBoundingSphere                -
- * @property {String} geometryResFilePath                         -
- * @property {Array.<EveSOFDataHullHazeSet>} hazeSets             -
- * @property {Array.<EveSOFDataHullDecalSet>} hullDecals          -
- * @property {Number} impactEffectType                            -
- * @property {Array.<EveSOFDataInstancedMesh>} instancedMeshes    -
- * @property {Boolean} isSkinned                                  -
- * @property {Array.<EveSOFDataHullLightSet>} lightSets           -
- * @property {Array.<EveSOFDataHullLocatorSet>} locatorSets       -
- * @property {Array.<EveSOFDataHullLocator>} locatorTurrets       -
- * @property {String} modelRotationCurvePath                      -
- * @property {Array.<EveSOFDataHullArea>} opaqueAreas             -
- * @property {Array.<EveSOFDataHullPlaneSet>} planeSets           -
- * @property {vec3} shapeEllipsoidCenter                          -
- * @property {vec3} shapeEllipsoidRadius                          -
- * @property {Array.<EveSOFDataHullSoundEmitter>} soundEmitters   -
- * @property {Array.<EveSOFDataHullSpotlightSet>} spotlightSets   -
- * @property {Array.<EveSOFDataHullSpriteLineSet>} spriteLineSets -
- * @property {Array.<EveSOFDataHullSpriteSet>} spriteSets         -
- * @property {Array.<EveSOFDataHullArea>} transparentAreas        -
- */
+
+@meta.type("EveSOFDataHull", true)
 export class EveSOFDataHull
 {
+
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("EveSOFDataHullArea")
     additiveAreas = [];
+
+    @meta.black.listOf("EveSOFDataHullAnimation")
     animations = [];
+
+    @meta.black.vector3
     audioPosition = vec3.create();
+
+    @meta.black.listOf("EveSOFDataHullBanner")
     banners = [];
+
+    @meta.black.objectOf("EveSOFDataHullBooster")
     booster = null;
+
+    @meta.black.vector4
     boundingSphere = vec4.create();
+
+    @meta.black.uint
     buildClass = 0;
+
+    @meta.black.boolean
     castShadow = false;
+
+    @meta.black.string
     category = "";
+
+    @meta.black.listOf("EveSOFDataHullChild")
     children = [];
+
+    @meta.black.listOf("EveSOFDataHullController")
     controllers = [];
+
+    @meta.black.listOf("EveSOFDataHullArea")
     decalAreas = [];
+
+    @meta.black.listOf("EveSOFDataHullDecalSet")
     decalSets = [];
+
+    @meta.black.objectOf("EveSOFDataPatternPerHull")
     defaultPattern = null;
+
+    @meta.black.listOf("EveSOFDataHullArea")
+    depthAreas = [];
+
+    @meta.black.string
     description = "";
+
+    @meta.black.listOf("EveSOFDataHullArea")
     distortionAreas = [];
+
+    @meta.black.boolean
     enableDynamicBoundingSphere = false;
+
+    @meta.black.path
     geometryResFilePath = "";
+
+    @meta.black.listOf("EveSOFDataHullHazeSet")
     hazeSets = [];
+
+    @meta.black.listOf("EveSOFDataHullDecalSet")
     hullDecals = [];
+
+    @meta.black.uint
     impactEffectType = 0;
+
+    @meta.black.listOf("EveSOFDataInstancedMesh")
     instancedMeshes = [];
+
+    @meta.black.boolean
     isSkinned = false;
+
+    @meta.black.listOf("EveSOFDataHullLightSet")
     lightSets = [];
+
+    @meta.black.listOf("EveSOFDataHullLocatorSet")
     locatorSets = [];
+
+    @meta.black.listOf("EveSOFDataHullLocator")
     locatorTurrets = [];
+
+    @meta.black.path
     modelRotationCurvePath = "";
+
+    @meta.black.listOf("EveSOFDataHullArea")
     opaqueAreas = [];
+
+    @meta.black.listOf("EveSOFDataHullPlaneSet")
     planeSets = [];
+
+    @meta.black.vector3
     shapeEllipsoidCenter = vec3.create();
+
+    @meta.black.vector3
     shapeEllipsoidRadius = vec3.create();
+
+    @meta.black.listOf("EveSOFDataHullSoundEmitter")
     soundEmitters = [];
+
+    @meta.black.listOf("EveSOFDataHullSpotlightSet")
     spotlightSets = [];
+
+    @meta.black.listOf("EveSOFDataHullSpriteLineSet")
     spriteLineSets = [];
+
+    @meta.black.listOf("EveSOFDataHullSpriteSet")
     spriteSets = [];
+
+    @meta.black.listOf("EveSOFDataHullArea")
     transparentAreas = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "additiveAreas", r.array ],
-            [ "animations", r.array ],
-            [ "audioPosition", r.vector3 ],
-            [ "banners", r.array ],
-            [ "booster", r.object ],
-            [ "boundingSphere", r.vector4 ],
-            [ "buildClass", r.uint ],
-            [ "castShadow", r.boolean ],
-            [ "category", r.string ],
-            [ "children", r.array ],
-            [ "controllers", r.array ],
-            [ "decalAreas", r.array ],
-            [ "decalSets", r.array ],
-            [ "defaultPattern", r.object ],
-            [ "depthAreas", r.array ],
-            [ "description", r.string ],
-            [ "distortionAreas", r.array ],
-            [ "enableDynamicBoundingSphere", r.boolean ],
-            [ "geometryResFilePath", r.path ],
-            [ "hazeSets", r.array ],
-            [ "hullDecals", r.array ],
-            [ "impactEffectType", r.uint ],
-            [ "instancedMeshes", r.array ],
-            [ "isSkinned", r.boolean ],
-            [ "lightSets", r.array ],
-            [ "locatorSets", r.array ],
-            [ "locatorTurrets", r.array ],
-            [ "name", r.string ],
-            [ "opaqueAreas", r.array ],
-            [ "planeSets", r.array ],
-            [ "modelRotationCurvePath", r.string ],
-            [ "shapeEllipsoidCenter", r.vector3 ],
-            [ "shapeEllipsoidRadius", r.vector3 ],
-            [ "soundEmitters", r.array ],
-            [ "spotlightSets", r.array ],
-            [ "spriteLineSets", r.array ],
-            [ "spriteSets", r.array ],
-            [ "transparentAreas", r.array ],
-        ];
-    }
 }

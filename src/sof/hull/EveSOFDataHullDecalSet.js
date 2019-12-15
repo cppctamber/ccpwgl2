@@ -1,29 +1,17 @@
-/**
- * EveSOFDataHullDecalSet
- * @ccp EveSOFDataHullDecalSet
- *
- * @property {String} name
- * @property {Array<EveSOFDataHullDecalSetItem>} items
- * @property {String} visibilityGroup
- */
+import { meta } from "global/index";
+
+
+@meta.type("EveSOFDataHullDecalSet", true)
 export class EveSOFDataHullDecalSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("EveSOFDataHullDecalSetItem")
     items = [];
+
+    @meta.black.string
     visibilityGroup = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "items", r.array ],
-            [ "visibilityGroup", r.string ]
-        ];
-    }
 }

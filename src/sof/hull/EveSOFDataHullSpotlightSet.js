@@ -1,37 +1,26 @@
-/**
- * EveSOFDataHullSpotlightSet
- *
- * @property {String} name                                  -
- * @property {String} coneTextureResPath                    -
- * @property {String} glowTextureResPath                    -
- * @property {Array.<EveSOFDataHullSpotlightSetItem>} items -
- * @property {Boolean} skinned                              -
- * @property {Number} zOffset                               -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataHullSpotlightSet", true)
 export class EveSOFDataHullSpotlightSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.path
     coneTextureResPath = "";
+
+    @meta.black.path
     glowTextureResPath = "";
+
+    @meta.black.listOf("EveSOFDataHullSpotlightSetItem")
     items = [];
+
+    @meta.black.boolean
     skinned = false;
+
+    @meta.black.float
     zOffset = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "coneTextureResPath", r.path ],
-            [ "glowTextureResPath", r.path ],
-            [ "items", r.array ],
-            [ "name", r.string ],
-            [ "skinned", r.boolean ],
-            [ "zOffset", r.float ]
-        ];
-    }
 }

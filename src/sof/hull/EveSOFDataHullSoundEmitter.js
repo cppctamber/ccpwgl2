@@ -1,25 +1,14 @@
-/**
- * EveSOFDataHullSoundEmitter
- *
- * @property {String} name   -
- * @property {String} prefix -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataHullSoundEmitter", true)
 export class EveSOFDataHullSoundEmitter
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.string
     prefix = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "prefix", r.string ]
-        ];
-    }
 }

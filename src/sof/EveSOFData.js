@@ -4,7 +4,8 @@ import {
     ErrSOFHullNotFound,
     ErrSOFMaterialNotFound,
     ErrSOFPatternNotFound,
-    ErrSOFRaceNotFound
+    ErrSOFRaceNotFound,
+    Tw2Effect
 } from "core";
 
 /**
@@ -32,7 +33,7 @@ export class EveSOFData
      */
     Initialize()
     {
-        /*
+
         this._spriteEffect = Tw2Effect.from({
             effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
             parameters: {
@@ -42,7 +43,7 @@ export class EveSOFData
         });
 
         this._bannerEffect = this.generic.CreateEffect(this.generic.bannerShader);
-        */
+
     }
 
     /**

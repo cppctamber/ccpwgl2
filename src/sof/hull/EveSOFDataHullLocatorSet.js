@@ -1,25 +1,14 @@
-/**
- * EveSOFDataHullLocatorSet
- *
- * @property {String} name                          -
- * @property {Array.<EveSOFDataTransform>} locators -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataHullLocatorSet", true)
 export class EveSOFDataHullLocatorSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("EveSOFDataTransform")
     locators = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "locators", r.array ]
-        ];
-    }
 }

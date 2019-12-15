@@ -1,28 +1,14 @@
-import { mat4 } from "global";
+import { meta, mat4 } from "global";
 
 
-/**
- * EveSOFDataHullLocator
- *
- * @property {String} name    -
- * @property {mat4} transform -
- */
+@meta.type("EveSOFDataHullLocator", true)
 export class EveSOFDataHullLocator
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.matrix4
     transform = mat4.create();
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "transform", r.matrix ]
-        ];
-    }
 }

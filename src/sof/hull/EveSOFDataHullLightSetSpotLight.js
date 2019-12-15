@@ -1,49 +1,35 @@
-import { vec3, vec4, quat } from "global";
+import { meta, vec3, vec4, quat } from "global";
 
-/**
- * EveSOFDataHullLightSetSpotLight
- * @ccp EveSOFDataHullLightSetSpotLight
- *
- * @property {String} name
- * @property {Number} brightness
- * @property {Number} innerAngle
- * @property {Number} innerRadius
- * @property {vec4} lightColor
- * @property {Number} outerAngle
- * @property {vec3} position
- * @property {Number} radius
- * @property {quat} rotation
- */
+
+@meta.type("EveSOFDataHullLightSetSpotLight", true)
 export class EveSOFDataHullLightSetSpotLight
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     brightness = 0;
+
+    @meta.black.float
     innerAngle = 0;
+
+    @meta.black.float
     innerRadius = 0;
+
+    @meta.black.color
     lightColor = vec4.create();
+
+    @meta.black.float
     outerAngle = 0;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.uint
     radius = 0;
+
+    @meta.black.quaternion
     rotation = quat.create();
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "brightness", r.float ],
-            [ "innerAngle", r.float ],
-            [ "innerRadius", r.float ],
-            [ "lightColor", r.color ],
-            [ "outerAngle", r.float ],
-            [ "position", r.vector3 ],
-            [ "radius", r.uint ],
-            [ "rotation", r.vector4 ]
-        ];
-    }
 }

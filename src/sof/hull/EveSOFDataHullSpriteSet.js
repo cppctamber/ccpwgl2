@@ -1,31 +1,20 @@
-/**
- * EveSOFDataHullSpriteSet
- *
- * @property {String} name                               -
- * @property {Array.<EveSOFDataHullSpriteSetItem>} items -
- * @property {Boolean} skinned                           -
- * @property {String} visibilityGroup                    -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataHullSpriteSet", true)
 export class EveSOFDataHullSpriteSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("EveSOFDataHullSpriteSetItem")
     items = [];
+
+    @meta.black.boolean
     skinned = false;
+
+    @meta.black.string
     visibilityGroup = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "items", r.array ],
-            [ "skinned", r.boolean ],
-            [ "visibilityGroup", r.string ]
-        ];
-    }
 }

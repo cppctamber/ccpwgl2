@@ -1,44 +1,32 @@
-/**
- * EveSOFDataHullPlaneSet
- *
- * @property {String} name                              -
- * @property {Number} atlasSize                         -
- * @property {Array.<EveSOFDataHullPlaneSetItem>} items -
- * @property {String} layer1MapResPath                  -
- * @property {String} layer2MapResPath                  -
- * @property {String} maskMapResPath                    -
- * @property {Boolean} skinned                          -
- * @property {Number} usage                             -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataHullPlaneSet", true)
 export class EveSOFDataHullPlaneSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.uint
     atlasSize = 0;
+
+    @meta.black.listOf("EveSOFDataHullPlaneSetItem")
     items = [];
+
+    @meta.black.path
     layer1MapResPath = "";
+
+    @meta.black.path
     layer2MapResPath = "";
+
+    @meta.black.path
     maskMapResPath = "";
+
+    @meta.black.boolean
     skinned = false;
+
+    @meta.black.uint
     usage = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "atlasSize", r.uint ],
-            [ "items", r.array ],
-            [ "layer1MapResPath", r.path ],
-            [ "layer2MapResPath", r.path ],
-            [ "maskMapResPath", r.path ],
-            [ "name", r.string ],
-            [ "planeData", r.vector4 ],
-            [ "skinned", r.boolean ],
-            [ "usage", r.uint ]
-        ];
-    }
 }

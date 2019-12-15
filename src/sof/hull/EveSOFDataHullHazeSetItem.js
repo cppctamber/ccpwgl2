@@ -1,49 +1,35 @@
-import { quat, vec3 } from "global";
+import { meta, quat, vec3 } from "global";
 
 
-/**
- * EveSOFDataHullHazeSetItem
- *
- * @property {Boolean} boosterGainInfluence -
- * @property {Number} colorType             -
- * @property {Number} hazeBrightness        -
- * @property {Number} hazeFalloff           -
- * @property {vec3} position                -
- * @property {quat} rotation                -
- * @property {vec3} scaling                 -
- * @property {Number} sourceBrightness      -
- * @property {Number} sourceSize            -
- */
+@meta.type("EveSOFDataHullHazeSetItem", true)
 export class EveSOFDataHullHazeSetItem
 {
 
+    @meta.black.boolean
     boosterGainInfluence = false;
+
+    @meta.black.uint
     colorType = 0;
+
+    @meta.black.float
     hazeBrightness = 0;
+
+    @meta.black.float
     hazeFalloff = 0;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.float
     sourceBrightness = 0;
+
+    @meta.black.float
     sourceSize = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boosterGainInfluence", r.boolean ],
-            [ "colorType", r.uint ],
-            [ "hazeBrightness", r.float ],
-            [ "hazeFalloff", r.float ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "sourceBrightness", r.float ],
-            [ "sourceSize", r.float ],
-        ];
-    }
 }

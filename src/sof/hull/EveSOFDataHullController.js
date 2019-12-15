@@ -1,22 +1,11 @@
-/**
- * EveSOFDataHullController
- *
- * @property {String} path -
- */
+import { meta } from "global/index";
+
+
+@meta.type("EveSOFDataHullController", true)
 export class EveSOFDataHullController
 {
 
+    @meta.black.path
     path = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "path", r.path ],
-        ];
-    }
 }

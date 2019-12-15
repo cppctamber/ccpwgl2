@@ -1,46 +1,32 @@
-import { mat4, vec3 } from "global";
+import { meta, mat4, vec3 } from "global";
 
 
-/**
- * EveSOFDataHullSpotlightSetItem
- *
- * @property {Number} boneIndex             -
- * @property {Boolean} boosterGainInfluence -
- * @property {Number} coneIntensity         -
- * @property {Number} flareIntensity        -
- * @property {Number} groupIndex            -
- * @property {Number} spriteIntensity       -
- * @property {vec3} spriteScale             -
- * @property {mat4} transform               -
- */
+@meta.type("EveSOFDataHullSpotlightSetItem", true)
 export class EveSOFDataHullSpotlightSetItem
 {
 
+    @meta.black.uint
     boneIndex = -1;
+
+    @meta.black.boolean
     boosterGainInfluence = false;
+
+    @meta.black.float
     coneIntensity = 0;
+
+    @meta.black.float
     flareIntensity = 0;
+
+    @meta.black.uint
     groupIndex = -1;
+
+    @meta.black.float
     spriteIntensity = 0;
+
+    @meta.black.vector3
     spriteScale = vec3.fromValues(1, 1, 1);
+
+    @meta.black.matrix4
     transform = mat4.create();
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boneIndex", r.uint ],
-            [ "boosterGainInfluence", r.boolean ],
-            [ "coneIntensity", r.float ],
-            [ "flareIntensity", r.float ],
-            [ "groupIndex", r.uint ],
-            [ "spriteScale", r.vector3 ],
-            [ "spriteIntensity", r.float ],
-            [ "transform", r.matrix ]
-        ];
-    }
 }

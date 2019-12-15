@@ -1,61 +1,47 @@
-import { vec3, quat } from "global";
+import { vec3, quat, meta } from "global";
 
 
-/**
- * EveSOFDataHullDecalSetItem
- * @ccp EveSOFDataHullDecalSetItem
- *
- * @property {String} name
- * @property {Number} boneIndex
- * @property {Number[]} indexBuffer
- * @property {Number} glowColorType
- * @property {Number} logoType
- * @property {Number} meshIndex
- * @property {Array<EveSOFDataParameter>} parameters
- * @property {vec3} position
- * @property {quat} rotation
- * @property {vec3} scaling
- * @property {Array<EveSOFDataTexture>} texture
- * @property {String} visibilityGroup
- */
+@meta.type("EveSOFDataHullDecalSetItem", true)
 export class EveSOFDataHullDecalSetItem
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.uint
     boneIndex = -1;
+
+    @meta.black.indexBuffer
     indexBuffer = [];
+
+    @meta.black.uint
     glowColorType = 0;
+
+    @meta.black.uint
     logoType = 0;
+
+    @meta.black.uint
     meshIndex = 0;
+
+    @meta.black.listOf("EveSOFDataParameter")
     parameters = [];
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.listOf("EveSOFDataTexture")
     textures = [];
+
+    @meta.black.uint
     usage = 0;
+
+    @meta.black.string
     visibilityGroup = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "boneIndex", r.uint ],
-            [ "indexBuffer", r.indexBuffer ],
-            [ "glowColorType", r.uint ],
-            [ "logoType", r.uint ],
-            [ "meshIndex", r.uint ],
-            [ "parameters", r.array ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "textures", r.array ],
-            [ "usage", r.uint ],
-            [ "visibilityGroup", r.string ],
-        ];
-    }
 }

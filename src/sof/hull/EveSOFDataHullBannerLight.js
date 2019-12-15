@@ -1,18 +1,9 @@
-/**
- * EveSOFDataHullBannerLight
- */
+import { meta } from "global";
+
+@meta.type("EveSOFDataHullBannerLight", true)
+@meta.data("black")
 export class EveSOFDataHullBannerLight
 {
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [];
-    }
 
 }
 

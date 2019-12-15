@@ -1,45 +1,32 @@
-import { vec3, vec4 } from "global";
+import { meta, vec3, vec4 } from "global";
 
 
-/**
- * EveSOFDataHullLightSetItem
- * @ccp EveSOFDataHullLightSetItem
- *
- * @property {String} name
- * @property {Number} brightness
- * @property {Number} innerRadius
- * @property {vec4} lightColor
- * @property {vec3} position
- * @property {Number} radius
- */
+@meta.type("EveSOFDataHullLightSetItem", true)
 export class EveSOFDataHullLightSetItem
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     brightness = 0;
+
+    @meta.black.float
     innerRadius = 0;
+
+    @meta.black.color
     lightColor = vec4.create();
+
+    @meta.black.float
     noiseAmplitude = 0;
+
+    @meta.black.float
     noiseFrequency = 0;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.float
     radius = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "brightness", r.float ],
-            [ "innerRadius", r.float ],
-            [ "lightColor", r.vector4 ],
-            [ "noiseAmplitude", r.float ],
-            [ "noiseFrequency", r.float ],
-            [ "position", r.vector3 ],
-            [ "radius", r.float ],
-        ];
-    }
 }

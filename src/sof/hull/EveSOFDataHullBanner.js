@@ -1,50 +1,38 @@
-import { quat, vec3 } from "global";
+import { meta, quat, vec3 } from "global";
 
 
-/**
- * EveSOFDataHullBanner
- *
- * @property {String} name      -
- * @property {Number} angleX    -
- * @property {Number} angleY    -
- * @property {Number} boneIndex -
- * @property {*} lightOverride  -
- * @property {vec3} position    -
- * @property {quat} rotation    -
- * @property {vec3} scaling     -
- * @property {Number} usage     -
- */
+@meta.type("EveSOFDataHullBanner", true)
 export class EveSOFDataHullBanner
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     angleX = 0;
+
+    @meta.black.float
     angleY = 0;
+
+    @meta.black.float
+    angleZ = 0;
+
+    @meta.black.uint
     boneIndex = -1;
+
+    @meta.black.object
     lightOverride = null;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.uint
     usage = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "angleX", r.float ],
-            [ "angleY", r.float ],
-            [ "angleZ", r.float ],
-            [ "boneIndex", r.uint ],
-            [ "lightOverride", r.object ],
-            [ "name", r.string ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "usage", r.uint ]
-        ];
-    }
 }

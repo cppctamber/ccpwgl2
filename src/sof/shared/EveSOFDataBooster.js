@@ -75,7 +75,7 @@ export class EveSOFDataBooster
     warpGlowColor = vec4.create();
 
     @meta.black.color
-    warpHaloColor = vec4.create();
+    warpHalpColor = vec4.create();
 
     @meta.black.objectOf("EveSOFDataBoosterShape")
     warpShape0 = null;
@@ -84,21 +84,21 @@ export class EveSOFDataBooster
     warpShape1 = null;
 
     /**
-     * Alias for `warpHaloColor` (ccp typo)
+     * Alias for `warpHalpColor` (ccp typo)
      * @returns {vec4}
      */
-    get warpHalpColor()
+    get warpHaloColor()
     {
-        return this.warpHaloColor;
+        return this.warpHalpColor;
     }
 
     /**
-     * Alias for `warpHaloColor` (ccp typo)
+     * Alias for `warpHalpColor` (ccp typo)
      * @param {vec4} v
      */
-    set warpHalpColor(v)
+    set warpHaloColor(v)
     {
-        this.warpHaloColor = v;
+        this.warpHalpColor = v;
     }
 
 }

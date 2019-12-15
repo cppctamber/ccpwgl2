@@ -1,28 +1,17 @@
-/**
- * EveSOFDataHullBooster
- *
- * @property {Boolean} alwaysOn                        -
- * @property {Boolean} hasTrails                       -
- * @property {Array.<EveSOFDataHullBoosterItem>} items -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataHullBooster", true)
 export class EveSOFDataHullBooster
 {
 
+    @meta.black.boolean
     alwaysOn = false;
+
+    @meta.black.boolean
     hasTrails = false;
+
+    @meta.black.listOf("EveSOFDataHullBoosterItem")
     items = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "alwaysOn", r.boolean ],
-            [ "hasTrails", r.boolean ],
-            [ "items", r.array ]
-        ];
-    }
 }

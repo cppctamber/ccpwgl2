@@ -1,65 +1,53 @@
-import { quat, vec3 } from "global";
+import { meta, quat, vec3 } from "global";
 
 
-/**
- * EveSOFDataHullSpriteLineSetItem
- *
- * @property {Number} blinkPhase      -
- * @property {Number} blinkPhaseShift -
- * @property {Number} blinkRate       -
- * @property {Number} boneIndex       -
- * @property {Number} colorType       -
- * @property {Number} falloff         -
- * @property {Number} intensity       -
- * @property {Boolean} isCircle       -
- * @property {Number} maxScale        -
- * @property {Number} minScale        -
- * @property {vec3} position          -
- * @property {quat} rotation          -
- * @property {vec3} scaling           -
- * @property {Number} spacing         -
- */
+@meta.type("EveSOFDataHullSpriteLineSetItem", true)
 export class EveSOFDataHullSpriteLineSetItem
 {
 
+    @meta.black.float
     blinkPhase = 0;
+
+    @meta.black.float
     blinkPhaseShift = 0;
+
+    @meta.black.float
     blinkRate = 0;
+
+    @meta.black.uint
     boneIndex = -1;
+
+    @meta.black.uint
     colorType = 0;
+
+    @meta.black.float
     falloff = 0;
+
+    @meta.black.uint
+    groupIndex = -1;
+
+    @meta.black.float
     intensity = 0;
+
+    @meta.black.boolean
     isCircle = false;
+
+    @meta.black.float
     maxScale = 0;
+
+    @meta.black.float
     minScale = 0;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.float
     spacing = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "blinkRate", r.float ],
-            [ "blinkPhase", r.float ],
-            [ "blinkPhaseShift", r.float ],
-            [ "boneIndex", r.uint ],
-            [ "colorType", r.uint ],
-            [ "falloff", r.float ],
-            [ "groupIndex", r.uint ],
-            [ "intensity", r.float ],
-            [ "isCircle", r.boolean ],
-            [ "maxScale", r.float ],
-            [ "minScale", r.float ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "spacing", r.float ]
-        ];
-    }
 }

@@ -1,39 +1,26 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 
-/**
- * EveSOFDataHullLightSetTexturedPointLight
- * @ccp EveSOFDataHullLightSetTexturedPointLight
- *
- * @property {String} name
- * @property {Number} brightness
- * @property {vec3} position
- * @property {Number} radius
- * @property {String} texturePath
- */
+
+@meta.type("EveSOFDataHullLightSetTexturedPointLight", true)
 export class EveSOFDataHullLightSetTexturedPointLight
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     brightness = 0;
+
+    @meta.black.float
     innerRadius = 0;
+
+    @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.float
     radius = 0;
+
+    @meta.black.path
     texturePath = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "brightness", r.float ],
-            [ "innerRadius", r.float ],
-            [ "position", r.vector3 ],
-            [ "radius", r.float ],
-            [ "texturePath", r.path ]
-        ];
-    }
 }

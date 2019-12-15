@@ -1,50 +1,38 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 
 
-/**
- * EveSOFDataHullSpriteSetItem
- *
- * @property {Number} blinkPhase -
- * @property {Number} blinkRate  -
- * @property {Number} boneIndex  -
- * @property {Number} colorType  -
- * @property {Number} falloff    -
- * @property {Number} intensity  -
- * @property {Number} maxScale   -
- * @property {Number} minScale   -
- * @property {vec3} position     -
- */
+@meta.type("EveSOFDataHullSpriteSetItem", true)
 export class EveSOFDataHullSpriteSetItem
 {
 
+    @meta.black.float
     blinkPhase = 0;
+
+    @meta.black.float
     blinkRate = 0;
+
+    @meta.black.uint
     boneIndex = -1;
+
+    @meta.black.uint
     colorType = 0;
+
+    @meta.black.float
     falloff = 0;
+
+    @meta.black.uint
+    groupIndex = -1;
+
+    @meta.black.float
     intensity = 0;
+
+    @meta.black.float
     maxScale = 0;
+
+    @meta.black.float
     minScale = 0;
+
+    @meta.black.vector3
     position = vec3.create();
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "blinkRate", r.float ],
-            [ "blinkPhase", r.float ],
-            [ "boneIndex", r.uint ],
-            [ "colorType", r.uint ],
-            [ "falloff", r.float ],
-            [ "groupIndex", r.uint ],
-            [ "intensity", r.float ],
-            [ "maxScale", r.float ],
-            [ "minScale", r.float ],
-            [ "position", r.vector3 ]
-        ];
-    }
 }

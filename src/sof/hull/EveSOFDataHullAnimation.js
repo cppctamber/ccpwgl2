@@ -1,46 +1,32 @@
-import { quat } from "global";
+import { meta, quat } from "global";
 
 
-/**
- * EveSOFDataHullAnimation
- *
- * @property {String} name              -
- * @property {Number} endRate           -
- * @property {Number} endRotationTime   -
- * @property {quat} endRotationValue    -
- * @property {Number} id                -
- * @property {Number} startRate         -
- * @property {Number} startRotationTime -
- * @property {quat} startRotationValue  -
- */
+@meta.type("EveSOFDataHullAnimation", true)
 export class EveSOFDataHullAnimation
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     endRate = 0;
+
+    @meta.black.float
     endRotationTime = 0;
+
+    @meta.black.quaternion
     endRotationValue = quat.create();
+
+    @meta.black.uint
     id = 0;
+
+    @meta.black.float
     startRate = 0;
+
+    @meta.black.float
     startRotationTime = 0;
+
+    @meta.black.quaternion
     startRotationValue = quat.create();
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "endRate", r.float ],
-            [ "endRotationTime", r.float ],
-            [ "endRotationValue", r.vector4 ],
-            [ "id", r.uint ],
-            [ "name", r.string ],
-            [ "startRate", r.float ],
-            [ "startRotationTime", r.float ],
-            [ "startRotationValue", r.vector4 ]
-        ];
-    }
 }
