@@ -1,9 +1,8 @@
-import { vec3, vec4, Tw2BaseClass } from "global";
+import { meta, vec3, vec4, Tw2BaseClass } from "global";
+
 
 /**
  * EveSpherePin
- * @ccp EveSpherePin
- * TODO: Implement
  *
  * @property {String} name                   -
  * @property {vec3} centerNormal             -
@@ -18,49 +17,45 @@ import { vec3, vec4, Tw2BaseClass } from "global";
  * @property {Number} pinRotation            -
  * @property {Number} sortValueMultiplier    -
  */
+@meta.notImplemented
+@meta.type("EveSpherePin", true)
 export class EveSpherePin extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.vector3
     centerNormal = vec3.create();
+
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.list
     curveSets = [];
+
+    @meta.black.boolean
     enablePicking = false;
+
+    @meta.black.path
     geometryResPath = "";
+
+    @meta.black.color
     pinColor = vec4.create();
+
+    @meta.black.object
     pinEffect = null;
+
+    @meta.black.float
     pinMaxRadius = 0;
+
+    @meta.black.float
     pinRadius = 0;
+
+    @meta.black.float
     pinRotation = 0;
+
+    @meta.black.float
     sortValueMultiplier = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "centerNormal", r.vector3 ],
-            [ "color", r.color ],
-            [ "curveSets", r.array ],
-            [ "enablePicking", r.boolean ],
-            [ "geometryResPath", r.path ],
-            [ "name", r.string ],
-            [ "pinColor", r.color ],
-            [ "pinEffect", r.object ],
-            [ "pinMaxRadius", r.float ],
-            [ "pinRadius", r.float ],
-            [ "pinRotation", r.float ],
-            [ "sortValueMultiplier", r.float ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

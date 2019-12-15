@@ -1,9 +1,8 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * EveTacticalOverlay
- * @ccp EveTacticalOverlay
- * TODO: Implement
  *
  * @property {Tw2Effect} anchorEffect      -
  * @property {Number} arcSegmentMultiplier -
@@ -14,41 +13,33 @@ import { Tw2BaseClass } from "global";
  * @property {Number} targetMaxSegments    -
  * @property {Tw2Effect} velocityEffect    -
  */
+@meta.notImplemented
+@meta.type("EveTacticalOverlay", true)
 export class EveTacticalOverlay extends Tw2BaseClass
 {
 
+    @meta.black.object
     anchorEffect = null;
+
+    @meta.black.float
     arcSegmentMultiplier = 0;
+
+    @meta.black.object
     connectorEffect = null;
+
+    @meta.black.float
     segmentsHigh = 0;
+
+    @meta.black.float
     segmentsLow = 0;
+
+    @meta.black.float
     segmentsMedium = 0;
+
+    @meta.black.float
     targetMaxSegments = 0;
+
+    @meta.black.object
     velocityEffect = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "anchorEffect", r.object ],
-            [ "arcSegmentMultiplier", r.float ],
-            [ "connectorEffect", r.object ],
-            [ "segmentsLow", r.float ],
-            [ "segmentsMedium", r.float ],
-            [ "segmentsHigh", r.float ],
-            [ "targetMaxSegments", r.float ],
-            [ "velocityEffect", r.object ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

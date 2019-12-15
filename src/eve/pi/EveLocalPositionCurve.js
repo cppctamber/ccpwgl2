@@ -1,33 +1,17 @@
-import { vec3, Tw2BaseClass } from "global";
+import { meta, vec3, Tw2BaseClass } from "global";
+
 
 /**
  * EveLocalPositionCurve
- * @ccp EveLocalPositionCurve
- * TODO: Implement
  *
  * @property {vec3} value -
  */
+@meta.notImplemented
+@meta.type("EveLocalPositionCurve", true)
 export class EveLocalPositionCurve extends Tw2BaseClass
 {
 
+    @meta.black.vector3
     value = vec3.create();
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "value", r.vector3 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 3;
 
 }

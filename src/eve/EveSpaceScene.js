@@ -1,25 +1,12 @@
-import { vec3, vec4, quat, mat4, util, device, resMan, tw2, Tw2BaseClass } from "global";
-import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess } from "core";
+import { meta, vec3, vec4, quat, mat4, device, resMan, tw2, Tw2BaseClass } from "global";
+import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tr2PostProcess } from "core";
+
 
 /**
  * EveSpaceScene
- * TODO: Identify where to set "shadowFadeThreshold" in ps frame data
- * TODO: Identify where to set "shadowThreshold" in ps frame data
- * TODO: Identify if/where/how to set "enableShadows" in ps frame data
- * TODO: Identify if/where/how to set "selfShadowOnly" in ps frame data
- * TODO: Identify if shadows require their own render mode and render batch accumulation
- * TODO: Implement "externalParameters"
- * TODO: Implement "selfShadowOnly"
- * TODO: Implement "shLightingManager"
- * TODO: Implement "shadowFadeThreshold"
- * TODO: Implement "shadowThreshold"
- * TODO: Implement "starField"
- * TODO: Implement "sunDiffuseColorWithDynamicLights"
- * TODO: Implement "postProcess"
- * @ccp EveSpaceScene
  *
  * @property {vec4} ambientColor                                                     -
- * @property {Tr2Effect} backgroundEffect                                            -
+ * @property {Tw2Effect} backgroundEffect                                            -
  * @property {Array.<EveObject>} backgroundObjects                                   -
  * @property {Boolean} backgroundRenderingEnabled                                    -
  * @property {Array.<Tw2CurveSet>} curveSets                                         -
@@ -65,48 +52,136 @@ import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tw2Effect, Tr2PostProcess 
  * @property {Tw2TextureRes} _envMap1Res
  * @property {Tw2TextureRes} _envMap1Res
  */
+@meta.type("EveSpaceScene", true)
 export class EveSpaceScene extends Tw2BaseClass
 {
-    // ccp
+
+    @meta.black.color
     ambientColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
+
+    @meta.black.object
     backgroundEffect = null;
+
+    @meta.black.list
     backgroundObjects = [];
+
+    @meta.black.boolean
     backgroundRenderingEnabled = true;
+
+    @meta.black.list
     curveSets = [];
+
+    @meta.notImplemented
+    @meta.black.boolean
     enableShadows = false;
+
+    @meta.black.path
     envMap1ResPath = "";
+
+    @meta.black.path
     envMap2ResPath = "";
+
+    @meta.black.path
     envMapResPath = "";
+
+    @meta.black.quaternion
     envMapRotation = quat.create();
+
+    @meta.notImplemented
+    @meta.black.list
     externalParameters = [];
+
+    @meta.black.color
     fogColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
+
+    @meta.black.float
     fogEnd = 0;
+
+    @meta.black.float
     fogMax = 0;
+
+    @meta.black.float
     fogStart = 0;
+
+    @meta.black.float
     nebulaIntensity = 1;
+
+    @meta.black.list
     objects = [];
+
+    @meta.black.path
     postProcessPath = "";
+
+    @meta.notImplemented
+    @meta.black.boolean
     selfShadowOnly = false;
+
+    @meta.notImplemented
+    @meta.black.object
     shLightingManager = null;
+
+    @meta.notImplemented
+    @meta.black.float
+    @meta.todo("Identify ps/vs frame data")
     shadowFadeThreshold = 0;
+
+    @meta.notImplemented
+    @meta.black.float
+    @meta.todo("Identify ps/vs frame data")
     shadowThreshold = 0;
+
+    @meta.notImplemented
+    @meta.black.object
     starfield = null;
+
+    @meta.black.color
     sunDiffuseColor = vec4.fromValues(1, 1, 1, 1);
+
+    @meta.notImplemented
+    @meta.black.color
     sunDiffuseColorWithDynamicLights = vec4.fromValues(1, 1, 1, 1);
+
+    @meta.black.vector3
     sunDirection = vec3.fromValues(1, -1, 1);
+
+    @meta.notImplemented
+    @meta.black.boolean
     useSunDiffuseColorWithDynamicLights = false;
 
-    //ccpwgl
+    @meta.color
     clearColor = vec4.fromValues(0, 0, 0, 1);
+
+    @meta.boolean
     display = true;
+
+    @meta.vector3
     envMapScaling = vec3.fromValues(1, 1, 1); // Should this come from the background effect?
+
+    @meta.uint
     fogBlur = 0;
+
+    @meta.uint
     fogType = 0;
+
+    @meta.list
     lensflares = [];
+
+    @meta.list
     planets = [];
+
+    @meta.list
     lineSets = [];
+
+    @meta.notImplemented
+    @meta.object
     postProcess = null;
-    //shadowEffect = null;
+
+    @meta.notImplemented
+    @meta.object
+    @meta.todo("Do shadows need their own render mode and batch accumulation?")
+    shadowEffect = null;
+
+    @meta.plain
     visible = {
         backgroundObjects: true,
         clearColor: true,
@@ -125,6 +200,7 @@ export class EveSpaceScene extends Tw2BaseClass
         starField: true
     };
 
+
     _debugHelper = null;
     _batches = new Tw2BatchAccumulator();
     _emptyTexture = null;
@@ -135,6 +211,7 @@ export class EveSpaceScene extends Tw2BaseClass
     _envMapRes = null;
     _envMap1Res = null;
     _envMap2Res = null;
+
 
     /**
      * Constructor
@@ -724,56 +801,5 @@ export class EveSpaceScene extends Tw2BaseClass
      * @type {?Function}
      */
     static DebugRenderer = window["Tw2DebugRenderer"] || null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "ambientColor", r.color ],
-            [ "backgroundEffect", r.object ],
-            [ "backgroundObjects", r.array ],
-            [ "backgroundRenderingEnabled", r.boolean ],
-            [ "curveSets", r.array ],
-            [ "enableShadows", r.boolean ],
-            [ "envMapResPath", r.path ],
-            [ "envMap1ResPath", r.path ],
-            [ "envMap2ResPath", r.path ],
-            [ "envMapRotation", r.vector4 ],
-            [ "externalParameters", r.array ],
-            [ "fogColor", r.color ],
-            [ "fogStart", r.float ],
-            [ "fogEnd", r.float ],
-            [ "fogMax", r.float ],
-            [ "nebulaIntensity", r.float ],
-            [ "objects", r.array ],
-            [ "postProcessPath", r.path ],
-            [ "selfShadowOnly", r.boolean ],
-            [ "starfield", r.object ],
-            [ "shadowFadeThreshold", r.float ],
-            [ "shadowThreshold", r.float ],
-            [ "shLightingManager", r.object ],
-            [ "sunDiffuseColor", r.color ],
-            [ "sunDiffuseColorWithDynamicLights", r.vector4 ],
-            [ "sunDirection", r.vector3 ],
-            [ "useSunDiffuseColorWithDynamicLights", r.boolean ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
-
-    /**
-     * Identifies the object is a scene
-     * @type {boolean}
-     * @private
-     */
-    static __isScene = true;
 
 }

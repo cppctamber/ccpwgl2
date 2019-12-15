@@ -1,9 +1,8 @@
-import { vec3, vec4, Tw2BaseClass } from "global";
+import { meta, vec3, vec4, Tw2BaseClass } from "global";
+
 
 /**
  * EveConnector
- * @ccp EveConnector
- * Todo: Implement
  *
  * @property {vec4} animationColor                -
  * @property {Number} animationScale              -
@@ -16,46 +15,39 @@ import { vec3, vec4, Tw2BaseClass } from "global";
  * @property {EveLocalPositionCurve} sourceObject -
  * @property {Number} type                        -
  */
+@meta.notImplemented
+@meta.type("EveConnector", true)
 export class EveConnector extends Tw2BaseClass
 {
 
+    @meta.black.color
     animationColor = vec4.create();
+
+    @meta.black.float
     animationScale = 0;
+
+    @meta.black.float
     animationSpeed = 0;
+
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.object
     destObject = null;
+
+    @meta.black.vector3
     destPosition = vec3.create();
+
+    @meta.black.boolean
     isAnimated = false;
+
+    @meta.black.float
     lineWidth = 0;
+
+    @meta.black.object
     sourceObject = null;
+
+    @meta.black.uint
     type = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "animationColor", r.color ],
-            [ "animationScale", r.float ],
-            [ "animationSpeed", r.float ],
-            [ "color", r.color ],
-            [ "destObject", r.object ],
-            [ "destPosition", r.vector3 ],
-            [ "isAnimated", r.boolean ],
-            [ "lineWidth", r.float ],
-            [ "sourceObject", r.object ],
-            [ "sourcePosition", r.vector3 ],
-            [ "type", r.uint ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

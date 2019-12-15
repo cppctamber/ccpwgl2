@@ -1,42 +1,28 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 /**
  * EveUiObject
- * @ccp EveUiObject
- * TODO: Implement
  *
  * @property {String} name                 -
  * @property {Number} boundingSphereRadius -
  * @property {Tw2Mesh} mesh                -
  * @property {Number} modelScale           -
  */
+@meta.notImplemented
+@meta.type("EveUiObject", true)
 export class EveUiObject extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     boundingSphereRadius = 0;
+
+    @meta.black.object
     mesh = null;
+
+    @meta.black.float
     modelScale = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boundingSphereRadius", r.float ],
-            [ "name", r.string ],
-            [ "mesh", r.object ],
-            [ "modelScale", r.float ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

@@ -1,34 +1,17 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * EveLineContainer
- * @ccp EveLineContainer
- * TODO: Implement
  *
  * @property {EveCurveLineSet} lineSet -
  */
+@meta.notImplemented
+@meta.type("EveLineContainer", true)
 export class EveLineContainer extends Tw2BaseClass
 {
 
+    @meta.black.object
     lineSet = null;
-
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "lineSet", r.object ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

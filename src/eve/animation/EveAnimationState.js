@@ -32,7 +32,7 @@ export class EveAnimationState
     @meta.black.list
     initCommands = [];
 
-    @meta.black.struct([EveAnimationStateTransition])
+    @meta.black.struct([ EveAnimationStateTransition ])
     transitions = [];
 
 }

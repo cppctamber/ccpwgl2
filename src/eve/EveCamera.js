@@ -1,9 +1,8 @@
-import { quat, vec3, Tw2BaseClass } from "global";
+import { meta, quat, vec3, Tw2BaseClass } from "global";
+
 
 /**
  * EveCamera
- * TODO: Implement
- * @ccp EveCamera
  *
  * @property {Number} fieldOfView             -
  * @property {Number} friction                -
@@ -22,53 +21,57 @@ import { quat, vec3, Tw2BaseClass } from "global";
  * @property {Number} yaw                     -
  * @property {Tr2CurveScalar} zoomCurve       -
  */
+@meta.notImplemented
+@meta.type("EveCamera", true)
 export class EveCamera extends Tw2BaseClass
 {
 
+    @meta.black.float
     fieldOfView = 0;
+
+    @meta.black.float
     friction = 0;
+
+    @meta.black.float
     frontClip = 0;
+
+    @meta.black.boolean
     idleMove = false;
+
+    @meta.black.float
     idleScale = 0;
+
+    @meta.black.float
     idleSpeed = 0;
+
+    @meta.black.vector3
     intr = vec3.create();
+
+    @meta.black.float
     maxSpeed = 0;
+
+    @meta.black.float
     noiseScale = 0;
+
+    @meta.black.object
     noiseScaleCurve = null;
+
+    @meta.black.float
     pitch = 0;
+
+    @meta.black.vector3
     pos = vec3.create();
+
+    @meta.black.quaternion
     rotationAroundParent = quat.create();
+
+    @meta.black.float
     translationFromParent = 0;
+
+    @meta.black.float
     yaw = 0;
+
+    @meta.black.object
     zoomCurve = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "fieldOfView", r.float ],
-            [ "friction", r.float ],
-            [ "frontClip", r.float ],
-            [ "idleMove", r.boolean ],
-            [ "idleScale", r.float ],
-            [ "idleSpeed", r.float ],
-            [ "intr", r.vector3 ],
-            [ "pitch", r.float ],
-            [ "pos", r.vector3 ],
-            [ "maxSpeed", r.float ],
-            [ "noiseScale", r.float ],
-            [ "noiseScaleCurve", r.object ],
-            [ "rotationAroundParent", r.vector4 ],
-            [ "translationFromParent", r.float ],
-            [ "yaw", r.float ],
-            [ "zoomCurve", r.object ]
-        ];
-    }
-
-    static __isStaging = 4;
 
 }
