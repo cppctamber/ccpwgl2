@@ -1,16 +1,12 @@
 import { EveChild } from "./EveChild";
-import { mat4, quat, vec3 } from "global";
+import { mat4, meta, quat, vec3 } from "global";
+
 
 /**
  * Container for other child effects
- * TODO: Implement "controllers"
- * TODO: Implement "hideOnLowQuality"
- * TODO: Implement "lights"
- * TODO: Implement "observers"
- * TODO: Implement "staticTransform"
- * TODO: Implement "transformModifiers"
  *
  * @property {String} name                                 -
+ * @property {Number} boneIndex                            -
  * @property {Array.<StateController>} controllers         -
  * @property {Array.<Tw2CurveSet>} curveSets               -
  * @property {Boolean} display                             -
@@ -28,29 +24,73 @@ import { mat4, quat, vec3 } from "global";
  * @property {mat4} _worldTransform                        -
  * @property {mat4} _worldTransformLast                    -
  */
+@meta.type("EveChildContainer", true)
+@meta.stage(2)
 export class EveChildContainer extends EveChild
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.uint
+    boneIndex = -1;
+
+    @meta.notImplemented
+    @meta.black.list
     controllers = [];
+
+    @meta.black.list
     curveSets = [];
+
+    @meta.black.boolean
     display = true;
+
+    @meta.notImplemented
+    @meta.black.boolean
     hideOnLowQuality = false;
+
+    @meta.notImplemented
+    @meta.black.object
     inheritProperties = null;
+
+    @meta.notImplemented
+    @meta.black.list
     lights = [];
+
+    @meta.black.matrix4
     localTransform = mat4.create();
+
+    @meta.black.list
     objects = [];
+
+    @meta.notImplemented
+    @meta.black.list
     observers = [];
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.notImplemented
+    @meta.black.boolean
     staticTransform = false;
+
+    @meta.notImplemented
+    @meta.black.list
     transformModifiers = [];
+
+    @meta.black.vector3
     translation = vec3.create();
 
-    // ccpwgl
+    @meta.boolean
     useSRT = true;
+
+
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
+
 
     /**
      * Gets object resources
@@ -129,39 +169,5 @@ export class EveChildContainer extends EveChild
             */
         }
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boneIndex", r.uint ],
-            [ "controllers", r.array ],
-            [ "display", r.boolean ],
-            [ "localTransform", r.matrix ],
-            [ "name", r.string ],
-            [ "curveSets", r.array ],
-            [ "hideOnLowQuality", r.boolean ],
-            [ "inheritProperties", r.object ],
-            [ "lights", r.array ],
-            [ "observers", r.array ],
-            [ "objects", r.array ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "staticTransform", r.boolean ],
-            [ "transformModifiers", r.array ],
-            [ "translation", r.vector3 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     * @private
-     */
-    static __isStaging = 2;
 
 }

@@ -1,10 +1,9 @@
-import { mat4, quat, vec3 } from "global";
+import { meta, quat, vec3 } from "global";
 import { EveChild } from "./EveChild";
 
 
 /**
  * EveChildCloud
- * TODO: Implement
  *
  * @property {String} name                -
  * @property {Number} cellScreenSize      -
@@ -15,17 +14,35 @@ import { EveChild } from "./EveChild";
  * @property {Number} sortingModifier     -
  * @property {vec3} translation           -
  */
+@meta.notImplemented
+@meta.type("EveChildCloud", true)
 export class EveChildCloud extends EveChild
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     cellScreenSize = 0;
+
+    @meta.black.object
     effect = null;
+
+    @meta.black.uint
     preTesselationLevel = 0;
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.float
     sortingModifier = 0;
+
+    @meta.black.vector3
     translation = vec3.create();
+
 
     /**
      * Gets object resources
@@ -37,30 +54,5 @@ export class EveChildCloud extends EveChild
         if (this.effect) this.effect.GetResources(out);
         return out;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "cellScreenSize", r.float ],
-            [ "sortingModifier", r.float ],
-            [ "effect", r.object ],
-            [ "name", r.string ],
-            [ "preTesselationLevel", r.uint ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "translation", r.vector3 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

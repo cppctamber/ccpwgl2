@@ -1,9 +1,9 @@
-import { quat } from "global";
+import { meta, quat } from "global";
 import { EveChild } from "./EveChild";
+
 
 /**
  * EveChildLink
- * TODO: Implement
  *
  * @property {String} name                                  -
  * @property {Array.<Tw2ValueBinding>} linkStrengthBindings -
@@ -11,14 +11,26 @@ import { EveChild } from "./EveChild";
  * @property {Tw2Mesh} mesh                                 -
  * @property {quat} rotation                                -
  */
+@meta.notImplemented
+@meta.type("EveChildLink", true)
 export class EveChildLink extends EveChild
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.list
     linkStrengthBindings = [];
+
+    @meta.black.list
     linkStrengthCurves = [];
+
+    @meta.black.object
     mesh = null;
+
+    @meta.black.quaternion
     rotation = quat.create();
+
 
     /**
      * Gets object resources
@@ -30,27 +42,5 @@ export class EveChildLink extends EveChild
         if (this.mesh) this.mesh.GetResources(out);
         return out;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "linkStrengthBindings", r.array ],
-            [ "linkStrengthCurves", r.array ],
-            [ "mesh", r.object ],
-            [ "name", r.string ],
-            [ "rotation", r.vector4 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

@@ -1,13 +1,10 @@
-import { vec3, quat, mat4, tw2 } from "global";
+import { meta, vec3, quat, mat4, tw2 } from "global";
 import { Tw2PerObjectData } from "core";
 import { EveChild } from "../EveChild";
 
-const { device } = tw2;
 
 /**
  * Mesh attachment to space object and oriented towards the camera
- * TODO: Is this deprecated?
- * @ccp EveChildBillboard
  *
  * @property {Boolean} display
  * @property {mat4} localTransform
@@ -22,22 +19,43 @@ const { device } = tw2;
  * @property {mat4} _worldTransform
  * @property {mat4} _worldTransformLast
  */
+@meta.type("EveChildBillboard", true)
+@meta.todo("Deprecated?")
 export class EveChildBillboard extends EveChild
 {
 
+    @meta.boolean
     display = true;
+
+    @meta.matrix4
     localTransform = mat4.create();
+
+    @meta.uint
     lowestLodVisible = 2;
+
+    @meta.object
     mesh = null;
+
+    @meta.quaternion
     rotation = quat.create();
+
+    @meta.vector3
     translation = vec3.create();
+
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.boolean
     staticTransform = false;
+
+    @meta.boolean
     useSRT = true;
+
 
     _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
+
 
     /**
      * Gets the child's resources
@@ -70,7 +88,7 @@ export class EveChildBillboard extends EveChild
             viewInverse = EveChild.global.mat4_0,
             finalScale = EveChild.global.vec3_0;
 
-        mat4.lookAt(viewInverse, device.eyePosition, this._worldTransform.subarray(12), [ 0, 1, 0 ]);
+        mat4.lookAt(viewInverse, tw2.device.eyePosition, this._worldTransform.subarray(12), [ 0, 1, 0 ]);
         mat4.transpose(viewInverse, viewInverse);
         mat4.getScaling(finalScale, parentTransform);
         vec3.multiply(finalScale, finalScale, this.scaling);

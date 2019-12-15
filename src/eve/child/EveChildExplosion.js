@@ -1,9 +1,9 @@
-import { mat4, quat, vec3 } from "global";
+import { meta, mat4, quat, vec3 } from "global";
 import { EveChild } from "./EveChild";
+
 
 /**
  * EveChildExplosion
- * TODO: Implement
  *
  * @property {String} name                               -
  * @property {Number} globalDuration                     -
@@ -20,23 +20,53 @@ import { EveChild } from "./EveChild";
  * @property {quat} rotation                             -
  * @property {vec3} scaling                              -
  */
+@meta.notImplemented
+@meta.type("EveChildExplosion", true)
 export class EveChildExplosion extends EveChild
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     globalDuration = 0;
+
+    @meta.black.object
     globalExplosion = null;
+
+    @meta.black.float
     globalExplosionDelay = 0;
+
+    @meta.black.vector3
     globalScaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.float
     localDuration = 0;
+
+    @meta.black.object
     localExplosion = null;
+
+    @meta.black.float
     localExplosionInterval = 0;
+
+    @meta.black.float
     localExplosionIntervalFactor = 0;
+
+    @meta.black.object
     localExplosionShared = null;
+
+    @meta.black.list
     localExplosions = [];
+
+    @meta.black.matrix4
     localTransform = mat4.create();
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
 
     /**
      * Gets object resources
@@ -53,37 +83,5 @@ export class EveChildExplosion extends EveChild
         }
         return out;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "globalDuration", r.float ],
-            [ "globalExplosion", r.object ],
-            [ "globalExplosionDelay", r.float ],
-            [ "globalExplosions", r.array ],
-            [ "globalScaling", r.vector3 ],
-            [ "localDuration", r.float ],
-            [ "localExplosion", r.object ],
-            [ "localExplosions", r.array ],
-            [ "localExplosionInterval", r.float ],
-            [ "localExplosionIntervalFactor", r.float ],
-            [ "localExplosionShared", r.object ],
-            [ "localTransform", r.matrix ],
-            [ "name", r.string ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

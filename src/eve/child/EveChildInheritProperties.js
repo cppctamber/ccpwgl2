@@ -1,23 +1,13 @@
+import { meta } from "global"
+
+
 /**
  * EveChildInheritProperties
- * TODO: What is this?
  */
+@meta.notImplemented
+@meta.type("EveChildInheritProperties", true)
+@meta.data("black")
 export class EveChildInheritProperties
 {
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

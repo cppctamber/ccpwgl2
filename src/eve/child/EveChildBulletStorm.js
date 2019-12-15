@@ -1,8 +1,9 @@
 import { EveChild } from "./EveChild";
+import { meta } from "global/index";
+
 
 /**
  * EveChildBulletStorm
- * Todo: Implement
  *
  * @property {Tw2Effect} effect        -
  * @property {Number} multiplier       -
@@ -10,13 +11,24 @@ import { EveChild } from "./EveChild";
  * @property {String} sourceLocatorSet -
  * @property {Number} speed            -
  */
+@meta.notImplemented
+@meta.type("EveChildBulletStorm", true)
 export class EveChildBulletStorm extends EveChild
 {
 
+    @meta.black.object
     effect = null;
+
+    @meta.black.uint
     multiplier = 0;
+
+    @meta.black.float
     range = 0;
+
+    @meta.black.string
     sourceLocatorSet = "";
+
+    @meta.black.float
     speed = 0;
 
     /**
@@ -29,27 +41,5 @@ export class EveChildBulletStorm extends EveChild
         if (this.effect) this.effect.GetResources(out);
         return out;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "effect", r.object ],
-            [ "multiplier", r.uint ],
-            [ "range", r.float ],
-            [ "speed", r.float ],
-            [ "sourceLocatorSet", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

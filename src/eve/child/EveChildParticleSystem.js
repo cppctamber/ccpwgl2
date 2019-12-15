@@ -1,13 +1,10 @@
-import { mat4, quat, vec3 } from "global";
+import { meta, mat4, quat, vec3 } from "global";
 import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
 /**
  * Particle system attachment to space object
- * TODO: Implement "lodSphereRadius"
- * TODO: Implement "minScreenSize"
- * TODO: Implement "useDynamicLod"
  *
  * @property {String} name                                                     -
  * @property {Boolean} display                                                 -
@@ -25,24 +22,55 @@ import { EveChild } from "./EveChild";
  * @property {mat4} _worldTransformLast                                        -
  * @property {Tw2PerObjectData} _perObjectData                                 -
  */
+@meta.type("EveChildParticleSystem", true)
+@meta.stage(1)
 export class EveChildParticleSystem extends EveChild
 {
-    // ccp
+
+    @meta.black.string
     name = "";
+
+    @meta.black.boolean
     display = true;
+
+    @meta.black.matrix4
     localTransform = mat4.create();
+
+    @meta.notImplemented
+    @meta.black.float
     lodSphereRadius = 0;
+
+    @meta.black.object
     mesh = null;
+
+    @meta.notImplemented
+    @meta.black.float
     minScreenSize = 0;
+
+    @meta.black.list
     particleEmitters = [];
+
+    @meta.black.list
     particleSystems = [];
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.vector3
     translation = vec3.create();
+
+    @meta.notImplemented
+    @meta.black.boolean
     useDynamicLod = false;
 
-    // ccpwgl
+    @meta.boolean
+    @meta.todo("Deprecated?")
     useSRT = true;
+
+
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveChild.perObjectData);
@@ -111,34 +139,5 @@ export class EveChildParticleSystem extends EveChild
             this.mesh.GetBatches(mode, accumulator, this._perObjectData);
         }
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "display", r.boolean ],
-            [ "localTransform", r.matrix ],
-            [ "lodSphereRadius", r.float ],
-            [ "mesh", r.object ],
-            [ "minScreenSize", r.float ],
-            [ "name", r.string ],
-            [ "particleEmitters", r.array ],
-            [ "particleSystems", r.array ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "translation", r.vector3 ],
-            [ "useDynamicLod", r.boolean ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

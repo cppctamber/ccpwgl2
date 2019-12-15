@@ -1,15 +1,11 @@
-import { vec3, quat, mat4 } from "global";
+import { meta, vec3, quat, mat4 } from "global";
 import { Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
 
+
 /**
  * Mesh attachment to space object
- * TODO: Implement "lowestLodVisible"
- * TODO: Implement "minScreenSize"
- * TODO: Implement "sortValueOffset"
- * TODO: Implement "staticTransform"
- * TODO: Implement "transformModifiers"
- *
+
  * @property {String} name                              -
  * @property {Boolean} display                          -
  * @property {mat4} localTransform                      -
@@ -31,25 +27,58 @@ import { EveChild } from "./EveChild";
 export class EveChildMesh extends EveChild
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.boolean
     display = true;
+
+    @meta.black.matrix4
     localTransform = mat4.create();
+
+    @meta.notImplemented
+    @meta.black.uint
     lowestLodVisible = 2;
+
+    @meta.black.object
     mesh = null;
+
+    @meta.notImplemented
+    @meta.black.float
     minScreenSize = 0;
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.notImplemented
+    @meta.black.float
     sortValueOffset = 0;
+
+    @meta.notImplemented
+    @meta.black.boolean
     staticTransform = false;
+
+    @meta.notImplemented
+    @meta.black.list
     transformModifiers = [];
+
+    @meta.black.vector3
     translation = vec3.create();
+
+    @meta.black.boolean
     useSRT = true;
+
+    @meta.black.boolean
     useSpaceObjectData = true;
 
-    // ccpwgl
+
     _worldTransform = mat4.create();
     _worldTransformLast = mat4.create();
     _perObjectData = null;
+
 
     /**
      * Gets object resources
@@ -133,36 +162,5 @@ export class EveChildMesh extends EveChild
 
         this.mesh.GetBatches(mode, accumulator, this._perObjectData);
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "display", r.boolean ],
-            [ "localTransform", r.matrix ],
-            [ "lowestLodVisible", r.uint ],
-            [ "mesh", r.object ],
-            [ "minScreenSize", r.float ],
-            [ "name", r.string ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "sortValueOffset", r.float ],
-            [ "staticTransform", r.boolean ],
-            [ "transformModifiers", r.array ],
-            [ "translation", r.vector3 ],
-            [ "useSpaceObjectData", r.boolean ],
-            [ "useSRT", r.boolean ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

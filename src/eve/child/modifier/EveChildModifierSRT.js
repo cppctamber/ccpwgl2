@@ -1,4 +1,5 @@
-import { quat, vec3, Tw2BaseClass } from "global";
+import { quat, vec3, Tw2BaseClass, meta } from "global";
+
 
 /**
  * EveChildModifierSRT
@@ -7,31 +8,18 @@ import { quat, vec3, Tw2BaseClass } from "global";
  * @property {vec3} scaling     -
  * @property {vec3} translation -
  */
+@meta.notImplemented
+@meta.type("EveChildModifierSRT", true)
 export class EveChildModifierSRT extends Tw2BaseClass
 {
 
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.vector3
     translation = vec3.create();
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "translation", r.vector3 ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
 
 }

@@ -1,9 +1,9 @@
-import { mat4, quat, vec3, vec4 } from "global";
+import { meta, mat4, quat, vec3, vec4 } from "global";
 import { EveChild } from "./EveChild";
+
 
 /**
  * EveChildQuad
- * TODO: Implement
  *
  * @property {String} name              -
  * @property {Number} brightness        -
@@ -15,17 +15,36 @@ import { EveChild } from "./EveChild";
  * @property {vec3} scaling             -
  * @property {vec3} translation         -
  */
+@meta.notImplemented
+@meta.type("EveChildQuad", true)
 export class EveChildQuad extends EveChild
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     brightness = 0;
+
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.object
     effect = null;
+
+    @meta.black.matrix4
     localTransform = mat4.create();
+
+    @meta.black.float
     minScreenSize = 0;
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.vector3
     translation = vec3.create();
 
     /**
@@ -38,31 +57,5 @@ export class EveChildQuad extends EveChild
         if (this.effect) this.effect.GetResources(out);
         return out;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "brightness", r.float ],
-            [ "color", r.color ],
-            [ "effect", r.object ],
-            [ "localTransform", r.matrix ],
-            [ "minScreenSize", r.float ],
-            [ "name", r.string ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "translation", r.vector3 ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
