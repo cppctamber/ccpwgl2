@@ -1,14 +1,16 @@
-/**
- * EveSOFDataMaterial
- *
- * @property {String} name                            -
- * @property {Array.<EveSOFDataParameter>} parameters -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataMaterial", true)
 export class EveSOFDataMaterial
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("EveSOFDataParameter")
     parameters = [];
+
 
     /**
      * Assigns the material to a simple plain object
@@ -35,16 +37,4 @@ export class EveSOFDataMaterial
         return out;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "parameters", r.array ]
-        ];
-    }
 }

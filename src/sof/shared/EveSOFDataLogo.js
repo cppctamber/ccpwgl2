@@ -1,22 +1,11 @@
-/**
- * EveSOFDataLogo
- *
- * @parameter {Array<EveSOFDataTexture>} textures
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataLogo", true)
 export class EveSOFDataLogo
 {
 
+    @meta.black.listOf("EveSOFDataTexture")
     textures = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "textures", r.array ]
-        ];
-    }
 }

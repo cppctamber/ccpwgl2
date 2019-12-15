@@ -1,34 +1,23 @@
-/**
- * EveSOFDataAreaMaterial
- *
- * @property {Number} colorType -
- * @property {String} material1 -
- * @property {String} material2 -
- * @property {String} material3 -
- * @property {String} material4 -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataAreaMaterial", true)
 export class EveSOFDataAreaMaterial
 {
 
+    @meta.black.uint
     colorType = 0;
+
+    @meta.black.string
     material1 = "";
+
+    @meta.black.string
     material2 = "";
+
+    @meta.black.string
     material3 = "";
+
+    @meta.black.string
     material4 = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "colorType", r.uint ],
-            [ "material1", r.string ],
-            [ "material2", r.string ],
-            [ "material3", r.string ],
-            [ "material4", r.string ]
-        ];
-    }
 }

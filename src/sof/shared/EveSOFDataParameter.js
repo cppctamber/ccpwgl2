@@ -1,17 +1,16 @@
-import { vec4 } from "global";
+import { meta, vec4 } from "global";
 
 
-/**
- * EveSOFDataParameter
- *
- * @property {String} name -
- * @property {vec4} value  -
- */
+@meta.type("EveSOFDataParameter", true)
 export class EveSOFDataParameter
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.vector4
     value = vec4.create();
+
 
     /**
      * Assigns the parameter's values to an object
@@ -25,16 +24,4 @@ export class EveSOFDataParameter
         return out;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "value", r.vector4 ]
-        ];
-    }
 }

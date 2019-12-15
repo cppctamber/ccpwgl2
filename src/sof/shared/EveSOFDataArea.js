@@ -1,52 +1,73 @@
-/**
- * EveSOFDataArea
- *
- * @property {EveSOFDataAreaMaterial} Black     -
- * @property {EveSOFDataAreaMaterial} Blue      -
- * @property {EveSOFDataAreaMaterial} Booster   -
- * @property {EveSOFDataAreaMaterial} Cyan      -
- * @property {EveSOFDataAreaMaterial} Darkhull  -
- * @property {EveSOFDataAreaMaterial} Fire      -
- * @property {EveSOFDataAreaMaterial} Glass     -
- * @property {EveSOFDataAreaMaterial} Green     -
- * @property {EveSOFDataAreaMaterial} Hull      -
- * @property {EveSOFDataAreaMaterial} Killmark  -
- * @property {EveSOFDataAreaMaterial} Monument  -
- * @property {EveSOFDataAreaMaterial} Orange    -
- * @property {EveSOFDataAreaMaterial} Primary   -
- * @property {EveSOFDataAreaMaterial} Reactor   -
- * @property {EveSOFDataAreaMaterial} Red       -
- * @property {EveSOFDataAreaMaterial} Rock      -
- * @property {EveSOFDataAreaMaterial} Sails     -
- * @property {EveSOFDataAreaMaterial} Secondary -
- * @property {EveSOFDataAreaMaterial} Tertiary  -
- * @property {EveSOFDataAreaMaterial} White     -
- * @property {EveSOFDataAreaMaterial} Yellow    -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataArea", true)
 export class EveSOFDataArea
 {
 
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Black = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Blue = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Booster = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Cyan = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Darkhull = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Fire = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Glass = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Green = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Hull = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Killmark = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Monument = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Orange = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Primary = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Reactor = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Red = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Rock = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Sails = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Secondary = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Tertiary = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     White = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Yellow = null;
+
 
     /**
      * Gets a data area by it's name
@@ -60,35 +81,4 @@ export class EveSOFDataArea
         return name in this ? this[name] : null;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "Black", r.object ],
-            [ "Blue", r.object ],
-            [ "Booster", r.object ],
-            [ "Cyan", r.object ],
-            [ "Darkhull", r.object ],
-            [ "Fire", r.object ],
-            [ "Glass", r.object ],
-            [ "Green", r.object ],
-            [ "Hull", r.object ],
-            [ "Killmark", r.object ],
-            [ "Monument", r.object ],
-            [ "Orange", r.object ],
-            [ "Primary", r.object ],
-            [ "Reactor", r.object ],
-            [ "Red", r.object ],
-            [ "Rock", r.object ],
-            [ "Sails", r.object ],
-            [ "Secondary", r.object ],
-            [ "Tertiary", r.object ],
-            [ "White", r.object ],
-            [ "Yellow", r.object ]
-        ];
-    }
 }

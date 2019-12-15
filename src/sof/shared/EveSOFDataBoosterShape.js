@@ -1,40 +1,26 @@
-import { vec4 } from "global";
+import { meta, vec4 } from "global";
 
 
-/**
- * EveSOFDataBoosterShape
- *
- * @property {vec4} color               -
- * @property {vec4} noiseAmplitureEnd   -
- * @property {vec4} noiseAmplitureStart -
- * @property {vec4} noiseFrequency      -
- * @property {Number} noiseFunction     -
- * @property {Number} noiseSpeed        -
- */
+@meta.type("EveSOFDataBoosterShape")
 export class EveSOFDataBoosterShape
 {
 
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.vector4
     noiseAmplitureEnd = vec4.create();
+
+    @meta.black.vector4
     noiseAmplitureStart = vec4.create();
+
+    @meta.black.vector4
     noiseFrequency = vec4.create();
+
+    @meta.black.float
     noiseFunction = 0;
+
+    @meta.black.float
     noiseSpeed = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "color", r.vector4 ],
-            [ "noiseFunction", r.float ],
-            [ "noiseSpeed", r.float ],
-            [ "noiseAmplitureStart", r.vector4 ],
-            [ "noiseAmplitureEnd", r.vector4 ],
-            [ "noiseFrequency", r.vector4 ]
-        ];
-    }
 }

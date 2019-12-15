@@ -1,14 +1,16 @@
-/**
- * EveSOFDataTexture
- *
- * @property {String} name        -
- * @property {String} resFilePath -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataTexture", true)
 export class EveSOFDataTexture
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.path
     resFilePath = "";
+
 
     /**
      * Assigns the texture's values to an object
@@ -21,16 +23,4 @@ export class EveSOFDataTexture
         return out;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "resFilePath", r.path ]
-        ];
-    }
 }

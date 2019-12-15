@@ -1,34 +1,23 @@
-/**
- * EveSOFDataLogoSet
- *
- * @property {EveSOFDataLogo} Marking_01
- * @property {EveSOFDataLogo} Marking_02
- * @property {EveSOFDataLogo} Primary
- * @property {EveSOFDataLogo} Secondary
- * @property {EveSOFDataLogo} Tertiary
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataLogoSet", true)
 export class EveSOFDataLogoSet
 {
 
+    @meta.black.objectOf("EveSOFDataLogo")
     Marking_01 = null;
+
+    @meta.black.objectOf("EveSOFDataLogo")
     Marking_02 = null;
+
+    @meta.black.objectOf("EveSOFDataLogo")
     Primary = null;
+
+    @meta.black.objectOf("EveSOFDataLogo")
     Secondary = null;
+
+    @meta.black.objectOf("EveSOFDataLogo")
     Tertiary = null;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "Marking_01", r.object ],
-            [ "Marking_02", r.object ],
-            [ "Primary", r.object ],
-            [ "Secondary", r.object ],
-            [ "Tertiary", r.object ]
-        ];
-    }
 }

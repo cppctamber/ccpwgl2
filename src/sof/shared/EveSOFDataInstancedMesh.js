@@ -1,3 +1,6 @@
+import { meta } from "global";
+
+
 /**
  * Instanced Mesh instance reader
  */
@@ -10,7 +13,7 @@ class EveSOFDataInstancedMeshInstanceReader
 
     static blackStruct(reader)
     {
-        let data = [
+        return new EveSOFDataInstancedMeshInstanceReader([
             reader.ReadF32(),
             reader.ReadF32(),
             reader.ReadF32(),
@@ -22,47 +25,31 @@ class EveSOFDataInstancedMeshInstanceReader
             reader.ReadF32(),
             reader.ReadF32(),
             reader.ReadF32()
-        ];
-
-        return new EveSOFDataInstancedMeshInstanceReader(data);
+        ]);
     }
 }
 
 
-/**
- * EveSOFDataInstancedMesh
- *
- * @property {String} name                        -
- * @property {String} geometryResPath             -
- * @property {Array.} instances                   -
- * @property {Number} lowestLodVisible            -
- * @property {String} shader                      -
- * @property {Array.<EveSOFDataTexture>} textures -
- */
+@meta.type("EveSOFDataInstancedMesh", true)
 export class EveSOFDataInstancedMesh
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.path
     geometryResPath = "";
+
+    @meta.black.struct([ EveSOFDataInstancedMeshInstanceReader ])
     instances = [];
+
+    @meta.black.uint
     lowestLodVisible = 0;
+
+    @meta.black.string
     shader = "";
+
+    @meta.black.listOf("EveSOFDataTexture")
     textures = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "geometryResPath", r.path ],
-            [ "instances", r.structList(EveSOFDataInstancedMeshInstanceReader) ],
-            [ "lowestLodVisible", r.uint ],
-            [ "name", r.string ],
-            [ "shader", r.string ],
-            [ "textures", r.array ]
-        ];
-    }
 }
