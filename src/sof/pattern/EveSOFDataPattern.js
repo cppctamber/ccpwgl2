@@ -1,21 +1,23 @@
-import { findElementByPropertyValue } from "global/util";
+import { meta, util } from "global";
 import { Tw2Error } from "core";
 
-/**
- * EveSOFDataPattern
- *
- * @property {String} name                                  -
- * @property {EveSOFDataPatternLayer} layer1                -
- * @property {EveSOFDataPatternLayer} layer2                -
- * @property {Array.<EveSOFDataPatternPerHull>} projections -
- */
+
+@meta.type("EveSOFDataPattern", true)
 export class EveSOFDataPattern
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.objectOf("EveSOFDataPatternLayer")
     layer1 = null;
+
+    @meta.black.objectOf("EveSOFDataPatternLayer")
     layer2 = null;
+
+    @meta.black.listOf("EveSOFDataPatternPerHull")
     projections = [];
+
 
     /**
      * Gets a hull pattern
@@ -42,7 +44,7 @@ export class EveSOFDataPattern
      */
     HasProjection(name)
     {
-        return !!findElementByPropertyValue(this.projections, "name", name);
+        return !!util.findElementByPropertyValue(this.projections, "name", name);
     }
 
     /**
@@ -62,20 +64,6 @@ export class EveSOFDataPattern
         throw new ErrSOFProjectionNotFound({ pattern: this.name, projection: name });
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "layer1", r.object ],
-            [ "layer2", r.object ],
-            [ "projections", r.array ]
-        ];
-    }
 }
 
 /**

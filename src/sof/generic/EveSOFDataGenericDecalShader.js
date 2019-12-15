@@ -1,32 +1,20 @@
-/**
- * EveSOFDataGenericDecalShader
- *
- * @property {Array.<EveSOFDataParameter>} defaultParameters  -
- * @property {Array.<EveSOFDataTexture>} defaultTextures      -
- * @property {Array.<EveSOFDataGenericString>} parameters     -
- * @property {Array.<EveSOFDataGenericString>} parentTextures -
- * @property {String} shader                                  -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataGenericDecalShader", true)
 export class EveSOFDataGenericDecalShader
 {
 
+    @meta.black.listOf("EveSOFDataTexture")
     defaultTextures = [];
+
+    @meta.black.listOf("EveSOFDataGenericString")
     parameters = [];
+
+    @meta.black.listOf("EveSOFDataGenericString")
     parentTextures = [];
+
+    @meta.black.string
     shader = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "defaultTextures", r.array ],
-            [ "parameters", r.array ],
-            [ "parentTextures", r.array ],
-            [ "shader", r.string ],
-        ];
-    }
 }

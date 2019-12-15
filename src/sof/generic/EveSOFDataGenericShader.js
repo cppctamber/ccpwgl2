@@ -1,38 +1,26 @@
-/**
- * EveSOFDataGenericShader
- *
- * @property {Array.<EveSOFDataParameter>} defaultParameters -
- * @property {Array.<EveSOFDataTexture>} defaultTextures     -
- * @property {Boolean} doGenerateDepthArea                   -
- * @property {Array.<EveSOFDataGenericString>} parameters    -
- * @property {String} shader                                 -
- * @property {Array.<EveSOFData
- * @property {String} transparencyTextureName                -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataGenericShader", true)
 export class EveSOFDataGenericShader
 {
 
+    @meta.black.listOf("EveSOFDataParameter")
     defaultParameters = [];
+
+    @meta.black.listOf("EveSOFDataTexture")
     defaultTextures = [];
+
+    @meta.black.boolean
     doGenerateDepthArea = false;
+
+    @meta.black.listOf("EveSOFDataGenericString")
     parameters = [];
+
+    @meta.black.path
     shader = "";
+
+    @meta.black.string
     transparencyTextureName = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "defaultParameters", r.array ],
-            [ "defaultTextures", r.array ],
-            [ "doGenerateDepthArea", r.boolean ],
-            [ "parameters", r.array ],
-            [ "shader", r.path ],
-            [ "transparencyTextureName", r.string ],
-        ];
-    }
 }

@@ -1,16 +1,19 @@
-/**
- * EveSOFDataPatternPerHull
- *
- * @property {String} name                                -
- * @property {EveSOFDataPatternTransform} transformLayer1 -
- * @property {EveSOFDataPatternTransform} transformLayer2 -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataPatternPerHull", true)
 export class EveSOFDataPatternPerHull
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.objectOf("EveSOFDataPatternTransform")
     transformLayer1 = null;
+
+    @meta.black.objectOf("EveSOFDataPatternTransform")
     transformLayer2 = null;
+
 
     /**
      * Reduces transforms to an array
@@ -24,17 +27,4 @@ export class EveSOFDataPatternPerHull
         return out;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "transformLayer1", r.object ],
-            [ "transformLayer2", r.object ]
-        ];
-    }
 }

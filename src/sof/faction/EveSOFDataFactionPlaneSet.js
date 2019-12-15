@@ -1,31 +1,17 @@
-import { vec4 } from "global";
+import { meta, vec4 } from "global";
 
 
-/**
- * EveSOFDataFactionPlaneSet
- *
- * @property {String} name       -
- * @property {vec4} color        -
- * @property {Number} groupIndex -
- */
+@meta.type("EveSOFDataFactionPlaneSet", true)
 export class EveSOFDataFactionPlaneSet
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.color
     color = vec4.create();
+
+    @meta.black.uint
     groupIndex = -1;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "color", r.vector4 ],
-            [ "groupIndex", r.uint ],
-            [ "name", r.string ],
-        ];
-    }
 }

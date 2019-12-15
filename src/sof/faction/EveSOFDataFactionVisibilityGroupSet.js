@@ -1,22 +1,11 @@
-/**
- * EveSOFDataFactionVisibilityGroupSet
- *
- * @property {Array.<EveSOFDataGenericString>} visibilityGroups -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataFactionVisibilityGroupSet", true)
 export class EveSOFDataFactionVisibilityGroupSet
 {
 
+    @meta.black.listOf("EveSOFDataGenericString")
     visibilityGroups = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "visibilityGroups", r.array ],
-        ];
-    }
 }

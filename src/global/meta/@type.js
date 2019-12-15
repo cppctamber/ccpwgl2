@@ -19,6 +19,7 @@ function createType(type)
 export const listOf = createType(Type.LIST);
 export const objectOf = createType(Type.OBJECT);
 export const plainOf = createType(Type.PLAIN);
+export const rawOf = createType(Type.RAW);
 
 export const list = createType(Type.LIST)();
 export const object = createType(Type.OBJECT)();

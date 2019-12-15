@@ -1,58 +1,47 @@
-/**
- * EveSOFDataGenericSwarm
- *
- * @property {Number} formationDistance  -
- * @property {Number} maxDeceleration    -
- * @property {Number} maxDistance0       -
- * @property {Number} separationDistance -
- * @property {Number} wanderDistance     -
- * @property {Number} wanderFluctuation  -
- * @property {Number} wanderRadius       -
- * @property {Number} weightAlign        -
- * @property {Number} weightAnchor       -
- * @property {Number} weightCohesion     -
- * @property {Number} weightDeceleration -
- * @property {Number} weightFormation    -
- * @property {Number} weightSeparation   -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataGenericShader", true)
 export class EveSOFDataGenericSwarm
 {
 
+    @meta.black.float
     formationDistance = 0;
+
+    @meta.black.float
     maxDeceleration = 0;
+
+    @meta.black.float
     maxDistance0 = 0;
+
+    @meta.black.float
     separationDistance = 0;
+
+    @meta.black.float
     wanderDistance = 0;
+
+    @meta.black.float
     wanderFluctuation = 0;
+
+    @meta.black.float
     wanderRadius = 0;
+
+    @meta.black.float
     weightAlign = 0;
+
+    @meta.black.float
     weightAnchor = 0;
+
+    @meta.black.float
     weightCohesion = 0;
+
+    @meta.black.float
     weightDeceleration = 0;
+
+    @meta.black.float
     weightFormation = 0;
+
+    @meta.black.float
     weightSeparation = 0;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "formationDistance", r.float ],
-            [ "maxDistance0", r.float ],
-            [ "maxDeceleration", r.float ],
-            [ "separationDistance", r.float ],
-            [ "wanderDistance", r.float ],
-            [ "wanderFluctuation", r.float ],
-            [ "wanderRadius", r.float ],
-            [ "weightAlign", r.float ],
-            [ "weightAnchor", r.float ],
-            [ "weightCohesion", r.float ],
-            [ "weightDeceleration", r.float ],
-            [ "weightFormation", r.float ],
-            [ "weightSeparation", r.float ],
-        ];
-    }
 }

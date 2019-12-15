@@ -1,28 +1,17 @@
-/**
- * EveSOFDataFactionChild
- *
- * @property {String} name
- * @property {Number} groupIndex -
- * @property {Boolean} isVisible -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataFactionChild", true)
 export class EveSOFDataFactionChild
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.uint
     groupIndex = -1;
+
+    @meta.black.boolean
     isVisible = false;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "groupIndex", r.uint ],
-            [ "name", r.string ],
-            [ "isVisible", r.boolean ]
-        ];
-    }
 }

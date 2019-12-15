@@ -1,88 +1,74 @@
-import { vec2, vec4 } from "global";
+import { meta, vec2, vec4 } from "global";
 
 
-/**
- * EveSOFDataGenericDamage
- *
- * @property {Number} armorParticleAngle                   -
- * @property {vec4} armorParticleColor0                    -
- * @property {vec4} armorParticleColor1                    -
- * @property {vec4} armorParticleColor2                    -
- * @property {vec4} armorParticleColor3                    -
- * @property {Number} armorParticleDrag                    -
- * @property {vec2} armorParticleMinMaxLifeTime            -
- * @property {vec2} armorParticleMinMaxSpeed               -
- * @property {Number} armorParticleRate                    -
- * @property {vec4} armorParticleSizes                     -
- * @property {Number} armorParticleTextureIndex            -
- * @property {Number} armorParticleTurbulenceAmplitude     -
- * @property {Number} armorParticleTurbulenceFrequency     -
- * @property {Number} armorParticleVelocityStretchRotation -
- * @property {String} armorShader                          -
- * @property {Number} flickerPerlinAlpha                   -
- * @property {Number} flickerPerlinBeta                    -
- * @property {Number} flickerPerlinN                       -
- * @property {Number} flickerPerlinSpeed                   -
- * @property {String} shieldGeometryResFilePath            -
- * @property {String} shieldShaderEllipsoid                -
- * @property {String} shieldShaderHull                     -
- */
+@meta.type("EveSOFDataGenericDamage", true)
 export class EveSOFDataGenericDamage
 {
 
+    @meta.black.float
     armorParticleAngle = 0;
+
+    @meta.black.color
     armorParticleColor0 = vec4.create();
+
+    @meta.black.color
     armorParticleColor1 = vec4.create();
+
+    @meta.black.color
     armorParticleColor2 = vec4.create();
+
+    @meta.black.color
     armorParticleColor3 = vec4.create();
+
+    @meta.black.float
     armorParticleDrag = 0;
+
+    @meta.black.vector2
     armorParticleMinMaxLifeTime = vec2.create();
+
+    @meta.black.vector2
     armorParticleMinMaxSpeed = vec2.create();
+
+    @meta.black.float
     armorParticleRate = 0;
+
+    @meta.black.vector4
     armorParticleSizes = vec4.create();
+
+    @meta.black.uint
     armorParticleTextureIndex = 0;
+
+    @meta.black.float
     armorParticleTurbulenceAmplitude = 0;
+
+    @meta.black.float
     armorParticleTurbulenceFrequency = 0;
+
+    @meta.black.float
     armorParticleVelocityStretchRotation = 0;
+
+    @meta.black.string
     armorShader = "";
+
+    @meta.black.float
     flickerPerlinAlpha = 0;
+
+    @meta.black.float
     flickerPerlinBeta = 0;
+
+    @meta.black.uint
     flickerPerlinN = 0;
+
+    @meta.black.float
     flickerPerlinSpeed = 0;
+
+    @meta.black.path
     shieldGeometryResFilePath = "";
+
+    @meta.black.string
     shieldShaderEllipsoid = "";
+
+    @meta.black.string
     shieldShaderHull = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "armorParticleAngle", r.float ],
-            [ "armorParticleColor0", r.vector4 ],
-            [ "armorParticleColor1", r.vector4 ],
-            [ "armorParticleColor2", r.vector4 ],
-            [ "armorParticleColor3", r.vector4 ],
-            [ "armorParticleDrag", r.float ],
-            [ "armorParticleMinMaxLifeTime", r.vector2 ],
-            [ "armorParticleMinMaxSpeed", r.vector2 ],
-            [ "armorParticleRate", r.float ],
-            [ "armorParticleSizes", r.vector4 ],
-            [ "armorParticleTurbulenceAmplitude", r.float ],
-            [ "armorParticleTurbulenceFrequency", r.float ],
-            [ "armorParticleVelocityStretchRotation", r.float ],
-            [ "armorParticleTextureIndex", r.uint ],
-            [ "armorShader", r.string ],
-            [ "flickerPerlinAlpha", r.float ],
-            [ "flickerPerlinBeta", r.float ],
-            [ "flickerPerlinSpeed", r.float ],
-            [ "flickerPerlinN", r.uint ],
-            [ "shieldGeometryResFilePath", r.path ],
-            [ "shieldShaderEllipsoid", r.string ],
-            [ "shieldShaderHull", r.string ],
-        ];
-    }
 }

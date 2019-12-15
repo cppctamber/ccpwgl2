@@ -1,27 +1,35 @@
-/**
- * EveSOFDataPatternLayer
- *
- * @property {Boolean} isTargetMtl1      -
- * @property {Boolean} isTargetMtl2      -
- * @property {Boolean} isTargetMtl3      -
- * @property {Boolean} isTargetMtl4      -
- * @property {Number} materialSource     -
- * @property {Number} projectionTypeU    -
- * @property {Number} projectionTypeV    -
- * @property {String} textureName        -
- * @property {String} textureResFilePath -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataPatternLayer", true)
 export class EveSOFDataPatternLayer
 {
 
+    @meta.black.boolean
     isTargetMtl1 = true;
+
+    @meta.black.boolean
     isTargetMtl2 = true;
+
+    @meta.black.boolean
     isTargetMtl3 = true;
+
+    @meta.black.boolean
     isTargetMtl4 = true;
+
+    @meta.black.uint
     materialSource = 0;
+
+    @meta.black.uint
     projectionTypeU = 0;
+
+    @meta.black.uint
     projectionTypeV = 0;
+
+    @meta.black.string
     textureName = "";
+
+    @meta.black.path
     textureResFilePath = "";
 
     /**
@@ -64,24 +72,4 @@ export class EveSOFDataPatternLayer
         }
     }
 
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "isTargetMtl1", r.boolean ],
-            [ "isTargetMtl2", r.boolean ],
-            [ "isTargetMtl3", r.boolean ],
-            [ "isTargetMtl4", r.boolean ],
-            [ "materialSource", r.uint ],
-            [ "projectionTypeU", r.uint ],
-            [ "projectionTypeV", r.uint ],
-            [ "textureName", r.string ],
-            [ "textureResFilePath", r.path ]
-        ];
-    }
 }

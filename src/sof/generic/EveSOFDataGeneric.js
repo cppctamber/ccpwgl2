@@ -1,44 +1,57 @@
 import { Tw2Error, Tw2Effect } from "core";
-import { isArray, isPlain, findElementByPropertyValue } from "global/util";
+import { meta, util } from "global";
 
-/**
- * EveSOFDataGeneric
- *
- * @property {String} areaShaderLocation                               -
- * @property {Array.<EveSOFDataGenericShader>} areaShaders             -
- * @property {EveSOFDataGenericShader} bannerShader                    -
- * @property {EveSOFDataGenericDamage} damage                          -
- * @property {String} decalShaderLocation                              -
- * @property {Array.<EveSOFDataGenericDecalShader>} decalShaders       -
- * @property {EveSOFDataAreaMaterial} genericWreckMaterial             -
- * @property {EveSOFDataGenericHullDamage} hullDamage                  -
- * @property {Array.<EveSOFDataGenericString>} materialPrefixes        -
- * @property {Array.<EveSOFDataGenericString>} patternMaterialPrefixes -
- * @property {String} resPathDefaultAlliance                           -
- * @property {String} resPathDefaultCeo                                -
- * @property {String} resPathDefaultCorp                               -
- * @property {String} shaderPrefixAnimated                             -
- * @property {EveSOFDataGenericSwarm} swarm                            -
- * @property {Array.<EveSOFDataGenericVariant>} variants               -
- */
+
+@meta.type("EveSOFDataGeneric", true)
 export class EveSOFDataGeneric
 {
 
+    @meta.black.path
     areaShaderLocation = "";
+
+    @meta.black.listOf("EveSOFDataGenericShader")
     areaShaders = [];
+
+    @meta.black.rawOf("EveSOFDataGenericShader")
     bannerShader = null;
+
+    @meta.black.objectOf("EveSOFDataGenericDamage")
     damage = null;
+
+    @meta.black.path
     decalShaderLocation = "";
+
+    @meta.black.listOf("EveSOFDataGenericDecalShader")
     decalShaders = [];
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     genericWreckMaterial = null;
+
+    @meta.black.objectOf("EveSOFDataGenericHullDamage")
     hullDamage = null;
+
+    @meta.black.listOf("EveSOFDataGenericString")
     materialPrefixes = [];
+
+    @meta.black.listOf("EveSOFDataGenericString")
     patternMaterialPrefixes = [];
+
+    @meta.black.path
     resPathDefaultAlliance = "";
+
+    @meta.black.path
     resPathDefaultCeo = "";
+
+    @meta.black.path
     resPathDefaultCorp = "";
+
+    @meta.black.string
     shaderPrefixAnimated = "";
+
+    @meta.black.objectOf("EveSOFDataGenericSwarm")
     swarm = null;
+
+    @meta.black.listOf("EveSOFDataGenericVariant")
     variants = [];
 
     /**
@@ -60,12 +73,12 @@ export class EveSOFDataGeneric
         {
             if (!src) return;
             // Sof object array
-            if (isArray(src))
+            if (util.isArray(src))
             {
                 src.forEach(child => child.Assign(dest));
             }
             // Plain object
-            else if (isPlain(src))
+            else if (util.isPlain(src))
             {
                 Object.assign(dest, src);
             }
@@ -115,7 +128,7 @@ export class EveSOFDataGeneric
      */
     HasAreaShader(name)
     {
-        return !!findElementByPropertyValue(this.areaShaders, "name", name);
+        return !!util.findElementByPropertyValue(this.areaShaders, "name", name);
     }
 
     /**
@@ -125,7 +138,7 @@ export class EveSOFDataGeneric
      */
     GetAreaShader(name)
     {
-        return findElementByPropertyValue(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
+        return util.findElementByPropertyValue(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
     }
 
     /**
@@ -135,7 +148,7 @@ export class EveSOFDataGeneric
      */
     HasDecalShader(name)
     {
-        return !!findElementByPropertyValue(this.decalShaders, "name", name);
+        return !!util.findElementByPropertyValue(this.decalShaders, "name", name);
     }
 
     /**
@@ -145,7 +158,7 @@ export class EveSOFDataGeneric
      */
     GetDecalShader(name)
     {
-        return findElementByPropertyValue(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
+        return util.findElementByPropertyValue(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
     }
 
     /**
@@ -206,33 +219,6 @@ export class EveSOFDataGeneric
         return this.patternMaterialPrefixes[offByOne].str;
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "areaShaderLocation", r.path ],
-            [ "areaShaders", r.array ],
-            [ "bannerShader", r.rawObject ],
-            [ "decalShaderLocation", r.path ],
-            [ "decalShaders", r.array ],
-            [ "damage", r.object ],
-            [ "genericWreckMaterial", r.object ],
-            [ "hullAreas", r.array ],
-            [ "hullDamage", r.object ],
-            [ "materialPrefixes", r.array ],
-            [ "patternMaterialPrefixes", r.array ],
-            [ "resPathDefaultAlliance", r.path ],
-            [ "resPathDefaultCeo", r.path ],
-            [ "resPathDefaultCorp", r.path ],
-            [ "shaderPrefixAnimated", r.string ],
-            [ "swarm", r.object ],
-            [ "variants", r.array ],
-        ];
-    }
 }
 
 /**

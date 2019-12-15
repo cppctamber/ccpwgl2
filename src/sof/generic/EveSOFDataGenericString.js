@@ -1,22 +1,11 @@
-/**
- * EveSOFDataGenericString
- *
- * @property {String} str -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataGenericString", true)
 export class EveSOFDataGenericString
 {
 
+    @meta.black.string
     str = "";
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "str", r.string ],
-        ];
-    }
 }

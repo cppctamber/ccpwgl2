@@ -33,7 +33,7 @@ const TypeReader = {
  * @param {Number|String|Function} type
  * @returns {Function}
  */
-function getReaderFromType(type)
+export function getReaderFromType(type)
 {
     if (isFunction(type)) return type;
     if (isString(type)) type = Type[type.toUpperCase()];

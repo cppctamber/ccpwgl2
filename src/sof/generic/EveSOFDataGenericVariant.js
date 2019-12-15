@@ -1,28 +1,17 @@
-/**
- * EveSOFDataGenericVariant
- *
- * @property {String} name                 -
- * @property {EveSOFDataHullArea} hullArea -
- * @property {Boolean} isTransparent       -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataGenericVariant", true)
 export class EveSOFDataGenericVariant
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.objectOf("EveSOFDataHullArea")
     hullArea = null;
+
+    @meta.black.boolean
     isTransparent = false;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "hullArea", r.object ],
-            [ "isTransparent", r.boolean ],
-            [ "name", r.string ],
-        ];
-    }
 }

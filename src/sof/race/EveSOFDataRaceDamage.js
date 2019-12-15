@@ -1,31 +1,20 @@
-/**
- * EveSOFDataRaceDamage
- *
- * @property {Array.<EveSOFDataParameter>} armorImpactParameters  -
- * @property {Array.<EveSOFDataTexture>} armorImpactTextures      -
- * @property {Array.<EveSOFDataParameter>} shieldImpactParameters -
- * @property {Array.<EveSOFDataTexture>} shieldImpactTextures     -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataRaceDamage", true)
 export class EveSOFDataRaceDamage
 {
 
+    @meta.black.listOf("EveSOFDataParameter")
     armorImpactParameters = [];
+
+    @meta.black.listOf("EveSOFDataTexture")
     armorImpactTextures = [];
+
+    @meta.black.listOf("EveSOFDataParameter")
     shieldImpactParameters = [];
+
+    @meta.black.listOf("EveSOFDataTexture")
     shieldImpactTextures = [];
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "armorImpactParameters", r.array ],
-            [ "armorImpactTextures", r.array ],
-            [ "shieldImpactParameters", r.array ],
-            [ "shieldImpactTextures", r.array ]
-        ];
-    }
 }

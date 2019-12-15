@@ -1,28 +1,17 @@
-/**
- * EveSOFDataRace
- *
- * @property {String} name                 -
- * @property {EveSOFDataBooster} booster   -
- * @property {EveSOFDataRaceDamage} damage -
- */
+import { meta } from "global";
+
+
+@meta.type("EveSOFDataRace", true)
 export class EveSOFDataRace
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.objectOf("EveSOFDataBooster")
     booster = null;
+
+    @meta.black.objectOf("EveSOFDataRaceDamage")
     damage = null;
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "booster", r.object ],
-            [ "damage", r.object ],
-            [ "name", r.string ],
-        ];
-    }
 }
