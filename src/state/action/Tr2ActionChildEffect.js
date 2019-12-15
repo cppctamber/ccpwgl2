@@ -1,38 +1,25 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * Tr2ActionChildEffect
- * Todo: Implement
  *
  * @property {String} childName     -
  * @property {String} path          -
  * @property {Boolean} removeOnStop -
  */
+@meta.notImplemented
+@meta.type("Tr2ActionChildEffect", true)
 export class Tr2ActionChildEffect extends Tw2BaseClass
 {
 
+    @meta.black.string
     childName = "";
+
+    @meta.black.path
     path = "";
+
+    @meta.black.boolean
     removeOnStop = false;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "childName", r.string ],
-            [ "path", r.path ],
-            [ "removeOnStop", r.boolean ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

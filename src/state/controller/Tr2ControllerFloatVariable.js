@@ -1,18 +1,28 @@
+import { meta } from "global"
+
 /**
  * Tr2ControllerFloatVariable
- * TODO: Implement
- * @ccp Tr2ControllerFloatVariable
  *
  * @property {String} name
  * @property {Number} defaultValue
  * @property {Object<String,Number>} enumValues
  * @property {Number} variableType
  */
+@meta.notImplemented
+@meta.type("Tr2ControllerFloatVariable", true)
 export class Tr2ControllerFloatVariable
 {
+
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     defaultValue = 0;
+
+    @meta.black.enums
     enumValues = {};
+
+    @meta.black.uint
     variableType = 0;
 
     /**
@@ -32,26 +42,5 @@ export class Tr2ControllerFloatVariable
 
         return str.sort().join(",");
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "defaultValue", r.float ],
-            [ "enumValues", r.enums ],
-            [ "variableType", r.uint ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

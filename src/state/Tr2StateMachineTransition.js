@@ -1,35 +1,20 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 /**
  * Tr2StateMachineTransition
- * Todo: Implement
  *
  * @property {String} name      -
  * @property {String} condition -
  */
+@meta.notImplemented
+@meta.type("Tr2StateMachineTransition", true)
 export class Tr2StateMachineTransition extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.string
     condition = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "condition", r.string ],
-            [ "name", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

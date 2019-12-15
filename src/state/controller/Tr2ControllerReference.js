@@ -1,32 +1,16 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 /**
  * Tr2ControllerReference
- * Todo: Implement
  *
  * @property {String} path -
  */
+@meta.notImplemented
+@meta.type("Tr2ControllerReference", true)
 export class Tr2ControllerReference extends Tw2BaseClass
 {
 
+    @meta.black.path
     path = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "path", r.path ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

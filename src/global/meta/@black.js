@@ -47,6 +47,7 @@ export const color = createType(Type.COLOR, readers.color)();
 export const quaternion = createType(Type.QUATERNION, readers.vector4)();
 export const matrix4 = createType(Type.MATRIX4, readers.matrix)();
 export const indexBuffer = createType(Type.INDEX_BUFFER, readers.indexBuffer)();
+export const enums = createType(Type.ENUM, readers.enums)();
 
 export const fromList = decorate({
     property({ target, property, descriptor }, options, typeOf)

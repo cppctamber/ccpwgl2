@@ -1,34 +1,21 @@
+import { meta, Tw2BaseClass } from "global"
+
+
 /**
  * Tr2ActionPlaySound
- * TODO: Implement
- * @ccp Tr2ActionPlaySound
  *
  * @property {String} emitter
  * @property {String} event
  */
-export class Tr2ActionPlaySound
+@meta.notImplemented
+@meta.type("Tr2ActionPlaySound", true)
+export class Tr2ActionPlaySound extends Tw2BaseClass
 {
 
+    @meta.black.string
     emitter = "";
+
+    @meta.black.string
     event = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "emitter", r.string ],
-            [ "event", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

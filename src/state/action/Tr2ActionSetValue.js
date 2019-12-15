@@ -1,38 +1,25 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * Tr2ActionSetValue
- * Todo: Implement
  *
  * @property {String} attribute -
  * @property {String} path      -
  * @property {String} value     -
  */
+@meta.notImplemented
+@meta.type("Tr2ActionSetValue", true)
 export class Tr2ActionSetValue extends Tw2BaseClass
 {
 
+    @meta.black.string
     attribute = "";
+
+    @meta.black.path
     path = "";
+
+    @meta.black.string
     value = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "attribute", r.string ],
-            [ "path", r.path ],
-            [ "value", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

@@ -1,32 +1,17 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * Tr2ActionOverlay
- * Todo: Implement
  *
  * @property {String} path -
  */
+@meta.notImplemented
+@meta.type("Tr2ActionOverlay", true)
 export class Tr2ActionOverlay extends Tw2BaseClass
 {
 
+    @meta.black.path
     path = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "path", r.path ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

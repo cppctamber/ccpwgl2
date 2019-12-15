@@ -1,35 +1,21 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
+
 
 /**
  * Tr2ActionAnimateCurveSet
- * TODO: Implement
  *
  * @property {Tw2CurveSet} curveSet -
  * @property {String} value         -
  */
+@meta.notImplemented
+@meta.type("Tr2ActionAnimateCurveSet", true)
 export class Tr2ActionAnimateCurveSet extends Tw2BaseClass
 {
 
+    @meta.black.object
     curveSet = null;
+
+    @meta.black.string
     value = "";
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "curveSet", r.object ],
-            [ "value", r.string ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

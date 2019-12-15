@@ -1,26 +1,12 @@
-import { Tw2BaseClass } from "global";
+import { meta, Tw2BaseClass } from "global";
 
 /**
  * Tr2SyncToAnimation
- * Todo: Implement
  */
+@meta.notImplemented
+@meta.type("Tr2SyncToAnimation", true)
+@meta.data("black")
 export class Tr2SyncToAnimation extends Tw2BaseClass
 {
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
