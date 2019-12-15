@@ -1,15 +1,8 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-/**
- * WodPlaceableRes
- *
- * @property {Number} farFadeDistance  -
- * @property {Number} nearFadeDistance -
- * @property {Tr2Model} visualModel    -
- */
-@meta.ccp("WodPlaceableRes")
 @meta.notImplemented
+@meta.type("WodPlaceableRes", true)
 export class WodPlaceableRes extends Tw2BaseClass
 {
 
@@ -19,7 +12,7 @@ export class WodPlaceableRes extends Tw2BaseClass
     @meta.black.float
     nearFadeDistance = 0;
 
-    @meta.black.object
+    @meta.black.objectOf("Tr2Model")
     visualModel = null;
 
 }

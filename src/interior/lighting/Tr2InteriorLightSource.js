@@ -1,24 +1,8 @@
 import { meta, vec3, vec4, Tw2BaseClass } from "global";
 
 
-/**
- * Tr2InteriorLightSource
- *
- * @property {String} name                -
- * @property {vec4} color                 -
- * @property {Number} coneAlphaInner      -
- * @property {Number} coneAlphaOuter      -
- * @property {vec3} coneDirection         -
- * @property {Number} falloff             -
- * @property {Number} importanceBias      -
- * @property {Number} importanceScale     -
- * @property {Tr2KelvinColor} kelvinColor -
- * @property {vec3} position              -
- * @property {Number} radius              -
- * @property {Boolean} useKelvinColor     -
- */
-@meta.ccp("Tr2InteriorLightSource")
 @meta.notImplemented
+@meta.type("Tr2InteriorLightSource", true)
 export class Tr2InteriorLightSource extends Tw2BaseClass
 {
 
@@ -46,7 +30,7 @@ export class Tr2InteriorLightSource extends Tw2BaseClass
     @meta.black.float
     importanceScale = 0;
 
-    @meta.black.object
+    @meta.black.objectOf("Tr2KelvinColor")
     kelvinColor = null;
 
     @meta.black.vector3

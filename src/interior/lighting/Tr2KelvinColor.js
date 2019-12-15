@@ -1,14 +1,8 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-/**
- * Tr2KelvinColor
- *
- * @property {Number} temperature -
- * @property {Number} tint        -
- */
-@meta.ccp("Tr2KelvinColor")
 @meta.notImplemented
+@meta.type("Tr2KelvinColor", true)
 export class Tr2KelvinColor extends Tw2BaseClass
 {
 

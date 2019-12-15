@@ -1,21 +1,15 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-/**
- * Tr2InteriorScene
- *
- * @property {Array.<Tr2IntSkinnedObject>} dynamics  -
- * @property {Array.<Tr2InteriorLightSource>} lights -
- */
-@meta.ccp("Tr2InteriorScene")
 @meta.notImplemented
+@meta.type("Tr2InteriorScene", true)
 export class Tr2InteriorScene extends Tw2BaseClass
 {
 
-    @meta.black.list
+    @meta.black.listOf("Tr2IntSkinnedObject")
     dynamics = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tr2InteriorLightSource")
     lights = [];
 
 }
