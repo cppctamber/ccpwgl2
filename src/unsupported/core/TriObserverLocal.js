@@ -1,12 +1,8 @@
 import { meta, vec3, Tw2BaseClass } from "global";
 
-/**
- * TriObserverLocal
- *
- * @property {vec3} front -
- */
+
 @meta.notImplemented
-@meta.type("TriObserverLocal")
+@meta.type("TriObserverLocal", true)
 export class TriObserverLocal extends Tw2BaseClass
 {
 

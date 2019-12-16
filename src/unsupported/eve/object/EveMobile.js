@@ -1,64 +1,43 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { EveObject } from "eve/object/EveObject";
 
-/**
- * EveMobile
- * TODO: Implement
- * @ccp EveMobile
- *
- * @property {String} name                         -
- * @property {Array.<EveObjectSet>} attachments    -
- * @property {vec3} boundingSphereCenter           -
- * @property {Number} boundingSphereRadius         -
- * @property {Array.<EveObject>} children          -
- * @property {Array.<StateController>} controllers -
- * @property {Array.<Tw2CurveSet>} curveSets       -
- * @property {Array.<EveObjectSet>} locatorSets    -
- * @property {Tr2MeshLod} meshLod                  -
- * @property {Array.<TriObserverLocal>} observers  -
- * @property {Tr2Effect} shadowEffect              -
- */
+
+@meta.notImplemented
+@meta.type("EveMobile", true)
 export class EveMobile extends EveObject
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("EveObjectSet")
     attachments = [];
+
+    @meta.black.vector3
     boundingSphereCenter = vec3.create();
+
+    @meta.black.float
     boundingSphereRadius = 0;
+
+    @meta.black.listOf("EveChild")
     children = [];
+
+    @meta.black.listOf("EveStateController")
     controllers = [];
+
+    @meta.black.listOf("Tw2CurveSet")
     curveSets = [];
+
+    @meta.black.listOf("EveLocatorSets")
     locatorSets = [];
+
+    @meta.black.objectOf("Tr2MeshLod")
     meshLod = null;
+
+    @meta.black.listOf("TriObserverLocal")
     observers = [];
+
+    @meta.black.objectOf("Tw2Effect")
     shadowEffect = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "attachments", r.array ],
-            [ "boundingSphereCenter", r.vector3 ],
-            [ "boundingSphereRadius", r.float ],
-            [ "children", r.array ],
-            [ "controllers", r.array ],
-            [ "curveSets", r.array ],
-            [ "locatorSets", r.array ],
-            [ "name", r.string ],
-            [ "meshLod", r.object ],
-            [ "observers", r.array ],
-            [ "shadowEffect", r.object ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

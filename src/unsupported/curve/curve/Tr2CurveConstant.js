@@ -1,5 +1,5 @@
 import { meta, vec4 } from "global";
-import { Tw2Curve } from "./Tw2Curve";
+import { Tw2Curve } from "curve";
 
 /**
  * Constant curve
@@ -9,7 +9,7 @@ import { Tw2Curve } from "./Tw2Curve";
 @meta.notImplemented
 @meta.type("Tw2CurveConstant", true)
 @meta.todo("Is this a curve or a key?")
-export class Tw2CurveConstant extends Tw2Curve
+export class Tr2CurveConstant extends Tw2Curve
 {
 
     @meta.black.string

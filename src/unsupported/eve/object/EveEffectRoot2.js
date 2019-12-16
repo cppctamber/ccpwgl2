@@ -1,74 +1,52 @@
-import { quat, vec3, vec4 } from "global";
+import { meta, quat, vec3, vec4 } from "global";
 import { EveObject } from "eve/object/EveObject";
 
 
-/**
- * EveEffectRoot2
- * TODO: Implement
- * @ccp EveEffectRoot2
- *
- * @property {String} name                          -
- * @property {vec3} boundingSphereCenter            -
- * @property {Number} boundingSphereRadius          -
- * @property {Array.<Tw2CurveSet>} curveSets        -
- * @property {Number} duration                      -
- * @property {Boolean} dynamicLOD                   -
- * @property {Array.<EveChild>} effectChildren      -
- * @property {Array.<Tr2PointLight>} lights         -
- * @property {Array} observers                      -
- * @property {quat} rotation                        -
- * @property {vec3} scaling                         -
- * @property {vec4} secondaryLightingEmissiveColor  -
- * @property {Number} secondaryLightingSphereRadius -
- * @property {vec3} translation                     -
- */
+@meta.notImplemented
+@meta.type("EveEffectRoot2", true)
 export class EveEffectRoot2 extends EveObject
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.vector3
     boundingSphereCenter = vec3.create();
+
+    @meta.black.float
     boundingSphereRadius = 0;
+
+    @meta.black.listOf("Tw2CurveSet")
     curveSets = [];
+
+    @meta.black.float
     duration = 0;
+
+    @meta.black.boolean
     dynamicLOD = false;
+
+    @meta.black.listOf("EveChild")
     effectChildren = [];
+
+    @meta.black.listOf("Tr2PointLight")
     lights = [];
+
+    @meta.black.listOf("TriObserverLocal")
     observers = [];
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.color
     secondaryLightingEmissiveColor = vec4.create();
+
+    @meta.black.float
     secondaryLightingSphereRadius = 0;
+
+    @meta.black.vector3
     translation = vec3.create();
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boundingSphereCenter", r.vector3 ],
-            [ "boundingSphereRadius", r.float ],
-            [ "curveSets", r.array ],
-            [ "duration", r.float ],
-            [ "dynamicLOD", r.boolean ],
-            [ "effectChildren", r.array ],
-            [ "lights", r.array ],
-            [ "name", r.string ],
-            [ "observers", r.array ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "secondaryLightingEmissiveColor", r.color ],
-            [ "secondaryLightingSphereRadius", r.float ],
-            [ "translation", r.vector3 ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

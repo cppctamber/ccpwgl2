@@ -1,44 +1,7 @@
 import { meta, vec3, vec4 } from "global";
-import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
+import { Tw2ParticleEmitter } from "particle/emitter/Tw2ParticleEmitter";
 
 
-/**
- * Tr2GpuSharedEmitter
- *
- * @property {String} name                         -
- * @property {Number} angle                        -
- * @property {vec3} attractorPosition              -
- * @property {Number} attractorStrength            -
- * @property {vec4} color0                         -
- * @property {vec4} color1                         -
- * @property {vec4} color2                         -
- * @property {vec4} color3                         -
- * @property {Number} colorMidpoint                -
- * @property {Boolean} continuousEmitter           -
- * @property {vec3} direction                      -
- * @property {Number} drag                         -
- * @property {Number} emissionDensity              -
- * @property {Number} gravity                      -
- * @property {Number} inheritVelocity              -
- * @property {Number} innerAngle                   -
- * @property {Number} maxDisplacement              -
- * @property {Number} maxEmissionDensity           -
- * @property {Number} maxLifeTime                  -
- * @property {Number} maxSpeed                     -
- * @property {Number} minLifeTime                  -
- * @property {Number} minSpeed                     -
- * @property {Tr2GpuParticleSystem} particleSystem -
- * @property {vec3} position                       -
- * @property {Number} radius                       -
- * @property {Number} rate                         -
- * @property {Boolean} scaledByParent              -
- * @property {Number} sizeVariance                 -
- * @property {vec3} sizes                          -
- * @property {Number} textureIndex                 -
- * @property {Number} turbulenceAmplitude          -
- * @property {Number} turbulenceFrequency          -
- * @property {Number} velocityStretchRotation      -
- */
 @meta.ccp("Tr2GpuSharedEmitter")
 @meta.notImplemented
 export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
@@ -110,7 +73,7 @@ export class Tr2GpuSharedEmitter extends Tw2ParticleEmitter
     @meta.black.float
     minSpeed = 0;
 
-    @meta.black.object
+    @meta.black.objectOf("Tr2GpuParticleSystem")
     particleSystem = null;
 
     @meta.black.vector3

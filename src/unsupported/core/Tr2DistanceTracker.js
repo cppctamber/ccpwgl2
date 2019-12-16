@@ -2,7 +2,7 @@ import { meta, vec3 } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2DistanceTracker")
+@meta.type("Tr2DistanceTracker", true)
 export class Tr2DistanceTracker
 {
 

@@ -1,22 +1,8 @@
 import { meta, vec3, vec4, Tw2BaseClass } from "global";
 
-/**
- * Tr2PointLight
- * TODO: Implement
- *
- * @property {String} name           -
- * @property {Number} brightness     -
- * @property {vec4} color            -
- * @property {Number} noiseAmplitude -
- * @property {Number} noiseFrequency -
- * @property {Number} noiseOctaves   -
- * @property {vec3} position         -
- * @property {Number} radius         -
- */
-@meta.data({
-    ccp: "Tr2PointLight",
-    notImplemented: true
-})
+
+@meta.notImplemented
+@meta.type("Tr2PointLight", true)
 export class Tr2PointLight extends Tw2BaseClass
 {
 

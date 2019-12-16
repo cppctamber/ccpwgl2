@@ -1,6 +1,6 @@
 import { meta, quat, vec3, mat4 } from "global";
 import { Tw2RenderBatch } from "core";
-import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { EveObjectSet, EveObjectSetItem } from "eve";
 
 
 @meta.notImplemented

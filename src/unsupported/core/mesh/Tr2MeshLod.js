@@ -7,63 +7,43 @@ import {
     RM_OPAQUE,
     RM_TRANSPARENT,
     RM_PICKABLE
-} from "global/engine";
+} from "global/engine/Tw2Constant";
 
-/**
- * Tr2MeshLod
- * TODO: Implement "depthAreas"
- * TODO: Implement "geometryRes"
- * TODO: Implement LOD
- * TODO: What should the mesh index be for it's render batch?
- * TODO: Confirm "associatedResources" is geometryRes cache
- *
- * @property {Array.<Tw2MeshArea>} additiveAreas         -
- * @property {Array<Tw2GeometryRes>} associatedResources -
- * @property {Array.<Tw2MeshArea>} decalAreas            -
- * @property {Array.<Tw2MeshArea>} depthAreas            -
- * @property {Array.<Tw2MeshArea>} distortionAreas       -
- * @property {Boolean} display                           -
- * @property {Tw2LodResource} geometryRes                -
- * @property {Array.<Tw2MeshArea>} opaqueAreas           -
- * @property {Array.<Tw2MeshArea>} pickableAreas         -
- * @property {Array.<Tw2MeshArea>} transparentAreas      -
- * @property {Tw2GeometryRes} _geometryResource          -
- */
-@meta.data({
-    ccp: "Tr2MeshLod",
-    notImplemented: true
-})
+
+@meta.notImplemented
+@meta.type("Tr2MeshLod", true)
+@meta.todo("Implement LOD")
 export class Tr2MeshLod extends Tw2BaseClass
 {
 
-    @meta.black.list
+    @meta.black.listOf("Tw2MeshArea")
     additiveAreas = [];
 
-    @meta.black.list
     @meta.notImplemented
+    @meta.black.listOf("Tw2GeometryRes")
     associatedResources = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2MeshArea")
     decalAreas = [];
 
-    @meta.black.list
     @meta.notImplemented
+    @meta.black.listOf("Tw2MeshArea")
     depthAreas = [];
 
-    @meta.black.list
     @meta.notImplemented
+    @meta.black.listOf("Tw2MeshArea")
     distortionAreas = [];
 
-    @meta.black.object
+    @meta.black.objectOf("Tr2LodResource")
     geometryRes = null;
 
-    @meta.black.list
+    @meta.black.listOf("Tw2MeshArea")
     opaqueAreas = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2MeshArea")
     pickableAreas = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2MeshArea")
     transparentAreas = [];
 
     @meta.boolean
@@ -80,7 +60,9 @@ export class Tr2MeshLod extends Tw2BaseClass
         depthAreas: true
     };
 
+
     _geometryResource = null;
+
 
     /**
      * Temporary alias for _geometryResource
@@ -98,11 +80,6 @@ export class Tr2MeshLod extends Tw2BaseClass
     set geometryResource(res)
     {
         this._geometryResource = res;
-    }
-
-    GetGeometryResource()
-    {
-        return this._geometryResource;
     }
 
     /**

@@ -1,5 +1,5 @@
 import { vec3, quat, mat4, meta } from "global";
-import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { EveObjectSet, EveObjectSetItem } from "eve";
 
 
 @meta.notImplemented

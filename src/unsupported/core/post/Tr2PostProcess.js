@@ -1,19 +1,12 @@
 import { meta, Tw2BaseClass } from "global";
 
-/**
- * Tr2PostProcess
- * TODO: Implement
- *
- * @property {Array.<Tw2Effect>} stages -
- */
-@meta.data({
-    ccp: "Tr2PostProcess",
-    notImplemented: true
-})
+
+@meta.notImplemented
+@meta.data("Tr2PostProcess", true)
 export class Tr2PostProcess extends Tw2BaseClass
 {
 
-    @meta.black.array
+    @meta.black.listOf("Tw2Effect")
     stages = [];
 
 }

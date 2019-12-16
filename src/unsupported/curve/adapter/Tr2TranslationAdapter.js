@@ -7,7 +7,7 @@ import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
 export class Tr2TranslationAdapter extends Tw2CurveAdapter
 {
 
-    @meta.black.objectOf("Tw2Curve"])
+    @meta.black.objectOf("Tw2Curve")
     curve = null;
 
     @meta.black.vector3

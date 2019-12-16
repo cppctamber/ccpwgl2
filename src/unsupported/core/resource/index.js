@@ -1,1 +1,1 @@
-export * from "./Tw2LodResource"
+export * from "./Tw2LodResource";

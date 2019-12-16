@@ -1,14 +1,7 @@
 import { meta, vec3 } from "global";
-import { Tw2ParticleForce } from "./Tw2ParticleForce";
+import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 
-/**
- * Tr2ParticleVortexForce
- *
- * @property {vec3} axis        -
- * @property {Number} magnitude -
- * @property {vec3} position    -
- */
 @meta.ccp("Tr2ParticleVortexForce")
 @meta.notImplemented
 export class Tr2ParticleVortexForce extends Tw2ParticleForce

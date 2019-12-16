@@ -1,6 +1,6 @@
 import { meta, vec4 } from "global";
 import { Tw2RenderBatch } from "core";
-import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
+import { EveObjectSet, EveObjectSetItem } from "eve";
 
 
 @meta.notImplemented
@@ -19,9 +19,7 @@ export class EveBoosterSet2Batch extends Tw2RenderBatch
     }
 }
 
-/**
- * Booster set item
- */
+
 @meta.notImplemented
 @meta.type("EveBoosterSet2Item", true)
 export class EveBoosterSet2Item extends EveObjectSetItem

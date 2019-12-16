@@ -1,4 +1,4 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { EveObject } from "eve/object/EveObject";
 
 
@@ -26,62 +26,63 @@ import { EveObject } from "eve/object/EveObject";
  * @property {Tr2Effect} shadowEffect                 -
  * @property {Tr2TranslationAdapter} translationCurve -
  */
+@meta.notImplemented
+@meta.type("EveStation2", true)
 export class EveStation2 extends EveObject
 {
 
+    @meta.black.listOf("EveObjectSet")
     attachments = [];
+
+    @meta.black.vector3
     boundingSphereCenter = vec3.create();
+
+    @meta.black.float
     boundingSphereRadius = 0;
+
+    @meta.black.listOf("EveObject")
     children = [];
+
+    @meta.black.listOf("EveCurveSet")
     curveSets = [];
+
+    @meta.black.listOf("EveSpaceObjectDecal")
     decals = [];
+
+    @meta.black.listOf("EveChild")
     effectChildren = [];
+
+    @meta.black.listOf("TriPointLight")
     lights = [];
+
+    @meta.black.listOf("EveLocatorSets")
     locatorSets = [];
+
+    @meta.black.listOf("EveLocator2")
     locators = [];
+
+    @meta.black.objectOf("Tw2Mesh")
     mesh = null;
+
+    @meta.black.objectOf("Tr2MeshLod")
     meshLod = null;
+
+    @meta.black.objectOf("Tr2RotationAdapter")
     modelRotationCurve = null;
+
+    @meta.black.float
     modelScale = 0;
+
+    @meta.black.listOf("TriObserverLocal")
     observers = [];
+
+    @meta.black.objectOf("Tr2RotationAdapter")
     rotationCurve = null;
+
+    @meta.black.objectOf("Tw2Effect")
     shadowEffect = null;
+
+    @meta.black.objectOf("Tr2TranslationAdapter")
     translationCurve = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "attachments", r.array ],
-            [ "boundingSphereCenter", r.vector3 ],
-            [ "boundingSphereRadius", r.float ],
-            [ "children", r.array ],
-            [ "curveSets", r.array ],
-            [ "decals", r.array ],
-            [ "effectChildren", r.array ],
-            [ "lights", r.array ],
-            [ "locatorSets", r.array ],
-            [ "locators", r.array ],
-            [ "name", r.string ],
-            [ "mesh", r.object ],
-            [ "meshLod", r.object ],
-            [ "modelScale", r.float ],
-            [ "observers", r.array ],
-            [ "rotationCurve", r.object ],
-            [ "modelRotationCurve", r.object ],
-            [ "shadowEffect", r.object ],
-            [ "translationCurve", r.object ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }

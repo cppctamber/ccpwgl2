@@ -19,6 +19,7 @@ export class Tr2LodResource extends Tw2BaseClass
     @meta.black.path
     mediumDetailResPath = "";
 
+
     /**
      * Gets the high detail resource
      * @returns {null|Tw2TextureRes}

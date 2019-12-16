@@ -1,4 +1,4 @@
-import { quat, vec3 } from "global";
+import { meta, quat, vec3 } from "global";
 import { EveObject } from "eve/object/EveObject";
 
 
@@ -22,56 +22,52 @@ import { EveObject } from "eve/object/EveObject";
  * @property {vec3} translation                  -
  * @property {Tr2CurveConstant} translationCurve -
  */
+@meta.notImplemented
+@meta.type("EveRootTransform", true)
 export class EveRootTransform extends EveObject
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.float
     boundingSphereRadius = 0;
+
+    @meta.black.listOf("EveObject")
     children = [];
+
+    @meta.black.listOf("Tw2CurveSet")
     curveSets = [];
+
+    @meta.black.boolean
     display = false;
+
+    @meta.black.objectOf("Tw2Mesh")
     mesh = null;
+
+    @meta.black.uint
     modifier = 0;
+
+    @meta.black.listOf("TriObserverLocal")
     observers = [];
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.objectOf("Tw2Curve") //Tr2CurveConstant, Tr2RotationAdapter
     rotationCurve = null;
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.black.float
     sortValueMultiplier = 0;
+
+    @meta.black.vector3
     translation = vec3.create();
+
+    @meta.black.objectOf("Tw2Curve") //Tr2CurveConstant, Tr2TranslationAdapter
     translationCurve = null;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boundingSphereRadius", r.float ],
-            [ "children", r.array ],
-            [ "curveSets", r.array ],
-            [ "display", r.boolean ],
-            [ "mesh", r.object ],
-            [ "modifier", r.uint ],
-            [ "name", r.string ],
-            [ "observers", r.array ],
-            [ "position", r.vector3 ],
-            [ "rotation", r.vector4 ],
-            [ "rotationCurve", r.object ],
-            [ "scaling", r.vector3 ],
-            [ "sortValueMultiplier", r.float ],
-            [ "translation", r.vector3 ],
-            [ "translationCurve", r.object ],
-            [ "useDistanceBasedScale", r.boolean ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 4;
 
 }
 
