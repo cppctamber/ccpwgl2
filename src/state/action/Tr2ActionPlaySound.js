@@ -1,15 +1,10 @@
-import { meta, Tw2BaseClass } from "global"
+import { meta } from "global";
+import { Tw2Action } from "./Tw2Action";
 
 
-/**
- * Tr2ActionPlaySound
- *
- * @property {String} emitter
- * @property {String} event
- */
 @meta.notImplemented
 @meta.type("Tr2ActionPlaySound", true)
-export class Tr2ActionPlaySound extends Tw2BaseClass
+export class Tr2ActionPlaySound extends Tw2Action
 {
 
     @meta.black.string

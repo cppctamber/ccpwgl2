@@ -1,16 +1,10 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
+import { Tw2Action } from "./Tw2Action";
 
 
-/**
- * Tr2ActionChildEffect
- *
- * @property {String} childName     -
- * @property {String} path          -
- * @property {Boolean} removeOnStop -
- */
 @meta.notImplemented
 @meta.type("Tr2ActionChildEffect", true)
-export class Tr2ActionChildEffect extends Tw2BaseClass
+export class Tr2ActionChildEffect extends Tw2Action
 {
 
     @meta.black.string

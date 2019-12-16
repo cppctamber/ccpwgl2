@@ -1,14 +1,10 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
+import { Tw2Action } from "./Tw2Action";
 
 
-/**
- * Tr2ActionOverlay
- *
- * @property {String} path -
- */
 @meta.notImplemented
 @meta.type("Tr2ActionOverlay", true)
-export class Tr2ActionOverlay extends Tw2BaseClass
+export class Tr2ActionOverlay extends Tw2Action
 {
 
     @meta.black.path

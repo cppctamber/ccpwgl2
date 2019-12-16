@@ -1,16 +1,10 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
+import { Tw2Action } from "./Tw2Action";
 
 
-/**
- * Tr2ActionPlayCurveSet
- *
- * @property {String} curveSetName -
- * @property {String} rangeName    -
- * @property {Boolean} syncToRange -
- */
 @meta.notImplemented
 @meta.type("Tr2ActionPlayCurveSet", true)
-export class Tr2ActionPlayCurveSet extends Tw2BaseClass
+export class Tr2ActionPlayCurveSet extends Tw2Action
 {
 
     @meta.black.string

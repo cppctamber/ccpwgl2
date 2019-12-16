@@ -1,16 +1,10 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
+import { Tw2Action } from "./Tw2Action";
 
 
-/**
- * Tr2ActionSetValue
- *
- * @property {String} attribute -
- * @property {String} path      -
- * @property {String} value     -
- */
 @meta.notImplemented
 @meta.type("Tr2ActionSetValue", true)
-export class Tr2ActionSetValue extends Tw2BaseClass
+export class Tr2ActionSetValue extends Tw2Action
 {
 
     @meta.black.string

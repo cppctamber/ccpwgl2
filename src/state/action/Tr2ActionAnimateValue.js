@@ -1,23 +1,16 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
+import { Tw2Action } from "./Tw2Action";
 
 
-/**
- * Tr2ActionAnimateValue
- *
- * @property {String} attribute               -
- * @property {Tr2CurveScalarExpression} curve -
- * @property {String} path                    -
- * @property {String} value                   -
- */
 @meta.notImplemented
 @meta.type("Tr2ActionAnimateValue", true)
-export class Tr2ActionAnimateValue extends Tw2BaseClass
+export class Tr2ActionAnimateValue extends Tw2Action
 {
 
     @meta.black.string
     attribute = "";
 
-    @meta.black.object
+    @meta.black.objectOf("Tr2CurveScalarExpression")
     curve = null;
 
     @meta.black.path

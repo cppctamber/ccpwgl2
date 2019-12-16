@@ -1,16 +1,10 @@
-import { meta, Tw2BaseClass } from "global";
+import { meta } from "global";
+import { Tw2Action } from "./Tw2Action";
 
 
-/**
- * Tr2ActionPlayMeshAnimation
- *
- * @property {String} animation -
- * @property {Number} loops     -
- * @property {String} mask      -
- */
 @meta.notImplemented
 @meta.type("Tr2ActionPlayMeshAnimation", true)
-export class Tr2ActionPlayMeshAnimation extends Tw2BaseClass
+export class Tr2ActionPlayMeshAnimation extends Tw2Action
 {
 
     @meta.black.string
