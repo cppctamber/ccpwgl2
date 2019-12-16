@@ -1,6 +1,7 @@
 import { vec3, quat, mat4, device } from "global";
 import { Tw2PerObjectData } from "core";
-import { EveObject } from "./legacy/EveObject";
+import { EveObject } from "./EveObject";
+
 
 /**
  * EveTransform

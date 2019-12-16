@@ -1,6 +1,6 @@
 import { vec3, mat4, util } from "global";
 import { Tw2PerObjectData } from "core";
-import { EveObject } from "./legacy/EveObject";
+import { EveObject } from "./EveObject";
 
 /**
  * EveMissileWarhead

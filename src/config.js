@@ -1,10 +1,9 @@
 import * as core from "./core";
 import * as curve from "./curve";
 import * as eve from "./eve";
-import * as interior from "./interior";
 import * as particle from "./particle";
 import * as sof from "./sof";
-import * as state from "./state";
+import * as unsupported from "./unsupported";
 import { Tw2EventEmitter, Tw2Notifications } from "./global/class";
 
 import { vec4, mat4 } from "./global/math";
@@ -73,10 +72,9 @@ export const config = {
             core,
             curve,
             eve,
-            interior,
             particle,
             sof,
-            state,
+            unsupported,
             { Tw2EventEmitter, Tw2Notifications }
         ],
 
