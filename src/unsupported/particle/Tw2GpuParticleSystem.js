@@ -1,50 +1,37 @@
 import { meta } from "global";
 
 
-/**
- * Tr2GpuParticleSystem
- *
- * @property {Tw2Effect} clear             -
- * @property {Tw2Effect} emit              -
- * @property {Tw2Effect} render            -
- * @property {Tw2Effect} setDrawParameters -
- * @property {Tw2Effect} setSortParameters -
- * @property {Tw2Effect} sort              -
- * @property {Tw2Effect} sortInner         -
- * @property {Tw2Effect} sortStep          -
- * @property {Tw2Effect} update            -
- */
-@meta.ccp("Tr2GpuParticleSystem")
 @meta.notImplemented
+@meta.type("Tr2GpuParticleSystem", true)
+@meta.todo("Handle conflict with Tw2BaseClass.emit")
 export class Tr2GpuParticleSystem
 {
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     clear = null;
 
-    @meta.black.object
-    @meta.todo("Handle conflict with Tw2BaseClass.emit")
+    @meta.black.objectOf("Tw2Effect")
     emit = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     render = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     setDrawParameters = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     setSortParameters = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     sort = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     sortInner = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     sortStep = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     update = null;
 
 
