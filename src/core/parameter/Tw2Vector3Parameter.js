@@ -1,22 +1,34 @@
-import { vec3 } from "global";
+import { meta, vec3 } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
+
 
 /**
  * Tw2Vector3Parameter
- * TODO: Is this deprecated?
- * @ccp N/A
+ *
+ * @property {String} name
+ * @property {vec3} value
  */
+@meta.type("Tw2Vector3Parameter")
 export class Tw2Vector3Parameter extends Tw2VectorParameter
 {
 
+    @meta.string
+    name = "";
+
+    @meta.vector3
+    value = vec3.fromValues(1,1,1);
+
+
     /**
      * Constructor
-     * @param {String} [name='']
-     * @param {vec3|Array|Float32Array} [value=vec3.fromValues(1,1,1)]
+     * @param {String} [name]
+     * @param {vec3|Array|Float32Array} [value]
      */
-    constructor(name = "", value = vec3.fromValues(1, 1, 1))
+    constructor(name, value)
     {
-        super(name, value);
+        super();
+        if (name) this.name = name;
+        if (value) vec3.copy(this.value, value);
     }
 
     /**

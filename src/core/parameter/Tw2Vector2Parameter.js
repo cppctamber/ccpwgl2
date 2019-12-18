@@ -1,22 +1,34 @@
-import { vec2 } from "global";
+import { meta, vec2 } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
+
 
 /**
  * Tw2Vector2Parameter
- * TODO: Is this deprecated?
- * @ccp N/A
+ *
+ * @property {String} name
+ * @property {vec2} value
  */
+@meta.type("Tw2Vector2Parameter")
 export class Tw2Vector2Parameter extends Tw2VectorParameter
 {
+
+    @meta.string
+    name = "";
+
+    @meta.vector2
+    value = vec2.fromValues(1, 1);
+
 
     /**
      * Constructor
      * @param {String} [name='']
      * @param {vec2|Array|Float32Array} [value=vec2.fromValues(1,1)]
      */
-    constructor(name = "", value = vec2.fromValues(1, 1))
+    constructor(name, value)
     {
-        super(name, value);
+        super();
+        if (name) this.name = name;
+        if (value) vec2.copy(this.value, value);
     }
 
     /**

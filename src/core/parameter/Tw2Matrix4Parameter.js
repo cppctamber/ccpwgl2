@@ -1,11 +1,22 @@
-import { mat4 } from "global";
+import { meta, mat4 } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
+
 
 /**
  * Tw2Matrix4Parameter
+ *
+ * @property {String} name
+ * @property {mat4} value
  */
+@meta.type("Tw2Matrix4Parameter", "Tw2MatrixParameter")
 export class Tw2Matrix4Parameter extends Tw2VectorParameter
 {
+
+    @meta.black.string
+    name = "";
+
+    @meta.black.matrix4
+    value = mat4.create();
 
     /**
      * Constructor
@@ -14,7 +25,14 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
      */
     constructor(name = "", value = mat4.create())
     {
-        super(name, value);
+        super();
+
+        if (name) this.name = name;
+
+        if (value)
+        {
+            mat4.copy(this.value, value);
+        }
     }
 
     /**
@@ -109,19 +127,6 @@ export class Tw2Matrix4Parameter extends Tw2VectorParameter
      * @type {Number}
      */
     static constantBufferSize = 16;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "value", r.matrix ]
-        ];
-    }
 
 }
 

@@ -1,43 +1,62 @@
-import { resMan, device, util } from "global";
+import { resMan, device, util, meta } from "global";
 import { Tw2SamplerState } from "../sampler";
 import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 
+
 /**
  * Tw2TextureParameter
- * TODO: Remove constructor parameters
- * TODO: Identify if override samplers are handled differently for TriTextureParameter (e.g. directly on effects)
- * TODO: Make textureRes private
- * TODO: Remove Override methods once utility functions working
- * @ccp TriTextureParameter
  *
- * @property {Boolean} useAllOverrides
  * @property {Number} addressUMode
  * @property {Number} addressVMode
  * @property {Number} addressWMode
  * @property {Number} filterMode
  * @property {Number} mapFilterMode
  * @property {Number} maxAnisotropy
+ * @property {Boolean} useAllOverrides
+ * @property {Boolean} forceAddressModes
  * @property {Tw2TextureRes} textureRes
  * @property {Tw2SamplerState} _sampler
  */
+@meta.type("Tw2TextureParameter", "TriTextureParameter")
 export class Tw2TextureParameter extends Tw2Parameter
 {
 
-    // ccp
+    @meta.black.string
+    name = "";
+
+    @meta.black.path
     resourcePath = "";
 
-    // ccpwgl
+    @meta.uint
     addressUMode = 1;
-    addressVMode = 1;
-    addressWMode = 1;
-    filterMode = 2;
-    maxAnisotropy = 4;
-    mipFilterMode = 2;
-    textureRes = null;
-    useAllOverrides = false;
-    forceAddressMode = false;
 
+    @meta.uint
+    addressVMode = 1;
+
+    @meta.uint
+    addressWMode = 1;
+
+    @meta.uint
+    filterMode = 2;
+
+    @meta.uint
+    maxAnisotropy = 4;
+
+    @meta.uint
+    mipFilterMode = 2;
+
+    @meta.boolean
+    useAllOverrides = false;
+
+    @meta.boolean
+    forceAddressModes = false;
+
+    @meta.objectOf("Tw2TextureRes")
+    @meta.todo("Make private")
+    textureRes = null;
+
+    @meta.objectOf("Tw2SamplerState")
     _sampler = null;
 
 
@@ -48,12 +67,13 @@ export class Tw2TextureParameter extends Tw2Parameter
      */
     constructor(name, texturePath)
     {
-        super(name);
+        super();
+
+        if (name) this.name = name;
 
         if (texturePath)
         {
-            this.resourcePath = texturePath;
-            this.Initialize();
+            this.SetValue(texturePath);
         }
     }
 
@@ -310,18 +330,5 @@ export class Tw2TextureParameter extends Tw2Parameter
         "maxAnisotropy",
         "forceAddressModes"
     ];
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "resourcePath", r.path ]
-        ];
-    }
 
 }

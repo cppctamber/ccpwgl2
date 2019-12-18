@@ -1,20 +1,11 @@
 import { ErrIndexBounds } from "../Tw2Error";
-import { util, Tw2BaseClass } from "global";
+import { util, Tw2BaseClass, meta } from "global";
 
-/**
- * Tw2VectorParameter base class
- *
- * @property {Float32Array} value
- * @property {?Float32Array} _constantBuffer
- * @property {?Number} _offset
- */
+
+@meta.type("Tw2VectorParameter")
+@meta.abstract
 export class Tw2VectorParameter extends Tw2BaseClass
 {
-
-    value = new Float32Array(this.size);
-    //_constantBuffer = null;
-    //_offset = null;
-
 
     /**
      * Gets the parameter's constant buffer size
@@ -23,18 +14,6 @@ export class Tw2VectorParameter extends Tw2BaseClass
     get size()
     {
         return this.constructor.constantBufferSize;
-    }
-
-    /**
-     * Constructor
-     * @param {String} [name='']
-     * @param {Float32Array|Array} [value]
-     */
-    constructor(name, value)
-    {
-        super();
-        this.name = name;
-        if (value) this.value.set(value);
     }
 
     /**

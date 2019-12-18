@@ -1,22 +1,23 @@
 import { Tw2Parameter } from "./Tw2Parameter";
-import { util } from "global";
+import { meta, util } from "global";
+
 
 /**
  * Tw2FloatParameter
- * @ccp Tr2FloatParameter
  *
  * @property {String} name
  * @property {Number} value
- * @property {?Float32Array} _constantBuffer
- * @property {?Number} _offset
  */
+@meta.type("Tw2FloatParameter", "Tr2FloatParameter")
 export class Tw2FloatParameter extends Tw2Parameter
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.float
     value = 1;
 
-    //_constantBuffer = null;
-    //_offset = null;
 
     /**
      * Constructor
@@ -25,8 +26,14 @@ export class Tw2FloatParameter extends Tw2Parameter
      */
     constructor(name = "", value = 1)
     {
-        super(name);
-        this.value = util.isArrayLike(value) ? value[0] : value;
+        super();
+
+        if (name) this.name = name;
+
+        if (value !== undefined)
+        {
+            this.value = util.isArrayLike(value) ? value[0] : value;
+        }
     }
 
     /**
@@ -117,18 +124,5 @@ export class Tw2FloatParameter extends Tw2Parameter
      * @type {Number}
      */
     static constantBufferSize = 1;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "value", r.float ]
-        ];
-    }
 
 }

@@ -1,25 +1,34 @@
-import { tw2 } from "global";
+import { meta, tw2 } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
+
 
 /**
  * Tw2VariableParameter
  *
+ * @property {String} name
  * @property {String} variableName
  */
+@meta.type("Tw2VariableParameter", "TriVariableParameter")
 export class Tw2VariableParameter extends Tw2Parameter
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.string
     variableName = "";
+
 
     /**
      * Constructor
-     * @param {String} [name='']
-     * @param {String} [variableName='']
+     * @param {String} [name]
+     * @param {String} [variableName]
      */
-    constructor(name = "", variableName = "")
+    constructor(name, variableName)
     {
-        super(name);
-        this.variableName = variableName;
+        super();
+        if (name) this.name = name;
+        if (variableName) this.variableName = variableName;
     }
 
     /**
@@ -73,19 +82,6 @@ export class Tw2VariableParameter extends Tw2Parameter
         {
             this.variable.Apply(a, b, c);
         }
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "variableName", r.string ]
-        ];
     }
 
 }

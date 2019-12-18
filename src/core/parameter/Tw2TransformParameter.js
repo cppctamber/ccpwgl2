@@ -1,31 +1,37 @@
 import { Tw2Parameter } from "./Tw2Parameter";
-import { vec3, quat, mat4 } from "global/math";
+import { meta, vec3, quat, mat4 } from "global";
 import { isNumber } from "global/util";
+
 
 /**
  * Tw2TransformParameter
- * @ccp Tr2TransformParameter
  *
  * @property {quat} rotation
  * @property {vec3} translation
  * @property {vec3} scaling
  * @property {mat4} _localTransform
  * @property {mat4} _worldTransform
- * @property {mat4} _parentTransform
+ * @property {Boolean} _rebuildLocal
+ * @property {Boolean} _rebuildWorldTransform
+ * @property {mat4|undefined} _parentTransform
  * @property {mat4|undefined} _worldTranspose
  * @property {mat4|undefined} _worldInverse
  * @property {mat4|undefined} _worldInverseTranspose
- * @property {Boolean} _rebuildLocal
- * @property {Boolean} _rebuildWorldTransform
  */
+@meta.type("Tw2TransformParameter", "Tr2TransformParameter")
 export class Tw2TransformParameter extends Tw2Parameter
 {
-    // ccp
+
+    @meta.black.string
     name = "";
+
+    @meta.black.quaternion
     rotation = quat.create();
 
-    // ccpwgl
+    @meta.vector3
     translation = vec3.create();
+
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
     _localTransform = mat4.create();
@@ -1050,8 +1056,9 @@ export class Tw2TransformParameter extends Tw2Parameter
      * Gets the object's values as a plain object
      * @param {Tw2TransformParameter} a
      * @param {Object} [out={}]
+     * @param {Object} [opt]
      */
-    static get(a, out = {})
+    static get(a, out = {}, opt)
     {
         out.rotation = a.GetRotation([]);
         out.translation = a.GetTranslation([]);
@@ -1080,16 +1087,4 @@ export class Tw2TransformParameter extends Tw2Parameter
         };
     }
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "rotation", r.vector4 ]
-        ];
-    }
 }

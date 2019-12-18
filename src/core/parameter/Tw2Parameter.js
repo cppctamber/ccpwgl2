@@ -1,14 +1,14 @@
 /* eslint no-unused-vars:0 */
 import { meta, Tw2BaseClass } from "global";
 
-/**
- * Tw2Parameter base class
- * * TODO: Remove constructor parameters
- * @ccp N/A
- */
+
+@meta.type("Tw2Parameter")
 @meta.abstract
 export class Tw2Parameter extends Tw2BaseClass
 {
+
+    @meta.string
+    name = "";
 
     /**
      * Gets the parameter's constant buffer size
@@ -17,16 +17,6 @@ export class Tw2Parameter extends Tw2BaseClass
     get size()
     {
         return this.constructor.constantBufferSize;
-    }
-
-    /**
-     * Constructor
-     * @param {String} [name='']
-     */
-    constructor(name = "")
-    {
-        super();
-        this.name = name;
     }
 
     /**

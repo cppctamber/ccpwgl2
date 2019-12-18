@@ -1,21 +1,34 @@
-import { vec4 } from "global";
+import { meta, vec4, quat } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
+
 /**
- * Tw2Vector4Parameter
- * @ccp TriVector4Parameter
+ * Tw2Vector2Parameter
+ *
+ * @property {String} name
+ * @property {vec4|quat} value
  */
+@meta.type("Tw2Vector4Parameter", "TriVector4Parameter")
 export class Tw2Vector4Parameter extends Tw2VectorParameter
 {
 
+    @meta.black.string
+    name = "";
+
+    @meta.black.vector4
+    value = vec4.fromValues(1,1,1,1);
+
+
     /**
      * Constructor
-     * @param {String} [name='']
-     * @param {vec4|Array|Float32Array} [value=vec4.fromValues(1,1,1,1)]
+     * @param {String} [name]
+     * @param {vec4|Array|Float32Array} [value]
      */
-    constructor(name = "", value = vec4.fromValues(1, 1, 1, 1))
+    constructor(name, value)
     {
-        super(name, value);
+        super();
+        if (name) this.name = name;
+        if (value) vec4.copy(this.value, value);
     }
 
     /**
@@ -95,18 +108,5 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
      * @type {Number}
      */
     static constantBufferSize = 4;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "value", r.vector4 ]
-        ];
-    }
 
 }
