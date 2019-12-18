@@ -51,13 +51,16 @@ export class Tw2CurveScalarKey extends Tw2CurveKey
 export class Tr2CurveScalar extends Tw2Curve
 {
 
+    @meta.black.string
+    name = "";
+
     @meta.black.uint
     extrapolationAfter = 0;
 
     @meta.black.uint
     extrapolationBefore = 0;
 
-    @meta.black.listOf("Tw2CurveScalarKey")
+    @meta.black.struct([ Tw2CurveScalarKey ])
     keys = [];
 
     @meta.black.float
