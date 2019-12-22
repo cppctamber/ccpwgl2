@@ -1,17 +1,6 @@
 import { meta, Tw2BaseClass } from "global";
 
-/**
- * Curve set
- *
- * @property {Array.<Tw2ValueBinding>} bindings                             -
- * @property {Array.<Tw2Curve|Tw2CurveExpression|Tw2CurveSequencer>} curves -
- * @property {Boolean} playOnLoad                                           -
- * @property {Array.<Tw2CurveSetRange>} ranges                              -
- * @property {Number} scale                                                 -
- * @property {Boolean} useSimTimeRebase                                     -
- * @property {Boolean} _isPlaying                                           -
- * @property {Number} _scaledTime                                           -
- */
+
 @meta.type("Tw2CurveSet", "TriCurveSet")
 export class Tw2CurveSet extends Tw2BaseClass
 {
@@ -19,17 +8,17 @@ export class Tw2CurveSet extends Tw2BaseClass
     @meta.black.string
     name = "";
 
-    @meta.black.list
+    @meta.black.listOf("Tw2ValueBinding")
     bindings = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Curve")
     curves = [];
 
     @meta.black.boolean
     playOnLoad = true;
 
     @meta.notImplemented
-    @meta.black.list
+    @meta.black.listOf("TriCurveSetRange")
     ranges = [];
 
     @meta.black.float
