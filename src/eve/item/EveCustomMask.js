@@ -2,16 +2,6 @@ import { meta, vec3, quat, vec4, mat4, tw2 } from "global";
 import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from "core/parameter";
 
 
-/**
- * Custom mask for patterns
- *
- * @property {Boolean} display             - Toggles mask visibility
- * @property {Boolean} isMirrored          - Identifies if the mask is mirrored
- * @property {Number} materialIndex        - The material this mask is for (ie. Mtl1, Mtl2, Mtl3, Mtl4, PMt1, PMt2)
- * @property {Object} parameters           - Mask parameters
- * @property {vec4} targetMaterials        - The target materials this mask is for
- * @property {mat4} _worldInverseTranspose - The custom mask's final matrix
- */
 @meta.type("EveCustomMask", true)
 @meta.stage(1)
 export class EveCustomMask extends Tw2TransformParameter

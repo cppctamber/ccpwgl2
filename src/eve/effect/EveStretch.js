@@ -1,36 +1,7 @@
 import { meta, vec3, mat4, Tw2BaseClass } from "global";
 import { Tw2Float } from "core";
 
-/**
- * EveStretch
- * TODO: Implement "moveCompletion"
- * TODO: Implement "moveObject"
- * TODO: Implement "progressCurve"
- * TODO: Implement "sourceLights"
- * TODO: Implement "useCurveLod"
- *
- * @property {String} name                      - The stretches' name
- * @property {Array.<TriCurveSet>} curveSets    - Animation curve sets
- * @property {Curve|CurveAdapter} dest          - Destination curve
- * @property {EveTransform} destObject          - Destination object
- * @property {Tw2Float} length                  - Stretch length
- * @property {TriCurveSet} moveCompletion       - not implemented
- * @property {EveTransform} moveObject          - not implemented
- * @property {Tr2CurveScalar} progressCurve     - not implemented
- * @property {Curve|CurveAdapter} source        - Source object
- * @property {Array} sourceLights               - not implemented
- * @property {EveTransform} sourceObject        - Source object
- * @property {EveTransform} stretchObject       - Stretch object
- * @property {Boolean} useCurveLod              - Enables curve LOD
- * @property {vec3} _destinationPosition        - Destination position
- * @property {Boolean} _displayDestObject       - Toggles destination object visibility
- * @property {Boolean} _displaySourceObject     - Toggles source object visibility
- * @property {Boolean} _isNegZForward           - Identifies if the the negative z axis is forwards
- * @property {vec3} _sourcePosition             - Source's position
- * @property {mat4} _sourceTransform            - Source's transform
- * @property {number} _time                     - The current stretch time
- * @property {Boolean} _useTransformsForStretch - Toggles using transforms for stretch objects
- */
+
 @meta.type("EveStretch", true)
 export class EveStretch extends Tw2BaseClass
 {
@@ -38,7 +9,7 @@ export class EveStretch extends Tw2BaseClass
     @meta.black.string
     name = "";
 
-    @meta.black.list
+    @meta.black.listOf("Tw2CurveSet")
     curveSets = [];
 
     @meta.boolean
@@ -50,11 +21,11 @@ export class EveStretch extends Tw2BaseClass
     @meta.black.object
     destObject = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Float")
     length = new Tw2Float();
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("Tw2CurveSet")
     moveCompletion = null;
 
     @meta.notImplemented
@@ -62,14 +33,14 @@ export class EveStretch extends Tw2BaseClass
     moveObject = null;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("Tw2Curve")
     progressCurve = null;
 
     @meta.black.object
     source = null;
 
     @meta.notImplemented
-    @meta.black.list
+    @meta.black.listOf("Tr2PointLight")
     sourceLights = [];
 
     @meta.black.object

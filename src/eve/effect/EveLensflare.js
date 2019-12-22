@@ -2,33 +2,7 @@ import { vec3, vec4, mat4, device, tw2, Tw2BaseClass, RS_COLORWRITEENABLE, meta 
 import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 
-/**
- * EveLensFlare
- *
- * @property {String} name                              -
- * @property {Boolean} display                          -
- * @property {Boolean} update                           -
- * @property {Boolean} doOcclusionQueries               -
- * @property {number} cameraFactor                      -
- * @property {vec3} position                            -
- * @property {Array} flares                             -
- * @property {Array.<EveOccluder>} occluders            -
- * @property {Array.<EveOccluder>} backgroundOccluders  -
- * @property {number} occlusionIntensity                -
- * @property {number} backgroundOcclusionIntensity      -
- * @property {Array} distanceToEdgeCurves               -
- * @property {Array} distanceToCenterCurves             -
- * @property {Array} radialAngleCurves                  -
- * @property {Array} xDistanceToCenter                  -
- * @property {Array} yDistanceToCenter                  -
- * @property {Array} zDistanceToCenter                  -
- * @property {Array} bindings                           -
- * @property {Array.<Tw2CurveSet>} curveSets            -
- * @property {?Tw2Mesh} mesh                            -
- * @property {vec3} _direction                          -
- * @property {mat4} _transform                          -
- * @property {*} _backBuffer                            -
- */
+
 @meta.type("EveLensflare", true)
 export class EveLensflare extends Tw2BaseClass
 {
@@ -37,37 +11,37 @@ export class EveLensflare extends Tw2BaseClass
     name = "";
 
     @meta.notImplemented
-    @meta.black.list
+    @meta.black.listOf("EveOccluder")
     backgroundOccluders = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2ValueBinding")
     bindings = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Curve")
     distanceToCenterCurves = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Curve")
     distanceToEdgeCurves = [];
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Mesh")
     mesh = null;
 
-    @meta.black.list
+    @meta.black.listOf("EveOccluder")
     occluders = [];
 
     @meta.black.vector3
     position = vec3.create();
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Curve")
     radialAngleCurves = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Curve")
     xDistanceToCenter = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Curve")
     yDistanceToCenter = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Curve")
     zDistanceToCenter = [];
 
     @meta.boolean
@@ -82,7 +56,7 @@ export class EveLensflare extends Tw2BaseClass
     @meta.float
     cameraFactor = 20;
 
-    @meta.list
+    @meta.listOf("EveLensflare")
     @meta.todo("Deprecated?")
     flares = [];
 
@@ -92,7 +66,7 @@ export class EveLensflare extends Tw2BaseClass
     @meta.float
     backgroundOcclusionIntensity = 1;
 
-    @meta.list
+    @meta.listOf("Tw2CurveSet")
     @meta.todo("Deprecated?")
     curveSets = [];
 
@@ -100,6 +74,7 @@ export class EveLensflare extends Tw2BaseClass
     _direction = vec3.create();
     _transform = mat4.create();
     _backBuffer = null;
+
 
     /**
      * Constructor

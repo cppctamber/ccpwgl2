@@ -4,16 +4,8 @@ import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists } from "global/util";
 import { Tw2Effect } from "core/mesh";
 
-/**
- * Sprite set render batch
- *
- * @property {Boolean} boosterGlow
- * @property {EveSpriteSet} spriteSet
- * @property {mat4} world
- * @property {Number}
- * @property {Number}
- */
-export class EveSpriteSetBatch extends Tw2RenderBatch
+
+class EveSpriteSetBatch extends Tw2RenderBatch
 {
 
     boosterGlow = false;
@@ -42,20 +34,6 @@ export class EveSpriteSetBatch extends Tw2RenderBatch
 }
 
 
-/**
- * Sprite
- *
- * @property {String} name       -
- * @property {Number} blinkPhase -
- * @property {Number} blinkRate  -
- * @property {Number} boneIndex  -
- * @property {vec4} color        -
- * @property {Number} falloff    -
- * @property {Number} maxScale   -
- * @property {Number} minScale   -
- * @property {vec3} position     -
- * @property {vec4} warpColor    -
- */
 @meta.type("EveSpriteSetItem", true)
 export class EveSpriteSetItem extends EveObjectSetItem
 {
@@ -90,9 +68,8 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.black.color
     warpColor = vec4.create();
 
-    // ccpwgl
     @meta.uint
-    groupIndex = -1;            // Retain from EveSOF?
+    groupIndex = -1;
 
     @meta.string
     @meta.todo("Remove this, and reference the name using the group index")
@@ -120,20 +97,6 @@ export class EveSpriteSetItem extends EveObjectSetItem
 }
 
 
-/**
- * Sprite set
- *
- * @property {String} name                      - The sprite set's name
- * @property {Tw2Effect} effect                 - The sprite set's effect
- * @property {Number} intensity                 - The sprite set's intensity
- * @property {Boolean} skinned                  - Use bone transforms (when useQuads is true)
- * @property {?Boolean} useQuads                - Use quad rendering (CPU transform)
- * @property {Number} _time                     - The sprite set's internal time
- * @property {WebGLBuffer} _vertexBuffer        - The sprite set's vertex buffer
- * @property {WebGLBuffer} _indexBuffer         - The sprite set's index buffer
- * @property {Tw2VertexDeclaration} _decl       - The sprite set's vertex declarations
- * @property {Tw2VertexDeclaration} _vdecl      -
- */
 @meta.type("EveSpriteSet", true)
 export class EveSpriteSet extends EveObjectSet
 {
@@ -141,7 +104,7 @@ export class EveSpriteSet extends EveObjectSet
     @meta.black.string
     name = "";
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     effect = null;
 
     @meta.black.float
@@ -167,8 +130,7 @@ export class EveSpriteSet extends EveObjectSet
      * Alias for this.items
      * @returns {Array}
      */
-    @meta.black.list
-    @meta.todo("Update parent class and replace with direct value")
+    @meta.black.listOf("EveSpriteSetItem")
     get sprites()
     {
         return this.items;

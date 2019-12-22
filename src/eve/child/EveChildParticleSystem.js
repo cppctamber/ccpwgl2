@@ -3,25 +3,6 @@ import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
-/**
- * Particle system attachment to space object
- *
- * @property {String} name                                                     -
- * @property {Boolean} display                                                 -
- * @property {mat4} localTransform                                             -
- * @property {Number} lodSphereRadius                                          -
- * @property {Tw2InstancedMesh} mesh                                           -
- * @property {Number} minScreenSize                                            -
- * @property {Array.<Tw2ParticleEmitter>} particleEmitters                     -
- * @property {Array.<Tw2ParticleSystem|Tr2GpuParticleSystem>} particleSystems  -
- * @property {quat} rotation                                                   -
- * @property {vec3} scaling                                                    -
- * @property {vec3} translation                                                -
- * @property {Boolean} useDynamicLod                                           -
- * @property {mat4} _worldTransform                                            -
- * @property {mat4} _worldTransformLast                                        -
- * @property {Tw2PerObjectData} _perObjectData                                 -
- */
 @meta.type("EveChildParticleSystem", true)
 @meta.stage(1)
 export class EveChildParticleSystem extends EveChild
@@ -40,17 +21,17 @@ export class EveChildParticleSystem extends EveChild
     @meta.black.float
     lodSphereRadius = 0;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2InstancedMesh")
     mesh = null;
 
     @meta.notImplemented
     @meta.black.float
     minScreenSize = 0;
 
-    @meta.black.list
+    @meta.black.listOf("Tw2ParticleEmitter")
     particleEmitters = [];
 
-    @meta.black.list
+    @meta.black.listOf([ "Tw2ParticleSystem","Tr2GpuParticleSystem" ])
     particleSystems = [];
 
     @meta.black.quaternion

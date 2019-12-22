@@ -1,15 +1,8 @@
 import { meta, mat4, util, Tw2BaseClass } from "global";
 
-/**
- * Contains transform information for T3 Attachments, Boosters, Turrets and XLTurrets
- *
- * @property {?number} atlasIndex0          - A booster locator's atlasIndex0
- * @property {?number} atlasIndex1          - A booster locator's atlasIndex1
- * @property {mat4} transform               - The locator's transform
- * @property {?Tw2Bone} _bone               - A turret locator's bone
- */
-@meta.stage(1)
+
 @meta.type("EveLocator2", true)
+@meta.stage(1)
 export class EveLocator2 extends Tw2BaseClass
 {
 
@@ -20,18 +13,17 @@ export class EveLocator2 extends Tw2BaseClass
     transform = mat4.create();
 
     @meta.uint
-    @meta.isNullable
     @meta.todo("Move to EveLocator only?")
     atlasIndex0 = null;
 
     @meta.uint
-    @meta.isNullable
     @meta.todo("Move to EveLocator only?")
     atlasIndex1 = null;
 
+    @meta.objectOf("Tw2Bone")
     @meta.isPrivate
-    @meta.todo("Replace all usages with private property")
     bone = null;
+
 
     /**
      * Gets the locator's bone from an animation controller

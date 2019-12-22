@@ -1,13 +1,9 @@
 /* eslint no-unused-vars:0 */
 import { meta, vec3, vec4, mat4, Tw2BaseClass } from "global";
 
-/**
- * EveObjectSetItem base class
- *
- * @property {Boolean} display - Toggles the set item's visibility
- * @property {Boolean} _dirty  - Identifies that the item is dirty
- */
+
 @meta.abstract
+@meta.type("EveObjectSetItem")
 export class EveObjectSetItem extends Tw2BaseClass
 {
 
@@ -26,16 +22,9 @@ export class EveObjectSetItem extends Tw2BaseClass
 
 }
 
-/**
- * EveObjectSet base class
- *
- * @property {Boolean} display        - Toggles set visibility
- * @property {Array<*>} items         - The set's items
- * @property {Array<*>} _visibleItems - The set's items that will be rendered when the set is visible
- * @property {Boolean} _dirty         - Identifies if the set requires rebuilding
- * @property {Boolean} _autoRebuild   - Auto rebuilds the object if a child is dirty
- */
+
 @meta.abstract
+@meta.type("EveObjectSet")
 export class EveObjectSet extends Tw2BaseClass
 {
 
@@ -51,6 +40,7 @@ export class EveObjectSet extends Tw2BaseClass
 
     _dirty = true;
     _visibleItems = [];
+
 
     /**
      * Initializes the set

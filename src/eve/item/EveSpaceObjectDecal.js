@@ -2,26 +2,7 @@ import { meta, vec3, quat, mat4, util, device, tw2, Tw2BaseClass } from "global"
 import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "core";
 import { Tw2Effect } from "core/mesh";
 
-/**
- * Decal
- *
- * @property {String} name                     - Decal name
- * @property {Tw2Effect} decalEffect           - Decal effect
- * @property {Boolean} display                 - Toggles decal visibility
- * @property {TypedArray} indexBuffer          - Decal index buffer
- * @property {Number} groupIndex               - Decals SOF group index
- * @property {Number} parentBoneIndex          - Decal's parent bone index
- * @property {Boolean} pickable                - Identifies if the decal is pickable
- * @property {Tw2Effect} pickEffect            - Decal pick effect
- * @property {vec3} position                   - Decal position
- * @property {quat} rotation                   - Decal rotation
- * @property {vec3} scaling                    - Decal scaling
- * @property {WebGLBuffer} _indexBuffer        - Decal index buffer
- * @property {Tw2GeometryRes} _parentGeometry  - Decal's parent geometry
- * @property {Tw2PerObjectData} _perObjectData - Decal per object data
- * @property {mat4} _localTransform                 - Decal local transform
- * @property {mat4} _localTransformInverse              - Decal local transform inverse
- */
+
 @meta.type("EveSpaceObjectDecal", true)
 export class EveSpaceObjectDecal extends Tw2BaseClass
 {
@@ -29,7 +10,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     @meta.black.string
     name = "";
     
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     decalEffect = null;
 
     @meta.boolean
@@ -49,7 +30,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     @meta.boolean
     pickable = true;
 
-    @meta.object
+    @meta.objectOf("Tw2Effect")
     pickEffect = null;
     
     @meta.black.vector3

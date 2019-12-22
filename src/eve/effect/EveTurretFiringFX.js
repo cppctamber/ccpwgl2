@@ -1,16 +1,6 @@
 import { meta, vec3, mat4, Tw2BaseClass } from "global";
 
-/**
- * EvePerMuzzleData
- *
- * @property {number} constantDelay
- * @property {number} currentStartDelay
- * @property {number} elapsedTime
- * @property muzzlePositionBone
- * @property {mat4} muzzleTransform
- * @property {Boolean} readyToStart
- * @property {Boolean} started
- */
+
 class EvePerMuzzleData
 {
 
@@ -24,41 +14,7 @@ class EvePerMuzzleData
 
 }
 
-/**
- * EveTurretFiringFX
 
- * @property {String} name                             -
- * @property {String} boneName                         -
- * @property {TriObserverLocal} destinationObserver    -
- * @property {Number} firingDelay1                     -
- * @property {Number} firingDelay2                     -
- * @property {Number} firingDelay3                     -
- * @property {Number} firingDelay4                     -
- * @property {Number} firingDurationOverride           -
- * @property {Number} firingPeakTime                   -
- * @property {Boolean} isLoopFiring                    -
- * @property {Number} maxRadius                        -
- * @property {Number} maxScale                         -
- * @property {Number} minRadius                        -
- * @property {Number} minScale                         -
- * @property {Boolean} scaleEffectTarget               -
- * @property {TriObserverLocal} sourceObserver         -
- * @property {Tw2CurveSet} startCurveSet               -
- * @property {Tw2CurveSet} stopCurveSet                -
- * @property {Array.<EveStretch|EveStretch2>} stretch  -
- * @property {Boolean} useMuzzleTransform              -
- * @property {Boolean} display                         -
- * @property {Array.<EveStretch>} stretch              -
- * @property {Boolean} useMuzzleTransform              -
- * @property {number} firingDelay5                     -
- * @property {number} firingDelay6                     -
- * @property {number} firingDelay7                     -
- * @property {number} firingDelay8                     -
- * @property {vec3} _endPosition                       -
- * @property {number} _firingDuration                  -
- * @property {Boolean} _isFiring                       - Identifies if the firing fx is firing
- * @property {Array.<EvePerMuzzleData>} _perMuzzleData -
- */
 @meta.type("EveTurretFiringFX", true)
 @meta.stage(2)
 export class EveTurretFiringFX extends Tw2BaseClass
@@ -74,7 +30,7 @@ export class EveTurretFiringFX extends Tw2BaseClass
     display = true;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("TriObserverLocal")
     destinationObserver = null;
 
     @meta.black.float
@@ -135,18 +91,18 @@ export class EveTurretFiringFX extends Tw2BaseClass
     scaleEffectTarget = false;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("TriObserverLocal")
     sourceObserver = null;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("Tw2CurveSet")
     startCurveSet = null;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("Tw2CurveSet")
     stopCurveSet = null;
 
-    @meta.black.list
+    @meta.black.listOf([ "EveStretch", "EveStretch2" ])
     stretch = [];
 
     @meta.black.boolean

@@ -4,11 +4,8 @@ import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists, isFunction } from "global/util";
 import { Tw2Effect } from "core/mesh";
 
-/**
- * Spotlight set render batch
- * @property {EveSpotlightSet} spotlightSet
- */
-export class EveSpotlightSetBatch extends Tw2RenderBatch
+
+class EveSpotlightSetBatch extends Tw2RenderBatch
 {
 
     spotlightSet = null;
@@ -26,22 +23,6 @@ export class EveSpotlightSetBatch extends Tw2RenderBatch
 }
 
 
-/**
- * Spotlight
- *
- * @property {String} name                  - The spotlight's name
- * @property {mat4} transform               - The spotlight's transform
- * @property {vec4} coneColor               - Colour of the spotlight's cone
- * @property {vec4} spriteColor             - Colour of the spotlight's sprite texture
- * @property {vec4} flareColor              - Colour of the spotlight's flare
- * @property {vec4} spriteScale             - The size of the spotlight
- * @property {Number} boosterGainInfluence  - If true, the spotlight can change size on booster gain
- * @property {Number} boneIndex             - The spotlight's bone index
- * @property {Number} groupIndex            - The sof faction group that the spotlight belongs to
- * @property {Number} coneIntensity         - Scales the spotlight's cone colour, set by an object's sof Faction
- * @property {Number} spriteIntensity       - Scales the spotlight's sprite colour, set by an object's sof Faction
- * @property {Number} flareIntensity        - Scales the spotlight's flare colour, set by an object's sof Faction
- */
 @meta.type("EveSpotlightSetItem", true)
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
@@ -106,19 +87,6 @@ export class EveSpotlightSetItem extends EveObjectSetItem
 }
 
 
-/**
- * Spotlight set
- *
- * @property {String} name                                - The spotlight set's name
- * @property {Tw2Effect} coneEffect                       - The spotlight set's cone effect
- * @property {Tw2Effect} glowEffect                       - The spotlight set's glow effect
- * @property {Number} intensity                           - The spotlight set's intensity
- * @property {Array.<EveSpotlightSetItem>} spotlightItems - The spotlight set's children
- * @property {WebGLBuffer} _coneVertexBuffer              - Vertex buffer for the spotlight set's cone vertices
- * @property {WebGLBuffer} _spriteVertexBuffer            - Vertex buffer for the spotlight set's sprite/glow vertices
- * @property {WebGLBuffer} _indexBuffer                   - Index buffer for the spotlight set
- * @property {Tw2VertexDeclaration} _decl                 - The spotlight set's vertex declarations
- */
 @meta.type("EveSpotlightSet", true)
 export class EveSpotlightSet extends EveObjectSet
 {
@@ -126,10 +94,10 @@ export class EveSpotlightSet extends EveObjectSet
     @meta.black.string
     name = "";
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     coneEffect = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     glowEffect = null;
 
     @meta.black.float
@@ -146,8 +114,7 @@ export class EveSpotlightSet extends EveObjectSet
      * Alias for this.items
      * @returns {Array}
      */
-    @meta.black.list
-    @meta.todo("Update parent class and replace with direct value")
+    @meta.black.listOf("EveSpotlightSetItem")
     get spotlightItems()
     {
         return this.items;

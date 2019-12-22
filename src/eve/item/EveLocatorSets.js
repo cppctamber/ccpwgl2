@@ -1,12 +1,6 @@
 import { meta, vec3, quat, Tw2BaseClass } from "global";
 
-/**
- * Locator
- * TODO: Is the black definition correct? Where are "boneIndex" and "scaling"
- *
- * @property {vec3} position - Locator's position
- * @property {quat} rotation - Locator's rotation
- */
+
 @meta.type("EveLocatorSetItem")
 @meta.stage(1)
 export class EveLocatorSetItem extends Tw2BaseClass
@@ -35,14 +29,8 @@ export class EveLocatorSetItem extends Tw2BaseClass
 
 }
 
-/**
- * Locator sets
- *
- * @property {String} name                       - Locator set name
- * @property {Array<EveLocatorSetItem>} locators - Locator sets
- */
+
 @meta.type("EveLocatorSets", true)
-@meta.stage(1)
 export class EveLocatorSets extends Tw2BaseClass
 {
 

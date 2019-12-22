@@ -3,27 +3,8 @@ import { Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
 
 
-/**
- * Mesh attachment to space object
-
- * @property {String} name                              -
- * @property {Boolean} display                          -
- * @property {mat4} localTransform                      -
- * @property {Number} lowestLodVisible                  -
- * @property {Tw2Mesh|Tw2InstancedMesh} mesh            -
- * @property {Number} minScreenSize                     -
- * @property {quat} rotation                            -
- * @property {vec3} scaling                             -
- * @property {Number} sortValueOffset                   -
- * @property {Boolean} staticTransform                  -
- * @property {Array.<ChildModifier>} transformModifiers -
- * @property {vec3} translation                         -
- * @property {Boolean} useSRT                           -
- * @property {Boolean} useSpaceObjectData               -
- * @property {mat4} _worldTransform                     -
- * @property {mat4} _worldTransformLast                 -
- * @property {Tw2PerObjectData} _perObjectData          -
- */
+@meta.type("EveChildMesh", true)
+@meta.desc("Mesh attachment to space object")
 export class EveChildMesh extends EveChild
 {
 
@@ -40,7 +21,7 @@ export class EveChildMesh extends EveChild
     @meta.black.uint
     lowestLodVisible = 2;
 
-    @meta.black.object
+    @meta.black.objectOf([ "Tw2Mesh", "Tw2InstancedMesh" ])
     mesh = null;
 
     @meta.notImplemented
@@ -62,7 +43,7 @@ export class EveChildMesh extends EveChild
     staticTransform = false;
 
     @meta.notImplemented
-    @meta.black.list
+    @meta.black.listOf("EveChildModifier")
     transformModifiers = [];
 
     @meta.black.vector3

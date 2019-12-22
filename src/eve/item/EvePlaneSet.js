@@ -3,11 +3,8 @@ import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { Tw2Effect } from "core/mesh";
 
-/**
- * Plane set render batch
- * @property {EvePlaneSet} planeSet
- */
-export class EvePlaneSetBatch extends Tw2RenderBatch
+
+class EvePlaneSetBatch extends Tw2RenderBatch
 {
 
     planeSet = null;
@@ -25,26 +22,6 @@ export class EvePlaneSetBatch extends Tw2RenderBatch
 }
 
 
-/**
- * Plane set item
- * If "boneIndex" and "groupIndex" are just used by the EveSOF, we may need to record this information if
- * we are going to convert this object back into a EveSOF object
- *
- * @property {String} name          -
- * @property {vec4} color           -
- * @property {vec4} layer1Scroll    -
- * @property {vec4} layer1Transform -
- * @property {vec4} layer2Scroll    -
- * @property {vec4} layer2Transform -
- * @property {Number} maskAtlasID   -
- * @property {vec3} position        -
- * @property {quat} rotation        -
- * @property {vec3} scaling         -
- * @property {Number} boneIndex     -
- * @property {Boolean} display      -
- * @property {Number} groupIndex    -
- * @property {mat4} transform       -
- */
 @meta.type("EvePlaneSetItem", true)
 export class EvePlaneSetItem extends EveObjectSetItem
 {
@@ -145,20 +122,6 @@ export class EvePlaneSetItem extends EveObjectSetItem
 }
 
 
-/**
- * Plane set
- *
- * @property {String} name                     -
- * @property {Tw2Effect} effect                -
- * @property {Boolean} hideOnLowQuality        -
- * @property {Number} pickBufferID             -
- * @property {Array.<EveObjectSetItem>} planes -
- * @property {Boolean} display                 -
- * @property {Number} _time                    -
- * @property {WebGLBuffer} _vertexBuffer       -
- * @property {WebGLBuffer} _indexBuffer        -
- * @property {Tw2VertexDeclaration} _decl      -
- */
 @meta.type("EvePlaneSet", true)
 export class EvePlaneSet extends EveObjectSet
 {
@@ -169,12 +132,12 @@ export class EvePlaneSet extends EveObjectSet
     @meta.black.object
     effect = null;
 
-    @meta.black.boolean
     @meta.notImplemented
+    @meta.black.boolean
     hideOnLowQuality = false;
 
-    @meta.black.byte
     @meta.notImplemented
+    @meta.black.byte
     pickBufferID = 0;
 
 
@@ -187,8 +150,7 @@ export class EvePlaneSet extends EveObjectSet
      * Alias for this.items
      * @returns {Array}
      */
-    @meta.black.list
-    @meta.todo("Update parent class and replace with direct value")
+    @meta.black.listOf("EvePlaneSetItem")
     get planes()
     {
         return this.items;

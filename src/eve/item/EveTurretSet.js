@@ -8,19 +8,6 @@ import {
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 
-/**
- * EveTurretSetItem
- *
- * @property {Boolean} isJoint              - Identifies if the turret is on a joint
- * @property {?String} locatorName          - The item's locator name
- * @property {Boolean} updateFromLocator    - Allows the turret to be updated from a locator's transforms
- * @property {Boolean} canFireWhenHidden    - Enables firing effects when hidden
- * @property {vec3} position                - The turret's position
- * @property {quat} rotation                - The turret's rotation
- * @property {?Tw2Bone} _bone               - The bone the turret is on
- * @property {mat4} _localTransform         - The turret's local transform
- * @property {quat} _localRotation          - the turret's local rotation
- */
 @meta.type("EveTurretSetItem")
 export class EveTurretSetItem extends EveObjectSetItem
 {
@@ -90,50 +77,7 @@ export class EveTurretSetItem extends EveObjectSetItem
 
 }
 
-/**
- * EveTurretSet
- *
- * @property {Number} bottomClipHeight                  -
- * @property {vec4} boundingSphere                      -
- * @property {Boolean} chooseRandomLocator              -
- * @property {Number} cyclingFireGroupCount             -
- * @property {String} firingEffectResPath               -
- * @property {String} geometryResPath                   -
- * @property {Number} impactSize                        -
- * @property {Boolean} laserMissBehaviour               -
- * @property {String} locatorName                       -
- * @property {Number} maxCyclingFirePos                 -
- * @property {Boolean} projectileMissBehaviour          -
- * @property {Number} sysBoneHeight                     -
- * @property {Number} sysBonePitch01Factor              -
- * @property {Number} sysBonePitch02Factor              -
- * @property {Number} sysBonePitchFactor                -
- * @property {Number} sysBonePitchMax                   -
- * @property {Number} sysBonePitchMin                   -
- * @property {Number} sysBonePitchOffset                -
- * @property {Tw2Effect} turretEffect                   -
- * @property {Boolean} updatePitchPose                  -
- * @property {Boolean} useDynamicBounds                 -
- * @property {Boolean} useRandomFiringDelay             -
- * @property {Tw2AnimationController} _activeAnimation  -
- * @property {Tw2GeometryRes} geometryResource          -
- * @property {?Function} _fireCallback                   -
- * @property {?Function} _fireCallbackPending            -
- * @property {Boolean} _hasCyclingFiringPos              -
- * @property {Tw2AnimationController} _inactiveAnimation -
- * @property {mat4} _parentTransform                        -
- * @property {Number} _state                             -
- * @property {vec3} _targetPosition                      -
- * @property {Object} visible                           -
- * @property {Boolean} visible.turrets                  -
- * @property {Boolean} visible.firingEffects            -
- * @property {Number} _activeTurret                     -
- * @property {Number} _currentCyclingFiresPos           -
- * @property {Boolean} _locatorDirty           -
- * @property {Tw2PerObjectData} _perObjectDataActive    -
- * @property {Tw2PerObjectData} _perObjectDataInactive  -
- * @property {Number} _recheckTimeLeft                  -
- */
+
 @meta.type("EveTurretSet", true)
 @meta.stage(1)
 export class EveTurretSet extends EveObjectSet
@@ -210,7 +154,7 @@ export class EveTurretSet extends EveObjectSet
     @meta.black.float
     sysBonePitchOffset = 0;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     turretEffect = null;
 
     @meta.notImplemented
@@ -228,7 +172,7 @@ export class EveTurretSet extends EveObjectSet
     @meta.object
     firingEffect = null;
 
-    @meta.object
+    @meta.objectOf("Tw2GeometryResource")
     @meta.todo("Make private")
     geometryResource = null;
 

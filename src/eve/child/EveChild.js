@@ -5,6 +5,7 @@ import { meta, vec3, mat4, Tw2BaseClass } from "global";
  * Root EveChild class
  */
 @meta.abstract
+@meta.type("EveChild")
 export class EveChild extends Tw2BaseClass
 {
 

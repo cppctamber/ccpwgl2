@@ -2,30 +2,6 @@ import { EveChild } from "./EveChild";
 import { mat4, meta, quat, vec3 } from "global";
 
 
-/**
- * Container for other child effects
- *
- * @property {String} name                                 -
- * @property {Boolean} alwaysOn                            -
- * @property {Number} boneIndex                            -
- * @property {Array.<StateController>} controllers         -
- * @property {Array.<Tw2CurveSet>} curveSets               -
- * @property {Boolean} display                             -
- * @property {*} displayFilter                             -
- * @property {Boolean} hideOnLowQuality                    -
- * @property {EveChildInheritProperties} inheritProperties -
- * @property {Array.<Tr2PointLight>} lights                -
- * @property {mat4} localTransform                         -
- * @property {Array.<EveChild>} objects                    -
- * @property {Array.<TriObserverLocal>} observers          -
- * @property {quat} rotation                               -
- * @property {vec3} scaling                                -
- * @property {Boolean} staticTransform                     -
- * @property {Array.<EveChildModifier>} transformModifiers -
- * @property {vec3} translation                            -
- * @property {mat4} _worldTransform                        -
- * @property {mat4} _worldTransformLast                    -
- */
 @meta.type("EveChildContainer", true)
 @meta.stage(2)
 export class EveChildContainer extends EveChild
@@ -42,7 +18,7 @@ export class EveChildContainer extends EveChild
     boneIndex = -1;
 
     @meta.notImplemented
-    @meta.black.list
+    @meta.black.listOf("Tr2Controller")
     controllers = [];
 
     @meta.black.listOf("Tw2CurveSet")

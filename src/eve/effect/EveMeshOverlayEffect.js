@@ -3,25 +3,6 @@ import { Tw2CurveSet } from "curve";
 import { meta, util, Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM_DISTORTION } from "global";
 
 
-/**
- * Constructor for Overlay Effects
- *
- * @property {String} name                          - The overlay effect's name
- * @property {Array.<Tw2Effect>} additiveEffects    - Additive overlay effects
- * @property {Tw2CurveSet} curveSet                 - Animation curve set
- * @property {Boolean} display                      - Enables/ disables all batch accumulations
- * @property {Array.<Tw2Effect>} decalEffects       - Decal overlay effects (Is this deprecated?)
- * @property {Array.<Tw2Effect>} distortionEffects  - Distortion effects (Currently not supported)
- * @property {Array.<Tw2Effect>} opaqueEffects      - Opaque overlay effects
- * @property {Array.<Tw2Effect>} transparentEffects - Transparent overlay effects
- * @property {Boolean} update                       - Enabled updating
- * @property {{}} visible                           - Batch accumulation options for the overlay effect
- * @property {Boolean} visible.opaqueEffects        - Enables/ disables opaque effect batch accumulation
- * @property {Boolean} visible.decalEffects         - Enables/ disables decal effect batch accumulation
- * @property {Boolean} visible.transparentEffects   - Enables/ disables transparent effect batch accumulation
- * @property {Boolean} visible.additiveEffects      - Enables/ disables additive effect batch accumulation
- * @property {Boolean} visible.distortionEffects    - Currently not supported
- */
 @meta.type("EveMeshOverlayEffect", true)
 export class EveMeshOverlayEffect extends Tw2BaseClass
 {
@@ -29,27 +10,26 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
     @meta.black.string
     name = "";
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Effect")
     additiveEffects = [];
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2CurveSet")
     curveSet = null;
 
-    @meta.list
-    @meta.todo("Deprecated?")
+    @meta.black.listOf("Tw2Effect")
     decalEffects = [];
 
     @meta.boolean
     display = true;
 
     @meta.notImplemented
-    @meta.black.list
+    @meta.black.listOf("Tw2Effect")
     distortionEffects = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Effect")
     opaqueEffects = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2Effect")
     transparentEffects = [];
 
     @meta.boolean

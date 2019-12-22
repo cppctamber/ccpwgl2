@@ -2,10 +2,7 @@ import { vec3, vec4, quat, mat4, util, device, meta } from "global";
 import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
-/**
- * Line types
- * @type {{SPHERED: number, STRAIGHT: number, INVALID: number, CURVED: number}}
- */
+
 const LineType = {
     INVALID: 0,
     STRAIGHT: 1,
@@ -14,23 +11,6 @@ const LineType = {
 };
 
 
-/**
- * Curve line set item
- *
- * @property {Number} animationSpeed     - Line's animation speed
- * @property {Number} animationScale     - Line's animation scale
- * @property {vec4} color1               - Line's start color
- * @property {vec4} color2               - Line's end color
- * @property {vec3} intermediatePosition - Line's intermediate/middle position (not used with straight lines)
- * @property {vec4} multiColor           -
- * @property {Number} multiColorBorder   -
- * @property {Number} numOfSegments      - The amount of segments for a curved or sphered line
- * @property {vec4} overlayColor         - Line's overlay color
- * @property {vec3} position1            - Line's start position
- * @property {vec3} position2            - Line's end position
- * @property {Number} type               - Line's type
- * @property {Number} width              - Line's width
- */
 @meta.type("EveCurveLineSetItem")
 export class EveCurveLineSetItem extends EveObjectSetItem
 {
@@ -72,7 +52,9 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     width = 1;
 
     @meta.enumerable(LineType)
+    @meta.isPrivate
     type = LineType.INVALID;
+
 
     /**
      * Changes the lines position from a ray3
@@ -266,27 +248,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 
 }
 
-/**
- * Curve line set
- * TODO: The black definition seems way too small - find an example black file that uses this class
- * TODO: Implement "depthOffset"
 
- * @property {Tw2Effect} lineEffect            -
- * @property {?Tw2Effect} pickEffect           -
- * @property {Number} lineWidthFactor          -
- * @property {Boolean} additive                -
- * @property {Number} depthOffset              -
- * @property {vec3} translation                -
- * @property {quat} rotation                   -
- * @property {vec3} scaling                    -
- * @property {mat4} transform                  -
- * @property {mat4} _parentTransform           -
- * @property {Number} _vertexSize              -
- * @property {Number} _vbSize                  -
- * @property {?WebGLBuffer} _vb                -
- * @property {Tw2PerObjectData} _perObjectData -
- * @property {Tw2VertexDeclaration} _decl      -
- */
 @meta.type("EveCurveLineSet", true)
 export class EveCurveLineSet extends EveObjectSet
 {
@@ -294,7 +256,7 @@ export class EveCurveLineSet extends EveObjectSet
     @meta.boolean
     additive = false;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     lineEffect = Tw2Effect.from({
         effectFilePath: "res:/Graphics/Effect/Managed/Space/SpecialFX/Lines3D.fx",
         textures: {
@@ -306,14 +268,14 @@ export class EveCurveLineSet extends EveObjectSet
     @meta.float
     lineWidthFactor = 1;
 
-    @meta.float
     @meta.notImplemented
+    @meta.float
     depthOffset = 0;
 
     @meta.boolean
     pickable = true;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     pickEffect = null;
 
     @meta.quaternion
@@ -328,9 +290,8 @@ export class EveCurveLineSet extends EveObjectSet
     @meta.matrix4
     transform = mat4.create();
 
-    @meta.todo("Replace usages and cache 'worldTransform' instead?")
-    _parentTransform = mat4.create();
 
+    _worldTransform = mat4.create();
     _vertexSize = 26;
     _vbSize = 0;
     _vb = null;
@@ -555,7 +516,14 @@ export class EveCurveLineSet extends EveObjectSet
      */
     UpdateViewDependentData(parentTransform)
     {
-        mat4.copy(this._parentTransform, parentTransform);
+        if (parentTransform)
+        {
+            mat4.multiply(this._worldTransform, parentTransform, this.transform);
+        }
+        else
+        {
+            mat4.copy(this._worldTransform, this.transform);
+        }
     }
 
     /**
@@ -724,11 +692,10 @@ export class EveCurveLineSet extends EveObjectSet
 
         const
             batch = new Tw2ForwardingRenderBatch(),
-            worldTransform = EveCurveLineSet.global.mat4_0;
+            worldTransformTranspose = mat4.transpose(EveCurveLineSet.global.mat4_0, this._worldTransform);
 
-        mat4.multiply(worldTransform, this.transform, this._parentTransform);
-        mat4.transpose(this._perObjectData.vs.Get("WorldMat"), worldTransform);
-        mat4.transpose(this._perObjectData.ps.Get("WorldMat"), worldTransform);
+        this._perObjectData.vs.Set("WorldMat", worldTransformTranspose);
+        this._perObjectData.ps.Set("WorldMat", worldTransformTranspose);
         batch.perObjectData = this._perObjectData;
         batch.geometryProvider = this;
         batch.renderMode = mode;
