@@ -1,14 +1,7 @@
 import { meta } from "global";
 import { Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2RandomConstantCurve
- *
- * @property {number} currentValue
- * @property {number} min
- * @property {number} max
- * @property {Boolean} hold
- */
+
 @meta.type("Tw2RandomConstantCurve")
 export class Tw2RandomConstantCurve extends Tw2Curve
 {

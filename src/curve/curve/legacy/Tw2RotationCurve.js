@@ -1,14 +1,25 @@
 import { meta, num, vec4, quat } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2QuaternionKey
- *
- * @property {quat} value
- * @property {vec4} leftTangent
- * @property {vec4} rightTangent
- * @property {number} interpolation
- */
+
+const Extrapolation = {
+    NONE: 0,
+    CONSTANT: 1,
+    GRADIENT: 2,
+    CYCLE: 3
+};
+
+
+const Interpolation = {
+    NONE: 0,
+    CONSTANT: 1,
+    LINEAR: 2,
+    HERMITE: 3,
+    SLERP: 5,
+    SQUAD: 6
+};
+
+
 @meta.type("Tw2QuaternionKey")
 export class Tw2QuaternionKey extends Tw2CurveKey
 {
@@ -23,22 +34,12 @@ export class Tw2QuaternionKey extends Tw2CurveKey
     @meta.vector4
     right = vec4.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 5;
 
 }
 
 
-/**
- * Tw2RotationCurve
- *
- * @property {number} start
- * @property {quat} value
- * @property {number} extrapolation
- * @property {Array.<Tw2QuaternionKey>} keys
- * @property {number} _currentKey
- * @property {number} length
- */
 @meta.type("Tw2RotationCurve")
 export class Tw2RotationCurve extends Tw2Curve
 {
@@ -50,15 +51,16 @@ export class Tw2RotationCurve extends Tw2Curve
     @meta.isPrivate
     value = quat.create();
 
-    @meta.uint
+    @meta.enumerable(Extrapolation)
     extrapolation = 0;
 
-    @meta.list
+    @meta.listOf("Tw2QuaternionKey")
     keys = [];
 
     @meta.float
     @meta.isPrivate
     length = 0;
+
 
     _currentKey = 1;
 
@@ -111,10 +113,10 @@ export class Tw2RotationCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2RotationCurve.Extrapolation.NONE:
+                case Extrapolation.NONE:
                     return quat.copy(value, this.value);
 
-                case Tw2RotationCurve.Extrapolation.CONSTANT:
+                case Extrapolation.CONSTANT:
                     return quat.copy(value, lastKey.value);
 
                 default:
@@ -125,7 +127,7 @@ export class Tw2RotationCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2RotationCurve.Extrapolation.NONE:
+                case Extrapolation.NONE:
                     return quat.copy(value, this.value);
 
                 default:
@@ -147,7 +149,7 @@ export class Tw2RotationCurve extends Tw2Curve
         const nt = (time - ck_1.time) / (ck.time - ck_1.time);
         switch (ck_1.interpolation)
         {
-            case Tw2RotationCurve.Interpolation.CONSTANT:
+            case Interpolation.CONSTANT:
                 return quat.copy(value, ck_1.value);
 
             case Tw2RotationCurve.Interpolation.LINEAR:
@@ -157,7 +159,7 @@ export class Tw2RotationCurve extends Tw2Curve
                 value[3] = ck_1.value[3] * (1 - nt) + ck.value[3] * nt;
                 return value;
 
-            case Tw2RotationCurve.Interpolation.HERMITE:
+            case Interpolation.HERMITE:
                 const
                     collect = quat.identity(scratch.quat_0),
                     arr = [ ck_1.value, ck_1.right, ck.left, ck.value ];
@@ -189,7 +191,7 @@ export class Tw2RotationCurve extends Tw2Curve
      * The curve's key dimension
      * @type {number}
      */
-    static outputDimention = 4;
+    static outputDimension = 4;
 
     /**
      * The curve's dimension
@@ -219,24 +221,12 @@ export class Tw2RotationCurve extends Tw2Curve
      * Extrapolation types
      * @type {{NONE: number, CONSTANT: number, GRADIENT: number, CYCLE: number}}
      */
-    static Extrapolation = {
-        NONE: 0,
-        CONSTANT: 1,
-        GRADIENT: 2,
-        CYCLE: 3
-    };
+    static Extrapolation = Extrapolation;
 
     /**
      * Interpolation types
      * @type {{NONE: number, CONSTANT: number, LINEAR: number, HERMITE: number, SLERP: number, SQUAD: number}}
      */
-    static Interpolation = {
-        NONE: 0,
-        CONSTANT: 1,
-        LINEAR: 2,
-        HERMITE: 3,
-        SLERP: 5,
-        SQUAD: 6
-    };
+    static Interpolation = Interpolation;
 
 }

@@ -1,11 +1,13 @@
 import { Tw2CurveKey, Tw2Curve } from "./Tw2Curve";
 import { meta } from "global/index";
 
-/**
- * Event curve key
- *
- * @property {Number} value -
- */
+
+const Extrapolation = {
+    NONE: 0,
+    CYCLE: 3
+};
+
+
 @meta.type("Tw2EventKey", "TriEventKey")
 export class Tw2EventKey extends Tw2CurveKey
 {
@@ -18,13 +20,7 @@ export class Tw2EventKey extends Tw2CurveKey
 
 }
 
-/**
- * Event curve
- *
- * @property {Number} extrapolation     -
- * @property {Array.<Tw2EventKey>} keys -
- * @property {Number} value             -
- */
+
 @meta.type("Tw2EventCurve", "TriEventCurve")
 export class Tw2EventCurve extends Tw2Curve
 {
@@ -33,9 +29,10 @@ export class Tw2EventCurve extends Tw2Curve
     name = "";
 
     @meta.black.uint
+    @meta.enumerable(Extrapolation)
     extrapolation = 0;
 
-    @meta.black.list
+    @meta.black.listOf("Tw2EventKey")
     keys = [];
 
     @meta.black.ushort
@@ -135,9 +132,6 @@ export class Tw2EventCurve extends Tw2Curve
      * Extrapolation types
      * @type {{NONE: number, CYCLE: number}}
      */
-    static Extrapolation = {
-        NONE: 0,
-        CYCLE: 3
-    };
+    static Extrapolation = Extrapolation;
 
 }

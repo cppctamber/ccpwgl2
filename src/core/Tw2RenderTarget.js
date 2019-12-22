@@ -1,18 +1,7 @@
 import { meta, util, tw2 } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
-/**
- * Tw2RenderTarget
- *
- * @property {String|Number} _id               - the render target's id
- * @property {String} name                     - the render target's name
- * @property {Tw2TextureRes} texture           - the render target's texture
- * @property {?Number} width                   - width of the render target's texture
- * @property {?Number} height                  - height of the render target's texture
- * @property {?Boolean} hasDepth               - toggles depth
- * @property {WebGLFramebuffer} _frameBuffer   - the render target's webgl frame buffer
- * @property {WebGLRenderbuffer} _renderBuffer - the render target's webgl render buffer
- */
+
 @meta.type("Tw2RenderTarget")
 export class Tw2RenderTarget
 {
@@ -22,22 +11,18 @@ export class Tw2RenderTarget
 
     @meta.object
     @meta.isPrivate
-    @meta.todo("Make private")
     texture = null;
 
     @meta.float
     @meta.isPrivate
-    @meta.todo("Make private")
     width = 0;
 
     @meta.float
     @meta.isPrivate
-    @meta.todo("Make private")
     height = 0;
 
     @meta.boolean
     @meta.isPrivate
-    @meta.todo("Make private")
     hasDepth = false;
 
     _id = util.generateID();

@@ -1,14 +1,23 @@
 import { meta, vec4 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2ColorKey
- *
- * @property {vec4} value
- * @property {vec4} left
- * @property {vec4} right
- * @property {number} interpolation
- */
+
+const Extrapolation = {
+    NONE: 0,
+    CONSTANT: 1,
+    GRADIENT: 2,
+    CYCLE: 3
+};
+
+
+const Interpolation = {
+    NONE: 0,
+    CONSTANT: 1,
+    LINEAR: 2
+};
+
+
+
 @meta.type("Tw2ColorKey")
 export class Tw2ColorKey extends Tw2CurveKey
 {
@@ -22,22 +31,12 @@ export class Tw2ColorKey extends Tw2CurveKey
     @meta.vector4
     right = vec4.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 0;
 
 }
 
 
-/**
- * Tw2ColorCurve
- *
- * @property {number} start
- * @property {vec4} currentValue
- * @property {number} extrapolation
- * @property {Array.<Tw2ColorKey>} keys
- * @property {number} _currentKey
- * @property {number} length
- */
 @meta.type("Tw2ColorCurve")
 export class Tw2ColorCurve extends Tw2Curve
 {
@@ -49,10 +48,10 @@ export class Tw2ColorCurve extends Tw2Curve
     @meta.isPrivate
     value = vec4.create();
 
-    @meta.uint
+    @meta.enumerable(Extrapolation)
     extrapolation = 0;
 
-    @meta.list
+    @meta.listOf("Tw2ColorKey")
     keys = [];
 
     @meta.float
@@ -108,13 +107,13 @@ export class Tw2ColorCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2ColorCurve.Extrapolation.NONE:
+                case Extrapolation.NONE:
                     return vec4.copy(value, this.value);
 
-                case Tw2ColorCurve.Extrapolation.CONSTANT:
+                case Extrapolation.CONSTANT:
                     return vec4.copy(value, lastKey.value);
 
-                case Tw2ColorCurve.Extrapolation.GRADIENT:
+                case Extrapolation.GRADIENT:
                     return vec4.scaleAndAdd(value, lastKey.value, lastKey.right, time - lastKey.time);
 
                 default:
@@ -125,10 +124,10 @@ export class Tw2ColorCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2ColorCurve.Extrapolation.NONE:
+                case Extrapolation.NONE:
                     return vec4.copy(value, this.value);
 
-                case Tw2ColorCurve.Extrapolation.GRADIENT:
+                case Extrapolation.GRADIENT:
                     return vec4.scaleAndAdd(value, firstKey.value, firstKey.left, time * this.length - lastKey.time);
 
                 default:
@@ -151,7 +150,7 @@ export class Tw2ColorCurve extends Tw2Curve
 
         switch (ck_1.interpolation)
         {
-            case Tw2ColorCurve.Interpolation.CONSTANT:
+            case Interpolation.CONSTANT:
                 return vec4.copy(value, ck_1.value);
 
             default:
@@ -197,21 +196,12 @@ export class Tw2ColorCurve extends Tw2Curve
      * Extrapolation types
      * @type {{NONE: number, CONSTANT: number, GRADIENT: number, CYCLE: number}}
      */
-    static Extrapolation = {
-        NONE: 0,
-        CONSTANT: 1,
-        GRADIENT: 2,
-        CYCLE: 3
-    };
+    static Extrapolation = Extrapolation;
 
     /**
      * Interpolation types
      * @type {{NONE: number, CONSTANT: number, LINEAR: number}}
      */
-    static Interpolation = {
-        NONE: 0,
-        CONSTANT: 1,
-        LINEAR: 2
-    };
+    static Interpolation = Interpolation;
 
 }

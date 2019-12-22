@@ -1,6 +1,23 @@
 import { meta } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
+
+const Extrapolation = {
+    NONE: 0,
+    CONSTANT: 1,
+    GRADIENT: 2,
+    CYCLE: 3
+};
+
+
+const Interpolation = {
+    NONE: 0,
+    CONSTANT: 1,
+    LINEAR: 2,
+    HERMITE: 3,
+    CATMULROM: 4
+};
+
 /**
  * Tw2ScalarKey
  *
@@ -22,24 +39,12 @@ export class Tw2ScalarKey extends Tw2CurveKey
     @meta.float
     right = 0;
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 0;
 
 }
 
 
-/**
- * Tw2ScalarCurve
- *
- * @property {number} start
- * @property {number} timeScale
- * @property {number} timeOffset
- * @property {number} value
- * @property {number} extrapolation
- * @property {Array.<Tw2ScalarKey>} keys
- * @property {number} _currentKey
- * @property {number} length
- */
 @meta.type("Tw2ScalarCurve")
 export class Tw2ScalarCurve extends Tw2Curve
 {
@@ -57,10 +62,10 @@ export class Tw2ScalarCurve extends Tw2Curve
     @meta.isPrivate
     value = 0;
 
-    @meta.uint
+    @meta.enumerable(Extrapolation)
     extrapolation = 0;
 
-    @meta.list
+    @meta.listOf("Tw2ScalarKey")
     keys = [];
 
     @meta.float
@@ -119,13 +124,13 @@ export class Tw2ScalarCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2ScalarCurve.Extrapolation.NONE:
+                case Extrapolation.NONE:
                     return this.value;
 
-                case Tw2ScalarCurve.Extrapolation.CONSTANT:
+                case Extrapolation.CONSTANT:
                     return lastKey.value;
 
-                case Tw2ScalarCurve.Extrapolation.GRADIENT:
+                case Extrapolation.GRADIENT:
                     return lastKey.value + (time - lastKey.time) * lastKey.right;
 
                 default:
@@ -136,10 +141,10 @@ export class Tw2ScalarCurve extends Tw2Curve
         {
             switch (this.extrapolation)
             {
-                case Tw2ScalarCurve.Extrapolation.NONE:
+                case Extrapolation.NONE:
                     return this.value;
 
-                case Tw2ScalarCurve.Extrapolation.GRADIENT:
+                case Extrapolation.GRADIENT:
                     return firstKey.value + (time * this.length - lastKey.time) * firstKey.left;
 
                 default:
@@ -161,13 +166,13 @@ export class Tw2ScalarCurve extends Tw2Curve
         const nt = (time - ck_1.time) / (ck.time - ck_1.time);
         switch (ck_1.interpolation)
         {
-            case Tw2ScalarCurve.Interpolation.CONSTANT:
+            case Interpolation.CONSTANT:
                 return ck_1.value;
 
-            case Tw2ScalarCurve.Interpolation.LINEAR:
+            case Interpolation.LINEAR:
                 return ck_1.value * (1 - nt) + ck.value * nt;
 
-            case Tw2ScalarCurve.Interpolation.HERMITE:
+            case Interpolation.HERMITE:
                 const
                     k3 = 2 * nt * nt * nt - 3 * nt * nt + 1,
                     k2 = -2 * nt * nt * nt + 3 * nt * nt,
@@ -218,23 +223,12 @@ export class Tw2ScalarCurve extends Tw2Curve
      * Extrapolation types
      * @type {{NONE: number, CONSTANT: number, GRADIENT: number, CYCLE: number}}
      */
-    static Extrapolation = {
-        NONE: 0,
-        CONSTANT: 1,
-        GRADIENT: 2,
-        CYCLE: 3
-    };
+    static Extrapolation = Extrapolation;
 
     /**
      * Interpolation types
      * @type {{NONE: number, CONSTANT: number, LINEAR: number, HERMITE: number, CATMULROM: number}}
      */
-    static Interpolation = {
-        NONE: 0,
-        CONSTANT: 1,
-        LINEAR: 2,
-        HERMITE: 3,
-        CATMULROM: 4
-    };
+    static Interpolation = Interpolation;
 
 }

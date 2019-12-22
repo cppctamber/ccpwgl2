@@ -1,15 +1,13 @@
 import { meta, vec4 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2ColorKey2
- *
- * @property {number} time
- * @property {vec4} value
- * @property {vec4} leftTangent
- * @property {vec4} rightTangent
- * @property {number} interpolation
- */
+
+const Interpolation = {
+    CONSTANT: 0,
+    LINEAR: 1
+};
+
+
 @meta.type("Tw2ColorKey2")
 export class Tw2ColorKey2 extends Tw2CurveKey
 {
@@ -23,27 +21,12 @@ export class Tw2ColorKey2 extends Tw2CurveKey
     @meta.vector4
     rightTangent = vec4.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
 }
 
 
-/**
- * Tw2ColorCurve2
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {vec4} startValue=[0,0,0,1]
- * @property {vec4} currentValue=[0,0,0,1]
- * @property {vec4} endValue=[0,0,0,1]
- * @property {vec4} startTangent
- * @property {vec4} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2ColorKey2>} keys
- */
 @meta.type("Tw2ColorCurve2")
 export class Tw2ColorCurve2 extends Tw2Curve
 {
@@ -76,10 +59,10 @@ export class Tw2ColorCurve2 extends Tw2Curve
     @meta.vector4
     endTangent = vec4.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
-    @meta.list
+    @meta.listOf("Tw2ColorKey2")
     keys = [];
 
     @meta.float
@@ -200,7 +183,7 @@ export class Tw2ColorCurve2 extends Tw2Curve
 
         switch (interp)
         {
-            case Tw2ColorCurve2.Interpolation.LINEAR:
+            case Interpolation.LINEAR:
                 if (lastKey && nextKey)
                 {
                     startValue = lastKey.value;
@@ -263,9 +246,6 @@ export class Tw2ColorCurve2 extends Tw2Curve
      * Interpolation types
      * @type {{CONSTANT: number, LINEAR: number}}
      */
-    static Interpolation = {
-        CONSTANT: 0,
-        LINEAR: 1
-    };
+    static Interpolation = Interpolation;
 
 }

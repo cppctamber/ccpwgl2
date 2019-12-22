@@ -1,14 +1,13 @@
 import { meta, vec4, quat } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2QuaternionKey2
- *
- * @property {quat} value
- * @property {vec4} leftTangent
- * @property {vec4} rightTangent
- * @property {number} interpolation
- */
+
+const Interpolation = {
+    CONSTANT: 0,
+    SPHERICAL_LINEAR: 4
+};
+
+
 @meta.type("Tw2QuaternionKey2")
 export class Tw2QuaternionKey2 extends Tw2CurveKey
 {
@@ -22,28 +21,12 @@ export class Tw2QuaternionKey2 extends Tw2CurveKey
     @meta.vector4
     rightTangent = vec4.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
 }
 
 
-/**
- * Tw2QuaternionCurve
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {quat} startValue
- * @property {quat} currentValue
- * @property {quat} endValue
- * @property {vec4} startTangent
- * @property {vec4} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2QuaternionKey>} keys
- * @property {number} length
- */
 @meta.type("Tw2QuaternionCurve")
 export class Tw2QuaternionCurve extends Tw2Curve
 {
@@ -76,10 +59,10 @@ export class Tw2QuaternionCurve extends Tw2Curve
     @meta.vector4
     endTangent = vec4.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
-    @meta.list
+    @meta.listOf("Tw2QuaternionKey")
     keys = [];
 
     @meta.float
@@ -213,7 +196,7 @@ export class Tw2QuaternionCurve extends Tw2Curve
 
         switch (interp)
         {
-            case Tw2QuaternionCurve.Interpolation.SPHERICAL_LINEAR:
+            case Interpolation.SPHERICAL_LINEAR:
                 if (lastKey && nextKey)
                 {
                     startValue = lastKey.value;
@@ -273,9 +256,6 @@ export class Tw2QuaternionCurve extends Tw2Curve
      * Interpolation types
      * @type {{CONSTANT: number, SPHERICAL_LINEAR: number}}
      */
-    static Interpolation = {
-        CONSTANT: 0,
-        SPHERICAL_LINEAR: 4
-    };
+    static Interpolation = Interpolation;
 
 }

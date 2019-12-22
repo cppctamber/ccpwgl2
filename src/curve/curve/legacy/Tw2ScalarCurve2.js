@@ -1,14 +1,14 @@
 import { meta } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2ScalarKey2
- *
- * @property {number} value
- * @property {number} leftTangent
- * @property {number} rightTangent
- * @property {number} interpolation
- */
+
+const Interpolation = {
+    CONSTANT: 0,
+    LINEAR: 1,
+    HERMITE: 2
+};
+
+
 @meta.type("Tw2ScalarKey2")
 export class Tw2ScalarKey2 extends Tw2CurveKey
 {
@@ -22,28 +22,12 @@ export class Tw2ScalarKey2 extends Tw2CurveKey
     @meta.float
     rightTangent = 0;
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
 }
 
 
-/**
- * Tw2ScalarCurve2
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {number} startValue
- * @property {number} currentValue
- * @property {number} endValue
- * @property {number} startTangent
- * @property {number} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2ScalarKey2>} keys
- * @property {number} length
- */
 @meta.type("Tw2ScalarCurve2")
 export class Tw2ScalarCurve2 extends Tw2Curve
 {
@@ -76,10 +60,10 @@ export class Tw2ScalarCurve2 extends Tw2Curve
     @meta.float
     endTangent = 0;
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
-    @meta.list
+    @meta.listOf("Tw2ScalarKey2")
     keys = [];
 
     @meta.float
@@ -196,7 +180,7 @@ export class Tw2ScalarCurve2 extends Tw2Curve
 
         switch (interp)
         {
-            case Tw2ScalarCurve2.Interpolation.LINEAR:
+            case Interpolation.LINEAR:
                 if (lastKey && nextKey)
                 {
                     startValue = lastKey.value;
@@ -215,7 +199,7 @@ export class Tw2ScalarCurve2 extends Tw2Curve
                 }
                 return startValue + (endValue - startValue) * (time / deltaTime);
 
-            case Tw2ScalarCurve2.Interpolation.HERMITE:
+            case Interpolation.HERMITE:
                 let inTangent = this.startTangent,
                     outTangent = this.endTangent;
 
@@ -292,10 +276,6 @@ export class Tw2ScalarCurve2 extends Tw2Curve
      * Interpolation types
      * @type {{CONSTANT: number, LINEAR: number, HERMITE: number}}
      */
-    static Interpolation = {
-        CONSTANT: 0,
-        LINEAR: 1,
-        HERMITE: 2
-    };
+    static Interpolation = Interpolation;
 
 }

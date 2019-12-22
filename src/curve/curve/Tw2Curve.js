@@ -1,14 +1,9 @@
 /* eslint no-unused-vars:0 */
 import { meta, vec3, vec4, quat, Tw2BaseClass } from "global";
 
-/**
- * Tw2CurveKey base class
- *
- * @property {number|String} _id
- * @property {String} name
- * @property {number} time
- */
+
 @meta.abstract
+@meta.type("Tw2CurveKey")
 export class Tw2CurveKey extends Tw2BaseClass
 {
 
@@ -21,12 +16,8 @@ export class Tw2CurveKey extends Tw2BaseClass
 }
 
 
-/**
- * Tw2Curve base class
- *
- * @property {String} name
- */
 @meta.abstract
+@meta.type("Tw2Curve")
 export class Tw2Curve extends Tw2BaseClass
 {
 

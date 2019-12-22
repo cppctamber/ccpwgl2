@@ -1,13 +1,7 @@
 import { vec3, quat, meta } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2Torque
- *
- * @property {quat} rot0
- * @property {vec3} omega0
- * @property {vec3} torque
- */
+
 @meta.type("Tw2Torque")
 export class Tw2Torque extends Tw2CurveKey
 {
@@ -24,17 +18,6 @@ export class Tw2Torque extends Tw2CurveKey
 }
 
 
-/**
- * Tw2RigidOrientation
- *
- * @property {String} name
- * @property {number} I
- * @property {number} drag
- * @property {quat} value
- * @property {number} start
- * @property {Array.<Tw2Torque>} states
- * @property {number} length
- */
 @meta.type("Tw2RigidOrientation")
 export class Tw2RigidOrientation extends Tw2Curve
 {
@@ -55,7 +38,7 @@ export class Tw2RigidOrientation extends Tw2Curve
     @meta.float
     start = 0;
 
-    @meta.list
+    @meta.listOf("Tw2Torque")
     states = [];
 
     @meta.float

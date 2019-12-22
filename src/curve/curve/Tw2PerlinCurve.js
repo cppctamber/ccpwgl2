@@ -1,17 +1,7 @@
 import { meta, noise } from "global";
 import { Tw2Curve } from "./Tw2Curve";
 
-/**
- * Perlin curve
- *
- * @property {Number} N      -
- * @property {Number} alpha  -
- * @property {Number} beta   -
- * @property {Number} offset -
- * @property {Number} scale  -
- * @property {Number} speed  -
- * @property {Number} value  -
- */
+
 @meta.type("Tw2PerlinCurve", "TriPerlinCurve")
 export class Tw2PerlinCurve extends Tw2Curve
 {

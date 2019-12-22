@@ -2,17 +2,7 @@ import { Tw2BaseClass, device, meta } from "global";
 import { Tw2VertexDeclaration } from "./vertex";
 import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleElementDeclaration";
 
-/**
- * Tr2RuntimeInstanceData
- * Todo: Find out if this is actually needed anywhere
- *
- * @property {Number} _count
- * @property {Float32Array} _data
- * @property {Boolean} _dirty
- * @property {Tw2VertexDeclaration} _declaration
- * @property {WebGLBuffer} _vb
- * @property {Number} _vertexStride
- */
+
 @meta.type("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData")
 @meta.data("black")
 export class Tw2RuntimeInstanceData extends Tw2BaseClass

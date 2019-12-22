@@ -1,15 +1,14 @@
 import { meta, vec3 } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
-/**
- * Tw2Vector3Key
- *
- * @property {number} time
- * @property {vec3} value
- * @property {vec3} leftTangent
- * @property {vec3} rightTangent
- * @property {number} interpolation
- */
+
+const Interpolation = {
+    CONSTANT: 0,
+    LINEAR: 1,
+    HERMITE: 2
+};
+
+
 @meta.type("Tw2Vector3Key")
 export class Tw2Vector3Key extends Tw2CurveKey
 {
@@ -23,28 +22,12 @@ export class Tw2Vector3Key extends Tw2CurveKey
     @meta.vector3
     rightTangent = vec3.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
 }
 
 
-/**
- * Tw2Vector3Curve
- *
- * @property {Boolean} cycle
- * @property {Boolean} reversed
- * @property {number} timeOffset
- * @property {number} timeScale
- * @property {vec3} startValue
- * @property {vec3} currentValue
- * @property {vec3} endValue
- * @property {vec3} startTangent
- * @property {vec3} endTangent
- * @property {number} interpolation
- * @property {Array.<Tw2Vector3Key>} keys
- * @property {number} length
- */
 @meta.type("Tw2Vector3Curve")
 export class Tw2Vector3Curve extends Tw2Curve
 {
@@ -77,10 +60,10 @@ export class Tw2Vector3Curve extends Tw2Curve
     @meta.vector3
     endTangent = vec3.create();
 
-    @meta.uint
+    @meta.enumerable(Interpolation)
     interpolation = 1;
 
-    @meta.list
+    @meta.listOf("Tw2Vector3Key")
     keys = [];
 
     @meta.float
@@ -201,7 +184,7 @@ export class Tw2Vector3Curve extends Tw2Curve
 
         switch (interp)
         {
-            case Tw2Vector3Curve.Interpolation.LINEAR:
+            case Interpolation.LINEAR:
                 if (lastKey && nextKey)
                 {
                     startValue = lastKey.value;
@@ -224,7 +207,7 @@ export class Tw2Vector3Curve extends Tw2Curve
                 value[2] = startValue[2] + (endValue[2] - startValue[2]) * (time / deltaTime);
                 return value;
 
-            case Tw2Vector3Curve.Interpolation.HERMITE:
+            case Interpolation.HERMITE:
                 let inTangent = this.startTangent,
                     outTangent = this.endTangent;
 
@@ -304,10 +287,6 @@ export class Tw2Vector3Curve extends Tw2Curve
      * Interpolation types
      * @type {{CONSTANT: number, LINEAR: number, HERMITE: number}}
      */
-    static Interpolation = {
-        CONSTANT: 0,
-        LINEAR: 1,
-        HERMITE: 2
-    };
+    static Interpolation = Interpolation;
 
 }

@@ -1,13 +1,6 @@
 import { meta, vec3, vec4, mat4 } from "global";
 
-/**
- * Tw2Frustum
- *
- * @property {Array.<vec4>} _planes
- * @property {vec3} _viewPos
- * @property {vec3} _viewDir
- * @property {Number} _halfWidthProjection
- */
+
 @meta.type("Tw2Frustum")
 export class Tw2Frustum
 {
