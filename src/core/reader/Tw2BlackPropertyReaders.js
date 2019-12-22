@@ -202,7 +202,7 @@ export function object(reader, id)
             catch (err)
             {
                 if (debugEnabled) console.dir(result);
-                throw new ErrBinaryReaderReadError({ message: `${propertyName} > ` + err.message });
+                throw new ErrBinaryReaderReadError({ message: `${propertyName} (${result.constructor.name}) > ` + err.message });
             }
         }
         else
@@ -442,12 +442,14 @@ export function structList(struct)
     };
 }
 
+
 /**
  * Gets a plain object from an array, using the supplied key as the property for each item
  * @param {String|Object} options
  * @param {String} options.key         - The element key to use as a property key
  * @param {?Function} [options.struct] - The optional struct to use (will use array reader by default)
  * @param {?String} [options.reroute]  - The optional property to reroute the results to
+ * @param {?String} [options.value]    - Sets the object value as one of the item's values instead of the item
  * @returns {function(*=)}
  */
 export function fromList(options)
@@ -457,7 +459,7 @@ export function fromList(options)
         options = { key: options };
     }
 
-    const { key, struct, reroute } = options;
+    const { key, struct, reroute, value } = options;
 
     const handler = function(reader, parent, property)
     {
@@ -479,7 +481,7 @@ export function fromList(options)
 
             if (prop === undefined)
             {
-                throw new Error(`Array element property '${key}' is undefined`);
+                throw new Error(`Array element property is undefined: ${key}`);
             }
 
             if (prop in target)
@@ -487,7 +489,22 @@ export function fromList(options)
                 console.warn(`Property '${prop}' already defined`);
             }
 
-            target[prop] = item;
+            if (value === undefined)
+            {
+                target[prop] = item;
+            }
+            else
+            {
+                // Return one of the item's property values instead of the whole item
+                if (value in item)
+                {
+                    target[prop] = item[value];
+                }
+                else
+                {
+                    throw new Error(`Property is undefined: ${value}`);
+                }
+            }
         }
     };
 
