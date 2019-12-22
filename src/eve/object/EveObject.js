@@ -3,10 +3,14 @@ import { meta, mat4, vec3, Tw2BaseClass } from "global";
 
 
 @meta.abstract
+@meta.type("EveObject")
 export class EveObject extends Tw2BaseClass
 {
 
+    @meta.string
     name = "";
+
+    @meta.boolean
     display = true;
 
 

@@ -1,39 +1,41 @@
-import { mat4, util, device, resMan } from "global";
+import { meta, mat4, util, device, resMan } from "global";
 import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
 
-/**
- * EvePlanet
- *
- * @property {EveTransform} highDetail               - The planet's model
- * @property {Tw2Effect} effectHeight                - The effect used to create the planet's height maps
- * @property {Tw2RenderTarget} heightMap             - A render target for the height map
- * @property {EveTransform} zOnlyModel               - The planet's z-only model
- * @property {number} itemID                         - The planet's item id, used for randomisation
- * @property {String} heightMapResPath1              - The res path for the planet's 1st height map
- * @property {String} heightMapResPath2              - The res path for the planet's 2nd height map
- * @property {Boolean} heightDirty                   - Identifies if the planet needs it's height map rebuilt
- * @property {Array} lockedResources                 - Resources which are keep alive until the height map is built
- * @property {Array.<Tw2Resource>} watchedResources  - Resources which are watched until the height map is built
- * @property {Number} _lod                           - The current lod level
- * @property {Boolean} _useLOD                       - Identifies if lod is being used
- * @property {EveTransform} _atmosphere              - A reference to the atmosphere used when creating the planet
- */
+
+@meta.type("EvePlanet")
 export class EvePlanet extends EveObject
 {
 
+    @meta.objectOf("EveTransform")
     highDetail = new EveTransform();
+    
+    @meta.objectOf("Tw2Effect")
     effectHeight = new Tw2Effect();
+    
+    @meta.objectOf("Tw2RenderTarget")
     heightMap = new Tw2RenderTarget();
+    
+    @meta.objectOf("EveTransform")
     zOnlyModel = null;
+    
+    @meta.uint
+    @meta.isPrivate
     itemID = 0;
+    
+    @meta.path
+    @meta.isPrivate
     heightMapResPath1 = "";
-    heightMapResPath2 = "";
-    heightDirty = false;
-    lockedResources = [];
-    watchedResources = [];
 
+    @meta.path
+    @meta.isPrivate
+    heightMapResPath2 = "";
+    
+
+    _heightDirty = false;
+    _lockedResources = [];
+    _watchedResources = [];
     _lod = 3;
     _useLOD = true;
     _atmosphere = null;
@@ -59,7 +61,7 @@ export class EvePlanet extends EveObject
         this.heightMapResPath1 = heightMap1;
         this.heightMapResPath2 = heightMap2;
         this.highDetail.children = [];
-        this.heightDirty = true;
+        this._heightDirty = true;
 
         let loadingParts = 1;
         if (resPath) loadingParts++;
@@ -230,21 +232,21 @@ export class EvePlanet extends EveObject
      */
     GetBatches(mode, accumulator)
     {
-        if (this.display && this.heightDirty && this.watchedResources.length && this.heightMapResPath1 !== "")
+        if (this.display && this._heightDirty && this._watchedResources.length && this.heightMapResPath1 !== "")
         {
-            for (let i = 0; i < this.watchedResources.length; ++i)
+            for (let i = 0; i < this._watchedResources.length; ++i)
             {
-                if (this.watchedResources[i] && !this.watchedResources[i].IsGood()) return;
+                if (this._watchedResources[i] && !this._watchedResources[i].IsGood()) return;
             }
 
-            this.watchedResources = [];
+            this._watchedResources = [];
             this.CreateHeightMap();
 
-            this.heightDirty = false;
-            for (let i = 0; i < this.lockedResources.length; ++i)
+            this._heightDirty = false;
+            for (let i = 0; i < this._lockedResources.length; ++i)
             {
-                if (!this.lockedResources[i]) continue;
-                this.lockedResources[i].doNotPurge--;
+                if (!this._lockedResources[i]) continue;
+                this._lockedResources[i].doNotPurge--;
             }
 
             const mainMesh = this.highDetail.children[0].mesh;
@@ -292,8 +294,8 @@ export class EvePlanet extends EveObject
     static MeshLoaded(planet, obj)
     {
         planet.highDetail.children.unshift(obj);
-        planet.lockedResources.splice(0);
-        planet.GetPlanetResources(planet.highDetail, [], planet.lockedResources);
+        planet._lockedResources.splice(0);
+        planet.GetPlanetResources(planet.highDetail, [], planet._lockedResources);
 
         let mainMesh = planet.highDetail.children[0].mesh,
             originalEffect = null,
@@ -315,7 +317,7 @@ export class EvePlanet extends EveObject
         }
         resPath = resPath.replace(".fx", "BlitHeight.fx");
 
-        planet.watchedResources.splice(0);
+        planet._watchedResources.splice(0);
         for (let param in originalEffect.parameters)
         {
             if (originalEffect.parameters.hasOwnProperty(param))
@@ -323,7 +325,7 @@ export class EvePlanet extends EveObject
                 planet.effectHeight.parameters[param] = originalEffect.parameters[param];
                 if ("textureRes" in originalEffect.parameters[param])
                 {
-                    planet.watchedResources.push(originalEffect.parameters[param].textureRes);
+                    planet._watchedResources.push(originalEffect.parameters[param].textureRes);
                 }
             }
         }
@@ -354,7 +356,7 @@ export class EvePlanet extends EveObject
                     planet.effectHeight.parameters[param] = originalEffect.parameters[param];
                     if ("textureRes" in originalEffect.parameters[param])
                     {
-                        planet.watchedResources.push(originalEffect.parameters[param].textureRes);
+                        planet._watchedResources.push(originalEffect.parameters[param].textureRes);
                     }
                 }
             }
@@ -362,14 +364,14 @@ export class EvePlanet extends EveObject
 
         const NormalHeight1 = new Tw2TextureParameter("NormalHeight1", planet.heightMapResPath1);
         NormalHeight1.Initialize();
-        planet.watchedResources.push(NormalHeight1.textureRes);
-        planet.lockedResources.push(NormalHeight1.textureRes);
+        planet._watchedResources.push(NormalHeight1.textureRes);
+        planet._lockedResources.push(NormalHeight1.textureRes);
         planet.effectHeight.parameters.NormalHeight1 = NormalHeight1;
 
         const NormalHeight2 = new Tw2TextureParameter("NormalHeight2", planet.heightMapResPath2);
         NormalHeight2.Initialize();
-        planet.watchedResources.push(NormalHeight2.textureRes);
-        planet.lockedResources.push(NormalHeight2.textureRes);
+        planet._watchedResources.push(NormalHeight2.textureRes);
+        planet._lockedResources.push(NormalHeight2.textureRes);
         planet.effectHeight.parameters.NormalHeight2 = NormalHeight2;
 
         planet.effectHeight.parameters.Random = new Tw2FloatParameter("Random", planet.itemID % 100);
@@ -377,27 +379,20 @@ export class EvePlanet extends EveObject
 
         planet.effectHeight.effectFilePath = resPath;
         planet.effectHeight.Initialize();
-        planet.heightDirty = true;
+        planet._heightDirty = true;
         planet.heightMap.Create(2048, 1024, false);
-        planet.watchedResources.push(planet.effectHeight.effectRes);
+        planet._watchedResources.push(planet.effectHeight.effectRes);
 
-        for (let i = 0; i < planet.lockedResources.length; ++i)
+        for (let i = 0; i < planet._lockedResources.length; ++i)
         {
-            if (!planet.lockedResources[i]) continue;
+            if (!planet._lockedResources[i]) continue;
 
-            planet.lockedResources[i].doNotPurge++;
-            if (planet.lockedResources[i].IsPurged())
+            planet._lockedResources[i].doNotPurge++;
+            if (planet._lockedResources[i].IsPurged())
             {
-                planet.lockedResources[i].Reload();
+                planet._lockedResources[i].Reload();
             }
         }
     }
-
-    /**
-     * Identifies the object is a planet
-     * @type {boolean}
-     * @private
-     */
-    static __isPlanet = true;
-
+    
 }

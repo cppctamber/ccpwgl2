@@ -1,19 +1,18 @@
+import { meta, util } from "global";
 import { EveSpaceObject } from "./EveSpaceObject";
-import { isNumber } from "global/util";
 
-/**
- * EveShip
- *
- * @property {Array.<EveBoosterSet>} boosters
- * @property {Array.<EveTurretSet>} turretSets
- * @property {number} boosterGain
- * @class
- */
+
+@meta.type("EveShip")
 export class EveShip extends EveSpaceObject
 {
 
+    @meta.objectOf("EveBoosterSet")
     boosters = null;
+
+    @meta.listOf("EveTurretSet")
     turretSets = [];
+
+    @meta.float
     boosterGain = 1;
 
 
@@ -80,7 +79,7 @@ export class EveShip extends EveSpaceObject
     RebuildTurretSet(index)
     {
         // Allow rebuilding from a turret
-        if (!isNumber(index))
+        if (!util.isNumber(index))
         {
             index = this.turretSets.indexOf(index);
         }
@@ -194,13 +193,5 @@ export class EveShip extends EveSpaceObject
             }
         }
     }
-
-    /**
-     * Identifies the object is a ship
-     * @type {boolean}
-     * @private
-     */
-    static __isShip = true;
-
 
 }

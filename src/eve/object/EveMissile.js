@@ -1,60 +1,65 @@
-import { vec3, mat4, util } from "global";
+import { meta, vec3, mat4 } from "global";
 import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
-/**
- * EveMissileWarhead
- * @ccp EveMissileWarhead
- * todo: Implement "acceleration"
- * todo: Implement "impactDuration"
- * todo: Implement "pathOffsetNoiseScale"
- * todo: Implement "pathOffsetNoiseSpeed"
- * todo: Implement "warheadLength"
- * todo: Implement "warheadRadius"
- *
- * @property {Number} acceleration                         -
- * @property {Number} durationEjectPhase                   -
- * @property {Number} impactDuration                       -
- * @property {Number} impactSize                           -
- * @property {Number} maxExplosionDistance                 -
- * @property {Tw2Mesh} mesh                                -
- * @property {Array.<ParticleEmitterGPU>} particleEmitters -
- * @property {Number} pathOffsetNoiseScale                 -
- * @property {Number} pathOffsetNoiseSpeed                 -
- * @property {EveSpriteSet} spriteSet                      -
- * @property {Number} startEjectVelocity                   -
- * @property {Number} warheadLength                        -
- * @property {Number} warheadRadius                        -
- * @property {Boolean} display                             -
- * @property {Tw2PerObjectData} _perObjectData             -
- * @property {Number} _state                               -
- * @property {Number} _time                                -
- * @property {mat4} _transform                             -
- * @property {vec3} _velocity                              -
- */
+
+@meta.type("EveMissileWarhead", true)
+@meta.stage(2)
 export class EveMissileWarhead extends EveObject
 {
-    //ccp
+
+    @meta.notImplemented
+    @meta.black.float
     acceleration = 1;
+
+    @meta.black.float
     durationEjectPhase = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     impactDuration = 0.6;
+
+    @meta.black.float
     impactSize = 0;
+
+    @meta.black.float
     maxExplosionDistance = 40;
+
+    @meta.black.objectOf("Tw2Mesh")
     mesh = null;
+
+    @meta.black.listOf("Tw2ParticleEmitter")
     particleEmitters = [];
+
+    @meta.notImplemented
+    @meta.black.float
     pathOffsetNoiseScale = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     pathOffsetNoiseSpeed = 0;
+
+    @meta.black.objectOf("EveSpriteSet")
     spriteSet = null;
+
+    @meta.black.float
     startEjectVelocity = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     warheadLength = 0;
+
+    @meta.notImplemented
+    @meta.black.float
     warheadRadius = 0;
 
-    //ccpwgl
+
     _perObjectData = Tw2PerObjectData.from(EveMissileWarhead.perObjectData);
     _state = EveMissileWarhead.State.READY;
     _time = 0;
     _transform = mat4.create();
     _velocity = vec3.create();
+
 
     /**
      * Initializes the warhead
@@ -218,74 +223,43 @@ export class EveMissileWarhead extends EveObject
         DEAD: 2
     };
 
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "acceleration", r.float ],
-            [ "durationEjectPhase", r.float ],
-            [ "impactDuration", r.float ],
-            [ "impactSize", r.float ],
-            [ "maxExplosionDistance", r.float ],
-            [ "mesh", r.object ],
-            [ "particleEmitters", r.array ],
-            [ "pathOffsetNoiseScale", r.float ],
-            [ "pathOffsetNoiseSpeed", r.float ],
-            [ "spriteSet", r.object ],
-            [ "startEjectVelocity", r.float ],
-            [ "warheadLength", r.float ],
-            [ "warheadRadius", r.float ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
-
 }
 
 
-/**
- * EveMissile
- * @ccp EveMissile
- * Todo: Implement "boundingSphereRadius"
- * Todo: Implement "modelTranslationCurve"
- * Todo: Are "curveSets" deprecated?
- *
- * @property {String} name                                                  -
- * @property {Boolean} display                                              -
- * @property {Array} warheads                                               -
- * @property {Array} curveSets                                              -
- * @property {vec3} boundingSphereCenter                                    -
- * @property {Number} boundingSphereRadius                                  -
- * @property {Tr2TranslationAdapter} modelTranslationCurve                  -
- * @property {Number} speed                                                 -
- * @property {vec3} _position                                               -
- * @property {vec3} _target                                                 -
- * @property {?function(EveMissileWarhead): void} _warheadExplosionCallback -
- * @property {?function(EveMissile): void} _missileFinishedCallback         -
- */
+@meta.type("EveMissile", true)
+@meta.stage(2)
 export class EveMissile extends EveObject
 {
-    // ccp
+
+    @meta.black.vector3
+    @meta.isPrivate
     boundingSphereCenter = vec3.create();
+
+    @meta.notImplemented
+    @meta.black.float
+    @meta.isPrivate
     boundingSphereRadius = 0;
+
+    @meta.notImplemented
+    @meta.black.objectOf("Tr2TranslationAdapter")
     modelTranslationCurve = null;
+
+    @meta.black.listOf("EveMissileWarhead")
     warheads = [];
 
-    // ccpwgl
+    @meta.listOf("Tw2CurveSet")
+    @meta.todo("Is this deprecated?")
     curveSets = [];
+
+    @meta.float
     speed = 1;
+
+
     _position = vec3.create();
     _target = vec3.create();
     _warheadExplosionCallback = null;
     _missileFinishedCallback = null;
+
 
     /**
      * Sets a callback which is fired when a warhead explodes
@@ -437,27 +411,5 @@ export class EveMissile extends EveObject
         warhead.spriteSet = sourceWarhead.spriteSet;
         return warhead;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "boundingSphereCenter", r.vector3 ],
-            [ "boundingSphereRadius", r.float ],
-            [ "modelTranslationCurve", r.object ],
-            [ "name", r.string ],
-            [ "warheads", r.array ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 2;
 
 }

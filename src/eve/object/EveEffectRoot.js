@@ -1,41 +1,48 @@
-import { vec3, quat, mat4 } from "global";
+import { meta, vec3, quat, mat4 } from "global";
 import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 import { EveSpaceObject } from "./EveSpaceObject";
 
-/**
- * EveEffectRoot root objects for FX, can be put into scene's objects array
- * TODO: Implement LOD
- *
- * @property {String} name
- * @property {Boolean} display
- * @property {[{}]} curveSets
- * @property {[{}]} effectChildren
- * @property {vec3} scaling
- * @property {quat} rotation
- * @property {vec3} translation
- * @property {mat4} localTransform
- * @property {vec3} boundingSphereCenter
- * @property {number} boundingSphereRadius
- * @property {number} duration
- * @property {Tw2PerObjectData} _perObjectData
- * @class
- */
+
+@meta.type("EveEffectRoot", true)
+@meta.todo("Implement LOD")
 export class EveEffectRoot extends EveObject
 {
 
+    @meta.listOf("Tw2CurveSet")
     curveSets = [];
+
+    @meta.listOf("EveMeshOverlayEffect")
     effectChildren = [];
+
+    @meta.float
     duration = 0;
+
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.quaternion
     rotation = quat.create();
+
+    @meta.vector3
     translation = vec3.create();
+
+    @meta.matrix4
+    @meta.isPrivate
     localTransform = mat4.create();
+
+    @meta.vector3
+    @meta.isPrivate
     boundingSphereCenter = vec3.create();
+
+    @meta.float
+    @meta.isPrivate
     boundingSphereRadius = 0;
+
 
     _worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
+
 
     /**
      * Sets the object's local transform

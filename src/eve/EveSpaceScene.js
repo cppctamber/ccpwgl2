@@ -2,56 +2,6 @@ import { meta, vec3, vec4, quat, mat4, device, resMan, tw2, Tw2BaseClass } from 
 import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
 
-/**
- * EveSpaceScene
- *
- * @property {vec4} ambientColor                                                     -
- * @property {Tw2Effect} backgroundEffect                                            -
- * @property {Array.<EveObject>} backgroundObjects                                   -
- * @property {Boolean} backgroundRenderingEnabled                                    -
- * @property {Array.<Tw2CurveSet>} curveSets                                         -
- * @property {Boolean} enableShadows                                                 -
- * @property {String} envMap1ResPath                                                 -
- * @property {String} envMap2ResPath                                                 -
- * @property {String} envMapResPath                                                  -
- * @property {quat} envMapRotation                                                   -
- * @property {Array.<Tr2ExternalParameter>} externalParameters                       -
- * @property {vec4} fogColor                                                         -
- * @property {Number} fogEnd                                                         -
- * @property {Number} fogMax                                                         -
- * @property {Number} fogStart                                                       -
- * @property {Number} nebulaIntensity                                                -
- * @property {Array.<EveEffectRoot2|EveRootTransform|EveObject|EveStation2>} objects -
- * @property {String} postProcessPath                                                -
- * @property {Boolean} selfShadowOnly                                                -
- * @property {Tr2ShLightingManager} shLightingManager                                -
- * @property {Number} shadowFadeThreshold                                            -
- * @property {Number} shadowThreshold                                                -
- * @property {EveStarfield} starfield                                                -
- * @property {vec4} sunDiffuseColor                                                  -
- * @property {vec4} sunDiffuseColorWithDynamicLights                                 -
- * @property {vec3} sunDirection                                                     -
- * @property {Boolean} useSunDiffuseColorWithDynamicLights                           -
- * @property {vec4} clearColor
- * @property {Boolean} display
- * @property {vec3} envMapScaling
- * @property {Number} fogBlur
- * @property {Number} fogType
- * @property {Array.<EveLensflare>} lensflares
- * @property {Array.<EvePlanet>} planets
- * @property {Tr2PostProcess} postProcess
- * @property {*} visible
- * @property {*} debugHelper
- * @property {Tw2BatchAccumulator} _batches
- * @property {Tw2TextureRes} _emptyTexture
- * @property {Tw2Frustum} _frustum
- * @property {Boolean} _lodEnabled
- * @property {Tw2RawData} _perFrameVS
- * @property {Tw2RawData} _perFramePS
- * @property {Tw2TextureRes} _envMapRes
- * @property {Tw2TextureRes} _envMap1Res
- * @property {Tw2TextureRes} _envMap1Res
- */
 @meta.type("EveSpaceScene", true)
 export class EveSpaceScene extends Tw2BaseClass
 {
@@ -59,16 +9,16 @@ export class EveSpaceScene extends Tw2BaseClass
     @meta.black.color
     ambientColor = vec4.fromValues(0.25, 0.25, 0.25, 1);
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2Effect")
     backgroundEffect = null;
 
-    @meta.black.list
+    @meta.black.listOf("EveObject")
     backgroundObjects = [];
 
     @meta.black.boolean
     backgroundRenderingEnabled = true;
 
-    @meta.black.list
+    @meta.black.listOf("Tw2CurveSet")
     curveSets = [];
 
     @meta.notImplemented
@@ -88,7 +38,7 @@ export class EveSpaceScene extends Tw2BaseClass
     envMapRotation = quat.create();
 
     @meta.notImplemented
-    @meta.black.list
+    @meta.black.listOf("Tr2ExternalParameter")
     externalParameters = [];
 
     @meta.black.color
@@ -106,7 +56,7 @@ export class EveSpaceScene extends Tw2BaseClass
     @meta.black.float
     nebulaIntensity = 1;
 
-    @meta.black.list
+    @meta.black.listOf("EveObject")
     objects = [];
 
     @meta.black.path
@@ -117,7 +67,7 @@ export class EveSpaceScene extends Tw2BaseClass
     selfShadowOnly = false;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("Tr2ShLightingManager")
     shLightingManager = null;
 
     @meta.notImplemented
@@ -131,7 +81,7 @@ export class EveSpaceScene extends Tw2BaseClass
     shadowThreshold = 0;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.black.objectOf("EveStarField")
     starfield = null;
 
     @meta.black.color
@@ -163,21 +113,21 @@ export class EveSpaceScene extends Tw2BaseClass
     @meta.uint
     fogType = 0;
 
-    @meta.list
+    @meta.listOf("EveLensflare")
     lensflares = [];
 
-    @meta.list
+    @meta.listOf("EvePlanet")
     planets = [];
 
-    @meta.list
+    @meta.listOf("EveCurveLineSet")
     lineSets = [];
 
     @meta.notImplemented
-    @meta.object
+    @meta.objectOf("Tr2PostProcess")
     postProcess = null;
 
     @meta.notImplemented
-    @meta.object
+    @meta.objectOf("Tw2Effect")
     @meta.todo("Do shadows need their own render mode and batch accumulation?")
     shadowEffect = null;
 

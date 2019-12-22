@@ -1,89 +1,119 @@
-import { vec3, quat, mat4, device } from "global";
+import { meta, vec3, quat, mat4, device } from "global";
 import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
 
-/**
- * EveTransform
- * TODO: Implement "distanceBasedScaleArg1"
- * TODO: Implement "distanceBasedScaleArg2"
- * TODO: Implement "overrideBoundsMax"
- * TODO: Implement "overrideBoundsMin"
- * TODO: Implement "sortValueMultiplier"
- * TODO: Implement "useDistanceBasedScale"
- * TODO: Implement "useLodLevel"
- * TODO: Implement "visibilityThreshold"
- * @ccp EveTransform
- *
- * @property {String} name                                                 -
- * @property {Array.<EveObject>} children                                  -
- * @property {Array.<Tw2CurveSet>} curveSets                               -
- * @property {Boolean} display                                             -
- * @property {Number} distanceBasedScaleArg1                               -
- * @property {Number} distanceBasedScaleArg2                               -
- * @property {Boolean} hideOnLowQuality                                    -
- * @property {Tw2Mesh|Tr2MeshLod} mesh                                     -
- * @property {Number} modifier                                             -
- * @property {Array.<TriObserverLocal>} observers                          -
- * @property {vec3} overrideBoundsMax                                      -
- * @property {vec3} overrideBoundsMin                                      -
- * @property {Array.<ParticleEmitter|ParticleEmitterGPU>} particleEmitters -
- * @property {Array.<ParticleSystem>} particleSystems                      -
- * @property {quat} rotation                                               -
- * @property {vec3} scaling                                                -
- * @property {Number} sortValueMultiplier                                  -
- * @property {vec3} translation                                            -
- * @property {Boolean} update                                              -
- * @property {Boolean} useDistanceBasedScale                               -
- * @property {Boolean} useLodLevel                                         -
- * @property {Number} visibilityThreshold                                  -
- * @property {Object} visible                                              -
- * @property {mat4} localTransform                                         -
- * @property {mat4} worldTransform                                         -
- * @property {Tw2PerObjectData} _perObjectData                             -
- */
+const Modifier = {
+    NONE: 0,
+    BILLBOARD: 1,
+    TRANSLATE_WITH_CAMERA: 2,
+    LOOK_AT_CAMERA: 3,
+    SIMPLE_HALO: 4,
+    EVE_CAMERA_ROTATION_ALIGNED: 100,
+    EVE_BOOSTER: 101,
+    EVE_SIMPLE_HALO: 102,
+    EVE_CAMERA_ROTATION: 103
+};
+
+
+@meta.type("EveTransform", true)
 export class EveTransform extends EveObject
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("EveObject")
     children = [];
+
+    @meta.black.listOf("Tw2CurveSet")
     curveSets = [];
+
+    @meta.black.boolean
     display = true;
+
+    @meta.notImplemented
+    @meta.black.float
     distanceBasedScaleArg1 = 0.2;
+
+    @meta.notImplemented
+    @meta.black.float
     distanceBasedScaleArg2 = 0.63;
+
+    @meta.notImplemented
+    @meta.black.boolean
     hideOnLowQuality = false;
+
+    @meta.black.objectOf([ "Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh" ])
     mesh = null;
+
+    @meta.black.uint
+    @meta.enumerable(Modifier)
     modifier = EveTransform.Modifier.NONE;
+
+    @meta.black.listOf("Tr2ObserverLocal")
     observers = [];
+
+    @meta.notImplemented
+    @meta.black.vector3
     overrideBoundsMax = vec3.create();
+
+    @meta.notImplemented
+    @meta.black.vector3
     overrideBoundsMin = vec3.create();
+
+    @meta.black.listOf("EveParticleEmitter")
     particleEmitters = [];
+
+    @meta.black.listOf("EveParticleSystem")
     particleSystems = [];
+
+    @meta.black.quaternion
     rotation = quat.create();
+
+    @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
+    @meta.notImplemented
+    @meta.black.float
     sortValueMultiplier = 1.0;
+
+    @meta.black.vector3
     translation = vec3.create();
+
+    @meta.black.boolean
     update = false;
+
+    @meta.notImplemented
+    @meta.black.boolean
     useDistanceBasedScale = false;
+
+    @meta.notImplemented
+    @meta.black.boolean
     useLodLevel = false;
+
+    @meta.notImplemented
+    @meta.black.float
     visibilityThreshold = 0;
 
-    //ccpwgl
+    @meta.plain
     visible = {
         mesh: true,
         children: true
     };
 
-    localTransform = mat4.create();
-    worldTransform = mat4.create();
+
+    _localTransform = mat4.create();
+    _worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveTransform.perObjectData);
+
 
     /**
      * Initializes the EveTransform
      */
     Initialize()
     {
-        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+        mat4.fromRotationTranslationScale(this._localTransform, this.rotation, this.translation, this.scaling);
     }
 
     /**
@@ -126,7 +156,9 @@ export class EveTransform extends EveObject
             finalScale = g.vec3_0,
             parentScale = g.vec3_1,
             dir = g.vec3_2,
-            viewInv = d.viewInverse;
+            viewInv = d.viewInverse,
+            local = this._localTransform,
+            world = this._worldTransform;
 
         if (!parentTransform)
         {
@@ -134,7 +166,7 @@ export class EveTransform extends EveObject
         }
 
         quat.normalize(this.rotation, this.rotation);
-        mat4.fromRotationTranslationScale(this.localTransform, this.rotation, this.translation, this.scaling);
+        mat4.fromRotationTranslationScale(local, this.rotation, this.translation, this.scaling);
         mat4.getScaling(parentScale, parentTransform);
 
         switch (this.modifier)
@@ -142,38 +174,38 @@ export class EveTransform extends EveObject
             case EveTransform.Modifier.BILLBOARD:
             case EveTransform.Modifier.SIMPLE_HALO:
                 const dirNorm = g.vec3_3;
-                mat4.multiply(this.worldTransform, parentTransform, this.localTransform);
+                mat4.multiply(world, parentTransform, local);
                 vec3.multiply(finalScale, this.scaling, parentScale);
 
                 if (this.modifier === EveTransform.Modifier.SIMPLE_HALO)
                 {
-                    vec3.subtract(dir, d.GetEyePosition(dir), this.worldTransform.subarray(12));
-                    vec3.normalize(dirNorm, this.worldTransform.subarray(8));
+                    vec3.subtract(dir, d.GetEyePosition(dir), world.subarray(12));
+                    vec3.normalize(dirNorm, world.subarray(8));
                     vec3.normalize(dir, dir);
                     let scale = vec3.dot(dir, dirNorm);
                     if (scale < 0) scale = 0;
                     vec3.scale(finalScale, finalScale, scale * scale);
                 }
 
-                this.worldTransform[0] = viewInv[0] * finalScale[0];
-                this.worldTransform[1] = viewInv[1] * finalScale[0];
-                this.worldTransform[2] = viewInv[2] * finalScale[0];
-                this.worldTransform[4] = viewInv[4] * finalScale[1];
-                this.worldTransform[5] = viewInv[5] * finalScale[1];
-                this.worldTransform[6] = viewInv[6] * finalScale[1];
-                this.worldTransform[8] = viewInv[8] * finalScale[2];
-                this.worldTransform[9] = viewInv[9] * finalScale[2];
-                this.worldTransform[10] = viewInv[10] * finalScale[2];
+                world[0] = viewInv[0] * finalScale[0];
+                world[1] = viewInv[1] * finalScale[0];
+                world[2] = viewInv[2] * finalScale[0];
+                world[4] = viewInv[4] * finalScale[1];
+                world[5] = viewInv[5] * finalScale[1];
+                world[6] = viewInv[6] * finalScale[1];
+                world[8] = viewInv[8] * finalScale[2];
+                world[9] = viewInv[9] * finalScale[2];
+                world[10] = viewInv[10] * finalScale[2];
                 break;
 
             case EveTransform.Modifier.EVE_CAMERA_ROTATION:
                 const translation = g.vec3_3;
                 vec3.transformMat4(translation, this.translation, parentTransform);
-                mat4.fromRotationTranslationScale(this.localTransform, this.rotation, translation, this.scaling);
-                mat4.multiply(this.worldTransform, viewInv, this.localTransform);
-                this.worldTransform[12] = this.localTransform[12];
-                this.worldTransform[13] = this.localTransform[13];
-                this.worldTransform[14] = this.localTransform[14];
+                mat4.fromRotationTranslationScale(local, this.rotation, translation, this.scaling);
+                mat4.multiply(world, viewInv, local);
+                world[12] = local[12];
+                world[13] = local[13];
+                world[14] = local[14];
                 break;
 
             case EveTransform.Modifier.EVE_CAMERA_ROTATION_ALIGNED:
@@ -189,13 +221,13 @@ export class EveTransform extends EveObject
                     rotationT = g.mat4_2;
 
                 // 3 4 3 3 3 4 3 3
-                mat4.translate(this.worldTransform, parentTransform, this.translation);
+                mat4.translate(world, parentTransform, this.translation);
                 mat4.transpose(parentT, parentTransform);
 
                 d.GetEyePosition(dir);
-                dir[0] -= this.worldTransform[12];
-                dir[1] -= this.worldTransform[13];
-                dir[2] -= this.worldTransform[14];
+                dir[0] -= world[12];
+                dir[1] -= world[13];
+                dir[2] -= world[14];
 
                 vec3.copy(camFwd, dir);
                 vec3.transformMat4(camFwd, camFwd, parentT);
@@ -226,44 +258,45 @@ export class EveTransform extends EveObject
 
                 if (this.modifier === EveTransform.Modifier.EVE_SIMPLE_HALO)
                 {
-                    vec3.normalize(forward, this.worldTransform.subarray(8));
+                    vec3.normalize(forward, world.subarray(8));
                     vec3.normalize(dirToCamNorm, dir);
                     let scale = -vec3.dot(dirToCamNorm, forward);
                     if (scale < 0) scale = 0;
-                    mat4.multiply(this.worldTransform, this.worldTransform, alignMat);
-                    mat4.scale(this.worldTransform, this.worldTransform, [ this.scaling[0] * scale, this.scaling[1] * scale, this.scaling[2] * scale ]);
+                    mat4.multiply(world, world, alignMat);
+                    mat4.scale(world, world, [ this.scaling[0] * scale, this.scaling[1] * scale, this.scaling[2] * scale ]);
                 }
                 else
                 {
-                    mat4.scale(this.worldTransform, this.worldTransform, this.scaling);
-                    mat4.multiply(this.worldTransform, this.worldTransform, alignMat);
+                    mat4.scale(world, world, this.scaling);
+                    mat4.multiply(world, world, alignMat);
                 }
                 break;
 
             case EveTransform.Modifier.LOOK_AT_CAMERA:
                 const lookAt = g.mat4_0;
-                mat4.multiply(this.worldTransform, parentTransform, this.localTransform);
-                mat4.lookAt(lookAt, viewInv.subarray(12), this.worldTransform.subarray(12), [ 0, 1, 0 ]);
+
+                mat4.multiply(world, parentTransform, local);
+                mat4.lookAt(lookAt, viewInv.subarray(12), world.subarray(12), [ 0, 1, 0 ]);
                 mat4.transpose(lookAt, lookAt);
                 vec3.multiply(finalScale, this.scaling, parentScale);
-                this.worldTransform[0] = lookAt[0] * finalScale[0];
-                this.worldTransform[1] = lookAt[1] * finalScale[0];
-                this.worldTransform[2] = lookAt[2] * finalScale[0];
-                this.worldTransform[4] = lookAt[4] * finalScale[1];
-                this.worldTransform[5] = lookAt[5] * finalScale[1];
-                this.worldTransform[6] = lookAt[6] * finalScale[1];
-                this.worldTransform[8] = lookAt[8] * finalScale[2];
-                this.worldTransform[9] = lookAt[9] * finalScale[2];
-                this.worldTransform[10] = lookAt[10] * finalScale[2];
+                world[0] = lookAt[0] * finalScale[0];
+                world[1] = lookAt[1] * finalScale[0];
+                world[2] = lookAt[2] * finalScale[0];
+                world[4] = lookAt[4] * finalScale[1];
+                world[5] = lookAt[5] * finalScale[1];
+                world[6] = lookAt[6] * finalScale[1];
+                world[8] = lookAt[8] * finalScale[2];
+                world[9] = lookAt[9] * finalScale[2];
+                world[10] = lookAt[10] * finalScale[2];
                 break;
 
             default:
-                mat4.multiply(this.worldTransform, parentTransform, this.localTransform);
+                mat4.multiply(world, parentTransform, local);
         }
 
         for (let i = 0; i < this.children.length; ++i)
         {
-            this.children[i].UpdateViewDependentData(this.worldTransform);
+            this.children[i].UpdateViewDependentData(world);
         }
     }
 
@@ -306,8 +339,8 @@ export class EveTransform extends EveObject
 
         if (this.visible.mesh && this.mesh)
         {
-            mat4.transpose(this._perObjectData.ffe.Get("World"), this.worldTransform);
-            mat4.invert(this._perObjectData.ffe.Get("WorldInverseTranspose"), this.worldTransform);
+            mat4.transpose(this._perObjectData.ffe.Get("World"), this._worldTransform);
+            mat4.invert(this._perObjectData.ffe.Get("WorldInverseTranspose"), this._worldTransform);
 
             if (perObjectData)
             {
@@ -357,56 +390,6 @@ export class EveTransform extends EveObject
      * Modifier states
      * @type {*}
      */
-    static Modifier = {
-        NONE: 0,
-        BILLBOARD: 1,
-        TRANSLATE_WITH_CAMERA: 2,
-        LOOK_AT_CAMERA: 3,
-        SIMPLE_HALO: 4,
-        EVE_CAMERA_ROTATION_ALIGNED: 100,
-        EVE_BOOSTER: 101,
-        EVE_SIMPLE_HALO: 102,
-        EVE_CAMERA_ROTATION: 103
-    };
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "children", r.array ],
-            [ "curveSets", r.array ],
-            [ "display", r.boolean ],
-            [ "distanceBasedScaleArg1", r.float ],
-            [ "distanceBasedScaleArg2", r.float ],
-            [ "hideOnLowQuality", r.boolean ],
-            [ "name", r.string ],
-            [ "mesh", r.object ],
-            [ "meshLod", r.object ],
-            [ "modifier", r.uint ],
-            [ "observers", r.array ],
-            [ "overrideBoundsMax", r.vector3 ],
-            [ "overrideBoundsMin", r.vector3 ],
-            [ "particleEmitters", r.array ],
-            [ "particleSystems", r.array ],
-            [ "rotation", r.vector4 ],
-            [ "scaling", r.vector3 ],
-            [ "sortValueMultiplier", r.float ],
-            [ "translation", r.vector3 ],
-            [ "update", r.boolean ],
-            [ "useDistanceBasedScale", r.boolean ],
-            [ "useLodLevel", r.boolean ],
-            [ "visibilityThreshold", r.float ]
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
+    static Modifier = Modifier;
 
 }
