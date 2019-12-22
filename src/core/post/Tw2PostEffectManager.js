@@ -1,19 +1,20 @@
 import { Tw2PostEffect } from "./Tw2PostEffect";
-import { Tw2BaseClass } from "global/class/Tw2BaseClass";
+import { meta, Tw2BaseClass } from "global";
 
-/**
- * Tw2PostEffectManager
- *
- * @property {String} name
- * @property {Boolean} display
- * @property {Array<Tw2PostEffect>} items
- */
+
+@meta.type("Tw2PostEffectManager")
 export class Tw2PostEffectManager extends Tw2BaseClass
 {
 
+    @meta.string
     name = "Post manager";
+
+    @meta.boolean
     display = true;
+
+    @meta.listOf("Tw2PostEffect")
     effects = [];
+
 
     _dirty = true;
     _onChildValueChanged = item => this.UpdateValues({ controller: item });

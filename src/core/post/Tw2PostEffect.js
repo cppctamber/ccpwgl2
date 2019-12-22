@@ -1,31 +1,28 @@
-import { device, Tw2BaseClass } from "global";
+import { meta, device, Tw2BaseClass } from "global";
 import { Tw2RenderTarget } from "../Tw2RenderTarget";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 import { Tw2TextureParameter, Tw2Vector4Parameter } from "../parameter";
 import { Tw2PostEffectStep } from "./Tw2PostEffectStep";
 import { assignIfExists } from "global/util";
 
-/**
- * Tw2PostEffect
- *
- * @property {Boolean} display                        - toggles rendering
- * @property {Number} [index=-1]                      - the post effect's render order (defaults to the order the effect is added)
- * @property {Number} _width                          - the post effect's width
- * @property {Number} _height                         - the post effect's height
- * @property {Tw2TextureRes} _texture                 - the output texture
- * @property {?Tw2CurveSet} curveSet                  - optional curve set
- * @property {Array<Tw2PostEffectStep>} steps         - post effect steps
- * @property {Array<Tw2PostEffectStep>} _visibleSteps - visible and ordered post effect steps
- * @property {Boolean} _dirty                         - identifies if the post is pending a rebuild
- * @property {Function} _onChildModified              - a function called when a child step is modified
- */
+
+@meta.type("Tw2PostEffect")
 export class Tw2PostEffect extends Tw2BaseClass
 {
 
+    @meta.boolean
     display = true;
+
+    @meta.uint
+    @meta.isPrivate
     index = -1;
+
+    @meta.objectOf("Tw2CurveSet")
     curveSet = null;
+
+    @meta.listOf("Tw2PostEffectStep")
     steps = [];
+
 
     _width = 0;
     _height = 0;

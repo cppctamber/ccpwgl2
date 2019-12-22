@@ -1,28 +1,27 @@
-import { assignIfExists } from "global/util";
+import { meta, util, Tw2BaseClass } from "global";
 import { Tw2Effect } from "../mesh/Tw2Effect";
-import { Tw2BaseClass } from "global/class/Tw2BaseClass";
 
-/**
- * Post effect step
- *
- * @property {String} name                      - the step's name
- * @property {Boolean} display                  - toggles rendering
- * @property {Number} [index=-1]                - the step's render order (defaults to the order it was added)
- * @property {Tw2Effect} effect                 - the step's effect
- * @property {?String} [target]                 - the step's render target name
- * @property {{string:string}} inputs           - the step's input render targets
- * @property {?Tw2RenderTarget} [_renderTarget] - the step's render target (if none is defined the current target is used)
- * @property {Boolean} _dirty                   - identifies if the post is pending a rebuild
- * @property {?Function} _onModified            - a function which is called when the step is modified
- */
+
+@meta.type("Tw2PostEffectStep")
 export class Tw2PostEffectStep extends Tw2BaseClass
 {
 
+    @meta.uint
+    @meta.isPrivate
     index = -1;
+
+    @meta.boolean
     display = true;
+
+    @meta.objectOf("Tw2Effect")
     effect = null;
+
+    @meta.string
     target = null;
+
+    @meta.plainOf("String")
     inputs = {};
+
 
     _renderTarget = null;
     _dirty = true;
@@ -77,7 +76,7 @@ export class Tw2PostEffectStep extends Tw2BaseClass
     static from(opt = {})
     {
         const item = new this();
-        assignIfExists(item, opt, [ "name", "display", "target", "index" ]);
+        util.assignIfExists(item, opt, [ "name", "display", "target", "index" ]);
 
         if (opt.inputs)
         {
