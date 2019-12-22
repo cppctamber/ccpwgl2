@@ -2,16 +2,7 @@ import { meta, vec3, vec4, noise } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-/**
- * Tw2ParticleTurbulenceForce
- *
- * @property {vec3} amplitude    -
- * @property {vec4} frequency    -
- * @property {Number} noiseLevel -
- * @property {Number} noiseRatio -
- * @property {number} _time      -
- */
-@meta.ccp("Tr2ParticleTurbulenceForce")
+@meta.type("Tw2ParticleTurbulenceForce", "Tr2ParticleTurbulenceForce")
 export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
 {
 
@@ -26,6 +17,7 @@ export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
 
     @meta.black.float
     noiseRatio = 0.5;
+
 
     _time = 0;
 

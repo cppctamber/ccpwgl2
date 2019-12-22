@@ -3,16 +3,7 @@ import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticle
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
-/**
- * Tw2StaticEmitter
- *
- * @property {String} name                      -
- * @property {Tw2GeometryRes} geometryResource  -
- * @property {Number} geometryIndex             -
- * @property {Tw2ParticleSystem} particleSystem -
- * @property {Boolean} _spawned                 -
- */
-@meta.ccp("Tr2StaticEmitter")
+@meta.type("Tw2StaticEmitter", "Tr2StaticEmitter")
 export class Tw2StaticEmitter extends Tw2ParticleEmitter
 {
 
@@ -25,15 +16,16 @@ export class Tw2StaticEmitter extends Tw2ParticleEmitter
     @meta.black.uint
     meshIndex = 0;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2ParticleSystem")
     particleSystem = null;
 
-    @meta.object
-    @meta.todo("Make property private")
+    @meta.objectOf("Tw2GeometryRes")
+    @meta.isPrivate
     geometryResource = null;
 
 
     _spawned = false;
+
 
     /**
      * Alias for meshIndex

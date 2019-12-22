@@ -37,7 +37,7 @@ import { Tw2ParticleElement } from "./element";
  * @property {WebGLBuffer} _vb                                  - Vertex buffer
  * @property {Array} _vertexStride                              - Vertex stride
  */
-@meta.ccp("Tr2ParticleSystem")
+@meta.type("Tw2ParticleSystem", "Tr2ParticleSystem")
 export class Tw2ParticleSystem extends Tw2BaseClass
 {
 
@@ -50,19 +50,19 @@ export class Tw2ParticleSystem extends Tw2BaseClass
     @meta.black.boolean
     applyForce = true;
 
-    @meta.black.list
+    @meta.black.listOf("Tw2ParticleConstraint")
     constraints = [];
 
-    @meta.black.list
+    @meta.black.listOf("Tw2ParticleElementDeclaration")
     elements = [];
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2ParticleEmitter")
     emitParticleDuringLifeEmitter = null;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2ParticleEmitter")
     emitParticleOnDeathEmitter = null;
 
-    @meta.black.list
+    @meta.black.listOf("Tw2ParticleForce")
     forces = [];
 
     @meta.black.uint
@@ -77,8 +77,8 @@ export class Tw2ParticleSystem extends Tw2BaseClass
     @meta.black.boolean
     updateSimulation = true;
 
-    @meta.black.boolean
     @meta.notImplemented
+    @meta.black.boolean
     useSimTimeRebase = false;
 
     @meta.todo("This is unused, remove it?")
@@ -86,6 +86,7 @@ export class Tw2ParticleSystem extends Tw2BaseClass
 
     @meta.todo("This is unused, remove it?")
     peakAliveCount = 0;
+
 
     _aabbMin = vec3.create();
     _aabbMax = vec3.create();

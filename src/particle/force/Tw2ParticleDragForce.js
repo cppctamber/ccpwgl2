@@ -2,12 +2,7 @@ import { meta } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-/**
- * Tw2ParticleDragForce
- *
- * @property {number} drag
- */
-@meta.ccp("Tr2ParticleDragForce")
+@meta.type("Tw2ParticleDragForce", "Tr2ParticleDragForce")
 export class Tw2ParticleDragForce extends Tw2ParticleForce
 {
 

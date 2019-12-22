@@ -3,16 +3,7 @@ import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
-/**
- * Tw2RandomIntegerAttributeGenerator
- *
- * @property {String} customName           -
- * @property {Number} elementType          -
- * @property {vec4} maxRange               -
- * @property {vec4} minRange               -
- * @property {Tw2ParticleElement} _element -
- */
-@meta.ccp("Tr2RandomIntegerAttributeGenerator")
+@meta.type("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator")
 export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
@@ -20,6 +11,7 @@ export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGene
     customName = "";
 
     @meta.black.uint
+    @meta.enumerable(Tw2ParticleElement.Type)
     elementType = Tw2ParticleElement.Type.CUSTOM;
 
     @meta.black.vector4
@@ -28,6 +20,7 @@ export class Tw2RandomIntegerAttributeGenerator extends Tw2ParticleAttributeGene
     @meta.black.vector4
     maxRange = vec4.create();
 
+    @meta.objectOf("Tw2ParticleElement")
     _element = null;
 
 

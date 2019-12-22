@@ -1,10 +1,6 @@
 import { meta } from "global";
 
 
-/**
- * Particle type
- * @type {{POSITION: number, VELOCITY: number, MASS: number, CUSTOM: number, LIFETIME: number}}
- */
 const ParticleType = {
     LIFETIME: 0,
     POSITION: 1,
@@ -13,21 +9,8 @@ const ParticleType = {
     CUSTOM: 4
 };
 
-/**
- * Tw2ParticleElement
- *
- * @property {number} elementType
- * @property {String} customName
- * @property {number} dimension
- * @property {number} usageIndex
- * @property {Boolean} usedByGPU
- * @property buffer
- * @property {number} startOffset
- * @property {number} offset
- * @property {number} instanceStride
- * @property {number} vertexStride
- * @property {Boolean} dirty
- */
+
+@meta.type("Tw2ParticleElement")
 export class Tw2ParticleElement
 {
 

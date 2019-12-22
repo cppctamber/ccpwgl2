@@ -2,12 +2,7 @@ import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-/**
- * Tw2ParticleDirectForce
- *
- * @property {vec3} force
- */
-@meta.ccp("Tr2ParticleDirectForce")
+@meta.type("Tw2ParticleDirectForce", "Tr2ParticleDirectForce")
 export class Tw2ParticleDirectForce extends Tw2ParticleForce
 {
 

@@ -3,28 +3,7 @@ import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
-/**
- * Tw2SphereShapeAttributeGenerator
- *
- * @property {String} customName             -
- * @property {Boolean} controlPosition       -
- * @property {Boolean} controlVelocity       -
- * @property {Number} distributionExponent   -
- * @property {Number} maxPhi                 -
- * @property {Number} maxRadius              -
- * @property {Number} maxSpeed               -
- * @property {Number} maxTheta               -
- * @property {Number} minPhi                 -
- * @property {Number} minRadius              -
- * @property {Number} minSpeed               -
- * @property {Number} minTheta               -
- * @property {Number} parentVelocityFactor   -
- * @property {vec3} position                 -
- * @property {quat} rotation                 -
- * @property {?Tw2ParticleElement} _position -
- * @property {?Tw2ParticleElement}_velocity  -
- */
-@meta.ccp("Tr2SphereShapeAttributeGenerator")
+@meta.type("Tw2SphereShapeAttributeGenerator", "Tr2SphereShapeAttributeGenerator")
 export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
@@ -76,7 +55,10 @@ export class Tw2SphereShapeAttributeGenerator extends Tw2ParticleAttributeGenera
     @meta.todo("Is this deprecated?")
     controlVelocity = true;
 
+    @meta.objectOf("Tw2ParticleElement")
     _position = null;
+
+    @meta.objectOf("Tw2ParticleElement")
     _velocity = null;
 
 

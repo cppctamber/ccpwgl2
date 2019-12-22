@@ -2,36 +2,26 @@ import { meta } from "global";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
-/**
- * Tw2DynamicEmitter
- *
- * @property {String} name                                      -
- * @property {Array.<Tw2ParticleAttributeGenerator>} generators -
- * @property {Number} maxParticles                              -
- * @property {Tw2ParticleSystem} particleSystem                 -
- * @property {Number} rate                                      -
- * @property {number} _accumulatedRate                          -
- * @property {Boolean} _isValid                                 -
- */
-@meta.ccp("Tr2DynamicEmitter")
+@meta.type("Tw2DynamicEmitter", "Tr2DynamicEmitter")
 export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 {
 
     @meta.black.string
     name = "";
 
-    @meta.black.list
+    @meta.black.listOf("Tw2ParticleAttributeGenerator")
     generators = [];
 
-    @meta.black.uint
     @meta.notImplemented
+    @meta.black.uint
     maxParticles = 0;
 
-    @meta.black.object
+    @meta.black.objectOf("Tw2ParticleSystem")
     particleSystem = null;
 
     @meta.black.float
     rate = 0;
+
 
     _accumulatedRate = 0;
     _isValid = false;

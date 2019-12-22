@@ -3,16 +3,7 @@ import { Tw2ParticleElement } from "./Tw2ParticleElement";
 import { meta, Tw2BaseClass } from "global";
 
 
-/**
- * Tw2ParticleElementDeclaration
- *
- * @property {String} customName  -
- * @property {Number} dimension   -
- * @property {Number} elementType -
- * @property {Number} usageIndex  -
- * @property {Boolean} usedByGPU  -
- */
-@meta.ccp("Tr2ParticleElementDeclaration")
+@meta.type("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration")
 export class Tw2ParticleElementDeclaration extends Tw2BaseClass
 {
 
@@ -23,6 +14,7 @@ export class Tw2ParticleElementDeclaration extends Tw2BaseClass
     dimension = 1;
 
     @meta.black.uint
+    @meta.enumerable(Tw2ParticleElement.Type)
     elementType = Tw2ParticleElement.Type.CUSTOM;
 
     @meta.black.uint
@@ -85,7 +77,7 @@ export class Tw2ParticleElementDeclaration extends Tw2BaseClass
         }
 
         return Tw2VertexElement.from({
-            usage: usage,
+            usage,
             usageIndex: this.usageIndex,
             elements: this.GetDimension()
         });

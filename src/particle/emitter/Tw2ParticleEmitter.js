@@ -2,16 +2,12 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-/**
- * Particle Emitter base class
- *
- * @property {Tw2ParticleSystem} particleSystem
- */
 @meta.abstract
+@meta.type("Tw2ParticleEmitter")
 export class Tw2ParticleEmitter extends Tw2BaseClass
 {
 
-    @meta.object
+    @meta.objectOf("Tw2ParticleSystem")
     particleSystem = null;
 
 
