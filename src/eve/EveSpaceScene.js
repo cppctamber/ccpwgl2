@@ -1,5 +1,5 @@
 import { meta, vec3, vec4, quat, mat4, device, resMan, tw2, Tw2BaseClass } from "global";
-import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum, Tr2PostProcess } from "core";
+import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
 
 /**
