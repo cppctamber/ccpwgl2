@@ -1,4 +1,4 @@
-import { util, resMan, tw2, Tw2BaseClass } from "global";
+import { meta, util, resMan, tw2, Tw2BaseClass } from "global";
 import {
     RM_ADDITIVE,
     RM_DEPTH,
@@ -8,57 +8,60 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "global/engine";
-import { assignIfExists, get, toArray } from "global/util";
 
-/**
- * Tw2Mesh
- * Todo: Implement "deferGeometryLoad"
- * Todo: Implement "depthNormalAreas"
- * Todo: Implement "distortionAreas"
- * Todo: Implement "depthAreas"
- * Todo: Implement "opaquePrepassAreas"
- * Todo: Handle "reversed" meshAreas
- * Todo: Handle "useSHLighting" meshAreas
- * @ccp Tr2Mesh
- *
- * @property {String} name                            -
- * @property {Array.<Tw2MeshArea>} additiveAreas      -
- * @property {Array.<Tw2MeshArea>} decalAreas         -
- * @property {Boolean} deferGeometryLoad              -
- * @property {Array.<Tw2MeshArea>} depthAreas         -
- * @property {Array.<Tw2MeshArea>} depthNormalAreas   -
- * @property {Boolean} display                        -
- * @property {Array.<Tw2MeshArea>} distortionAreas    -
- * @property {String} geometryResPath                 -
- * @property {Number} meshIndex                       -
- * @property {Array.<Tw2MeshArea>} opaqueAreas        -
- * @property {Array.<Tw2MeshArea>} opaquePrepassAreas -
- * @property {Array.<Tw2MeshArea>} pickableAreas      -
- * @property {Array.<Tw2MeshArea>} transparentAreas   -
- * @property {Tw2GeometryRes} geometryResource        -
- * @parameter {*} visible                            -
 
- */
+@meta.type("Tw2Mesh", "Tr2Mesh")
 export class Tw2Mesh extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.black.listOf("Tw2MeshArea")
     additiveAreas = [];
+
+    @meta.black.listOf("Tw2MeshArea")
     decalAreas = [];
+
+    @meta.notImplemented
+    @meta.black.boolean
     deferGeometryLoad = false;
+
+    @meta.notImplemented
+    @meta.black.listOf("Tw2MeshArea")
     depthAreas = [];
+
+    @meta.notImplemented
+    @meta.black.listOf("Tw2MeshArea")
     depthNormalAreas = [];
+
+    @meta.boolean
+    display = true;
+
+    @meta.notImplemented
+    @meta.black.listOf("Tw2MeshArea")
     distortionAreas = [];
+    
+    @meta.black.path
     geometryResPath = "";
+    
+    @meta.black.uint
     meshIndex = 0;
+
+    @meta.black.listOf("Tw2MeshArea")
     opaqueAreas = [];
+
+    @meta.notImplemented
+    @meta.black.listOf("Tw2MeshArea")
     opaquePrepassAreas = [];
+
+    @meta.black.listOf("Tw2MeshArea")
     pickableAreas = [];
+
+    @meta.black.listOf("Tw2MeshArea")
     transparentAreas = [];
 
-    // ccpwgl
-    display = true;
-    geometryResource = null;
+    @meta.plain
     visible = {
         additiveAreas: true,
         decalAreas: true,
@@ -71,6 +74,27 @@ export class Tw2Mesh extends Tw2BaseClass
         transparentAreas: true,
     };
 
+    @meta.objectOf("Tw2GeometryRes")
+    _geometryResource = null;
+
+    /**
+     * Temporary alias for _geometryResource
+     * @returns {null|Tw2GeometryRes}
+     */
+    get geometryResource()
+    {
+        return this._geometryResource;
+    }
+
+    /**
+     * Temporary alias for _geometryResource
+     * @param {Tw2GeometryRes} res
+     */
+    set geometryResource(res)
+    {
+        this._geometryResource = res;
+    }
+
     /**
      * Initializes the mesh
      */
@@ -78,7 +102,7 @@ export class Tw2Mesh extends Tw2BaseClass
     {
         if (this.geometryResPath !== "")
         {
-            this.geometryResource = resMan.GetResource(this.geometryResPath);
+            this._geometryResource = resMan.GetResource(this.geometryResPath);
         }
     }
 
@@ -88,7 +112,7 @@ export class Tw2Mesh extends Tw2BaseClass
      */
     IsGood()
     {
-        return this.geometryResource && this.geometryResource.IsGood();
+        return this._geometryResource && this._geometryResource.IsGood();
     }
 
     /**
@@ -98,9 +122,9 @@ export class Tw2Mesh extends Tw2BaseClass
      */
     GetResources(out = [])
     {
-        if (this.geometryResource && !out.includes(this.geometryResource))
+        if (this._geometryResource && !out.includes(this._geometryResource))
         {
-            out.push(this.geometryResource);
+            out.push(this._geometryResource);
         }
 
         //return super.GetResources(out);
@@ -125,60 +149,41 @@ export class Tw2Mesh extends Tw2BaseClass
         if (!this.IsGood() || !this.display) return false;
 
         const getBatches = this.constructor.GetAreaBatches;
+        let area;
         switch (mode)
         {
             case RM_ADDITIVE:
-                if (this.visible.additiveAreas)
-                {
-                    getBatches(this, this.additiveAreas, mode, accumulator, perObjectData);
-                }
-                return;
+                if (this.visible.additiveAreas) area = this.additiveAreas;
+                break;
 
             case RM_DECAL:
-                if (this.visible.decalAreas)
-                {
-                    getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
-                }
-                return;
+                if (this.visible.decalAreas) area = this.decalAreas;
+                break;
 
             case RM_DEPTH:
-                /*
-                if (this.visible.depthAreas)
-                {
-                    getBatches(this, this.depthAreas, mode, accumulator, perObjectData);
-                }
-                */
-                return;
+                if (this.visible.depthAreas) area = this.depthAreas;
+                break;
 
             case RM_DISTORTION:
-                /*
-                if (this.visible.distortionAreas)
-                {
-                    getBatches(this, this.distortionAreas, mode, accumulator, perObjectData);
-                }
-                */
-                return;
+                if (this.visible.distortionAreas) area = this.distortionAreas;
+                break;
 
             case RM_OPAQUE:
-                if (this.visible.opaqueAreas)
-                {
-                    getBatches(this, this.opaqueAreas, mode, accumulator, perObjectData);
-                }
-                return;
+                if (this.visible.opaqueAreas) area = this.opaqueAreas;
+                break;
 
             case RM_PICKABLE:
-                if (this.visible.pickableAreas)
-                {
-                    getBatches(this, this.pickableAreas, mode, accumulator, perObjectData);
-                }
-                return;
+                if (this.visible.pickableAreas) area = this.pickableAreas;
+                break;
 
             case RM_TRANSPARENT:
-                if (this.visible.transparentAreas)
-                {
-                    getBatches(this, this.transparentAreas, mode, accumulator, perObjectData);
-                }
-                return;
+                if (this.visible.transparentAreas) area = this.transparentAreas;
+                break;
+        }
+
+        if (area)
+        {
+            getBatches(this, area, mode, accumulator, perObjectData);
         }
     }
 
@@ -216,7 +221,7 @@ export class Tw2Mesh extends Tw2BaseClass
                 const batch = new area.constructor.batchType();
                 batch.renderMode = mode;
                 batch.perObjectData = perObjectData;
-                batch.geometryRes = mesh.geometryResource;
+                batch.geometryRes = mesh._geometryResource;
                 batch.meshIx = mesh.meshIndex;
                 batch.start = area.index;
                 batch.count = area.count;
@@ -234,7 +239,7 @@ export class Tw2Mesh extends Tw2BaseClass
      */
     static createAreaIfExists(dest, src, names)
     {
-        names = toArray(names);
+        names = util.toArray(names);
         for (let i = 0; i < names.length; i++)
         {
             const name = names[i];
@@ -261,11 +266,11 @@ export class Tw2Mesh extends Tw2BaseClass
     static from(values, options)
     {
         const item = new Tw2Mesh();
-        item.index = get(options, "index", 0);
+        item.index = util.get(options, "index", 0);
 
         if (values)
         {
-            assignIfExists(item, values, [
+            util.assignIfExists(item, values, [
                 "name", "display", "deferGeometryLoad",
                 "geometryResPath", "meshIndex"
             ]);
@@ -276,7 +281,7 @@ export class Tw2Mesh extends Tw2BaseClass
                 "opaquePrepassAreas", "pickableAreas", "transparentAreas"
             ];
 
-            assignIfExists(item.visible, values.visible, areaNames);
+            util.assignIfExists(item.visible, values.visible, areaNames);
             this.createAreaIfExists(item, values, areaNames);
         }
 
@@ -287,35 +292,5 @@ export class Tw2Mesh extends Tw2BaseClass
 
         return item;
     }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "additiveAreas", r.array ],
-            [ "decalAreas", r.array ],
-            [ "deferGeometryLoad", r.boolean ],
-            [ "depthAreas", r.array ],
-            [ "depthNormalAreas", r.array ],
-            [ "distortionAreas", r.array ],
-            [ "geometryResPath", r.path ],
-            [ "meshIndex", r.uint ],
-            [ "name", r.string ],
-            [ "opaqueAreas", r.array ],
-            [ "opaquePrepassAreas", r.array ],
-            [ "pickableAreas", r.array ],
-            [ "transparentAreas", r.array ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }

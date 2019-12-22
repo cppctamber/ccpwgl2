@@ -1,33 +1,36 @@
 import { Tw2GeometryBatch } from "../batch";
-import { util, Tw2BaseClass } from "global";
-import { assignIfExists } from "global/util";
+import { util, Tw2BaseClass, meta } from "global";
 import { Tw2Effect } from "./Tw2Effect";
 
-/**
- * Tw2MeshArea
- * TODO: Implement "reversed" - in RenderBatch or Mesh?
- * TODO: Implement "useSHLighting" - in RenderBatch or Mesh?
- * @ccp Tr2MeshArea
- *
- * @property {String} name           -
- * @property {Number} count          -
- * @property {Tr2Effect} effect      -
- * @property {Number} index          -
- * @property {Boolean} reversed      -
- * @property {Boolean} useSHLighting -
- */
+
+@meta.type("Tw2MeshArea", "Tr2MeshArea")
+@meta.stage(1)
 export class Tw2MeshArea extends Tw2BaseClass
 {
 
+    @meta.black.string
     name = "";
+
+    @meta.boolean
+    display = true;
+
+    @meta.black.uint
     count = 1;
+
+    @meta.black.objectOf("Tw2Effect")
     effect = null;
+
+    @meta.black.uint
     index = 0;
+
+    @meta.notImplemented
+    @meta.black.boolean
     reversed = false;
+
+    @meta.notImplemented
+    @meta.black.boolean
     useSHLighting = false;
 
-    // ccpwgl
-    display = true;
 
     /**
      * Alias for index
@@ -56,11 +59,11 @@ export class Tw2MeshArea extends Tw2BaseClass
     static from(values, options)
     {
         const item = new this();
-        assignIfExists(item, options, "index");
+        util.assignIfExists(item, options, "index");
 
         if (values)
         {
-            assignIfExists(item, values, [
+            util.assignIfExists(item, values, [
                 "name", "display", "count", "index", "reversed", "useSHLighting"
             ]);
 
@@ -79,28 +82,5 @@ export class Tw2MeshArea extends Tw2BaseClass
      * @type {Tw2RenderBatch}
      */
     static batchType = Tw2GeometryBatch;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "count", r.uint ],
-            [ "effect", r.object ],
-            [ "index", r.uint ],
-            [ "name", r.string ],
-            [ "reversed", r.boolean ],
-            [ "useSHLighting", r.boolean ],
-        ];
-    }
-
-    /**
-     * Identifies that the class is in staging
-     * @property {null|Number}
-     */
-    static __isStaging = 1;
 
 }
