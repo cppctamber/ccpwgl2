@@ -1,14 +1,7 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 import { meta, quat } from "global";
 
-/**
- * Euler to Quaternion sequencer
- *
- * @property {Tr2CurveScalar} pitch -
- * @property {Tr2CurveScalar} roll  -
- * @property {Tr2CurveScalar} yaw   -
- * @property {quat} currentValue
- */
+
 @meta.type("Tw2CurveEulerRotation", "Tr2CurveEulerRotation")
 @meta.stage(2)
 export class Tw2CurveEulerRotation extends Tw2CurveSequencer
@@ -17,13 +10,13 @@ export class Tw2CurveEulerRotation extends Tw2CurveSequencer
     @meta.black.string
     name = "";
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     pitch = null;
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     roll = null;
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     yaw = null;
 
     @meta.quaternion

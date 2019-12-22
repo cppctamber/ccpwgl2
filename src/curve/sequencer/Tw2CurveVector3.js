@@ -1,14 +1,7 @@
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 import { meta, vec3 } from "global";
 
-/**
- * Vector3 curve sequencer
- *
- * @property {Tr2CurveScalar} x -
- * @property {Tr2CurveScalar} y -
- * @property {Tr2CurveScalar} z -
- * @property {vec3} currentValue      -
- */
+
 @meta.type("Tw2CurveVector3", "Tr2CurveVector3")
 @meta.stage(2)
 export class Tw2CurveVector3 extends Tw2CurveSequencer
@@ -17,13 +10,13 @@ export class Tw2CurveVector3 extends Tw2CurveSequencer
     @meta.black.string
     name = "";
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     x = null;
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     y = null;
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     z = null;
 
     @meta.vector3

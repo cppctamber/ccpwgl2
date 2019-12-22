@@ -1,15 +1,7 @@
 import { meta, vec4 } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
-/**
- * Tw2RGBAScalarSequencer
- *
- * @property {vec4} value
- * @property {Tw2Curve} RedCurve
- * @property {Tw2Curve} GreenCurve
- * @property {Tw2Curve} BlueCurve
- * @property {Tw2Curve} AlphaCurve
- */
+
 @meta.type("Tw2RGBAScalarSequencer")
 export class Tw2RGBAScalarSequencer extends Tw2CurveSequencer
 {
@@ -18,16 +10,16 @@ export class Tw2RGBAScalarSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     value = vec4.create();
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     RedCurve = null;
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     GreenCurve = null;
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     BlueCurve = null;
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     AlphaCurve = null;
 
 

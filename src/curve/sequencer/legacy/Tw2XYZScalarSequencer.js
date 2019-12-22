@@ -1,15 +1,7 @@
 import { meta, vec3 } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
-/**
- * Tw2XYZScalarSequencer
- *
- * @property {String} name
- * @property {vec3} value
- * @property {Tw2CurveSequencer} XCurve
- * @property {Tw2CurveSequencer} YCurve
- * @property {Tw2CurveSequencer} ZCurve
- */
+
 @meta.type("Tw2XYZScalarSequencer")
 export class Tw2XYZScalarSequencer extends Tw2CurveSequencer
 {
@@ -18,13 +10,13 @@ export class Tw2XYZScalarSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     value = vec3.create();
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     XCurve = null;
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     YCurve = null;
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     ZCurve = null;
 
 

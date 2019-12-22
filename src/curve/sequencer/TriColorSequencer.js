@@ -1,13 +1,7 @@
 import { meta, vec4 } from "global";
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
-/**
- * Color sequencer
- *
- * @property {String} name                                   -
- * @property {Array.<Tw2Curve|Tw2CurveExpression>} functions -
- * @property {vec4} value                                    -
- */
+
 @meta.type("TriColorSequencer", true)
 @meta.todo("Make backwards compatible with old Tw2ColorSequencer")
 @meta.stage(2)
@@ -17,7 +11,7 @@ export class TriColorSequencer extends Tw2CurveSequencer
     @meta.black.string
     name = "";
 
-    @meta.list
+    @meta.listOf("Tr2CurveScalar")
     functions = [];
 
     @meta.vector4

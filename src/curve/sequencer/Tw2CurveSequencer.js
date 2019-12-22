@@ -1,10 +1,8 @@
+import { meta } from "global";
 import { Tw2Curve } from "../curve/Tw2Curve";
 
-/**
- * Tw2CurveSequencer base class
- *
- * @class
- */
+
+@meta.type("Tw2CurveSequencer")
 export class Tw2CurveSequencer extends Tw2Curve
 {
     /**

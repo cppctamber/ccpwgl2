@@ -1,19 +1,13 @@
 import { meta } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
-/**
- * Tw2ScalarSequencer
- *
- * @property {String} name
- * @property {number} value
- * @property {number} operator
- * @property {Array<Tw2Curve>} functions
- * @property {number} inMinClamp
- * @property {number} inMaxClamp
- * @property {number} outMinClamp
- * @property {number} outMaxClamp
- * @property {Boolean} clamping
- */
+
+const Operator = {
+    MULTIPLY: 0,
+    ADD: 1
+};
+
+
 @meta.type("Tw2ScalarSequencer")
 export class Tw2ScalarSequencer extends Tw2CurveSequencer
 {
@@ -22,10 +16,10 @@ export class Tw2ScalarSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     value = 0;
 
-    @meta.uint
+    @meta.enumerable(Operator)
     operator = 0;
 
-    @meta.list
+    @meta.listOf("Tw2Curve")
     functions = [];
 
     @meta.float
@@ -151,9 +145,6 @@ export class Tw2ScalarSequencer extends Tw2CurveSequencer
      * Operator types
      * @type {{MULTIPLY: number, ADD: number}}
      */
-    static Operator = {
-        MULTIPLY: 0,
-        ADD: 1
-    };
+    static Operator = Operator;
 
 }

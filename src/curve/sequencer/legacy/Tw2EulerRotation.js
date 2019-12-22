@@ -1,26 +1,18 @@
 import { meta, quat } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
-/**
- * Tw2EulerRotation
- *
- * @property {String} name
- * @property {Tw2Curve} [yawCurve]
- * @property {Tw2Curve} [pitchCurve]
- * @property {Tw2Curve} [rollCurve]
- * @property {quat} currentValue=[0,0,0,1]
- */
+
 @meta.type("Tw2EulerRotation")
 export class Tw2EulerRotation extends Tw2CurveSequencer
 {
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     yawCurve = null;
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     pitchCurve = null;
 
-    @meta.object
+    @meta.objectOf("Tw2Curve")
     rollCurve = null;
 
     @meta.quaternion

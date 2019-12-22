@@ -1,15 +1,13 @@
 import { meta, vec3 } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
-/**
- * Tw2VectorSequencer
- *
- * @property {String} name
- * @property {number} start
- * @property {vec3} value
- * @property {number} operator
- * @property {Array.<Tw2Curve>} functions
- */
+
+const Operator = {
+    MULTIPLY: 0,
+    ADD: 1
+};
+
+
 @meta.type("Tw2VectorSequencer")
 export class Tw2VectorSequencer extends Tw2CurveSequencer
 {
@@ -21,10 +19,10 @@ export class Tw2VectorSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     value = vec3.create();
 
-    @meta.uint
+    @meta.enumerable(Operator)
     operator = 0;
 
-    @meta.list
+    @meta.listOf("Tw2Curve")
     functions = [];
 
 
@@ -120,9 +118,6 @@ export class Tw2VectorSequencer extends Tw2CurveSequencer
      * Operator types
      * @type {{MULTIPLY: number, ADD: number}}
      */
-    static Operator = {
-        MULTIPLY: 0,
-        ADD: 1
-    };
+    static Operator = Operator;
 
 }

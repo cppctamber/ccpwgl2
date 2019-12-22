@@ -1,16 +1,7 @@
 import { meta, vec4 } from "global";
 import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 
-/**
- * Tw2CurveColor
- *
- * @property {string} name       -
- * @property {Tr2CurveScalar} r  -
- * @property {Tr2CurveScalar} g  -
- * @property {Tr2CurveScalar} b  -
- * @property {Tr2CurveScalar} a  -
- * @property {vec4} currentValue -
- */
+
 @meta.type("Tw2CurveColor", "Tr2CurveColor")
 @meta.stage(2)
 export class Tw2CurveColor extends Tw2CurveSequencer
@@ -19,16 +10,16 @@ export class Tw2CurveColor extends Tw2CurveSequencer
     @meta.black.string
     name = "";
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     r = null;
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     g = null;
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     b = null;
 
-    @meta.black.raw
+    @meta.black.rawOf("Tr2CurveScalar")
     a = null;
 
     @meta.color
