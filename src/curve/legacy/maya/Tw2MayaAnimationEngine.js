@@ -1,17 +1,7 @@
 import { meta, curve, util, vec4 } from "global";
 import { ErrFeatureNotImplemented } from "core";
 
-/**
- * Tw2MayaAnimationEngine
- * TODO: Complete the prototype `_EvaluteBezier`
- *
- * @property {number|String} id
- * @property {Array} curves
- * @property {Array} hermiteSegments
- * @property {Array} bezierSegments
- * @property {number} _currentCurveIndex
- * @property _evalCache
- */
+
 @meta.type("Tw2MayaAnimationEngine")
 export class Tw2MayaAnimationEngine
 {

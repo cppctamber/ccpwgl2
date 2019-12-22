@@ -1,23 +1,6 @@
 import { meta, curve, vec3, quat, mat4, util, resMan } from "global";
 
-/**
- * Tw2TransformTrack
- *
- * @property {String|number} _id
- * @property {String} name
- * @property {String} resPath
- * @property {Object} res
- * @property {String} group
- * @property {Boolean} cycle
- * @property {number} duration
- * @property {vec3} translation
- * @property {quat} rotation
- * @property {vec3} scale
- * @property positionCurve
- * @property orientationCurve
- * @property scaleCurve
- * @property {mat4} _scaleShear
- */
+
 @meta.type("Tw2TransformTrack")
 export class Tw2TransformTrack
 {
