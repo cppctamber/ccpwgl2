@@ -1,15 +1,17 @@
-/**
- * Tw2Model
- *
- * @property {Tw2GeometryModel} modelRes
- * @property {Array.<Tw2Bone>} bones
- * @property {Object.<string, Tw2Bone>} bonesByName - An object containing every Tw2Bone name and it's object
- */
+import { meta } from "global";
+
+
+@meta.type("Tw2Model")
 export class Tw2Model
 {
 
+    @meta.objectOf("Tw2GeometryModel")
     modelRes = null;
+
+    @meta.list("Tw2Bone")
     bones = [];
+
+    @meta.plainOf("Tw2Bone")
     bonesByName = {};
 
 }

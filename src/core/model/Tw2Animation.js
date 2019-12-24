@@ -1,28 +1,33 @@
-import { Tw2EventEmitter } from "global";
+import { meta, Tw2EventEmitter } from "global";
 
-/**
- * Tw2Animation
- *
- * @property {Tw2GeometryAnimation} animationRes - The animation's resource
- * @property {Number} time                       - The current animation time
- * @property {Number} timeScale                  - The animation's time scale
- * @property {Boolean} cycle                     - identifies if the animation will cycle
- * @property {Array<Tw2TrackGroup>} trackGroups  - Track groups
- * @property {Function} _callback                - Optional callback fired when an animation ends
- * @property {Function} _controller              - The animation's controller
- */
+
+@meta.type("Tw2Animation")
 export class Tw2Animation extends Tw2EventEmitter
 {
 
+    @meta.objectOf("Tw2GeometryAnimation")
+    @meta.isPrivate
     animationRes = null;
+
+    @meta.float
+    @meta.isPrivate
     time = 0;
+
+    @meta.float
     timeScale = 1.0;
+
+    @meta.boolean
     cycle = false;
+
+    @meta.listOf("Tw2TrackGroup")
+    @meta.isPrivate
     trackGroups = [];
+
 
     _callback = null;
     _controller = null;
     _state = Tw2Animation.State.FINISHED;
+
 
     /**
      * Constructor

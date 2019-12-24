@@ -1,4 +1,4 @@
-import { vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "global";
+import { meta, vec3, quat, mat3, mat4, curve, util, Tw2BaseClass } from "global";
 import { Tw2GeometryRes } from "../resource";
 import { Tw2Animation } from "./Tw2Animation";
 import { Tw2Bone } from "./Tw2Bone";
@@ -8,33 +8,37 @@ import { Tw2Track } from "./Tw2Track";
 import { Tw2TrackGroup } from "./Tw2TrackGroup";
 import { Tw2MeshBinding } from "./Tw2MeshBinding";
 
-/**
- * Tw2AnimationController
- * TODO: Handle bounds in the update function
- *
- * @property {Array.<Tw2GeometryRes>} geometryResources
- * @property {Array.<Tw2Model>} models
- * @property {Array.<Tw2Animation>} animations
- * @property {Array.<Tw2MeshBinding>} meshBindings
- * @property {Boolean} update
- * @property {Boolean} _isLoaded
- * @property {Boolean} _isPlaying
- * @property {Boolean} _boundsDirty
- * @property {Array} _pendingCommands
- */
+
+@meta.type("Tw2AnimationController")
+@meta.todo("Handle rebuilding bounds in update function")
 export class Tw2AnimationController extends Tw2BaseClass
 {
 
+    @meta.listOf("Tw2GeometryRes")
+    @meta.isPrivate
     geometryResources = [];
+
+    @meta.listOf("Tw2Model")
+    @meta.isPrivate
     models = [];
+
+    @meta.listOf("Tw2Animation")
+    @meta.isPrivate
     animations = [];
+
+    @meta.listOf("Tw2MeshBinding")
+    @meta.isPrivate
     meshBindings = [];
+
+    @meta.boolean
     update = true;
+
 
     _isLoaded = false;
     _isPlaying = false;
     _boundsDirty = false;
     _pendingCommands = [];
+
 
     /**
      * Constructor
