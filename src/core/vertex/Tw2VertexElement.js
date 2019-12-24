@@ -1,30 +1,36 @@
-import { GL_FLOAT } from "global";
+import { meta, GL_FLOAT, util } from "global";
+import * as consts from "global/engine/Tw2Constant";
 
-/**
- * Tw2VertexElement
- *
- * @property {Function} customSetter
- * @property {Number} elements
- * @property {?Number} location
- * @property {Number} offset
- * @property {Number} type
- * @property {Number} usage
- * @property {Number} usageIndex
- */
+
+@meta.type("Tw2VertexElement")
 export class Tw2VertexElement
 {
 
     customSetter = null;
+
+    @meta.uint
     elements = null;
+
+    @meta.uint
     location = null;
+
+    @meta.uint
     offset = 0;
+
+    @meta.uint
     type = null;
+
+    @meta.uint
     usage = -1;
+
+    @meta.uint
     usageIndex = null;
+
 
     _registerIndex = null;
     _usedMask = null;
     _attr = null;
+
 
     /**
      * Gets the vertex's type as a string
@@ -48,24 +54,32 @@ export class Tw2VertexElement
         {
             // Compulsory
             let { usage, usageIndex } = values;
-            item.usage = typeof usage === "string" ? this.Type[usage.toUpperCase()] : usage;
+            item.usage = util.isString(usage) ? this.Type[usage.toUpperCase()] : usage;
             item.usageIndex = usageIndex;
 
             // Optional
-            const { elements = null, type = GL_FLOAT, offset = 0, location = null, customSetter = null } = values;
+            const { elements = null, offset = 0, location = null, customSetter = null } = values;
             item.offset = offset;
             item.elements = elements;
-            item.type = type;
             item.location = location;
             item.customSetter = customSetter;
 
-            // Unused
+            // Optional
+            let { type = GL_FLOAT } = values;
+            if (util.isString(type))
+            {
+                if (type.substring(0, 3) !== "GL_") type = "GL_" + type;
+                type = consts[type];
+                if (type === undefined) throw new ReferenceError(`Invalid gl type: ${type}`);
+            }
+            item.type = type;
+
+            // Unused/ Debugging
             const { registerIndex = null, usedMask = null, attr = null } = values;
             item._registerIndex = registerIndex;
             item._usedMask = usedMask;
-
-            // Debugging
             item._attr = attr;
+
         }
         return item;
     }

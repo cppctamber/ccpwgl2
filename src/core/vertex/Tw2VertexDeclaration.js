@@ -1,19 +1,31 @@
+import { meta } from "global";
 import { Tw2VertexElement } from "./Tw2VertexElement";
 
-/**
- * Tw2VertexDeclaration
- *
- * @property {Array.<Tw2VertexElement>} elements
- * @property {Array.<Tw2VertexElement>} elementsSorted
- * @property {?Number} stride
- * @property {?Number} vertexSize
- */
+
+@meta.type("Tw2VertexDeclaration")
 export class Tw2VertexDeclaration
 {
 
+    @meta.listOf("Tw2VertexElement")
     elements = [];
+
+    @meta.listOf("Tw2VertexElement")
+    @meta.isPrivate
     elementsSorted = [];
-    stride = null;
+
+    //@meta.uint
+    //stride = null;
+
+    // @meta.uint
+    // vertexSize
+
+    /**
+     * Fire on value changes
+     */
+    UpdateValues()
+    {
+        this.RebuildHash();
+    }
 
     /**
      * Clears the declaration
