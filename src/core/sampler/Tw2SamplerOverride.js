@@ -1,36 +1,75 @@
+import { meta } from "global";
 import { Tw2SamplerState } from "./Tw2SamplerState";
 
-/**
- * Tw2SamplerOverride
- *
- * @property {Number} addressU
- * @property {Number} addressV
- * @property {Number} addressW
- * @property {Number} filter
- * @property {Number} mipFilter
- * @property {Number} lodBias
- * @property {Number} maxMipLevel
- * @property {Number} maxAnisotropy
- * @property {Boolean} forceAddressModes
- * @property {Tw2SamplerState} _sampler
- */
+
+const WrapModesByName = {
+    NONE: 0,
+    REPEAT: 1,
+    MIRRORED_REPEAT: 2,
+    CLAMP_TO_EDGE: 3
+};
+
+
+const FilterModesByName = {
+    NEAREST: 0,
+    LINEAR: 1
+};
+
+
+const MipFilterModesByName = {
+    NONE: 0,
+    MIPMAP_NEAREST: 1,
+    MIPMAP_LINEAR: 2
+};
+
+
+@meta.type("Tw2SamplerOverride")
 export class Tw2SamplerOverride
 {
 
+    @meta.string
     name = "";
+
+    @meta.enumerable(WrapModesByName, 3)
     addressU = 0;
+
+    @meta.enumerable(WrapModesByName, 3)
     addressV = 0;
+
+    @meta.enumerable(WrapModesByName, 3)
     addressW = 0;
+
+    @meta.enumerable(FilterModesByName, 2)
     filter = 0;
+
+    @meta.enumerable(MipFilterModesByName, 2)
     mipFilter = 0;
+
+    @meta.notImplemented
+    @meta.uint
     lodBias = 0;
+
+    @meta.uint
     maxMipLevel = 0;
+
+    @meta.uint
     maxAnisotropy = 0;
 
+    @meta.boolean
     forceAddressModes = false;
 
-    _sampler = null;
 
+    _sampler = null;
+    _isDirty = true;
+
+    /**
+     * Fires on value changes
+     * TODO: Development only
+     */
+    UpdateValues()
+    {
+        this._isDirty = true;
+    }
 
     /**
      * Gets the sampler
@@ -40,7 +79,12 @@ export class Tw2SamplerOverride
      */
     GetSampler(device, originalSampler)
     {
-        if (this._sampler)
+        if (this._isDirty)
+        {
+            // Development only
+            this._isDirty = false;
+        }
+        else if (this._sampler)
         {
             return this._sampler;
         }

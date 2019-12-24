@@ -1,40 +1,51 @@
-import { FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D } from "global";
+import { meta, FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D } from "global";
 
-/**
- * Tw2SamplerState
- *
- * @property {String} name
- * @property {Number} registerIndex
- * @property {Number} minFilter
- * @property {Number} maxFilter
- * @property {Number} magFilter
- * @property {Number} minFilterNoMips
- * @property {Number} addressU
- * @property {Number} addressV
- * @property {Number} addressW
- * @property {Number} anisotropy
- * @property {Number} samplerType
- * @property {Boolean} isVolume
- * @property {Number} hash
- * @property {Boolean} forceAddressModes
- */
+
+@meta.type("Tw2SamplerState")
 export class Tw2SamplerState
 {
 
+    @meta.string
     name = "";
+
+    @meta.uint
     registerIndex = 0;
+
+    @meta.uint
     minFilter = GL_LINEAR;
+
+    @meta.uint
     maxFilter = GL_LINEAR;
+
+    @meta.uint
     magFilter = GL_LINEAR;
+
+    @meta.uint
     minFilterNoMips = GL_LINEAR;
+
+    @meta.uint
     addressU = GL_REPEAT;
+
+    @meta.uint
     addressV = GL_REPEAT;
+
+    @meta.uint
     addressW = GL_REPEAT;
+
+    @meta.uint
     anisotropy = 1;
+
+    @meta.uint
     samplerType = GL_TEXTURE_2D;
+
+    @meta.boolean
     isVolume = false;
+
+    @meta.uint
+    @meta.isPrivate
     hash = 0;
 
+    @meta.boolean
     forceAddressModes = false;
 
     // Not used
