@@ -1,45 +1,58 @@
-import { box3, sph3, vec3 } from "global";
+import { meta, box3, sph3, vec3 } from "global";
 import { Tw2VertexDeclaration } from "../vertex";
 import { isNumber } from "global/util";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
 
-/**
- * Tw2GeometryMesh
- *
- * @property {String} name
- * @property {Tw2VertexDeclaration} declaration
- * @property {Array.<Tw2GeometryMeshArea>} areas
- * @property {WebGLBuffer} buffer
- * @property {Number} bufferLength
- * @property bufferData
- * @property {WebGLBuffer} indexes
- * @property indexData
- * @property {Number} indexType
- * @property {vec3} minBounds
- * @property {vec3} maxBounds
- * @property {vec3} boundsSpherePosition
- * @property {Number} boundsSphereRadius
- * @property {Array} bones
- * @property {Array.<string>} boneBindings
- */
+
+@meta.type("Tw2GeometryMesh")
 export class Tw2GeometryMesh
 {
 
+    @meta.string
     name = "";
+
+    @meta.objectOf("Tw2VertexDeclaration")
     declaration = new Tw2VertexDeclaration();
+
+    @meta.listOf("Tw2GeometryMeshArea")
     areas = [];
+
+    @meta.vector
     buffer = null;
+
+    @meta.uint
     bufferLength = 0;
+
+    @meta.objectOf(WebGLBuffer)
     bufferData = null;
+
+    @meta.objectOf(WebGLBuffer)
     indexes = null;
+
+    @meta.vector
     indexData = null;
+
+    @meta.uint
     indexType = 0;
+
+    @meta.vector3
     minBounds = vec3.fromValues(0, 0, 0);
+
+    @meta.vector3
     maxBounds = vec3.fromValues(0, 0, 0);
+
+    @meta.vector3
     boundsSpherePosition = vec3.create();
+
+    @meta.float
     boundsSphereRadius = 0;
+
+    @meta.listOf("Tw2GeometryBone")
     bones = [];
+
+    @meta.listOf(String)
     boneBindings = [];
+
 
     _faces = 0;
     _vertices = 0;

@@ -1,15 +1,17 @@
-/**
- * Tw2GeometryModel
- *
- * @property {String} name
- * @property {Array.<Tw2GeometryMeshBinding>} meshBindings
- * @property {Tw2GeometrySkeleton} skeleton
- */
+import { meta  } from "global";
+
+
+@meta.type("Tw2GeometryModel")
 export class Tw2GeometryModel
 {
 
+    @meta.string
     name = "";
+
+    @meta.listOf("Tw2GeometryMeshBinding")
     meshBindings = [];
+
+    @meta.objectOf("Tw2GeometrySkeleton")
     skeleton = null;
 
 

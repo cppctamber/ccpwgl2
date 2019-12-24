@@ -1,27 +1,32 @@
-import { mat3, mat4, quat, vec3 } from "global";
+import { meta, mat3, mat4, quat, vec3 } from "global";
 
-/**
- * Tw2GeometryBone
- *
- * @property {String} name
- * @property {Number} parentIndex
- * @property {vec3} position
- * @property {quat} orientation
- * @property {mat3} scaleShear
- * @property {mat4} localTransform
- * @property {mat4} worldTransform
- * @property {mat4} worldTransformInv
- */
+
+@meta.type("Tw2GeometryBone")
 export class Tw2GeometryBone
 {
 
+    @meta.string
     name = "";
+
+    @meta.uint
     parentIndex = -1;
+
+    @meta.vector3
     position = vec3.create();
+
+    @meta.quaternion
     orientation = quat.create();
+
+    @meta.matrix4
     scaleShear = mat3.create();
+
+    @meta.matrix4
     localTransform = mat4.create();
+
+    @meta.matrix4
     worldTransform = mat4.create();
+
+    @meta.matrix4
     worldTransformInv = mat4.create();
 
 

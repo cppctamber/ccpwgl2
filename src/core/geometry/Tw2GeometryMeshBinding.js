@@ -1,13 +1,14 @@
-/**
- * Tw2GeometryMeshBinding
- *
- * @property {Tw2GeometryMesh} mesh
- * @property {Array.<Tw2GeometryBone>} bones
- */
+import { meta  } from "global";
+
+
+@meta.type("Tw2GeometryMeshBinding")
 export class Tw2GeometryMeshBinding
 {
 
+    @meta.objectOf("Tw2GeometryMesh")
     mesh = null;
+
+    @meta.listOf("Tw2GeometryBone")
     bones = [];
 
 }

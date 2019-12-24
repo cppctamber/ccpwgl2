@@ -1,17 +1,20 @@
-/**
- * Tw2GeometryCurve
- *
- * @property {Number} dimension
- * @property {Number} degree
- * @property {Float32Array} knots
- * @property {Float32Array} controls
- */
+import { meta } from "global";
+
+
+@meta.type("Tw2GeometryCurve")
 export class Tw2GeometryCurve
 {
 
+    @meta.float
     dimension = 0;
+
+    @meta.float
     degree = 0;
+
+    @meta.vector
     knots = null;
+
+    @meta.vector
     controls = null;
 
 }

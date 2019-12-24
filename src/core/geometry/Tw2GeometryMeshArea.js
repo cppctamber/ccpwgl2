@@ -1,26 +1,31 @@
-import { box3, sph3, vec3 } from "global";
+import { box3, meta, sph3, vec3 } from "global";
 
-/**
- * Tw2GeometryMeshArea
- *
- * @property {String} name
- * @property {Number} start
- * @property {Number} count
- * @property {vec3} minBounds
- * @property {vec3} maxBounds
- * @property {vec3} boundsSpherePosition
- * @property {Number} boundsSphereRadius
- */
+
+@meta.type("Tw2GeometryMeshArea")
 export class Tw2GeometryMeshArea
 {
 
+    @meta.string
     name = "";
+
+    @meta.uint
     start = 0;
+
+    @meta.uint
     count = 0;
+
+    @meta.vector3
     minBounds = vec3.fromValues(0, 0, 0);
+
+    @meta.vector3
     maxBounds = vec3.fromValues(0, 0, 0);
+
+    @meta.vector3
     boundsSpherePosition = vec3.create();
+
+    @meta.float
     boundsSphereRadius = 0;
+
 
     /**
      * Gets the object's bounding box
