@@ -44,5 +44,6 @@ export const quaternion = createType(Type.QUATERNION)();
 export const matrix3 = createType(Type.MATRIX3)();
 export const matrix4 = createType(Type.MATRIX4)();
 export const indexBuffer = createType(Type.INDEX_BUFFER)();
+export const vector = createType(Type.VECTOR)();
 
 export const enumerable = createType(Type.ENUM);
