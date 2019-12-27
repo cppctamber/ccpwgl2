@@ -1,4 +1,4 @@
-import { meta  } from "global";
+import { meta } from "global";
 
 
 @meta.type("Tw2GeometryModel")
