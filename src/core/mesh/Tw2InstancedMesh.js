@@ -21,7 +21,7 @@ export class Tw2InstancedMesh extends Tw2BaseClass
 
     @meta.boolean
     display = true;
-    
+
     @meta.black.listOf("Tw2MeshArea")
     additiveAreas = [];
 
@@ -35,19 +35,19 @@ export class Tw2InstancedMesh extends Tw2BaseClass
     @meta.notImplemented
     @meta.black.listOf("Tw2MeshArea")
     distortionAreas = [];
-    
+
     @meta.black.path
     geometryResPath = "";
 
     @meta.black.path
     instanceGeometryResPath = "";
-    
+
     @meta.black.object
     instanceGeometryResource = null;
-    
+
     @meta.black.uint
     instanceMeshIndex = 0;
-    
+
     @meta.black.vector3
     maxBounds = vec3.create();
 

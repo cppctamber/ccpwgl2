@@ -41,10 +41,10 @@ export class Tw2Mesh extends Tw2BaseClass
     @meta.notImplemented
     @meta.black.listOf("Tw2MeshArea")
     distortionAreas = [];
-    
+
     @meta.black.path
     geometryResPath = "";
-    
+
     @meta.black.uint
     meshIndex = 0;
 
@@ -127,14 +127,14 @@ export class Tw2Mesh extends Tw2BaseClass
             out.push(this._geometryResource);
         }
 
-        //return super.GetResources(out);
-        util.perArrayChild(this.additiveAreas, "GetResources", out);
-        util.perArrayChild(this.decalAreas, "GetResources", out);
-        util.perArrayChild(this.depthAreas, "GetResources", out);
-        util.perArrayChild(this.distortionAreas, "GetResources", out);
-        util.perArrayChild(this.opaqueAreas, "GetResources", out);
-        util.perArrayChild(this.pickableAreas, "GetResources", out);
-        util.perArrayChild(this.transparentAreas, "GetResources", out);
+        const per = util.perArrayChild;
+        per(this.additiveAreas, "GetResources", out);
+        per(this.decalAreas, "GetResources", out);
+        per(this.depthAreas, "GetResources", out);
+        per(this.distortionAreas, "GetResources", out);
+        per(this.opaqueAreas, "GetResources", out);
+        per(this.pickableAreas, "GetResources", out);
+        per(this.transparentAreas, "GetResources", out);
         return out;
     }
 
