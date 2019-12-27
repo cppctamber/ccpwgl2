@@ -2,12 +2,6 @@ import { meta, vec4, quat } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-/**
- * Tw2Vector2Parameter
- *
- * @property {String} name
- * @property {vec4|quat} value
- */
 @meta.type("Tw2Vector4Parameter", "TriVector4Parameter")
 export class Tw2Vector4Parameter extends Tw2VectorParameter
 {
@@ -16,7 +10,7 @@ export class Tw2Vector4Parameter extends Tw2VectorParameter
     name = "";
 
     @meta.black.vector4
-    value = vec4.fromValues(1,1,1,1);
+    value = vec4.fromValues(1, 1, 1, 1);
 
 
     /**

@@ -4,20 +4,6 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 
 
-/**
- * Tw2TextureParameter
- *
- * @property {Number} addressUMode
- * @property {Number} addressVMode
- * @property {Number} addressWMode
- * @property {Number} filterMode
- * @property {Number} mapFilterMode
- * @property {Number} maxAnisotropy
- * @property {Boolean} useAllOverrides
- * @property {Boolean} forceAddressModes
- * @property {Tw2TextureRes} textureRes
- * @property {Tw2SamplerState} _sampler
- */
 @meta.type("Tw2TextureParameter", "TriTextureParameter")
 export class Tw2TextureParameter extends Tw2Parameter
 {

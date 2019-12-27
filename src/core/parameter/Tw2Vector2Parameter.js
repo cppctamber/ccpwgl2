@@ -2,12 +2,6 @@ import { meta, vec2 } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-/**
- * Tw2Vector2Parameter
- *
- * @property {String} name
- * @property {vec2} value
- */
 @meta.type("Tw2Vector2Parameter")
 export class Tw2Vector2Parameter extends Tw2VectorParameter
 {

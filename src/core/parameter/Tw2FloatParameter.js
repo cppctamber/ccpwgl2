@@ -2,12 +2,6 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { meta, util } from "global";
 
 
-/**
- * Tw2FloatParameter
- *
- * @property {String} name
- * @property {Number} value
- */
 @meta.type("Tw2FloatParameter", "Tr2FloatParameter")
 export class Tw2FloatParameter extends Tw2Parameter
 {

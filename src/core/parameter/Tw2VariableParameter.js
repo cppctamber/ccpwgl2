@@ -2,12 +2,6 @@ import { meta, tw2 } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 
-/**
- * Tw2VariableParameter
- *
- * @property {String} name
- * @property {String} variableName
- */
 @meta.type("Tw2VariableParameter", "TriVariableParameter")
 export class Tw2VariableParameter extends Tw2Parameter
 {

@@ -1,23 +1,7 @@
 import { Tw2Parameter } from "./Tw2Parameter";
-import { meta, vec3, quat, mat4 } from "global";
-import { isNumber } from "global/util";
+import { meta, vec3, quat, mat4, util } from "global";
 
 
-/**
- * Tw2TransformParameter
- *
- * @property {quat} rotation
- * @property {vec3} translation
- * @property {vec3} scaling
- * @property {mat4} _localTransform
- * @property {mat4} _worldTransform
- * @property {Boolean} _rebuildLocal
- * @property {Boolean} _rebuildWorldTransform
- * @property {mat4|undefined} _parentTransform
- * @property {mat4|undefined} _worldTranspose
- * @property {mat4|undefined} _worldInverse
- * @property {mat4|undefined} _worldInverseTranspose
- */
 @meta.type("Tw2TransformParameter", "Tr2TransformParameter")
 export class Tw2TransformParameter extends Tw2Parameter
 {
@@ -33,6 +17,7 @@ export class Tw2TransformParameter extends Tw2Parameter
 
     @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
+
 
     _localTransform = mat4.create();
     _worldTransform = mat4.create();
@@ -976,94 +961,30 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     static set(a, values, opt = {})
     {
-        if (!values)
+        if (values)
         {
-            return false;
-        }
+            values = Object.assign({}, values);
 
-        this.init();
-
-        const { vec3_0, vec3_1, quat_0 } = this.global;
-
-        let rotation, translation, scaling, updated = false;
-
-        // Transform has precedence to any other property
-        if (values.transform)
-        {
-            rotation = mat4.getRotation(quat_0, values.transform);
-            translation = mat4.getTranslation(vec3_0, values.transform);
-            scaling = mat4.getScaling(vec3_1, values.transform);
-        }
-        else
-        {
-            rotation = values.rotation || values.orientation;
-            translation = values.position || values.translation;
-            scaling = values.scale || values.scaling || values.radius;
-        }
-
-        if (rotation || translation || scaling !== undefined)
-        {
-            if (rotation)
+            if (values.transform)
             {
-                if (rotation.length === 3)
-                {
-                    rotation = vec3.euler.getQuat(quat_0, rotation);
-                }
-
-                if (!quat.equals(a.rotation, rotation))
-                {
-                    quat.copy(a.rotation, rotation);
-                    updated = true;
-                }
+                values.rotation = mat4.getRotation([], values.transform);
+                values.scaling = mat4.getScaling([], values.transform);
+                values.translation = mat4.getTranslation([], values.translation);
+                Reflect.deleteProperty(values, "transform");
             }
 
-            if (translation && !vec3.equals(a.translation, translation))
+            if (util.isNumber(values.scaling))
             {
-                vec3.copy(a.translation, translation);
-                updated = true;
+                values.scaling = [ values.scaling, values.scaling, values.scaling ];
             }
 
-            if (scaling !== undefined)
+            if (values.rotation && values.rotation.length === 3)
             {
-                if (isNumber(scaling))
-                {
-                    scaling = vec3.set(vec3_1, scaling, scaling, scaling);
-                }
-
-                if (!vec3.equals(a.scaling, scaling))
-                {
-                    vec3.copy(a.scaling, scaling);
-                    updated = true;
-                }
-            }
-
-            if (updated && !opt.skipUpdate)
-            {
-                a.RebuildTransforms({ force: true });
+                values.rotation = vec3.euler.getQuat([], values.rotation);
             }
         }
 
-        if (values.name && a.name !== values.name)
-        {
-            a.name = values.name;
-            updated = true;
-        }
-
-        return updated;
-    }
-
-    /**
-     * Gets the object's values as a plain object
-     * @param {Tw2TransformParameter} a
-     * @param {Object} [out={}]
-     * @param {Object} [opt]
-     */
-    static get(a, out = {}, opt)
-    {
-        out.rotation = a.GetRotation([]);
-        out.translation = a.GetTranslation([]);
-        out.scaling = a.GetScale([]);
-        return out;
+        return Tw2Parameter.set(a, values, opt);
     }
 
     /**
