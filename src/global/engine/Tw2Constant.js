@@ -40,8 +40,7 @@ export const TypeCategory = {
     PLAIN: 5,
     LIST: 6,
     ARRAY: 7,
-    TYPED: 8,
-    ENUM: 9
+    TYPED: 8
 };
 
 export const TypeTypeCategory = {
@@ -64,10 +63,12 @@ export const TypeTypeCategory = {
     [Type.VECTOR2]: TypeCategory.TYPED,
     [Type.VECTOR3]: TypeCategory.TYPED,
     [Type.VECTOR4]: TypeCategory.TYPED,
+    [Type.COLOR] : TypeCategory.TYPED,
+    [Type.QUATERNION] : TypeCategory.TYPED,
     [Type.MATRIX3]: TypeCategory.TYPED,
     [Type.MATRIX4]: TypeCategory.TYPED,
     [Type.INDEX_BUFFER]: TypeCategory.TYPED,
-    [Type.ENUM]: TypeCategory.ENUM
+    [Type.ENUM]: TypeCategory.NUMBER
 };
 
 export const TypeLength = {
