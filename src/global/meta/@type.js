@@ -9,9 +9,9 @@ import { decorate, typeHandler } from "./helpers";
 function createType(type)
 {
     return decorate({
-        property({ target, property, descriptor }, typeOf)
+        property({ target, property, descriptor, Constructor }, typeOf)
         {
-            typeHandler({ target, property, descriptor }, type, typeOf);
+            typeHandler({ target, property, descriptor, Constructor }, type, typeOf);
         }
     });
 }

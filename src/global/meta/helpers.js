@@ -1,6 +1,6 @@
 import { isFunction, isPlain, isString, toArray } from "global/util";
 import { ErrInvalidDecoratorUsage } from "core/Tw2Error";
-import { has, get, set } from "../meta";
+import { has, get, getOwn, set } from "../meta";
 import { Type } from "../engine/Tw2Constant";
 
 const invalidUsage = {
@@ -82,7 +82,7 @@ export function decorate(options, value)
             const targetType = getTargetType(target, property);
 
             const decoratorObject = { target, property, descriptor };
-            if (targetType !== "class") decoratorObject.Constructor = target.constructor;
+            //if (targetType !== "class") decoratorObject.Constructor = target.constructor;
 
             // Predefined value
             if (value !== undefined)
@@ -116,14 +116,19 @@ export function typeHandler({ target, property, descriptor }, type, typeOf)
     if (property.charAt(0) === "_") set("isPrivate", true, target, property);
     if (descriptor.value === null) set("isNullable", true, target, property);
 
-    /*
-    // Keep track of a classes's props
-    const { constructor } = target;
-    const props = has("props", constructor) ? get("props", constructor) : [];
-    if (!props.includes(property)) props.push(property);
-    props.sort();
-    set("props", props, constructor);
-    */
+    // Define constructor properties
+    const Constructor = target.constructor;
+    let props = getOwn("props", Constructor);
+    if (!props)
+    {
+        props = has("props", Constructor) ? get("props", Constructor).slice(0) : [];
+        set("props", props, Constructor);
+    }
+    if (!props.includes(property))
+    {
+        props.push(property);
+        props.sort();
+    }
 
     return type;
 }

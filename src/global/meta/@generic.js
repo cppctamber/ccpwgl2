@@ -19,7 +19,7 @@ export const abstract = decorate({
             }
         };
     },
-    method({ target, property, descriptor })
+    method({ property, descriptor })
     {
         descriptor.value = function()
         {
@@ -89,28 +89,28 @@ export const notImplemented = decorate({
         // Todo: Flag all children as not implemented
         todo("Implement")(target);
     },
-    handler({ target, property, Constructor })
+    handler({ target, property })
     {
         set("notImplemented", true, target, property);
-        let stage = get("stage", Constructor) || 0;
-        set("stage", Math.max(stage, 1), Constructor);
+        let stage = get("stage", target.constructor) || 0;
+        set("stage", Math.max(stage, 1), target.constructor);
         todo("Implement")(target, property);
     }
 })();
 
 export const todo = decorate({
-    handler({ target, property, Constructor }, value)
+    handler({ target, property }, value)
     {
         if (property)
         {
             // Add all child todos to the parent
             let parentTodo = `[${property}] ` + value,
-                parentTodos = has("todo", Constructor) ? get("todo", Constructor) : [];
+                parentTodos = has("todo", target.constructor) ? get("todo", target.constructor) : [];
 
             if (!parentTodos.includes(parentTodo)) parentTodos.push(parentTodo);
             parentTodos.sort();
 
-            set("todos", parentTodo, Constructor);
+            set("todos", parentTodo, target.constructor);
         }
 
         let todos = has("todo", target, property) ? get("todo", target, property) : [];
@@ -146,7 +146,7 @@ export const isNullable = decorate({
 
 export const test = decorate({
     class: false,
-    handler({ target, property, descriptor }, string="Test decorator")
+    handler({ target, property, descriptor }, string = "Test decorator")
     {
         console.dir(target);
         console.dir(property);

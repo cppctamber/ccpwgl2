@@ -22,7 +22,7 @@ function getMetaName(name)
  * @param {*} value
  * @returns {Function}
  */
-export function data(a, value=true)
+export function data(a, value = true)
 {
     return function(target, property)
     {
