@@ -25,7 +25,7 @@ const TypeReader = {
     [Type.ARRAY]: array,
     [Type.PLAIN]: rawObject,
     [Type.INDEX_BUFFER]: indexBuffer,
-    [Type.ENUM] : enums
+    [Type.ENUM]: enums
 };
 
 /**

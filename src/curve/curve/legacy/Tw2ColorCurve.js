@@ -17,7 +17,6 @@ const Interpolation = {
 };
 
 
-
 @meta.type("Tw2ColorKey")
 export class Tw2ColorKey extends Tw2CurveKey
 {

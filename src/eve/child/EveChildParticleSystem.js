@@ -31,7 +31,7 @@ export class EveChildParticleSystem extends EveChild
     @meta.black.listOf("Tw2ParticleEmitter")
     particleEmitters = [];
 
-    @meta.black.listOf([ "Tw2ParticleSystem","Tr2GpuParticleSystem" ])
+    @meta.black.listOf([ "Tw2ParticleSystem", "Tr2GpuParticleSystem" ])
     particleSystems = [];
 
     @meta.black.quaternion
