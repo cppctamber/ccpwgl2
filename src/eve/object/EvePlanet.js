@@ -10,20 +10,20 @@ export class EvePlanet extends EveObject
 
     @meta.objectOf("EveTransform")
     highDetail = new EveTransform();
-    
+
     @meta.objectOf("Tw2Effect")
     effectHeight = new Tw2Effect();
-    
+
     @meta.objectOf("Tw2RenderTarget")
     heightMap = new Tw2RenderTarget();
-    
+
     @meta.objectOf("EveTransform")
     zOnlyModel = null;
-    
+
     @meta.uint
     @meta.isPrivate
     itemID = 0;
-    
+
     @meta.path
     @meta.isPrivate
     heightMapResPath1 = "";
@@ -31,7 +31,7 @@ export class EvePlanet extends EveObject
     @meta.path
     @meta.isPrivate
     heightMapResPath2 = "";
-    
+
 
     _heightDirty = false;
     _lockedResources = [];
@@ -394,5 +394,5 @@ export class EvePlanet extends EveObject
             }
         }
     }
-    
+
 }
