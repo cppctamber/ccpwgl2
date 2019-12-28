@@ -6,10 +6,10 @@ import { Tw2Effect } from "core/mesh";
 @meta.type("EveSpaceObjectDecal", true)
 export class EveSpaceObjectDecal extends Tw2BaseClass
 {
-    
+
     @meta.black.string
     name = "";
-    
+
     @meta.black.objectOf("Tw2Effect")
     decalEffect = null;
 
@@ -19,7 +19,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     @meta.uint
     @meta.todo("Identify if deprecated, this may only be needed if created a SOF object from a decal")
     groupIndex = -1;
-    
+
     @meta.black.indexBuffer
     indexBuffer = [];
 
@@ -32,13 +32,13 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
 
     @meta.objectOf("Tw2Effect")
     pickEffect = null;
-    
+
     @meta.black.vector3
     position = vec3.create();
-    
+
     @meta.black.quaternion
     rotation = quat.create();
-    
+
     @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
 

@@ -37,7 +37,7 @@ export class EveLocatorSets extends Tw2BaseClass
     @meta.black.string
     name = "";
 
-    @meta.black.struct([EveLocatorSetItem])
+    @meta.black.struct([ EveLocatorSetItem ])
     locators = [];
 
 }

@@ -28,7 +28,7 @@ export class EveCustomMask extends Tw2TransformParameter
     @meta.black.vector4
     targetMaterials = vec4.create();
 
-    @meta.object
+    @meta.plainOf("Tw2Parameter")
     @meta.todo("Move to direct class properties")
     parameters = {
         PatternMaskMap: new Tw2TextureParameter("PatternMaskMap"),
@@ -36,7 +36,6 @@ export class EveCustomMask extends Tw2TransformParameter
         FresnelColor: new Tw2Vector4Parameter("FresnelColor"),
         Gloss: new Tw2Vector4Parameter("Gloss")
     };
-
 
     _worldInverseTranspose = mat4.create();
 
