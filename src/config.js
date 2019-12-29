@@ -58,6 +58,7 @@ export const config = {
             "sm_hi": core.Tw2EffectRes,
             "sm_lo": core.Tw2EffectRes,
             "wbg": core.Tw2GeometryRes,
+            "cake": core.Tw2GeometryRes,
             "png": core.Tw2TextureRes,
             "dds": core.Tw2TextureRes,
             "cube": core.Tw2TextureRes,

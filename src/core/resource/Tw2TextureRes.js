@@ -6,6 +6,7 @@ import {
     ErrResourceExtensionUnregistered
 } from "../Tw2Error";
 import {
+    meta,
     resMan,
     device,
     DDS_HEADER_LENGTH_INT,
@@ -38,6 +39,7 @@ import {
  * @property {Boolean} _isAttached         - identifies if the texture was attached rather than loaded
  * @property {?String} _extension          - loading file extension
  */
+@meta.type("Tw2TextureRes")
 export class Tw2TextureRes extends Tw2Resource
 {
 
@@ -159,7 +161,7 @@ export class Tw2TextureRes extends Tw2Resource
 
                     default:
                         const code = Tw2TextureRes.Int32ToFourCC(fourCC);
-                        throw new ErrResourceFormat(`Invalid DDS, ${code} unsupported`);
+                        throw new ErrResourceFormat(`Invalid DDS format: ${code}`);
                 }
 
                 this.hasMipMaps = mipmaps > 1;
@@ -192,7 +194,7 @@ export class Tw2TextureRes extends Tw2Resource
                 break;
 
             default:
-                throw new ErrResourceFormat(`Invalid format, ${this._extension} unsupported`);
+                throw new ErrResourceFormat(`Invalid format: ${this._extension}`);
         }
 
         this._isAttached = false;

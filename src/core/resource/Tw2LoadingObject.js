@@ -22,7 +22,7 @@ export class Tw2LoadingObject extends Tw2Resource
     _inPrepare = null;
     _objects = [];
     _constructor = null;
-
+    _requestResponseType = "arraybuffer";
 
     /**
      * Adds a child object
@@ -145,9 +145,3 @@ export class Tw2LoadingObject extends Tw2Resource
     }
 
 }
-
-/**
- * HTTP request response type
- * @type {String}
- */
-Tw2LoadingObject.prototype.requestResponseType = "arraybuffer";

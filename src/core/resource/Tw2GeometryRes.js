@@ -1,4 +1,4 @@
-import { box3, sph3, vec3, quat, mat3, mat4, resMan, device } from "global";
+import { meta, box3, sph3, vec3, quat, mat3, mat4, resMan, device } from "global";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2VertexElement } from "../vertex";
 import { Tw2Resource } from "./Tw2Resource";
@@ -6,7 +6,7 @@ import {
     ErrGeometryFileType,
     ErrGeometryMeshEffectBinding,
     ErrGeometryMeshBoneNameInvalid,
-    ErrGeometryMeshAreaMissing
+    ErrGeometryMeshAreaMissing, ErrResourceFormat
 } from "../Tw2Error";
 import {
     Tw2BlendShapeData,
@@ -21,6 +21,7 @@ import {
     Tw2GeometryTrackGroup,
     Tw2GeometryTransformTrack
 } from "../geometry";
+import { Tw2CakeReader } from "core/reader/Tw2CakeReader";
 
 
 /**
@@ -36,6 +37,7 @@ import {
  * @property {Boolean} systemMirror
  * @inherit Tw2Resource
  */
+@meta.type("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
 {
 
@@ -47,6 +49,11 @@ export class Tw2GeometryRes extends Tw2Resource
     models = [];
     animations = [];
     systemMirror = resMan.systemMirror;
+
+
+    _requestResponseType = null;
+    _extension = null;
+
 
     /**
      * Gets the object's bounding box
@@ -136,10 +143,150 @@ export class Tw2GeometryRes extends Tw2Resource
     }
 
     /**
-     * Prepare
-     * @param data
+     * Handles different geometry formats
+     * @param {String} url
+     * @param {String} extension
+     */
+    DoCustomLoad(url, extension)
+    {
+        this._extension = null;
+        this._requestResponseType = null;
+
+        switch (extension)
+        {
+            case "wbg":
+                this._extension = extension;
+                this._requestResponseType = "arraybuffer";
+                break;
+
+            case "cake":
+                this._extension = extension;
+                this._requestResponseType = "text";
+                break;
+
+            default:
+                throw new ErrResourceFormat(`Invalid format: ${this._extension}`);
+        }
+    }
+
+    /**
+     * Prepares the object
+     * @param {*} data
      */
     Prepare(data)
+    {
+        // Clear current geometry
+        this.meshes.splice(0);
+        this.models.splice(0);
+        this.animations.splice(0);
+        vec3.set(this.minBounds, 0, 0, 0);
+        vec3.set(this.maxBounds, 0, 0, 0);
+        vec3.set(this.boundsSpherePosition, 0, 0, 0);
+        this.boundsSphereRadius = 0;
+
+        switch(this._extension)
+        {
+            case "wbg":
+                this.PrepareWBG(data);
+                break;
+
+            case "cake":
+                this.PrepareCAKE(data);
+                break;
+
+            default:
+                throw new ErrResourceFormat(`Invalid format: ${this._extension}`);
+        }
+    }
+
+    /**
+     * Prepares a cake file
+     * TODO: Add support for more than one mesh
+     * TODO: Add support for models
+     * TODO: Add support for animations
+     * TODO: Add support for blend shapes
+     * @param {String} data
+     */
+    PrepareCAKE(data)
+    {
+        const
+            gl = device.gl,
+            result = new Tw2CakeReader(data);
+
+        const { bufferData, indexData, declaration, areas, name = this.path } = result;
+
+        // TODO: Add support for more than one mesh
+        const mesh = new Tw2GeometryMesh();
+        this.meshes[0] = mesh;
+
+        mesh.name = name;
+        mesh.declaration = declaration;
+
+        mesh.bufferLength = bufferData.length;
+        mesh.buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
+
+        mesh.indexes = gl.createBuffer();
+        mesh.indexType = indexData.BYTES_PER_ELEMENT === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+
+        for (let i = 0; i < areas.length; ++i)
+        {
+            const { name, start, count } = areas[i];
+            const area = new Tw2GeometryMeshArea();
+            area.name = name;
+            area.start = start;
+            area.count = count;
+            mesh.areas.push(area);
+            mesh.RebuildAreaBounds(area, bufferData, indexData, true);
+        }
+
+        mesh._areas = areas.length;
+        mesh._faces = indexData.length / 3;
+        mesh._vertices = bufferData.length / (mesh.declaration.stride / 4);
+
+        if (this.systemMirror)
+        {
+            mesh.bufferData = bufferData;
+            mesh.indexData = indexData;
+        }
+
+        /*
+        const { models, animations, boneBindings, blendShapes } = result;
+
+        for (let i = 0; i < boneBindings.length; i++)
+        {
+            // TODO: Bone bindings
+        }
+
+        for (let i = 0; i < blendShapes.length; i++)
+        {
+            //TODO: Blend shapes
+        }
+
+        for (let i = 0; i < models; i++)
+        {
+            //TODO: Models
+        }
+
+        for (let i = 0; i < animations; i++)
+        {
+            //TODO: Animations
+        }
+
+         */
+
+        this.RebuildBounds();
+        this.OnPrepared();
+    }
+
+    /**
+     * Prepares a wbg file
+     * @param {ArrayBuffer} data
+     */
+    PrepareWBG(data)
     {
         const
             gl = device.gl,
@@ -919,9 +1066,3 @@ export class Tw2GeometryRes extends Tw2Resource
     }
 
 }
-
-/**
- * Request Response Type
- * @type {String}
- */
-Tw2GeometryRes.prototype.requestResponseType = "arraybuffer";

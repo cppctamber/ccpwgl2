@@ -1,7 +1,9 @@
+import { meta } from "global";
 import { Tw2BinaryReader } from "../reader";
 import { Tw2Resource } from "./Tw2Resource";
 import { Tw2Shader } from "./Tw2Shader";
 import { ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderVersion } from "../Tw2Error";
+
 
 /**
  * Tw2EffectRes
@@ -16,6 +18,7 @@ import { ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderVersion } from
  * @property {*} shaders
  * @inherits Tw2Resource
  */
+@meta.type("Tw2EffectRes")
 export class Tw2EffectRes extends Tw2Resource
 {
 
@@ -27,6 +30,8 @@ export class Tw2EffectRes extends Tw2Resource
     version = 0;
     stringTable = "";
     shaders = {};
+
+    _requestResponseType = "arraybuffer";
 
 
     /**
@@ -203,9 +208,3 @@ export class Tw2EffectRes extends Tw2Resource
     }
 
 }
-
-/**
- * Request Response Type
- * @type {String}
- */
-Tw2EffectRes.prototype.requestResponseType = "arraybuffer";

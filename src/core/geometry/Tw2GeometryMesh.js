@@ -198,7 +198,7 @@ export class Tw2GeometryMesh
     static GetBoundsFromVertices(out, start, count, stride, pOffset, bufferData, indexData)
     {
         count = count / 3;
-        start = start / 2 / 3;
+        start = start / 3 / indexData.BYTES_PER_ELEMENT;
 
         const
             vertexIndices = [],

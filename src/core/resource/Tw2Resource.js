@@ -1,4 +1,4 @@
-import { resMan } from "global";
+import { meta, resMan } from "global";
 import { Tw2Error } from "../Tw2Error";
 import { isFunction } from "global/util";
 import { Tw2Notifications } from "global/class/Tw2Notifications";
@@ -14,6 +14,7 @@ import { Tw2Notifications } from "global/class/Tw2Notifications";
  * @property {Array<Error>} _errors
  * @property {Set} _watchers
  */
+@meta.type("Tw2Resource")
 export class Tw2Resource extends Tw2Notifications
 {
     path = "";
@@ -23,6 +24,16 @@ export class Tw2Resource extends Tw2Notifications
     _state = Tw2Resource.State.NO_INIT;
     _errors = [];
     _requested = 0;
+    _requestResponseType = null;
+
+    /**
+     * Gets the request response type
+     * @returns {null|String}
+     */
+    get requestResponseType()
+    {
+        return this._requestResponseType;
+    }
 
     /**
      * Checks if the resource is good and keeps it alive
@@ -416,8 +427,4 @@ export class Tw2Resource extends Tw2Notifications
  */
 Tw2Resource.prototype.DoCustomLoad = null;
 
-/**
- * HTTP request response type
- * @type {null}
- */
-Tw2Resource.prototype.requestResponseType = null;
+

@@ -16711,6 +16711,7 @@ var config = {
       "sm_hi": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
       "sm_lo": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
       "wbg": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryRes"],
+      "cake": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2GeometryRes"],
       "png": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2TextureRes"],
       "dds": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2TextureRes"],
       "cube": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2TextureRes"],
@@ -18898,7 +18899,7 @@ var Tw2GeometryMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
 
   static GetBoundsFromVertices(out, start, count, stride, pOffset, bufferData, indexData) {
     count = count / 3;
-    start = start / 2 / 3;
+    start = start / 3 / indexData.BYTES_PER_ELEMENT;
     var vertexIndices = [],
         indices = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         position = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
@@ -19474,7 +19475,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************!*\
   !*** ./core/index.js ***!
   \***********************/
-/*! exports provided: Tw2RuntimeInstanceData, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement */
+/*! exports provided: Tw2RuntimeInstanceData, Tw2Error, ErrWebglContext, ErrWebxrNotSupported, ErrWebxrDeviceNotFound, ErrWebxrRequestFailed, ErrWebxrSessionNotSupported, ErrStoreKeyReserved, ErrStoreValueInvalid, ErrStoreValueMissing, ErrStoreInvalid, ErrHTTPRequest, ErrHTTPStatus, ErrBinaryFormat, ErrBinaryReaderReadError, ErrBinaryObjectTypeNotFound, ErrGeometryMeshMissingParticleElement, ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshAreaMissing, ErrGeometryMeshBoneNameInvalid, ErrGeometryMeshEffectBinding, ErrGeometryFileType, ErrResourcePrefixUnregistered, ErrResourcePrefixUndefined, ErrResourceExtensionUnregistered, ErrResourceExtensionUndefined, ErrResourceFormat, ErrShaderVersion, ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderCompile, ErrShaderLink, ErrDeclarationValueType, ErrSingletonInstantiation, ErrInvalidDecoratorUsage, ErrAbstractClass, ErrAbstractMethod, ErrFeatureNotImplemented, ErrIndexBounds, ErrBindingValueUndefined, ErrBindingType, ErrBindingReference, ErrSOFHullNotFound, ErrSOFFactionNotFound, ErrSOFRaceNotFound, ErrSOFMaterialNotFound, ErrSOFPatternNotFound, ErrWrapped, Tw2Frustum, Tw2RenderTarget, Tw2BatchAccumulator, Tw2ForwardingRenderBatch, Tw2GeometryBatch, Tw2GeometryLineBatch, Tw2RenderBatch, Tw2InstancedMeshBatch, Tw2PerObjectData, Tw2RawData, Tw2BlendShapeData, Tw2GeometryAnimation, Tw2GeometryBone, Tw2GeometryCurve, Tw2GeometryMesh, Tw2GeometryMeshArea, Tw2GeometryMeshBinding, Tw2GeometryModel, Tw2GeometrySkeleton, Tw2GeometryTrackGroup, Tw2GeometryTransformTrack, Tw2Effect, Tw2InstancedMesh, Tw2Mesh, Tw2MeshArea, Tw2MeshLineArea, Tw2Animation, Tw2AnimationController, Tw2Bone, Tw2BoneBinding, Tw2MeshBinding, Tw2Model, Tw2Track, Tw2TrackGroup, Tw2Parameter, Tw2FloatParameter, Tw2Matrix4Parameter, Tw2MatrixParameter, Tw2TransformParameter, Tw2VariableParameter, Tw2Vector2Parameter, Tw2Vector3Parameter, Tw2Vector4Parameter, Tw2TextureParameter, Tw2PostEffect, Tw2PostEffectManager, Tw2PostEffectStep, Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2CakeReader, Tw2EffectRes, Tw2GeometryRes, Tw2LoadingObject, Tw2Resource, Tw2Shader, Tw2TextureRes, Tw2VideoRes, Tw2SamplerState, Tw2SamplerOverride, Tw2Float, Tw2VertexDeclaration, Tw2VertexElement */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19582,6 +19583,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2BlackReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_7__["Tw2BlackReader"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_7__["Tw2ObjectReader"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CakeReader", function() { return _reader__WEBPACK_IMPORTED_MODULE_7__["Tw2CakeReader"]; });
 
 /* harmony import */ var _resource__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./resource */ "./core/resource/index.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return _resource__WEBPACK_IMPORTED_MODULE_8__["Tw2EffectRes"]; });
@@ -27425,6 +27428,241 @@ Tw2BlackReader.DEBUG_ENABLED = true;
 
 /***/ }),
 
+/***/ "./core/reader/Tw2CakeReader.js":
+/*!**************************************!*\
+  !*** ./core/reader/Tw2CakeReader.js ***!
+  \**************************************/
+/*! exports provided: Tw2CakeReader */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CakeReader", function() { return Tw2CakeReader; });
+/* harmony import */ var core_vertex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/vertex */ "./core/vertex/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
+
+
+class Tw2CakeReader {
+  /**
+   * Constructor
+   * @param {String} data
+   */
+  constructor(data) {
+    this.name = "";
+    this.areas = [];
+    this.declaration = null;
+    this.indexData = null;
+    this.bufferData = null;
+    this.boneBindings = null;
+    this.blendShapes = null;
+    this.models = null;
+    this.animations = null;
+
+    if (!global__WEBPACK_IMPORTED_MODULE_1__["util"].isString(data)) {
+      throw new ReferenceError("Invalid format, expected string");
+    }
+
+    var lines = data.split("\n"),
+        indexData = [],
+        declarations = [];
+    var currentLine = 0;
+    /**
+     * Parses the current line
+     * @returns {{name: string, value: *}}
+     */
+
+    function parseLine() {
+      var line = lines[currentLine];
+      if (!line) return {
+        name: "EMPTY",
+        value: undefined
+      };
+      var split = line.split(":"),
+          name = split[0].toUpperCase(); // Convert string vector to vector
+
+      var value = split[1];
+
+      if (value.includes(",") || value.includes("[")) {
+        value = value.replace("[", "").replace("]", "");
+        value = value.split(",");
+
+        for (var i = 0; i < value.length; i++) {
+          value[i] = Number(value[i]);
+        }
+      }
+
+      return {
+        name,
+        value
+      };
+    }
+
+    while (currentLine < lines.length) {
+      var {
+        name,
+        value
+      } = parseLine();
+
+      switch (name) {
+        case "EMPTY":
+          currentLine++;
+          break;
+
+        case "NAME":
+          this.name = value || "";
+          currentLine++;
+          break;
+
+        case "AREA":
+          var area = {
+            name: value,
+            start: indexData.length * Tw2CakeReader.IndexArray.BYTES_PER_ELEMENT,
+            count: 0
+          };
+          this.areas.push(area);
+          currentLine++; // Get faces
+
+          while (currentLine < lines.length) {
+            var face = parseLine();
+
+            if (face.name === "FACE") {
+              if (!global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector3(face.value)) {
+                throw new ReferenceError("Unexpected face value: " + face.value);
+              }
+
+              area.count += 3;
+              indexData.push(face.value[0]);
+              indexData.push(face.value[1]);
+              indexData.push(face.value[2]);
+              currentLine++;
+            } else break;
+          }
+
+          break;
+
+        case "POSITION":
+        case "NORMAL":
+        case "TANGENT":
+        case "BITANGENT":
+        case "TEXCOORD0":
+        case "TEXCOORD1":
+          var declaration = void 0;
+
+          for (var i = 0; i < declarations.length; i++) {
+            if (declarations[i].name === name) {
+              declaration = declarations[i];
+            }
+          }
+
+          if (!declaration) {
+            declaration = {
+              name,
+              usageIndex: Tw2CakeReader.UsageIndex[name],
+              usage: Tw2CakeReader.Usage[name],
+              elements: Tw2CakeReader.Elements[name],
+              vertices: []
+            };
+            declarations.push(declaration);
+          }
+
+          if (!global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector(value) || value.length !== declaration.elements) {
+            throw new ReferenceError("Invalid value for declaration \"".concat(name, "\": ").concat(value));
+          }
+
+          declaration.vertices.push(value);
+          currentLine++;
+          break;
+
+        default:
+          throw new ReferenceError("Unexpected value type: \"".concat(name, "\""));
+      }
+    }
+
+    var vertexSize = 0,
+        vertexCount = 0; // Create declarations
+
+    this.declaration = new core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexDeclaration"]();
+
+    for (var _i = 0; _i < declarations.length; _i++) {
+      var {
+        vertices,
+        usageIndex,
+        usage,
+        elements,
+        name: _name
+      } = declarations[_i]; // Validate vertex counts
+
+      if (_i === 0) {
+        vertexCount = vertices.length;
+      } else if (vertices.length !== vertexCount) {
+        throw new ReferenceError("Unexpected vertex count: ".concat(_name));
+      } // Create vertex element
+
+
+      this.declaration.elements.push(core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].from({
+        usage,
+        usageIndex,
+        elements,
+        type: global__WEBPACK_IMPORTED_MODULE_1__["GL_FLOAT"],
+        offset: vertexSize * 4
+      }));
+      vertexSize += elements;
+    }
+
+    this.declaration.RebuildHash();
+    this.declaration.stride = vertexSize * 4; // Create buffer data
+
+    var bufferSize = vertexCount * vertexSize;
+
+    if (bufferSize) {
+      this.bufferData = new Float32Array(bufferSize);
+      var offset = 0;
+
+      for (var vIx = 0; vIx < vertexCount; vIx++) {
+        for (var dIx = 0; dIx < declarations.length; dIx++) {
+          for (var _i2 = 0; _i2 < declarations[dIx].elements; _i2++) {
+            this.bufferData[offset++] = declarations[dIx].vertices[vIx][_i2];
+          }
+        }
+      }
+    } // Create index data
+
+
+    this.indexData = new Tw2CakeReader.IndexArray(indexData); // TODO: Models
+    // TODO: Animations
+    // TODO: Blend shapes
+    // TODO: Bones
+  }
+
+}
+Tw2CakeReader.IndexArray = Uint32Array;
+Tw2CakeReader.UsageIndex = {
+  POSITION: 0,
+  NORMAL: 0,
+  TANGENT: 0,
+  BITANGENT: 0,
+  TEXCOORD0: 0,
+  TEXCOORD1: 1
+};
+Tw2CakeReader.Elements = {
+  POSITION: 3,
+  NORMAL: 3,
+  TANGENT: 4,
+  BITANGENT: 4,
+  TEXCOORD0: 2,
+  TEXCOORD1: 2
+};
+Tw2CakeReader.Usage = {
+  POSITION: core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.POSITION,
+  NORMAL: core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.NORMAL,
+  TANGENT: core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.TANGENT,
+  BITANGENT: core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.BITANGENT,
+  TEXCOORD0: core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.TEXCOORD,
+  TEXCOORD1: core_vertex__WEBPACK_IMPORTED_MODULE_0__["Tw2VertexElement"].Type.TEXCOORD
+};
+
+/***/ }),
+
 /***/ "./core/reader/Tw2ObjectReader.js":
 /*!****************************************!*\
   !*** ./core/reader/Tw2ObjectReader.js ***!
@@ -27826,7 +28064,7 @@ Tw2ObjectReader.ElementTypes = {
 /*!******************************!*\
   !*** ./core/reader/index.js ***!
   \******************************/
-/*! exports provided: Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader */
+/*! exports provided: Tw2BinaryReader, Tw2BlackReader, Tw2ObjectReader, Tw2CakeReader */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -27839,6 +28077,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2ObjectReader */ "./core/reader/Tw2ObjectReader.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2ObjectReader", function() { return _Tw2ObjectReader__WEBPACK_IMPORTED_MODULE_2__["Tw2ObjectReader"]; });
+
+/* harmony import */ var _Tw2CakeReader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2CakeReader */ "./core/reader/Tw2CakeReader.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2CakeReader", function() { return _Tw2CakeReader__WEBPACK_IMPORTED_MODULE_3__["Tw2CakeReader"]; });
+
 
 
 
@@ -27856,10 +28098,14 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2EffectRes", function() { return Tw2EffectRes; });
-/* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../reader */ "./core/reader/index.js");
-/* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
-/* harmony import */ var _Tw2Shader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Shader */ "./core/resource/Tw2Shader.js");
-/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../reader */ "./core/reader/index.js");
+/* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
+/* harmony import */ var _Tw2Shader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Shader */ "./core/resource/Tw2Shader.js");
+/* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+var _dec, _class, _temp;
+
+
 
 
 
@@ -27878,7 +28124,7 @@ __webpack_require__.r(__webpack_exports__);
  * @inherits Tw2Resource
  */
 
-class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource"] {
+var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2EffectRes"), _dec(_class = (_temp = class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.passes = [];
@@ -27889,6 +28135,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
     this.version = 0;
     this.stringTable = "";
     this.shaders = {};
+    this._requestResponseType = "arraybuffer";
   }
 
   /**
@@ -27907,7 +28154,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
     this.version = 0;
     this.stringTable = "";
     this.shaders = {};
-    var reader = new _reader__WEBPACK_IMPORTED_MODULE_0__["Tw2BinaryReader"](new Uint8Array(data));
+    var reader = new _reader__WEBPACK_IMPORTED_MODULE_1__["Tw2BinaryReader"](new Uint8Array(data));
     var stringTable = "";
     /**
      * ReadString
@@ -27929,7 +28176,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
     var version = reader.ReadUInt32();
 
     if (version < 2 || version > 8) {
-      this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderVersion"]({
+      this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderVersion"]({
         path: this.path,
         version
       }));
@@ -27942,7 +28189,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
       headerSize = reader.ReadUInt32();
 
       if (headerSize === 0) {
-        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderHeaderSize"]({
+        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderHeaderSize"]({
           path: this.path
         }));
         return;
@@ -27984,7 +28231,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
       headerSize = reader.ReadUInt32();
 
       if (headerSize === 0) {
-        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderHeaderSize"]({
+        this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderHeaderSize"]({
           path: this.path
         }));
         return;
@@ -28031,7 +28278,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
         var valueName = options[permutation.name];
 
         if (!permutation.options.hasOwnProperty(valueName)) {
-          this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_3__["ErrShaderPermutationValue"]({
+          this.OnError(new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrShaderPermutationValue"]({
             path: this.path,
             permutation: permutation.name,
             valueName: valueName
@@ -28054,7 +28301,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
     var shader = null;
 
     try {
-      shader = new _Tw2Shader__WEBPACK_IMPORTED_MODULE_2__["Tw2Shader"](this.reader, this.version, this.stringTable, this.stringTableOffset, this.path);
+      shader = new _Tw2Shader__WEBPACK_IMPORTED_MODULE_3__["Tw2Shader"](this.reader, this.version, this.stringTable, this.stringTableOffset, this.path);
     } catch (error) {
       this.OnError(error);
       return null;
@@ -28064,13 +28311,7 @@ class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resourc
     return shader;
   }
 
-}
-/**
- * Request Response Type
- * @type {String}
- */
-
-Tw2EffectRes.prototype.requestResponseType = "arraybuffer";
+}, _temp)) || _class);
 
 /***/ }),
 
@@ -28090,6 +28331,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _geometry__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../geometry */ "./core/geometry/index.js");
+/* harmony import */ var core_reader_Tw2CakeReader__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core/reader/Tw2CakeReader */ "./core/reader/Tw2CakeReader.js");
+var _dec, _class, _temp;
+
+
 
 
 
@@ -28110,7 +28355,7 @@ __webpack_require__.r(__webpack_exports__);
  * @inherit Tw2Resource
  */
 
-class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
+var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryRes", "TriGeometryRes"), _dec(_class = (_temp = class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.meshes = [];
@@ -28121,6 +28366,8 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
     this.models = [];
     this.animations = [];
     this.systemMirror = global__WEBPACK_IMPORTED_MODULE_0__["resMan"].systemMirror;
+    this._requestResponseType = null;
+    this._extension = null;
   }
 
   /**
@@ -28207,12 +28454,147 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
     return this.meshes[meshIndex].bufferLength * 4 / this.meshes[meshIndex].declaration.stride;
   }
   /**
-   * Prepare
-   * @param data
+   * Handles different geometry formats
+   * @param {String} url
+   * @param {String} extension
+   */
+
+
+  DoCustomLoad(url, extension) {
+    this._extension = null;
+    this._requestResponseType = null;
+
+    switch (extension) {
+      case "wbg":
+        this._extension = extension;
+        this._requestResponseType = "arraybuffer";
+        break;
+
+      case "cake":
+        this._extension = extension;
+        this._requestResponseType = "text";
+        break;
+
+      default:
+        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormat"]("Invalid format: ".concat(this._extension));
+    }
+  }
+  /**
+   * Prepares the object
+   * @param {*} data
    */
 
 
   Prepare(data) {
+    // Clear current geometry
+    this.meshes.splice(0);
+    this.models.splice(0);
+    this.animations.splice(0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(this.minBounds, 0, 0, 0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(this.maxBounds, 0, 0, 0);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(this.boundsSpherePosition, 0, 0, 0);
+    this.boundsSphereRadius = 0;
+
+    switch (this._extension) {
+      case "wbg":
+        this.PrepareWBG(data);
+        break;
+
+      case "cake":
+        this.PrepareCAKE(data);
+        break;
+
+      default:
+        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_4__["ErrResourceFormat"]("Invalid format: ".concat(this._extension));
+    }
+  }
+  /**
+   * Prepares a cake file
+   * TODO: Add support for more than one mesh
+   * TODO: Add support for models
+   * TODO: Add support for animations
+   * TODO: Add support for blend shapes
+   * @param {String} data
+   */
+
+
+  PrepareCAKE(data) {
+    var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
+        result = new core_reader_Tw2CakeReader__WEBPACK_IMPORTED_MODULE_6__["Tw2CakeReader"](data);
+    var {
+      bufferData,
+      indexData,
+      declaration,
+      areas,
+      name = this.path
+    } = result; // TODO: Add support for more than one mesh
+
+    var mesh = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMesh"]();
+    this.meshes[0] = mesh;
+    mesh.name = name;
+    mesh.declaration = declaration;
+    mesh.bufferLength = bufferData.length;
+    mesh.buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, mesh.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
+    mesh.indexes = gl.createBuffer();
+    mesh.indexType = indexData.BYTES_PER_ELEMENT === 2 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexes);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+
+    for (var i = 0; i < areas.length; ++i) {
+      var {
+        name: _name,
+        start,
+        count
+      } = areas[i];
+      var area = new _geometry__WEBPACK_IMPORTED_MODULE_5__["Tw2GeometryMeshArea"]();
+      area.name = _name;
+      area.start = start;
+      area.count = count;
+      mesh.areas.push(area);
+      mesh.RebuildAreaBounds(area, bufferData, indexData, true);
+    }
+
+    mesh._areas = areas.length;
+    mesh._faces = indexData.length / 3;
+    mesh._vertices = bufferData.length / (mesh.declaration.stride / 4);
+
+    if (this.systemMirror) {
+      mesh.bufferData = bufferData;
+      mesh.indexData = indexData;
+    }
+    /*
+    const { models, animations, boneBindings, blendShapes } = result;
+      for (let i = 0; i < boneBindings.length; i++)
+    {
+        // TODO: Bone bindings
+    }
+      for (let i = 0; i < blendShapes.length; i++)
+    {
+        //TODO: Blend shapes
+    }
+      for (let i = 0; i < models; i++)
+    {
+        //TODO: Models
+    }
+      for (let i = 0; i < animations; i++)
+    {
+        //TODO: Animations
+    }
+       */
+
+
+    this.RebuildBounds();
+    this.OnPrepared();
+  }
+  /**
+   * Prepares a wbg file
+   * @param {ArrayBuffer} data
+   */
+
+
+  PrepareWBG(data) {
     var gl = global__WEBPACK_IMPORTED_MODULE_0__["device"].gl,
         reader = new _reader__WEBPACK_IMPORTED_MODULE_1__["Tw2BinaryReader"](new Uint8Array(data));
     /* let fileVersion = */
@@ -28914,13 +29296,7 @@ class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resou
     return [];
   }
 
-}
-/**
- * Request Response Type
- * @type {String}
- */
-
-Tw2GeometryRes.prototype.requestResponseType = "arraybuffer";
+}, _temp)) || _class);
 
 /***/ }),
 
@@ -28963,6 +29339,7 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
     this._inPrepare = null;
     this._objects = [];
     this._constructor = null;
+    this._requestResponseType = "arraybuffer";
   }
 
   /**
@@ -29084,12 +29461,6 @@ class Tw2LoadingObject extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Res
   }
 
 }
-/**
- * HTTP request response type
- * @type {String}
- */
-
-Tw2LoadingObject.prototype.requestResponseType = "arraybuffer";
 
 /***/ }),
 
@@ -29107,6 +29478,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/class/Tw2Notifications */ "./global/class/Tw2Notifications.js");
+var _dec, _class, _class2, _temp;
+
 
 
 
@@ -29123,7 +29496,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Set} _watchers
  */
 
-class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
+var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
   constructor(...args) {
     super(...args);
     this.path = "";
@@ -29132,12 +29505,22 @@ class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE
     this._state = Tw2Resource.State.NO_INIT;
     this._errors = [];
     this._requested = 0;
+    this._requestResponseType = null;
   }
 
+  /**
+   * Gets the request response type
+   * @returns {null|String}
+   */
+  get requestResponseType() {
+    return this._requestResponseType;
+  }
   /**
    * Checks if the resource is good and keeps it alive
    * @returns {boolean}
    */
+
+
   IsGood() {
     this.KeepAlive();
     return this.IsPrepared() || this.IsLoaded();
@@ -29482,16 +29865,7 @@ class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE
    */
 
 
-}
-/**
- * An optional function for when the resource handles it's own loading
- * -  If the method returns false then the resource manager will handle the http request
- * @type {?Function}
- * @returns {Boolean}
- */
-
-Tw2Resource.__isResource = true;
-Tw2Resource.State = {
+}, _class2.__isResource = true, _class2.State = {
   ERROR: -3,
   PURGED: -2,
   UNLOADED: -1,
@@ -29499,8 +29873,7 @@ Tw2Resource.State = {
   REQUESTED: 1,
   LOADED: 2,
   PREPARED: 3
-};
-Tw2Resource.Callback = {
+}, _class2.Callback = {
   ERROR: "OnResError",
   PURGED: "OnResPurged",
   UNLOADED: "OnResUnloaded",
@@ -29509,14 +29882,15 @@ Tw2Resource.Callback = {
   PREPARED: "OnResPrepared",
   WARNING: "OnResWarning",
   DEBUG: "OnResDebug"
-};
-Tw2Resource.prototype.DoCustomLoad = null;
+}, _temp)) || _class);
 /**
- * HTTP request response type
- * @type {null}
+ * An optional function for when the resource handles it's own loading
+ * -  If the method returns false then the resource manager will handle the http request
+ * @type {?Function}
+ * @returns {Boolean}
  */
 
-Tw2Resource.prototype.requestResponseType = null;
+Tw2Resource.prototype.DoCustomLoad = null;
 
 /***/ }),
 
@@ -29536,6 +29910,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json");
 var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./shaderOverrides.json */ "./core/resource/shaderOverrides.json", 1);
+var _dec, _class, _class2, _temp;
+
 
 
 
@@ -29549,7 +29925,7 @@ var _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4___namespace = /*#__PURE__*/
  * @class
  */
 
-class Tw2Shader {
+var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Shader"), _dec(_class = (_temp = _class2 = class Tw2Shader {
   /**
    * Constructor
    * @param reader
@@ -30120,9 +30496,7 @@ class Tw2Shader {
    */
 
 
-}
-Tw2Shader.ConstantIgnore = ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS"];
-Tw2Shader.DEBUG_ENABLED = false;
+}, _class2.ConstantIgnore = ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS"], _class2.DEBUG_ENABLED = false, _temp)) || _class);
 
 /***/ }),
 
@@ -30139,6 +30513,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
+var _dec, _class, _temp;
+
 
 
 
@@ -30156,7 +30532,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {?String} _extension          - loading file extension
  */
 
-class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resource"] {
+var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].type("Tw2TextureRes"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.texture = null;
@@ -30266,7 +30642,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
 
           default:
             var code = Tw2TextureRes.Int32ToFourCC(fourCC);
-            throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, ".concat(code, " unsupported"));
+            throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS format: ".concat(code));
         }
 
         this.hasMipMaps = mipmaps > 1;
@@ -30300,7 +30676,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
         break;
 
       default:
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid format, ".concat(this._extension, " unsupported"));
+        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid format: ".concat(this._extension));
     }
 
     this._isAttached = false;
@@ -30522,7 +30898,7 @@ class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resour
     return img;
   }
 
-}
+}, _temp)) || _class);
 
 /***/ }),
 
@@ -30539,6 +30915,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Resource */ "./core/resource/Tw2Resource.js");
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
+var _dec, _class, _temp;
+
 
 
 
@@ -30560,7 +30938,7 @@ __webpack_require__.r(__webpack_exports__);
  * @property {?Function} _onEnded        - An optional callback which is fired when the video has ended
  */
 
-class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource"] {
+var Tw2VideoRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VideoRes"), _dec(_class = (_temp = class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.texture = null;
@@ -30788,7 +31166,7 @@ class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource
     }
   }
 
-}
+}, _temp)) || _class);
 
 /***/ }),
 

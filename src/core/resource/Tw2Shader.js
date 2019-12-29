@@ -1,4 +1,4 @@
-import { quat, util, device } from "global";
+import { meta, quat, util, device } from "global";
 import { Tw2VertexDeclaration, Tw2VertexElement } from "../vertex";
 import { Tw2SamplerState } from "../sampler";
 import { ErrShaderCompile, ErrShaderLink } from "../Tw2Error";
@@ -11,6 +11,7 @@ import shaderOverrides from "./shaderOverrides.json";
  * @property {Object.<string, Array>} annotations
  * @class
  */
+@meta.type("Tw2Shader")
 export class Tw2Shader
 {
 
