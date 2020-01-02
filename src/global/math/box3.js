@@ -493,6 +493,7 @@ box3.fromBounds = function(out, min, max)
 
 /**
  * Helper method which creates a box3 from an eve object's bounding box properties
+ * TODO: Clean up
  *
  * @param {box3} out
  * @param {*} obj
@@ -526,6 +527,7 @@ box3.fromObjectBounds = function(out, obj, m)
 
 /**
  * Helper method which creates a box3 from an eve object's bounding sphere properties
+ * TODO: Clean up
  *
  * @param {box3} out
  * @param {*} obj
@@ -1059,12 +1061,10 @@ box3.toBounds = function(a, outMin, outMax)
 };
 
 /**
- *
+ * TODO: Clean up
  *
  * @param {box3} a
  * @param {*} obj
- * @param {vec3} obj.minBounds
- * @param {vec3} obj.maxBounds
  * @param {mat4} [m]
  */
 box3.toObjectBounds = function(a, obj, m)
@@ -1093,7 +1093,7 @@ box3.toObjectBounds = function(a, obj, m)
 };
 
 /**
- *
+ * TODO: Clean up
  *
  * @param {box3} a
  * @param {*} obj

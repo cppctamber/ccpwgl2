@@ -13,6 +13,7 @@ export const sph3 = {};
 
 // Scratch
 let sph3_0 = null;
+let box3_0 = null;
 
 /**
  * Returns a subarray containing the position component of the sph3
@@ -202,6 +203,7 @@ sph3.fromBounds = function(out, min, max)
 
 /**
  * Helper method which creates a sph3 from an eve object's bounding box properties
+ * TODO: Clean up
  *
  * @param {sph3} out
  * @param {*} obj
@@ -235,6 +237,7 @@ sph3.fromObjectBounds = function(out, obj, m)
 
 /**
  * Helper method which creates a sph3 from an eve object's bounding sphere properties
+ * TODO: Clean up
  *
  * @param {sph3} out
  * @param {*} obj
@@ -509,43 +512,38 @@ sph3.setArray = vec4.setArray;
  * @param {vec3} [position] - An optional center position
  * @returns {sph3} out      - the receiving sphere
  */
-sph3.setPoints = (function()
+sph3.setPoints = function(out, points, position)
 {
-    let box3_0;
+    if (!box3_0) box3_0 = box3.create();
 
-    return function(out, points, position)
+    if (position)
     {
-        if (!box3_0) box3_0 = box3.create();
+        out[0] = position[0];
+        out[1] = position[1];
+        out[2] = position[2];
+    }
+    else
+    {
+        box3.setPoints(box3_0, points);
+        out[0] = (box3_0[0] + box3_0[3]) * 0.5;
+        out[1] = (box3_0[1] + box3_0[4]) * 0.5;
+        out[2] = (box3_0[2] + box3_0[5]) * 0.5;
+    }
 
-        if (position)
-        {
-            out[0] = position[0];
-            out[1] = position[1];
-            out[2] = position[2];
-        }
-        else
-        {
-            box3.setPoints(box3_0, points);
-            out[0] = (box3_0[0] + box3_0[3]) * 0.5;
-            out[1] = (box3_0[1] + box3_0[4]) * 0.5;
-            out[2] = (box3_0[2] + box3_0[5]) * 0.5;
-        }
+    let maxSquaredRadius = 0;
 
-        let maxSquaredRadius = 0;
+    for (let i = 0; i < points.length; i++)
+    {
+        let x = out[0] - points[i][0],
+            y = out[1] - points[i][1],
+            z = out[2] - points[i][2];
 
-        for (let i = 0; i < points.length; i++)
-        {
-            let x = out[0] - points[i][0],
-                y = out[1] - points[i][1],
-                z = out[2] - points[i][2];
+        maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
+    }
 
-            maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
-        }
-
-        out[3] = Math.sqrt(maxSquaredRadius);
-        return out;
-    };
-})();
+    out[3] = Math.sqrt(maxSquaredRadius);
+    return out;
+};
 
 /**
  * Returns the squared distance between two sph3s
@@ -591,7 +589,21 @@ sph3.squaredDistanceToPoint = function(a, p)
 sph3.toArray = vec4.toArray;
 
 /**
+ * Converts a sphere to bounds
  *
+ * @param {sph3} a
+ * @param {vec3} minBounds
+ * @param {vec3} maxBounds
+ */
+sph3.toBounds = function(a, minBounds, maxBounds)
+{
+    if (!box3_0) box3_0 = box3.create();
+    box3.fromSph3(box3_0, a);
+    box3.toBounds(box3_0, minBounds, maxBounds);
+};
+
+/**
+ * TODO: Clean up
  *
  * @param {sph3} a
  * @param {*} obj
@@ -624,7 +636,7 @@ sph3.toObjectBounds = function(a, obj, m)
 };
 
 /**
- *
+ *  * TODO: Clean up
  *
  * @param {sph3} a
  * @param {*} obj
@@ -652,6 +664,20 @@ sph3.toObjectPositionRadius = function(a, obj, m)
     }
 
     throw new Error("Invalid object bounds");
+};
+
+/**
+ *
+ * @param a
+ * @param position
+ * @returns {*}
+ */
+sph3.toPositionRadius = function(a, position)
+{
+    position[0] = a[0];
+    position[1] = a[1];
+    position[2] = a[2];
+    return a[3];
 };
 
 /**
