@@ -25,6 +25,9 @@ export class Tw2InstancedMesh extends Tw2BaseClass
     @meta.black.listOf("Tw2MeshArea")
     additiveAreas = [];
 
+    @meta.black.object
+    boundsMethod = null;
+
     @meta.black.listOf("Tw2MeshArea")
     decalAreas = [];
 
