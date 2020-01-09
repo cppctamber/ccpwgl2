@@ -45,6 +45,16 @@ export class Tw2Effect extends Tw2BaseClass
     }
 
     /**
+     * Finds an effect parameter by it's name
+     * @param {String} name
+     * @returns {Tw2Parameter}
+     */
+    FindParameter(name)
+    {
+        return this.parameters[name] || null;
+    }
+
+    /**
      * Fires on value changes
      * @param {*} opt
      */

@@ -51,6 +51,16 @@ export class Tw2MeshArea extends Tw2BaseClass
     }
 
     /**
+     * Finds an effect parameter by it's name
+     * @param {String} name
+     * @returns {Tw2Parameter|null}
+     */
+    FindParameter(name)
+    {
+        return this.effect ? this.effect.FindParameter(name) : null;
+    }
+
+    /**
      * Creates a mesh area from a plain object
      * @param {*} [values]
      * @param {*} [options]

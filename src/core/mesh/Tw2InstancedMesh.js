@@ -10,6 +10,7 @@ import {
     RM_TRANSPARENT,
     RM_PICKABLE
 } from "global/engine";
+import { isString } from "global/util";
 
 
 @meta.type("Tw2InstancedMesh", "Tr2InstancedMesh")
@@ -111,6 +112,48 @@ export class Tw2InstancedMesh extends Tw2BaseClass
         {
             this.instanceGeometryResource = resMan.GetResource(this.instanceGeometryResPath);
         }
+    }
+
+    /**
+     * Finds all parameters of a given name
+     * @param {Object|String} options
+     * @param {Array} [out=[]]
+     * @returns {Array} out
+     */
+    FindParameters(options, out=[])
+    {
+        if (isString(options)) options = { name: options };
+        const { name, areaName, areaType } = options;
+
+        const findParameter = type =>
+        {
+            if (!areaType || areaType === type)
+            {
+                const meshAreas = this[type] || [];
+                for (let i = 0; i < meshAreas.length; i++)
+                {
+                    if (!areaName || meshAreas[i].name === areaName)
+                    {
+                        const parameter = meshAreas[i].FindParameter(name, out);
+                        if (parameter && !out.includes(parameter))
+                        {
+                            out.push(parameter);
+                        }
+                    }
+                }
+            }
+        };
+
+        findParameter("transparentAreas");
+        findParameter("pickableAreas");
+        findParameter("opaqueAreas");
+        findParameter("distortionAreas");
+        findParameter("depthAreas");
+        findParameter("additiveAreas");
+        findParameter("opaquePrepassAreas");
+        findParameter("depthNormalAreas");
+
+        return out;
     }
 
     /**
