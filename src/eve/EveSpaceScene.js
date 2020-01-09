@@ -53,6 +53,14 @@ export class EveSpaceScene extends Tw2BaseClass
     @meta.black.float
     fogStart = 0;
 
+    @meta.notImplemented
+    @meta.black.path
+    lowQualityNebulaMixResPath = "";
+
+    @meta.notImplemented
+    @meta.black.path
+    lowQualityNebulaResPath = "";
+
     @meta.black.float
     nebulaIntensity = 1;
 
@@ -629,7 +637,16 @@ export class EveSpaceScene extends Tw2BaseClass
         const f = 1.0 / distance;
 
         const vs = this._perFrameVS;
-        vs.Set("FogFactors", [ this.fogEnd * f, f, this.visible.fog ? this.fogMax : 0, 1 ]);
+
+        if (this.visible.fog)
+        {
+            vs.Set("FogFactors", [ this.fogEnd * f, f, this.fogMax, 1 ]);
+        }
+        else
+        {
+            vs.Set("FogFactors", [ 0, 0, 0, 0 ]);
+        }
+
         vs.Set("ViewportAdjustment", [ 1, 1, 1, 1 ]);
         vs.Set("MiscSettings", [ d.currentTime, 0, d.viewportWidth, d.viewportHeight ]);
         vs.Set("SunData.DirWorld", sunDir);
@@ -649,8 +666,18 @@ export class EveSpaceScene extends Tw2BaseClass
         ps.Set("SunData.DirWorld", sunDir);
         ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
         ps.Set("SceneData.AmbientColor", this.ambientColor);
-        ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, 1 ]);
-        ps.Set("SceneData.FogColor", this.fogColor);
+
+        if (this.visible.fog)
+        {
+            ps.Set("SceneData.FogColor", this.fogColor);
+            ps.Set("MiscSettings", [ d.currentTime, this.fogType, this.fogBlur, 1 ]);
+        }
+        else
+        {
+            ps.Set("SceneData.FogColor", [ 0, 0, 0, 0 ]);
+            ps.Set("MiscSettings", [ d.currentTime, 0, 0, 1 ]);
+        }
+
         ps.Set("FovXY", [ d.targetResolution[3], d.targetResolution[2] ]);
         ps.Set("ShadowMapSettings", [ 1, 1, 0, 0 ]);
         ps.Set("TargetResolution", d.targetResolution);
