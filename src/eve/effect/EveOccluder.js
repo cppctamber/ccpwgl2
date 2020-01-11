@@ -49,7 +49,7 @@ export class EveOccluder extends Tw2BaseClass
 
         g.accumulator.Render();
 
-        mat4.multiply(worldViewProj, d.viewProjection, this.sprites[0].worldTransform);
+        mat4.multiply(worldViewProj, d.viewProjection, this.sprites[0]._worldTransform);
         vec4.transformMat4(center, [ 0, 0, 0, 1 ], worldViewProj);
 
         const
