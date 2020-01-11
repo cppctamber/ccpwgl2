@@ -36,7 +36,7 @@
             camera = ccpwgl.createCamera();
             scene = ccpwgl.loadScene(nebulaPath);
             scene.treatPlanetsAsObjects(true);
-            scene.loadSun(lensflarePath);
+            //scene.loadSun(lensflarePath);
 
 
             let planetsData = [],
@@ -73,10 +73,10 @@
                         angle = Math.PI * 2 * planetsData.indexOf(planet) / planetsData.length,
                         { radius, name } = planet;
 
-                    this.transform.Set({
-                        scale: radius,
-                        translation: [ maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle) ]
-                    });
+                    this.transform
+                        .SetScaleUniform(radius)
+                        .SetTranslationFromValues(maxRadius * Math.cos(angle), 0, maxRadius * Math.sin(angle))
+                        .UpdateValues();
 
                     console.log(`Loaded ${name}`);
                 }));
