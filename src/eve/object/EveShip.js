@@ -173,7 +173,7 @@ export class EveShip extends EveSpaceObject
 
             if (this.visible.turretSets)
             {
-                if (this.lod > 1)
+                if (this._lod > 1)
                 {
                     for (let i = 0; i < this.turretSets.length; ++i)
                     {

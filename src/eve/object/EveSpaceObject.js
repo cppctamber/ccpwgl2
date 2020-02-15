@@ -42,10 +42,6 @@ export class EveSpaceObject extends EveObject
     @meta.listOf("EveLocator")
     locators = [];
 
-    @meta.uint
-    @meta.isPrivate
-    lod = 3;
-
     @meta.objectOf("Tw2Mesh")
     mesh = null;
 
@@ -92,7 +88,7 @@ export class EveSpaceObject extends EveObject
         boosters: true
     };
 
-
+    _lod = 3;
     _worldSpriteScale = 1;
     _worldTransform = mat4.create();
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
@@ -157,7 +153,7 @@ export class EveSpaceObject extends EveObject
      */
     ResetLod()
     {
-        this.lod = 3;
+        this._lod = 3;
     }
 
     /**
@@ -166,54 +162,23 @@ export class EveSpaceObject extends EveObject
      */
     UpdateLod(frustum)
     {
-        if (!this._useLOD)
-        {
-            this.lod = 3;
-        }
-        else
-        {
-            const center = vec3.transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
+        const center = vec3.transformMat4(EveObject.global.vec3_0, this.boundingSphereCenter, this.transform);
 
-            if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
+        if (frustum.IsSphereVisible(center, this.boundingSphereRadius))
+        {
+            if (frustum.GetPixelSizeAcross(center, this.boundingSphereRadius) < 100)
             {
-                const size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
-
-                if (size <= EveSpaceObject.LOD_THRESHOLD_NONE)
-                {
-                    this.lod = 0;
-                }
-                else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW)
-                {
-                    this.lod = 1;
-                }
-                else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM)
-                {
-                    this.lod = 2;
-                }
-                else
-                {
-                    this.lod = 3;
-                }
+                this._lod = 1;
             }
             else
             {
-                this.lod = 0;
+                this._lod = 2;
             }
         }
-
-        if (this.mesh && "SetQuality" in this.mesh)
+        else
         {
-            this.mesh.SetQuality(3 - this.lod);
+            this._lod = 0;
         }
-    }
-
-    /**
-     * Toggles LOD calculations
-     * @param {Boolean} bool
-     */
-    UseLOD(bool)
-    {
-        this._useLOD = bool;
     }
 
     /**
@@ -340,6 +305,20 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
+     * Rebuilds overlay effects
+     * @param {Array<EveMeshOverlayEffect>} [overlays=[]] - The overlays that should be in effect
+     */
+    RebuildOverlays(overlays=[])
+    {
+        this.overlayEffects.splice(0);
+
+        for (let i = 0; i < overlays.length; i++)
+        {
+            this.overlayEffects.push(overlays[i]);
+        }
+    }
+
+    /**
      * A Per frame function that updates view dependent data
      * @param {undefined|mat4} parentTransform
      * @param {Number} dt
@@ -355,7 +334,16 @@ export class EveSpaceObject extends EveObject
             mat4.copy(this._worldTransform, this.transform);
         }
 
-        this._worldSpriteScale = mat4.maxScaleOnAxis(this._worldTransform);
+        // Scale sprites to object scale
+        const worldSpriteScale = mat4.maxScaleOnAxis(this._worldTransform);
+        if (this._worldSpriteScale !== worldSpriteScale)
+        {
+            this._worldSpriteScale = worldSpriteScale;
+            for (let i = 0; i < this.spriteSets.length; i++)
+            {
+                this.spriteSets[i].SetWorldSpriteScale(worldSpriteScale);
+            }
+        }
 
         for (let i = 0; i < this.children.length; ++i)
         {
@@ -409,11 +397,11 @@ export class EveSpaceObject extends EveObject
      */
     Update(dt)
     {
-        if (this.lod > 0)
+        if (this._lod > 0)
         {
             for (let i = 0; i < this.spriteSets.length; ++i)
             {
-                this.spriteSets[i].Update(dt, this._worldSpriteScale);
+                this.spriteSets[i].Update(dt);
             }
 
             for (let i = 0; i < this.planeSets.length; i++)
@@ -433,7 +421,7 @@ export class EveSpaceObject extends EveObject
 
             for (let i = 0; i < this.effectChildren.length; ++i)
             {
-                this.effectChildren[i].Update(dt, this._worldTransform, this.lod);
+                this.effectChildren[i].Update(dt, this._worldTransform, this._lod);
             }
 
             for (let i = 0; i < this.curveSets.length; ++i)
@@ -466,12 +454,12 @@ export class EveSpaceObject extends EveObject
         {
             const show = this.visible;
 
-            if (show.mesh && this.mesh && this.lod > 0)
+            if (show.mesh && this.mesh && this._lod > 0)
             {
                 this.mesh.GetBatches(mode, accumulator, this._perObjectData);
             }
 
-            if (this.lod > 1)
+            if (this._lod > 1)
             {
                 if (show.spriteSets)
                 {
@@ -534,7 +522,6 @@ export class EveSpaceObject extends EveObject
             {
                 for (let i = 0; i < this.effectChildren.length; i++)
                 {
-                    this.effectChildren[i]._parentLod = this.lod;
                     this.effectChildren[i].GetBatches(mode, accumulator, this._perObjectData);
                 }
             }
@@ -549,25 +536,6 @@ export class EveSpaceObject extends EveObject
     {
         this.animation.RenderDebugInfo(debugHelper);
     }
-
-    /**
-     * LOD threshold for hiding object
-     * @type {number}
-     */
-    static LOD_THRESHOLD_NONE = 100;
-
-    /**
-     * LOD threshold for low quality
-     * @type {number}
-     */
-    static LOD_THRESHOLD_LOW = 200;
-
-    /**
-     * LOD threshold for medium quality
-     * @type {number}
-     */
-    static LOD_THRESHOLD_MEDIUM = 500;
-
 
     /**
      * Per object data

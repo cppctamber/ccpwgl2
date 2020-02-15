@@ -1,4 +1,4 @@
-import { vec3, vec4, util, device, meta } from "global";
+import { vec3, vec4, util, device, meta, AttachmentType } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists } from "global/util";
@@ -75,6 +75,10 @@ export class EveSpriteSetItem extends EveObjectSetItem
     @meta.todo("Remove this, and reference the name using the group index")
     groupName = "";
 
+    @meta.uint
+    @meta.todo("Remove this after testing")
+    colorType = -1;
+
     /**
      * Creates a sprite set item from an object
      * @param {*} [values]
@@ -88,7 +92,7 @@ export class EveSpriteSetItem extends EveObjectSetItem
             util.assignIfExists(item, values, [
                 "name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale",
                 "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor",
-                "groupName"
+                "groupName", "colorType"
             ]);
         }
         return item;
@@ -177,20 +181,25 @@ export class EveSpriteSet extends EveObjectSet
     }
 
     /**
-     * Per frame update
-     * @param {Number} dt - Delta time
-     * @param {Number} [worldSpriteScale]
+     * Sets the world sprite scale
+     * @param {Number} worldSpriteScale
      */
-    Update(dt, worldSpriteScale)
+    SetWorldSpriteScale(worldSpriteScale)
     {
-        this._time += dt;
-
-        if (this._worldSpriteScale !== undefined && this._worldSpriteScale !== worldSpriteScale)
+        if (this._worldSpriteScale !== worldSpriteScale)
         {
             this._worldSpriteScale = worldSpriteScale;
             this._dirty = true;
         }
+    }
 
+    /**
+     * Per frame update
+     * @param {Number} dt - Delta time
+     */
+    Update(dt)
+    {
+        this._time += dt;
         super.Update(dt);
     }
 
@@ -568,6 +577,11 @@ export class EveSpriteSet extends EveObjectSet
         return item;
     }
 
+    /**
+     * Set type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.SPRITE_SET;
 
     /**
      * The sprite set's item constructor
