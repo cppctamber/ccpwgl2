@@ -363,12 +363,23 @@ export class EveBoosterSet extends EveObjectSet
     }
 
     /**
+     * Sets world sprite scale
+     * @param {Number} scale
+     */
+    SetWorldSpriteScale(scale)
+    {
+        if (this.glows)
+        {
+            this.glows.SetWorldSpriteScale(scale);
+        }
+    }
+
+    /**
      * Per frame update
      * @param {Number} dt - DeltaTime
      * @param {mat4} parentMatrix
-     * @param {Number} [worldSpriteScale]
      */
-    Update(dt, parentMatrix, worldSpriteScale)
+    Update(dt, parentMatrix)
     {
         mat4.copy(this._parentTransform, parentMatrix);
 
@@ -376,7 +387,7 @@ export class EveBoosterSet extends EveObjectSet
 
         if (this.glows)
         {
-            this.glows.Update(dt, worldSpriteScale);
+            this.glows.Update(dt);
         }
     }
 

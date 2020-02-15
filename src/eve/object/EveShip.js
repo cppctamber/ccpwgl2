@@ -138,7 +138,8 @@ export class EveShip extends EveSpaceObject
                 this.RebuildBoosterSet();
             }
 
-            this.boosters.Update(dt, this._worldTransform, this._worldSpriteScale);
+            this.boosters.SetWorldSpriteScale(this._worldSpriteScale);
+            this.boosters.Update(dt, this._worldTransform);
         }
 
         for (let i = 0; i < this.turretSets.length; ++i)
