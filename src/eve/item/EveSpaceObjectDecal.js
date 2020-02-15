@@ -42,6 +42,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     @meta.black.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
+    _usage = 0;
 
     _dirty = true;
     _indexBuffer = null;
@@ -135,7 +136,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
      * @param {Tw2PerObjectData} perObjectData
      * @param {Number} [counter=0]
      */
-    GetBatches(mode, accumulator, perObjectData, counter)
+    GetBatches(mode, accumulator, perObjectData, counter=0)
     {
         let effect;
         switch (mode)
@@ -196,8 +197,9 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             mat4.transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
             mat4.transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
 
-            this._perObjectData.ps.Get("displayData")[0] = counter || 0;
+            this._perObjectData.ps.SetIndex("displayData", 0, counter);
             this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
+
 
             batch.perObjectData = this._perObjectData;
             batch.geometryProvider = this;
@@ -292,8 +294,8 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
             [ "parentBoneMatrix", mat4.identity([]) ]
         ],
         ps: [
-            [ "displayData", 4 ],
-            [ "shipData", 4 * 3 ]
+            [ "displayData", [ 0, 1, 0, 0 ] ],
+            [ "shipData", 12 ]
         ]
     };
 
