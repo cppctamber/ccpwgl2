@@ -1,4 +1,4 @@
-import { meta, resMan, Tw2BaseClass } from "global";
+import { AttachmentType, meta, resMan, Tw2BaseClass } from "global";
 import { Tw2RenderBatch } from "core/batch";
 
 
@@ -77,4 +77,9 @@ export class EveTrailsSet extends Tw2BaseClass
         return out;
     }
 
+    /**
+     * Item attachment type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.TRAIL_SET;
 }

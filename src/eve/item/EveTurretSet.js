@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, quat, mat4, util, resMan, device } from "global";
+import { meta, vec3, vec4, quat, mat4, util, resMan, device, AttachmentType } from "global";
 import {
     Tw2PerObjectData,
     Tw2VertexElement,
@@ -875,6 +875,13 @@ export class EveTurretSet extends EveObjectSet
     }
 
     /**
+     * Set type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.TURRET_SET;
+
+
+    /**
      * The eve turret set's item constructor
      * @type {EveTurretSetItem}
      */
@@ -976,3 +983,4 @@ export class EveTurretSet extends EveObjectSet
     })();
 
 }
+

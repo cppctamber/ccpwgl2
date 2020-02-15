@@ -1,6 +1,16 @@
 import { Tw2GeometryBatch, Tw2Effect } from "core";
 import { Tw2CurveSet } from "curve";
-import { meta, util, Tw2BaseClass, RM_OPAQUE, RM_TRANSPARENT, RM_ADDITIVE, RM_DECAL, RM_DISTORTION } from "global";
+import {
+    meta,
+    util,
+    Tw2BaseClass,
+    AttachmentType,
+    RM_OPAQUE,
+    RM_TRANSPARENT,
+    RM_ADDITIVE,
+    RM_DECAL,
+    RM_DISTORTION
+} from "global";
 
 
 @meta.type("EveMeshOverlayEffect", true)
@@ -115,6 +125,12 @@ export class EveMeshOverlayEffect extends Tw2BaseClass
         }
         return [];
     }
+
+    /**
+     * Attachment type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.MESH_OVERLAY_EFFECT;
 
     /**
      * Creates an area's effects

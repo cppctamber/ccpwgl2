@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, mat4, util, device } from "global";
+import { meta, vec3, vec4, mat4, util, device, AttachmentType } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { assignIfExists, isFunction } from "global/util";
@@ -450,6 +450,12 @@ export class EveSpotlightSet extends EveObjectSet
     }
 
     /**
+     * Set type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.SPOTLIGHT_SET;
+
+    /**
      * Spotlight set item constructor
      * @type {EveSpotlightSetItem}usageIndex:
      elements:    */
@@ -469,6 +475,5 @@ export class EveSpotlightSet extends EveObjectSet
     ];
 
 }
-
 
 

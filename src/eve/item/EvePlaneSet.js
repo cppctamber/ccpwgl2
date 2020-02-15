@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, quat, mat4, util, device } from "global";
+import { meta, vec3, vec4, quat, mat4, util, device, AttachmentType } from "global";
 import { Tw2VertexDeclaration, Tw2RenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 import { Tw2Effect } from "core/mesh";
@@ -225,9 +225,8 @@ export class EvePlaneSet extends EveObjectSet
 
         const
             vertexSize = 35,
-            mat4_0 = EvePlaneSet.global.mat4_0;
+            array = new Float32Array(itemCount * 4 * vertexSize);
 
-        const array = new Float32Array(itemCount * 4 * vertexSize);
         for (let i = 0; i < itemCount; ++i)
         {
             const
@@ -395,6 +394,12 @@ export class EvePlaneSet extends EveObjectSet
     }
 
     /**
+     * Set type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.PLANE_SET;
+
+    /**
      * The plane set's item constructor
      * @type {EvePlaneSetItem}
      */
@@ -417,3 +422,4 @@ export class EvePlaneSet extends EveObjectSet
     ];
 
 }
+

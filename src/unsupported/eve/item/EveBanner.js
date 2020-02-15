@@ -1,4 +1,4 @@
-import { meta, quat, vec3, mat4, Tw2BaseClass } from "global";
+import { meta, quat, vec3, mat4, Tw2BaseClass, AttachmentType } from "global";
 
 
 @meta.type("EveBanner", true)
@@ -43,5 +43,11 @@ export class EveBanner extends Tw2BaseClass
     {
         mat4.fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
     }
+
+    /**
+     * Item attachment type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.BANNER;
 
 }

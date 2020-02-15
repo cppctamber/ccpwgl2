@@ -1,4 +1,4 @@
-import { vec3, vec4, quat, mat4, util, device, meta } from "global";
+import { vec3, vec4, quat, mat4, util, device, meta, AttachmentType } from "global";
 import { Tw2Effect, Tw2PerObjectData, Tw2VertexDeclaration, Tw2ForwardingRenderBatch } from "core";
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
@@ -920,6 +920,12 @@ export class EveCurveLineSet extends EveObjectSet
      * @type {EveCurveLineSetItem}
      */
     static Item = EveCurveLineSetItem;
+
+    /**
+     * Set type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.LINE_SET;
 
     /**
      * Global and scratch variables

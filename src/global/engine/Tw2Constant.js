@@ -1,5 +1,27 @@
 /*
 
+    Attachment types
+
+ */
+
+export const AttachmentType = {
+    GENERIC: 0,
+    SPRITE_SET : 1,
+    SPOTLIGHT_SET: 2,
+    PLANE_SET: 3,
+    TURRET_SET: 4,
+    BOOSTER_SET: 5,
+    MESH_OVERLAY_EFFECT:10,
+    SPRITE_LINE_SET: 20,
+    BANNER: 21,
+    TRAIL_SET: 22,
+    BOOSTER_SET_2: 23,
+    HAZE_SET:213,
+    LINE_SET: 100
+};
+
+/*
+
     Property Types
 
  */

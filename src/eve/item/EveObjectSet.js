@@ -1,5 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { meta, vec3, vec4, mat4, Tw2BaseClass } from "global";
+import { meta, vec3, vec4, mat4, Tw2BaseClass, AttachmentType } from "global";
 
 
 @meta.abstract
@@ -298,6 +298,12 @@ export class EveObjectSet extends Tw2BaseClass
     {
 
     }
+
+    /**
+     * The set's type
+     * @type {number}
+     */
+    static attachmentType = AttachmentType.GENERIC;
 
     /**
      * The object set's item
