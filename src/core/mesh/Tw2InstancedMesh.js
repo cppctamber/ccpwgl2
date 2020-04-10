@@ -171,6 +171,15 @@ export class Tw2InstancedMesh extends Tw2BaseClass
     }
 
     /**
+     * Gets the meshes' geometry resource
+     * @returns {null|Tw2GeometryRes}
+     */
+    GetGeometryRes()
+    {
+        return this._geometryResource;
+    }
+
+    /**
      * Gets mesh resources
      * @param {Array} [out=[]] - Optional receiving array
      * @returns {Array.<Tw2Resource>} [out]
