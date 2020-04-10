@@ -124,6 +124,41 @@ function readResFileIndex(resFileIndex)
         // Remove "res:/" from file name
         const fileName = split[0].substring(5);
         json[fileName] = split[1];
+
+        // Allow overriding of source dds files by dumping replacement png files in the root cache directory
+        // Some dds formats are not supported..
+        if (fileName.includes(".dds"))
+        {
+            const
+                newName = fileName.replace(".dds", ".png"),
+                target = split[1].substring(3) + ".png";
+
+            if (fs.existsSync(`${args.dest}/${target}`))
+            {
+                json[newName] = target;
+            }
+            else
+            {
+                console.log(`No conversion for: ${fileName}`);
+            }
+        }
+
+        // Allow overriding of source gr2 files by dumping replacement cake files in the root cache directory
+        if (fileName.includes(".gr2"))
+        {
+            let newName = fileName.replace(".gr2", ".cake"),
+                target = split[1].substring(3) + ".cake";
+
+            if (fs.existsSync(`${args.dest}/${target}`))
+            {
+                json[newName] = target;
+            }
+            else
+            {
+                console.log(`No conversion for: ${fileName}`);
+            }
+        }
+
     });
 
     if (args.json)
@@ -500,7 +535,11 @@ function getFile(fileName, req, res)
         else
         {
             res.setHeader("Content-type", contentType);
-            if (!local) res.setHeader("Content-Encoding", "gzip");
+            if (!local && contentType && contentType !== "image/png" && !fileName.includes(".cake"))
+            {
+                res.setHeader("Content-Encoding", "gzip");
+                console.log("gzip");
+            }
             addCors(res);
             res.end(data);
             log(fileName, "Success");
