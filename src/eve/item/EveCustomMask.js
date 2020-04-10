@@ -71,4 +71,35 @@ export class EveCustomMask extends Tw2TransformParameter
         perObjectData.vs.Set("CustomMaskMatrix" + index, this._worldInverseTranspose);
     }
 
+    /**
+     * Applies custom mask's parameters to an effect
+     * @param {Tw2Effect} effect
+     * @param {EveCustomMask} mask
+     * @param index
+     * @constructor
+     */
+    static ApplyMaterials(effect, mask, index)
+    {
+        const
+            prefix = index === 0 ? "PMtl1" : "PMtl2",
+            patternName = index === 0 ? "PatternMask1Map" : "PatternMask2Map",
+            DiffuseName = effect.parameters[prefix + "DiffuseColor"],
+            FresnelName = effect.parameters[prefix + "FresnelColor"],
+            GlossName = effect.parameters[prefix + "Gloss"],
+            PatternTexture = effect.parameters[patternName];
+
+        const { DiffuseColor, FresnelColor, Gloss, PatternMaskMap } = mask.parameters;
+
+        if (DiffuseName) DiffuseName.SetValue(DiffuseColor.GetValue());
+        if (FresnelName) FresnelName.SetValue(FresnelColor.GetValue());
+        if (GlossName) GlossName.SetValue(Gloss.GetValue());
+
+        if (PatternTexture)
+        {
+            const overrides = PatternMaskMap.GetOverrides();
+            PatternTexture.SetOverrides(overrides);
+            PatternTexture.SetValue(PatternTexture.PatternMaskMap.GetValue());
+        }
+    }
+
 }
