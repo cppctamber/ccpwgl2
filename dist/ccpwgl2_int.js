@@ -19795,6 +19795,16 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     }
   }
   /**
+   * Finds an effect parameter by it's name
+   * @param {String} name
+   * @returns {Tw2Parameter}
+   */
+
+
+  FindParameter(name) {
+    return this.parameters[name] || null;
+  }
+  /**
    * Fires on value changes
    * @param {*} opt
    */
@@ -20450,7 +20460,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _batch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../batch */ "./core/batch/index.js");
 /* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
 /* harmony import */ var global_engine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/engine */ "./global/engine/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp;
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -20462,7 +20473,8 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2MeshArea"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+
+var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2MeshArea"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -20472,31 +20484,33 @@ var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
 
     _initializerDefineProperty(this, "additiveAreas", _descriptor3, this);
 
-    _initializerDefineProperty(this, "decalAreas", _descriptor4, this);
+    _initializerDefineProperty(this, "boundsMethod", _descriptor4, this);
 
-    _initializerDefineProperty(this, "depthAreas", _descriptor5, this);
+    _initializerDefineProperty(this, "decalAreas", _descriptor5, this);
 
-    _initializerDefineProperty(this, "distortionAreas", _descriptor6, this);
+    _initializerDefineProperty(this, "depthAreas", _descriptor6, this);
 
-    _initializerDefineProperty(this, "geometryResPath", _descriptor7, this);
+    _initializerDefineProperty(this, "distortionAreas", _descriptor7, this);
 
-    _initializerDefineProperty(this, "instanceGeometryResPath", _descriptor8, this);
+    _initializerDefineProperty(this, "geometryResPath", _descriptor8, this);
 
-    _initializerDefineProperty(this, "instanceGeometryResource", _descriptor9, this);
+    _initializerDefineProperty(this, "instanceGeometryResPath", _descriptor9, this);
 
-    _initializerDefineProperty(this, "instanceMeshIndex", _descriptor10, this);
+    _initializerDefineProperty(this, "instanceGeometryResource", _descriptor10, this);
 
-    _initializerDefineProperty(this, "maxBounds", _descriptor11, this);
+    _initializerDefineProperty(this, "instanceMeshIndex", _descriptor11, this);
 
-    _initializerDefineProperty(this, "minBounds", _descriptor12, this);
+    _initializerDefineProperty(this, "maxBounds", _descriptor12, this);
 
-    _initializerDefineProperty(this, "opaqueAreas", _descriptor13, this);
+    _initializerDefineProperty(this, "minBounds", _descriptor13, this);
 
-    _initializerDefineProperty(this, "pickableAreas", _descriptor14, this);
+    _initializerDefineProperty(this, "opaqueAreas", _descriptor14, this);
 
-    _initializerDefineProperty(this, "transparentAreas", _descriptor15, this);
+    _initializerDefineProperty(this, "pickableAreas", _descriptor15, this);
 
-    _initializerDefineProperty(this, "visible", _descriptor16, this);
+    _initializerDefineProperty(this, "transparentAreas", _descriptor16, this);
+
+    _initializerDefineProperty(this, "visible", _descriptor17, this);
 
     this._geometryResource = null;
   }
@@ -20532,6 +20546,50 @@ var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     }
   }
   /**
+   * Finds all parameters of a given name
+   * @param {Object|String} options
+   * @param {Array} [out=[]]
+   * @returns {Array} out
+   */
+
+
+  FindParameters(options, out = []) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_4__["isString"])(options)) options = {
+      name: options
+    };
+    var {
+      name,
+      areaName,
+      areaType
+    } = options;
+
+    var findParameter = type => {
+      if (!areaType || areaType === type) {
+        var meshAreas = this[type] || [];
+
+        for (var i = 0; i < meshAreas.length; i++) {
+          if (!areaName || meshAreas[i].name === areaName) {
+            var parameter = meshAreas[i].FindParameter(name, out);
+
+            if (parameter && !out.includes(parameter)) {
+              out.push(parameter);
+            }
+          }
+        }
+      }
+    };
+
+    findParameter("transparentAreas");
+    findParameter("pickableAreas");
+    findParameter("opaqueAreas");
+    findParameter("distortionAreas");
+    findParameter("depthAreas");
+    findParameter("additiveAreas");
+    findParameter("opaquePrepassAreas");
+    findParameter("depthNormalAreas");
+    return out;
+  }
+  /**
    * Checks if the instances meshes' resources are good
    * @returns {Boolean}
    */
@@ -20543,6 +20601,15 @@ var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
         isInstancedResGood = !instanced ? false : instanced.IsGood ? instanced.IsGood() : true;
 
     return isResGood && isInstancedResGood;
+  }
+  /**
+   * Gets the meshes' geometry resource
+   * @returns {null|Tw2GeometryRes}
+   */
+
+
+  GetGeometryRes() {
+    return this._geometryResource;
   }
   /**
    * Gets mesh resources
@@ -20729,91 +20796,98 @@ var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
   initializer: function () {
     return [];
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "decalAreas", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "depthAreas", [_dec6, _dec7], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "distortionAreas", [_dec8, _dec9], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "geometryResPath", [_dec10], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return "";
-  }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "instanceGeometryResPath", [_dec11], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return "";
-  }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "instanceGeometryResource", [_dec12], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "boundsMethod", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "instanceMeshIndex", [_dec13], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "decalAreas", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "depthAreas", [_dec7, _dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "distortionAreas", [_dec9, _dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "geometryResPath", [_dec11], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "instanceGeometryResPath", [_dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "instanceGeometryResource", [_dec13], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "instanceMeshIndex", [_dec14], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "maxBounds", [_dec14], {
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "maxBounds", [_dec15], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "minBounds", [_dec15], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "minBounds", [_dec16], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "opaqueAreas", [_dec16], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "opaqueAreas", [_dec17], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "pickableAreas", [_dec17], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "pickableAreas", [_dec18], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "transparentAreas", [_dec18], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "transparentAreas", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec19], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -20844,6 +20918,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Mesh", function() { return Tw2Mesh; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var global_engine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/engine */ "./global/engine/index.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -20851,6 +20926,7 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
 
 
 
@@ -20918,6 +20994,50 @@ var Tw2Mesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Mesh"
     }
   }
   /**
+   * Finds all parameters of a given name
+   * @param {Object|String} options
+   * @param {Array} [out=[]]
+   * @returns {Array} out
+   */
+
+
+  FindParameters(options, out = []) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(options)) options = {
+      name: options
+    };
+    var {
+      name,
+      areaName,
+      areaType
+    } = options;
+
+    var findParameter = type => {
+      if (!areaType || areaType === type) {
+        var meshAreas = this[type] || [];
+
+        for (var i = 0; i < meshAreas.length; i++) {
+          if (!areaName || meshAreas[i].name === areaName) {
+            var parameter = meshAreas[i].FindParameter(name, out);
+
+            if (parameter && !out.includes(parameter)) {
+              out.push(parameter);
+            }
+          }
+        }
+      }
+    };
+
+    findParameter("transparentAreas");
+    findParameter("pickableAreas");
+    findParameter("opaqueAreas");
+    findParameter("distortionAreas");
+    findParameter("depthAreas");
+    findParameter("additiveAreas");
+    findParameter("opaquePrepassAreas");
+    findParameter("depthNormalAreas");
+    return out;
+  }
+  /**
    * Checks if the mesh's resource is good
    * @returns {Boolean}
    */
@@ -20925,6 +21045,15 @@ var Tw2Mesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Mesh"
 
   IsGood() {
     return this._geometryResource && this._geometryResource.IsGood();
+  }
+  /**
+   * Gets the meshes' geometry resource
+   * @returns {null|Tw2GeometryRes}
+   */
+
+
+  GetGeometryRes() {
+    return this._geometryResource;
   }
   /**
    * Gets mesh resources
@@ -21273,6 +21402,16 @@ var Tw2MeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2M
 
   set meshIndex(val) {
     this.index = val;
+  }
+  /**
+   * Finds an effect parameter by it's name
+   * @param {String} name
+   * @returns {Tw2Parameter|null}
+   */
+
+
+  FindParameter(name) {
+    return this.effect ? this.effect.FindParameter(name) : null;
   }
   /**
    * Creates a mesh area from a plain object
@@ -26870,7 +27009,8 @@ function getReaderFromType(type) {
  */
 
 function path(reader) {
-  var path = reader.ReadStringU16(); // Because there are two sources for "res:" now we need to replace
+  var path = reader.ReadStringU16();
+  var originalPath = path; // Because there are two sources for "res:" now we need to replace
   // any references from the eve cdn with a new res path mapping
 
   if (path.indexOf("res:") === 0) {
@@ -26883,6 +27023,15 @@ function path(reader) {
 
   switch (ext) {
     case "dds":
+      if (path.includes("_cube")) {
+        path = path.replace(".dds", ".cube");
+      } else {
+        path = path.replace(".dds", ".png");
+      } //console.log(`Renamed: ${originalPath} : ${path}`);
+
+
+      break;
+
     case "png":
       // TODO: Remove the need to do this in Tw2TextureRes
       // Will need to provide all quality versions of these files in the cdn even if they
@@ -26898,7 +27047,8 @@ function path(reader) {
     case "gr2":
       // TODO: Add support for these files
       // Temporarily use ccpwgl resources (this won't always work but will do for now)
-      path = path.replace(ext, "wbg").replace("cdn:", "res:");
+      //path = path.replace(ext, "wbg").replace("cdn:", "res:");
+      path = path.replace(ext, "cake");
       break;
 
     case "red":
@@ -39843,7 +39993,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpaceScene", function() { return EveSpaceScene; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _dec54, _dec55, _dec56, _dec57, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -39853,7 +40003,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceScene", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2ExternalParameter"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2ShLightingManager"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveStarField"), _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveLensflare"), _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EvePlanet"), _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCurveLineSet"), _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tr2PostProcess"), _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceScene", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2ExternalParameter"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2ShLightingManager"), _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveStarField"), _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveLensflare"), _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EvePlanet"), _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCurveLineSet"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tr2PostProcess"), _dec54 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec55 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec56 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec57 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   // Should this come from the background effect?
 
   /**
@@ -39892,51 +40042,55 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
 
     _initializerDefineProperty(this, "fogStart", _descriptor15, this);
 
-    _initializerDefineProperty(this, "nebulaIntensity", _descriptor16, this);
+    _initializerDefineProperty(this, "lowQualityNebulaMixResPath", _descriptor16, this);
 
-    _initializerDefineProperty(this, "objects", _descriptor17, this);
+    _initializerDefineProperty(this, "lowQualityNebulaResPath", _descriptor17, this);
 
-    _initializerDefineProperty(this, "postProcessPath", _descriptor18, this);
+    _initializerDefineProperty(this, "nebulaIntensity", _descriptor18, this);
 
-    _initializerDefineProperty(this, "selfShadowOnly", _descriptor19, this);
+    _initializerDefineProperty(this, "objects", _descriptor19, this);
 
-    _initializerDefineProperty(this, "shLightingManager", _descriptor20, this);
+    _initializerDefineProperty(this, "postProcessPath", _descriptor20, this);
 
-    _initializerDefineProperty(this, "shadowFadeThreshold", _descriptor21, this);
+    _initializerDefineProperty(this, "selfShadowOnly", _descriptor21, this);
 
-    _initializerDefineProperty(this, "shadowThreshold", _descriptor22, this);
+    _initializerDefineProperty(this, "shLightingManager", _descriptor22, this);
 
-    _initializerDefineProperty(this, "starfield", _descriptor23, this);
+    _initializerDefineProperty(this, "shadowFadeThreshold", _descriptor23, this);
 
-    _initializerDefineProperty(this, "sunDiffuseColor", _descriptor24, this);
+    _initializerDefineProperty(this, "shadowThreshold", _descriptor24, this);
 
-    _initializerDefineProperty(this, "sunDiffuseColorWithDynamicLights", _descriptor25, this);
+    _initializerDefineProperty(this, "starfield", _descriptor25, this);
 
-    _initializerDefineProperty(this, "sunDirection", _descriptor26, this);
+    _initializerDefineProperty(this, "sunDiffuseColor", _descriptor26, this);
 
-    _initializerDefineProperty(this, "useSunDiffuseColorWithDynamicLights", _descriptor27, this);
+    _initializerDefineProperty(this, "sunDiffuseColorWithDynamicLights", _descriptor27, this);
 
-    _initializerDefineProperty(this, "clearColor", _descriptor28, this);
+    _initializerDefineProperty(this, "sunDirection", _descriptor28, this);
 
-    _initializerDefineProperty(this, "display", _descriptor29, this);
+    _initializerDefineProperty(this, "useSunDiffuseColorWithDynamicLights", _descriptor29, this);
 
-    _initializerDefineProperty(this, "envMapScaling", _descriptor30, this);
+    _initializerDefineProperty(this, "clearColor", _descriptor30, this);
 
-    _initializerDefineProperty(this, "fogBlur", _descriptor31, this);
+    _initializerDefineProperty(this, "display", _descriptor31, this);
 
-    _initializerDefineProperty(this, "fogType", _descriptor32, this);
+    _initializerDefineProperty(this, "envMapScaling", _descriptor32, this);
 
-    _initializerDefineProperty(this, "lensflares", _descriptor33, this);
+    _initializerDefineProperty(this, "fogBlur", _descriptor33, this);
 
-    _initializerDefineProperty(this, "planets", _descriptor34, this);
+    _initializerDefineProperty(this, "fogType", _descriptor34, this);
 
-    _initializerDefineProperty(this, "lineSets", _descriptor35, this);
+    _initializerDefineProperty(this, "lensflares", _descriptor35, this);
 
-    _initializerDefineProperty(this, "postProcess", _descriptor36, this);
+    _initializerDefineProperty(this, "planets", _descriptor36, this);
 
-    _initializerDefineProperty(this, "shadowEffect", _descriptor37, this);
+    _initializerDefineProperty(this, "lineSets", _descriptor37, this);
 
-    _initializerDefineProperty(this, "visible", _descriptor38, this);
+    _initializerDefineProperty(this, "postProcess", _descriptor38, this);
+
+    _initializerDefineProperty(this, "shadowEffect", _descriptor39, this);
+
+    _initializerDefineProperty(this, "visible", _descriptor40, this);
 
     this._debugHelper = null;
     this._batches = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
@@ -40336,7 +40490,13 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     if (Math.abs(distance) < 1e-5) distance = 1e-5;
     var f = 1.0 / distance;
     var vs = this._perFrameVS;
-    vs.Set("FogFactors", [this.fogEnd * f, f, this.visible.fog ? this.fogMax : 0, 1]);
+
+    if (this.visible.fog) {
+      vs.Set("FogFactors", [this.fogEnd * f, f, this.fogMax, 1]);
+    } else {
+      vs.Set("FogFactors", [0, 0, 0, 0]);
+    }
+
     vs.Set("ViewportAdjustment", [1, 1, 1, 1]);
     vs.Set("MiscSettings", [d.currentTime, 0, d.viewportWidth, d.viewportHeight]);
     vs.Set("SunData.DirWorld", sunDir);
@@ -40355,8 +40515,15 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     ps.Set("SunData.DirWorld", sunDir);
     ps.Set("SunData.DiffuseColor", this.sunDiffuseColor);
     ps.Set("SceneData.AmbientColor", this.ambientColor);
-    ps.Set("MiscSettings", [d.currentTime, this.fogType, this.fogBlur, 1]);
-    ps.Set("SceneData.FogColor", this.fogColor);
+
+    if (this.visible.fog) {
+      ps.Set("SceneData.FogColor", this.fogColor);
+      ps.Set("MiscSettings", [d.currentTime, this.fogType, this.fogBlur, 1]);
+    } else {
+      ps.Set("SceneData.FogColor", [0, 0, 0, 0]);
+      ps.Set("MiscSettings", [d.currentTime, 0, 0, 1]);
+    }
+
     ps.Set("FovXY", [d.targetResolution[3], d.targetResolution[2]]);
     ps.Set("ShadowMapSettings", [1, 1, 0, 0]);
     ps.Set("TargetResolution", d.targetResolution);
@@ -40513,161 +40680,175 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
   initializer: function () {
     return 0;
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "nebulaIntensity", [_dec19], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 1;
-  }
-}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "objects", [_dec20], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return [];
-  }
-}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "postProcessPath", [_dec21], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "lowQualityNebulaMixResPath", [_dec19, _dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "selfShadowOnly", [_dec22, _dec23], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "lowQualityNebulaResPath", [_dec21, _dec22], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "nebulaIntensity", [_dec23], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 1;
+  }
+}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "objects", [_dec24], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
+}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "postProcessPath", [_dec25], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "selfShadowOnly", [_dec26, _dec27], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "shLightingManager", [_dec24, _dec25], {
+}), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "shLightingManager", [_dec28, _dec29], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "shadowFadeThreshold", [_dec26, _dec27, _dec28], {
+}), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "shadowFadeThreshold", [_dec30, _dec31, _dec32], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "shadowThreshold", [_dec29, _dec30, _dec31], {
+}), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "shadowThreshold", [_dec33, _dec34, _dec35], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "starfield", [_dec32, _dec33], {
+}), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "starfield", [_dec36, _dec37], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColor", [_dec34], {
+}), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColor", [_dec38], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
   }
-}), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColorWithDynamicLights", [_dec35, _dec36], {
+}), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "sunDiffuseColorWithDynamicLights", [_dec39, _dec40], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(1, 1, 1, 1);
   }
-}), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "sunDirection", [_dec37], {
+}), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "sunDirection", [_dec41], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, -1, 1);
   }
-}), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "useSunDiffuseColorWithDynamicLights", [_dec38, _dec39], {
+}), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "useSunDiffuseColorWithDynamicLights", [_dec42, _dec43], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "clearColor", [_dec40], {
+}), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "clearColor", [_dec44], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromValues(0, 0, 0, 1);
   }
-}), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec41], {
+}), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec45], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-}), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "envMapScaling", [_dec42], {
+}), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "envMapScaling", [_dec46], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromValues(1, 1, 1);
   }
-}), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "fogBlur", [_dec43], {
+}), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "fogBlur", [_dec47], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "fogType", [_dec44], {
+}), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "fogType", [_dec48], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "lensflares", [_dec45], {
+}), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "lensflares", [_dec49], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "planets", [_dec46], {
+}), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "planets", [_dec50], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "lineSets", [_dec47], {
+}), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "lineSets", [_dec51], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "postProcess", [_dec48, _dec49], {
+}), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "postProcess", [_dec52, _dec53], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec50, _dec51, _dec52], {
+}), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "shadowEffect", [_dec54, _dec55, _dec56], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec53], {
+}), _descriptor40 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec57], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -42127,7 +42308,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! curve */ "./curve/index.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -42138,7 +42319,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveMeshOverlayEffect", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.objectOf("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].plain, _dec(_class = (_class2 = (_temp = class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveMeshOverlayEffect", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.objectOf("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -42231,13 +42412,17 @@ var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].t
     return [];
   }
   /**
+   * Attachment type
+   * @type {number}
+   */
+
+
+  /**
    * Creates an area's effects
    * @param {EveMeshOverlayEffect} dest
    * @param {*} src
    * @param {String|String[]} names
    */
-
-
   static createAreaEffects(dest, src, names) {
     names = global__WEBPACK_IMPORTED_MODULE_2__["util"].toArray(names);
 
@@ -42284,7 +42469,7 @@ var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].t
     return item;
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
+}, _class3.attachmentType = global__WEBPACK_IMPORTED_MODULE_2__["AttachmentType"].MESH_OVERLAY_EFFECT, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -42421,7 +42606,7 @@ var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveO
 
     global__WEBPACK_IMPORTED_MODULE_0__["tw2"].SetVariableValue("OccluderValue", [(1 << index * 2) / 255.0, (2 << index * 2) / 255.0, 0, 0]);
     g.accumulator.Render();
-    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldViewProj, d.viewProjection, this.sprites[0].worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(worldViewProj, d.viewProjection, this.sprites[0]._worldTransform);
     global__WEBPACK_IMPORTED_MODULE_0__["vec4"].transformMat4(center, [0, 0, 0, 1], worldViewProj);
     var x0 = (center[0] / center[3] + 1) * 0.5,
         y0 = (center[1] / center[3] + 1) * 0.5;
@@ -44025,19 +44210,29 @@ var EveBoosterSet = (_dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
     this._locatorDirty = true;
   }
   /**
-   * Per frame update
-   * @param {Number} dt - DeltaTime
-   * @param {mat4} parentMatrix
-   * @param {Number} [worldSpriteScale]
+   * Sets world sprite scale
+   * @param {Number} scale
    */
 
 
-  Update(dt, parentMatrix, worldSpriteScale) {
+  SetWorldSpriteScale(scale) {
+    if (this.glows) {
+      this.glows.SetWorldSpriteScale(scale);
+    }
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt - DeltaTime
+   * @param {mat4} parentMatrix
+   */
+
+
+  Update(dt, parentMatrix) {
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._parentTransform, parentMatrix);
     super.Update(dt);
 
     if (this.glows) {
-      this.glows.Update(dt, worldSpriteScale);
+      this.glows.Update(dt);
     }
   }
   /**
@@ -44247,7 +44442,7 @@ var EveBoosterSet = (_dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
   usage: "TEXCOORD",
   usageIndex: 7,
   elements: 2
-}], _class6._box = [[[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]], [[-1.0, -1.0, -1.0], [-1.0, 1.0, -1.0], [1.0, 1.0, -1.0], [1.0, -1.0, -1.0]], [[-1.0, -1.0, 0.0], [-1.0, 1.0, 0.0], [-1.0, 1.0, -1.0], [-1.0, -1.0, -1.0]], [[1.0, -1.0, 0.0], [1.0, -1.0, -1.0], [1.0, 1.0, -1.0], [1.0, 1.0, 0.0]], [[-1.0, -1.0, 0.0], [-1.0, -1.0, -1.0], [1.0, -1.0, -1.0], [1.0, -1.0, 0.0]], [[-1.0, 1.0, 0.0], [1.0, 1.0, 0.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]]], _temp2), (_descriptor10 = _applyDecoratedDescriptor(_class5.prototype, "alwaysOn", [_dec12, _dec13], {
+}], _class6._box = [[[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]], [[-1.0, -1.0, -1.0], [-1.0, 1.0, -1.0], [1.0, 1.0, -1.0], [1.0, -1.0, -1.0]], [[-1.0, -1.0, 0.0], [-1.0, 1.0, 0.0], [-1.0, 1.0, -1.0], [-1.0, -1.0, -1.0]], [[1.0, -1.0, 0.0], [1.0, -1.0, -1.0], [1.0, 1.0, -1.0], [1.0, 1.0, 0.0]], [[-1.0, -1.0, 0.0], [-1.0, -1.0, -1.0], [1.0, -1.0, -1.0], [1.0, -1.0, 0.0]], [[-1.0, 1.0, 0.0], [1.0, 1.0, 0.0], [1.0, 1.0, -1.0], [-1.0, 1.0, -1.0]]], _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].BOOSTER_SET, _temp2), (_descriptor10 = _applyDecoratedDescriptor(_class5.prototype, "alwaysOn", [_dec12, _dec13], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -45342,7 +45537,7 @@ var EveCurveLineSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
    */
 
 
-}, _class6.Item = EveCurveLineSetItem, _class6.global = null, _class6.perObjectData = {
+}, _class6.Item = EveCurveLineSetItem, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].LINE_SET, _class6.global = null, _class6.perObjectData = {
   vs: [["WorldMat", 16]],
   ps: [["WorldMat", 16]]
 }, _class6.vertexDeclarations = [{
@@ -45541,6 +45736,38 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     perObjectData.ps.SetIndex("CustomMaskMaterialID" + index, 0, this.materialIndex);
     perObjectData.vs.SetIndex("CustomMaskData" + index, 1, this.isMirrored ? 1 : 0);
     perObjectData.vs.Set("CustomMaskMatrix" + index, this._worldInverseTranspose);
+  }
+  /**
+   * Applies custom mask's parameters to an effect
+   * @param {Tw2Effect} effect
+   * @param {EveCustomMask} mask
+   * @param index
+   * @constructor
+   */
+
+
+  static ApplyMaterials(effect, mask, index) {
+    var prefix = index === 0 ? "PMtl1" : "PMtl2",
+        patternName = index === 0 ? "PatternMask1Map" : "PatternMask2Map",
+        DiffuseName = effect.parameters[prefix + "DiffuseColor"],
+        FresnelName = effect.parameters[prefix + "FresnelColor"],
+        GlossName = effect.parameters[prefix + "Gloss"],
+        PatternTexture = effect.parameters[patternName];
+    var {
+      DiffuseColor,
+      FresnelColor,
+      Gloss,
+      PatternMaskMap
+    } = mask.parameters;
+    if (DiffuseName) DiffuseName.SetValue(DiffuseColor.GetValue());
+    if (FresnelName) FresnelName.SetValue(FresnelColor.GetValue());
+    if (GlossName) GlossName.SetValue(Gloss.GetValue());
+
+    if (PatternTexture) {
+      var overrides = PatternMaskMap.GetOverrides();
+      PatternTexture.SetOverrides(overrides);
+      PatternTexture.SetValue(PatternTexture.PatternMaskMap.GetValue());
+    }
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec3], {
@@ -46011,12 +46238,12 @@ var EveObjectSet = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
 
   Render() {}
   /**
-   * The object set's item
-   * @type {?Function}
+   * The set's type
+   * @type {number}
    */
 
 
-}, _class6.Item = null, _class6.global = {
+}, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].GENERIC, _class6.Item = null, _class6.global = {
   vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
@@ -46346,8 +46573,7 @@ var EvePlaneSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     }
 
     var vertexSize = 35,
-        mat4_0 = EvePlaneSet.global.mat4_0;
-    var array = new Float32Array(itemCount * 4 * vertexSize);
+        array = new Float32Array(itemCount * 4 * vertexSize);
 
     for (var i = 0; i < itemCount; ++i) {
       var item = this._visibleItems[i],
@@ -46494,12 +46720,12 @@ var EvePlaneSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     return item;
   }
   /**
-   * The plane set's item constructor
-   * @type {EvePlaneSetItem}
+   * Set type
+   * @type {number}
    */
 
 
-}, _class6.Item = EvePlaneSetItem, _class6.vertexDeclarations = [{
+}, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].PLANE_SET, _class6.Item = EvePlaneSetItem, _class6.vertexDeclarations = [{
   usage: "TEXCOORD",
   usageIndex: 0,
   elements: 4
@@ -46617,6 +46843,7 @@ var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
 
     _initializerDefineProperty(this, "scaling", _descriptor11, this);
 
+    this._usage = 0;
     this._dirty = true;
     this._indexBuffer = null;
     this._localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
@@ -46705,7 +46932,7 @@ var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
    */
 
 
-  GetBatches(mode, accumulator, perObjectData, counter) {
+  GetBatches(mode, accumulator, perObjectData, counter = 0) {
     var effect;
 
     switch (mode) {
@@ -46761,7 +46988,8 @@ var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
       global__WEBPACK_IMPORTED_MODULE_0__["mat4"].invert(this._perObjectData.vs.Get("invWorldMatrix"), this._perObjectData.vs.Get("worldMatrix"));
       global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("decalMatrix"), this._localTransform);
       global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("invDecalMatrix"), this._localTransformInverse);
-      this._perObjectData.ps.Get("displayData")[0] = counter || 0;
+
+      this._perObjectData.ps.SetIndex("displayData", 0, counter);
 
       this._perObjectData.ps.Set("shipData", perObjectData.ps.data);
 
@@ -46842,7 +47070,7 @@ var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
 
 }, _class3.perObjectData = {
   vs: [["worldMatrix", 16], ["invWorldMatrix", 16], ["decalMatrix", 16], ["invDecalMatrix", 16], ["parentBoneMatrix", global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])]],
-  ps: [["displayData", 4], ["shipData", 4 * 3]]
+  ps: [["displayData", [0, 1, 0, 0]], ["shipData", 12]]
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -47419,12 +47647,12 @@ var EveSpotlightSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
     return item;
   }
   /**
-   * Spotlight set item constructor
-   * @type {EveSpotlightSetItem}usageIndex:
-   elements:    */
+   * Set type
+   * @type {number}
+   */
 
 
-}, _class6.Item = EveSpotlightSetItem, _class6.vertexDeclarations = [{
+}, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].SPOTLIGHT_SET, _class6.Item = EveSpotlightSetItem, _class6.vertexDeclarations = [{
   usage: "COLOR",
   usageIndex: 0,
   elements: 4
@@ -47496,7 +47724,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObjectSet */ "./eve/item/EveObjectSet.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
 /* harmony import */ var core_mesh__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! core/mesh */ "./core/mesh/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _temp, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _class4, _class5, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _class6, _temp2;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _temp, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _class4, _class5, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _class6, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -47534,7 +47762,7 @@ class EveSpriteSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatc
 
 }
 
-var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this, and reference the name using the group index"), _dec(_class = (_class2 = (_temp = class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this, and reference the name using the group index"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this after testing"), _dec(_class = (_class2 = (_temp = class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -47561,6 +47789,8 @@ var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     _initializerDefineProperty(this, "groupIndex", _descriptor11, this);
 
     _initializerDefineProperty(this, "groupName", _descriptor12, this);
+
+    _initializerDefineProperty(this, "colorType", _descriptor13, this);
   }
 
   /**
@@ -47572,7 +47802,7 @@ var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     var item = new this();
 
     if (values) {
-      global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale", "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor", "groupName"]);
+      global__WEBPACK_IMPORTED_MODULE_0__["util"].assignIfExists(item, values, ["name", "display", "blinkRate", "blinkPhase", "minScale", "maxScale", "falloff", "boneIndex", "groupIndex", "position", "color", "warpColor", "groupName", "colorType"]);
     }
 
     return item;
@@ -47662,20 +47892,27 @@ var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
   initializer: function () {
     return "";
   }
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "colorType", [_dec15, _dec16], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
 })), _class2)) || _class);
-var EveSpriteSet = (_dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSet", true), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSpriteSetItem"), _dec15(_class4 = (_class5 = (_temp2 = _class6 = class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveSpriteSet = (_dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSet", true), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSpriteSetItem"), _dec17(_class4 = (_class5 = (_temp2 = _class6 = class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "name", _descriptor13, this);
+    _initializerDefineProperty(this, "name", _descriptor14, this);
 
-    _initializerDefineProperty(this, "effect", _descriptor14, this);
+    _initializerDefineProperty(this, "effect", _descriptor15, this);
 
-    _initializerDefineProperty(this, "intensity", _descriptor15, this);
+    _initializerDefineProperty(this, "intensity", _descriptor16, this);
 
-    _initializerDefineProperty(this, "skinned", _descriptor16, this);
+    _initializerDefineProperty(this, "skinned", _descriptor17, this);
 
-    _initializerDefineProperty(this, "useQuads", _descriptor17, this);
+    _initializerDefineProperty(this, "useQuads", _descriptor18, this);
 
     this._time = 0;
     this._vertexBuffer = null;
@@ -47738,20 +47975,25 @@ var EveSpriteSet = (_dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     this._dirty = true;
   }
   /**
-   * Per frame update
-   * @param {Number} dt - Delta time
-   * @param {Number} [worldSpriteScale]
+   * Sets the world sprite scale
+   * @param {Number} worldSpriteScale
    */
 
 
-  Update(dt, worldSpriteScale) {
-    this._time += dt;
-
-    if (this._worldSpriteScale !== undefined && this._worldSpriteScale !== worldSpriteScale) {
+  SetWorldSpriteScale(worldSpriteScale) {
+    if (this._worldSpriteScale !== worldSpriteScale) {
       this._worldSpriteScale = worldSpriteScale;
       this._dirty = true;
     }
+  }
+  /**
+   * Per frame update
+   * @param {Number} dt - Delta time
+   */
 
+
+  Update(dt) {
+    this._time += dt;
     super.Update(dt);
   }
   /**
@@ -48104,12 +48346,12 @@ var EveSpriteSet = (_dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     return item;
   }
   /**
-   * The sprite set's item constructor
-   * @type {EveSpriteSetItem}
+   * Set type
+   * @type {number}
    */
 
 
-}, _class6.Item = EveSpriteSetItem, _class6.vertexDeclarations = [{
+}, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].SPRITE_SET, _class6.Item = EveSpriteSetItem, _class6.vertexDeclarations = [{
   usage: "TEXCOORD",
   usageIndex: 5,
   elements: 2
@@ -48161,42 +48403,42 @@ var EveSpriteSet = (_dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
   usage: "COLOR",
   usageIndex: 1,
   elements: 4
-}], _temp2), (_descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec16], {
+}], _temp2), (_descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec18], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec17], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "effect", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "intensity", [_dec18], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "intensity", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "skinned", [_dec19], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class5.prototype, "skinned", [_dec21], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor17 = _applyDecoratedDescriptor(_class5.prototype, "useQuads", [_dec20], {
+}), _descriptor18 = _applyDecoratedDescriptor(_class5.prototype, "useQuads", [_dec22], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _applyDecoratedDescriptor(_class5.prototype, "sprites", [_dec21], Object.getOwnPropertyDescriptor(_class5.prototype, "sprites"), _class5.prototype)), _class5)) || _class4);
+}), _applyDecoratedDescriptor(_class5.prototype, "sprites", [_dec23], Object.getOwnPropertyDescriptor(_class5.prototype, "sprites"), _class5.prototype)), _class5)) || _class4);
 
 /***/ }),
 
@@ -49012,12 +49254,12 @@ var EveTurretSet = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     }
   }
   /**
-   * The eve turret set's item constructor
-   * @type {EveTurretSetItem}
+   * Set type
+   * @type {number}
    */
 
 
-}, _class6.Item = EveTurretSetItem, _class6.State = {
+}, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].TURRET_SET, _class6.Item = EveTurretSetItem, _class6.State = {
   INACTIVE: 0,
   IDLE: 1,
   FIRING: 2,
@@ -50685,7 +50927,8 @@ var EveShip = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip"
         this.RebuildBoosterSet();
       }
 
-      this.boosters.Update(dt, this._worldTransform, this._worldSpriteScale);
+      this.boosters.SetWorldSpriteScale(this._worldSpriteScale);
+      this.boosters.Update(dt, this._worldTransform);
     }
 
     for (var i = 0; i < this.turretSets.length; ++i) {
@@ -50714,7 +50957,7 @@ var EveShip = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip"
       }
 
       if (this.visible.turretSets) {
-        if (this.lod > 1) {
+        if (this._lod > 1) {
           for (var i = 0; i < this.turretSets.length; ++i) {
             this.turretSets[i].GetBatches(mode, accumulator, this._perObjectData, this.visible.firingEffects);
           }
@@ -50768,7 +51011,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveObject */ "./eve/object/EveObject.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -50779,7 +51022,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceObject"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2AnimationController"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveObject"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2CurveSet"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCustomMask"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpaceObjectDecal"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveChild"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCurveLineSet"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveLocator"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Mesh"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveMeshOverlayEffect"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EvePlaneSet"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpotlightSet"), _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpriteSet"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveTurretSet"), _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
+var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceObject"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2AnimationController"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveObject"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2CurveSet"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCustomMask"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpaceObjectDecal"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveChild"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCurveLineSet"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveLocator"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Mesh"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveMeshOverlayEffect"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EvePlaneSet"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpotlightSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpriteSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveTurretSet"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -50805,28 +51048,27 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 
     _initializerDefineProperty(this, "locators", _descriptor11, this);
 
-    _initializerDefineProperty(this, "lod", _descriptor12, this);
+    _initializerDefineProperty(this, "mesh", _descriptor12, this);
 
-    _initializerDefineProperty(this, "mesh", _descriptor13, this);
+    _initializerDefineProperty(this, "overlayEffects", _descriptor13, this);
 
-    _initializerDefineProperty(this, "overlayEffects", _descriptor14, this);
+    _initializerDefineProperty(this, "planeSets", _descriptor14, this);
 
-    _initializerDefineProperty(this, "planeSets", _descriptor15, this);
+    _initializerDefineProperty(this, "shapeEllipsoidRadius", _descriptor15, this);
 
-    _initializerDefineProperty(this, "shapeEllipsoidRadius", _descriptor16, this);
+    _initializerDefineProperty(this, "shapeEllipsoidCenter", _descriptor16, this);
 
-    _initializerDefineProperty(this, "shapeEllipsoidCenter", _descriptor17, this);
+    _initializerDefineProperty(this, "spotlightSets", _descriptor17, this);
 
-    _initializerDefineProperty(this, "spotlightSets", _descriptor18, this);
+    _initializerDefineProperty(this, "spriteSets", _descriptor18, this);
 
-    _initializerDefineProperty(this, "spriteSets", _descriptor19, this);
+    _initializerDefineProperty(this, "transform", _descriptor19, this);
 
-    _initializerDefineProperty(this, "transform", _descriptor20, this);
+    _initializerDefineProperty(this, "turretSets", _descriptor20, this);
 
-    _initializerDefineProperty(this, "turretSets", _descriptor21, this);
+    _initializerDefineProperty(this, "visible", _descriptor21, this);
 
-    _initializerDefineProperty(this, "visible", _descriptor22, this);
-
+    this._lod = 3;
     this._worldSpriteScale = 1;
     this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObject.perObjectData);
@@ -50885,7 +51127,7 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 
 
   ResetLod() {
-    this.lod = 3;
+    this._lod = 3;
   }
   /**
    * Updates the lod
@@ -50894,40 +51136,17 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 
 
   UpdateLod(frustum) {
-    if (!this._useLOD) {
-      this.lod = 3;
-    } else {
-      var center = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(EveSpaceObject.global.vec3_0, this.boundingSphereCenter, this._worldTransform);
+    var center = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(_EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"].global.vec3_0, this.boundingSphereCenter, this.transform);
 
-      if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
-        var size = frustum.GetPixelSizeAcross(center, this.boundingSphereRadius);
-
-        if (size <= EveSpaceObject.LOD_THRESHOLD_NONE) {
-          this.lod = 0;
-        } else if (size <= EveSpaceObject.LOD_THRESHOLD_LOW) {
-          this.lod = 1;
-        } else if (size <= EveSpaceObject.LOD_THRESHOLD_MEDIUM) {
-          this.lod = 2;
-        } else {
-          this.lod = 3;
-        }
+    if (frustum.IsSphereVisible(center, this.boundingSphereRadius)) {
+      if (frustum.GetPixelSizeAcross(center, this.boundingSphereRadius) < 100) {
+        this._lod = 1;
       } else {
-        this.lod = 0;
+        this._lod = 2;
       }
+    } else {
+      this._lod = 0;
     }
-
-    if (this.mesh && "SetQuality" in this.mesh) {
-      this.mesh.SetQuality(3 - this.lod);
-    }
-  }
-  /**
-   * Toggles LOD calculations
-   * @param {Boolean} bool
-   */
-
-
-  UseLOD(bool) {
-    this._useLOD = bool;
   }
   /**
    * Finds all turret prefixes
@@ -51048,6 +51267,19 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     return out;
   }
   /**
+   * Rebuilds overlay effects
+   * @param {Array<EveMeshOverlayEffect>} [overlays=[]] - The overlays that should be in effect
+   */
+
+
+  RebuildOverlays(overlays = []) {
+    this.overlayEffects.splice(0);
+
+    for (var i = 0; i < overlays.length; i++) {
+      this.overlayEffects.push(overlays[i]);
+    }
+  }
+  /**
    * A Per frame function that updates view dependent data
    * @param {undefined|mat4} parentTransform
    * @param {Number} dt
@@ -51059,12 +51291,21 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
       global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this._worldTransform, parentTransform, this.transform);
     } else {
       global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._worldTransform, this.transform);
+    } // Scale sprites to object scale
+
+
+    var worldSpriteScale = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis(this._worldTransform);
+
+    if (this._worldSpriteScale !== worldSpriteScale) {
+      this._worldSpriteScale = worldSpriteScale;
+
+      for (var i = 0; i < this.spriteSets.length; i++) {
+        this.spriteSets[i].SetWorldSpriteScale(worldSpriteScale);
+      }
     }
 
-    this._worldSpriteScale = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].maxScaleOnAxis(this._worldTransform);
-
-    for (var i = 0; i < this.children.length; ++i) {
-      this.children[i].UpdateViewDependentData(this._worldTransform);
+    for (var _i = 0; _i < this.children.length; ++_i) {
+      this.children[_i].UpdateViewDependentData(this._worldTransform);
     }
 
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(this._perObjectData.vs.Get("WorldMat"), this._worldTransform);
@@ -51091,16 +51332,16 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
       global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(radii, radii, 0.5);
     }
 
-    for (var _i = 0; _i < this.customMasks.length; ++_i) {
-      this.customMasks[_i].UpdatePerObjectData(this._worldTransform, this._perObjectData, _i, this.visible.customMasks);
+    for (var _i2 = 0; _i2 < this.customMasks.length; ++_i2) {
+      this.customMasks[_i2].UpdatePerObjectData(this._worldTransform, this._perObjectData, _i2, this.visible.customMasks);
     }
 
     if (this.animation.animations.length) {
       this._perObjectData.vs.Set("JointMat", this.animation.GetBoneMatrices(0));
     }
 
-    for (var _i2 = 0; _i2 < this.lineSets.length; ++_i2) {
-      this.lineSets[_i2].UpdateViewDependentData(this._worldTransform);
+    for (var _i3 = 0; _i3 < this.lineSets.length; ++_i3) {
+      this.lineSets[_i3].UpdateViewDependentData(this._worldTransform);
     }
   }
   /**
@@ -51110,37 +51351,37 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 
 
   Update(dt) {
-    if (this.lod > 0) {
+    if (this._lod > 0) {
       for (var i = 0; i < this.spriteSets.length; ++i) {
-        this.spriteSets[i].Update(dt, this._worldSpriteScale);
+        this.spriteSets[i].Update(dt);
       }
 
-      for (var _i3 = 0; _i3 < this.planeSets.length; _i3++) {
-        this.planeSets[_i3].Update(dt);
+      for (var _i4 = 0; _i4 < this.planeSets.length; _i4++) {
+        this.planeSets[_i4].Update(dt);
       }
 
-      for (var _i4 = 0; _i4 < this.spotlightSets.length; _i4++) {
-        this.spotlightSets[_i4].Update(dt);
+      for (var _i5 = 0; _i5 < this.spotlightSets.length; _i5++) {
+        this.spotlightSets[_i5].Update(dt);
       }
 
-      for (var _i5 = 0; _i5 < this.children.length; ++_i5) {
-        this.children[_i5].Update(dt);
+      for (var _i6 = 0; _i6 < this.children.length; ++_i6) {
+        this.children[_i6].Update(dt);
       }
 
-      for (var _i6 = 0; _i6 < this.effectChildren.length; ++_i6) {
-        this.effectChildren[_i6].Update(dt, this._worldTransform, this.lod);
+      for (var _i7 = 0; _i7 < this.effectChildren.length; ++_i7) {
+        this.effectChildren[_i7].Update(dt, this._worldTransform, this._lod);
       }
 
-      for (var _i7 = 0; _i7 < this.curveSets.length; ++_i7) {
-        this.curveSets[_i7].Update(dt);
+      for (var _i8 = 0; _i8 < this.curveSets.length; ++_i8) {
+        this.curveSets[_i8].Update(dt);
       }
 
-      for (var _i8 = 0; _i8 < this.overlayEffects.length; ++_i8) {
-        this.overlayEffects[_i8].Update(dt);
+      for (var _i9 = 0; _i9 < this.overlayEffects.length; ++_i9) {
+        this.overlayEffects[_i9].Update(dt);
       }
 
-      for (var _i9 = 0; _i9 < this.lineSets.length; _i9++) {
-        this.lineSets[_i9].Update(dt);
+      for (var _i10 = 0; _i10 < this.lineSets.length; _i10++) {
+        this.lineSets[_i10].Update(dt);
       }
 
       this.animation.Update(dt);
@@ -51157,11 +51398,11 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     if (this.display) {
       var show = this.visible;
 
-      if (show.mesh && this.mesh && this.lod > 0) {
+      if (show.mesh && this.mesh && this._lod > 0) {
         this.mesh.GetBatches(mode, accumulator, this._perObjectData);
       }
 
-      if (this.lod > 1) {
+      if (this._lod > 1) {
         if (show.spriteSets) {
           for (var i = 0; i < this.spriteSets.length; i++) {
             this.spriteSets[i].GetBatches(mode, accumulator, this._perObjectData, this._worldTransform);
@@ -51169,47 +51410,45 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
         }
 
         if (show.spotlightSets) {
-          for (var _i10 = 0; _i10 < this.spotlightSets.length; _i10++) {
-            this.spotlightSets[_i10].GetBatches(mode, accumulator, this._perObjectData);
+          for (var _i11 = 0; _i11 < this.spotlightSets.length; _i11++) {
+            this.spotlightSets[_i11].GetBatches(mode, accumulator, this._perObjectData);
           }
         }
 
         if (show.planeSets) {
-          for (var _i11 = 0; _i11 < this.planeSets.length; _i11++) {
-            this.planeSets[_i11].GetBatches(mode, accumulator, this._perObjectData);
+          for (var _i12 = 0; _i12 < this.planeSets.length; _i12++) {
+            this.planeSets[_i12].GetBatches(mode, accumulator, this._perObjectData);
           }
         }
 
         if (show.decals) {
-          for (var _i12 = 0; _i12 < this.decals.length; _i12++) {
-            this.decals[_i12].GetBatches(mode, accumulator, this._perObjectData, show.killmarks ? this.killCount : 0);
+          for (var _i13 = 0; _i13 < this.decals.length; _i13++) {
+            this.decals[_i13].GetBatches(mode, accumulator, this._perObjectData, show.killmarks ? this.killCount : 0);
           }
         }
 
         if (show.lineSets) {
-          for (var _i13 = 0; _i13 < this.lineSets.length; _i13++) {
-            this.lineSets[_i13].GetBatches(mode, accumulator);
+          for (var _i14 = 0; _i14 < this.lineSets.length; _i14++) {
+            this.lineSets[_i14].GetBatches(mode, accumulator);
           }
         }
 
         if (show.overlayEffects && this.mesh && this.mesh.IsGood()) {
-          for (var _i14 = 0; _i14 < this.overlayEffects.length; _i14++) {
-            this.overlayEffects[_i14].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
+          for (var _i15 = 0; _i15 < this.overlayEffects.length; _i15++) {
+            this.overlayEffects[_i15].GetBatches(mode, accumulator, this._perObjectData, this.mesh);
           }
         }
       }
 
       if (show.children) {
-        for (var _i15 = 0; _i15 < this.children.length; _i15++) {
-          this.children[_i15].GetBatches(mode, accumulator, this._perObjectData);
+        for (var _i16 = 0; _i16 < this.children.length; _i16++) {
+          this.children[_i16].GetBatches(mode, accumulator, this._perObjectData);
         }
       }
 
       if (show.effectChildren) {
-        for (var _i16 = 0; _i16 < this.effectChildren.length; _i16++) {
-          this.effectChildren[_i16]._parentLod = this.lod;
-
-          this.effectChildren[_i16].GetBatches(mode, accumulator, this._perObjectData);
+        for (var _i17 = 0; _i17 < this.effectChildren.length; _i17++) {
+          this.effectChildren[_i17].GetBatches(mode, accumulator, this._perObjectData);
         }
       }
     }
@@ -51224,12 +51463,12 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     this.animation.RenderDebugInfo(debugHelper);
   }
   /**
-   * LOD threshold for hiding object
-   * @type {number}
+   * Per object data
+   * @type {{vs: *[], ps: *[]}}
    */
 
 
-}, _class3.LOD_THRESHOLD_NONE = 100, _class3.LOD_THRESHOLD_LOW = 200, _class3.LOD_THRESHOLD_MEDIUM = 500, _class3.perObjectData = {
+}, _class3.perObjectData = {
   vs: [["WorldMat", 16], ["WorldMatLast", 16], ["Shipdata", [0, 1, 0, -10]], ["Clipdata1", 4], ["EllipsoidRadii", 4], ["EllipsoidCenter", 4], ["CustomMaskMatrix0", global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskMatrix1", global__WEBPACK_IMPORTED_MODULE_0__["mat4"].identity([])], ["CustomMaskData0", [1, 0, 0, 0]], ["CustomMaskData1", [1, 0, 0, 0]], ["JointMat", 696]],
   ps: [["Shipdata", [0, 1, 0, 1]], ["Clipdata1", 4], ["Clipdata2", 4], ["ShLighting", 4 * 7], ["CustomMaskMaterialID0", 4], ["CustomMaskMaterialID1", 4], ["CustomMaskTarget0", 4], ["CustomMaskTarget1", 4]]
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "animation", [_dec2], {
@@ -51309,77 +51548,70 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
   initializer: function () {
     return [];
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "lod", [_dec15, _dec16], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return 3;
-  }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "mesh", [_dec17], {
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "mesh", [_dec15], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "overlayEffects", [_dec18], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "overlayEffects", [_dec16], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "planeSets", [_dec19], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "planeSets", [_dec17], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidRadius", [_dec20, _dec21], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidRadius", [_dec18, _dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidCenter", [_dec22, _dec23], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "shapeEllipsoidCenter", [_dec20, _dec21], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "spotlightSets", [_dec24], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "spotlightSets", [_dec22], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "spriteSets", [_dec25], {
+}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "spriteSets", [_dec23], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "transform", [_dec26], {
+}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "transform", [_dec24], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
-}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "turretSets", [_dec27], {
+}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "turretSets", [_dec25], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec28], {
+}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec26], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -53838,11 +54070,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!**************************************!*\
   !*** ./global/engine/Tw2Constant.js ***!
   \**************************************/
-/*! exports provided: Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
+/*! exports provided: AttachmentType, Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return AttachmentType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return Type; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TypeCategory", function() { return TypeCategory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TypeTypeCategory", function() { return TypeTypeCategory; });
@@ -54202,9 +54435,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return VendorWebglPrefixes; });
 /*
 
+    Attachment types
+
+ */
+var AttachmentType = {
+  GENERIC: 0,
+  SPRITE_SET: 1,
+  SPOTLIGHT_SET: 2,
+  PLANE_SET: 3,
+  TURRET_SET: 4,
+  BOOSTER_SET: 5,
+  MESH_OVERLAY_EFFECT: 10,
+  SPRITE_LINE_SET: 20,
+  BANNER: 21,
+  TRAIL_SET: 22,
+  BOOSTER_SET_2: 23,
+  HAZE_SET: 213,
+  LINE_SET: 100
+};
+/*
+
     Property Types
 
  */
+
 var Type = {
   UNKNOWN: 0,
   BOOLEAN: 1,
@@ -56853,7 +57107,7 @@ Tw2ResMan.__category = "Resource Manager";
 /*!********************************!*\
   !*** ./global/engine/index.js ***!
   \********************************/
-/*! exports provided: Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, Tw2Device, Tw2ResMan, Tw2Logger */
+/*! exports provided: AttachmentType, Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, Tw2Device, Tw2ResMan, Tw2Logger */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56868,6 +57122,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return _Tw2Logger__WEBPACK_IMPORTED_MODULE_2__["Tw2Logger"]; });
 
 /* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AttachmentType"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeCategory", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeCategory"]; });
@@ -57593,7 +57849,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: meta, util, Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, tw2, resMan, device, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
+/*! exports provided: meta, util, AttachmentType, Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, tw2, resMan, device, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57612,6 +57868,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Schema"]; });
 
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AttachmentType"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeCategory", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeCategory"]; });
@@ -58838,6 +59096,7 @@ box3.fromBounds = function (out, min, max) {
 };
 /**
  * Helper method which creates a box3 from an eve object's bounding box properties
+ * TODO: Clean up
  *
  * @param {box3} out
  * @param {*} obj
@@ -58865,6 +59124,7 @@ box3.fromObjectBounds = function (out, obj, m) {
 };
 /**
  * Helper method which creates a box3 from an eve object's bounding sphere properties
+ * TODO: Clean up
  *
  * @param {box3} out
  * @param {*} obj
@@ -59368,12 +59628,10 @@ box3.toBounds = function (a, outMin, outMax) {
   return a;
 };
 /**
- *
+ * TODO: Clean up
  *
  * @param {box3} a
  * @param {*} obj
- * @param {vec3} obj.minBounds
- * @param {vec3} obj.maxBounds
  * @param {mat4} [m]
  */
 
@@ -59398,7 +59656,7 @@ box3.toObjectBounds = function (a, obj, m) {
   }
 };
 /**
- *
+ * TODO: Clean up
  *
  * @param {box3} a
  * @param {*} obj
@@ -63176,6 +63434,7 @@ __webpack_require__.r(__webpack_exports__);
 var sph3 = {}; // Scratch
 
 var sph3_0 = null;
+var box3_0 = null;
 /**
  * Returns a subarray containing the position component of the sph3
  * - Why does webpack fail to resolve this if referencing pln.normal?
@@ -63356,6 +63615,7 @@ sph3.fromBounds = function (out, min, max) {
 };
 /**
  * Helper method which creates a sph3 from an eve object's bounding box properties
+ * TODO: Clean up
  *
  * @param {sph3} out
  * @param {*} obj
@@ -63383,6 +63643,7 @@ sph3.fromObjectBounds = function (out, obj, m) {
 };
 /**
  * Helper method which creates a sph3 from an eve object's bounding sphere properties
+ * TODO: Clean up
  *
  * @param {sph3} out
  * @param {*} obj
@@ -63646,35 +63907,32 @@ sph3.setArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].setArray;
  * @returns {sph3} out      - the receiving sphere
  */
 
-sph3.setPoints = function () {
-  var box3_0;
-  return function (out, points, position) {
-    if (!box3_0) box3_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
+sph3.setPoints = function (out, points, position) {
+  if (!box3_0) box3_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
 
-    if (position) {
-      out[0] = position[0];
-      out[1] = position[1];
-      out[2] = position[2];
-    } else {
-      _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].setPoints(box3_0, points);
-      out[0] = (box3_0[0] + box3_0[3]) * 0.5;
-      out[1] = (box3_0[1] + box3_0[4]) * 0.5;
-      out[2] = (box3_0[2] + box3_0[5]) * 0.5;
-    }
+  if (position) {
+    out[0] = position[0];
+    out[1] = position[1];
+    out[2] = position[2];
+  } else {
+    _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].setPoints(box3_0, points);
+    out[0] = (box3_0[0] + box3_0[3]) * 0.5;
+    out[1] = (box3_0[1] + box3_0[4]) * 0.5;
+    out[2] = (box3_0[2] + box3_0[5]) * 0.5;
+  }
 
-    var maxSquaredRadius = 0;
+  var maxSquaredRadius = 0;
 
-    for (var i = 0; i < points.length; i++) {
-      var x = out[0] - points[i][0],
-          y = out[1] - points[i][1],
-          z = out[2] - points[i][2];
-      maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
-    }
+  for (var i = 0; i < points.length; i++) {
+    var x = out[0] - points[i][0],
+        y = out[1] - points[i][1],
+        z = out[2] - points[i][2];
+    maxSquaredRadius = Math.max(maxSquaredRadius, x * x + y * y + z * z);
+  }
 
-    out[3] = Math.sqrt(maxSquaredRadius);
-    return out;
-  };
-}();
+  out[3] = Math.sqrt(maxSquaredRadius);
+  return out;
+};
 /**
  * Returns the squared distance between two sph3s
  *
@@ -63718,7 +63976,20 @@ sph3.squaredDistanceToPoint = function (a, p) {
 
 sph3.toArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].toArray;
 /**
+ * Converts a sphere to bounds
  *
+ * @param {sph3} a
+ * @param {vec3} minBounds
+ * @param {vec3} maxBounds
+ */
+
+sph3.toBounds = function (a, minBounds, maxBounds) {
+  if (!box3_0) box3_0 = _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].create();
+  _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].fromSph3(box3_0, a);
+  _box3__WEBPACK_IMPORTED_MODULE_4__["box3"].toBounds(box3_0, minBounds, maxBounds);
+};
+/**
+ * TODO: Clean up
  *
  * @param {sph3} a
  * @param {*} obj
@@ -63726,6 +63997,7 @@ sph3.toArray = _vec4__WEBPACK_IMPORTED_MODULE_1__["vec4"].toArray;
  * @param {vec3} obj.maxBounds
  * @param {mat4} [m]
  */
+
 
 sph3.toObjectBounds = function (a, obj, m) {
   var has = obj.minBounds || obj._boundingBox;
@@ -63746,7 +64018,7 @@ sph3.toObjectBounds = function (a, obj, m) {
   }
 };
 /**
- *
+ *  * TODO: Clean up
  *
  * @param {sph3} a
  * @param {*} obj
@@ -63771,6 +64043,20 @@ sph3.toObjectPositionRadius = function (a, obj, m) {
   }
 
   throw new Error("Invalid object bounds");
+};
+/**
+ *
+ * @param a
+ * @param position
+ * @returns {*}
+ */
+
+
+sph3.toPositionRadius = function (a, position) {
+  position[0] = a[0];
+  position[1] = a[1];
+  position[2] = a[2];
+  return a[3];
 };
 /**
  * Transforms a sphere with a mat4
@@ -70186,8 +70472,7 @@ function EveSOF(tw2) {
       if (!shader) continue;
       var effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + shader,
           parameters = Object.assign({}, src.parameters),
-          // Should src.shader actually be shader?
-      textures = Object.assign(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["decalShaders"], src.shader, {}), "defaultTextures", {}));
+          textures = Object.assign(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(data["generic"]["decalShaders"], shader, {}), "defaultTextures", {}));
 
       if (factionDecal) {
         Object.assign(parameters, factionDecal.parameters);
@@ -70409,11 +70694,13 @@ function EveSOF(tw2) {
           items,
           effect: {
             effectFilePath: hullSet.skinned ? EFF_PLANE_SKINNED : EFF_PLANE,
+            parameters: {
+              PlaneData: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "planeData", [1, 0, 0, 0])
+            },
             textures: {
               Layer1Map: hullSet.layer1MapResPath,
               Layer2Map: hullSet.layer2MapResPath,
-              MaskMap: hullSet.maskMapResPath,
-              PlaneData: Object(global_util__WEBPACK_IMPORTED_MODULE_1__["get"])(hullSet, "planeData", [1, 0, 0, 0])
+              MaskMap: hullSet.maskMapResPath
             }
           }
         }));
@@ -72243,44 +72530,39 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
   }
 
   /**
-   * Creates an effect from a sof shader
-   * @param {*|EveSOFDataGenericShader|EveSOFDataGenericDecalShader} shader
-   * @param {Boolean} [isAnimated]
-   * @param {*} [assignable]
-   * @returns {Tw2Effect}
+   * Initializer
    */
-  CreateEffect(shader, isAnimated, assignable) {
-    var parameters = {},
-        textures = {},
-        overrides = {},
-        effectFilePath = this.GetShaderPath(shader.shader || shader.effectFilePath, isAnimated);
+  Initialize() {
+    if (this.bannerShader) {
+      // No banner.fx for gles effects
+      this.bannerShader.shader = "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"; // TODO: Figure out default parameters and textures
+    }
+  }
+  /**
+   * Gets a shader's configuration object
+   * @param {String} name
+   * @param {Boolean} isAnimated
+   * @param {Object} [provided]
+   * @returns {{effectFilePath: *, textures: *, parameters: *}}
+   */
 
-    function assignObject(dest, src) {
-      if (!src) return; // Sof object array
 
-      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isArray(src)) {
-        src.forEach(child => child.Assign(dest));
-      } // Plain object
-      else if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isPlain(src)) {
-          Object.assign(dest, src);
-        }
+  GetShaderConfig(name, isAnimated, provided) {
+    if (this.HasDecalShader(name)) {
+      var _shader = this.GetDecalShader(name),
+          _effectFilePath = this.GetDecalShaderPath(name, isAnimated);
+
+      return _shader.Assign({
+        effectFilePath: _effectFilePath
+      }, provided);
     }
 
-    assignObject(parameters, shader.defaultParameters);
-    assignObject(textures, shader.defaultTextures);
-
-    if (assignable) {
-      assignObject(parameters, assignable.parameters);
-      assignObject(textures, assignable.textures);
-      assignObject(overrides, assignable.overrides);
-    }
-
-    return core__WEBPACK_IMPORTED_MODULE_0__["Tw2Effect"].from({
+    var shader = this.GetAreaShader(name),
+        effectFilePath = this.GetAreaShaderPath(name, isAnimated);
+    return shader.Assign({
       effectFilePath,
-      parameters,
-      textures,
-      overrides
-    });
+      hasPatternMaskMaps: shader.HasPatternMaskMaps()
+    }, provided);
   }
   /**
    * Gets a shader's prefix
@@ -72302,9 +72584,31 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
 
   GetShaderPath(shader, isAnimated) {
     var prefix = this.GetShaderPrefix(isAnimated);
-    if (shader.charAt(0) !== "/") shader += "/";
+    if (shader.charAt(0) !== "/") shader = "/" + shader;
     var index = shader.lastIndexOf("/");
     return shader.substring(0, index + 1) + prefix + shader.substring(index + 1);
+  }
+  /**
+   * Gets an area shader's path
+   * @param shader
+   * @param isAnimated
+   * @returns {string}
+   */
+
+
+  GetAreaShaderPath(shader, isAnimated) {
+    return this.areaShaderLocation + this.GetShaderPath(shader, isAnimated);
+  }
+  /**
+   * Gets a decal shader's path
+   * @param shader
+   * @param isAnimated
+   * @returns {string}
+   */
+
+
+  GetDecalShaderPath(shader, isAnimated) {
+    return this.decalShaderLocation + this.GetShaderPath(shader, isAnimated);
   }
   /**
    * Checks if an area shader exists
@@ -72314,7 +72618,7 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
 
 
   HasAreaShader(name) {
-    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "name", name);
+    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "shader", name);
   }
   /**
    * Gets area shader by it's short name
@@ -72324,7 +72628,7 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
 
 
   GetAreaShader(name) {
-    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
+    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "shader", name, ErrSOFAreaShaderNotFound);
   }
   /**
    * Checks if a decal shader exists
@@ -72334,7 +72638,7 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
 
 
   HasDecalShader(name) {
-    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "name", name);
+    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "shader", name);
   }
   /**
    * Gets a decal shader by it's short name
@@ -72344,7 +72648,7 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
 
 
   GetDecalShader(name) {
-    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
+    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "shader", name, ErrSOFDecalShaderNotFound);
   }
   /**
    * Gets material prefixes
@@ -72825,6 +73129,69 @@ var EveSOFDataGenericDecalShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["
     _initializerDefineProperty(this, "shader", _descriptor4, this);
   }
 
+  /**
+   * Assigns the shader's parameters to an object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @returns {Object} out
+   */
+  Assign(out = {}, provided) {
+    out.parameters = this.AssignParameters(out.parameters, provided ? provided.parameters : undefined);
+    out.textures = this.AssignTextures(out.textures, provided ? provided.textures : undefined);
+    return out;
+  }
+  /**
+   * Assigns the shader's parameters to an object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @return {Object} out
+   */
+
+
+  AssignParameters(out = {}, provided) {
+    if (provided) {
+      for (var i = 0; i < this.parameters.length; i++) {
+        var {
+          str
+        } = this.parameters[i];
+
+        if (provided[str] !== undefined) {
+          out[str] = provided[str];
+        }
+      }
+    }
+
+    return out;
+  }
+  /**
+   * Assigns the shader's textures to an object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @returns {Object} out
+   */
+
+
+  AssignTextures(out = {}, provided) {
+    for (var i = 0; i < this.defaultTextures.length; i++) {
+      this.defaultTextures[i].Assign(out);
+    }
+
+    for (var _i = 0; _i < this.parentTextures.length; _i++) {
+      var {
+        str
+      } = this.parentTextures[_i];
+
+      if (provided && str in provided) {
+        console.log("Providing texture: ", str);
+        out[str] = provided[str];
+      } else if (!out[str]) {
+        out[str] = "";
+      }
+    }
+
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultTextures", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -73012,7 +73379,7 @@ var EveSOFDataGenericHullDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["m
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataGenericShader", function() { return EveSOFDataGenericShader; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -73021,7 +73388,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataGenericString"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericShader {
+var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataGenericString"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = _class3 = class EveSOFDataGenericShader {
   constructor() {
     _initializerDefineProperty(this, "defaultParameters", _descriptor, this);
 
@@ -73036,7 +73403,81 @@ var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"
     _initializerDefineProperty(this, "transparencyTextureName", _descriptor6, this);
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultParameters", [_dec2], {
+  /**
+   * Checks if the effect has pattern mask maps
+   * @returns {boolean}
+   */
+  HasPatternMaskMaps() {
+    for (var i = 0; i < this.parameters.length; i++) {
+      if (EveSOFDataGenericShader.PatternMaskMaps.includes(this.parameters[i].str)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+  /**
+   * Assigns the shader's parameters
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @returns {Object} out
+   */
+
+
+  Assign(out = {}, provided) {
+    out.parameters = this.AssignParameters(out.parameters, provided ? provided.parameters : undefined);
+    out.textures = this.AssignTextures(out.textures, provided ? provided.textures : undefined);
+    return out;
+  }
+  /**
+   * Assigns the shader's parameters to an object
+   * @param {Object} [out={}]
+   * @param {Object} [provided]
+   * @return {Object} out
+   */
+
+
+  AssignParameters(out = {}, provided) {
+    for (var i = 0; i < this.defaultParameters.length; i++) {
+      this.defaultParameters[i].Assign(out);
+    }
+
+    if (provided) {
+      for (var _i = 0; _i < this.parameters.length; _i++) {
+        var {
+          str
+        } = this.parameters[_i];
+
+        if (provided[str] !== undefined) {
+          out[str] = provided[str];
+        }
+      }
+    }
+
+    return out;
+  }
+  /**
+   * Assigns the shader's textures to an object
+   * @param {Object} [out={}]
+   * @param {Object} [provided] - unused
+   * @returns {Object} out
+   */
+
+
+  AssignTextures(out = {}, provided) {
+    for (var i = 0; i < this.defaultTextures.length; i++) {
+      this.defaultTextures[i].Assign(out);
+    }
+
+    return out;
+  }
+  /**
+   * Pattern mask maps
+   * @type {string[]}
+   */
+
+
+}, _class3.PatternMaskMaps = ["PatternMask1Map", "PatternMask2Map"], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultParameters", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -73050,28 +73491,28 @@ var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"
   initializer: function () {
     return [];
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "doGenerateDepthArea", [_dec4], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "doGenerateDepthArea", [_dec4, _dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return false;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "parameters", [_dec5], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "parameters", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "shader", [_dec6], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "shader", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "transparencyTextureName", [_dec7], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "transparencyTextureName", [_dec8, _dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -73465,6 +73906,16 @@ var EveSOFDataHull = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     _initializerDefineProperty(this, "spriteSets", _descriptor37, this);
 
     _initializerDefineProperty(this, "transparentAreas", _descriptor38, this);
+  }
+
+  /**
+   * Initializer
+   */
+  Initialize() {
+    // Temporary until animations are handled in .cake files
+    if (this.geometryResFilePath.includes(".cake")) {
+      this.isSkinned = false;
+    }
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -73875,6 +74326,45 @@ var EveSOFDataHullArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
     _initializerDefineProperty(this, "textures", _descriptor8, this);
   }
 
+  /**
+   * Assigns the area's textures and parameters to an object
+   * @param {Object} [out={}]
+   * @returns {{}} out
+   */
+  Assign(out = {}) {
+    out.parameters = this.AssignParameters(out.parameters);
+    out.textures = this.AssignTextures(out.textures);
+    return out;
+  }
+  /**
+   * Assigns the area's parameters to an object
+   * @param {Object} [out={}]
+   * @returns {Object} out
+   */
+
+
+  AssignParameters(out = {}) {
+    for (var i = 0; i < this.parameters.length; i++) {
+      this.parameters[i].Assign(out);
+    }
+
+    return out;
+  }
+  /**
+   * Assigns the area's textures to an object
+   * @param {Object} [out={}]
+   * @returns {Object} out
+   */
+
+
+  AssignTextures(out = {}) {
+    for (var i = 0; i < this.textures.length; i++) {
+      this.textures[i].Assign(out);
+    }
+
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -73901,7 +74391,7 @@ var EveSOFDataHullArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
   enumerable: true,
   writable: true,
   initializer: function () {
-    return 0;
+    return 1;
   }
 }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "index", [_dec6], {
   configurable: true,
@@ -74441,6 +74931,43 @@ var EveSOFDataHullDecalSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
     _initializerDefineProperty(this, "usage", _descriptor12, this);
 
     _initializerDefineProperty(this, "visibilityGroup", _descriptor13, this);
+  }
+
+  /**
+   * Assigns the hull decal set's parameters
+   * @param {Object} [out={}]
+   * @returns {Object} out
+   */
+  Assign(out = {}) {
+    out.parameters = this.AssignParameters(out.parameters);
+    out.textures = this.AssignTextures(out.textures);
+    return out;
+  }
+  /**
+   * Assigns parameters to an object
+   * @param {Object} [out={}]
+   */
+
+
+  AssignParameters(out = {}) {
+    for (var i = 0; i < this.parameters.length; i++) {
+      this.parameters[i].Assign(out);
+    }
+
+    return out;
+  }
+  /**
+   * Assigns parameters to an object
+   * @param {Object} [out={}]
+   */
+
+
+  AssignTextures(out = {}) {
+    for (var i = 0; i < this.textures.length; i++) {
+      this.textures[i].Assign(out);
+    }
+
+    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -76843,6 +77370,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return EveSOFDataArea; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+/* harmony import */ var sof_shared_EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sof/shared/EveSOFDataMaterial */ "./sof/shared/EveSOFDataMaterial.js");
 var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -76850,6 +77378,7 @@ function _initializerDefineProperty(target, property, descriptor, context) { if 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
 
 
 var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataArea", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec(_class = (_class2 = (_temp = class EveSOFDataArea {
@@ -76898,14 +77427,43 @@ var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
   }
 
   /**
+   * Initializer
+   */
+  Initialize() {
+    // Provide names for each data area
+    for (var key in this) {
+      if (this.hasOwnProperty(key) && this[key] instanceof sof_shared_EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataMaterial"]) {
+        this[key].name = key;
+      }
+    }
+  }
+  /**
    * Gets a data area by it's name
    * @param {String} name
    * @returns {EveSOFDataAreaMaterial|null}
    */
-  Get(name) {
+
+
+  GetByName(name) {
     if (name.indexOf("area_") === 0) name = name.substring(5);
     name = name.charAt(0).toUpperCase() + name.substring(1).toLowerCase();
     return name in this ? this[name] : null;
+  }
+  /**
+   * Gets by color type
+   * @param {Number} value
+   * @returns {{}}
+   */
+
+
+  GetByColorType(value) {
+    for (var key in this) {
+      if (this.hasOwnProperty(key)) {
+        if (this[key].colorType === value) {
+          return this[key];
+        }
+      }
+    }
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "Black", [_dec2], {
@@ -77070,7 +77628,7 @@ var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataAreaMaterial", function() { return EveSOFDataAreaMaterial; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -77079,48 +77637,72 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataAreaMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataAreaMaterial", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataAreaMaterial {
+var EveSOFDataAreaMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataAreaMaterial", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataAreaMaterial {
   constructor() {
-    _initializerDefineProperty(this, "colorType", _descriptor, this);
+    _initializerDefineProperty(this, "name", _descriptor, this);
 
-    _initializerDefineProperty(this, "material1", _descriptor2, this);
+    _initializerDefineProperty(this, "colorType", _descriptor2, this);
 
-    _initializerDefineProperty(this, "material2", _descriptor3, this);
+    _initializerDefineProperty(this, "material1", _descriptor3, this);
 
-    _initializerDefineProperty(this, "material3", _descriptor4, this);
+    _initializerDefineProperty(this, "material2", _descriptor4, this);
 
-    _initializerDefineProperty(this, "material4", _descriptor5, this);
+    _initializerDefineProperty(this, "material3", _descriptor5, this);
+
+    _initializerDefineProperty(this, "material4", _descriptor6, this);
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "colorType", [_dec2], {
+  /**
+   * Assigns the value of the area material to an object
+   * @param {Object} out
+   * @returns {Object}
+   */
+  Assign(out = {}) {
+    out.name = this.name;
+    out.colorType = this.colorType;
+    out.material1 = this.material1;
+    out.material2 = this.material2;
+    out.material3 = this.material3;
+    out.material4 = this.material4;
+    return out;
+  }
+
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "colorType", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "material1", [_dec3], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "material1", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "material2", [_dec4], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "material2", [_dec5], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "material3", [_dec5], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "material3", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "material4", [_dec6], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "material4", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -77611,6 +78193,19 @@ var EveSOFDataLogo = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     _initializerDefineProperty(this, "textures", _descriptor, this);
   }
 
+  /**
+   * Assigns the logo's textures to an object
+   * @param {Object} [out={}]
+   * @returns {Object} out
+   */
+  AssignTextures(out = {}) {
+    for (var i = 0; i < this.textures.length; i++) {
+      this.textures[i].Assign(out);
+    }
+
+    return out;
+  }
+
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "textures", [_dec2], {
   configurable: true,
   enumerable: true,
@@ -77633,7 +78228,7 @@ var EveSOFDataLogo = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataLogoSet", function() { return EveSOFDataLogoSet; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -77642,7 +78237,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataLogoSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec(_class = (_class2 = (_temp = class EveSOFDataLogoSet {
+var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataLogoSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec(_class = (_class2 = (_temp = _class3 = class EveSOFDataLogoSet {
   constructor() {
     _initializerDefineProperty(this, "Marking_01", _descriptor, this);
 
@@ -77655,7 +78250,44 @@ var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
     _initializerDefineProperty(this, "Tertiary", _descriptor5, this);
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "Marking_01", [_dec2], {
+  /**
+   * Gets a logo set by type
+   * @param {Number} type
+   * @returns {EveSOFDataLogo|null}
+   */
+  FindType(type) {
+    var name = EveSOFDataLogoSet.Type[type];
+    return name && this[name] ? this[name] : null;
+  }
+  /**
+   * Checks if a logo type exists by type
+   * @param {Number} type
+   * @returns {boolean}
+   */
+
+
+  HasType(type) {
+    return this.FindType(type) !== null;
+  }
+  /**
+   * Assigns logo textures by type
+   * @param {Number} type
+   * @param {Object} [out={}]
+   */
+
+
+  AssignType(type, out = {}) {
+    var logo = this.FindType(type);
+    if (!logo) throw new Error("Invalid type: " + type);
+    return logo.Assign(out);
+  }
+  /**
+   * Usage index
+   * @type {String[]}
+   */
+
+
+}, _class3.Type = ["Primary", "Secondary", "Tertiary", "Marking_01", "Marking_02"], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "Marking_01", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -82281,7 +82913,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveBanner", function() { return EveBanner; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -82290,7 +82922,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBanner", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveBanner extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBanner", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveBanner extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -82321,8 +82953,13 @@ var EveBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBan
   OnValueChanged() {
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(this.transform, this.rotation, this.position, this.scaling);
   }
+  /**
+   * Item attachment type
+   * @type {number}
+   */
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
+
+}, _class3.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].BANNER, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -82411,7 +83048,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var eve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve */ "./eve/index.js");
-var _dec, _class, _temp, _dec2, _dec3, _class3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _class4, _class5, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _temp2;
+var _dec, _class, _temp, _dec2, _dec3, _class3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _class4, _class5, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _class6, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -82438,7 +83075,7 @@ var EveBoosterSet2Batch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].no
 
 }, _temp)) || _class);
 var EveBoosterSet2Item = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet2Item", true), _dec2(_class3 = _dec3(_class3 = class EveBoosterSet2Item extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {}) || _class3) || _class3);
-var EveBoosterSet2 = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet2", true), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSpriteSet"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveTrailsSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4(_class4 = _dec5(_class4 = (_class5 = (_temp2 = class EveBoosterSet2 extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveBoosterSet2 = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet2", true), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSpriteSet"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveTrailsSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4(_class4 = _dec5(_class4 = (_class5 = (_temp2 = _class6 = class EveBoosterSet2 extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
@@ -82481,7 +83118,7 @@ var EveBoosterSet2 = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
     _initializerDefineProperty(this, "warpHaloColor", _descriptor19, this);
   }
 
-}, _temp2), (_descriptor = _applyDecoratedDescriptor(_class5.prototype, "alwaysOn", [_dec6], {
+}, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].BOOSTER_SET_2, _temp2), (_descriptor = _applyDecoratedDescriptor(_class5.prototype, "alwaysOn", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -82633,7 +83270,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var eve__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! eve */ "./eve/index.js");
-var _dec, _class, _temp, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class3, _class4, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp2, _dec13, _dec14, _class6;
+var _dec, _class, _temp, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class3, _class4, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp2, _dec13, _dec14, _class6, _class7, _temp3;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -82756,7 +83393,7 @@ var EveHazeSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
     return 0;
   }
 })), _class4)) || _class3) || _class3);
-var EveHazeSet = (_dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveHazeSet", true), _dec13(_class6 = _dec14(_class6 = class EveHazeSet extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {}) || _class6) || _class6);
+var EveHazeSet = (_dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveHazeSet", true), _dec13(_class6 = _dec14(_class6 = (_temp3 = _class7 = class EveHazeSet extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {}, _class7.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].HAZE_SET, _temp3)) || _class6) || _class6);
 
 /***/ }),
 
@@ -82774,7 +83411,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSpriteLineSet", function() { return EveSpriteLineSet; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var eve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! eve */ "./eve/index.js");
-var _dec, _class, _temp, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _class3, _class4, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp2, _dec20, _dec21, _class6;
+var _dec, _class, _temp, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _class3, _class4, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp2, _dec20, _dec21, _class6, _class7, _temp3;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -82958,7 +83595,7 @@ var EveSpriteLineSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].
     return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 })), _class4)) || _class3) || _class3);
-var EveSpriteLineSet = (_dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteLineSet"), _dec20(_class6 = _dec21(_class6 = class EveSpriteLineSet extends eve__WEBPACK_IMPORTED_MODULE_1__["EveObjectSet"] {}) || _class6) || _class6);
+var EveSpriteLineSet = (_dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteLineSet"), _dec20(_class6 = _dec21(_class6 = (_temp3 = _class7 = class EveSpriteLineSet extends eve__WEBPACK_IMPORTED_MODULE_1__["EveObjectSet"] {}, _class7.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].SPRITE_LINE_SET, _temp3)) || _class6) || _class6);
 
 /***/ }),
 
@@ -82975,7 +83612,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveTrailsSet", function() { return EveTrailsSet; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var core_batch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/batch */ "./core/batch/index.js");
-var _dec, _class, _temp, _dec2, _dec3, _dec4, _dec5, _dec6, _class3, _class4, _descriptor, _descriptor2, _descriptor3, _temp2;
+var _dec, _class, _temp, _dec2, _dec3, _dec4, _dec5, _dec6, _class3, _class4, _descriptor, _descriptor2, _descriptor3, _class5, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -83000,7 +83637,7 @@ var EveTrailSetRenderBatch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
   }
 
 }, _temp)) || _class);
-var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTrailSet", true), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = class EveTrailsSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTrailSet", true), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = _class5 = class EveTrailsSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -83047,8 +83684,13 @@ var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImple
 
     return out;
   }
+  /**
+   * Item attachment type
+   * @type {number}
+   */
 
-}, _temp2), (_descriptor = _applyDecoratedDescriptor(_class4.prototype, "effect", [_dec4], {
+
+}, _class5.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].TRAIL_SET, _temp2), (_descriptor = _applyDecoratedDescriptor(_class4.prototype, "effect", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
