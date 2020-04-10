@@ -44,4 +44,42 @@ export class EveSOFDataHullDecalSetItem
     @meta.black.string
     visibilityGroup = "";
 
+
+    /**
+     * Assigns the hull decal set's parameters
+     * @param {Object} [out={}]
+     * @returns {Object} out
+     */
+    Assign(out={})
+    {
+        out.parameters = this.AssignParameters(out.parameters);
+        out.textures = this.AssignTextures(out.textures);
+        return out;
+    }
+    /**
+     * Assigns parameters to an object
+     * @param {Object} [out={}]
+     */
+    AssignParameters(out = {})
+    {
+        for (let i = 0; i < this.parameters.length; i++)
+        {
+            this.parameters[i].Assign(out);
+        }
+        return out;
+    }
+
+    /**
+     * Assigns parameters to an object
+     * @param {Object} [out={}]
+     */
+    AssignTextures(out={})
+    {
+        for (let i = 0; i < this.textures.length; i++)
+        {
+            this.textures[i].Assign(out);
+        }
+        return out;
+    }
+
 }

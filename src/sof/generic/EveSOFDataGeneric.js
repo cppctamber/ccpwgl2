@@ -1,4 +1,4 @@
-import { Tw2Error, Tw2Effect } from "core";
+import { Tw2Error } from "core";
 import { meta, util } from "global";
 
 
@@ -54,47 +54,43 @@ export class EveSOFDataGeneric
     @meta.black.listOf("EveSOFDataGenericVariant")
     variants = [];
 
+
     /**
-     * Creates an effect from a sof shader
-     * @param {*|EveSOFDataGenericShader|EveSOFDataGenericDecalShader} shader
-     * @param {Boolean} [isAnimated]
-     * @param {*} [assignable]
-     * @returns {Tw2Effect}
+     * Initializer
      */
-    CreateEffect(shader, isAnimated, assignable)
+    Initialize()
     {
+        if (this.bannerShader)
+        {
+            // No banner.fx for gles effects
+            this.bannerShader.shader = "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx";
+            // TODO: Figure out default parameters and textures
+        }
+    }
+
+    /**
+     * Gets a shader's configuration object
+     * @param {String} name
+     * @param {Boolean} isAnimated
+     * @param {Object} [provided]
+     * @returns {{effectFilePath: *, textures: *, parameters: *}}
+     */
+    GetShaderConfig(name, isAnimated, provided)
+    {
+        if (this.HasDecalShader(name))
+        {
+            const
+                shader = this.GetDecalShader(name),
+                effectFilePath = this.GetDecalShaderPath(name, isAnimated);
+
+            return shader.Assign({ effectFilePath }, provided);
+        }
+
         const
-            parameters = {},
-            textures = {},
-            overrides = {},
-            effectFilePath = this.GetShaderPath(shader.shader || shader.effectFilePath, isAnimated);
+            shader = this.GetAreaShader(name),
+            effectFilePath = this.GetAreaShaderPath(name, isAnimated);
 
-        function assignObject(dest, src)
-        {
-            if (!src) return;
-            // Sof object array
-            if (util.isArray(src))
-            {
-                src.forEach(child => child.Assign(dest));
-            }
-            // Plain object
-            else if (util.isPlain(src))
-            {
-                Object.assign(dest, src);
-            }
-        }
-
-        assignObject(parameters, shader.defaultParameters);
-        assignObject(textures, shader.defaultTextures);
-
-        if (assignable)
-        {
-            assignObject(parameters, assignable.parameters);
-            assignObject(textures, assignable.textures);
-            assignObject(overrides, assignable.overrides);
-        }
-
-        return Tw2Effect.from({ effectFilePath, parameters, textures, overrides });
+        return shader.Assign({ effectFilePath, hasPatternMaskMaps: shader.HasPatternMaskMaps() }, provided);
     }
 
     /**
@@ -116,9 +112,31 @@ export class EveSOFDataGeneric
     GetShaderPath(shader, isAnimated)
     {
         const prefix = this.GetShaderPrefix(isAnimated);
-        if (shader.charAt(0) !== "/") shader += "/";
+        if (shader.charAt(0) !== "/") shader = "/" + shader;
         const index = shader.lastIndexOf("/");
         return shader.substring(0, index + 1) + prefix + shader.substring(index + 1);
+    }
+
+    /**
+     * Gets an area shader's path
+     * @param shader
+     * @param isAnimated
+     * @returns {string}
+     */
+    GetAreaShaderPath(shader, isAnimated)
+    {
+        return this.areaShaderLocation + this.GetShaderPath(shader, isAnimated);
+    }
+
+    /**
+     * Gets a decal shader's path
+     * @param shader
+     * @param isAnimated
+     * @returns {string}
+     */
+    GetDecalShaderPath(shader, isAnimated)
+    {
+        return this.decalShaderLocation + this.GetShaderPath(shader, isAnimated);
     }
 
     /**
@@ -128,7 +146,7 @@ export class EveSOFDataGeneric
      */
     HasAreaShader(name)
     {
-        return !!util.findElementByPropertyValue(this.areaShaders, "name", name);
+        return !!util.findElementByPropertyValue(this.areaShaders, "shader", name);
     }
 
     /**
@@ -138,7 +156,7 @@ export class EveSOFDataGeneric
      */
     GetAreaShader(name)
     {
-        return util.findElementByPropertyValue(this.areaShaders, "name", name, ErrSOFAreaShaderNotFound);
+        return util.findElementByPropertyValue(this.areaShaders, "shader", name, ErrSOFAreaShaderNotFound);
     }
 
     /**
@@ -148,7 +166,7 @@ export class EveSOFDataGeneric
      */
     HasDecalShader(name)
     {
-        return !!util.findElementByPropertyValue(this.decalShaders, "name", name);
+        return !!util.findElementByPropertyValue(this.decalShaders, "shader", name);
     }
 
     /**
@@ -158,7 +176,7 @@ export class EveSOFDataGeneric
      */
     GetDecalShader(name)
     {
-        return util.findElementByPropertyValue(this.decalShaders, "name", name, ErrSOFDecalShaderNotFound);
+        return util.findElementByPropertyValue(this.decalShaders, "shader", name, ErrSOFDecalShaderNotFound);
     }
 
     /**

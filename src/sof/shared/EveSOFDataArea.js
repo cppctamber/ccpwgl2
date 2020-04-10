@@ -1,4 +1,5 @@
 import { meta } from "global";
+import { EveSOFDataMaterial } from "sof/shared/EveSOFDataMaterial";
 
 
 @meta.type("EveSOFDataArea", true)
@@ -68,17 +69,49 @@ export class EveSOFDataArea
     @meta.black.objectOf("EveSOFDataAreaMaterial")
     Yellow = null;
 
+    /**
+     * Initializer
+     */
+    Initialize()
+    {
+        // Provide names for each data area
+        for (const key in this)
+        {
+            if (this.hasOwnProperty(key) && this[key] instanceof EveSOFDataMaterial)
+            {
+                this[key].name = key;
+            }
+        }
+    }
 
     /**
      * Gets a data area by it's name
      * @param {String} name
      * @returns {EveSOFDataAreaMaterial|null}
      */
-    Get(name)
+    GetByName(name)
     {
         if (name.indexOf("area_") === 0) name = name.substring(5);
         name = name.charAt(0).toUpperCase() + name.substring(1).toLowerCase();
         return name in this ? this[name] : null;
     }
 
+    /**
+     * Gets by color type
+     * @param {Number} value
+     * @returns {{}}
+     */
+    GetByColorType(value)
+    {
+        for (const key in this)
+        {
+            if (this.hasOwnProperty(key))
+            {
+                if (this[key].colorType === value)
+                {
+                    return this[key];
+                }
+            }
+        }
+    }
 }

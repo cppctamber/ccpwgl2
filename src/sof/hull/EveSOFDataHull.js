@@ -119,4 +119,15 @@ export class EveSOFDataHull
     @meta.black.listOf("EveSOFDataHullArea")
     transparentAreas = [];
 
+    /**
+     * Initializer
+     */
+    Initialize()
+    {
+        // Temporary until animations are handled in .cake files
+        if (this.geometryResFilePath.includes(".cake"))
+        {
+            this.isSkinned = false;
+        }
+    }
 }

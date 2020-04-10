@@ -51,6 +51,7 @@ export function getReaderFromType(type)
 export function path(reader)
 {
     let path = reader.ReadStringU16();
+    let originalPath = path;
 
     // Because there are two sources for "res:" now we need to replace
     // any references from the eve cdn with a new res path mapping
@@ -66,6 +67,17 @@ export function path(reader)
     switch (ext)
     {
         case "dds":
+            if (path.includes("_cube"))
+            {
+                path = path.replace(".dds", ".cube");
+            }
+            else
+            {
+                path = path.replace(".dds", ".png");
+            }
+            //console.log(`Renamed: ${originalPath} : ${path}`);
+            break;
+
         case "png":
             // TODO: Remove the need to do this in Tw2TextureRes
             // Will need to provide all quality versions of these files in the cdn even if they
@@ -79,7 +91,8 @@ export function path(reader)
         case "gr2":
             // TODO: Add support for these files
             // Temporarily use ccpwgl resources (this won't always work but will do for now)
-            path = path.replace(ext, "wbg").replace("cdn:", "res:");
+            //path = path.replace(ext, "wbg").replace("cdn:", "res:");
+            path = path.replace(ext, "cake");
             break;
 
         case "red":
