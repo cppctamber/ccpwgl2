@@ -80,8 +80,7 @@ export function EveSOF(tw2)
             if (index >= 0)
             {
                 pathCopy = pathCopy.substr(0, index) + "_" + pathInsert + pathCopy.substr(index);
-                var textureOverrides = get(area, "textureOverrides",
-                    {});
+                var textureOverrides = get(area, "textureOverrides", {});
                 if ((name in textureOverrides) && (faction.name in textureOverrides[name]))
                 {
                     return pathCopy;
@@ -500,8 +499,7 @@ export function EveSOF(tw2)
             const
                 effectFilePath = data["generic"]["decalShaderLocation"] + "/" + GetShaderPrefix(false) + shader,
                 parameters = Object.assign({}, src.parameters),
-                // Should src.shader actually be shader?
-                textures = Object.assign(get(get(data["generic"]["decalShaders"], src.shader, {}), "defaultTextures", {}));
+                textures = Object.assign(get(get(data["generic"]["decalShaders"], shader, {}), "defaultTextures", {}));
 
             if (factionDecal)
             {
@@ -750,11 +748,13 @@ export function EveSOF(tw2)
                     items,
                     effect: {
                         effectFilePath: hullSet.skinned ? EFF_PLANE_SKINNED : EFF_PLANE,
+                        parameters: {
+                            PlaneData: get(hullSet, "planeData", [ 1, 0, 0, 0 ])
+                        },
                         textures: {
                             Layer1Map: hullSet.layer1MapResPath,
                             Layer2Map: hullSet.layer2MapResPath,
-                            MaskMap: hullSet.maskMapResPath,
-                            PlaneData: get(hullSet, "planeData", [ 1, 0, 0, 0 ])
+                            MaskMap: hullSet.maskMapResPath
                         }
                     }
                 }));
