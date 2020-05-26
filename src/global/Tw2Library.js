@@ -456,7 +456,7 @@ class Tw2Library extends Tw2EventEmitter
 
         if (!this.IsClass(result, expectedConstructor))
         {
-            throw new Error("Unexpected constructor");
+            throw new Error("Unexpected constructor: " + result.constructor.name);
         }
 
         return result;
