@@ -2,7 +2,7 @@ var ccpwgl = (function(tw2)
 {
     var ccpwgl = new tw2.Tw2EventEmitter();
 
-    const {vec3, vec4, quat, mat4} = tw2.math;
+    const { vec3, vec4, quat, mat4 } = tw2.math;
 
     // Enables debug mode
     Object.defineProperty(ccpwgl, "debug", {
@@ -112,7 +112,7 @@ var ccpwgl = (function(tw2)
     var resourceUnloadPolicy = ccpwgl.ResourceUnloadPolicy.USAGE_BASED;
 
     /** Background clear color **/
-    var clearColor = [0, 0, 0, 1];
+    var clearColor = [ 0, 0, 0, 1 ];
     /** Toggles using a scene's clear colour**/
     var useSceneClearColor = true;
 
@@ -203,7 +203,7 @@ var ccpwgl = (function(tw2)
                     .SetViewMatrix(camera.getView())
                     .GLClearColor(clear)
                     .GLClearDepth(1.0)
-                    .GLViewport([0, 0, tw2.width, tw2.height])
+                    .GLViewport([ 0, 0, tw2.width, tw2.height ])
                     .GLClear(tw2.gl.COLOR_BUFFER_BIT | tw2.gl.DEPTH_BUFFER_BIT);
 
                 ccpwgl.emit("pre_render", dt);
@@ -214,10 +214,10 @@ var ccpwgl = (function(tw2)
                 {
                     // We have crap in back buffer alpha channel, so clear it
                     tw2
-                        .GLColorMask([false, false, false, false])
-                        .GLClearColor([0, 0, 0, 1])
+                        .GLColorMask([ false, false, false, false ])
+                        .GLClearColor([ 0, 0, 0, 1 ])
                         .GLClear(tw2.gl.COLOR_BUFFER_BIT)
-                        .GLColorMask([true, true, true, true]);
+                        .GLColorMask([ true, true, true, true ]);
                 }
             }
         }
@@ -235,17 +235,17 @@ var ccpwgl = (function(tw2)
             if (ccpwgl[name] && !hasNotifiedDeveloper)
             {
                 hasNotifiedDeveloper = true;
-                tw2.Log("error", `'ccpwgl.${name}' method is now deprecated and has been replaced with an emitted event`)
+                tw2.Log("error", `'ccpwgl.${name}' method is now deprecated and has been replaced with an emitted event`);
                 ccpwgl[name](dt);
             }
-        }
+        };
     }
 
     ccpwgl
         .on("update", oldEvents("onUpdate"))
         .on("pre_render", oldEvents("onPreRender"))
         .on("post_render", oldEvents("onPostRender"))
-        .on("post_scene_render", oldEvents("onPostSceneRender"))
+        .on("post_scene_render", oldEvents("onPostSceneRender"));
 
 
     /**
@@ -336,33 +336,33 @@ var ccpwgl = (function(tw2)
                             name: "Color down filter 4",
                             target: "quadRT1",
                             effectFilePath: postDirectory + "ColorDownFilter4.fx",
-                            inputs: {BlitCurrent: null}
+                            inputs: { BlitCurrent: null }
                         },
                         {
                             name: "Color high pass filter",
                             target: "quadRT0",
                             effectFilePath: postDirectory + "ColorHighPassFilter.fx",
-                            parameters: {LuminanceThreshold: 0.85, LuminanceScale: 2},
-                            inputs: {BlitCurrent: "quadRT1"}
+                            parameters: { LuminanceThreshold: 0.85, LuminanceScale: 2 },
+                            inputs: { BlitCurrent: "quadRT1" }
                         },
                         {
                             name: "Color exposure blur horizontal big",
                             target: "quadRT1",
                             effectFilePath: postDirectory + "ColorExpBlurHorizontalBig.fx",
-                            inputs: {BlitCurrent: "quadRT0"}
+                            inputs: { BlitCurrent: "quadRT0" }
                         },
                         {
                             name: "Color exposure blur vertical big",
                             target: "quadRT0",
                             effectFilePath: postDirectory + "ColorExpBlurVerticalBig.fx",
-                            inputs: {BlitCurrent: "quadRT1"}
+                            inputs: { BlitCurrent: "quadRT1" }
                         },
                         {
                             name: "Color up filter 4 add",
                             target: null,
                             effectFilePath: postDirectory + "ColorUpFilter4_Add.fx",
-                            parameters: {"ScalingFactor": 1},
-                            inputs: {BlitCurrent: "quadRT0", BlitOriginal: null}
+                            parameters: { "ScalingFactor": 1 },
+                            inputs: { BlitCurrent: "quadRT0", BlitOriginal: null }
                         }
                     ]
                 });
@@ -472,21 +472,21 @@ var ccpwgl = (function(tw2)
         tw2.eveSof.FetchMaterialNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
-    }
+    };
 
     ccpwgl.getPatternNames = function(onResolved, onRejected)
     {
         tw2.eveSof.FetchPatternNames()
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
-    }
+    };
 
     ccpwgl.getHullPatternNames = function(hull, onResolved, onRejected)
     {
         tw2.eveSof.FetchHullPatternNames(hull)
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
-    }
+    };
 
     /**
      * Returns a proper constructor function (either 'loadObject' or 'loadShip') appropriate for the given
@@ -518,6 +518,17 @@ var ccpwgl = (function(tw2)
         tw2.FetchObject(resPath)
             .then(onResolved)
             .catch(onRejected || defaultErrorHandler);
+    };
+
+    /**
+     * Gets an object's length
+     * @param object
+     * @returns {number}
+     */
+    function getObjectLongAxis(object)
+    {
+        var bounds = object.getBoundingSphere();
+        return bounds[1] ? Math.round(bounds[1] * 2) : -1;
     }
 
     const mat4_0 = mat4.create();
@@ -534,13 +545,13 @@ var ccpwgl = (function(tw2)
     function SpaceObject(resPath, onload)
     {
         /** Wrapped tw2 object **/
-        this.wrappedObjects = [null];
+        this.wrappedObjects = [ null ];
         /** Transforms @type {Tw2Transform} **/
         this.transform = new tw2.Tw2TransformParameter("transform")
             .on("modified", () =>
             {
                 if (!this.isLoaded()) return;
-                this.wrappedObjects[0].SetTransform(this.transform._worldTransform)
+                this.wrappedObjects[0].SetTransform(this.transform._worldTransform);
             });
 
         /** Per-frame on update callback @type {!function(dt): void} **/
@@ -582,6 +593,15 @@ var ccpwgl = (function(tw2)
             {
                 onload.call(self);
             }
+        }
+
+        /**
+         * Gets the object's length;
+         * @returns {number}
+         */
+        this.getLongAxis = function()
+        {
+            return getObjectLongAxis(this);
         }
 
         /**
@@ -630,7 +650,7 @@ var ccpwgl = (function(tw2)
             {
                 throw new TypeError("Object does not have bounding sphere information");
             }
-            return [this.wrappedObjects[0].boundingSphereCenter, this.wrappedObjects[0].boundingSphereRadius];
+            return [ this.wrappedObjects[0].boundingSphereCenter, this.wrappedObjects[0].boundingSphereRadius ];
         };
 
         function rebuildOverlays()
@@ -695,7 +715,7 @@ var ccpwgl = (function(tw2)
             this.dna = resPath;
         }
 
-        ccpwgl.GetObject(resPath, onObjectLoaded, defaultErrorHandler, ["!EveShip", "!EveShip2"]);
+        ccpwgl.GetObject(resPath, onObjectLoaded, defaultErrorHandler, [ "!EveShip", "!EveShip2" ]);
     }
 
     /**
@@ -710,14 +730,14 @@ var ccpwgl = (function(tw2)
     function Ship(resPath, onload)
     {
         /** Wrapped tw2 ship object @type {tw2.EveShip} **/
-        this.wrappedObjects = [null];
+        this.wrappedObjects = [ null ];
         /** Object transform @type {Tw2TransformParameter} **/
         this.transform = new tw2.Tw2TransformParameter("transform")
             .on("modified", () =>
             {
                 if (this.isLoaded())
                 {
-                    const {_worldTransform} = this.transform;
+                    const { _worldTransform } = this.transform;
 
                     const len = this.wrappedObjects.length;
                     for (let i = 0; i < len; i++)
@@ -734,7 +754,7 @@ var ccpwgl = (function(tw2)
                 }
             });
         /** Internal boosters object @type {tw2.EveBoosterSet} **/
-        this.boosters = [null];
+        this.boosters = [ null ];
         /** Current siege state @type {ccpwgl.ShipSiegeState} **/
         this.siegeState = ccpwgl.ShipSiegeState.NORMAL;
         /** Internal siege state, as opposed to Ship.siegeState also includes transition states @type {number} **/
@@ -783,9 +803,10 @@ var ccpwgl = (function(tw2)
         var faction = null;
 
         var self = this;
+
         if (typeof resPath == "string")
         {
-            resPath = [resPath];
+            resPath = [ resPath ];
         }
         for (var i = 0; i < resPath.length; ++i)
         {
@@ -800,7 +821,7 @@ var ccpwgl = (function(tw2)
                 obj.display = display;
                 self.wrappedObjects[index] = obj;
 
-                const {_worldTransform} = self.transform;
+                const { _worldTransform } = self.transform;
                 self.wrappedObjects[index].SetTransform(_worldTransform);
 
                 if (self.boosters[index])
@@ -869,6 +890,15 @@ var ccpwgl = (function(tw2)
                     }
                 }
             }
+        }
+
+        /**
+         * Gets the object's length;
+         * @returns {number}
+         */
+        this.getLongAxis = function()
+        {
+            return getObjectLongAxis(this);
         }
 
         /**
@@ -958,7 +988,7 @@ var ccpwgl = (function(tw2)
                             }
                             throw new TypeError("Invalid parts passed to Tech3 ship constructor");
                         }
-                        systems[j - 1] = [i, loc.subarray(12, 15)];
+                        systems[j - 1] = [ i, loc.subarray(12, 15) ];
                         found = true;
                         break;
                     }
@@ -969,7 +999,7 @@ var ccpwgl = (function(tw2)
                     {
                         throw new TypeError("Invalid parts passed to Tech3 ship constructor");
                     }
-                    systems[4] = [i, vec3.create()];
+                    systems[4] = [ i, vec3.create() ];
                 }
             }
             var offset = vec3.create();
@@ -981,7 +1011,7 @@ var ccpwgl = (function(tw2)
                 mat4.translate(self.partTransforms[index], self.partTransforms[index], offset);
                 vec3.add(offset, offset, systems[i][1]);
 
-                const {_worldTransform} = self.transform;
+                const { _worldTransform } = self.transform;
                 self.wrappedObjects[index].SetTransform(_worldTransform, self.partTransforms[index]);
             }
         }
@@ -1016,7 +1046,7 @@ var ccpwgl = (function(tw2)
             {
                 throw new ccpwgl.IsStillLoadingError();
             }
-            return [this.wrappedObjects[0].boundingSphereCenter, this.wrappedObjects[0].boundingSphereRadius];
+            return [ this.wrappedObjects[0].boundingSphereCenter, this.wrappedObjects[0].boundingSphereRadius ];
         };
 
         /**
@@ -1507,7 +1537,7 @@ var ccpwgl = (function(tw2)
                 }
             }
 
-            ccpwgl.GetObject(resPath[i], OnShipPartLoaded(i), defaultErrorHandler, ["EveShip", "EveShip2"]);
+            ccpwgl.GetObject(resPath[i], OnShipPartLoaded(i), defaultErrorHandler, [ "EveShip", "EveShip2" ]);
         }
     }
 
@@ -1528,7 +1558,7 @@ var ccpwgl = (function(tw2)
         this.name = options && options.name ? options.name : "";
 
         /** Wrapped tw2 planet object @type {tw2.EvePlanet} **/
-        this.wrappedObjects = [new tw2.EvePlanet()];
+        this.wrappedObjects = [ new tw2.EvePlanet() ];
 
         /** Local transform **/
         this.transform = new tw2.Tw2TransformParameter("transform")
@@ -1554,6 +1584,15 @@ var ccpwgl = (function(tw2)
                 this.wrappedObjects[0].display = display;
             }
         });
+
+        /**
+         * Gets the object's length;
+         * @returns {number}
+         */
+        this.getLongAxis = function()
+        {
+            return getObjectLongAxis(this);
+        }
 
         /**
          * Gets the object's resources
@@ -1587,7 +1626,7 @@ var ccpwgl = (function(tw2)
         this.getBoundingSphere = function()
         {
             var tr = this.wrappedObjects[0].highDetail;
-            return [vec3.clone(tr.translation), Math.max(tr.scaling[0], tr.scaling[1], tr.scaling[2])];
+            return [ vec3.clone(tr.translation), Math.max(tr.scaling[0], tr.scaling[1], tr.scaling[2]) ];
         };
 
         this.wrappedObjects[0].Create(options, function()
@@ -1686,9 +1725,9 @@ var ccpwgl = (function(tw2)
             if (treatPlanetsAsObjects !== bool)
             {
                 treatPlanetsAsObjects = bool;
-                rebuildSceneObjects(self)
+                rebuildSceneObjects(self);
             }
-        }
+        };
 
         /**
          * Internal helper function that rebuilds a list of object in the wrapped
@@ -2046,7 +2085,7 @@ var ccpwgl = (function(tw2)
          */
         this.setFog = function(startDistance, endDistance, maxOpacity, color)
         {
-            this.fog = [startDistance, endDistance, maxOpacity, color];
+            this.fog = [ startDistance, endDistance, maxOpacity, color ];
             if (this.wrappedScene)
             {
                 this.wrappedScene.fogStart = startDistance;
@@ -2169,10 +2208,10 @@ var ccpwgl = (function(tw2)
             var view = mat4.create();
             mat4.identity(view);
             mat4.rotateY(view, view, -this.shift);
-            mat4.translate(view, view, [0, 0.0, -this.distance]);
+            mat4.translate(view, view, [ 0, 0.0, -this.distance ]);
             mat4.rotateX(view, view, this.rotationY + this.additionalRotationY);
             mat4.rotateY(view, view, this.rotationX + this.additionalRotationX);
-            mat4.translate(view, view, [-this.poi[0], -this.poi[1], -this.poi[2]]);
+            mat4.translate(view, view, [ -this.poi[0], -this.poi[1], -this.poi[2] ]);
             return view;
         };
 
@@ -2480,7 +2519,7 @@ var ccpwgl = (function(tw2)
         camera.minDistance = get(options, "minDistance", 0.6);
         camera.rotationX = get(options, "rotationX", 0);
         camera.rotationY = get(options, "rotationY", 0);
-        vec3.copy(camera.poi, get(options, "poi", [0, 0, 0]));
+        vec3.copy(camera.poi, get(options, "poi", [ 0, 0, 0 ]));
         camera.nearPlane = get(options, "nearPlane", 1);
         camera.farPlane = get(options, "farPlane", 1000000);
         camera.minPitch = get(options, "minPitch", -0.5);
@@ -2644,7 +2683,7 @@ var ccpwgl = (function(tw2)
     ccpwgl.loadWrappedScene = async function(options)
     {
         return await tw2.Scene.create(options, ccpwgl);
-    }
+    };
 
     /**
      * ESI Helpers
@@ -2725,14 +2764,14 @@ var ccpwgl = (function(tw2)
      */
     function buildUrl(endpoint, params)
     {
-        params = Object.assign({language: esi._language, datasource: esi._dataSource}, params);
+        params = Object.assign({ language: esi._language, datasource: esi._dataSource }, params);
 
         let keys = Object.keys(params).sort(),
             url_string = `${esi._root}/${esi._version}/${endpoint}/`;
 
         for (let i = 0; i < keys.length; i++)
         {
-            url_string += `${i === 0 ? "?" : "&"}${keys[i]}=${params[keys[i]]}`
+            url_string += `${i === 0 ? "?" : "&"}${keys[i]}=${params[keys[i]]}`;
         }
 
         return url_string.toLowerCase();
@@ -2824,13 +2863,13 @@ var ccpwgl = (function(tw2)
      * @param {Array|Object|Number} [scaling=1]
      * @returns {Array}
      */
-    function createMatrix(rotation = [0, 0, 0, 1], translation = [0, 0, 0], scaling = 1)
+    function createMatrix(rotation = [ 0, 0, 0, 1 ], translation = [ 0, 0, 0 ], scaling = 1)
     {
-        const {isPlain, isNumber} = tw2.util;
+        const { isPlain, isNumber } = tw2.util;
 
         if (isPlain(rotation)) rotation = arrayFromObject(rotation);
         if (isPlain(translation)) translation = arrayFromObject(translation);
-        if (isNumber(scaling)) scaling = [scaling, scaling, scaling];
+        if (isNumber(scaling)) scaling = [ scaling, scaling, scaling ];
         else if (isPlain(scaling)) scaling = arrayFromObject(scaling);
 
         return mat4.fromRotationTranslationScale([], rotation, translation, scaling);
@@ -2889,7 +2928,7 @@ var ccpwgl = (function(tw2)
      */
     esi.getGraphic = async function(graphicID, params)
     {
-        return await getIDFromESIRoute(Universe.GRAPHICS, graphicID, params)
+        return await getIDFromESIRoute(Universe.GRAPHICS, graphicID, params);
     };
 
     /**
@@ -2900,7 +2939,7 @@ var ccpwgl = (function(tw2)
      */
     esi.getGroup = async function(groupID, params)
     {
-        return await getIDFromESIRoute(Universe.GROUPS, groupID, params)
+        return await getIDFromESIRoute(Universe.GROUPS, groupID, params);
     };
 
     /**
@@ -2911,7 +2950,7 @@ var ccpwgl = (function(tw2)
      */
     esi.getCategory = async function(categoryID, params)
     {
-        return await getIDFromESIRoute(Universe.CATEGORIES, categoryID, params)
+        return await getIDFromESIRoute(Universe.CATEGORIES, categoryID, params);
     };
 
     /**
@@ -2927,9 +2966,9 @@ var ccpwgl = (function(tw2)
             {
                 if (!original.planets) original.planets = [];
                 const star = await esi.getStar(original.star_id);
-                const {lensflare_graphic_id} = await getIDFromStaticRoute(Static.SUN_TYPES, star.type_id);
-                const {nebula_graphic_id} = await esi.getConstellation(original.constellation_id);
-                return {nebula_graphic_id, lensflare_graphic_id};
+                const { lensflare_graphic_id } = await getIDFromStaticRoute(Static.SUN_TYPES, star.type_id);
+                const { nebula_graphic_id } = await esi.getConstellation(original.constellation_id);
+                return { nebula_graphic_id, lensflare_graphic_id };
             });
     };
 
@@ -2944,8 +2983,8 @@ var ccpwgl = (function(tw2)
         return await getIDFromESIRoute(Universe.CONSTELLATIONS, constellationID, params,
             async (original) =>
             {
-                const {graphic_id} = await getIDFromStaticRoute(Static.REGIONS, original.region_id);
-                return {nebula_graphic_id: graphic_id};
+                const { graphic_id } = await getIDFromStaticRoute(Static.REGIONS, original.region_id);
+                return { nebula_graphic_id: graphic_id };
             });
     };
 
@@ -2960,8 +2999,8 @@ var ccpwgl = (function(tw2)
         return await getIDFromESIRoute(Universe.REGIONS, regionID, params,
             async (original) =>
             {
-                const {graphic_id} = await getIDFromStaticRoute(Static.REGIONS, regionID);
-                return {nebula_graphic_id: graphic_id};
+                const { graphic_id } = await getIDFromStaticRoute(Static.REGIONS, regionID);
+                return { nebula_graphic_id: graphic_id };
             });
     };
 
@@ -2977,7 +3016,7 @@ var ccpwgl = (function(tw2)
         return await getIDFromESIRoute(Universe.STATIONS, stationID, params,
             async (original) =>
             {
-                let result = {dock_entry: {x: 0, y: 0, z: 0}, dock_orientation: {x: 0, y: 0, z: 0}};
+                let result = { dock_entry: { x: 0, y: 0, z: 0 }, dock_orientation: { x: 0, y: 0, z: 0 } };
                 try
                 {
                     const extended = await getIDFromStaticRoute(Static.STATION_TYPES, original.type_id);
@@ -2988,8 +3027,8 @@ var ccpwgl = (function(tw2)
                     // Some newer station don't have data
                 }
 
-                return {dock_entry, dock_orientation};
-            })
+                return { dock_entry, dock_orientation };
+            });
     };
 
     /**
@@ -3012,7 +3051,7 @@ var ccpwgl = (function(tw2)
                     vec3_0 = vec3.fromValues(0, 1, 0);
                 }
 
-                const {system_id, destination, type_id} = original;
+                const { system_id, destination, type_id } = original;
 
                 const results = await Promise.all([
                     esi.getSystem(system_id),
@@ -3023,12 +3062,12 @@ var ccpwgl = (function(tw2)
                 const
                     sourcePosition = arrayFromObject(results[0].position),
                     destinationPosition = arrayFromObject(results[1].position),
-                    {graphic_id} = results[2];
+                    { graphic_id } = results[2];
 
                 mat4.lookAtGL(mat4_0, sourcePosition, destinationPosition, vec3_0);
                 mat4.getRotation(quat_0, mat4_0);
 
-                return {graphic_id, rotation: {x: quat_0[0], y: quat_0[1], z: quat_0[2], w: quat_0[3]}};
+                return { graphic_id, rotation: { x: quat_0[0], y: quat_0[1], z: quat_0[2], w: quat_0[3] } };
             });
     };
 
@@ -3041,7 +3080,7 @@ var ccpwgl = (function(tw2)
     esi.getMoon = async function(moonID, params)
     {
         return await getIDFromESIRoute(Universe.MOONS, moonID, params,
-            async (original) => await getIDFromStaticRoute(Static.MOONS, moonID))
+            async (original) => await getIDFromStaticRoute(Static.MOONS, moonID));
     };
 
     /**
@@ -3053,7 +3092,7 @@ var ccpwgl = (function(tw2)
     esi.getPlanet = async function(planetID, params)
     {
         return await getIDFromESIRoute(Universe.PLANETS, planetID, params,
-            async (original) => await getIDFromStaticRoute(Static.PLANETS, planetID))
+            async (original) => await getIDFromStaticRoute(Static.PLANETS, planetID));
     };
 
     /**
@@ -3075,7 +3114,7 @@ var ccpwgl = (function(tw2)
      */
     esi.getResPathFromTypeID = async function(typeID)
     {
-        const {graphic_id} = await getIDFromESIRoute(Universe.TYPES, typeID);
+        const { graphic_id } = await getIDFromESIRoute(Universe.TYPES, typeID);
         return ccpwgl.getResPathFromGraphicID(graphic_id);
     };
 
@@ -3087,7 +3126,7 @@ var ccpwgl = (function(tw2)
      */
     esi.getResPathFromGraphicID = async function(graphicID)
     {
-        const {sof_dna, graphic_file} = await getIDFromESIRoute(Universe.GRAPHICS, graphicID);
+        const { sof_dna, graphic_file } = await getIDFromESIRoute(Universe.GRAPHICS, graphicID);
         return fromPath(sof_dna || graphic_file || "");
     };
 
@@ -3099,7 +3138,7 @@ var ccpwgl = (function(tw2)
      */
     async function getGraphicDataFromPlanetaryBody(data, itemID)
     {
-        const {shader_preset, height_map_1, height_map_2, radius, name, position} = data;
+        const { shader_preset, height_map_1, height_map_2, radius, name, position } = data;
 
         const result = await Promise.all([
             esi.getResPathFromGraphicID(shader_preset),
@@ -3139,7 +3178,7 @@ var ccpwgl = (function(tw2)
     {
         const data = await esi.getPlanet(planetID);
         return await getGraphicDataFromPlanetaryBody(data, planetID);
-    }
+    };
 
     /**
      * Gets a star's graphic data
@@ -3149,8 +3188,8 @@ var ccpwgl = (function(tw2)
     esi.getStarGraphicData = async function(starID)
     {
         const
-            {type_id, name, radius} = await esi.getStar(starID),
-            {resource_file, lensflare_resource_file} = await getIDFromStaticRoute(Static.SUN_TYPES, type_id);
+            { type_id, name, radius } = await esi.getStar(starID),
+            { resource_file, lensflare_resource_file } = await getIDFromStaticRoute(Static.SUN_TYPES, type_id);
 
         return {
             itemID: starID,
@@ -3160,7 +3199,7 @@ var ccpwgl = (function(tw2)
             lensflarePath: lensflare_resource_file,
             transform: createMatrix(undefined, undefined, radius)
         };
-    }
+    };
 
     /**
      * Gets a stargate's graphic data
@@ -3170,7 +3209,7 @@ var ccpwgl = (function(tw2)
     esi.getStargateGraphicData = async function(stargateID)
     {
         const
-            {name, position, rotation, graphic_id} = await esi.getStargate(stargateID),
+            { name, position, rotation, graphic_id } = await esi.getStargate(stargateID),
             resPath = await esi.getResPathFromGraphicID(graphic_id),
             transform = createMatrix(rotation, position, 1);
 
@@ -3180,7 +3219,7 @@ var ccpwgl = (function(tw2)
             resPath,
             transform
         };
-    }
+    };
 
     /**
      * Gets system graphic data
@@ -3190,7 +3229,7 @@ var ccpwgl = (function(tw2)
     esi.getSystemGraphicData = async function(systemID)
     {
         const
-            {name, nebula_graphic_id, lensflare_graphic_id} = await esi.getSystem(systemID),
+            { name, nebula_graphic_id, lensflare_graphic_id } = await esi.getSystem(systemID),
             nebulaPath = await esi.getResPathFromGraphicID(nebula_graphic_id),
             lensflarePath = await esi.getResPathFromGraphicID(lensflare_graphic_id);
 
@@ -3200,7 +3239,7 @@ var ccpwgl = (function(tw2)
             nebulaPath,
             lensflarePath
         };
-    }
+    };
 
     return ccpwgl;
 

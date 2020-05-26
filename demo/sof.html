@@ -21,9 +21,12 @@
             scene = ccpwgl.loadScene("res:/dx9/scene/universe/m10_cube.red");
 
             var lastHull = null;
+            var longAxis = null;
 
             function loadDna(dna)
             {
+                longAxis = null;
+
                 ccpwgl.getSofHullConstructor(dna, function(constructor)
                 {
                     if (constructor)
@@ -34,7 +37,9 @@
                         }
                         catch (e)
                         {
+
                         }
+
                         ship = scene[constructor](dna, function()
                         {
                             var hull = dna.split(":")[0];
@@ -44,6 +49,7 @@
                                 lastHull = hull;
                             }
                         });
+
                         if ("setBoosterStrength" in ship)
                         {
                             ship.setBoosterStrength($("#booster-intensity").val() / 50);
@@ -81,9 +87,28 @@
                 scene.getObject(0).setKillCount(parseInt($(this).val()));
             });
 
+            const loadingElement = document.getElementById("loading");
+
             ccpwgl.on("pre_render", function()
             {
-                document.getElementById("loading").style.display = ccpwgl.isLoading() ? "block" : "none";
+                if (ccpwgl.isLoading())
+                {
+                    loadingElement.style.display = "block";
+                    loadingElement.innerText = "Loading";
+                }
+                else if (ship)
+                {
+                    if (!longAxis)
+                    {
+                        longAxis = ship.getLongAxis().toLocaleString() + "m long axis";
+                        loadingElement.style.display = "block";
+                        loadingElement.innerText = longAxis;
+                    }
+                }
+                else
+                {
+                    loadingElement.style.display = "none";
+                }
             });
         });
     </script>
@@ -99,7 +124,7 @@
         <button id="state" class="btn" data-pane="state-pane">State</button>
     </div>
 </div>
-<div id="loading">Loading...</div>
+<div id="loading" style="color:white; top:10px; left:10px">Loading...</div>
 <div id="browse-pane" class="pane visible">
     <div class="pane-heading">Browse</div>
     <div class="flex-horizontal">

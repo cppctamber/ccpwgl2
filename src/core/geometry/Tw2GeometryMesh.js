@@ -133,8 +133,8 @@ export class Tw2GeometryMesh
             indexData
         );
 
-        box3.toObjectBounds(box, area);
-        box3.toObjectPositionRadius(box, area);
+        box3.toBounds(box, area.minBounds, area.maxBounds);
+        area.boundsSphereRadius = box3.toPositionRadius(box, area.boundsSpherePosition);
         return true;
     }
 

@@ -364,6 +364,19 @@ export class Tw2Device extends Tw2EventEmitter
     }
 
     /**
+     * Sets the pixel aspect ratio and resizes afterwards
+     * @param {Number} value
+     */
+    SetPixelRatio(value)
+    {
+        if (this.viewportPixelRatio !== value)
+        {
+            this.viewportPixelRatio = value;
+            this.Resize();
+        }
+    }
+
+    /**
      * Handles resize events
      */
     Resize()
@@ -380,12 +393,12 @@ export class Tw2Device extends Tw2EventEmitter
         */
         else
         {
-            this.canvas.width = this.canvas.offsetWidth * this.viewportPixelRatio;
-            this.canvas.height = this.canvas.offsetHeight * this.viewportPixelRatio;
+            this.canvas.width = Math.floor(this.canvas.offsetWidth * this.viewportPixelRatio);
+            this.canvas.height = Math.floor(this.canvas.offsetHeight * this.viewportPixelRatio);
         }
 
-        this.viewportWidth = this.canvas.clientWidth;
-        this.viewportHeight = this.canvas.clientHeight;
+        this.viewportWidth = this.canvas.width;
+        this.viewportHeight = this.canvas.height;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
 
         this.tw2.SetVariableValue("ViewportSize", [
