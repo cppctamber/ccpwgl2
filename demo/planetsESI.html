@@ -16,6 +16,17 @@
         async function OnDocLoad()
         {
             const { esi } = ccpwgl;
+
+            try
+            {
+                await esi.testCustomCDN("Custom CDN must be running to use this demo");
+            }
+            catch(err)
+            {
+                document.getElementById("loading").innerHTML = err.message;
+                throw err;
+            }
+
             const { mat4, vec2, vec3, vec4, ray3, sph3 } = tw2.math;
 
             const randomSystems = [
