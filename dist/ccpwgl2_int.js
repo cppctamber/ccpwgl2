@@ -57573,7 +57573,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
    */
 
 
-  static NormalizePath(path) {
+  static NormalizePath(path = "") {
     path = path.toLowerCase();
     path = path.replace("\\", "/");
     return path;
@@ -67480,27 +67480,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getURLInteger", function() { return getURLInteger; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getURLFloat", function() { return getURLFloat; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getURLBoolean", function() { return getURLBoolean; });
+/* harmony import */ var global_util_type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util/type */ "./global/util/type.js");
+
 var url = {},
     query = window.location.search.substring(1),
     split = query.split("&");
 
 for (var i = 0; i < split.length; i++) {
   var result = split[i].split("="),
-      key = result[0].toLowerCase(),
+      key = result[0],
       value = unescape(result[1]);
 
   if (key) {
     var v = value.toLowerCase();
-    url[key] = v === "true" ? true : v === "false" ? false : value;
+
+    switch (v) {
+      case "true":
+        v = true;
+        break;
+
+      case "false":
+        v = false;
+        break;
+
+      case "null":
+        v = null;
+        break;
+
+      case "undefined":
+        v = undefined;
+        break;
+    }
+
+    url[key] = v;
   }
 }
 /**
  * Gets the url as an object
+ * @param {Boolean|Function} operator
  * @returns {*}
  */
 
 
-function getURL() {
+function getURL(operator) {
+  if (Object(global_util_type__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(operator)) {
+    var out = {};
+
+    for (var _key in operator) {
+      if (operator.hasOwnProperty(_key)) {
+        out[_key] = url[_key] === undefined ? operator[_key] : url[_key];
+      }
+    }
+
+    return out;
+  } else if (Object(global_util_type__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(operator)) {
+    var _out = {};
+
+    for (var _key2 in url) {
+      if (url.hasOwnProperty(_key2)) {
+        var _value = operator(_key2, url[_key2], url);
+
+        if (_value !== undefined) {
+          _out[_key2] = _value;
+        }
+      }
+    }
+
+    return _out;
+  }
+
   return Object.assign({}, url);
 }
 /**

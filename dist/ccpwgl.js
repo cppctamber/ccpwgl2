@@ -376,6 +376,21 @@ var ccpwgl = (function(tw2)
         }
     };
 
+    ccpwgl.post.setBlur = function(amount)
+    {
+        const blurs = [];
+        ccpwgl.post.effects.forEach(effect =>
+        {
+            effect.steps.forEach(step =>
+            {
+                if (step.effect && "g_blurScale" in step.effect.parameters)
+                {
+                    step.effect.parameters["g_blurScale"].x = amount;
+                }
+            });
+        });
+    };
+
     /**
      * Assigns an active camera used for scene rendering. A camera is an object that is
      * required to have three following methods (that are called during rendering):
@@ -602,7 +617,7 @@ var ccpwgl = (function(tw2)
         this.getLongAxis = function()
         {
             return getObjectLongAxis(this);
-        }
+        };
 
         /**
          * Gets the object's resources
@@ -899,7 +914,7 @@ var ccpwgl = (function(tw2)
         this.getLongAxis = function()
         {
             return getObjectLongAxis(this);
-        }
+        };
 
         /**
          * Gets the object's resources
@@ -1592,7 +1607,7 @@ var ccpwgl = (function(tw2)
         this.getLongAxis = function()
         {
             return getObjectLongAxis(this);
-        }
+        };
 
         /**
          * Gets the object's resources
@@ -2741,6 +2756,9 @@ var ccpwgl = (function(tw2)
         TYPES: "universe/types"
     };
 
+    // Disable custom cdn by default
+    ccpwgl.useCustomCDN = false;
+
     /**
      * Paths to extended data
      * @type {{MOONS: string, PLANETS: string, REGIONS: string}}
@@ -2789,11 +2807,13 @@ var ccpwgl = (function(tw2)
     async function tempExtendESI(url, id, params, extender)
     {
         const json = await tw2.resMan.Fetch(url, "json");
+
         if (extender)
         {
             const jsonExtend = await extender(json);
             Object.assign(json, jsonExtend);
         }
+
         return json;
     };
 
@@ -2966,9 +2986,15 @@ var ccpwgl = (function(tw2)
             {
                 if (!original.planets) original.planets = [];
                 const star = await esi.getStar(original.star_id);
-                const { lensflare_graphic_id } = await getIDFromStaticRoute(Static.SUN_TYPES, star.type_id);
-                const { nebula_graphic_id } = await esi.getConstellation(original.constellation_id);
-                return { nebula_graphic_id, lensflare_graphic_id };
+
+                if (ccpwgl.useCustomCDN)
+                {
+                    const { lensflare_graphic_id } = await getIDFromStaticRoute(Static.SUN_TYPES, star.type_id);
+                    const { nebula_graphic_id } = await esi.getConstellation(original.constellation_id);
+                    return { nebula_graphic_id, lensflare_graphic_id };
+                }
+
+                return {};
             });
     };
 
@@ -2983,8 +3009,13 @@ var ccpwgl = (function(tw2)
         return await getIDFromESIRoute(Universe.CONSTELLATIONS, constellationID, params,
             async (original) =>
             {
-                const { graphic_id } = await getIDFromStaticRoute(Static.REGIONS, original.region_id);
-                return { nebula_graphic_id: graphic_id };
+                if (ccpwgl.useCustomCDN)
+                {
+                    const { graphic_id } = await getIDFromStaticRoute(Static.REGIONS, original.region_id);
+                    return { nebula_graphic_id: graphic_id };
+                }
+
+                return {};
             });
     };
 
@@ -2999,8 +3030,13 @@ var ccpwgl = (function(tw2)
         return await getIDFromESIRoute(Universe.REGIONS, regionID, params,
             async (original) =>
             {
-                const { graphic_id } = await getIDFromStaticRoute(Static.REGIONS, regionID);
-                return { nebula_graphic_id: graphic_id };
+                if (ccpwgl.useCustomCDN)
+                {
+                    const { graphic_id } = await getIDFromStaticRoute(Static.REGIONS, regionID);
+                    return { nebula_graphic_id: graphic_id };
+                }
+
+                return {};
             });
     };
 
@@ -3060,8 +3096,8 @@ var ccpwgl = (function(tw2)
                 ]);
 
                 const
-                    sourcePosition = arrayFromObject(results[0].position),
-                    destinationPosition = arrayFromObject(results[1].position),
+                    sourcePosition = results[0].position ? arrayFromObject(results[0].position) : [ 0, 0, 0 ],
+                    destinationPosition = results[1].position ? arrayFromObject(results[1].position) : [ 0, 0, 0 ],
                     { graphic_id } = results[2];
 
                 mat4.lookAtGL(mat4_0, sourcePosition, destinationPosition, vec3_0);
@@ -3115,7 +3151,7 @@ var ccpwgl = (function(tw2)
     esi.getResPathFromTypeID = async function(typeID)
     {
         const { graphic_id } = await getIDFromESIRoute(Universe.TYPES, typeID);
-        return ccpwgl.getResPathFromGraphicID(graphic_id);
+        return await ccpwgl.getResPathFromGraphicID(graphic_id);
     };
 
 
@@ -3126,6 +3162,11 @@ var ccpwgl = (function(tw2)
      */
     esi.getResPathFromGraphicID = async function(graphicID)
     {
+        if (!graphicID)
+        {
+            throw new Error("Graphic ID not found");
+        }
+
         const { sof_dna, graphic_file } = await getIDFromESIRoute(Universe.GRAPHICS, graphicID);
         return fromPath(sof_dna || graphic_file || "");
     };
@@ -3138,13 +3179,18 @@ var ccpwgl = (function(tw2)
      */
     async function getGraphicDataFromPlanetaryBody(data, itemID)
     {
-        const { shader_preset, height_map_1, height_map_2, radius, name, position } = data;
+        const { shader_preset, height_map_1, height_map_2, radius=0, name, position = { x: 0, y: 0, z: 0 }} = data;
 
-        const result = await Promise.all([
-            esi.getResPathFromGraphicID(shader_preset),
-            esi.getResPathFromGraphicID(height_map_1),
-            esi.getResPathFromGraphicID(height_map_2)
-        ]);
+        let result = [];
+
+        if (ccpwgl.useCustomCDN)
+        {
+            result = await Promise.all([
+                esi.getResPathFromGraphicID(shader_preset),
+                esi.getResPathFromGraphicID(height_map_1),
+                esi.getResPathFromGraphicID(height_map_2)
+            ]);
+        }
 
         return {
             itemID,
@@ -3209,7 +3255,7 @@ var ccpwgl = (function(tw2)
     esi.getStargateGraphicData = async function(stargateID)
     {
         const
-            { name, position, rotation, graphic_id } = await esi.getStargate(stargateID),
+            { name, position={ x:0, y:0, z:0 }, rotation = { x:0, y:0, z:0, w: 0 }, graphic_id } = await esi.getStargate(stargateID),
             resPath = await esi.getResPathFromGraphicID(graphic_id),
             transform = createMatrix(rotation, position, 1);
 
@@ -3222,16 +3268,39 @@ var ccpwgl = (function(tw2)
     };
 
     /**
+     * Tests to see if a custom cdn is running
+     * @param {String} [message]
+     * @returns {Promise<void>}
+     */
+    esi.testCustomCDN = async function(message = "Custom CDN not running")
+    {
+        try
+        {
+            await getIDFromStaticRoute(Static.SUN_TYPES, 6);
+            ccpwgl.useCustomCDN = true;
+        }
+        catch(err)
+        {
+            ccpwgl.useCustomCDN = false;
+            throw new Error(message);
+        }
+    }
+
+    /**
      * Gets system graphic data
      * @param {Number} systemID
      * @returns {Promise<{nebulaResPath: String, name: String, lensflareResPath: String}>}
      */
     esi.getSystemGraphicData = async function(systemID)
     {
-        const
-            { name, nebula_graphic_id, lensflare_graphic_id } = await esi.getSystem(systemID),
+        const { name, nebula_graphic_id, lensflare_graphic_id } = await esi.getSystem(systemID);
+        let nebulaPath, lensflarePath;
+
+        if (ccpwgl.useCustomCDN)
+        {
             nebulaPath = await esi.getResPathFromGraphicID(nebula_graphic_id),
             lensflarePath = await esi.getResPathFromGraphicID(lensflare_graphic_id);
+        }
 
         return {
             itemID: systemID,

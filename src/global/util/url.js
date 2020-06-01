@@ -1,3 +1,5 @@
+import { isFunction, isPlain } from "global/util/type";
+
 const
     url = {},
     query = window.location.search.substring(1),
@@ -7,22 +9,71 @@ for (let i = 0; i < split.length; i++)
 {
     const
         result = split[i].split("="),
-        key = result[0].toLowerCase(),
+        key = result[0],
         value = unescape(result[1]);
 
     if (key)
     {
         let v = value.toLowerCase();
-        url[key] = v === "true" ? true : v === "false" ? false : value;
+        switch(v)
+        {
+            case "true":
+                v = true;
+                break;
+
+            case "false":
+                v = false;
+                break;
+
+            case "null":
+                v = null;
+                break;
+
+            case "undefined":
+                v = undefined;
+                break;
+        }
+
+        url[key] = v;
     }
 }
 
 /**
  * Gets the url as an object
+ * @param {Boolean|Function} operator
  * @returns {*}
  */
-export function getURL()
+export function getURL(operator)
 {
+    if (isPlain(operator))
+    {
+        const out = {};
+        for (const key in operator)
+        {
+            if (operator.hasOwnProperty(key))
+            {
+                out[key] = url[key] === undefined ? operator[key] : url[key];
+            }
+        }
+        return out;
+    }
+    else if (isFunction(operator))
+    {
+        const out = {};
+        for (const key in url)
+        {
+            if (url.hasOwnProperty(key))
+            {
+                const value = operator(key, url[key], url);
+                if (value !== undefined)
+                {
+                    out[key] = value;
+                }
+            }
+        }
+        return out;
+    }
+
     return Object.assign({}, url);
 }
 
