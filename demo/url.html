@@ -120,7 +120,7 @@
             }
 
             // Allow overriding sof values
-            if (url.sof_hull) shipDna[0] = url.sof_hull;
+            if (url.sof_hull) shipDNA[0] = url.sof_hull;
             if (url.sof_faction) shipDNA[1] = url.sof_faction;
             if (url.sof_race) shipDNA[2] = url.sof_race;
 
@@ -134,6 +134,12 @@
             let nebulaPath = "";
             try
             {
+                // Validate sof string
+                if (shipDNA)
+                {
+                    await tw2.eveSof.FetchObject(shipDNA);
+                }
+
                 if (url.system_id)
                 {
                     await esi.testCustomCDN("Custom CDN required to use 'system_id' parameter");
