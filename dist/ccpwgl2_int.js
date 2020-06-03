@@ -57573,7 +57573,7 @@ class Tw2ResMan extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2
    */
 
 
-  static NormalizePath(path = "") {
+  static NormalizePath(path) {
     path = path.toLowerCase();
     path = path.replace("\\", "/");
     return path;
@@ -67510,6 +67510,12 @@ for (var i = 0; i < split.length; i++) {
       case "undefined":
         v = undefined;
         break;
+
+      default:
+        if (!isNaN(v)) {
+          v = Number(v);
+        }
+
     }
 
     url[key] = v;
@@ -71844,8 +71850,10 @@ class EveSOFData {
         MainIntensity: 1,
         GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
       }
-    });
-    this._bannerEffect = this.generic.CreateEffect(this.generic.bannerShader);
+    }); // There is no "packed" banner effect but there is a "unpacked" version
+    // Need to figure out if we can come to an approximation
+
+    this._bannerEffect = null;
   }
   /**
    * Gets a hull by it's name
