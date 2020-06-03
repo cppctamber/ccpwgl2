@@ -23,13 +23,24 @@
 
             // Get values from url and provide defaults
             const url = tw2.util.getURL({
+
+                text: true,
+
                 // Scene
                 scene_green: true,
                 scene_intensity: 4,
                 system_id: undefined,
                 nebula: "m10",
+
                 // Post
                 post_blur: 1,
+
+                // Space object factory
+                sof_string: null,
+                sof_hull: null,
+                sof_race: null,
+                sof_faction: null,
+
                 // Item
                 item_id: 0,
                 item_rotate_x: 0,
@@ -41,6 +52,7 @@
                 item_siege_enabled: true,
                 item_siege_start: 5,
                 item_siege_end: 5,
+
                 // Camera
                 camera_rotation_x: 0.12,
                 camera_rotation_y: 0.62,
@@ -49,7 +61,8 @@
                 camera_poi_x: 0,
                 camera_poi_y: 0,
                 camera_poi_z: 0,
-                                // Sun
+
+                // Sun
                 sun_x: 0,
                 sun_y: 0,
                 sun_z: 0,
@@ -75,7 +88,7 @@
             // Store some stuff.
             let shipDetails = [ "", "", "", "" ],
                 shipLoaded = false,
-                shipDNA = "";
+                shipDNA = [];
 
             // Setup item
             if (url.item_id)
@@ -89,11 +102,7 @@
 
                     shipDetails[0] = item.name;
                     shipDetails[2] = group.name;
-                    shipDNA = graphic.sof_dna || "";
-
-                    // Guess the race, esi doesn't have race (this could result in incorrect value)
-                    const dnaSplit = shipDNA.split(":");
-                    if (dnaSplit.length > 2) shipDetails[1] = dnaSplit[2];
+                    if (graphic.sof_dna) shipDNA = graphic.sof_dna.split(":");
                 }
                 catch (err)
                 {
@@ -105,6 +114,21 @@
                     throw err;
                 }
             }
+            else if (url.sof_string)
+            {
+                shipDNA = url.sof_string.split(":");
+            }
+
+            // Allow overriding sof values
+            if (url.sof_hull) shipDna[0] = url.sof_hull;
+            if (url.sof_faction) shipDNA[1] = url.sof_faction;
+            if (url.sof_race) shipDNA[2] = url.sof_race;
+
+            // Guess the ship's race: esi doesn't have race (this could result in incorrect value)
+            if (shipDNA.length > 2) shipDetails[1] = shipDNA[2];
+
+            // Convert dna back into a string
+            shipDNA = shipDNA.join(":");
 
             // Setup system
             let nebulaPath = "";
@@ -164,6 +188,7 @@
                             shipDetails[3] = ship.getLongAxis().toLocaleString();
                             shipLoaded = true;
 
+                            // Store some text to display later
                             ship.custom = {};
                             const str = [];
                             if (shipDetails[1]) str.push(`${shipDetails[1].toUpperCase()} -`);
@@ -186,7 +211,8 @@
             let siegeEnabled = url.item_siege_enabled,
                 siegeTimer = 0,
                 siegeStarted = false,
-                siegeEnding = false;
+                siegeEnding = false,
+                postDone = !url.post_blur;
 
             // Don't bother updating transforms if there aren't any to do
             const doTransforms = Math.abs(url.item_rotate_x + url.item_rotate_y + url.item_rotate_z);
@@ -243,13 +269,16 @@
                     primaryText.innerText = "Loading";
                     secondaryText.style.display = "none";
                     secondaryText.innerText = "";
-
                     // Update post effects
-                    if (url.post_blur) ccpwgl.post.setBlur(url.post_blur / 10);
+                    if (url.post_blur && !postDone)
+                    {
+                        ccpwgl.post.setBlur(url.post_blur / 10);
+                        postDone = true;
+                    }
                 }
                 else
                 {
-                    if (shipLoaded)
+                    if (shipLoaded && url.text)
                     {
                         secondaryText.innerText = ship.custom.secondaryText;
                         primaryText.innerText = ship.custom.primaryText;
