@@ -42,7 +42,9 @@ export class EveSOFData
             }
         });
 
-        this._bannerEffect = this.generic.CreateEffect(this.generic.bannerShader);
+        // There is no "packed" banner effect but there is a "unpacked" version
+        // Need to figure out if we can come to an approximation
+        this._bannerEffect = null;
 
     }
 

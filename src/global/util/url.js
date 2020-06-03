@@ -32,6 +32,12 @@ for (let i = 0; i < split.length; i++)
             case "undefined":
                 v = undefined;
                 break;
+
+            default:
+                if (!isNaN(v))
+                {
+                    v = Number(v);
+                }
         }
 
         url[key] = v;

@@ -56,11 +56,16 @@
                 // Camera
                 camera_rotation_x: 0.12,
                 camera_rotation_y: 0.62,
-                //camera_distance: 0,
+                camera_distance: undefined,
                 camera_fov: 30,
                 camera_poi_x: 0,
                 camera_poi_y: 0,
                 camera_poi_z: 0,
+                camera_near_plane: 1,
+                camera_far_plane: 0,
+                camera_min_distance: 50,
+                camera_max_distance: 100000,
+                camera_auto_focus: undefined,
 
                 // Sun
                 sun_x: 0,
@@ -70,6 +75,14 @@
                 sun_g: 255,
                 sun_b: 255
             });
+
+            // Default camera auto focus to on if no distance has been defined
+            if (url.camera_auto_focus === undefined && !url.camera_distance)
+            {
+                url.camera_auto_focus = true;
+            }
+
+            console.dir(url);
 
             // Change text colour depending on green screen status
             primaryText.style.color = secondaryText.style.color = url.scene_green ? "black" : "white";
@@ -82,13 +95,17 @@
                 rotationX: Math.max(-1, Math.min(url.camera_rotation_x, 1)),
                 rotationY: Math.max(-1, Math.min(url.camera_rotation_y, 1)),
                 distance: url.camera_distance,
-                poi: [ url.camera_poi_x, url.camera_poi_y, url.camera_poi_z ]
+                poi: [ url.camera_poi_x, url.camera_poi_y, url.camera_poi_z ],
+                nearPlane: url.camera_near_plane,
+                farPlane: url.camera_far_plane,
+                maxDistance: url.camera_max_distance,
+                minDistance: url.camera_min_distance
             });
 
             // Store some stuff.
             let shipDetails = [ "", "", "", "" ],
                 shipLoaded = false,
-                shipDNA = [];
+                shipDNA = null;
 
             // Setup item
             if (url.item_id)
@@ -118,17 +135,15 @@
             {
                 shipDNA = url.sof_string.split(":");
             }
+            else
+            {
+                shipDNA = []
+            }
 
             // Allow overriding sof values
             if (url.sof_hull) shipDNA[0] = url.sof_hull;
             if (url.sof_faction) shipDNA[1] = url.sof_faction;
             if (url.sof_race) shipDNA[2] = url.sof_race;
-
-            // Guess the ship's race: esi doesn't have race (this could result in incorrect value)
-            if (shipDNA.length > 2) shipDetails[1] = shipDNA[2];
-
-            // Convert dna back into a string
-            shipDNA = shipDNA.join(":");
 
             // Setup system
             let nebulaPath = "";
@@ -137,6 +152,12 @@
                 // Validate sof string
                 if (shipDNA)
                 {
+                    // Guess the ship's race from it's faction: esi doesn't this data (the result could be wrong here)
+                    const faction = await tw2.eveSof.FetchFaction(shipDNA[1]);
+                    shipDetails[1] = faction.description;
+
+                    // Convert dna back into a string
+                    shipDNA = shipDNA.join(":");
                     await tw2.eveSof.FetchObject(shipDNA);
                 }
 
@@ -175,9 +196,9 @@
                 {
                     ship = scene.loadShip(shipDNA, function()
                         {
-                            if (!url.camera_distance)
+                            if (url.camera_auto_focus)
                             {
-                                camera.focus(this, 3, 50, true);
+                                camera.focus(this, 3, 50, url.camera_near_plane === undefined);
                             }
 
                             if (url.camera_poi_x || !url.camera_poi_y || url.camera_poi_z)
