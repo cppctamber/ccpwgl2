@@ -88,7 +88,7 @@
             // Store some stuff.
             let shipDetails = [ "", "", "", "" ],
                 shipLoaded = false,
-                shipDNA = [];
+                shipDNA = null;
 
             // Setup item
             if (url.item_id)
@@ -118,17 +118,15 @@
             {
                 shipDNA = url.sof_string.split(":");
             }
+            else
+            {
+                shipDNA = []
+            }
 
             // Allow overriding sof values
             if (url.sof_hull) shipDNA[0] = url.sof_hull;
             if (url.sof_faction) shipDNA[1] = url.sof_faction;
             if (url.sof_race) shipDNA[2] = url.sof_race;
-
-            // Guess the ship's race: esi doesn't have race (this could result in incorrect value)
-            if (shipDNA.length > 2) shipDetails[1] = shipDNA[2];
-
-            // Convert dna back into a string
-            shipDNA = shipDNA.join(":");
 
             // Setup system
             let nebulaPath = "";
@@ -137,6 +135,12 @@
                 // Validate sof string
                 if (shipDNA)
                 {
+                    // Guess the ship's race from it's faction: esi doesn't this data (the result could be wrong here)
+                    const faction = await tw2.eveSof.FetchFaction(shipDNA[1]);
+                    shipDetails[1] = faction.description;
+
+                    // Convert dna back into a string
+                    shipDNA = shipDNA.join(":");
                     await tw2.eveSof.FetchObject(shipDNA);
                 }
 
