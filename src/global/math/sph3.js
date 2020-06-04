@@ -244,6 +244,66 @@ sph3.fromMat4 = function(out, m)
     return out;
 };
 
+let aPosition,
+    bPosition,
+    toAPosition,
+    toBPosition,
+    center;
+
+/**
+ * Gets the union of two spheres
+ * @param {sph3} out
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {sph3} out
+ */
+sph3.union = function(out, a, b)
+{
+    if (!aPosition)
+    {
+        aPosition = vec3.create();
+        bPosition = vec3.create();
+        toAPosition = vec3.create();
+        toBPosition = vec3.create();
+    }
+
+    const
+        aRadius = sph3.extract(a, aPosition),
+        bRadius = sph3.extract(b, bPosition);
+
+    vec3.subtract(toBPosition, bPosition, aPosition);
+    const separation = vec3.length(toBPosition);
+    
+    if (aRadius >= separation + bRadius)
+    {
+        return out === a ? out : sph3.copy(out, a);
+    }
+
+    if (bRadius >= separation + aRadius)
+    {
+        return out === b ? out : sph3.clone(out, b);
+    }
+
+    if (!center) center = vec3.create();
+    const halfDistance = (aRadius + separation + bRadius) * 0.5;
+    vec3.scale(center, toBPosition, (-aRadius + halfDistance) / separation);
+    vec3.add(center, aPosition, center);
+    return sph3.fromPositionRadius(out, center, halfDistance);
+};
+
+/**
+ * Gets the union of a sphere and a sphere's components
+ * @param {sph3} out
+ * @param {sph3} a
+ * @param {vec3} position
+ * @param {Number} radius
+ * @returns {sph3}
+ */
+sph3.unionPositionRadius = function(out, a, position, radius)
+{
+    return sph3.union(out, a, sph3.fromPositionRadius(sph3_0, position, radius));
+};
+
 /**
  * Gets a point clamped to the sphere
  *
