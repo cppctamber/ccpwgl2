@@ -105,7 +105,6 @@ box3.clone = function(a)
     out[3] = a[3];
     out[4] = a[4];
     out[5] = a[5];
-    out[6] = a[6];
     return out;
 };
 
@@ -191,7 +190,6 @@ box3.copy = function(out, a)
     out[3] = a[3];
     out[4] = a[4];
     out[5] = a[5];
-    out[6] = a[6];
     return out;
 };
 
