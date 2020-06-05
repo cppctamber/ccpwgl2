@@ -1,4 +1,4 @@
-import { meta, vec3, vec4, quat, mat4, device, resMan, tw2, Tw2BaseClass } from "global";
+import { meta, vec3, vec4, quat, mat4, device, resMan, tw2, Tw2BaseClass, WrappedType } from "global";
 import { Tw2BatchAccumulator, Tw2RawData, Tw2Frustum } from "core";
 
 
@@ -766,6 +766,12 @@ export class EveSpaceScene extends Tw2BaseClass
             [ "MiscSettings", 4 ]
         ]
     };
+
+    /**
+     * The object's wrapped type
+     * @type {number}
+     */
+    static wrappedType = WrappedType.SPACE_SCENE;
 
     /**
      * Class global and scratch variables

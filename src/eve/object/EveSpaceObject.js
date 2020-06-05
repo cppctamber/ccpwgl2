@@ -1,4 +1,4 @@
-import { meta, vec3, mat4, util } from "global";
+import { meta, box3, vec3, mat4, util, sph3 } from "global";
 import { Tw2AnimationController, Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
@@ -91,8 +91,12 @@ export class EveSpaceObject extends EveObject
     _lod = 3;
     _worldSpriteScale = 1;
     _worldTransform = mat4.create();
+    _offsetTransform = null;
     _perObjectData = Tw2PerObjectData.from(EveSpaceObject.perObjectData);
 
+    _boundingBox = null;
+    _boundingSphere = null;
+    _boundsDirty = true;
 
     /**
      * Initializes the EveSpaceObject
@@ -111,6 +115,68 @@ export class EveSpaceObject extends EveObject
     }
 
     /**
+     * Gets the object's bounding sphere
+     * @param {sph3} out
+     * @param {boolean} force
+     * @returns {boolean}
+     */
+    GetBoundingSphere(out, force)
+    {
+        this.RebuildBounds(force);
+        sph3.copy(out, this._boundingSphere);
+        return this._boundsDirty;
+    }
+
+    /**
+     * Gets the object's bounding box
+     * @param {box3} out
+     * @param {boolean} force
+     * @returns {boolean}
+     */
+    GetBoundingBox(out, force)
+    {
+        this.RebuildBounds(force);
+        box3.copy(out, this._boundingBox);
+        return this._boundsDirty;
+    }
+
+    /**
+     * Rebuilds the object's bounds
+     * @param {boolean} force
+     */
+    RebuildBounds(force=this._boundsDirty)
+    {
+        if (!this._boundingSphere)
+        {
+            force = true;
+            // Don't use the built in bounding sphere as it isn't geometrically correct
+            this._boundingSphere = sph3.create();
+            this._boundingBox = sph3.create();
+        }
+
+        const isGood = this.mesh && this.mesh.IsGood();
+
+        if (force)
+        {
+            if (isGood)
+            {
+                this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
+            }
+            else
+            {
+                box3.empty(this._boundingBox);
+            }
+
+            // TODO: Cycle through all children and update bounds...
+
+            sph3.fromBox3(this._boundingSphere, this._boundingBox);
+        }
+
+        this._boundsDirty = isGood;
+        return isGood;
+    }
+
+    /**
      * Sets the object's local transform
      * @param {mat4} m
      * @param {mat4} offset
@@ -119,7 +185,19 @@ export class EveSpaceObject extends EveObject
     {
         if (offset)
         {
-            mat4.multiply(this.transform, m, offset);
+            if (!this._offsetTransform)
+            {
+                this._offsetTransform = mat4.clone(offset);
+            }
+            else
+            {
+                mat4.copy(this._offsetTransform, offset);
+            }
+        }
+
+        if (this._offsetTransform)
+        {
+            mat4.multiply(this.transform, m, this._offsetTransform);
         }
         else
         {

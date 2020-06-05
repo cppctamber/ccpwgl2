@@ -86,8 +86,7 @@ export class Tw2TransformParameter extends Tw2Parameter
      */
     RebuildTransforms(opt)
     {
-        let
-            force = opt ? opt.force : false,
+        let force = opt ? opt.force : false,
             skipUpdate = opt ? opt.skipUpdate : false;
 
         if (force || this._rebuildLocal)
