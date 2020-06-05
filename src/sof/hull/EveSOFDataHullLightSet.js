@@ -11,6 +11,12 @@ export class EveSOFDataHullLightSet
     @meta.black.listOf("EveSOFDataHullLightSetItem")
     items = [];
 
+    @meta.black.float
+    noiseAmplitude = 0;
+
+    @meta.black.float
+    noiseOctaves = 0;
+
     @meta.black.string
     visibilityGroup = "";
 

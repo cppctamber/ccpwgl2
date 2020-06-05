@@ -11,6 +11,9 @@ export class EveSOFDataHullPlaneSetItem
     @meta.black.color
     color = vec4.create();
 
+    @meta.black.float
+    dutyCycle = 0;
+
     @meta.black.uint
     groupIndex = -1;
 
@@ -31,6 +34,9 @@ export class EveSOFDataHullPlaneSetItem
 
     @meta.black.vector3
     position = vec3.create();
+
+    @meta.black.float
+    rate = 0;
 
     @meta.black.quaternion
     rotation = quat.create();

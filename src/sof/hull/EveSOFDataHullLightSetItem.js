@@ -23,6 +23,9 @@ export class EveSOFDataHullLightSetItem
     @meta.black.float
     noiseFrequency = 0;
 
+    @meta.black.float
+    noiseOctaves = 0;
+
     @meta.black.vector3
     position = vec3.create();
 

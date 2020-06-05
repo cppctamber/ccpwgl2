@@ -54,6 +54,9 @@ export class EveSOFDataGeneric
     @meta.black.listOf("EveSOFDataGenericVariant")
     variants = [];
 
+    @meta.black.listOf("EveSOFDataGenericString")
+    visibilityGroups = [];
+
 
     /**
      * Initializer
