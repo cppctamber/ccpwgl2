@@ -1,4 +1,4 @@
-import { meta, util } from "global";
+import { meta, util, WrappedType } from "global";
 import { EveSpaceObject } from "./EveSpaceObject";
 
 
@@ -194,5 +194,11 @@ export class EveShip extends EveSpaceObject
             }
         }
     }
+
+    /**
+     * Identifies the object's wrapped type
+     * @type {number}
+     */
+    static wrappedType = WrappedType.SPACE_SHIP;
 
 }

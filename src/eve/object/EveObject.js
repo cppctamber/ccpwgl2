@@ -1,5 +1,5 @@
 /* eslint no-unused-vars:0 */
-import { meta, mat4, vec3, Tw2BaseClass } from "global";
+import { meta, mat4, vec3, Tw2BaseClass, WrappedType } from "global";
 
 
 @meta.abstract
@@ -45,6 +45,12 @@ export class EveObject extends Tw2BaseClass
     {
 
     }
+
+    /**
+     * Identifies the object's wrapped type'
+     * @type {Number}
+     */
+    static wrappedType = WrappedType.SPACE_OBJECT;
 
     /**
      * Global and scratch variables

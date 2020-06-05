@@ -1,4 +1,4 @@
-import { meta, mat4, util, device, resMan } from "global";
+import { meta, mat4, util, device, resMan, WrappedType } from "global";
 import { Tw2Effect, Tw2RenderTarget, Tw2TextureParameter, Tw2FloatParameter } from "core";
 import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
@@ -394,5 +394,11 @@ export class EvePlanet extends EveObject
             }
         }
     }
+
+    /**
+     * Identifies the object's WrappedType
+     * @type {number}
+     */
+    static wrappedType = WrappedType.PLANET;
 
 }

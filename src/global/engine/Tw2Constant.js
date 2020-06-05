@@ -12,12 +12,26 @@ export const AttachmentType = {
     TURRET_SET: 4,
     BOOSTER_SET: 5,
     MESH_OVERLAY_EFFECT:10,
+    LINE_SET: 11,
     SPRITE_LINE_SET: 20,
     BANNER: 21,
     TRAIL_SET: 22,
     BOOSTER_SET_2: 23,
-    HAZE_SET:213,
-    LINE_SET: 100
+    HAZE_SET: 24
+};
+
+
+/*
+
+Wrapped type
+
+ */
+export const WrappedType = {
+    SPACE_SCENE: 0,
+    SPACE_OBJECT: 1,
+    SPACE_SHIP: 2,
+    PLANET: 3,
+    LENS_FLARE: 4
 };
 
 /*
