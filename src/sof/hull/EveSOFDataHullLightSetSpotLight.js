@@ -21,6 +21,12 @@ export class EveSOFDataHullLightSetSpotLight
     lightColor = vec4.create();
 
     @meta.black.float
+    noiseAmplitude = 0;
+
+    @meta.black.float
+    noiseFrequency = 0;
+
+    @meta.black.float
     outerAngle = 0;
 
     @meta.black.vector3

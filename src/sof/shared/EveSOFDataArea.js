@@ -43,6 +43,9 @@ export class EveSOFDataArea
     Orange = null;
 
     @meta.black.objectOf("EveSOFDataAreaMaterial")
+    Ornament = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
     Primary = null;
 
     @meta.black.objectOf("EveSOFDataAreaMaterial")
@@ -56,6 +59,9 @@ export class EveSOFDataArea
 
     @meta.black.objectOf("EveSOFDataAreaMaterial")
     Sails = null;
+
+    @meta.black.objectOf("EveSOFDataAreaMaterial")
+    SimplePrimary = null;
 
     @meta.black.objectOf("EveSOFDataAreaMaterial")
     Secondary = null;
