@@ -55,6 +55,10 @@ export class Tw2InstancedMesh extends Tw2BaseClass
     @meta.black.vector3
     maxBounds = vec3.create();
 
+    @meta.notImplemented
+    @meta.black.uint
+    maxInstanceSize = 0;
+
     @meta.black.vector3
     minBounds = vec3.create();
 
