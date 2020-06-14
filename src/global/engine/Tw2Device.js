@@ -121,6 +121,8 @@ export class Tw2Device extends Tw2EventEmitter
     xr = null;
     tw2 = null;
 
+    canvas2d = null;
+
     dt = 0;
     frameCounter = 0;
     startTime = null;
@@ -246,16 +248,15 @@ export class Tw2Device extends Tw2EventEmitter
 
     /**
      * Creates webgl Device
-     * @param {HTMLCanvasElement} canvas - The html canvas to create a webgl rendering context from
-     * @param {{}} [params]              - Optional gl parameters
-     * @param {Boolean} [params.webgl2]  - Optional flag to enable a webgl2 rendering context
+     * @params {*} options
      * @throws ErrWebglContext           - When unable to create a webgl context
      */
-    CreateDevice(canvas, params = {})
+    CreateDevice({ canvas, canvas2d, glParams = {} } = {})
     {
         this.gl = null;
         this.effectDir = "/effect.gles2/";
 
+        const params = Object.assign({}, glParams);
         params.alpha = get(params, "alpha", true);
         params.webgl2 = this.enableWebgl2;
         params.xrCompatible = this.enableWebxr;
@@ -263,6 +264,31 @@ export class Tw2Device extends Tw2EventEmitter
 
         const gl = this.gl = Tw2Device.CreateContext(params, canvas);
         this.msg("debug", `Webgl${this.glVersion} context created`);
+
+        // Allow for a 2d canvas
+        try
+        {
+            if (canvas2d)
+            {
+                if (isString(canvas2d))
+                {
+                    canvas2d = document.getElementById(canvas2d);
+                }
+
+                this.canvas2d = {
+                    canvas: canvas2d,
+                    context: canvas2d.getContext("2d"),
+                    enabled: true,
+                    autoResize: true,
+                    OnResize: null,
+                    OnDraw: null
+                };
+            }
+        }
+        catch(err)
+        {
+            throw new Error("Invalid 2d canvas");
+        }
 
         const
             returnFalse = () => false,
@@ -393,13 +419,34 @@ export class Tw2Device extends Tw2EventEmitter
         */
         else
         {
-            this.canvas.width = Math.floor(this.canvas.offsetWidth * this.viewportPixelRatio);
-            this.canvas.height = Math.floor(this.canvas.offsetHeight * this.viewportPixelRatio);
+            this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
+            this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
         }
 
         this.viewportWidth = this.canvas.width;
         this.viewportHeight = this.canvas.height;
         this.viewportAspect = this.viewportWidth / this.viewportHeight;
+
+        const event = {
+            width: this.viewportWidth,
+            height: this.viewportHeight,
+            aspect: this.viewportAspect,
+        };
+
+        // Handle 2d canvas
+        if (this.canvas2d && this.canvas2d.enabled)
+        {
+            if (this.canvas2d.autoResize)
+            {
+                this.canvas2d.canvas.width = this.viewportWidth;
+                this.canvas2d.canvas.height = this.viewportHeight;
+            }
+
+            if (this.canvas2d.OnResize)
+            {
+                this.canvas2d.OnResize(event);
+            }
+        }
 
         this.tw2.SetVariableValue("ViewportSize", [
             this.viewportWidth,
@@ -408,12 +455,7 @@ export class Tw2Device extends Tw2EventEmitter
             this.viewportHeight
         ]);
 
-        this.emit("resized", {
-            width: this.viewportWidth,
-            height: this.viewportHeight,
-            aspect: this.viewportAspect,
-            canvas: this.canvas
-        });
+        this.emit("resized", event);
     }
 
     /**
@@ -458,7 +500,10 @@ export class Tw2Device extends Tw2EventEmitter
      */
     EndFrame()
     {
-
+        if (this.canvas2d && this.canvas2d.enabled && this.canvas2d.OnDraw)
+        {
+            this.canvas2d.OnDraw();
+        }
     }
 
     /**
