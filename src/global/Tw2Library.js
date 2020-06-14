@@ -201,11 +201,13 @@ class Tw2Library extends Tw2EventEmitter
     Initialize(options = {})
     {
         this.Register(options);
-        this.device.CreateDevice(options.canvas, options.glParams);
 
-        if (options.render)
+        const { render, glParams, canvas, canvas2d } = options;
+        this.device.CreateDevice({ canvas, canvas2d, glParams });
+
+        if (render)
         {
-            this.on("tick", options.render);
+            this.on("tick", render);
 
             const tick = () =>
             {
