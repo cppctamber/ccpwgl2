@@ -635,3 +635,45 @@ vec3.unwrapRadians = function(out, a)
     out[2] = num.unwrapRadians(a[2]);
     return out;
 };
+
+/**
+ * Converts from linear color to rgba
+ * @param {vec3} out
+ * @param {vec3} linear
+ * @param {boolean} [denormalizeAlpha]
+ * @returns {vec3}
+ */
+vec3.toRGB = function(out, linear)
+{
+    out[0] = num.colorFromLinear(linear[0]);
+    out[1] = num.colorFromLinear(linear[1]);
+    out[2] = num.colorFromLinear(linear[2]);
+    return out;
+};
+
+/**
+ * Converts to linear color from rgba
+ * @param {vec3} out
+ * @param {vec3} rgb
+ * @returns {vec3} out
+ */
+vec3.fromRGB = function(out, rgb)
+{
+    out[0] = num.linearFromColor(rgb[0]);
+    out[1] = num.linearFromColor(rgb[1]);
+    out[2] = num.linearFromColor(rgb[2]);
+    return out;
+};
+
+/**
+ * Gets hex value from linear color
+ * @param {vec4} linear
+ * @returns {string} hex value
+ */
+vec3.hex = function(linear)
+{
+    return "#" +
+        num.hexFromLinear(linear[0]) +
+        num.hexFromLinear(linear[1]) +
+        num.hexFromLinear(linear[2]);
+};
