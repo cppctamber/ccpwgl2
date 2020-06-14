@@ -561,6 +561,46 @@ num.toHalfFloat = (function()
 }());
 
 /**
+ * Converts linear color to rgba/rgb color
+ * @param {Number} a
+ * @returns {Number}
+ */
+num.colorFromLinear = function(a)
+{
+    return Math.min(Math.floor(a * 255), 255);
+};
+
+/**
+ * Converts linear color to rgba/rgb color
+ * @param {Number} a
+ * @returns {Number}
+ */
+num.linearFromColor = function(a)
+{
+    return a / 255;
+};
+
+/**
+ * Converts linear color to hex string
+ * @param {Number} a
+ * @returns {String}
+ */
+num.hexFromLinear = function(a)
+{
+    return num.hexFromColor(num.colorFromLinear(a));
+};
+
+/**
+ * Converts rgb/rgba color to hex string
+ * @param {Number} a
+ * @returns {String}
+ */
+num.hexFromColor = function(a)
+{
+    return (a | 1 << 8).toString(16).slice(1);
+};
+
+/**
  * Unwraps degrees
  *
  * @param {number} d

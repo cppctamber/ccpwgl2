@@ -120,6 +120,13 @@ export class Tw2TextureRes extends Tw2Resource
 
             */
             case "dds":
+
+                // Ensure we have data to work with
+                if (!data.byteLength)
+                {
+                    throw new ErrResourceFormat("Invalid DDS, file is empty");
+                }
+
                 const
                     ext = device.GetExtension("compressed_texture_s3tc"),
                     header = new Int32Array(data, 0, DDS_HEADER_LENGTH_INT),
