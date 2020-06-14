@@ -90,15 +90,35 @@ export class EveCustomMask extends Tw2TransformParameter
 
         const { DiffuseColor, FresnelColor, Gloss, PatternMaskMap } = mask.parameters;
 
-        if (DiffuseName) DiffuseName.SetValue(DiffuseColor.GetValue());
-        if (FresnelName) FresnelName.SetValue(FresnelColor.GetValue());
-        if (GlossName) GlossName.SetValue(Gloss.GetValue());
+        if (DiffuseName)
+        {
+            DiffuseName.SetValue(DiffuseColor.GetValue());
+            DiffuseColor.on("modified", () => DiffuseName.SetValue(DiffuseColor.GetValue()));
+        }
+
+        if (FresnelName)
+        {
+            FresnelName.SetValue(FresnelColor.GetValue());
+            FresnelColor.on("modified", () => FresnelName.SetValue(FresnelColor.GetValue()));
+        }
+
+        if (GlossName)
+        {
+            GlossName.SetValue(Gloss.GetValue());
+            Gloss.on("modified", () => GlossName.SetValue(Gloss.GetValue()));
+        }
 
         if (PatternTexture)
         {
             const overrides = PatternMaskMap.GetOverrides();
             PatternTexture.SetOverrides(overrides);
-            PatternTexture.SetValue(PatternTexture.PatternMaskMap.GetValue());
+            PatternTexture.SetValue(PatternMaskMap.GetValue());
+
+            PatternMaskMap.on("modified", ()=>
+            {
+                PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
+                PatternTexture.SetValue(PatternTexture.GetValue());
+            });
         }
     }
 
