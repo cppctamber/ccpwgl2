@@ -18,6 +18,163 @@ export class Tw2Shader
     techniques = {};
     annotations = {};
 
+    /**
+     * Finds per object data usages in a shader
+     * @param {Tw2PerObjectData} perObjectData
+     * @param {String } [technique=Main]
+     * @returns {{ps: {parameter: [], frame: [], object: []}, ffe: {object: []}, vs: {parameter: [], frame: [], object: []}}}
+     */
+    FindPerObjectDataUsage(perObjectData, technique = "Main")
+    {
+        if (!Tw2Shader.DEBUG_ENABLED)
+        {
+            throw new Error("Debug mode must be enabled to find per object data");
+        }
+
+        //TODO: Add Textures
+        //TODO: Add Overrides
+
+        const result = {
+            vs: {
+                frame: [],
+                object: [],
+                parameter: [],
+                //texture: [],
+                //override: []
+            },
+            ps: {
+                frame: [],
+                object: [],
+                parameter: [],
+                //texture: [],
+                //override: []
+            },
+            ffe: {
+                object: [],
+            }
+        };
+
+        const
+            { perFramePSData, perFrameVSData } = device,
+            [ stage0, stage1 ] = this.techniques[technique].passes[0].stages,
+            code = stage0.shaderCode + stage1.shaderCode,
+            lines = code.split(/\r\n|\r|\n/);
+
+        const CBH = {
+            cb0: { name: "ConstantVertex", source: stage0, target: result.vs.parameter, isStage: true },
+            cb1: { name: "PerFrameVS", source: perFrameVSData, target: result.vs.frame },
+            cb2: { name: "PerFramePS", source: perFramePSData, target: result.ps.frame },
+            cb3: { name: "PerObjectVS", source: perObjectData.vs, target: result.vs.object },
+            cb4: { name: "PerObjectPS", source: perObjectData.ps, target: result.ps.object },
+            cb5: { name: "PerObjectFFE", source: perObjectData.ffe, target: result.ffe.object },
+            cb7: { name: "ConstantFragment", source: stage1, target: result.ps.parameter, isStage: true }
+        };
+
+        const CBHReverse = {
+            "PerFrameVS": "cb1",
+            "PerObjectVS": "cb3",
+            "PerFramePS": "cb2",
+            "PerObjectPS": "cb4",
+            "PerObjectFFE": "cb5"
+        };
+
+        const Swizzle = [ "x", "y", "z", "w" ];
+
+        function parsePer(per, index, fullElement)
+        {
+            const { target } = per;
+
+            const el = per.source.FindElementFromIndex(index);
+            if (el)
+            {
+                const
+                    { name, offset } = el,
+                    ix = index - offset,
+                    propName = fullElement ? name : name + "." + ix;
+
+                if (!target.includes(propName))
+                {
+                    target.push(propName);
+                    target.sort();
+                }
+                return;
+            }
+
+            throw new Error(`Error finding element in ${per.name} at index: ${index}`);
+        }
+
+        function parseStage(stage, index)
+        {
+            const
+                { target, source } = stage,
+                { constants } = source;
+
+            for (let i = 0; i < constants.length; i++)
+            {
+                const { offset, name, type, size } = constants[i];
+                // Find the correct constant value
+                if (index < offset || index > offset + size - 1) continue;
+                // Offset to the constant
+                const ix = index - offset;
+                // Per object or per frame
+                if (type === 3)
+                {
+                    parsePer(CBH[CBHReverse[name]], ix);
+                }
+                // Parameter
+                else
+                {
+                    const propName = name + "." + ix;
+                    if (!target.includes(propName))
+                    {
+                        target.push(propName);
+                        target.sort();
+                    }
+                }
+                return;
+            }
+
+            throw new Error(`Error finding element in ${stage.name} at index: ${index}`);
+        }
+
+        lines.forEach(line =>
+        {
+            if (!line) return;
+
+            // Todo: Use a single regex to get the results...
+            const match = line.match(/cb[0123457]\[\d+\]\.?[xyzw]?[xyzw]?[xyzw]?[xyzw]+/g); //(cb[0123457])\[(\d+)\]\.([xyzw]+)
+
+            if (!match) return;
+
+            for (let i = 0; i < match.length; i++)
+            {
+                let [ split, swizzle ] = match[i].split(".");
+
+                const
+                    cbh = split.match(/(cb[0-7])/g)[0],
+                    index = parseInt(split.replace(cbh, "").replace("[", "").replace("]", "")) * 4,
+                    // Todo: Handle when a whole value is used, excluding the initial definition of the constant buffer
+                    elements = swizzle.split("").map(x => Swizzle.indexOf(x));
+
+                const source = CBH[cbh];
+
+                for (let i = 0; i < elements.length; i++)
+                {
+                    if (source.isStage)
+                    {
+                        parseStage(source, index + elements[i]);
+                    }
+                    else
+                    {
+                        parsePer(source, index + elements[i]);
+                    }
+                }
+
+            }
+        });
+
+        return result;
+    }
 
     /**
      * Constructor
@@ -131,6 +288,8 @@ export class Tw2Shader
                         if (Tw2Shader.DEBUG_ENABLED)
                         {
                             stage.shaderCode = shaderCode;
+
+
                             stage.shadowShaderCode = shadowShaderCode;
                         }
                     }
@@ -310,6 +469,26 @@ export class Tw2Shader
                         {
                             if (stage.textures[n].registerIndex === s.registerIndex)
                             {
+                                /*
+                                switch(stage.textures[n].type)
+                                {
+                                    case 4:
+                                        s.samplerType = gl.TEXTURE_CUBE_MAP;
+                                        s.isVolume = false;
+                                        break;
+
+                                    case 3:
+                                        s.samplerType = gl.TEXTURE_2D_ARRAY; // gl.TEXTURE_3D ??
+                                        s.isVolume = true;
+                                        break;
+
+                                    default:
+                                        s.samplerType = gl.TEXTURE_2D;
+                                        s.isVolume = false;
+                                        break;
+                                }
+                                 */
+
                                 s.samplerType = stage.textures[n].type === 4 ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
                                 s.isVolume = stage.textures[n].type === 3;
                                 break;
