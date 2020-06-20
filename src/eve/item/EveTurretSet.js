@@ -273,6 +273,7 @@ export class EveTurretSet extends EveObjectSet
 
     /**
      * Sets a callback which is called when the turret set fires
+     * TODO: Replace with events
      * @param {Function} func
      */
     OnTurretFired(func)
@@ -680,6 +681,8 @@ export class EveTurretSet extends EveObjectSet
                         this._fireCallback(this, transforms, activeTurret);
                     }
                     this._fireCallbackPending = false;
+
+                    this.emit("fired", { turretSet: this, turret: activeTurret });
                 }
             }
 
@@ -857,10 +860,7 @@ export class EveTurretSet extends EveObjectSet
         this._state = EveTurretSet.State.FIRING;
         this._recheckTimeLeft = 2;
 
-        if (this._fireCallback)
-        {
-            this._fireCallbackPending = true;
-        }
+        this._fireCallbackPending = true;
     }
 
     /**
