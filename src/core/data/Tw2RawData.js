@@ -68,6 +68,28 @@ export class Tw2RawData
     }
 
     /**
+     * Finds an element by an index
+     * @param {Number} index
+     * @returns {*|null}
+     */
+    FindElementFromIndex(index)
+    {
+        if (index >= 0 && index < this._nextOffset)
+        {
+            for (const key in this.elements)
+            {
+                if (this.elements.hasOwnProperty(key))
+                {
+                    const { offset, size } = this.elements[key];
+                    if (index < offset || index > offset + size - 1) continue;
+                    return this.elements[key];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Declares a raw data element
      * @param {String} name
      * @param {Number|Array|Float32Array} data - Size or the default value in an array
@@ -79,7 +101,7 @@ export class Tw2RawData
             size = isValue ? data.length : data,
             value = isValue ? data : null;
 
-        this.elements[name] = { offset: this._nextOffset, array: null, size, value };
+        this.elements[name] = { name, offset: this._nextOffset, array: null, size, value };
         this._nextOffset += size;
     }
 

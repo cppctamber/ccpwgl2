@@ -55,6 +55,27 @@ export class Tw2AnimationController extends Tw2BaseClass
     }
 
     /**
+     * Fires a listener on an event
+     * @param {String} eventName
+     * @param {Function} listener
+     * @param {*} [context]
+     * @param {Boolean} [once]
+     * @returns {Tw2EventEmitter}
+     */
+    on(eventName, listener, context, once)
+    {
+
+        // Ensure "loaded" event is handled if called after the controller has already loaded
+        if (eventName === "loaded" && this.IsLoaded())
+        {
+            listener.call(context, { controller: this });
+            if (once) return this;
+        }
+
+        return super.on(eventName, listener, context, once);
+    }
+
+    /**
      * Checks if the animation is good
      * @returns {boolean}
      */

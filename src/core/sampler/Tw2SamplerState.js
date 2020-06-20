@@ -108,6 +108,12 @@ export class Tw2SamplerState
 
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
         gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);
+
+        if (targetType === gl.TEXTURE_3D || targetType === gl.TEXTURE_2D_ARRAY)
+        {
+            gl.texParameteri(targetType, gl.TEXTURE_WRAP_R, useAddress ? this.addressW : gl.CLAMP_TO_EDGE);
+        }
+
         gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
         gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
 

@@ -70,9 +70,9 @@ export class Tw2Animation extends Tw2EventEmitter
      * Adds a callback
      * - Provided for backwards compatibility
      * - If the callback returns true it will be removed once fired
-     * @param {Function} callback
+     * @param {Function} [callback=null]
      */
-    AddCallback(callback)
+    AddCallback(callback=null)
     {
         this._callback = callback;
     }
@@ -126,7 +126,11 @@ export class Tw2Animation extends Tw2EventEmitter
         this._state = Tw2Animation.State.PLAYING;
 
         if (events) this.add(events);
-        if (callback) this.AddCallback(callback);
+
+        if (callback !== undefined)
+        {
+            this.AddCallback(callback);
+        }
 
         if (wasPaused)
         {
