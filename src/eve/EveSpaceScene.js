@@ -158,6 +158,7 @@ export class EveSpaceScene extends Tw2BaseClass
         starField: true
     };
 
+    _localTransform = mat4.create();
 
     _debugHelper = null;
     _batches = new Tw2BatchAccumulator();
@@ -213,6 +214,45 @@ export class EveSpaceScene extends Tw2BaseClass
             this.objects.splice(0);
         }
 
+    }
+
+    /**
+     * Sets the scene's transform
+     * @param {mat4} m
+     */
+    SetTransform(m)
+    {
+        mat4.copy(this._localTransform, m);
+    }
+
+    /**
+     * Gets the scene's transform
+     * @param {mat4} out
+     */
+    GetTransform(out)
+    {
+        mat4.copy(out, this._localTransform);
+    }
+
+    /**
+     * Sets the scene's environment transform
+     * @param {mat4} m
+     */
+    SetEnvironmentTransform(m)
+    {
+        mat4.getRotation(this.envMapRotation, m);
+        mat4.getScaling(this.envMapScaling, m);
+        // Apply to the effect as well??
+    }
+
+    /**
+     * Gets the scene's environment transform
+     * @param {mat4} out
+     */
+    GetEnvironmentTransform(out)
+    {
+        const translation = vec3.set(EveSpaceScene.global.vec3_ZERO, 0, 0, 0);
+        mat4.fromRotationTranslationScale(out, this.envMapRotation, translation, this.envMapScaling);
     }
 
     /**
@@ -448,7 +488,7 @@ export class EveSpaceScene extends Tw2BaseClass
         const
             d = device,
             g = EveSpaceScene.global,
-            tr = undefined,
+            tr = this._localTransform,
             show = this.visible;
 
         if (show["environment"] && this.backgroundEffect)
@@ -593,7 +633,7 @@ export class EveSpaceScene extends Tw2BaseClass
         {
             for (let i = 0; i < this.lensflares.length; ++i)
             {
-                this.lensflares[i].UpdateOccluders();
+                this.lensflares[i].UpdateOccluders(); // World transform applied here?
             }
         }
 
@@ -621,15 +661,24 @@ export class EveSpaceScene extends Tw2BaseClass
         const
             d = device,
             g = EveSpaceScene.global,
+            world = this._localTransform,
             envMapTransform = g.mat4_2,
             sunDir = g.vec3_0,
             show = this.visible;
 
-        // Todo: Update from local transform??
         mat4.fromQuat(envMapTransform, this.envMapRotation);
         mat4.scale(envMapTransform, envMapTransform, this.envMapScaling);
+
+        mat4.multiply(envMapTransform, envMapTransform, world);
+        envMapTransform[12] = 0;
+        envMapTransform[13] = 0;
+        envMapTransform[14] = 0;
+
         mat4.transpose(envMapTransform, envMapTransform);
-        vec3.negate(sunDir, this.sunDirection);
+
+        // Sun direction
+        vec3.transformMat4(sunDir, this.sunDirection, world);
+        vec3.negate(sunDir, sunDir);
         vec3.normalize(sunDir, sunDir);
 
         let distance = this.fogEnd - this.fogStart;
@@ -689,15 +738,6 @@ export class EveSpaceScene extends Tw2BaseClass
         ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
         ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
 
-        /*
-        ps.Get("SceneData.NebulaIntensity")[0] = this.nebulaIntensity;
-        ps.Get("ViewportSize")[0] = d.viewportWidth;
-        ps.Get("ViewportSize")[1] = d.viewportHeight;
-        ps.Get("ShadowCameraRange")[0] = 1;
-        ps.Get("ProjectionToView")[0] = -d.projection[14];
-        ps.Get("ProjectionToView")[1] = -d.projection[10] - 1;
-         */
-
         d.perFramePSData = ps;
 
         const
@@ -718,6 +758,7 @@ export class EveSpaceScene extends Tw2BaseClass
         if (!EveSpaceScene.global)
         {
             EveSpaceScene.global = {
+                vec3_ZERO : vec3.create(),
                 vec3_0: vec3.create(),
                 vec4_0: vec4.create(),
                 mat4_0: mat4.create(),
