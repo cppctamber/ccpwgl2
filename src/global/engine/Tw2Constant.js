@@ -1,3 +1,72 @@
+/**
+ * Values for textureQuality option that can be passed to ccpwgl.initialize.
+ */
+export const TextureQuality = {
+    HIGH: 0,
+    MEDIUM: 1,
+    LOW: 2
+};
+
+/**
+ * Values for textureQuality option that can be passed to ccpwgl.initialize.
+ */
+export const ShaderQuality = {
+    HIGH: "hi",
+    LOW: "lo"
+};
+
+/**
+ * Resource unload policty. Controls how cached resources are evicted from
+ * memory. See ccpwgl.getResourceUnloadPolicy and ccpwgl.setResourceUnloadPolicy.
+ * When set to MANUAL you need to call ccpwgl.clearCachedResources function manually
+ * from time to time to clear resources from memory cache. When set to USAGE_BASED
+ * (default) resources are automatically removed from the cache if they are not used
+ * for a specified period of time.
+ * It is preferable to use USAGE_BASED, but occasionally this will unload resources
+ * when you don't want to (for example if you temporary hide a ship). In such cases
+ * you will have to use MANUAL policy and call ccpwgl.clearCachedResources when
+ * you know that all resources you need are loaded (see ccpwgl.isLoading).
+ */
+export const ResourceUnloadPolicy = {
+    MANUAL: 0,
+    USAGE_BASED: 1
+};
+
+/**
+ * Scene LOD settings: with LOD_ENABLED, scene will not try to render ships/objects that
+ * are outside view frustum. Additionally it will hide some parts of ship (like decals)
+ * for ships that too far away. Enabling LOD will help performance significantly for
+ * scenes with a large number of objects. Defaults to LOD_DISABLED for compatibility.
+ */
+export const LodSettings = {
+    LOD_DISABLED: 0,
+    LOD_ENABLED: 1
+};
+
+/**
+ * Turret states
+ */
+export const TurretState = {
+    IDLE: 0,
+    OFFLINE: 1,
+    FIRING: 2
+};
+
+/**
+ * Ship siege state
+ */
+export const AnimationState = {
+    NORMAL: 0,
+
+    SIEGE: 1,
+    NORMAL_TO_SIEGE: 100,
+    SIEGE_TO_NORMAL: 101,
+
+    WARP: 2,
+    NORMAL_TO_WARP: 200,
+    WARP_TO_NORMAL: 201
+};
+
 /*
 
     Attachment types
@@ -570,6 +639,7 @@ export const DDS_HEADER_OFFSET_CAPS2 = 28;
 export const DDS_HEADER_OFFSET_CAPS3 = 29;
 export const DDS_HEADER_OFFSET_CAPS4 = 30;
 export const DDS_HEADER_OFFSET_DXGI_FORMAT = 32;
+
 
 export const FOURCC_DXT1 = 827611204;
 export const FOURCC_DXT5 = 894720068;
