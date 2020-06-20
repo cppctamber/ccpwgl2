@@ -135,16 +135,17 @@ export class EveLocator2 extends Tw2BaseClass
     }
 
     /**
-     * Locator name prefixes
+     * Locator types
      * @type {{AUDIO: string, ATTACH: string, BOOSTER: string, TURRET: string, XL_TURRET: string}}
      */
-    static Prefix = {
+    static Type = {
         AUDIO: "locator_audio",
         ATTACH: "locator_attach",
         BOOSTER: "locator_booster",
         TURRET: "locator_turret",
         XL_TURRET: "locator_xl",
-        CHAIN: "locator_chain"
+        CHAIN: "locator_chain",
+        ATOMIC: "locator_atomic"
     };
 
 }
