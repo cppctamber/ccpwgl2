@@ -85,7 +85,13 @@ export class Tw2Animation extends Tw2EventEmitter
     {
         if (this._callback)
         {
-            if (this._callback(this, this._controller))
+            // Cache the original callback in case the animation's callback
+            // was changed from within the original callback - we don't want to remove a new one.
+            const
+                callback = this._callback,
+                remove = callback(this, this._controller);
+
+            if (remove && this._callback === callback)
             {
                 this._callback = null;
             }
