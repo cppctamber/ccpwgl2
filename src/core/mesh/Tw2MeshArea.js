@@ -51,6 +51,16 @@ export class Tw2MeshArea extends Tw2BaseClass
     }
 
     /**
+     * Gets a mesh areas's resources
+     * @param {Array} out
+     * @returns {Array<Tw2Resource>} out
+     */
+    GetResources(out=[])
+    {
+        return this.effect ? this.effect.GetResources(out) : out;
+    }
+
+    /**
      * Finds an effect parameter by it's name
      * @param {String} name
      * @returns {Tw2Parameter|null}
