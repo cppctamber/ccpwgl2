@@ -116,6 +116,7 @@ export class Tw2Effect extends Tw2BaseClass
     {
         this.shader = res.GetShader(this.options);
         this.BindParameters();
+        this.emit("loaded", { effect: this, shader: this.shader, resource: res });
         return true;
     }
 
@@ -631,6 +632,23 @@ export class Tw2Effect extends Tw2BaseClass
         return this.BindParameters();
     }
 
+    /**
+     * on Event Listener
+     * @param {Tw2Effect} source
+     * @param {String} eventName
+     * @param {Function} listener
+     * @param {*} [context]
+     * @returns {boolean}
+     */
+    static onListener(source, eventName, listener, context)
+    {
+        if (eventName === "loaded" && source.shader)
+        {
+            listener.call(context, { effect: source, shader: source.shader, resource: source.effectRes });
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Converts an effect file path into one suitable for an effect resource

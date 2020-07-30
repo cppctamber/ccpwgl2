@@ -107,6 +107,7 @@ export class Tw2EventEmitter
         }
 
         eventName = eventName.toLowerCase();
+
         if (!events[eventName])
         {
             events[eventName] = new Map();
@@ -115,7 +116,7 @@ export class Tw2EventEmitter
         // Allow intercepting of a listener when its first added
         if (!events[eventName].has(listener) && this.constructor.onListener)
         {
-            if (this.constructor.onListener(eventName, listener, context) && once)
+            if (this.constructor.onListener(this, eventName, listener, context) && once)
             {
                 return this;
             }
