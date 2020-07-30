@@ -193,6 +193,107 @@ export class Tw2TransformParameter extends Tw2Parameter
     }
 
     /**
+     * Sets the transform from an object
+     * @param {Object} options
+     * @param {Boolean} [skipUpdate]
+     */
+    SetValues(options = {}, skipUpdate)
+    {
+        let {
+            transform,
+            rotation,
+            euler,
+            scale,
+            scaling,
+            radius,
+            translation,
+            position,
+            name
+        } = options;
+
+        if (name) this.name = name;
+
+        if (scale === undefined) scale = scaling;
+        if (scale === undefined && radius) scale = radius * 2;
+        if (!rotation) rotation = euler;
+        if (!translation) translation = position;
+
+        if (!transform && !rotation && !scale && !translation)
+        {
+            return;
+        }
+
+        if (transform)
+        {
+            if (util.isMatrix4)
+            {
+                this.SetTransform(transform);
+            }
+            else
+            {
+                throw new Error("Invalid transform matrix");
+            }
+        }
+
+        if (rotation)
+        {
+            if (util.isVector3(rotation))
+            {
+                this.SetRotationFromEuler(rotation);
+            }
+            else if (util.isVector4(rotation))
+            {
+                this.SetRotation(rotation);
+            }
+            else
+            {
+                throw new Error("Invalid rotation value");
+            }
+        }
+
+        if (scale !== undefined)
+        {
+            if (util.isNumber(scale))
+            {
+                this.SetScaleUniform(scale);
+            }
+            else if (util.isVector3)
+            {
+                this.SetScale(scale);
+            }
+            else
+            {
+                throw new Error("Invalid scale");
+            }
+        }
+
+        if (translation)
+        {
+            this.SetTranslation(translation);
+        }
+
+        if (!skipUpdate)
+        {
+            this.UpdateValues();
+        }
+
+    }
+
+    /**
+     * Gets the transforms' values
+     * @param {Object} [out={}]
+     * @returns {{}}
+     */
+    GetValues(out = {})
+    {
+        if (this.name) out.name = this.name;
+        out.rotation = this.GetRotation([]);
+        out.translation = this.GetTranslation([]);
+        out.scaling = this.GetScale([]);
+        return out;
+    }
+
+    /**
      * Gets the world transpose
      * @param {mat4} out
      * @returns {mat4}
@@ -627,7 +728,7 @@ export class Tw2TransformParameter extends Tw2Parameter
 
     /**
      * Gets the local axis angle
-     * @param {quat} out
+     * @param {vec3} out
      * @returns {Number}
      */
     GetAxisAngle(out)
@@ -944,6 +1045,48 @@ export class Tw2TransformParameter extends Tw2Parameter
     ScaleZ(s)
     {
         return this.ScaleValues(1, 1, s);
+    }
+
+    /**
+     * Gets a vector 3 from an object
+     * @param {Object} obj
+     * @returns {Float32Array}
+     */
+    static Vector3FromObject(obj)
+    {
+        if ("r" in obj)
+        {
+            return new Float32Array([ obj.r, obj.g, obj.b ]);
+        }
+        else if ("x" in obj)
+        {
+            return new Float32Array([ obj.x, obj.y, obj.z ]);
+        }
+        else
+        {
+            throw new Error("Invalid vector3 object");
+        }
+    }
+
+    /**
+     * Gets a quat from an object
+     * @param {Object} obj
+     * @returns {Float32Array}
+     */
+    static Vector4FromObject(obj)
+    {
+        if ("r" in obj)
+        {
+            return new Float32Array([ obj.r, obj.g, obj.b, "a" in obj ? obj.a : 1 ]);
+        }
+        else if ("x" in obj)
+        {
+            return new Float32Array([ obj.x, obj.y, obj.z, obj.w ]);
+        }
+        else
+        {
+            throw new Error("Invalid vector4 object");
+        }
     }
 
     /**
