@@ -32,7 +32,6 @@ export class EvePlanet extends EveObject
     @meta.isPrivate
     heightMapResPath2 = "";
 
-
     _heightDirty = false;
     _lockedResources = [];
     _watchedResources = [];
@@ -40,6 +39,18 @@ export class EvePlanet extends EveObject
     _useLOD = true;
     _atmosphere = null;
     _planet = null;
+
+    /**
+     * Rebuilds the planet
+     */
+    Rebuild()
+    {
+        if (this._planet)
+        {
+            this._heightDirty = true;
+            EvePlanet.MeshLoaded(this, this._planet);
+        }
+    }
 
     /**
      * Creates the planet from an options object
@@ -83,6 +94,7 @@ export class EvePlanet extends EveObject
         {
             resMan.GetObject(resPath, obj =>
             {
+                obj.resPath = resPath;
                 this._planet = obj;
                 EvePlanet.MeshLoaded(this, obj);
                 onPartLoaded();
@@ -93,6 +105,7 @@ export class EvePlanet extends EveObject
         {
             resMan.GetObject(atmospherePath, obj =>
             {
+                obj.resPath = atmospherePath;
                 this._atmosphere = obj;
                 this.highDetail.children.push(obj);
                 onPartLoaded();
