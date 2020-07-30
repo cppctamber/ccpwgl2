@@ -154,7 +154,7 @@ export class Tw2Device extends Tw2EventEmitter
     enableWebgl2 = true;
     enableWebxr = true;
 
-    alphaBlendBackBuffer = true;
+    alphaBlendBackBuffer = false;
     antialiasing = true;
     msaaSamples = 0;
     wrapModes = [];
@@ -257,7 +257,7 @@ export class Tw2Device extends Tw2EventEmitter
         this.effectDir = "/effect.gles2/";
 
         const params = Object.assign({}, glParams);
-        params.alpha = get(params, "alpha", true);
+        params.alpha = get(params, "alpha", false);
         params.webgl2 = this.enableWebgl2;
         params.xrCompatible = this.enableWebxr;
         params.antialiasing = this.enableAntialiasing ? get(params, "antialiasing", true) : false;
