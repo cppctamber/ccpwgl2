@@ -550,36 +550,101 @@ export class Tw2Shader
         {
             const
                 name = ReadString(),
-                annotations = [],
+                annotations = { name },
                 annotationCount = reader.ReadUInt8();
+
+            let group = "None",
+                components = [];
 
             for (let annotationIx = 0; annotationIx < annotationCount; ++annotationIx)
             {
-                annotations[annotationIx] = {};
-                annotations[annotationIx].name = ReadString();
-                annotations[annotationIx].type = reader.ReadUInt8();
-                switch (annotations[annotationIx].type)
+                let
+                    key = ReadString(),
+                    type = reader.ReadUInt8(),
+                    value;
+
+                switch (type)
                 {
                     case 0:
-                        annotations[annotationIx].value = reader.ReadUInt32() !== 0;
+                        value = reader.ReadUInt32() !== 0;
                         break;
 
                     case 1:
-                        annotations[annotationIx].value = reader.ReadInt32();
+                        value = reader.ReadInt32();
                         break;
 
                     case 2:
-                        annotations[annotationIx].value = reader.ReadFloat32();
+                        value = reader.ReadFloat32();
                         break;
 
                     default:
-                        annotations[annotationIx].value = ReadString();
+                        value = ReadString();
+                }
+
+                // Normalize the annotations
+                switch (key.toUpperCase())
+                {
+                    case "UIWIDGET":
+                        annotations.widget = value.toUpperCase();
+                        if (annotations.widget === "LINEARCOLOR")
+                        {
+                            components = this.constructor.LinearColor;
+                        }
+                        break;
+
+                    case "SASUIVISIBLE":
+                        annotations.display = value;
+                        break;
+
+                    case "SASUIDESCRIPTION":
+                        annotations.description = value;
+                        break;
+
+                    case "GROUP":
+                        group = annotations.group = value;
+                        break;
+
+                    case "COMPONENT1":
+                        components[0] = value;
+                        break;
+
+                    case "COMPONENT2":
+                        components[1] = value;
+                        break;
+
+                    case "COMPONENT3":
+                        components[2] = value;
+                        break;
+
+                    case "COMPONENT4":
+                        components[3] = value;
+                        break;
+
+                    default:
+                        key = key.charAt(0).toLowerCase() + key.substring(1);
+                        annotations[key] = value;
                 }
             }
+
+            if (!annotations.widget && this.HasTexture(name))
+            {
+                annotations.widget = "TEXTURE";
+            }
+
+            if (components.length)
+            {
+                annotations.components = components;
+            }
+
             this.annotations[name] = annotations;
         }
     }
 
+    /**
+     * Linear colour component names
+     * @type {string[]}
+     */
+    static LinearColor = [ "Linear red", "Linear green", "Linear blue", "Linear alpha" ];
 
     /**
      * Applies an Effect Pass
@@ -819,11 +884,21 @@ export class Tw2Shader
 
         if (!overrides) return code;
 
+        function escapeRegExp(string)
+        {
+            return string.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        function replaceAll(str, find, replace)
+        {
+            return str.replace(new RegExp(escapeRegExp(find), "g"), replace);
+        }
+
         for (const key in overrides)
         {
             if (overrides.hasOwnProperty(key))
             {
-                code = code.replace(key, overrides[key]);
+                code = replaceAll(code, key, overrides[key]);
             }
         }
 
