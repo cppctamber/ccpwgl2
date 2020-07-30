@@ -186,21 +186,24 @@ export function EveSOF(tw2)
                 area = hullAreas[i],
                 effect = new Tw2Effect();
 
-            // Use references to custom mask parameters - do not recreate them
-            for (let i = 0; i < 2; i++)
+            if (masks)
             {
-                const mask = masks[i];
-                if (mask)
+                // Use references to custom mask parameters - do not recreate them
+                for (let i = 0; i < 2; i++)
                 {
-                    const { PatternMaskMap, DiffuseColor, FresnelColor, Gloss } = mask.parameters;
-                    effect.parameters[PatternMaskMap.name] = PatternMaskMap;
-                    effect.parameters[DiffuseColor.name] = DiffuseColor;
-                    effect.parameters[FresnelColor.name] = FresnelColor;
-                    effect.parameters[Gloss.name] = Gloss;
-                }
-                else
-                {
-                    console.error("Missing mask " + i);
+                    const mask = masks[i];
+                    if (mask)
+                    {
+                        const { PatternMaskMap, DiffuseColor, FresnelColor, Gloss } = mask.parameters;
+                        effect.parameters[PatternMaskMap.name] = PatternMaskMap;
+                        effect.parameters[DiffuseColor.name] = DiffuseColor;
+                        effect.parameters[FresnelColor.name] = FresnelColor;
+                        effect.parameters[Gloss.name] = Gloss;
+                    }
+                    else
+                    {
+                        console.error("Missing mask " + i);
+                    }
                 }
             }
 
@@ -1025,22 +1028,27 @@ export function EveSOF(tw2)
 
     function SetupTurretMaterial(turretSet, parentFactionName, turretFactionName)
     {
+
         var parentFaction = data["faction"][parentFactionName];
         var turretFaction = data["faction"][turretFactionName];
+
         var parentArea = null;
         if (parentFaction && parentFaction.areas && ("hull" in parentFaction.areas))
         {
             parentArea = parentFaction.areas.hull;
         }
+
         var turretArea = null;
         if (turretFaction && turretFaction.areas && ("hull" in turretFaction.areas))
         {
             turretArea = turretFaction.areas.hull;
         }
+
         if (!parentArea && !turretArea)
         {
             return;
         }
+
         if (turretSet.turretEffect)
         {
             var params = turretSet.turretEffect.parameters;
@@ -1054,10 +1062,12 @@ export function EveSOF(tw2)
                     }
                     var parentValue = null;
                     var turretValue = null;
+
                     if (parentArea)
                     {
                         parentValue = GetTurretMaterialParameter(i, parentFaction, parentArea);
                     }
+
                     if (turretArea)
                     {
                         turretValue = GetTurretMaterialParameter(i, parentFaction, parentArea);
