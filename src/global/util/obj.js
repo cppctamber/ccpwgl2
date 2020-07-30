@@ -1,61 +1,84 @@
-import { isTyped, isArrayLike, isArray, isObjectObject, isNumber, isVector, isPlain, } from "./type";
-import { toArray } from "./arr";
+import { isTyped, isArrayLike, isArray, isObjectObject, isNumber, isVector } from "./type";
 import { num } from "../math";
 
 /**
  * Assigns property values if they exist in a source object
  * - Typed arrays are cloned/ copied to ensure no pass-by-reference errors
- * - TODO: Return boolean for when some thing was assigned
  *
  * @param {*} dest
  * @param {*} src
- * @param {String|string[]} attrs
+ * @param {string[]} attrs
+ * @param {Boolean} [skipIfDestUndefined] - Skips assignment if the destination doesn't have the value
  * @returns {boolean} true if something was assigned
  */
-export function assignIfExists(dest, src, attrs)
+export function assignIfExists(dest, src, attrs, skipIfDestUndefined)
 {
     if (!src) return false;
 
-    attrs = toArray(attrs);
+    if (!isArray(attrs))
+    {
+        attrs = [ attrs ];
+        console.warn("Attributes must now always an array");
+    }
+
     let assigned = false;
     for (let i = 0; i < attrs.length; i++)
     {
         const attr = attrs[i];
-        if (src[attr] === undefined) continue;
 
-        assigned = true;
-        if (isArrayLike(dest[attr]))
+        let srcAttr = attr,
+            destAttr = attr;
+
+        if (isArray(attr))
         {
-            if (isTyped(dest[attr]))
+            srcAttr = attr[1];
+            destAttr = attr[0];
+        }
+
+        if (src[srcAttr] === undefined)
+        {
+            continue;
+        }
+
+        if (skipIfDestUndefined && dest[destAttr] === undefined)
+        {
+            continue;
+        }
+
+        if (isArrayLike(dest[destAttr]))
+        {
+            if (isTyped(dest[destAttr]))
             {
-                if (dest[attr].length !== src[attr].length)
+                if (dest[destAttr].length !== src[srcAttr].length)
                 {
-                    const Constructor = dest[attr].constructor;
-                    dest[attr] = new Constructor(src[attr]);
+                    const Constructor = dest[destAttr].constructor;
+                    dest[destAttr] = new Constructor(src[srcAttr]);
                 }
                 else
                 {
-                    dest[attr].set(src[attr]);
+                    dest[destAttr].set(src[srcAttr]);
                 }
             }
             else
             {
-                dest[attr].splice(0);
-                for (let i = 0; i < src[attr].length; i++)
+                dest[destAttr].splice(0);
+                for (let i = 0; i < src[srcAttr].length; i++)
                 {
-                    dest[attr].push(src[attr][i]);
+                    dest[destAttr].push(src[srcAttr][i]);
                 }
             }
         }
-        else if (isTyped(src[attr]))
+        else if (isTyped(src[srcAttr]))
         {
-            const Constructor = src[attr].constructor;
-            dest[attr] = new Constructor(src[attr]);
+            const Constructor = src[srcAttr].constructor;
+            dest[destAttr] = new Constructor(src[srcAttr]);
         }
         else
         {
-            dest[attr] = src[attr];
+            dest[destAttr] = src[srcAttr];
         }
+
+        assigned = true;
     }
 
     return assigned;
