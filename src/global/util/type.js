@@ -316,23 +316,30 @@ export function isUndefined(a)
 /**
  * Checks if a value is arraylike and only contains numbers
  * @param {*} a
+ * @param {!Number} [len]
  * @returns {Boolean}
  */
-export function isVector(a)
+export function isVector(a, len)
 {
     if (a)
     {
         if (isTyped(a))
         {
-            return true;
+            return len === undefined ? true : a.length === len;
         }
 
         if (isArray(a))
         {
+            if (len !== undefined && a.length !== len)
+            {
+                return false;
+            }
+
             for (let i = 0; i < a.length; i++)
             {
                 if (!isNumber(a[i])) return false;
             }
+
             return true;
         }
     }
@@ -346,7 +353,7 @@ export function isVector(a)
  */
 export function isVector2(a)
 {
-    return isVector(a) ? a.length === 2 : false;
+    return isVector(a, 2);
 }
 
 /**
@@ -356,7 +363,7 @@ export function isVector2(a)
  */
 export function isVector3(a)
 {
-    return isVector(a) ? a.length === 3 : false;
+    return isVector(a,  3);
 }
 
 /**
@@ -366,7 +373,7 @@ export function isVector3(a)
  */
 export function isVector4(a)
 {
-    return isVector(a) ? a.length === 4 : false;
+    return isVector(a, 4);
 }
 
 /**
@@ -376,7 +383,7 @@ export function isVector4(a)
  */
 export function isMatrix3(a)
 {
-    return isVector(a) ? a.length === 9 : false;
+    return isVector(a, 9);
 }
 
 /**
@@ -386,5 +393,5 @@ export function isMatrix3(a)
  */
 export function isMatrix4(a)
 {
-    return isVector(a) ? a.length === 16 : false;
+    return isVector(a, 16);
 }
