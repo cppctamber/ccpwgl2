@@ -1,4 +1,4 @@
-import { isFunction, isPlain, isString } from "global/util";
+import { isFunction } from "global/util";
 
 /**
  * Meta data prefix
@@ -17,32 +17,6 @@ function getMetaName(name)
 }
 
 /**
- * Provides similar functionality to Reflect.metadata
- * @param {String} a
- * @param {*} value
- * @param {Object} [options];
- * @returns {Function}
- */
-export function metadata(a, value, options)
-{
-    if (value !== undefined)
-    {
-        return function(target, property, descriptor)
-        {
-            handle(target, property, descriptor, options, a, value);
-        };
-    }
-
-    return function(...args)
-    {
-        return function(target, property, descriptor)
-        {
-            handle(target, property, descriptor, options, a, args);
-        };
-    };
-}
-
-/**
  * Defines meta data
  * @param {String} name
  * @param {*} value
@@ -50,7 +24,7 @@ export function metadata(a, value, options)
  * @param {String} [property]
  * @returns {*} value
  */
-export function setMetadata(name, value, target, property)
+export function defineMetadata(name, value, target, property)
 {
     Reflect.defineMetadata(getMetaName(name), value, target, property);
 }
@@ -201,8 +175,8 @@ export function getOwnMetadataValues(target, property)
 /**
  * Ensures descriptors always have default values
  * - Babel doesn't always handle correctly
- * @param {*} d
- * @returns {*}
+ * @param {PropertyDescriptor} d
+ * @returns {PropertyDescriptor}
  */
 export function handleDescriptor(d)
 {
@@ -215,146 +189,66 @@ export function handleDescriptor(d)
     return d;
 }
 
+const invalidHandlers = {
+    ctor: () => { throw new TypeError("Decorator doesn't support classes");},
+    method: () => { throw new TypeError("Decorator doesn't support methods");},
+    property: () => { throw new TypeError("Decorator doesn't support properties");},
+};
 
-function handle(t, p, d, o, k, v)
+function normalizeHandlers(options)
 {
-    if (!isString(k))
+    const { ctor, method, property, handler } = options;
+
+    function resolve(value, errHandler)
     {
-        throw new Error("A key must be defined");
+        if (isFunction(value)) return value;
+        if (value === false) return errHandler;
+        return isFunction(handler) ? handler : errHandler;
     }
 
-    handleDescriptor(d);
-
-    let any = true,
-        func;
-
-    if (o)
-    {
-        func = o.any;
-
-        if (o.any !== undefined)
-        {
-            any = o.any;
-        }
-        else
-        {
-            any = o.method === undefined && o.class === undefined && o.property === undefined;
-        }
-    }
-
-    if (!any)
-    {
-        if (p)
-        {
-            if (isFunction(t[p]))
-            {
-                if (!o.method) throw new Error("Decorator doesn't support methods");
-            }
-            else if (!o.property)
-            {
-                throw new Error("Decorator doesn't support properties");
-            }
-        }
-        else if (!o.class)
-        {
-            throw new Error("Decorator doesn't support classes");
-        }
-    }
-
-    if (func)
-    {
-        v = func({  target: t, property: p, descriptor:  d, key: k, value: v, options: o });
-    }
-
-    if (v !== undefined)
-    {
-        setMetadata(k, v, t, p);
-    }
+    return {
+        ctor: resolve(ctor, invalidHandlers.ctor),
+        method: resolve(method, invalidHandlers.method),
+        property: resolve(property, invalidHandlers.property)
+    };
 }
 
-
-/**
- * Constructs a generic meta data type decorator
- * @param {Number} type
- * @param {Object} [o={}]
- * @returns {(function(*=): function(...[*]=))|(function(...[*]=))}
- */
-export function createTypeDecorator(type, o={})
+function getDecorator(handlers, options, ...args)
 {
-    if (!isPlain(o)) o = { children: !!o };
-
-    o.property = true;
-    o.class = false;
-    o.method = false;
-
-    if (o.children)
+    return function(target, property, descriptor)
     {
-        return function(...args)
-        {
-            return function(t, p, d)
-            {
-                handle(t, p, d, o, "type", type);
-                setMetadata("typeOf", args, t, p);
-            };
-        };
-    }
-
-    return function(t, p, d)
-    {
-        handle(t, p, d, o, "type", type);
+        if (descriptor) handleDescriptor(descriptor);
+        let obj = { target, property, descriptor, ...options };
+        if (!property) return handlers.ctor(obj, ...args);
+        return isFunction(target[property]) ? handlers.method(obj, ...args) : handlers.property(obj, ...args);
     };
 }
 
 /**
  * Creates a decorator
- * @param {String|Function} k
- * @param {Object} [options={}]
- * @param {*} [options.value]          - The value to set, or if undefined a value must be passed to the decorator
- * @param {Function} [options.func]    - An optional function to call before setting meta data value
- * @param {Boolean} [options.method]   - True if allowed on methods
- * @param {Boolean} [options.class]    - True if allowed on classes
- * @param {Boolean} [options.property] - True if allowed on properties
- * @param {Boolean} [options.any]      - Defaults to true if no decorator type restrictions defined
+ * @param {Object|Function} o
+ * @param {Boolean|Function} [o.ctor]     - Class handler
+ * @param {Boolean|Function} [o.property] - Property handler
+ * @param {Boolean|Function} [o.method]   - Method handler
+ * @param {Function} [o.handler]  - Default handler
+ * @param {*} [o.value]
  * @returns {Function}
  */
-export function createDecorator(k, options={})
+export function createDecorator(o)
 {
-    const { value } = options;
-    
-    if (isFunction(k))
-    {
-        if (value !== undefined)
-        {
-            return function(target, property, descriptor)
-            {
-                handleDescriptor(descriptor);
-                k({ target, property, descriptor, value, options });
-            };
-        }
+    // Strip standard options
+    let { handler, property, method, ctor, noArgs, ...options } = o;
 
-        return function(...args)
-        {
-            return function(target, property, descriptor)
-            {
-                handleDescriptor(descriptor);
-                k({ target, property, descriptor, value: args, options });
-            };
-        };
-    }
+    const handlers = normalizeHandlers(o);
 
-    if (value !== undefined)
+    if (noArgs)
     {
-        return function(target, property, descriptor)
-        {
-            handle(target, property, descriptor, options, k, value);
-        };
+        return getDecorator(handlers, options);
     }
 
     return function(...args)
     {
-        return function(target, property,  descriptor)
-        {
-            handle(target, property, descriptor, options, k, args);
-        };
+        return getDecorator(handlers, options, ...args);
     };
 }
+
