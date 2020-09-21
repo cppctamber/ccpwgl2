@@ -18,7 +18,7 @@ export function assignIfExists(dest, src, attrs, skipIfDestUndefined)
     if (!isArray(attrs))
     {
         attrs = [ attrs ];
-        console.warn("Attributes must now always an array");
+        console.warn("Attributes must now always be an array");
     }
 
     let assigned = false;
@@ -216,4 +216,24 @@ export function isEqual(a, b)
     }
 
     return true;
+}
+
+/**
+ * Gets an object's key from a value
+ * @param {Object} obj
+ * @param {*} value
+ * @returns {string}
+ */
+export function getKeyFromValue(obj, value)
+{
+    for (const key in obj)
+    {
+        if (obj.hasOwnProperty(key))
+        {
+            if(obj[key] === value)
+            {
+                return key;
+            }
+        }
+    }
 }
