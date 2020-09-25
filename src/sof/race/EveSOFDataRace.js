@@ -1,17 +1,17 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataRace", true)
+@meta.ctor("EveSOFDataRace")
 export class EveSOFDataRace
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("EveSOFDataBooster")
+    @meta.struct("EveSOFDataBooster")
     booster = null;
 
-    @meta.black.objectOf("EveSOFDataRaceDamage")
+    @meta.struct("EveSOFDataRaceDamage")
     damage = null;
 
 }

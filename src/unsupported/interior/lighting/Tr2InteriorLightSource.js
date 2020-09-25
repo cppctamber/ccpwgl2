@@ -2,44 +2,44 @@ import { meta, vec3, vec4, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2InteriorLightSource", true)
+@meta.ctor("Tr2InteriorLightSource")
 export class Tr2InteriorLightSource extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.float
+    @meta.float
     coneAlphaInner = 0;
 
-    @meta.black.float
+    @meta.float
     coneAlphaOuter = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     coneDirection = vec3.create();
 
-    @meta.black.float
+    @meta.float
     falloff = 0;
 
-    @meta.black.float
+    @meta.float
     importanceBias = 0;
 
-    @meta.black.float
+    @meta.float
     importanceScale = 0;
 
-    @meta.black.objectOf("Tr2KelvinColor")
+    @meta.struct("Tr2KelvinColor")
     kelvinColor = null;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.float
+    @meta.float
     radius = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     useKelvinColor = false;
 
 }

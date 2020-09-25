@@ -1,23 +1,23 @@
 import { meta, vec4 } from "global";
 
 
-@meta.type("EveSOFDataFactionSpotlightSet", true)
+@meta.ctor("EveSOFDataFactionSpotlightSet")
 export class EveSOFDataFactionSpotlightSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.color
+    @meta.color
     coneColor = vec4.create();
 
-    @meta.black.color
+    @meta.color
     flareColor = vec4.create();
 
-    @meta.black.uint
+    @meta.uint
     groupIndex = -1;
 
-    @meta.black.color
+    @meta.color
     spriteColor = vec4.create();
 
 }

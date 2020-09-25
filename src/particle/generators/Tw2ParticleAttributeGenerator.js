@@ -2,8 +2,6 @@
 import { meta, vec3, Tw2BaseClass } from "global";
 
 
-@meta.abstract
-@meta.type("Tw2ParticleAttributeGenerator")
 export class Tw2ParticleAttributeGenerator extends Tw2BaseClass
 {
 

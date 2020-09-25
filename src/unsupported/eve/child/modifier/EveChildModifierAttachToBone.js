@@ -3,11 +3,11 @@ import { EveChildModifier } from "./EveChildModifier";
 
 
 @meta.notImplemented
-@meta.type("EveChildModifierAttachToBone", true)
+@meta.ctor("EveChildModifierAttachToBone")
 export class EveChildModifierAttachToBone extends EveChildModifier
 {
 
-    @meta.black.uint
+    @meta.uint
     boneIndex = -1;
 
 }

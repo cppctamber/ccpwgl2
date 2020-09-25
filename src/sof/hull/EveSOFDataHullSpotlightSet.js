@@ -1,26 +1,26 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataHullSpotlightSet", true)
+@meta.ctor("EveSOFDataHullSpotlightSet")
 export class EveSOFDataHullSpotlightSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.path
+    @meta.path
     coneTextureResPath = "";
 
-    @meta.black.path
+    @meta.path
     glowTextureResPath = "";
 
-    @meta.black.listOf("EveSOFDataHullSpotlightSetItem")
+    @meta.list("EveSOFDataHullSpotlightSetItem")
     items = [];
 
-    @meta.black.boolean
+    @meta.boolean
     skinned = false;
 
-    @meta.black.float
+    @meta.float
     zOffset = 0;
 
 }

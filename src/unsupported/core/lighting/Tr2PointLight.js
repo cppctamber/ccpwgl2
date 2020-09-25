@@ -2,35 +2,35 @@ import { meta, vec3, vec4, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2PointLight", true)
+@meta.ctor("Tr2PointLight")
 export class Tr2PointLight extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     brightness = 0;
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.float
+    @meta.float
     innerRadius = 0;
 
-    @meta.black.float
+    @meta.float
     noiseAmplitude = 0;
 
-    @meta.black.float
+    @meta.float
     noiseFrequency = 0;
 
-    @meta.black.float
+    @meta.float
     noiseOctaves = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.float
+    @meta.float
     radius = 0;
 
 }

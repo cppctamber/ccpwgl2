@@ -2,7 +2,7 @@ import { meta, quat, vec3 } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 
-@meta.type("Tw2YPRSequencer")
+@meta.ctor("Tw2YPRSequencer")
 export class Tw2YPRSequencer extends Tw2CurveSequencer
 {
 
@@ -14,13 +14,13 @@ export class Tw2YPRSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     YawPitchRoll = vec3.create();
 
-    @meta.objectOf("Tw2Curve")
+    @meta.struct("Tw2Curve")
     YawCurve = null;
 
-    @meta.objectOf("Tw2Curve")
+    @meta.struct("Tw2Curve")
     PitchCurve = null;
 
-    @meta.objectOf("Tw2Curve")
+    @meta.struct("Tw2Curve")
     RollCurve = null;
 
     /**

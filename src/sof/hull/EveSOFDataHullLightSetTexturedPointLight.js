@@ -1,26 +1,26 @@
 import { meta, vec3 } from "global";
 
 
-@meta.type("EveSOFDataHullLightSetTexturedPointLight", true)
+@meta.ctor("EveSOFDataHullLightSetTexturedPointLight")
 export class EveSOFDataHullLightSetTexturedPointLight
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     brightness = 0;
 
-    @meta.black.float
+    @meta.float
     innerRadius = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.float
+    @meta.float
     radius = 0;
 
-    @meta.black.path
+    @meta.path
     texturePath = "";
 
 }

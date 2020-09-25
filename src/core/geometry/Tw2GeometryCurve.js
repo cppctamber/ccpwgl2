@@ -1,7 +1,7 @@
 import { meta } from "global";
 
 
-@meta.type("Tw2GeometryCurve")
+@meta.ctor("Tw2GeometryCurve")
 export class Tw2GeometryCurve
 {
 

@@ -2,32 +2,32 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveStretch2", true)
+@meta.ctor("EveStretch2")
 export class EveStretch2 extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.object
+    @meta.struct()
     destinationEmitter = null;
 
-    @meta.black.object
+    @meta.struct()
     destinationLight = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
-    @meta.black.objectOf("Tw2CurveSet")
+    @meta.struct("Tw2CurveSet")
     loop = null;
 
-    @meta.black.object
+    @meta.struct()
     sourceEmitter = null;
 
-    @meta.black.object
+    @meta.struct()
     sourceLight = null;
 
-    @meta.black.uint
+    @meta.uint
     quadCount = 0;
 
 }

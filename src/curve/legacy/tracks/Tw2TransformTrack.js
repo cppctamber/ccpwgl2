@@ -1,7 +1,7 @@
 import { meta, curve, vec3, quat, mat4, util, resMan } from "global";
 
 
-@meta.type("Tw2TransformTrack")
+@meta.ctor("Tw2TransformTrack")
 export class Tw2TransformTrack
 {
 
@@ -11,7 +11,7 @@ export class Tw2TransformTrack
     @meta.path
     resPath = "";
 
-    @meta.object
+    @meta.struct()
     res = null;
 
     @meta.string
@@ -35,13 +35,13 @@ export class Tw2TransformTrack
     @meta.matrix4
     scaleShear = mat4.create();
 
-    @meta.object
+    @meta.struct()
     positionCurve = null;
 
-    @meta.object
+    @meta.struct()
     orientationCurve = null;
 
-    @meta.object
+    @meta.struct()
     scaleCurve = null;
 
 

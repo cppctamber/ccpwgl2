@@ -2,14 +2,14 @@ import { meta, util, tw2 } from "global";
 import { Tw2TextureRes } from "./resource/Tw2TextureRes";
 
 
-@meta.type("Tw2RenderTarget")
+@meta.ctor("Tw2RenderTarget")
 export class Tw2RenderTarget
 {
 
     @meta.string
     name = "";
 
-    @meta.object
+    @meta.struct("Tw2TextureRes")
     @meta.isPrivate
     texture = null;
 
@@ -24,6 +24,7 @@ export class Tw2RenderTarget
     @meta.boolean
     @meta.isPrivate
     hasDepth = false;
+
 
     _id = util.generateID();
     _frameBuffer = null;

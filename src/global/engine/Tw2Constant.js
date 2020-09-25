@@ -136,46 +136,6 @@ export const Type = {
     ENUM: 70,
 };
 
-export const TypeCategory = {
-    UNKNOWN: 0,
-    BOOLEAN: 1,
-    STRING: 2,
-    NUMBER: 3,
-    OBJECT: 4,
-    PLAIN: 5,
-    LIST: 6,
-    ARRAY: 7,
-    TYPED: 8
-};
-
-export const TypeTypeCategory = {
-    [Type.UNKNOWN]: TypeCategory.UNKNOWN,
-    [Type.BOOLEAN]: TypeCategory.BOOLEAN,
-    [Type.STRING]: TypeCategory.STRING,
-    [Type.PATH]: TypeCategory.STRING,
-    [Type.EXPRESSION]: TypeCategory.STRING,
-    [Type.BYTE]: TypeCategory.NUMBER,
-    [Type.UINT]: TypeCategory.NUMBER,
-    [Type.USHORT]: TypeCategory.NUMBER,
-    [Type.FLOAT]: TypeCategory.NUMBER,
-    [Type.ENUM]: TypeCategory.NUMBER,
-    [Type.OBJECT]: TypeCategory.OBJECT,
-    [Type.RAW]: TypeCategory.OBJECT,
-    [Type.LIST]: TypeCategory.LIST,
-    [Type.PLAIN]: TypeCategory.PLAIN,
-    [Type.ARRAY]: TypeCategory.ARRAY,
-    [Type.VECTOR]: TypeCategory.TYPED,
-    [Type.VECTOR2]: TypeCategory.TYPED,
-    [Type.VECTOR3]: TypeCategory.TYPED,
-    [Type.VECTOR4]: TypeCategory.TYPED,
-    [Type.COLOR]: TypeCategory.TYPED,
-    [Type.QUATERNION]: TypeCategory.TYPED,
-    [Type.MATRIX3]: TypeCategory.TYPED,
-    [Type.MATRIX4]: TypeCategory.TYPED,
-    [Type.INDEX_BUFFER]: TypeCategory.TYPED,
-    [Type.ENUM]: TypeCategory.NUMBER
-};
-
 export const TypeLength = {
     [Type.VECTOR2]: 2,
     [Type.VECTOR3]: 3,

@@ -3,17 +3,17 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.type("Tr2ActionChildEffect", true)
+@meta.ctor("Tr2ActionChildEffect")
 export class Tr2ActionChildEffect extends Tw2Action
 {
 
-    @meta.black.string
+    @meta.string
     childName = "";
 
-    @meta.black.path
+    @meta.path
     path = "";
 
-    @meta.black.boolean
+    @meta.boolean
     removeOnStop = false;
 
 }

@@ -2,18 +2,17 @@ import { meta } from "global";
 import { Tw2Curve } from "curve";
 
 
-@meta.type("Tw2CurveAdapter")
-@meta.abstract
+@meta.ctor("Tw2CurveAdapter")
 export class Tw2CurveAdapter extends Tw2Curve
 {
 
-    @meta.string
+    //@meta.string
     name = "";
 
-    @meta.objectOf("Tw2Curve")
+    //@meta.struct("Tw2Curve")
     curve = null;
 
-    @meta.unknown
+    //@meta.unknown
     value = null;
 
 

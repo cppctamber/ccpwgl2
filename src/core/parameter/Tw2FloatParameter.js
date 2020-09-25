@@ -2,14 +2,14 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { meta, util } from "global";
 
 
-@meta.type("Tw2FloatParameter", "Tr2FloatParameter")
+@meta.ctor("Tw2FloatParameter", "Tr2FloatParameter")
 export class Tw2FloatParameter extends Tw2Parameter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     value = 1;
 
 

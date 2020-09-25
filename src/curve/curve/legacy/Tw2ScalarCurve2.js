@@ -9,7 +9,7 @@ const Interpolation = {
 };
 
 
-@meta.type("Tw2ScalarKey2")
+@meta.ctor("Tw2ScalarKey2")
 export class Tw2ScalarKey2 extends Tw2CurveKey
 {
 
@@ -22,13 +22,13 @@ export class Tw2ScalarKey2 extends Tw2CurveKey
     @meta.float
     rightTangent = 0;
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 1;
 
 }
 
 
-@meta.type("Tw2ScalarCurve2")
+@meta.ctor("Tw2ScalarCurve2")
 export class Tw2ScalarCurve2 extends Tw2Curve
 {
 
@@ -60,10 +60,10 @@ export class Tw2ScalarCurve2 extends Tw2Curve
     @meta.float
     endTangent = 0;
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 1;
 
-    @meta.listOf("Tw2ScalarKey2")
+    @meta.list("Tw2ScalarKey2")
     keys = [];
 
     @meta.float

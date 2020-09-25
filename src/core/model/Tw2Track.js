@@ -1,14 +1,14 @@
 import { meta } from "global";
 
 
-@meta.type("Tw2Track")
+@meta.ctor("Tw2Track")
 export class Tw2Track
 {
 
-    @meta.objectOf("Tw2GeometryTransformTrack")
+    @meta.struct("Tw2GeometryTransformTrack")
     trackRes = null;
 
-    @meta.objectOf("Tw2Bone")
+    @meta.struct("Tw2Bone")
     bone = null;
 
 }

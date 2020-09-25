@@ -1,7 +1,7 @@
 import { meta, FilterMode, MipFilterMode, GL_LINEAR, GL_REPEAT, GL_TEXTURE_2D } from "global";
 
 
-@meta.type("Tw2SamplerState")
+@meta.ctor("Tw2SamplerState")
 export class Tw2SamplerState
 {
 

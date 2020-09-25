@@ -3,8 +3,7 @@ import { EveChildModifier } from "./EveChildModifier";
 
 
 @meta.notImplemented
-@meta.type("EveChildModifierCameraOrientedRotationConstrained", true)
-@meta.data("black")
+@meta.ctor("EveChildModifierCameraOrientedRotationConstrained")
 export class EveChildModifierCameraOrientedRotationConstrained extends EveChildModifier
 {
 

@@ -1,7 +1,7 @@
 import { meta } from "global";
 
 
-@meta.type("Tw2GeometryAnimation")
+@meta.ctor("Tw2GeometryAnimation")
 export class Tw2GeometryAnimation
 {
 
@@ -11,7 +11,7 @@ export class Tw2GeometryAnimation
     @meta.float
     duration = 0;
 
-    @meta.listOf("Tw2GeometryTrackGroup")
+    @meta.list("Tw2GeometryTrackGroup")
     trackGroups = [];
 
 }

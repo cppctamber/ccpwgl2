@@ -1,7 +1,7 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-@meta.type("EveChildModifier")
+@meta.ctor("EveChildModifier")
 export class EveChildModifier extends Tw2BaseClass
 {
 

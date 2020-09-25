@@ -1,26 +1,14 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataTexture", true)
+@meta.ctor("EveSOFDataTexture")
 export class EveSOFDataTexture
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.path
+    @meta.path
     resFilePath = "";
-
-
-    /**
-     * Assigns the texture's values to an object
-     * @param {{}} [out={}]
-     * @returns {{}}
-     */
-    Assign(out = {})
-    {
-        out[this.name] = this.resFilePath;
-        return out;
-    }
 
 }

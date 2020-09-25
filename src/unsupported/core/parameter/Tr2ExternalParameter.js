@@ -3,17 +3,17 @@ import { Tw2Parameter } from "core/parameter/Tw2Parameter";
 
 
 @meta.notImplemented
-@meta.type("Tr2ExternalParameter", true)
+@meta.ctor("Tr2ExternalParameter")
 export class Tr2ExternalParameter extends Tw2Parameter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.string
+    @meta.string
     destinationAttribute = "";
 
-    @meta.black.object
+    @meta.struct()
     destinationObject = null;
 
 }

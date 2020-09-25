@@ -21,7 +21,7 @@ export class EveBoosterSet2Batch extends Tw2RenderBatch
 
 
 @meta.notImplemented
-@meta.type("EveBoosterSet2Item", true)
+@meta.ctor("EveBoosterSet2Item")
 export class EveBoosterSet2Item extends EveObjectSetItem
 {
 
@@ -29,65 +29,65 @@ export class EveBoosterSet2Item extends EveObjectSetItem
 
 
 @meta.notImplemented
-@meta.type("EveBoosterSet2", true)
+@meta.ctor("EveBoosterSet2")
 export class EveBoosterSet2 extends EveObjectSet
 {
 
-    @meta.black.boolean
+    @meta.boolean
     alwaysOn = false;
 
-    @meta.black.float
+    @meta.float
     alwaysOnIntensity = 0;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
-    @meta.black.color
+    @meta.color
     glowColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     glowScale = 0;
 
-    @meta.black.objectOf("EveSpriteSet")
+    @meta.struct("EveSpriteSet")
     glows = null;
 
-    @meta.black.color
+    @meta.color
     haloColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     haloScaleX = 0;
 
-    @meta.black.float
+    @meta.float
     haloScaleY = 0;
 
-    @meta.black.color
+    @meta.color
     lightColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     lightFlickerAmplitude = 0;
 
-    @meta.black.float
+    @meta.float
     lightFlickerFrequency = 0;
 
-    @meta.black.float
+    @meta.float
     lightRadius = 0;
 
-    @meta.black.color
+    @meta.color
     lightWarpColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     lightWarpRadius = 0;
 
-    @meta.black.float
+    @meta.float
     symHaloScale = 0;
 
-    @meta.black.objectOf("EveTrailsSet")
+    @meta.struct("EveTrailsSet")
     trails = null;
 
-    @meta.black.color
+    @meta.color
     warpGlowColor = vec4.create();
 
-    @meta.black.color
+    @meta.color
     warpHaloColor = vec4.create();
 
     /**

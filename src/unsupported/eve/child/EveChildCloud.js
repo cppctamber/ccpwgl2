@@ -3,32 +3,32 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.type("EveChildCloud", true)
+@meta.ctor("EveChildCloud")
 export class EveChildCloud extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     cellScreenSize = 0;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
-    @meta.black.uint
+    @meta.uint
     preTesselationLevel = 0;
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.float
+    @meta.float
     sortingModifier = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
 

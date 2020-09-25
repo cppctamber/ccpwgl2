@@ -1,7 +1,8 @@
 import { meta } from "global";
 
-@meta.type("EveSOFDataHullBannerLight", true)
-@meta.data("black")
+
+@meta.notImplemented
+@meta.ctor("EveSOFDataHullBannerLight")
 export class EveSOFDataHullBannerLight
 {
 

@@ -2,8 +2,6 @@
 import { meta, vec3, vec4, Tw2BaseClass } from "global";
 
 
-@meta.abstract
-@meta.type("Tw2ParticleForce")
 export class Tw2ParticleForce extends Tw2BaseClass
 {
 

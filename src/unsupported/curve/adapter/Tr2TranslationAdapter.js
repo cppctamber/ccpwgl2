@@ -3,14 +3,14 @@ import { Tw2CurveAdapter } from "./Tw2CurveAdapter";
 
 
 @meta.notImplemented
-@meta.type("Tr2TranslationAdapter", true)
+@meta.ctor("Tr2TranslationAdapter")
 export class Tr2TranslationAdapter extends Tw2CurveAdapter
 {
 
-    @meta.black.objectOf("Tw2Curve")
+    @meta.struct("Tw2Curve")
     curve = null;
 
-    @meta.black.vector3
+    @meta.vector3
     value = vec3.create();
 
 

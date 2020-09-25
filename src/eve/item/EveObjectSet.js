@@ -2,8 +2,6 @@
 import { meta, vec3, vec4, mat4, Tw2BaseClass, AttachmentType } from "global";
 
 
-@meta.abstract
-@meta.type("EveObjectSetItem")
 export class EveObjectSetItem extends Tw2BaseClass
 {
 
@@ -23,8 +21,6 @@ export class EveObjectSetItem extends Tw2BaseClass
 }
 
 
-@meta.abstract
-@meta.type("EveObjectSet")
 export class EveObjectSet extends Tw2BaseClass
 {
 
@@ -34,7 +30,7 @@ export class EveObjectSet extends Tw2BaseClass
     @meta.boolean
     display = true;
 
-    @meta.list
+    @meta.list()
     items = [];
 
 

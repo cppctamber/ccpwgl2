@@ -1,98 +1,74 @@
 import { meta, vec4 } from "global";
 
 
-@meta.type("EveSOFDataFactionColorSet")
+@meta.ctor("EveSOFDataFactionColorSet")
 export class EveSOFDataFactionColorSet
 {
 
-    @meta.black.color
+    @meta.color
     Black = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Blue = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Booster = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Cyan = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Darkhull = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Fire = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Glass = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Green = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Hull = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Killmark = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Orange = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Primary = vec4.create();
 
-    @meta.black.color
+    @meta.color
     PrimaryLight = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Reactor = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Red = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Secondary = vec4.create();
 
-    @meta.black.color
+    @meta.color
     SecondaryLight = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Tertiary = vec4.create();
 
-    @meta.black.color
+    @meta.color
     TertiaryLight = vec4.create();
 
-    @meta.black.color
+    @meta.color
     White = vec4.create();
 
-    @meta.black.color
+    @meta.color
     WhiteLight = vec4.create();
 
-    @meta.black.color
+    @meta.color
     Yellow = vec4.create();
-
-
-    /**
-     * Gets a faction color set by name
-     * @param {String} name
-     * @param {vec4} out
-     * @returns {vec4|null}
-     */
-    Get(name, out)
-    {
-        name = name.toUpperCase();
-
-        for (const key in this)
-        {
-            if (this.hasOwnProperty(key) && key.toUpperCase() === name)
-            {
-                vec4.copy(out, this[name]);
-                return out;
-            }
-        }
-
-        vec4.set(out, 0, 0, 0, 0);
-        return null;
-    }
 
 }

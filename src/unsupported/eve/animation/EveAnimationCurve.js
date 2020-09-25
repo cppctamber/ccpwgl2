@@ -2,11 +2,11 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveAnimationCurve", true)
+@meta.ctor("EveAnimationCurve")
 export class EveAnimationCurve
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
 }

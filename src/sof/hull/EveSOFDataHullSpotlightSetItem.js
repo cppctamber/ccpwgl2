@@ -1,32 +1,32 @@
 import { meta, mat4, vec3 } from "global";
 
 
-@meta.type("EveSOFDataHullSpotlightSetItem", true)
+@meta.ctor("EveSOFDataHullSpotlightSetItem")
 export class EveSOFDataHullSpotlightSetItem
 {
 
-    @meta.black.uint
+    @meta.uint
     boneIndex = -1;
 
-    @meta.black.boolean
+    @meta.boolean
     boosterGainInfluence = false;
 
-    @meta.black.float
+    @meta.float
     coneIntensity = 0;
 
-    @meta.black.float
+    @meta.float
     flareIntensity = 0;
 
-    @meta.black.uint
+    @meta.uint
     groupIndex = -1;
 
-    @meta.black.float
+    @meta.float
     spriteIntensity = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     spriteScale = vec3.fromValues(1, 1, 1);
 
-    @meta.black.matrix4
+    @meta.matrix4
     transform = mat4.create();
 
 }

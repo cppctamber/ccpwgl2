@@ -2,11 +2,11 @@ import { meta } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.type("Tw2ParticleDragForce", "Tr2ParticleDragForce")
+@meta.ctor("Tw2ParticleDragForce", "Tr2ParticleDragForce")
 export class Tw2ParticleDragForce extends Tw2ParticleForce
 {
 
-    @meta.black.float
+    @meta.float
     drag = 0.1;
 
 

@@ -14,32 +14,32 @@ import { meta, Tw2BaseClass } from "global";
  * @property {Tw2Effect} velocityEffect    -
  */
 @meta.notImplemented
-@meta.type("EveTacticalOverlay", true)
+@meta.ctor("EveTacticalOverlay")
 export class EveTacticalOverlay extends Tw2BaseClass
 {
 
-    @meta.black.object
+    @meta.struct()
     anchorEffect = null;
 
-    @meta.black.float
+    @meta.float
     arcSegmentMultiplier = 0;
 
-    @meta.black.object
+    @meta.struct()
     connectorEffect = null;
 
-    @meta.black.float
+    @meta.float
     segmentsHigh = 0;
 
-    @meta.black.float
+    @meta.float
     segmentsLow = 0;
 
-    @meta.black.float
+    @meta.float
     segmentsMedium = 0;
 
-    @meta.black.float
+    @meta.float
     targetMaxSegments = 0;
 
-    @meta.black.object
+    @meta.struct()
     velocityEffect = null;
 
 }

@@ -2,17 +2,17 @@ import { meta, curve, util, vec4 } from "global";
 import { ErrFeatureNotImplemented } from "core";
 
 
-@meta.type("Tw2MayaAnimationEngine")
+@meta.ctor("Tw2MayaAnimationEngine")
 export class Tw2MayaAnimationEngine
 {
 
-    @meta.list
+    @meta.list()
     curves = [];
 
-    @meta.list
+    @meta.list()
     hermiteSegments = [];
 
-    @meta.list
+    @meta.list()
     bezierSegments = [];
 
 

@@ -2,20 +2,20 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tw2CurveSetRange", true)
+@meta.ctor("Tw2CurveSetRange")
 export class Tw2CurveSetRange extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     endTime = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     looped = false;
 
-    @meta.black.float
+    @meta.float
     startTime = 0;
 
 }

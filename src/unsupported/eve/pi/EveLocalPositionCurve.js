@@ -7,11 +7,11 @@ import { meta, vec3, Tw2BaseClass } from "global";
  * @property {vec3} value -
  */
 @meta.notImplemented
-@meta.type("EveLocalPositionCurve", true)
+@meta.ctor("EveLocalPositionCurve")
 export class EveLocalPositionCurve extends Tw2BaseClass
 {
 
-    @meta.black.vector3
+    @meta.vector3
     value = vec3.create();
 
 }

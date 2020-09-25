@@ -3,23 +3,23 @@ import { ErrGeometryMeshElementComponentsMissing, ErrGeometryMeshMissingParticle
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
-@meta.type("Tw2StaticEmitter", "Tr2StaticEmitter")
+@meta.ctor("Tw2StaticEmitter", "Tr2StaticEmitter")
 export class Tw2StaticEmitter extends Tw2ParticleEmitter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.path
+    @meta.path
     geometryResourcePath = "";
 
-    @meta.black.uint
+    @meta.uint
     meshIndex = 0;
 
-    @meta.black.objectOf("Tw2ParticleSystem")
+    @meta.struct("Tw2ParticleSystem")
     particleSystem = null;
 
-    @meta.objectOf("Tw2GeometryRes")
+    @meta.struct("Tw2GeometryRes")
     @meta.isPrivate
     geometryResource = null;
 

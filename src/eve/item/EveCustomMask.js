@@ -2,7 +2,7 @@ import { meta, vec3, quat, vec4, mat4, tw2 } from "global";
 import { Tw2TextureParameter, Tw2TransformParameter, Tw2Vector4Parameter } from "core/parameter";
 
 
-@meta.type("EveCustomMask", true)
+@meta.ctor("EveCustomMask")
 @meta.stage(1)
 export class EveCustomMask extends Tw2TransformParameter
 {
@@ -13,22 +13,22 @@ export class EveCustomMask extends Tw2TransformParameter
     @meta.boolean
     isMirrored = false;
 
-    @meta.black.byte
+    @meta.byte
     materialIndex = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.vector4
+    @meta.vector4
     targetMaterials = vec4.create();
 
-    @meta.plainOf("Tw2Parameter")
+    @meta.plain //Of("Tw2Parameter")
     @meta.todo("Move to direct class properties")
     parameters = {
         PatternMaskMap: new Tw2TextureParameter("PatternMaskMap"),

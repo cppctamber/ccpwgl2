@@ -26,7 +26,7 @@ const Interpolation = {
  * @property {number} right
  * @property {number} interpolation
  */
-@meta.type("Tw2ScalarKey")
+@meta.ctor("Tw2ScalarKey")
 export class Tw2ScalarKey extends Tw2CurveKey
 {
 
@@ -39,13 +39,13 @@ export class Tw2ScalarKey extends Tw2CurveKey
     @meta.float
     right = 0;
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 0;
 
 }
 
 
-@meta.type("Tw2ScalarCurve")
+@meta.ctor("Tw2ScalarCurve")
 export class Tw2ScalarCurve extends Tw2Curve
 {
 
@@ -62,10 +62,10 @@ export class Tw2ScalarCurve extends Tw2Curve
     @meta.isPrivate
     value = 0;
 
-    @meta.enumerable(Extrapolation)
+    @meta.enums(Extrapolation)
     extrapolation = 0;
 
-    @meta.listOf("Tw2ScalarKey")
+    @meta.list("Tw2ScalarKey")
     keys = [];
 
     @meta.float

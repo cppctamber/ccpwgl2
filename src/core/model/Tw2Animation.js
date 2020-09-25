@@ -1,11 +1,11 @@
 import { meta, Tw2EventEmitter } from "global";
 
 
-@meta.type("Tw2Animation")
+@meta.ctor("Tw2Animation")
 export class Tw2Animation extends Tw2EventEmitter
 {
 
-    @meta.objectOf("Tw2GeometryAnimation")
+    @meta.struct("Tw2GeometryAnimation")
     @meta.isPrivate
     animationRes = null;
 
@@ -19,7 +19,7 @@ export class Tw2Animation extends Tw2EventEmitter
     @meta.boolean
     cycle = false;
 
-    @meta.listOf("Tw2TrackGroup")
+    @meta.list("Tw2TrackGroup")
     @meta.isPrivate
     trackGroups = [];
 

@@ -3,56 +3,56 @@ import { Tw2PerObjectData, Tw2RawData } from "core";
 import { EveChild } from "./EveChild";
 
 
-@meta.type("EveChildMesh", true)
+@meta.ctor("EveChildMesh", true)
 @meta.desc("Mesh attachment to space object")
 export class EveChildMesh extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.boolean
+    @meta.boolean
     display = true;
 
-    @meta.black.matrix4
+    @meta.matrix4
     localTransform = mat4.create();
 
     @meta.notImplemented
-    @meta.black.uint
+    @meta.uint
     lowestLodVisible = 2;
 
-    @meta.black.objectOf([ "Tw2Mesh", "Tw2InstancedMesh" ])
+    @meta.struct([ "Tw2Mesh", "Tw2InstancedMesh" ])
     mesh = null;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     minScreenSize = 0;
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sortValueOffset = 0;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     staticTransform = false;
 
     @meta.notImplemented
-    @meta.black.listOf("EveChildModifier")
+    @meta.list("EveChildModifier")
     transformModifiers = [];
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
-    @meta.black.boolean
+    @meta.boolean
     useSRT = true;
 
-    @meta.black.boolean
+    @meta.boolean
     useSpaceObjectData = true;
 
 

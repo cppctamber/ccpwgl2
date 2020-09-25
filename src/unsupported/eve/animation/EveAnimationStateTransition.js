@@ -2,7 +2,7 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveAnimationStateTransition")
+@meta.ctor("EveAnimationStateTransition")
 export class EveAnimationStateTransition
 {
 

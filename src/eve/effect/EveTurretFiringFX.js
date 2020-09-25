@@ -15,34 +15,34 @@ class EvePerMuzzleData
 }
 
 
-@meta.type("EveTurretFiringFX", true)
+@meta.ctor("EveTurretFiringFX")
 @meta.stage(2)
 export class EveTurretFiringFX extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.string
+    @meta.string
     boneName = "";
 
     @meta.boolean
     display = true;
 
     @meta.notImplemented
-    @meta.black.objectOf("TriObserverLocal")
+    @meta.struct("TriObserverLocal")
     destinationObserver = null;
 
-    @meta.black.float
+    @meta.float
     firingDelay1 = 0;
 
-    @meta.black.float
+    @meta.float
     firingDelay2 = 0;
 
-    @meta.black.float
+    @meta.float
     firingDelay3 = 0;
 
-    @meta.black.float
+    @meta.float
     firingDelay4 = 0;
 
     @meta.float
@@ -62,50 +62,50 @@ export class EveTurretFiringFX extends Tw2BaseClass
     firingDelay8 = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     firingDurationOverride = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     firingPeakTime = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     isLoopFiring = false;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     maxRadius = 0;
 
-    @meta.black.float
+    @meta.float
     maxScale = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     minRadius = 0;
 
-    @meta.black.float
+    @meta.float
     minScale = 0;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     scaleEffectTarget = false;
 
     @meta.notImplemented
-    @meta.black.objectOf("TriObserverLocal")
+    @meta.struct("TriObserverLocal")
     sourceObserver = null;
 
     @meta.notImplemented
-    @meta.black.objectOf("Tw2CurveSet")
+    @meta.struct("Tw2CurveSet")
     startCurveSet = null;
 
     @meta.notImplemented
-    @meta.black.objectOf("Tw2CurveSet")
+    @meta.struct("Tw2CurveSet")
     stopCurveSet = null;
 
-    @meta.black.listOf([ "EveStretch", "EveStretch2" ])
+    @meta.list([ "EveStretch", "EveStretch2" ])
     stretch = [];
 
-    @meta.black.boolean
+    @meta.boolean
     useMuzzleTransform = false;
 
 

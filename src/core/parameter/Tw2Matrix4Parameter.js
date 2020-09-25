@@ -2,14 +2,14 @@ import { meta, mat4 } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-@meta.type("Tw2Matrix4Parameter", "Tw2MatrixParameter")
+@meta.ctor("Tw2Matrix4Parameter", "Tw2MatrixParameter")
 export class Tw2Matrix4Parameter extends Tw2VectorParameter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.matrix4
+    @meta.matrix4
     value = mat4.create();
 
     /**

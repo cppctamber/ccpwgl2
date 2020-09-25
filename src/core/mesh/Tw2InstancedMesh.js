@@ -13,7 +13,7 @@ import {
 import { isString } from "global/util";
 
 
-@meta.type("Tw2InstancedMesh", "Tr2InstancedMesh")
+@meta.ctor("Tw2InstancedMesh", "Tr2InstancedMesh")
 export class Tw2InstancedMesh extends Tw2BaseClass
 {
 
@@ -23,52 +23,52 @@ export class Tw2InstancedMesh extends Tw2BaseClass
     @meta.boolean
     display = true;
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     additiveAreas = [];
 
-    @meta.black.object
+    @meta.struct()
     boundsMethod = null;
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     decalAreas = [];
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     depthAreas = [];
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     distortionAreas = [];
 
-    @meta.black.path
+    @meta.path
     geometryResPath = "";
 
-    @meta.black.path
+    @meta.path
     instanceGeometryResPath = "";
 
-    @meta.black.object
+    @meta.struct()
     instanceGeometryResource = null;
 
-    @meta.black.uint
+    @meta.uint
     instanceMeshIndex = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     maxBounds = vec3.create();
 
     @meta.notImplemented
-    @meta.black.uint
+    @meta.uint
     maxInstanceSize = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     minBounds = vec3.create();
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     opaqueAreas = [];
 
-    @meta.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     pickableAreas = [];
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     transparentAreas = [];
 
     @meta.plain

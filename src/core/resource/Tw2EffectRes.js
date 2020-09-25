@@ -18,7 +18,7 @@ import { ErrShaderHeaderSize, ErrShaderPermutationValue, ErrShaderVersion } from
  * @property {*} shaders
  * @inherits Tw2Resource
  */
-@meta.type("Tw2EffectRes")
+@meta.ctor("Tw2EffectRes")
 export class Tw2EffectRes extends Tw2Resource
 {
 

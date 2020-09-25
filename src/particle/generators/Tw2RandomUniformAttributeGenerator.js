@@ -3,24 +3,24 @@ import { Tw2ParticleElement } from "../element/Tw2ParticleElement";
 import { Tw2ParticleAttributeGenerator } from "./Tw2ParticleAttributeGenerator";
 
 
-@meta.type("Tw2RandomUniformAttributeGenerator", "Tr2RandomUniformAttributeGenerator")
+@meta.ctor("Tw2RandomUniformAttributeGenerator", "Tr2RandomUniformAttributeGenerator")
 export class Tw2RandomUniformAttributeGenerator extends Tw2ParticleAttributeGenerator
 {
 
-    @meta.black.string
+    @meta.string
     customName = "";
 
-    @meta.black.uint
-    @meta.enumerable(Tw2ParticleElement.Type)
+    @meta.uint
+    @meta.enums(Tw2ParticleElement.Type)
     elementType = Tw2ParticleElement.Type.CUSTOM;
 
-    @meta.black.vector4
+    @meta.vector4
     minRange = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     maxRange = vec4.create();
 
-    @meta.objectOf("Tw2ParticleElement")
+    @meta.struct("Tw2ParticleElement")
     _element = null;
 
 

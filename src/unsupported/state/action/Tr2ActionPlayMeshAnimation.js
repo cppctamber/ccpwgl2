@@ -3,17 +3,17 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.type("Tr2ActionPlayMeshAnimation", true)
+@meta.ctor("Tr2ActionPlayMeshAnimation")
 export class Tr2ActionPlayMeshAnimation extends Tw2Action
 {
 
-    @meta.black.string
+    @meta.string
     animation = "";
 
-    @meta.black.uint
+    @meta.uint
     loops = 0;
 
-    @meta.black.string
+    @meta.string
     mask = "";
 
 }

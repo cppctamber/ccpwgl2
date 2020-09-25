@@ -3,20 +3,20 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.type("Tr2ActionAnimateValue", true)
+@meta.ctor("Tr2ActionAnimateValue")
 export class Tr2ActionAnimateValue extends Tw2Action
 {
 
-    @meta.black.string
+    @meta.string
     attribute = "";
 
-    @meta.black.objectOf("Tr2CurveScalarExpression")
+    @meta.struct("Tr2CurveScalarExpression")
     curve = null;
 
-    @meta.black.path
+    @meta.path
     path = "";
 
-    @meta.black.string
+    @meta.string
     value = "";
 
 }

@@ -16,38 +16,38 @@ import { meta, vec3, vec4, Tw2BaseClass } from "global";
  * @property {Number} type                        -
  */
 @meta.notImplemented
-@meta.type("EveConnector", true)
+@meta.ctor("EveConnector", true)
 export class EveConnector extends Tw2BaseClass
 {
 
-    @meta.black.color
+    @meta.color
     animationColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     animationScale = 0;
 
-    @meta.black.float
+    @meta.float
     animationSpeed = 0;
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.object
+    @meta.struct()
     destObject = null;
 
-    @meta.black.vector3
+    @meta.vector3
     destPosition = vec3.create();
 
-    @meta.black.boolean
+    @meta.boolean
     isAnimated = false;
 
-    @meta.black.float
+    @meta.float
     lineWidth = 0;
 
-    @meta.black.object
+    @meta.struct()
     sourceObject = null;
 
-    @meta.black.uint
+    @meta.uint
     type = 0;
 
 }

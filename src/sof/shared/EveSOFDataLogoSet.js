@@ -1,23 +1,23 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataLogoSet", true)
+@meta.ctor("EveSOFDataLogoSet")
 export class EveSOFDataLogoSet
 {
 
-    @meta.black.objectOf("EveSOFDataLogo")
+    @meta.struct("EveSOFDataLogo")
     Marking_01 = null;
 
-    @meta.black.objectOf("EveSOFDataLogo")
+    @meta.struct("EveSOFDataLogo")
     Marking_02 = null;
 
-    @meta.black.objectOf("EveSOFDataLogo")
+    @meta.struct("EveSOFDataLogo")
     Primary = null;
 
-    @meta.black.objectOf("EveSOFDataLogo")
+    @meta.struct("EveSOFDataLogo")
     Secondary = null;
 
-    @meta.black.objectOf("EveSOFDataLogo")
+    @meta.struct("EveSOFDataLogo")
     Tertiary = null;
 
 

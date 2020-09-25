@@ -11,39 +11,39 @@ import {
 
 
 @meta.notImplemented
-@meta.type("Tr2MeshLod", true)
+@meta.ctor("Tr2MeshLod")
 @meta.todo("Implement LOD")
 export class Tr2MeshLod extends Tw2BaseClass
 {
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     additiveAreas = [];
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2GeometryRes")
+    @meta.list("Tw2GeometryRes")
     associatedResources = [];
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     decalAreas = [];
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     depthAreas = [];
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     distortionAreas = [];
 
-    @meta.black.objectOf("Tr2LodResource")
+    @meta.struct("Tr2LodResource")
     geometryRes = null;
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     opaqueAreas = [];
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     pickableAreas = [];
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     transparentAreas = [];
 
     @meta.boolean

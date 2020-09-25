@@ -2,17 +2,17 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2StateMachine", true)
+@meta.ctor("Tr2StateMachine")
 export class Tr2StateMachine extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
+    @meta.uint
     startState = 0;
 
-    @meta.black.listOf("Tr2StateMachineState")
+    @meta.list("Tr2StateMachineState")
     states = [];
 
 }

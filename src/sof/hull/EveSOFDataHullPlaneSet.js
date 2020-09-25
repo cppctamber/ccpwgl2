@@ -1,32 +1,32 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataHullPlaneSet", true)
+@meta.ctor("EveSOFDataHullPlaneSet")
 export class EveSOFDataHullPlaneSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
+    @meta.uint
     atlasSize = 0;
 
-    @meta.black.listOf("EveSOFDataHullPlaneSetItem")
+    @meta.list("EveSOFDataHullPlaneSetItem")
     items = [];
 
-    @meta.black.path
+    @meta.path
     layer1MapResPath = "";
 
-    @meta.black.path
+    @meta.path
     layer2MapResPath = "";
 
-    @meta.black.path
+    @meta.path
     maskMapResPath = "";
 
-    @meta.black.boolean
+    @meta.boolean
     skinned = false;
 
-    @meta.black.uint
+    @meta.uint
     usage = 0;
 
 }

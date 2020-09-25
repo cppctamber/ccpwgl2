@@ -2,14 +2,14 @@ import { meta } from "global";
 import { Tw2VertexDeclaration } from "../vertex";
 
 
-@meta.type("Tw2BlendShapeData")
+@meta.ctor("Tw2BlendShapeData")
 export class Tw2BlendShapeData
 {
 
     @meta.string
     name = "";
 
-    @meta.objectOf("Tw2VertexDeclaration")
+    @meta.struct("Tw2VertexDeclaration")
     declaration = new Tw2VertexDeclaration();
 
     @meta.vector

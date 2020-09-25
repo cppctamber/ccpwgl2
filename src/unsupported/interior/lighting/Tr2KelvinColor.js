@@ -2,14 +2,14 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2KelvinColor", true)
+@meta.ctor("Tr2KelvinColor")
 export class Tr2KelvinColor extends Tw2BaseClass
 {
 
-    @meta.black.float
+    @meta.float
     temperature = 0;
 
-    @meta.black.float
+    @meta.float
     tint = 0;
 
 }

@@ -2,7 +2,7 @@ import { meta } from "global";
 import { Tw2Curve, Tw2CurveKey } from "curve";
 
 
-@meta.type("Tw2CurveScalarKey")
+@meta.ctor("Tw2CurveScalarKey")
 export class Tw2CurveScalarKey extends Tw2CurveKey
 {
 
@@ -47,26 +47,26 @@ export class Tw2CurveScalarKey extends Tw2CurveKey
 
 
 @meta.notImplemented
-@meta.type("Tr2CurveScalar", true)
+@meta.ctor("Tr2CurveScalar")
 export class Tr2CurveScalar extends Tw2Curve
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
+    @meta.uint
     extrapolationAfter = 0;
 
-    @meta.black.uint
+    @meta.uint
     extrapolationBefore = 0;
 
-    @meta.black.struct([ Tw2CurveScalarKey ])
+    @meta.list(Tw2CurveScalarKey)
     keys = [];
 
-    @meta.black.float
+    @meta.float
     timeOffset = 0;
 
-    @meta.black.float
+    @meta.float
     timeScale = 0;
 
     @meta.float

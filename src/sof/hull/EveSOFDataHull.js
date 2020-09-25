@@ -1,122 +1,122 @@
 import { meta, vec3, vec4 } from "global";
 
 
-@meta.type("EveSOFDataHull", true)
+@meta.ctor("EveSOFDataHull")
 export class EveSOFDataHull
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveSOFDataHullArea")
+    @meta.list("EveSOFDataHullArea")
     additiveAreas = [];
 
-    @meta.black.listOf("EveSOFDataHullAnimation")
+    @meta.list("EveSOFDataHullAnimation")
     animations = [];
 
-    @meta.black.vector3
+    @meta.vector3
     audioPosition = vec3.create();
 
-    @meta.black.listOf("EveSOFDataHullBanner")
+    @meta.list("EveSOFDataHullBanner")
     banners = [];
 
-    @meta.black.objectOf("EveSOFDataHullBooster")
+    @meta.struct("EveSOFDataHullBooster")
     booster = null;
 
-    @meta.black.vector4
+    @meta.vector4
     boundingSphere = vec4.create();
 
-    @meta.black.uint
+    @meta.uint
     buildClass = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     castShadow = false;
 
-    @meta.black.string
+    @meta.string
     category = "";
 
-    @meta.black.listOf("EveSOFDataHullChild")
+    @meta.list("EveSOFDataHullChild")
     children = [];
 
-    @meta.black.listOf("EveSOFDataHullController")
+    @meta.list("EveSOFDataHullController")
     controllers = [];
 
-    @meta.black.listOf("EveSOFDataHullArea")
+    @meta.list("EveSOFDataHullArea")
     decalAreas = [];
 
-    @meta.black.listOf("EveSOFDataHullDecalSet")
+    @meta.list("EveSOFDataHullDecalSet")
     decalSets = [];
 
-    @meta.black.objectOf("EveSOFDataPatternPerHull")
+    @meta.struct("EveSOFDataPatternPerHull")
     defaultPattern = null;
 
-    @meta.black.listOf("EveSOFDataHullArea")
+    @meta.list("EveSOFDataHullArea")
     depthAreas = [];
 
-    @meta.black.string
+    @meta.string
     description = "";
 
-    @meta.black.listOf("EveSOFDataHullArea")
+    @meta.list("EveSOFDataHullArea")
     distortionAreas = [];
 
-    @meta.black.boolean
+    @meta.boolean
     enableDynamicBoundingSphere = false;
 
-    @meta.black.path
+    @meta.path
     geometryResFilePath = "";
 
-    @meta.black.listOf("EveSOFDataHullHazeSet")
+    @meta.list("EveSOFDataHullHazeSet")
     hazeSets = [];
 
-    @meta.black.listOf("EveSOFDataHullDecalSet")
+    @meta.list("EveSOFDataHullDecalSet")
     hullDecals = [];
 
-    @meta.black.uint
+    @meta.uint
     impactEffectType = 0;
 
-    @meta.black.listOf("EveSOFDataInstancedMesh")
+    @meta.list("EveSOFDataInstancedMesh")
     instancedMeshes = [];
 
-    @meta.black.boolean
+    @meta.boolean
     isSkinned = false;
 
-    @meta.black.listOf("EveSOFDataHullLightSet")
+    @meta.list("EveSOFDataHullLightSet")
     lightSets = [];
 
-    @meta.black.listOf("EveSOFDataHullLocatorSet")
+    @meta.list("EveSOFDataHullLocatorSet")
     locatorSets = [];
 
-    @meta.black.listOf("EveSOFDataHullLocator")
+    @meta.list("EveSOFDataHullLocator")
     locatorTurrets = [];
 
-    @meta.black.path
+    @meta.path
     modelRotationCurvePath = "";
 
-    @meta.black.listOf("EveSOFDataHullArea")
+    @meta.list("EveSOFDataHullArea")
     opaqueAreas = [];
 
-    @meta.black.listOf("EveSOFDataHullPlaneSet")
+    @meta.list("EveSOFDataHullPlaneSet")
     planeSets = [];
 
-    @meta.black.vector3
+    @meta.vector3
     shapeEllipsoidCenter = vec3.create();
 
-    @meta.black.vector3
+    @meta.vector3
     shapeEllipsoidRadius = vec3.create();
 
-    @meta.black.listOf("EveSOFDataHullSoundEmitter")
+    @meta.list("EveSOFDataHullSoundEmitter")
     soundEmitters = [];
 
-    @meta.black.listOf("EveSOFDataHullSpotlightSet")
+    @meta.list("EveSOFDataHullSpotlightSet")
     spotlightSets = [];
 
-    @meta.black.listOf("EveSOFDataHullSpriteLineSet")
+    @meta.list("EveSOFDataHullSpriteLineSet")
     spriteLineSets = [];
 
-    @meta.black.listOf("EveSOFDataHullSpriteSet")
+    @meta.list("EveSOFDataHullSpriteSet")
     spriteSets = [];
 
-    @meta.black.listOf("EveSOFDataHullArea")
+    @meta.list("EveSOFDataHullArea")
     transparentAreas = [];
 
     /**

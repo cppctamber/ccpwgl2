@@ -20,7 +20,7 @@ const Interpolation = {
 };
 
 
-@meta.type("Tw2QuaternionKey")
+@meta.ctor("Tw2QuaternionKey")
 export class Tw2QuaternionKey extends Tw2CurveKey
 {
 
@@ -34,13 +34,13 @@ export class Tw2QuaternionKey extends Tw2CurveKey
     @meta.vector4
     right = vec4.create();
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 5;
 
 }
 
 
-@meta.type("Tw2RotationCurve")
+@meta.ctor("Tw2RotationCurve")
 export class Tw2RotationCurve extends Tw2Curve
 {
 
@@ -51,10 +51,10 @@ export class Tw2RotationCurve extends Tw2Curve
     @meta.isPrivate
     value = quat.create();
 
-    @meta.enumerable(Extrapolation)
+    @meta.enums(Extrapolation)
     extrapolation = 0;
 
-    @meta.listOf("Tw2QuaternionKey")
+    @meta.list("Tw2QuaternionKey")
     keys = [];
 
     @meta.float

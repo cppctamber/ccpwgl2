@@ -2,17 +2,17 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2IntSkinnedObject", true)
+@meta.ctor("Tr2IntSkinnedObject")
 export class Tr2IntSkinnedObject extends Tw2BaseClass
 {
 
-    @meta.black.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.black.objectOf("TriMatrix")
+    @meta.struct("TriMatrix")
     transform = null;
 
-    @meta.black.objectOf("Tr2SkinnedModel")
+    @meta.struct("Tr2SkinnedModel")
     visualModel = null;
 
 }

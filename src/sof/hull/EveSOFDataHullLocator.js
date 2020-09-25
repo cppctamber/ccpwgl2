@@ -1,14 +1,14 @@
 import { meta, mat4 } from "global";
 
 
-@meta.type("EveSOFDataHullLocator", true)
+@meta.ctor("EveSOFDataHullLocator")
 export class EveSOFDataHullLocator
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.matrix4
+    @meta.matrix4
     transform = mat4.create();
 
 }

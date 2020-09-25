@@ -1,7 +1,7 @@
 import { box3, meta, sph3, vec3 } from "global";
 
 
-@meta.type("Tw2GeometryMeshArea")
+@meta.ctor("Tw2GeometryMeshArea")
 export class Tw2GeometryMeshArea
 {
 

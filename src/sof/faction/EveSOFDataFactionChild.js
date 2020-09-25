@@ -1,17 +1,17 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataFactionChild", true)
+@meta.ctor("EveSOFDataFactionChild")
 export class EveSOFDataFactionChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
+    @meta.uint
     groupIndex = -1;
 
-    @meta.black.boolean
+    @meta.boolean
     isVisible = false;
 
 }

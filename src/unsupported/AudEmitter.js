@@ -1,11 +1,11 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-@meta.type("AudEmitter", true)
+@meta.ctor("AudEmitter", true)
 export class AudEmitter extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
 }

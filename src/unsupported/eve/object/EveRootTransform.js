@@ -2,71 +2,51 @@ import { meta, quat, vec3 } from "global";
 import { EveObject } from "eve/object/EveObject";
 
 
-/**
- * EveRootTransform
- * TODO: Implement
- * @ccp EveRootTransform
- *
- * @property {String} name                       -
- * @property {Number} boundingSphereRadius       -
- * @property {Array.<EveObject>} children        -
- * @property {Array.<Tw2CurveSet>} curveSets     -
- * @property {Boolean} display                   -
- * @property {Tw2Mesh} mesh                      -
- * @property {Number} modifier                   -
- * @property {Array} observers                   -
- * @property {quat} rotation                     -
- * @property {Tr2CurveConstant} rotationCurve    -
- * @property {vec3} scaling                      -
- * @property {Number} sortValueMultiplier        -
- * @property {vec3} translation                  -
- * @property {Tr2CurveConstant} translationCurve -
- */
 @meta.notImplemented
-@meta.type("EveRootTransform", true)
+@meta.ctor("EveRootTransform")
 export class EveRootTransform extends EveObject
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     boundingSphereRadius = 0;
 
-    @meta.black.listOf("EveObject")
+    @meta.list("EveObject")
     children = [];
 
-    @meta.black.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.black.boolean
+    @meta.boolean
     display = false;
 
-    @meta.black.objectOf("Tw2Mesh")
+    @meta.struct("Tw2Mesh")
     mesh = null;
 
-    @meta.black.uint
+    @meta.uint
     modifier = 0;
 
-    @meta.black.listOf("TriObserverLocal")
+    @meta.list("TriObserverLocal")
     observers = [];
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.objectOf("Tw2Curve") //Tr2CurveConstant, Tr2RotationAdapter
+    @meta.struct("Tw2Curve") //Tr2CurveConstant, Tr2RotationAdapter
     rotationCurve = null;
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.float
+    @meta.float
     sortValueMultiplier = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
-    @meta.black.objectOf("Tw2Curve") //Tr2CurveConstant, Tr2TranslationAdapter
+    @meta.struct("Tw2Curve") //Tr2CurveConstant, Tr2TranslationAdapter
     translationCurve = null;
 
 }

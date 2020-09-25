@@ -37,7 +37,7 @@ import { Tw2CakeReader } from "core/reader/Tw2CakeReader";
  * @property {Boolean} systemMirror
  * @inherit Tw2Resource
  */
-@meta.type("Tw2GeometryRes", "TriGeometryRes")
+@meta.ctor("Tw2GeometryRes", "TriGeometryRes")
 export class Tw2GeometryRes extends Tw2Resource
 {
 
@@ -1053,16 +1053,6 @@ export class Tw2GeometryRes extends Tw2Resource
             curve.controls[i] = reader.ReadFloat32();
         }
         return curve;
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [];
     }
 
 }

@@ -2,14 +2,14 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { meta, vec3, quat, mat4, util } from "global";
 
 
-@meta.type("Tw2TransformParameter", "Tr2TransformParameter")
+@meta.ctor("Tw2TransformParameter", "Tr2TransformParameter")
 export class Tw2TransformParameter extends Tw2Parameter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
     @meta.vector3

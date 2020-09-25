@@ -2,7 +2,7 @@ import { meta, vec3, quat } from "global";
 import { Tw2Curve } from "curve";
 
 
-@meta.type("Tw2MayaEulerRotationCurve")
+@meta.ctor("Tw2MayaEulerRotationCurve")
 export class Tw2MayaEulerRotationCurve extends Tw2Curve
 {
 
@@ -15,7 +15,7 @@ export class Tw2MayaEulerRotationCurve extends Tw2Curve
     @meta.float
     zIndex = -1;
 
-    @meta.objectOf("Tw2MayaAnimationEngine")
+    @meta.struct("Tw2MayaAnimationEngine")
     animationEngine = null;
 
     @meta.vector3

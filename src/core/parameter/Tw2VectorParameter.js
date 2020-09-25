@@ -2,8 +2,7 @@ import { ErrIndexBounds } from "../Tw2Error";
 import { util, Tw2BaseClass, meta } from "global";
 
 
-@meta.type("Tw2VectorParameter")
-@meta.abstract
+@meta.ctor("Tw2VectorParameter")
 export class Tw2VectorParameter extends Tw2BaseClass
 {
 

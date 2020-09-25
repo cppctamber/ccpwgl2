@@ -2,8 +2,6 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-@meta.type("Tw2Parameter")
-@meta.abstract
 export class Tw2Parameter extends Tw2BaseClass
 {
 

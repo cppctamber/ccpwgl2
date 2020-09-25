@@ -2,15 +2,15 @@ import { meta } from "global";
 import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 
-@meta.ccp("Tr2ForceSphereVolume")
+@meta.ctor("Tr2ForceSphereVolume")
 @meta.notImplemented
 export class Tr2ForceSphereVolume extends Tw2ParticleForce
 {
 
-    @meta.black.listOf("Tw2ParticleForce")
+    @meta.list("Tw2ParticleForce")
     forces = [];
 
-    @meta.black.float
+    @meta.float
     radius = 0;
 
 

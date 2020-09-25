@@ -30,26 +30,26 @@ class EveSOFDataInstancedMeshInstanceReader
 }
 
 
-@meta.type("EveSOFDataInstancedMesh", true)
+@meta.ctor("EveSOFDataInstancedMesh")
 export class EveSOFDataInstancedMesh
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.path
+    @meta.path
     geometryResPath = "";
 
-    @meta.black.struct([ EveSOFDataInstancedMeshInstanceReader ])
+    @meta.list(EveSOFDataInstancedMeshInstanceReader)
     instances = [];
 
-    @meta.black.uint
+    @meta.uint
     lowestLodVisible = 0;
 
-    @meta.black.string
+    @meta.string
     shader = "";
 
-    @meta.black.listOf("EveSOFDataTexture")
+    @meta.list("EveSOFDataTexture")
     textures = [];
 
 }

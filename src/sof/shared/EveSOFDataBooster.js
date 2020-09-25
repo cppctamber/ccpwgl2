@@ -1,86 +1,86 @@
 import { meta, vec4 } from "global";
 
 
-@meta.type("EveSOFDataBooster", true)
+@meta.ctor("EveSOFDataBooster")
 export class EveSOFDataBooster
 {
 
-    @meta.black.color
+    @meta.color
     glowColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     glowScale = 0;
 
-    @meta.black.path
+    @meta.path
     gradient0ResPath = "";
 
-    @meta.black.path
+    @meta.path
     gradient1ResPath = "";
 
-    @meta.black.color
+    @meta.color
     haloColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     haloScaleX = 0;
 
-    @meta.black.float
+    @meta.float
     haloScaleY = 0;
 
-    @meta.black.color
+    @meta.color
     lightColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     lightFlickerAmplitude = 0;
 
-    @meta.black.float
+    @meta.float
     lightFlickerFrequency = 0;
 
-    @meta.black.float
+    @meta.float
     lightRadius = 0;
 
-    @meta.black.color
+    @meta.color
     lightWarpColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     lightWarpRadius = 0;
 
-    @meta.black.objectOf("EveSOFDataBoosterShape")
+    @meta.struct("EveSOFDataBoosterShape")
     shape0 = null;
 
-    @meta.black.objectOf("EveSOFDataBoosterShape")
+    @meta.struct("EveSOFDataBoosterShape")
     shape1 = null;
 
-    @meta.black.uint
+    @meta.uint
     shapeAtlasCount = 0;
 
-    @meta.black.uint
+    @meta.uint
     shapeAtlasHeight = 0;
 
-    @meta.black.path
+    @meta.path
     shapeAtlasResPath = "";
 
-    @meta.black.uint
+    @meta.uint
     shapeAtlasWidth = 0;
 
-    @meta.black.float
+    @meta.float
     symHaloScale = 0;
 
-    @meta.black.color
+    @meta.color
     trailColor = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     trailSize = vec4.create();
 
-    @meta.black.color
+    @meta.color
     warpGlowColor = vec4.create();
 
-    @meta.black.color
+    @meta.color
     warpHalpColor = vec4.create();
 
-    @meta.black.objectOf("EveSOFDataBoosterShape")
+    @meta.struct("EveSOFDataBoosterShape")
     warpShape0 = null;
 
-    @meta.black.objectOf("EveSOFDataBoosterShape")
+    @meta.struct("EveSOFDataBoosterShape")
     warpShape1 = null;
 
     /**

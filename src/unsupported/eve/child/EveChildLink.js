@@ -3,23 +3,23 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.type("EveChildLink", true)
+@meta.ctor("EveChildLink")
 export class EveChildLink extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("Tw2ValueBinding")
+    @meta.list("Tw2ValueBinding")
     linkStrengthBindings = [];
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     linkStrengthCurves = [];
 
-    @meta.black.objectOf("Tw2Mesh")
+    @meta.struct("Tw2Mesh")
     mesh = null;
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
 

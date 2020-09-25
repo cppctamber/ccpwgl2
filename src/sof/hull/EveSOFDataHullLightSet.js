@@ -1,23 +1,23 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataHullLightSet", true)
+@meta.ctor("EveSOFDataHullLightSet")
 export class EveSOFDataHullLightSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveSOFDataHullLightSetItem")
+    @meta.list("EveSOFDataHullLightSetItem")
     items = [];
 
-    @meta.black.float
+    @meta.float
     noiseAmplitude = 0;
 
-    @meta.black.float
+    @meta.float
     noiseOctaves = 0;
 
-    @meta.black.string
+    @meta.string
     visibilityGroup = "";
 
 }

@@ -3,14 +3,14 @@ import { Tw2PerObjectData, Tw2ForwardingRenderBatch } from "core";
 import { Tw2Effect } from "core/mesh";
 
 
-@meta.type("EveSpaceObjectDecal", true)
+@meta.ctor("EveSpaceObjectDecal", true)
 export class EveSpaceObjectDecal extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     decalEffect = null;
 
     @meta.boolean
@@ -20,7 +20,7 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     @meta.todo("Identify if deprecated, this may only be needed if created a SOF object from a decal")
     groupIndex = -1;
 
-    @meta.black.indexBuffer
+    @meta.indexBuffer
     indexBuffer = [];
 
     @meta.uint
@@ -30,16 +30,16 @@ export class EveSpaceObjectDecal extends Tw2BaseClass
     @meta.boolean
     pickable = true;
 
-    @meta.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     pickEffect = null;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
     _usage = 0;

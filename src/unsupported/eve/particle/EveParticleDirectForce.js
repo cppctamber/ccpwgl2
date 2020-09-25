@@ -1,4 +1,4 @@
-import { vec3 } from "global";
+import { vec3, meta } from "global";
 import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 
 /**
@@ -10,19 +10,8 @@ import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 export class EveParticleDirectForce extends Tw2ParticleForce
 {
 
+    @meta.vector3
     force = vec3.create();
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "force", r.vector3 ]
-        ];
-    }
 
     /**
      * Identifies that the class is in staging

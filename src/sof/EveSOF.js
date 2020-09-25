@@ -1133,56 +1133,6 @@ export function EveSOF(tw2)
     })();
 
     /**
-     * Extends the sof data object with patterns from a space object factory file
-     * @param {String} [resPath] - The resource path to a source space object factory file
-     * @returns {Promise}
-     */
-    this.ExtendPatternsFrom = async function(resPath)
-    {
-        if (!resPath)
-        {
-            return Promise.reject(new Error("Invalid respath: undefined"));
-        }
-
-        const
-            currentSof = await this.FetchSOF(),
-            extendSof = await tw2.FetchObject(resPath);
-
-        currentSof.pattern = currentSof.pattern.concat(extendSof.pattern);
-    };
-
-    /**
-     * Extends the sof data object with materials from a space object factory file
-     * @param {String} [resPath] - The resource path to a source space object factory file
-     * @returns {Promise}
-     */
-    this.ExtendMaterialsFrom = async function(resPath)
-    {
-        if (!resPath)
-        {
-            return Promise.reject(new Error("Invalid respath: undefined"));
-        }
-
-        const
-            currentSof = await this.FetchSOF(),
-            extendSof = await tw2.FetchObject(resPath);
-
-        const materials = extendSof.material;
-
-        if (resPath.includes(".black"))
-        {
-            extendSof.material.forEach(material =>
-            {
-                currentSof.material[material.name] = material.Assign();
-            });
-        }
-        else
-        {
-            Object.assign(currentSof.material, extendSof.material);
-        }
-    };
-
-    /**
      * Gets a sof object
      * @param {String} name
      * @returns {Promise<{}>}

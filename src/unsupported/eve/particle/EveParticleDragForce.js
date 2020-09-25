@@ -1,4 +1,5 @@
 import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
+import { meta } from "global";
 
 /**
  * EveParticleDragForce
@@ -9,19 +10,8 @@ import { Tw2ParticleForce } from "particle/force/Tw2ParticleForce";
 export class EveParticleDragForce extends Tw2ParticleForce
 {
 
+    @meta.float
     drag = 0;
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "drag", r.float ]
-        ];
-    }
 
     /**
      * Identifies that the class is in staging

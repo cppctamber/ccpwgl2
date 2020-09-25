@@ -1,36 +1,43 @@
-import { ErrAbstractClass, ErrAbstractMethod, ErrSingletonInstantiation } from "core/Tw2Error";
-import { decorate, typeHandler } from "./helpers";
-import { set, get, has } from "./meta";
+import { createDecorator, defineMetadata, getMetadata, hasMetadata, isString } from "global/util";
+import { ErrAbstractMethod, ErrSingletonInstantiation } from "core/Tw2Error";
 
-export const abstract = decorate({
-    class({ target })
+
+export const has = function(name, target, property)
+{
+    return hasMetadata(name, target, property);
+};
+
+export const get = function(name, target, property)
+{
+    return getMetadata(name, target, property);
+};
+
+export const set = function(name, value, target, property)
+{
+    return defineMetadata(name, value, target, property);
+};
+
+export const abstract = createDecorator({
+    noArgs: true,
+    ctor({ target })
     {
-        return class Abstract extends target
-        {
-            constructor()
-            {
-                super();
-
-                if (this.constructor === Abstract)
-                {
-                    throw new ErrAbstractClass({ class: target.name });
-                }
-
-            }
-        };
+        defineMetadata("abstract", true, target);
+        return target;
     },
-    method({ property, descriptor })
+    method({ target, property, descriptor })
     {
+        defineMetadata("abstract", true, target, property);
         descriptor.value = function()
         {
             throw new ErrAbstractMethod({ class: this.constructor.name, method: property });
         };
         return descriptor;
     }
-})();
+});
 
-export const singleton = decorate({
-    class({ target })
+export const singleton = createDecorator({
+    noArgs: true,
+    ctor({ target })
     {
         let count = 0;
         return class Singleton extends target
@@ -43,114 +50,133 @@ export const singleton = decorate({
             }
         };
     }
-})();
-
-export const ccp = decorate({
-    class({ target }, value)
-    {
-        set("ccp", value, target);
-    }
 });
 
 /**
- * Creates a property type decorator
- * @param {String|Number} type
- * @returns {*}
+ * Constructors by type
+ * @type {Map<String, any>}
  */
-export const type = decorate({
-    class({ target }, type, ccpType)
+const byType = new Map();
+
+/**
+ * Types by constructor
+ * @type {Map<any, String>}
+ */
+const byCtor = new Map();
+
+export const ctor = createDecorator({
+    ctor({ target }, ...types)
     {
-        set("type", type, target);
-        if (ccpType)
+        for (let i = 0; i < types.length; i++)
         {
-            if (ccpType === true) ccpType = type;
-            set("ccp", ccpType, target);
+            if (isString(types[i]))
+            {
+                byType.set(types[i], target);
+
+                if (i === 0)
+                {
+                    byCtor.set(target, types[i]);
+                    defineMetadata("type", types[i], target);
+
+                    // Temporary
+                    if (!target.getOwnTw2Type)
+                    {
+                        target.getOwnTw2Type = function()
+                        {
+                            return ctor.getType(this);
+                        };
+
+                        target.getTw2Type = function(Ctor)
+                        {
+                            return ctor.getType(Ctor);
+                        };
+
+                        target.getTw2Ctor = function(type)
+                        {
+                            return ctor.getCtor(type);
+                        };
+                    }
+                }
+            }
         }
-    },
-    property({ target, property, descriptor }, type, typeOf)
-    {
-        typeHandler({ target, property, descriptor }, type, typeOf);
     }
 });
 
-export const stage = decorate({
-    class({ target }, value)
-    {
-        set("stage", value, target);
-        if (value > 3) set("notImplemented", true, target);
-    }
-});
+ctor.getCtor = function(type)
+{
+    return byType.get(type);
+};
 
-export const notImplemented = decorate({
-    class({ target })
-    {
-        set("notImplemented", true, target);
-        set("stage", 4, target);
-        // Todo: Flag all children as not implemented
-        todo("Implement")(target);
-    },
-    handler({ target, property })
-    {
-        set("notImplemented", true, target, property);
-        let stage = get("stage", target.constructor) || 0;
-        set("stage", Math.max(stage, 1), target.constructor);
-        todo("Implement")(target, property);
-    }
-})();
+ctor.getType = function(Ctor)
+{
+    return byCtor.get(Ctor);
+};
 
-export const todo = decorate({
+ctor.getValues = function()
+{
+    const out = {};
+    for (const [ type, ctor ] of byType)
+    {
+        out[type] = ctor;
+    }
+    return out;
+};
+
+export const data = createDecorator({
     handler({ target, property }, value)
     {
-        if (property)
+        if (hasMetadata("data", target, property))
         {
-            // Add all child todos to the parent
-            let parentTodo = `[${property}] ` + value,
-                parentTodos = has("todo", target.constructor) ? get("todo", target.constructor) : [];
-
-            if (!parentTodos.includes(parentTodo)) parentTodos.push(parentTodo);
-            parentTodos.sort();
-
-            set("todos", parentTodo, target.constructor);
+            Object.assign({}, getMetadata("data", target, property), value);
         }
 
-        let todos = has("todo", target, property) ? get("todo", target, property) : [];
-        if (!todos.includes(value)) todos.push(value);
-        todos.sort();
-
-        set("todo", todos, target, property);
+        defineMetadata("data", value, target, property);
     }
 });
 
-export const desc = decorate({
-    handler({ target, property }, value)
+export const isPrivate = createDecorator({
+    noArgs: true,
+    property({ target, property })
     {
-        set("desc", value, target, property);
+        defineMetadata("isPrivate", true, target, property);
     }
 });
 
-export const isPrivate = decorate({
-    class: false,
+export const desc = createDecorator({
+    handler({ target, property }, description)
+    {
+        defineMetadata("desc", description, target, property);
+    }
+});
+
+export const todo = createDecorator({
+    handler({ target, property }, todo, stage = 1)
+    {
+        defineMetadata("todo", todo, target, property);
+        const currentStage = getMetadata("stage", target, property) || 0;
+        defineMetadata("stage", Math.max(stage, currentStage), target, property);
+    }
+});
+
+export const partialImplementation = createDecorator({
+    noArgs: true,
     handler({ target, property })
     {
-        set("isPrivate", true, target, property);
+        defineMetadata("stage", 2, target, property);
     }
-})();
+});
 
-export const isNullable = decorate({
-    class: false,
+export const notImplemented = createDecorator({
+    noArgs: true,
     handler({ target, property })
     {
-        set("isNullable", true, target, property);
+        defineMetadata("stage", 3, target, property);
     }
-})();
+});
 
-export const test = decorate({
-    class: false,
-    handler({ target, property, descriptor }, string = "Test decorator")
+export const stage = createDecorator({
+    ctor({ target, property }, stage=0)
     {
-        console.dir(target);
-        console.dir(property);
-        console.dir(descriptor);
-        throw new Error(string);
+        defineMetadata("stage", stage, target, property);
     }
 });

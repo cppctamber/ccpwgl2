@@ -2,58 +2,58 @@ import { meta, vec3, mat4, Tw2BaseClass } from "global";
 import { Tw2Float } from "core";
 
 
-@meta.type("EveStretch", true)
+@meta.ctor("EveStretch", true)
 export class EveStretch extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
     @meta.boolean
     display = true;
 
-    @meta.black.object
+    @meta.struct()
     dest = null;
 
-    @meta.black.object
+    @meta.struct()
     destObject = null;
 
-    @meta.black.objectOf("Tw2Float")
+    @meta.struct("Tw2Float")
     length = new Tw2Float();
 
     @meta.notImplemented
-    @meta.black.objectOf("Tw2CurveSet")
+    @meta.struct("Tw2CurveSet")
     moveCompletion = null;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.struct()
     moveObject = null;
 
     @meta.notImplemented
-    @meta.black.objectOf("Tw2Curve")
+    @meta.struct("Tw2Curve")
     progressCurve = null;
 
-    @meta.black.object
+    @meta.struct()
     source = null;
 
     @meta.notImplemented
-    @meta.black.listOf("Tr2PointLight")
+    @meta.list("Tr2PointLight")
     sourceLights = [];
 
-    @meta.black.object
+    @meta.struct()
     sourceObject = null;
 
-    @meta.black.object
+    @meta.struct()
     stretchObject = null;
 
     @meta.boolean
     update = true;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useCurveLod = false;
 
 

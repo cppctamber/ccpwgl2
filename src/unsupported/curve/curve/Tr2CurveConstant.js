@@ -1,21 +1,17 @@
 import { meta, vec4 } from "global";
 import { Tw2Curve } from "curve";
 
-/**
- * Constant curve
- *
- * @property {vec4} value  -
- */
+
 @meta.notImplemented
-@meta.type("Tw2CurveConstant", true)
+@meta.ctor("Tw2CurveConstant")
 @meta.todo("Is this a curve or a key?")
 export class Tr2CurveConstant extends Tw2Curve
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.vector4
+    @meta.vector4
     value = vec4.create();
 
     /**

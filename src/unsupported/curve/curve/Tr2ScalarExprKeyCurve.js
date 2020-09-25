@@ -2,35 +2,35 @@ import { meta } from "global";
 import { Tw2Curve, Tw2CurveKey } from "curve";
 
 
-@meta.type("Tr2ScalarExprKey", true)
+@meta.ctor("Tr2ScalarExprKey")
 export class Tr2ScalarExprKey extends Tw2CurveKey
 {
 
-    @meta.black.float
+    @meta.float
     input1 = -1;
 
-    @meta.black.float
+    @meta.float
     input2 = -1;
 
-    @meta.black.float
+    @meta.float
     input3 = -1;
 
-    @meta.black.uint
+    @meta.uint
     interpolation = 0;
 
-    @meta.black.float
+    @meta.float
     left = 0;
 
-    @meta.black.float
+    @meta.float
     right = 0;
 
-    @meta.black.float
+    @meta.float
     time = 0;
 
-    @meta.black.expression
+    @meta.expression
     timeExpression = "";
 
-    @meta.black.float
+    @meta.float
     @meta.isPrivate
     value = 0;
 
@@ -38,17 +38,17 @@ export class Tr2ScalarExprKey extends Tw2CurveKey
 
 
 @meta.notImplemented
-@meta.type("Tr2ScalarExprKeyCurve", true)
+@meta.ctor("Tr2ScalarExprKeyCurve")
 export class Tr2ScalarExprKeyCurve extends Tw2Curve
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
+    @meta.uint
     interpolation = 0;
 
-    @meta.black.listOf("Tr2ScalarExprKey")
+    @meta.list("Tr2ScalarExprKey")
     keys = [];
 
 }

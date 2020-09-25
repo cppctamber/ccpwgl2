@@ -1,7 +1,7 @@
 import { meta } from "global";
 
 
-@meta.type("Tw2BoneBinding")
+@meta.ctor("Tw2BoneBinding")
 export class Tw2BoneBinding
 {
 

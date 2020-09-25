@@ -2,14 +2,14 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2ShLightingManager", true)
+@meta.ctor("Tr2ShLightingManager")
 export class Tr2ShLightingManager extends Tw2BaseClass
 {
 
-    @meta.black.float
+    @meta.float
     primaryIntensity = 0;
 
-    @meta.black.float
+    @meta.float
     secondaryIntensity = 0;
 
 }

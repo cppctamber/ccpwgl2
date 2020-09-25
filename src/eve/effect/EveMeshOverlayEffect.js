@@ -13,33 +13,33 @@ import {
 } from "global";
 
 
-@meta.type("EveMeshOverlayEffect", true)
+@meta.ctor("EveMeshOverlayEffect", true)
 export class EveMeshOverlayEffect extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("Tw2Effect")
+    @meta.list("Tw2Effect")
     additiveEffects = [];
 
-    @meta.black.objectOf("Tw2CurveSet")
+    @meta.struct("Tw2CurveSet")
     curveSet = null;
 
-    @meta.black.listOf("Tw2Effect")
+    @meta.list("Tw2Effect")
     decalEffects = [];
 
     @meta.boolean
     display = true;
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2Effect")
+    @meta.list("Tw2Effect")
     distortionEffects = [];
 
-    @meta.black.listOf("Tw2Effect")
+    @meta.list("Tw2Effect")
     opaqueEffects = [];
 
-    @meta.black.listOf("Tw2Effect")
+    @meta.list("Tw2Effect")
     transparentEffects = [];
 
     @meta.boolean

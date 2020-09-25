@@ -1,47 +1,47 @@
 import { meta, quat, vec3, vec4 } from "global";
 
 
-@meta.type("EveSOFDataHullPlaneSetItem", true)
+@meta.ctor("EveSOFDataHullPlaneSetItem")
 export class EveSOFDataHullPlaneSetItem
 {
 
-    @meta.black.uint
+    @meta.uint
     boneIndex = -1;
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.float
+    @meta.float
     dutyCycle = 0;
 
-    @meta.black.uint
+    @meta.uint
     groupIndex = -1;
 
-    @meta.black.vector4
+    @meta.vector4
     layer1Scroll = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     layer1Transform = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     layer2Scroll = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     layer2Transform = vec4.create();
 
-    @meta.black.uint
+    @meta.uint
     maskMapAtlasIndex = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.float
+    @meta.float
     rate = 0;
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
 }

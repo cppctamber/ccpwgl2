@@ -2,14 +2,14 @@ import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.type("Tw2ParticleAttractorForce", "Tr2ParticleAttractorForce")
+@meta.ctor("Tw2ParticleAttractorForce", "Tr2ParticleAttractorForce")
 export class Tw2ParticleAttractorForce extends Tw2ParticleForce
 {
 
-    @meta.black.float
+    @meta.float
     magnitude = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
 

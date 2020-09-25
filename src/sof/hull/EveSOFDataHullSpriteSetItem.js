@@ -1,38 +1,38 @@
 import { meta, vec3 } from "global";
 
 
-@meta.type("EveSOFDataHullSpriteSetItem", true)
+@meta.ctor("EveSOFDataHullSpriteSetItem")
 export class EveSOFDataHullSpriteSetItem
 {
 
-    @meta.black.float
+    @meta.float
     blinkPhase = 0;
 
-    @meta.black.float
+    @meta.float
     blinkRate = 0;
 
-    @meta.black.uint
+    @meta.uint
     boneIndex = -1;
 
-    @meta.black.uint
+    @meta.uint
     colorType = 0;
 
-    @meta.black.float
+    @meta.float
     falloff = 0;
 
-    @meta.black.uint
+    @meta.uint
     groupIndex = -1;
 
-    @meta.black.float
+    @meta.float
     intensity = 0;
 
-    @meta.black.float
+    @meta.float
     maxScale = 0;
 
-    @meta.black.float
+    @meta.float
     minScale = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
 }

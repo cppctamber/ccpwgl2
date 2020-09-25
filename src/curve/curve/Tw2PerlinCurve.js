@@ -2,32 +2,32 @@ import { meta, noise } from "global";
 import { Tw2Curve } from "./Tw2Curve";
 
 
-@meta.type("Tw2PerlinCurve", "TriPerlinCurve")
+@meta.ctor("Tw2PerlinCurve", "TriPerlinCurve")
 export class Tw2PerlinCurve extends Tw2Curve
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     alpha = 0;
 
-    @meta.black.float
+    @meta.float
     beta = 0;
 
-    @meta.black.uint
+    @meta.uint
     N = 0;
 
-    @meta.black.float
+    @meta.float
     offset = 0;
 
-    @meta.black.float
+    @meta.float
     scale = 0;
 
-    @meta.black.float
+    @meta.float
     speed = 0;
 
-    @meta.black.float
+    @meta.float
     @meta.isPrivate
     value = 0;
 

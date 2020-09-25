@@ -3,45 +3,45 @@ import { Tw2TextureRes, Tw2RenderTarget } from "core";
 import { EveOccluder } from "./EveOccluder";
 
 
-@meta.type("EveLensflare", true)
+@meta.ctor("EveLensflare")
 export class EveLensflare extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
     @meta.notImplemented
-    @meta.black.listOf("EveOccluder")
+    @meta.list("EveOccluder")
     backgroundOccluders = [];
 
-    @meta.black.listOf("Tw2ValueBinding")
+    @meta.list("Tw2ValueBinding")
     bindings = [];
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     distanceToCenterCurves = [];
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     distanceToEdgeCurves = [];
 
-    @meta.black.objectOf("Tw2Mesh")
+    @meta.struct("Tw2Mesh")
     mesh = null;
 
-    @meta.black.listOf("EveOccluder")
+    @meta.list("EveOccluder")
     occluders = [];
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     radialAngleCurves = [];
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     xDistanceToCenter = [];
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     yDistanceToCenter = [];
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     zDistanceToCenter = [];
 
     @meta.boolean
@@ -56,7 +56,7 @@ export class EveLensflare extends Tw2BaseClass
     @meta.float
     cameraFactor = 20;
 
-    @meta.listOf("EveLensflare")
+    @meta.list("EveLensflare")
     @meta.todo("Deprecated?")
     flares = [];
 
@@ -66,7 +66,7 @@ export class EveLensflare extends Tw2BaseClass
     @meta.float
     backgroundOcclusionIntensity = 1;
 
-    @meta.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     @meta.todo("Deprecated?")
     curveSets = [];
 

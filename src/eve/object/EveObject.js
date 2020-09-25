@@ -2,8 +2,6 @@
 import { meta, mat4, vec3, Tw2BaseClass, WrappedType } from "global";
 
 
-@meta.abstract
-@meta.type("EveObject")
 export class EveObject extends Tw2BaseClass
 {
 

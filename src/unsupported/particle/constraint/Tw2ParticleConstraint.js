@@ -2,14 +2,6 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-/**
- * Tw2ParticleConstraint base class
- * - Not implemented yet
- *
- * @property {String|number} _id
- * @property {String} name
- */
-@meta.abstract
 export class Tw2ParticleConstraint extends Tw2BaseClass
 {
 

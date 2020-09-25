@@ -9,7 +9,7 @@ const Interpolation = {
 };
 
 
-@meta.type("Tw2Vector2Key")
+@meta.ctor("Tw2Vector2Key")
 export class Tw2Vector2Key extends Tw2CurveKey
 {
 
@@ -22,13 +22,13 @@ export class Tw2Vector2Key extends Tw2CurveKey
     @meta.vector2
     rightTangent = vec2.create();
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 1;
 
 }
 
 
-@meta.type("Tw2Vector2Curve")
+@meta.ctor("Tw2Vector2Curve")
 export class Tw2Vector2Curve extends Tw2Curve
 {
 
@@ -60,10 +60,10 @@ export class Tw2Vector2Curve extends Tw2Curve
     @meta.vector2
     endTangent = vec2.create();
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 1;
 
-    @meta.listOf("Tw2Vector2Key")
+    @meta.list("Tw2Vector2Key")
     keys = [];
 
     @meta.float

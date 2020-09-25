@@ -1,35 +1,35 @@
 import { meta, quat, vec3 } from "global";
 
 
-@meta.type("EveSOFDataHullHazeSetItem", true)
+@meta.ctor("EveSOFDataHullHazeSetItem")
 export class EveSOFDataHullHazeSetItem
 {
 
-    @meta.black.boolean
+    @meta.boolean
     boosterGainInfluence = false;
 
-    @meta.black.uint
+    @meta.uint
     colorType = 0;
 
-    @meta.black.float
+    @meta.float
     hazeBrightness = 0;
 
-    @meta.black.float
+    @meta.float
     hazeFalloff = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.float
+    @meta.float
     sourceBrightness = 0;
 
-    @meta.black.float
+    @meta.float
     sourceSize = 0;
 
 }

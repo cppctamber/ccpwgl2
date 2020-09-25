@@ -2,14 +2,14 @@ import { meta } from "global";
 import { Tw2Curve } from "curve";
 
 
-@meta.type("Tw2CurveExpression")
+@meta.ctor("Tw2CurveExpression")
 export class Tw2CurveExpression extends Tw2Curve
 {
 
     @meta.string
     name = "";
 
-    @meta.list
+    @meta.list()
     inputs = [];
 
 

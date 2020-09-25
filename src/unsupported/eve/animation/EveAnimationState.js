@@ -3,26 +3,26 @@ import { EveAnimationStateTransition } from "./EveAnimationStateTransition";
 
 
 @meta.notImplemented
-@meta.type("EveAnimationState", true)
+@meta.ctor("EveAnimationState")
 export class EveAnimationState
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("EveAnimationCurve")
+    @meta.struct("EveAnimationCurve")
     animation = null;
 
-    @meta.black.listOf("EveAnimationCommand")
+    @meta.list("EveAnimationCommand")
     curves = [];
 
-    @meta.black.listOf("EveAnimationCommand")
+    @meta.list("EveAnimationCommand")
     commands = [];
 
-    @meta.black.listOf("EveAnimationCommand")
+    @meta.list("EveAnimationCommand")
     initCommands = [];
 
-    @meta.black.struct([ EveAnimationStateTransition ], "EveAnimationStateTransition")
+    @meta.list(EveAnimationStateTransition)
     transitions = [];
 
 }

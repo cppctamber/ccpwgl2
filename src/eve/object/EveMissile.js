@@ -3,54 +3,54 @@ import { Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
 
-@meta.type("EveMissileWarhead", true)
+@meta.ctor("EveMissileWarhead", true)
 @meta.stage(2)
 export class EveMissileWarhead extends EveObject
 {
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     acceleration = 1;
 
-    @meta.black.float
+    @meta.float
     durationEjectPhase = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     impactDuration = 0.6;
 
-    @meta.black.float
+    @meta.float
     impactSize = 0;
 
-    @meta.black.float
+    @meta.float
     maxExplosionDistance = 40;
 
-    @meta.black.objectOf("Tw2Mesh")
+    @meta.struct("Tw2Mesh")
     mesh = null;
 
-    @meta.black.listOf("Tw2ParticleEmitter")
+    @meta.list("Tw2ParticleEmitter")
     particleEmitters = [];
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     pathOffsetNoiseScale = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     pathOffsetNoiseSpeed = 0;
 
-    @meta.black.objectOf("EveSpriteSet")
+    @meta.struct("EveSpriteSet")
     spriteSet = null;
 
-    @meta.black.float
+    @meta.float
     startEjectVelocity = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     warheadLength = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     warheadRadius = 0;
 
 
@@ -226,28 +226,28 @@ export class EveMissileWarhead extends EveObject
 }
 
 
-@meta.type("EveMissile", true)
+@meta.ctor("EveMissile", true)
 @meta.stage(2)
 export class EveMissile extends EveObject
 {
 
-    @meta.black.vector3
+    @meta.vector3
     @meta.isPrivate
     boundingSphereCenter = vec3.create();
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     @meta.isPrivate
     boundingSphereRadius = 0;
 
     @meta.notImplemented
-    @meta.black.objectOf("Tr2TranslationAdapter")
+    @meta.struct("Tr2TranslationAdapter")
     modelTranslationCurve = null;
 
-    @meta.black.listOf("EveMissileWarhead")
+    @meta.list("EveMissileWarhead")
     warheads = [];
 
-    @meta.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     @meta.todo("Is this deprecated?")
     curveSets = [];
 

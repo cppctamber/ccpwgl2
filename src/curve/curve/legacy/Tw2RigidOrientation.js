@@ -2,7 +2,7 @@ import { vec3, quat, meta } from "global";
 import { Tw2CurveKey, Tw2Curve } from "../Tw2Curve";
 
 
-@meta.type("Tw2Torque")
+@meta.ctor("Tw2Torque")
 export class Tw2Torque extends Tw2CurveKey
 {
 
@@ -18,7 +18,7 @@ export class Tw2Torque extends Tw2CurveKey
 }
 
 
-@meta.type("Tw2RigidOrientation")
+@meta.ctor("Tw2RigidOrientation")
 export class Tw2RigidOrientation extends Tw2Curve
 {
 
@@ -38,7 +38,7 @@ export class Tw2RigidOrientation extends Tw2Curve
     @meta.float
     start = 0;
 
-    @meta.listOf("Tw2Torque")
+    @meta.list("Tw2Torque")
     states = [];
 
     @meta.float

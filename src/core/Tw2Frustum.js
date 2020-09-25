@@ -1,7 +1,7 @@
 import { meta, vec3, vec4, mat4 } from "global";
 
 
-@meta.type("Tw2Frustum")
+@meta.ctor("Tw2Frustum")
 export class Tw2Frustum
 {
 

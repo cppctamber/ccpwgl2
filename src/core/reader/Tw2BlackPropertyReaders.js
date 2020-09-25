@@ -1,6 +1,6 @@
-import { vec2, vec3, vec4, mat4, tw2, meta } from "global";
-import { ErrBinaryObjectTypeNotFound, ErrBinaryReaderReadError, ErrFeatureNotImplemented } from "../Tw2Error";
-import { isFunction, isPlain, isString } from "global/util";
+import { vec2, vec3, vec4, mat4, tw2 } from "global";
+import { ErrBinaryReaderReadError, ErrFeatureNotImplemented } from "../Tw2Error";
+import { getMetadata, hasMetadata, isFunction, isPlain, isString } from "global/util";
 
 import { Type } from "global/engine/Tw2Constant";
 
@@ -28,93 +28,6 @@ const TypeReader = {
     [Type.ENUM]: enums
 };
 
-/**
- * Gets a black reader from a property type
- * @param {Number|String|Function} type
- * @returns {Function}
- */
-export function getReaderFromType(type)
-{
-    if (isFunction(type)) return type;
-    if (isString(type)) type = Type[type.toUpperCase()];
-    if (type === undefined || TypeReader[type] === undefined) type = Type.UNKNOWN;
-    return TypeReader[type];
-}
-
-
-/**
- * Reads a path
- * - Handles compatibilities so ccpwgl can either load newer files or try to fail gracefully
- * @param {Tw2BlackBinaryReader} reader
- * @returns {String}
- */
-export function path(reader)
-{
-    let path = reader.ReadStringU16();
-    let originalPath = path;
-
-    // Because there are two sources for "res:" now we need to replace
-    // any references from the eve cdn with a new res path mapping
-    if (path.indexOf("res:") === 0)
-    {
-        path = "cdn:" + path.substring(4);
-    }
-
-    let ext = "";
-    const dot = path.lastIndexOf(".");
-    if (dot !== -1) ext = path.substr(dot + 1).toLowerCase();
-
-    switch (ext)
-    {
-        case "dds":
-            if (path.includes("_cube"))
-            {
-                path = path.replace(".dds", ".cube");
-            }
-            else
-            {
-                path = path.replace(".dds", ".png");
-            }
-            //console.log(`Renamed: ${originalPath} : ${path}`);
-            break;
-
-        case "png":
-            // TODO: Remove the need to do this in Tw2TextureRes
-            // Will need to provide all quality versions of these files in the cdn even if they
-            // don't exist as ccpwgl will have no idea if they exist or not, and so we'd get
-            // errors when changing texture qualities in the ccpwgl_int.device
-            path = path.replace("_lowdetail", "");       // Shouldn't exist
-            path = path.replace("_mediumdetail", "");    // Shouldn't exist
-            path = path.replace(ext, `0.${ext}`);
-            break;
-
-        case "gr2":
-            // TODO: Add support for these files
-            // Temporarily use ccpwgl resources (this won't always work but will do for now)
-            //path = path.replace(ext, "wbg").replace("cdn:", "res:");
-            path = path.replace(ext, "cake");
-            break;
-
-        case "red":
-            // TODO: Handle red files
-            // There may still be legit .red files some of which we won't be able to read
-            // (Some are in .black format so we'll just rename for now...)
-            path = path.replace(ext, "black");
-            break;
-
-        case "sm_hi":
-        case "sm_lo":
-            path = path.replace(ext, "fx");
-            break;
-
-        case "sm_depth":
-            // TODO: Add support for depth shaders
-            path = "";
-            break;
-    }
-
-    return path;
-}
 
 /**
  * Reads objects
@@ -147,16 +60,11 @@ export function object(reader, id)
         objectReader = reader.ReadBinaryReader(reader.ReadU32()),
         type = objectReader.ReadStringU16(),
         result = context.ConstructType(type),
-        properties = tw2.HasBlack(type) ? tw2.GetBlack(type) : null;
+        blackReaders = result.constructor.blackReaders || {};
 
     if (!givenId)
     {
         reader.references.set(id, result);
-    }
-
-    if (!properties && !meta.has("black", result.constructor))
-    {
-        throw new ErrBinaryObjectTypeNotFound({ type });
     }
 
     while (!objectReader.AtEnd())
@@ -164,64 +72,56 @@ export function object(reader, id)
         let propertyName = objectReader.ReadStringU16(),
             reader;
 
-        // Defined on object
-        if (properties && properties.has(propertyName))
+        // Defined directly on class
+        if (blackReaders[propertyName])
         {
-            reader = properties.get(propertyName);
+            reader = blackReaders[propertyName];
+        }
+        // Defined as black meta data
+        else if (hasMetadata("black", result, propertyName))
+        {
+            reader = getMetadata("black", result, propertyName);
+        }
+        // Use property type meta data
+        else if (hasMetadata("type", result, propertyName))
+        {
+            const propertyType = Number(getMetadata("type", result, propertyName));
+            reader = TypeReader[propertyType];
         }
 
-        // Defined with meta data
-        if (!reader && meta.has("black", result, propertyName))
-        {
-            reader = meta.get("black", result, propertyName);
-        }
-
-        // Try to use type definition if all else fails
-        if (debugEnabled)
-        {
-            if (!reader && meta.has("type", result, propertyName))
-            {
-                const propertyType = meta.get("type", result, propertyName) || 0;
-                reader = getReaderFromType(propertyType);
-                console.log(`Identifying reader from property '${propertyName}' type: ${propertyType.toString()}`);
-            }
-        }
-
-        if (reader)
-        {
-            if (!isFunction(reader))
-            {
-                if (debugEnabled) console.dir(result);
-                throw new ErrBinaryReaderReadError({ readError: `Invalid reader for property "${propertyName}" for "${type}"` });
-            }
-
-            try
-            {
-                if (reader.custom)
-                {
-                    reader(objectReader, result, propertyName);
-                }
-                else
-                {
-                    // Ensure property is defined on object
-                    if (!(propertyName in result) && debugEnabled)
-                    {
-                        console.log(`'${type}' missing property: '${propertyName}'`);
-                    }
-
-                    result[propertyName] = reader(objectReader);
-                }
-            }
-            catch (err)
-            {
-                if (debugEnabled) console.dir(result);
-                throw new ErrBinaryReaderReadError({ message: `${propertyName} (${result.constructor.name}) > ` + err.message });
-            }
-        }
-        else
+        if (!reader)
         {
             if (debugEnabled) console.dir(result);
             throw new ErrBinaryReaderReadError({ readError: `Unknown property "${propertyName}" for "${type}"` });
+        }
+
+        if (!isFunction(reader))
+        {
+            if (debugEnabled) console.dir(result);
+            throw new ErrBinaryReaderReadError({ readError: `Invalid reader for property "${propertyName}" for "${type}"` });
+        }
+
+        try
+        {
+            if (reader.custom)
+            {
+                reader(objectReader, result, propertyName);
+            }
+            else
+            {
+                // Ensure property is defined on object
+                if (!(propertyName in result) && debugEnabled)
+                {
+                    console.log(`'${type}' missing property: '${propertyName}'`);
+                }
+
+                result[propertyName] = reader(objectReader);
+            }
+        }
+        catch (err)
+        {
+            if (debugEnabled) console.dir(result);
+            throw new ErrBinaryReaderReadError({ message: `${propertyName} (${result.constructor.name}) > ` + err.message });
         }
     }
 
@@ -283,6 +183,24 @@ export function string(reader)
     return reader.ReadStringU16();
 }
 
+
+/**
+ * Reads a path
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {String}
+ */
+export function path(reader)
+{
+    const result = reader.ReadStringU16();
+    return path.handler ? path.handler(result) : result;
+}
+
+/**
+ * Path handler
+ * @type {null|Function}
+ */
+path.handler = null;
+
 /**
  * Creates an enum object from a string
  * @param {Tw2BlackReader} reader
@@ -290,14 +208,17 @@ export function string(reader)
  */
 export function enums(reader)
 {
-    const value = reader.ReadStringU16();
-    const entry = value.split(",");
-    const out = {};
+    const
+        value = reader.ReadStringU16(),
+        entry = value.split(","),
+        out = {};
+
     for (let i = 0; i < entry.length; i++)
     {
         const split = entry[i].split("=");
         out[split[0]] = Number(split[1]);
     }
+
     return out;
 }
 

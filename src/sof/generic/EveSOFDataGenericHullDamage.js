@@ -1,47 +1,47 @@
 import { meta, vec2, vec4 } from "global";
 
 
-@meta.type("EveSOFDataGenericHullDamage", true)
+@meta.ctor("EveSOFDataGenericHullDamage", true)
 export class EveSOFDataGenericHullDamage
 {
 
-    @meta.black.float
+    @meta.float
     hullParticleAngle = 0;
 
-    @meta.black.color
+    @meta.color
     hullParticleColor0 = vec4.create();
 
-    @meta.black.color
+    @meta.color
     hullParticleColor1 = vec4.create();
 
-    @meta.black.color
+    @meta.color
     hullParticleColor2 = vec4.create();
 
-    @meta.black.float
+    @meta.float
     hullParticleColorMidpoint = 0;
 
-    @meta.black.float
+    @meta.float
     hullParticleDrag = 0;
 
-    @meta.black.vector2
+    @meta.vector2
     hullParticleMinMaxLifeTime = vec2.create();
 
-    @meta.black.vector2
+    @meta.vector2
     hullParticleMinMaxSpeed = vec2.create();
 
-    @meta.black.float
+    @meta.float
     hullParticleRate = 0;
 
-    @meta.black.vector4
+    @meta.vector4
     hullParticleSizes = vec4.create();
 
-    @meta.black.uint
+    @meta.uint
     hullParticleTextureIndex = 0;
 
-    @meta.black.float
+    @meta.float
     hullParticleTurbulenceAmplitude = 0;
 
-    @meta.black.float
+    @meta.float
     hullParticleTurbulenceFrequency = 0;
 
 }

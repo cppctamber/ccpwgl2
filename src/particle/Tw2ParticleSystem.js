@@ -37,48 +37,48 @@ import { Tw2ParticleElement } from "./element";
  * @property {WebGLBuffer} _vb                                  - Vertex buffer
  * @property {Array} _vertexStride                              - Vertex stride
  */
-@meta.type("Tw2ParticleSystem", "Tr2ParticleSystem")
+@meta.ctor("Tw2ParticleSystem", "Tr2ParticleSystem")
 export class Tw2ParticleSystem extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.boolean
+    @meta.boolean
     applyAging = true;
 
-    @meta.black.boolean
+    @meta.boolean
     applyForce = true;
 
-    @meta.black.listOf("Tw2ParticleConstraint")
+    @meta.list("Tw2ParticleConstraint")
     constraints = [];
 
-    @meta.black.listOf("Tw2ParticleElementDeclaration")
+    @meta.list("Tw2ParticleElementDeclaration")
     elements = [];
 
-    @meta.black.objectOf("Tw2ParticleEmitter")
+    @meta.struct("Tw2ParticleEmitter")
     emitParticleDuringLifeEmitter = null;
 
-    @meta.black.objectOf("Tw2ParticleEmitter")
+    @meta.struct("Tw2ParticleEmitter")
     emitParticleOnDeathEmitter = null;
 
-    @meta.black.listOf("Tw2ParticleForce")
+    @meta.list("Tw2ParticleForce")
     forces = [];
 
-    @meta.black.uint
+    @meta.uint
     maxParticleCount = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     requiresSorting = false;
 
-    @meta.black.boolean
+    @meta.boolean
     updateBoundingBox = false;
 
-    @meta.black.boolean
+    @meta.boolean
     updateSimulation = true;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useSimTimeRebase = false;
 
     @meta.todo("This is unused, remove it?")

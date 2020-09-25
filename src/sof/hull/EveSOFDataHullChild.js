@@ -1,32 +1,32 @@
 import { meta, quat, vec3 } from "global";
 
 
-@meta.type("EveSOFDataHullChild", true)
+@meta.ctor("EveSOFDataHullChild")
 export class EveSOFDataHullChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
+    @meta.uint
     groupIndex = -1;
 
-    @meta.black.uint
+    @meta.uint
     id = 0;
 
-    @meta.black.uint
+    @meta.uint
     lowestLodVisible = 0;
 
-    @meta.black.path
+    @meta.path
     redFilePath = "";
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
 }

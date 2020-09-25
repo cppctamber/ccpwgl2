@@ -9,24 +9,24 @@ import { Tw2TrackGroup } from "./Tw2TrackGroup";
 import { Tw2MeshBinding } from "./Tw2MeshBinding";
 
 
-@meta.type("Tw2AnimationController")
+@meta.ctor("Tw2AnimationController")
 @meta.todo("Handle rebuilding bounds in update function")
 export class Tw2AnimationController extends Tw2BaseClass
 {
 
-    @meta.listOf("Tw2GeometryRes")
+    @meta.list("Tw2GeometryRes")
     @meta.isPrivate
     geometryResources = [];
 
-    @meta.listOf("Tw2Model")
+    @meta.list("Tw2Model")
     @meta.isPrivate
     models = [];
 
-    @meta.listOf("Tw2Animation")
+    @meta.list("Tw2Animation")
     @meta.isPrivate
     animations = [];
 
-    @meta.listOf("Tw2MeshBinding")
+    @meta.list("Tw2MeshBinding")
     @meta.isPrivate
     meshBindings = [];
 

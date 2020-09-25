@@ -3,26 +3,26 @@ import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 
 @meta.notImplemented
-@meta.type("Tr2CurveEulerRotationExpression", true)
+@meta.ctor("Tr2CurveEulerRotationExpression")
 export class Tr2CurveEulerRotationExpression extends Tw2CurveExpression
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.list
+    @meta.list()
     inputs = [];
 
-    @meta.black.expression
+    @meta.expression
     expressionPitch = "";
 
-    @meta.black.expression
+    @meta.expression
     expressionRoll = "";
 
-    @meta.black.expression
+    @meta.expression
     expressionYaw = "";
 
-    @meta.black.quaternion
+    @meta.quaternion
     @meta.isPrivate
     currentValue = quat.create();
 

@@ -20,14 +20,14 @@ export class EveTrailSetRenderBatch extends Tw2RenderBatch
 
 
 @meta.notImplemented
-@meta.type("EveTrailSet", true)
+@meta.ctor("EveTrailSet")
 export class EveTrailsSet extends Tw2BaseClass
 {
 
-    @meta.black.object
+    @meta.struct()
     effect = null;
 
-    @meta.black.path
+    @meta.path
     geometryResPath = "";
 
     @meta.boolean

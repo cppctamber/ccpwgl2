@@ -3,14 +3,14 @@ import { meta, vec4 } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2RotationAdapter")
+@meta.ctor("Tr2RotationAdapter")
 export class Tr2RotationAdapter extends Tw2CurveAdapter
 {
 
-    @meta.black.objectOf("Tw2Curve")
+    //@meta.struct("Tw2Curve")
     curve = null;
 
-    @meta.black.vector4
+    //@meta.vector4
     value = vec4.create();
 
 

@@ -8,7 +8,7 @@ const Operator = {
 };
 
 
-@meta.type("Tw2ScalarSequencer")
+@meta.ctor("Tw2ScalarSequencer")
 export class Tw2ScalarSequencer extends Tw2CurveSequencer
 {
 
@@ -16,10 +16,10 @@ export class Tw2ScalarSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     value = 0;
 
-    @meta.enumerable(Operator)
+    @meta.enums(Operator)
     operator = 0;
 
-    @meta.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     functions = [];
 
     @meta.float

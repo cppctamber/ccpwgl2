@@ -1,11 +1,11 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-@meta.type("Tw2Float", "TriFloat")
+@meta.ctor("Tw2Float", "TriFloat")
 export class Tw2Float extends Tw2BaseClass
 {
 
-    @meta.black.float
+    @meta.float
     value = 0;
 
 }

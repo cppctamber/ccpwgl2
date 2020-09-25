@@ -1,16 +1,17 @@
 import { meta, vec3 } from "global";
 
 
-@meta.type("EveSOFDataHullSoundEmitter", true)
+@meta.ctor("EveSOFDataHullSoundEmitter")
 export class EveSOFDataHullSoundEmitter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.string
+    @meta.string
     prefix = "";
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
+
 }

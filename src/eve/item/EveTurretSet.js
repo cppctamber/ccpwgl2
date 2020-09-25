@@ -8,7 +8,7 @@ import {
 import { EveObjectSet, EveObjectSetItem } from "./EveObjectSet";
 
 
-@meta.type("EveTurretSetItem")
+@meta.ctor("EveTurretSetItem")
 export class EveTurretSetItem extends EveObjectSetItem
 {
 
@@ -78,101 +78,101 @@ export class EveTurretSetItem extends EveObjectSetItem
 }
 
 
-@meta.type("EveTurretSet", true)
+@meta.ctor("EveTurretSet", true)
 @meta.stage(1)
 export class EveTurretSet extends EveObjectSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     bottomClipHeight = 0;
 
-    @meta.black.vector4
+    @meta.vector4
     boundingSphere = vec4.create();
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     chooseRandomLocator = false;
 
     @meta.notImplemented
-    @meta.black.uint
+    @meta.uint
     cyclingFireGroupCount = 0;
 
-    @meta.black.path
+    @meta.path
     firingEffectResPath = "";
 
-    @meta.black.path
+    @meta.path
     geometryResPath = "";
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     impactSize = 0;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     laserMissBehaviour = false;
 
-    @meta.black.string
+    @meta.string
     locatorName = "";
 
     @meta.notImplemented
-    @meta.black.uint
+    @meta.uint
     maxCyclingFirePos = 0;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     projectileMissBehaviour = false;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sysBoneHeight = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sysBonePitch01Factor = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sysBonePitch02Factor = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sysBonePitchFactor = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sysBonePitchMax = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sysBonePitchMin = 0;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sysBonePitchOffset = 0;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     turretEffect = null;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     updatePitchPose = false;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useDynamicBounds = false;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useRandomFiringDelay = false;
 
-    @meta.object
+    @meta.struct()
     firingEffect = null;
 
-    @meta.objectOf("Tw2GeometryResource")
+    @meta.struct("Tw2GeometryResource")
     @meta.todo("Make private")
     geometryResource = null;
 

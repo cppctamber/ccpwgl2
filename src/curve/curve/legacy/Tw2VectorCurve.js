@@ -18,7 +18,7 @@ const Interpolation = {
 };
 
 
-@meta.type("Tw2VectorKey")
+@meta.ctor("Tw2VectorKey")
 export class Tw2VectorKey extends Tw2CurveKey
 {
 
@@ -31,7 +31,7 @@ export class Tw2VectorKey extends Tw2CurveKey
     @meta.vector3
     right = vec3.create();
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 0;
 
 }
@@ -48,7 +48,7 @@ export class Tw2VectorKey extends Tw2CurveKey
  * @property {number} _currentKey
  * @property {number} length
  */
-@meta.type("Tw2VectorCurve")
+@meta.ctor("Tw2VectorCurve")
 export class Tw2VectorCurve extends Tw2Curve
 {
 
@@ -59,10 +59,10 @@ export class Tw2VectorCurve extends Tw2Curve
     @meta.isPrivate
     value = vec3.create();
 
-    @meta.enumerable(Extrapolation)
+    @meta.enums(Extrapolation)
     extrapolation = 0;
 
-    @meta.list
+    @meta.list()
     keys = [];
 
     @meta.float

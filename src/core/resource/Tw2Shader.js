@@ -11,7 +11,7 @@ import shaderOverrides from "./shaderOverrides.json";
  * @property {Object.<string, Array>} annotations
  * @class
  */
-@meta.type("Tw2Shader")
+@meta.ctor("Tw2Shader")
 export class Tw2Shader
 {
 

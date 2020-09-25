@@ -3,17 +3,17 @@ import { EveChildModifier } from "./EveChildModifier";
 
 
 @meta.notImplemented
-@meta.type("EveChildModifierSRT", true)
+@meta.ctor("EveChildModifierSRT")
 export class EveChildModifierSRT extends EveChildModifier
 {
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
 }

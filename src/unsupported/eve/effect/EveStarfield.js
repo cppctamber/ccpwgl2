@@ -2,32 +2,32 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveStarfield", true)
+@meta.ctor("EveStarfield")
 export class EveStarfield extends Tw2BaseClass
 {
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
-    @meta.black.float
+    @meta.float
     maxDist = 0;
 
-    @meta.black.float
+    @meta.float
     maxFlashRate = 0;
 
-    @meta.black.float
+    @meta.float
     minDist = 0;
 
-    @meta.black.float
+    @meta.float
     minFlashIntensity = 0;
 
-    @meta.black.float
+    @meta.float
     minFlashRate = 0;
 
-    @meta.black.uint
+    @meta.uint
     numStars = 0;
 
-    @meta.black.uint
+    @meta.uint
     seed = 0;
 
 }

@@ -23,26 +23,26 @@ const MipFilterModesByName = {
 };
 
 
-@meta.type("Tw2SamplerOverride")
+@meta.ctor("Tw2SamplerOverride")
 export class Tw2SamplerOverride
 {
 
     @meta.string
     name = "";
 
-    @meta.enumerable(WrapModesByName, 3)
+    @meta.enums(WrapModesByName, 3)
     addressU = 0;
 
-    @meta.enumerable(WrapModesByName, 3)
+    @meta.enums(WrapModesByName, 3)
     addressV = 0;
 
-    @meta.enumerable(WrapModesByName, 3)
+    @meta.enums(WrapModesByName, 3)
     addressW = 0;
 
-    @meta.enumerable(FilterModesByName, 2)
+    @meta.enums(FilterModesByName, 2)
     filter = 0;
 
-    @meta.enumerable(MipFilterModesByName, 2)
+    @meta.enums(MipFilterModesByName, 2)
     mipFilter = 0;
 
     @meta.notImplemented

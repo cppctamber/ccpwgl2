@@ -3,7 +3,7 @@ import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
-@meta.type("EveChildBillboard", true)
+@meta.ctor("EveChildBillboard")
 @meta.todo("Deprecated?")
 export class EveChildBillboard extends EveChild
 {
@@ -17,7 +17,7 @@ export class EveChildBillboard extends EveChild
     @meta.uint
     lowestLodVisible = 2;
 
-    @meta.objectOf([ "Tw2Mesh", "Tw2InstancedMesh" ])
+    @meta.struct([ "Tw2Mesh", "Tw2InstancedMesh" ])
     mesh = null;
 
     @meta.quaternion

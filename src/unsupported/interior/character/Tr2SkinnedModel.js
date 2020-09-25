@@ -2,20 +2,20 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2SkinnedModel", true)
+@meta.ctor("Tr2SkinnedModel")
 export class Tr2SkinnedModel extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.path
+    @meta.path
     geometryResPath = "";
 
-    @meta.black.list
+    @meta.list()
     meshes = [];
 
-    @meta.black.string
+    @meta.string
     skeletonName = "";
 
 }

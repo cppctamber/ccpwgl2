@@ -1,32 +1,32 @@
 import { meta, quat } from "global";
 
 
-@meta.type("EveSOFDataHullAnimation", true)
+@meta.ctor("EveSOFDataHullAnimation")
 export class EveSOFDataHullAnimation
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     endRate = 0;
 
-    @meta.black.float
+    @meta.float
     endRotationTime = 0;
 
-    @meta.black.quaternion
+    @meta.quaternion
     endRotationValue = quat.create();
 
-    @meta.black.uint
+    @meta.uint
     id = 0;
 
-    @meta.black.float
+    @meta.float
     startRate = 0;
 
-    @meta.black.float
+    @meta.float
     startRotationTime = 0;
 
-    @meta.black.quaternion
+    @meta.quaternion
     startRotationValue = quat.create();
 
 }

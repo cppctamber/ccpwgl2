@@ -4,14 +4,14 @@ import { Tw2Parameter } from "./Tw2Parameter";
 import { Tw2TextureRes } from "../resource/Tw2TextureRes";
 
 
-@meta.type("Tw2TextureParameter", "TriTextureParameter")
+@meta.ctor("Tw2TextureParameter", "TriTextureParameter")
 export class Tw2TextureParameter extends Tw2Parameter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.path
+    @meta.path
     resourcePath = "";
 
     @meta.uint
@@ -38,11 +38,11 @@ export class Tw2TextureParameter extends Tw2Parameter
     @meta.boolean
     forceAddressModes = false;
 
-    @meta.objectOf("Tw2TextureRes")
+    @meta.struct("Tw2TextureRes")
     @meta.todo("Make private")
     textureRes = null;
 
-    @meta.objectOf("Tw2SamplerState")
+    @meta.struct("Tw2SamplerState")
     _sampler = null;
 
 

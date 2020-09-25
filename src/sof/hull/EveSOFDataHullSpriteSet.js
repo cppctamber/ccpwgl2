@@ -1,20 +1,20 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataHullSpriteSet", true)
+@meta.ctor("EveSOFDataHullSpriteSet")
 export class EveSOFDataHullSpriteSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveSOFDataHullSpriteSetItem")
+    @meta.list("EveSOFDataHullSpriteSetItem")
     items = [];
 
-    @meta.black.boolean
+    @meta.boolean
     skinned = false;
 
-    @meta.black.string
+    @meta.string
     visibilityGroup = "";
 
 }

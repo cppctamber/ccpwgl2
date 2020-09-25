@@ -1,17 +1,17 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataHullBooster", true)
+@meta.ctor("EveSOFDataHullBooster")
 export class EveSOFDataHullBooster
 {
 
-    @meta.black.boolean
+    @meta.boolean
     alwaysOn = false;
 
-    @meta.black.boolean
+    @meta.boolean
     hasTrails = false;
 
-    @meta.black.listOf("EveSOFDataHullBoosterItem")
+    @meta.list("EveSOFDataHullBoosterItem")
     items = [];
 
 }

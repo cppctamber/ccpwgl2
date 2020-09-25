@@ -2,14 +2,14 @@ import { meta, vec4, mat4, tw2, Tw2BaseClass } from "global";
 import { Tw2Effect, Tw2VertexDeclaration, Tw2BatchAccumulator } from "core";
 
 
-@meta.type("EveOccluder", true)
+@meta.ctor("EveOccluder")
 export class EveOccluder extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveTransform")
+    @meta.list("EveTransform")
     sprites = [];
 
 

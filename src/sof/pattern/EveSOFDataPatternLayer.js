@@ -1,35 +1,35 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataPatternLayer", true)
+@meta.ctor("EveSOFDataPatternLayer", true)
 export class EveSOFDataPatternLayer
 {
 
-    @meta.black.boolean
+    @meta.boolean
     isTargetMtl1 = true;
 
-    @meta.black.boolean
+    @meta.boolean
     isTargetMtl2 = true;
 
-    @meta.black.boolean
+    @meta.boolean
     isTargetMtl3 = true;
 
-    @meta.black.boolean
+    @meta.boolean
     isTargetMtl4 = true;
 
-    @meta.black.uint
+    @meta.uint
     materialSource = 0;
 
-    @meta.black.uint
+    @meta.uint
     projectionTypeU = 0;
 
-    @meta.black.uint
+    @meta.uint
     projectionTypeV = 0;
 
-    @meta.black.string
+    @meta.string
     textureName = "";
 
-    @meta.black.path
+    @meta.path
     textureResFilePath = "";
 
     /**

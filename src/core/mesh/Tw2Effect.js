@@ -1,6 +1,33 @@
 import { meta, util, device, tw2, Tw2BaseClass } from "global";
 import { Tw2TextureParameter } from "../parameter/Tw2TextureParameter";
 import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
+import { fromList } from "core/reader/Tw2BlackPropertyReaders";
+
+
+class Tw2ConstantParameter
+{
+    /**
+     * Black reader
+     * @param {Tw2BlackBinaryReader} r
+     * @returns {Tw2Vector4Parameter}
+     */
+    static blackStruct(r)
+    {
+        const item = new Tw2Vector4Parameter();
+
+        // Temporary
+        Object.defineProperty(item, "isConstant", { value: true, writable: false });
+
+        item.name = r.ReadStringU16();
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+        r.ExpectU16(0, "unknown content");
+        item.SetValue(new Float32Array([ r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32() ]));
+        return item;
+    }
+
+}
+
 
 /**
  * Tw2Effect
@@ -18,14 +45,34 @@ import { Tw2Vector4Parameter } from "../parameter/Tw2Vector4Parameter";
 export class Tw2Effect extends Tw2BaseClass
 {
 
+    @meta.string
     name = "";
+
+    @meta.path
     effectFilePath = "";
+
+    @meta.struct("Tw2EffectRes")
+    @meta.isPrivate
     effectRes = null;
+
+    //@meta.plain
     parameters = {};
+
+    //@meta.plain
+    @meta.isPrivate
     techniques = {};
+
+    @meta.notImplemented
     samplerOverrides = {};
+
+    @meta.notImplemented
     options = {};
+
+    @meta.struct("Tw2Shader")
+    @meta.isPrivate
     shader = null;
+
+    @meta.boolean
     autoParameter = false;
 
     //resources
@@ -741,54 +788,27 @@ export class Tw2Effect extends Tw2BaseClass
         "PerObjectPSInt"
     ];
 
-    /**
-     * Black definition
-     * @param r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "effectFilePath", r.path ],
-            [ "name", r.string ],
-            [ "parameters", r.fromList({ key: "name" }) ],
-            // Reroute resources to parameters for now
-            [ "resources", r.fromList({ key: "name", reroute: "parameters" }) ],
-            // Reroute constant parameters for now
-            [ "constParameters", r.fromList({ key: "name", reroute: "parameters", struct: Tw2ConstantParameter }) ],
-            [ "options", r.notImplemented ],
-            [ "samplerOverrides", r.notImplemented ]
-        ];
-    }
+    static blackReaders = {
+
+        parameters: fromList({ key: "name" }),
+
+        resources: fromList({
+            key: "name",
+            reroute: "parameters"
+        }),
+
+        constParameters: fromList({
+            key: "name",
+            reroute: "parameters",
+            struct: Tw2ConstantParameter
+        })
+
+    };
 
     /**
      * Identifies that the class is in staging
      * @property {null|Number}
      */
     static __isStaging = 1;
-
-}
-
-class Tw2ConstantParameter
-{
-    /**
-     * Black reader
-     * @param {Tw2BlackBinaryReader} r
-     * @returns {Tw2Vector4Parameter}
-     */
-    static blackStruct(r)
-    {
-        const item = new Tw2Vector4Parameter();
-
-        // Temporary
-        Object.defineProperty(item, "isConstant", { value: true, writable: false });
-
-        item.name = r.ReadStringU16();
-        r.ExpectU16(0, "unknown content");
-        r.ExpectU16(0, "unknown content");
-        r.ExpectU16(0, "unknown content");
-        item.SetValue(new Float32Array([ r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32() ]));
-        return item;
-    }
 
 }

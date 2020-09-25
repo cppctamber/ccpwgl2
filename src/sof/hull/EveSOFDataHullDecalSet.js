@@ -1,17 +1,17 @@
-import { meta } from "global/index";
+import { meta } from "global";
 
 
-@meta.type("EveSOFDataHullDecalSet", true)
+@meta.ctor("EveSOFDataHullDecalSet")
 export class EveSOFDataHullDecalSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveSOFDataHullDecalSetItem")
+    @meta.list("EveSOFDataHullDecalSetItem")
     items = [];
 
-    @meta.black.string
+    @meta.string
     visibilityGroup = "";
 
 }

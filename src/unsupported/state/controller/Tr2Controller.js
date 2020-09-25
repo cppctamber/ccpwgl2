@@ -2,20 +2,20 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2Controller", true)
+@meta.ctor("Tr2Controller")
 export class Tr2Controller extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.boolean
+    @meta.boolean
     isShared = false;
 
-    @meta.black.listOf("Tr2StateMachine")
+    @meta.list("Tr2StateMachine")
     stateMachines = [];
 
-    @meta.black.listOf("Tr2ControllerFloatVariable")
+    @meta.list("Tr2ControllerFloatVariable")
     variables = [];
 
 }

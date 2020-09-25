@@ -18,44 +18,44 @@ import { meta, vec3, vec4, Tw2BaseClass } from "global";
  * @property {Number} sortValueMultiplier    -
  */
 @meta.notImplemented
-@meta.type("EveSpherePin", true)
+@meta.ctor("EveSpherePin", true)
 export class EveSpherePin extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.vector3
+    @meta.vector3
     centerNormal = vec3.create();
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.list
+    @meta.list()
     curveSets = [];
 
-    @meta.black.boolean
+    @meta.boolean
     enablePicking = false;
 
-    @meta.black.path
+    @meta.path
     geometryResPath = "";
 
-    @meta.black.color
+    @meta.color
     pinColor = vec4.create();
 
-    @meta.black.object
+    @meta.struct()
     pinEffect = null;
 
-    @meta.black.float
+    @meta.float
     pinMaxRadius = 0;
 
-    @meta.black.float
+    @meta.float
     pinRadius = 0;
 
-    @meta.black.float
+    @meta.float
     pinRotation = 0;
 
-    @meta.black.float
+    @meta.float
     sortValueMultiplier = 0;
 
 }

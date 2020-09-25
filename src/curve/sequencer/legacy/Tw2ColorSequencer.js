@@ -8,7 +8,7 @@ const Operator = {
 };
 
 
-@meta.type("Tw2ColorSequencer")
+@meta.ctor("Tw2ColorSequencer")
 export class Tw2ColorSequencer extends Tw2CurveSequencer
 {
 
@@ -21,10 +21,10 @@ export class Tw2ColorSequencer extends Tw2CurveSequencer
     @meta.vector4
     value = vec4.create();
 
-    @meta.enumerable(Operator)
+    @meta.enums(Operator)
     operator = 0;
 
-    @meta.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     functions = [];
 
 

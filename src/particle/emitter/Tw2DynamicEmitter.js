@@ -2,24 +2,24 @@ import { meta } from "global";
 import { Tw2ParticleEmitter } from "./Tw2ParticleEmitter";
 
 
-@meta.type("Tw2DynamicEmitter", "Tr2DynamicEmitter")
+@meta.ctor("Tw2DynamicEmitter", "Tr2DynamicEmitter")
 export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("Tw2ParticleAttributeGenerator")
+    @meta.list("Tw2ParticleAttributeGenerator")
     generators = [];
 
     @meta.notImplemented
-    @meta.black.uint
+    @meta.uint
     maxParticles = 0;
 
-    @meta.black.objectOf("Tw2ParticleSystem")
+    @meta.struct("Tw2ParticleSystem")
     particleSystem = null;
 
-    @meta.black.float
+    @meta.float
     rate = 0;
 
 
@@ -86,22 +86,6 @@ export class Tw2DynamicEmitter extends Tw2ParticleEmitter
 
             this.particleSystem.EndSpawnParticle();
         }
-    }
-
-    /**
-     * Black definition
-     * @param {*} r
-     * @returns {*[]}
-     */
-    static black(r)
-    {
-        return [
-            [ "name", r.string ],
-            [ "particleSystem", r.object ],
-            [ "generators", r.array ],
-            [ "maxParticles", r.uint ],
-            [ "rate", r.float ],
-        ];
     }
 
 }

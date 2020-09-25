@@ -1,27 +1,27 @@
 import { meta, Tw2BaseClass } from "global";
 
 
-@meta.type("Tw2CurveSet", "TriCurveSet")
+@meta.ctor("Tw2CurveSet", "TriCurveSet")
 export class Tw2CurveSet extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("Tw2ValueBinding")
+    @meta.list("Tw2ValueBinding")
     bindings = [];
 
-    @meta.black.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     curves = [];
 
-    @meta.black.boolean
+    @meta.boolean
     playOnLoad = true;
 
     @meta.notImplemented
-    @meta.black.listOf("TriCurveSetRange")
+    @meta.list("TriCurveSetRange")
     ranges = [];
 
-    @meta.black.float
+    @meta.float
     scale = 1;
 
     @meta.notImplemented

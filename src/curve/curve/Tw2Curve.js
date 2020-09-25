@@ -2,8 +2,6 @@
 import { meta, vec3, vec4, quat, Tw2BaseClass } from "global";
 
 
-@meta.abstract
-@meta.type("Tw2CurveKey")
 export class Tw2CurveKey extends Tw2BaseClass
 {
 
@@ -16,8 +14,6 @@ export class Tw2CurveKey extends Tw2BaseClass
 }
 
 
-@meta.abstract
-@meta.type("Tw2Curve")
 export class Tw2Curve extends Tw2BaseClass
 {
 

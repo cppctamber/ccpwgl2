@@ -2,15 +2,15 @@ import { meta, mat4, util, Tw2BaseClass } from "global";
 import { vec3 } from "global/index";
 
 
-@meta.type("EveLocator2", true)
+@meta.ctor("EveLocator2")
 @meta.stage(1)
 export class EveLocator2 extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.matrix4
+    @meta.matrix4
     transform = mat4.create();
 
     @meta.uint
@@ -21,7 +21,7 @@ export class EveLocator2 extends Tw2BaseClass
     @meta.todo("Move to EveLocator only?")
     atlasIndex1 = null;
 
-    @meta.objectOf("Tw2Bone")
+    @meta.struct("Tw2Bone")
     @meta.isPrivate
     bone = null;
 
@@ -150,7 +150,7 @@ export class EveLocator2 extends Tw2BaseClass
 
 }
 
-@meta.type("EveLocator", true)
+@meta.ctor("EveLocator")
 export class EveLocator extends EveLocator2
 {
 

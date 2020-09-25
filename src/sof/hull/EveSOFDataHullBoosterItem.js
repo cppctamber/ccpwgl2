@@ -1,27 +1,27 @@
 import { mat4, meta, vec4 } from "global";
 
 
-@meta.type("EveSOFDataHullBoosterItem", true)
+@meta.ctor("EveSOFDataHullBoosterItem")
 export class EveSOFDataHullBoosterItem
 {
 
-    @meta.black.uint
+    @meta.uint
     atlasIndex0 = 0;
 
-    @meta.black.uint
+    @meta.uint
     atlasIndex1 = 0;
 
-    @meta.black.vector4
+    @meta.vector4
     functionality = vec4.create();
 
-    @meta.black.boolean
+    @meta.boolean
     hasTrail = false;
 
-    @meta.black.float
+    @meta.float
     @meta.todo("What should the default value be?")
     lightScale = 1;
 
-    @meta.black.matrix4
+    @meta.matrix4
     transform = mat4.create();
 
 }

@@ -1,74 +1,74 @@
 import { meta, vec2, vec4 } from "global";
 
 
-@meta.type("EveSOFDataGenericDamage", true)
+@meta.ctor("EveSOFDataGenericDamage", true)
 export class EveSOFDataGenericDamage
 {
 
-    @meta.black.float
+    @meta.float
     armorParticleAngle = 0;
 
-    @meta.black.color
+    @meta.color
     armorParticleColor0 = vec4.create();
 
-    @meta.black.color
+    @meta.color
     armorParticleColor1 = vec4.create();
 
-    @meta.black.color
+    @meta.color
     armorParticleColor2 = vec4.create();
 
-    @meta.black.color
+    @meta.color
     armorParticleColor3 = vec4.create();
 
-    @meta.black.float
+    @meta.float
     armorParticleDrag = 0;
 
-    @meta.black.vector2
+    @meta.vector2
     armorParticleMinMaxLifeTime = vec2.create();
 
-    @meta.black.vector2
+    @meta.vector2
     armorParticleMinMaxSpeed = vec2.create();
 
-    @meta.black.float
+    @meta.float
     armorParticleRate = 0;
 
-    @meta.black.vector4
+    @meta.vector4
     armorParticleSizes = vec4.create();
 
-    @meta.black.uint
+    @meta.uint
     armorParticleTextureIndex = 0;
 
-    @meta.black.float
+    @meta.float
     armorParticleTurbulenceAmplitude = 0;
 
-    @meta.black.float
+    @meta.float
     armorParticleTurbulenceFrequency = 0;
 
-    @meta.black.float
+    @meta.float
     armorParticleVelocityStretchRotation = 0;
 
-    @meta.black.string
+    @meta.string
     armorShader = "";
 
-    @meta.black.float
+    @meta.float
     flickerPerlinAlpha = 0;
 
-    @meta.black.float
+    @meta.float
     flickerPerlinBeta = 0;
 
-    @meta.black.uint
+    @meta.uint
     flickerPerlinN = 0;
 
-    @meta.black.float
+    @meta.float
     flickerPerlinSpeed = 0;
 
-    @meta.black.path
+    @meta.path
     shieldGeometryResFilePath = "";
 
-    @meta.black.string
+    @meta.string
     shieldShaderEllipsoid = "";
 
-    @meta.black.string
+    @meta.string
     shieldShaderHull = "";
 
 }

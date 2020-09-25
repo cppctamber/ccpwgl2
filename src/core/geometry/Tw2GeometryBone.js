@@ -1,7 +1,7 @@
 import { meta, mat3, mat4, quat, vec3 } from "global";
 
 
-@meta.type("Tw2GeometryBone")
+@meta.ctor("Tw2GeometryBone")
 export class Tw2GeometryBone
 {
 

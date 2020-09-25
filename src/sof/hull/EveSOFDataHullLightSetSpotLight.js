@@ -1,41 +1,41 @@
 import { meta, vec3, vec4, quat } from "global";
 
 
-@meta.type("EveSOFDataHullLightSetSpotLight", true)
+@meta.ctor("EveSOFDataHullLightSetSpotLight")
 export class EveSOFDataHullLightSetSpotLight
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     brightness = 0;
 
-    @meta.black.float
+    @meta.float
     innerAngle = 0;
 
-    @meta.black.float
+    @meta.float
     innerRadius = 0;
 
-    @meta.black.color
+    @meta.color
     lightColor = vec4.create();
 
-    @meta.black.float
+    @meta.float
     noiseAmplitude = 0;
 
-    @meta.black.float
+    @meta.float
     noiseFrequency = 0;
 
-    @meta.black.float
+    @meta.float
     outerAngle = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.uint
+    @meta.uint
     radius = 0;
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
 }

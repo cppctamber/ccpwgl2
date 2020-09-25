@@ -3,11 +3,11 @@ import { Tw2AnimationController, Tw2PerObjectData } from "core";
 import { EveObject } from "./EveObject";
 
 
-@meta.type("EveSpaceObject")
+@meta.ctor("EveSpaceObject")
 export class EveSpaceObject extends EveObject
 {
 
-    @meta.objectOf("Tw2AnimationController")
+    @meta.struct("Tw2AnimationController")
     animation = new Tw2AnimationController();
 
     @meta.vector3
@@ -18,37 +18,37 @@ export class EveSpaceObject extends EveObject
     @meta.isPrivate
     boundingSphereRadius = 0;
 
-    @meta.listOf("EveObject")
+    @meta.list("EveObject")
     children = [];
 
-    @meta.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.listOf("EveCustomMask")
+    @meta.list("EveCustomMask")
     customMasks = [];
 
-    @meta.listOf("EveSpaceObjectDecal")
+    @meta.list("EveSpaceObjectDecal")
     decals = [];
 
-    @meta.listOf("EveChild")
+    @meta.list("EveChild")
     effectChildren = [];
 
     @meta.float
     killCount = 0;
 
-    @meta.listOf("EveCurveLineSet")
+    @meta.list("EveCurveLineSet")
     lineSets = [];
 
-    @meta.listOf("EveLocator")
+    @meta.list("EveLocator")
     locators = [];
 
-    @meta.objectOf("Tw2Mesh")
+    @meta.struct("Tw2Mesh")
     mesh = null;
 
-    @meta.listOf("EveMeshOverlayEffect")
+    @meta.list("EveMeshOverlayEffect")
     overlayEffects = [];
 
-    @meta.listOf("EvePlaneSet")
+    @meta.list("EvePlaneSet")
     planeSets = [];
 
     @meta.vector3
@@ -59,16 +59,16 @@ export class EveSpaceObject extends EveObject
     @meta.isPrivate
     shapeEllipsoidCenter = vec3.create();
 
-    @meta.listOf("EveSpotlightSet")
+    @meta.list("EveSpotlightSet")
     spotlightSets = [];
 
-    @meta.listOf("EveSpriteSet")
+    @meta.list("EveSpriteSet")
     spriteSets = [];
 
     @meta.matrix4
     transform = mat4.create();
 
-    @meta.listOf("EveTurretSet")
+    @meta.list("EveTurretSet")
     turretSets = [];
 
     @meta.plain

@@ -2,72 +2,72 @@ import { EveChild } from "./EveChild";
 import { mat4, meta, quat, vec3 } from "global";
 
 
-@meta.type("EveChildContainer", true)
+@meta.ctor("EveChildContainer", true)
 @meta.stage(2)
 export class EveChildContainer extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     alwaysOn = false;
 
-    @meta.black.uint
+    @meta.uint
     boneIndex = -1;
 
     @meta.notImplemented
-    @meta.black.listOf("Tr2Controller")
+    @meta.list("Tr2Controller")
     controllers = [];
 
-    @meta.black.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.black.boolean
+    @meta.boolean
     display = true;
 
     @meta.notImplemented
-    @meta.black.object
+    @meta.struct()
     displayFilter = null;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     hideOnLowQuality = false;
 
     @meta.notImplemented
-    @meta.black.objectOf("EveChildInheritProperties")
+    @meta.struct("EveChildInheritProperties")
     inheritProperties = null;
 
     @meta.notImplemented
-    @meta.black.listOf("Tr2PointLight")
+    @meta.list("Tr2PointLight")
     lights = [];
 
-    @meta.black.matrix4
+    @meta.matrix4
     localTransform = mat4.create();
 
-    @meta.black.listOf("EveChild")
+    @meta.list("EveChild")
     objects = [];
 
     @meta.notImplemented
-    @meta.black.listOf("TriObserverLocal")
+    @meta.list("TriObserverLocal")
     observers = [];
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     staticTransform = false;
 
     @meta.notImplemented
-    @meta.black.listOf("EveChildModifier")
+    @meta.list("EveChildModifier")
     transformModifiers = [];
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
     @meta.boolean

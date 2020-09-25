@@ -1,11 +1,11 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataFactionVisibilityGroupSet", true)
+@meta.ctor("EveSOFDataFactionVisibilityGroupSet")
 export class EveSOFDataFactionVisibilityGroupSet
 {
 
-    @meta.black.listOf("EveSOFDataGenericString")
+    @meta.list("EveSOFDataGenericString")
     visibilityGroups = [];
 
 }

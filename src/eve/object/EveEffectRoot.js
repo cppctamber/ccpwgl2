@@ -4,15 +4,15 @@ import { EveObject } from "./EveObject";
 import { EveSpaceObject } from "./EveSpaceObject";
 
 
-@meta.type("EveEffectRoot", true)
+@meta.ctor("EveEffectRoot")
 @meta.todo("Implement LOD")
 export class EveEffectRoot extends EveObject
 {
 
-    @meta.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.listOf("EveMeshOverlayEffect")
+    @meta.list("EveMeshOverlayEffect")
     effectChildren = [];
 
     @meta.float

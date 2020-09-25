@@ -3,28 +3,28 @@ import { meta } from "global/index";
 
 
 @meta.notImplemented
-@meta.type("Tr2CurveScalarExpression", true)
+@meta.ctor("Tr2CurveScalarExpression")
 export class Tr2CurveScalarExpression extends Tw2CurveExpression
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.list
+    @meta.list()
     inputs = [];
 
-    @meta.black.expression
+    @meta.expression
     expression = "";
 
-    @meta.black.float
+    @meta.float
     @meta.todo("Figure out the default value")
     input1 = -1;
 
-    @meta.black.float
+    @meta.float
     @meta.todo("Figure out the default value")
     input2 = -1;
 
-    @meta.black.float
+    @meta.float
     @meta.todo("Figure out the default value")
     input3 = -1;
 

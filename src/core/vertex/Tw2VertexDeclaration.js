@@ -2,14 +2,14 @@ import { meta } from "global";
 import { Tw2VertexElement } from "./Tw2VertexElement";
 
 
-@meta.type("Tw2VertexDeclaration")
+@meta.ctor("Tw2VertexDeclaration")
 export class Tw2VertexDeclaration
 {
 
-    @meta.listOf("Tw2VertexElement")
+    @meta.list("Tw2VertexElement")
     elements = [];
 
-    @meta.listOf("Tw2VertexElement")
+    @meta.list("Tw2VertexElement")
     @meta.isPrivate
     elementsSorted = [];
 

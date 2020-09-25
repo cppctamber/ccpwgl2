@@ -2,7 +2,7 @@ import { meta, quat } from "global";
 import { Tw2CurveSequencer } from "../Tw2CurveSequencer";
 
 
-@meta.type("Tw2QuaternionSequencer")
+@meta.ctor("Tw2QuaternionSequencer")
 export class Tw2QuaternionSequencer extends Tw2CurveSequencer
 {
 
@@ -13,7 +13,7 @@ export class Tw2QuaternionSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     value = quat.create();
 
-    @meta.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     functions = [];
 
 

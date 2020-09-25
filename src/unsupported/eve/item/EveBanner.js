@@ -1,7 +1,7 @@
 import { meta, quat, vec3, mat4, Tw2BaseClass, AttachmentType } from "global";
 
 
-@meta.type("EveBanner", true)
+@meta.ctor("EveBanner")
 @meta.notImplemented
 export class EveBanner extends Tw2BaseClass
 {

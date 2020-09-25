@@ -2,36 +2,36 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2GpuParticleSystem", true)
+@meta.ctor("Tr2GpuParticleSystem")
 @meta.todo("Handle conflict with Tw2BaseClass.emit")
 export class Tr2GpuParticleSystem
 {
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     clear = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     emit = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     render = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     setDrawParameters = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     setSortParameters = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     sort = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     sortInner = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     sortStep = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     update = null;
 
 

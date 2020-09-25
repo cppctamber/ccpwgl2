@@ -39,7 +39,7 @@ import {
  * @property {Boolean} _isAttached         - identifies if the texture was attached rather than loaded
  * @property {?String} _extension          - loading file extension
  */
-@meta.type("Tw2TextureRes")
+@meta.ctor("Tw2TextureRes")
 export class Tw2TextureRes extends Tw2Resource
 {
 

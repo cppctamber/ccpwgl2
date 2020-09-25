@@ -3,20 +3,20 @@ import { toArray } from "global/util";
 
 
 @meta.notImplemented
-@meta.type("Tr2LodResource", true)
+@meta.ctor("Tr2LodResource")
 export class Tr2LodResource extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.path
+    @meta.path
     highDetailResPath = "";
 
-    @meta.black.path
+    @meta.path
     lowDetailResPath = "";
 
-    @meta.black.path
+    @meta.path
     mediumDetailResPath = "";
 
 

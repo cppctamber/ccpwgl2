@@ -1,11 +1,11 @@
 import { meta } from "global";
 
 
-@meta.type("Tw2GeometrySkeleton")
+@meta.ctor("Tw2GeometrySkeleton")
 export class Tw2GeometrySkeleton
 {
 
-    @meta.listOf("Tw2GeometryBone")
+    @meta.list("Tw2GeometryBone")
     bones = [];
 
 }

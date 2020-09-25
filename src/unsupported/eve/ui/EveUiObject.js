@@ -9,20 +9,20 @@ import { meta, Tw2BaseClass } from "global";
  * @property {Number} modelScale           -
  */
 @meta.notImplemented
-@meta.type("EveUiObject", true)
+@meta.ctor("EveUiObject")
 export class EveUiObject extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     boundingSphereRadius = 0;
 
-    @meta.black.object
+    @meta.struct()
     mesh = null;
 
-    @meta.black.float
+    @meta.float
     modelScale = 0;
 
 }

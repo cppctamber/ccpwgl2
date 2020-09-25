@@ -2,7 +2,7 @@ import { Tw2PostEffect } from "./Tw2PostEffect";
 import { meta, Tw2BaseClass } from "global";
 
 
-@meta.type("Tw2PostEffectManager")
+@meta.ctor("Tw2PostEffectManager")
 export class Tw2PostEffectManager extends Tw2BaseClass
 {
 
@@ -12,7 +12,7 @@ export class Tw2PostEffectManager extends Tw2BaseClass
     @meta.boolean
     display = true;
 
-    @meta.listOf("Tw2PostEffect")
+    @meta.list("Tw2PostEffect")
     effects = [];
 
 

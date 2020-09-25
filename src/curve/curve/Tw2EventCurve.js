@@ -8,34 +8,34 @@ const Extrapolation = {
 };
 
 
-@meta.type("Tw2EventKey", "TriEventKey")
+@meta.ctor("Tw2EventKey", "TriEventKey")
 export class Tw2EventKey extends Tw2CurveKey
 {
 
-    @meta.black.float
+    @meta.float
     time = 0;
 
-    @meta.black.ushort
+    @meta.ushort
     value = 0;
 
 }
 
 
-@meta.type("Tw2EventCurve", "TriEventCurve")
+@meta.ctor("Tw2EventCurve", "TriEventCurve")
 export class Tw2EventCurve extends Tw2Curve
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
-    @meta.enumerable(Extrapolation)
+    @meta.uint
+    @meta.enums(Extrapolation)
     extrapolation = 0;
 
-    @meta.black.listOf("Tw2EventKey")
+    @meta.list("Tw2EventKey")
     keys = [];
 
-    @meta.black.ushort
+    @meta.ushort
     @meta.isPrivate
     value = 0;
 

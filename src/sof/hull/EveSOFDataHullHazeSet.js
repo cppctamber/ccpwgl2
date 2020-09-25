@@ -1,17 +1,17 @@
 import { meta } from "global/index";
 
 
-@meta.type("EveSOFDataHullHazeSet", true)
+@meta.ctor("EveSOFDataHullHazeSet")
 export class EveSOFDataHullHazeSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveSOFDataHullHazeSetItem")
+    @meta.list("EveSOFDataHullHazeSetItem")
     items = [];
 
-    @meta.black.string
+    @meta.string
     visibilityGroup = "";
 
 }

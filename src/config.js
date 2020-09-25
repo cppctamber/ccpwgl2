@@ -5,8 +5,34 @@ import * as particle from "./particle";
 import * as sof from "./sof";
 import * as unsupported from "./unsupported";
 import { Tw2EventEmitter, Tw2Notifications } from "./global/class";
-
+import { path } from "./core/reader/Tw2BlackPropertyReaders";
 import { vec4, mat4 } from "./global/math";
+
+/**
+ * Black property path  handler
+ * @param {String} filepath
+ * @returns {String}
+ */
+path.handler = function(filepath)
+{
+    // Because there are two sources for "res:" now we need to replace
+    // any references from the eve cdn with a new res path mapping
+    if (filepath.indexOf("res:") === 0)
+    {
+        filepath = "cdn:" + filepath.substring(4);
+    }
+
+    /*
+    let ext = "";
+    const dot = filepath.lastIndexOf(".");
+    if (dot !== -1) ext = filepath.substr(dot + 1).toLowerCase();
+     */
+
+    return filepath;
+};
+
+
+
 
 /**
  * Register global configurations
@@ -49,9 +75,7 @@ export const config = {
     store: {
 
         path: {
-            "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-            // Set to you local cdn cache server path
-            "cdn": "http://localhost:3000/"
+            "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/"
         },
 
         extension: {

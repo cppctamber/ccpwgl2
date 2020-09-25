@@ -17,7 +17,7 @@ const Interpolation = {
 };
 
 
-@meta.type("Tw2ColorKey")
+@meta.ctor("Tw2ColorKey")
 export class Tw2ColorKey extends Tw2CurveKey
 {
 
@@ -30,13 +30,13 @@ export class Tw2ColorKey extends Tw2CurveKey
     @meta.vector4
     right = vec4.create();
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 0;
 
 }
 
 
-@meta.type("Tw2ColorCurve")
+@meta.ctor("Tw2ColorCurve")
 export class Tw2ColorCurve extends Tw2Curve
 {
 
@@ -47,10 +47,10 @@ export class Tw2ColorCurve extends Tw2Curve
     @meta.isPrivate
     value = vec4.create();
 
-    @meta.enumerable(Extrapolation)
+    @meta.enums(Extrapolation)
     extrapolation = 0;
 
-    @meta.listOf("Tw2ColorKey")
+    @meta.list("Tw2ColorKey")
     keys = [];
 
     @meta.float

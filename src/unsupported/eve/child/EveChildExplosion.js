@@ -3,50 +3,50 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.type("EveChildExplosion", true)
+@meta.ctor("EveChildExplosion")
 export class EveChildExplosion extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     globalDuration = 0;
 
-    @meta.black.objectOf("EveChildExplosion")
+    @meta.struct("EveChildExplosion")
     globalExplosion = null;
 
-    @meta.black.float
+    @meta.float
     globalExplosionDelay = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     globalScaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.float
+    @meta.float
     localDuration = 0;
 
-    @meta.black.objectOf("EveChildExplosion")
+    @meta.struct("EveChildExplosion")
     localExplosion = null;
 
-    @meta.black.float
+    @meta.float
     localExplosionInterval = 0;
 
-    @meta.black.float
+    @meta.float
     localExplosionIntervalFactor = 0;
 
-    @meta.black.objectOf("EveChildExplosion")
+    @meta.struct("EveChildExplosion")
     localExplosionShared = null;
 
-    @meta.black.listOf("EveChildExplosion")
+    @meta.list("EveChildExplosion")
     localExplosions = [];
 
-    @meta.black.matrix4
+    @meta.matrix4
     localTransform = mat4.create();
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
 

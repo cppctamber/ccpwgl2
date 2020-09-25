@@ -1,20 +1,20 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataRaceDamage", true)
+@meta.ctor("EveSOFDataRaceDamage")
 export class EveSOFDataRaceDamage
 {
 
-    @meta.black.listOf("EveSOFDataParameter")
+    @meta.list("EveSOFDataParameter")
     armorImpactParameters = [];
 
-    @meta.black.listOf("EveSOFDataTexture")
+    @meta.list("EveSOFDataTexture")
     armorImpactTextures = [];
 
-    @meta.black.listOf("EveSOFDataParameter")
+    @meta.list("EveSOFDataParameter")
     shieldImpactParameters = [];
 
-    @meta.black.listOf("EveSOFDataTexture")
+    @meta.list("EveSOFDataTexture")
     shieldImpactTextures = [];
 
 }

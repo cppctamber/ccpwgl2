@@ -1,7 +1,7 @@
 import { meta, vec3, quat, Tw2BaseClass } from "global";
 
 
-@meta.type("EveLocatorSetItem")
+@meta.ctor("EveLocatorSetItem")
 @meta.stage(1)
 export class EveLocatorSetItem extends Tw2BaseClass
 {
@@ -30,14 +30,14 @@ export class EveLocatorSetItem extends Tw2BaseClass
 }
 
 
-@meta.type("EveLocatorSets", true)
+@meta.ctor("EveLocatorSets", true)
 export class EveLocatorSets extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.struct([ EveLocatorSetItem ])
+    @meta.list(EveLocatorSetItem)
     locators = [];
 
 }

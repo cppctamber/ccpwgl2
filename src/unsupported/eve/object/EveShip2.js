@@ -3,56 +3,56 @@ import { EveObject } from "eve/object/EveObject";
 
 
 @meta.notImplemented
-@meta.type("EveShip2", true)
+@meta.ctor("EveShip2")
 export class EveShip2 extends EveObject
 {
 
-    @meta.black.listOf("EveObjectSet")
+    @meta.list("EveObjectSet")
     attachments = [];
 
-    @meta.black.objectOf("EveBoosterSet2")
+    @meta.struct("EveBoosterSet2")
     boosters = null;
 
-    @meta.black.vector3
+    @meta.vector3
     boundingSphereCenter = vec3.create();
 
-    @meta.black.float
+    @meta.float
     boundingSphereRadius = 0;
 
-    @meta.black.listOf("EveObject")
+    @meta.list("EveObject")
     children = [];
 
-    @meta.black.listOf("EveCustomMask")
+    @meta.list("EveCustomMask")
     customMasks = [];
 
-    @meta.black.listOf("EveSpaceObjectDecal")
+    @meta.list("EveSpaceObjectDecal")
     decals = [];
 
-    @meta.black.string
+    @meta.string
     dna = "";
 
-    @meta.black.listOf("EveLocatorSets")
+    @meta.list("EveLocatorSets")
     locatorSets = [];
 
-    @meta.black.listOf("EveLocator2")
+    @meta.list("EveLocator2")
     locators = [];
 
-    @meta.black.objectOf([ "Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod" ])
+    @meta.struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod")
     mesh = null;
 
-    @meta.black.objectOf("EveCurve") // Tr2RotationAdapter
+    @meta.struct("EveCurve") // Tr2RotationAdapter
     rotationCurve = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     shadowEffect = null;
 
-    @meta.black.vector3
+    @meta.vector3
     shapeEllipsoidCenter = vec3.create();
 
-    @meta.black.vector3
+    @meta.vector3
     shapeEllipsoidRadius = vec3.create();
 
-    @meta.black.objectOf("EveCurve") // Tr2TranslationAdapter
+    @meta.struct("EveCurve") // Tr2TranslationAdapter
     translationCurve = null;
 
 }

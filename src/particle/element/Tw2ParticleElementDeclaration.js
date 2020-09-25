@@ -3,24 +3,24 @@ import { Tw2ParticleElement } from "./Tw2ParticleElement";
 import { meta, Tw2BaseClass } from "global";
 
 
-@meta.type("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration")
+@meta.ctor("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration")
 export class Tw2ParticleElementDeclaration extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     customName = "";
 
-    @meta.black.uint
+    @meta.uint
     dimension = 1;
 
-    @meta.black.uint
-    @meta.enumerable(Tw2ParticleElement.Type)
+    @meta.uint
+    @meta.enums(Tw2ParticleElement.Type)
     elementType = Tw2ParticleElement.Type.CUSTOM;
 
-    @meta.black.uint
+    @meta.uint
     usageIndex = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     usedByGPU = true;
 
 

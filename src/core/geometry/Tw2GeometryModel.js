@@ -1,17 +1,17 @@
 import { meta } from "global";
 
 
-@meta.type("Tw2GeometryModel")
+@meta.ctor("Tw2GeometryModel")
 export class Tw2GeometryModel
 {
 
     @meta.string
     name = "";
 
-    @meta.listOf("Tw2GeometryMeshBinding")
+    @meta.list("Tw2GeometryMeshBinding")
     meshBindings = [];
 
-    @meta.objectOf("Tw2GeometrySkeleton")
+    @meta.struct("Tw2GeometrySkeleton")
     skeleton = null;
 
 

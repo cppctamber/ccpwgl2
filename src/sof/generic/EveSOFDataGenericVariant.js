@@ -1,17 +1,17 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataGenericVariant", true)
+@meta.ctor("EveSOFDataGenericVariant", true)
 export class EveSOFDataGenericVariant
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("EveSOFDataHullArea")
+    @meta.struct("EveSOFDataHullArea")
     hullArea = null;
 
-    @meta.black.boolean
+    @meta.boolean
     isTransparent = false;
 
 }

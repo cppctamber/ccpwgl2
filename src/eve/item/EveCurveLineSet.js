@@ -11,7 +11,7 @@ const LineType = {
 };
 
 
-@meta.type("EveCurveLineSetItem")
+@meta.ctor("EveCurveLineSetItem")
 export class EveCurveLineSetItem extends EveObjectSetItem
 {
 
@@ -51,7 +51,7 @@ export class EveCurveLineSetItem extends EveObjectSetItem
     @meta.float
     width = 1;
 
-    @meta.enumerable(LineType)
+    @meta.enums(LineType)
     @meta.isPrivate
     type = LineType.INVALID;
 
@@ -249,14 +249,14 @@ export class EveCurveLineSetItem extends EveObjectSetItem
 }
 
 
-@meta.type("EveCurveLineSet", true)
+@meta.ctor("EveCurveLineSet", true)
 export class EveCurveLineSet extends EveObjectSet
 {
 
     @meta.boolean
     additive = false;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     lineEffect = Tw2Effect.from({
         effectFilePath: "res:/Graphics/Effect/Managed/Space/SpecialFX/Lines3D.fx",
         textures: {
@@ -275,7 +275,7 @@ export class EveCurveLineSet extends EveObjectSet
     @meta.boolean
     pickable = true;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     pickEffect = null;
 
     @meta.quaternion

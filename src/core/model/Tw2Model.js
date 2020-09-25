@@ -1,17 +1,17 @@
 import { meta } from "global";
 
 
-@meta.type("Tw2Model")
+@meta.ctor("Tw2Model")
 export class Tw2Model
 {
 
-    @meta.objectOf("Tw2GeometryModel")
+    @meta.struct("Tw2GeometryModel")
     modelRes = null;
 
-    @meta.listOf("Tw2Bone")
+    @meta.list("Tw2Bone")
     bones = [];
 
-    @meta.plainOf("Tw2Bone")
+    @meta.plain //("Tw2Bone")
     bonesByName = {};
 
 }

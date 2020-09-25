@@ -2,14 +2,14 @@ import { meta, util, WrappedType } from "global";
 import { EveSpaceObject } from "./EveSpaceObject";
 
 
-@meta.type("EveShip")
+@meta.ctor("EveShip")
 export class EveShip extends EveSpaceObject
 {
 
-    @meta.objectOf("EveBoosterSet")
+    @meta.struct("EveBoosterSet")
     boosters = null;
 
-    @meta.listOf("EveTurretSet")
+    @meta.list("EveTurretSet")
     turretSets = [];
 
     @meta.float

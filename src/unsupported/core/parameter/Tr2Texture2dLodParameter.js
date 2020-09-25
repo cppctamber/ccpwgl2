@@ -2,14 +2,14 @@ import { meta } from "global";
 import { Tw2Parameter } from "core";
 
 @meta.notImplemented
-@meta.type("Tr2Texture2dLodParameter", true)
+@meta.ctor("Tr2Texture2dLodParameter")
 export class Tr2Texture2dLodParameter extends Tw2Parameter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("Tr2LodResource")
+    @meta.struct("Tr2LodResource")
     lodResource = null;
 
 }

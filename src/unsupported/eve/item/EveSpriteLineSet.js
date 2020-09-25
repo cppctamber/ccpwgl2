@@ -21,7 +21,7 @@ export class EveSpriteLineSetBatch
 
 
 @meta.notImplemented
-@meta.type("EveSpriteLineSetItem")
+@meta.ctor("EveSpriteLineSetItem")
 export class EveSpriteLineSetItem extends EveObjectSetItem
 {
 
@@ -88,7 +88,7 @@ export class EveSpriteLineSetItem extends EveObjectSetItem
 
 
 @meta.notImplemented
-@meta.type("EveSpriteLineSet")
+@meta.ctor("EveSpriteLineSet")
 export class EveSpriteLineSet extends EveObjectSet
 {
 

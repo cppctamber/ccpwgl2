@@ -10,11 +10,11 @@ const ParticleType = {
 };
 
 
-@meta.type("Tw2ParticleElement")
+@meta.ctor("Tw2ParticleElement")
 export class Tw2ParticleElement
 {
 
-    @meta.enumerable(ParticleType)
+    @meta.enums(ParticleType)
     elementType = null;
 
     @meta.string

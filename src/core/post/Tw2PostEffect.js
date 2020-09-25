@@ -6,7 +6,7 @@ import { Tw2PostEffectStep } from "./Tw2PostEffectStep";
 import { assignIfExists } from "global/util";
 
 
-@meta.type("Tw2PostEffect")
+@meta.ctor("Tw2PostEffect")
 export class Tw2PostEffect extends Tw2BaseClass
 {
 
@@ -17,10 +17,10 @@ export class Tw2PostEffect extends Tw2BaseClass
     @meta.isPrivate
     index = -1;
 
-    @meta.objectOf("Tw2CurveSet")
+    @meta.struct("Tw2CurveSet")
     curveSet = null;
 
-    @meta.listOf("Tw2PostEffectStep")
+    @meta.list("Tw2PostEffectStep")
     steps = [];
 
 

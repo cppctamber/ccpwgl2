@@ -25,29 +25,29 @@ import { ErrBindingType, ErrBindingValueUndefined, ErrBindingReference } from "c
  * @property {Boolean} _sourceIsArray      -
  * @property {Boolean} _sourceIsRGBA       -
  */
-@meta.type("Tw2ValueBinding", "TriValueBinding")
+@meta.ctor("Tw2ValueBinding", "TriValueBinding")
 export class Tw2ValueBinding extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.string
+    @meta.string
     destinationAttribute = "";
 
-    @meta.black.object
+    @meta.struct()
     destinationObject = null;
 
-    @meta.black.vector4
+    @meta.vector4
     offset = vec4.create();
 
-    @meta.black.float
+    @meta.float
     scale = 1;
 
-    @meta.black.string
+    @meta.string
     sourceAttribute = "";
 
-    @meta.black.object
+    @meta.struct()
     sourceObject = null;
 
 

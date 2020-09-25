@@ -1,11 +1,11 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataGenericString", true)
+@meta.ctor("EveSOFDataGenericString", true)
 export class EveSOFDataGenericString
 {
 
-    @meta.black.string
+    @meta.string
     str = "";
 
 }

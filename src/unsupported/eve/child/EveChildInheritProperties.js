@@ -2,8 +2,7 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveChildInheritProperties", true)
-@meta.data("black")
+@meta.ctor("EveChildInheritProperties")
 export class EveChildInheritProperties
 {
 

@@ -4,20 +4,20 @@ import { EveTransform } from "./EveTransform";
 import { EveObject } from "./EveObject";
 
 
-@meta.type("EvePlanet")
+@meta.ctor("EvePlanet")
 export class EvePlanet extends EveObject
 {
 
-    @meta.objectOf("EveTransform")
+    @meta.struct("EveTransform")
     highDetail = new EveTransform();
 
-    @meta.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effectHeight = new Tw2Effect();
 
-    @meta.objectOf("Tw2RenderTarget")
+    @meta.struct("Tw2RenderTarget")
     heightMap = new Tw2RenderTarget();
 
-    @meta.objectOf("EveTransform")
+    @meta.struct("EveTransform")
     zOnlyModel = null;
 
     @meta.uint

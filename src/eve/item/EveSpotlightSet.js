@@ -23,11 +23,11 @@ class EveSpotlightSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.type("EveSpotlightSetItem", true)
+@meta.ctor("EveSpotlightSetItem", true)
 export class EveSpotlightSetItem extends EveObjectSetItem
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
     @meta.float
@@ -36,7 +36,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.uint
     boneIndex = 0;                  // retain from EveSOF?
 
-    @meta.black.color
+    @meta.color
     coneColor = vec4.create();
 
     @meta.float
@@ -45,7 +45,7 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.boolean
     display = true;
 
-    @meta.black.color
+    @meta.color
     flareColor = vec4.create();
 
     @meta.float
@@ -55,16 +55,16 @@ export class EveSpotlightSetItem extends EveObjectSetItem
     @meta.todo("Identify if deprecated, only needed if creating a SOF object from the spotlight")
     groupIndex = -1;
 
-    @meta.black.color
+    @meta.color
     spriteColor = vec4.create();
 
     @meta.float
     spriteIntensity = 0;            // Non-standard Faction intensity
 
-    @meta.black.color
+    @meta.color
     spriteScale = vec3.fromValues(1, 1, 1);
 
-    @meta.black.matrix4
+    @meta.matrix4
     transform = mat4.create();
 
 
@@ -87,20 +87,20 @@ export class EveSpotlightSetItem extends EveObjectSetItem
 }
 
 
-@meta.type("EveSpotlightSet", true)
+@meta.ctor("EveSpotlightSet", true)
 export class EveSpotlightSet extends EveObjectSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     coneEffect = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     glowEffect = null;
 
-    @meta.black.float
+    @meta.float
     intensity = 1;
 
 
@@ -114,7 +114,7 @@ export class EveSpotlightSet extends EveObjectSet
      * Alias for this.items
      * @returns {Array}
      */
-    @meta.black.listOf("EveSpotlightSetItem")
+    @meta.list("EveSpotlightSetItem")
     get spotlightItems()
     {
         return this.items;

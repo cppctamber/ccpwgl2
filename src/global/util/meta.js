@@ -251,4 +251,3 @@ export function createDecorator(o)
         return getDecorator(handlers, options, ...args);
     };
 }
-

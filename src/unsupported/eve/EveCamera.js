@@ -22,56 +22,56 @@ import { meta, quat, vec3, Tw2BaseClass } from "global";
  * @property {Tr2CurveScalar} zoomCurve       -
  */
 @meta.notImplemented
-@meta.type("EveCamera", true)
+@meta.ctor("EveCamera", true)
 export class EveCamera extends Tw2BaseClass
 {
 
-    @meta.black.float
+    @meta.float
     fieldOfView = 0;
 
-    @meta.black.float
+    @meta.float
     friction = 0;
 
-    @meta.black.float
+    @meta.float
     frontClip = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     idleMove = false;
 
-    @meta.black.float
+    @meta.float
     idleScale = 0;
 
-    @meta.black.float
+    @meta.float
     idleSpeed = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     intr = vec3.create();
 
-    @meta.black.float
+    @meta.float
     maxSpeed = 0;
 
-    @meta.black.float
+    @meta.float
     noiseScale = 0;
 
-    @meta.black.object
+    @meta.struct()
     noiseScaleCurve = null;
 
-    @meta.black.float
+    @meta.float
     pitch = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     pos = vec3.create();
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotationAroundParent = quat.create();
 
-    @meta.black.float
+    @meta.float
     translationFromParent = 0;
 
-    @meta.black.float
+    @meta.float
     yaw = 0;
 
-    @meta.black.object
+    @meta.struct()
     zoomCurve = null;
 
 }

@@ -1,4 +1,5 @@
-import { meta, vec3, quat, mat4, curve, util, resMan } from "global";
+import { vec3, quat, mat4, curve, util, resMan } from "global";
+
 
 /**
  * Tw2WbgTrack
@@ -71,7 +72,7 @@ export function Tw2WbgTrack()
     };
 }
 
-meta.set("type", "Tw2WbgTrack", Tw2WbgTrack);
+util.defineMetadata("type", "Tw2WbgTrack", Tw2WbgTrack);
 
 /**
  * Tw2WbgTransformTrack
@@ -161,4 +162,4 @@ export function Tw2WbgTransformTrack()
  */
 Tw2WbgTransformTrack.prototype = new Tw2WbgTrack();
 
-meta.set("type", "Tw2WbgTransformTrack", Tw2WbgTransformTrack);
+util.defineMetadata("type", "Tw2WbgTransformTrack", Tw2WbgTransformTrack);

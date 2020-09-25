@@ -265,12 +265,6 @@ export class Tw2BaseClass extends Tw2EventEmitter
 
     /**
      *
-     * @type {*}
-     */
-    static black = null;
-
-    /**
-     *
      * @type {null|String}
      */
     static __category = null;

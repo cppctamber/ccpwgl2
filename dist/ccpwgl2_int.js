@@ -17143,7 +17143,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sof__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sof */ "./sof/index.js");
 /* harmony import */ var _unsupported__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./unsupported */ "./unsupported/index.js");
 /* harmony import */ var _global_class__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./global/class */ "./global/class/index.js");
-/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
+/* harmony import */ var _core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var _global_math__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./global/math */ "./global/math/index.js");
+
 
 
 
@@ -17153,8 +17155,30 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /**
+ * Black property path  handler
+ * @param {String} filepath
+ * @returns {String}
+ */
+
+_core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_7__["path"].handler = function (filepath) {
+  // Because there are two sources for "res:" now we need to replace
+  // any references from the eve cdn with a new res path mapping
+  if (filepath.indexOf("res:") === 0) {
+    filepath = "cdn:" + filepath.substring(4);
+  }
+  /*
+  let ext = "";
+  const dot = filepath.lastIndexOf(".");
+  if (dot !== -1) ext = filepath.substr(dot + 1).toLowerCase();
+   */
+
+
+  return filepath;
+};
+/**
  * Register global configurations
  */
+
 
 var config = {
   debug: false,
@@ -17188,9 +17212,7 @@ var config = {
   },
   store: {
     path: {
-      "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/",
-      // Set to you local cdn cache server path
-      "cdn": "http://localhost:3000/"
+      "res": "https://developers.eveonline.com/ccpwgl/assetpath/1097993/"
     },
     extension: {
       "sm_hi": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2EffectRes"],
@@ -17220,22 +17242,22 @@ var config = {
       "matrix4": _core__WEBPACK_IMPORTED_MODULE_0__["Tw2Matrix4Parameter"]
     },
     variable: {
-      "WorldMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "ViewportSize": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
-      "Time": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create(),
-      "u_DecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
-      "u_InvDecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_7__["mat4"].create(),
+      "WorldMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ViewMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ViewProjectionMat": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "ViewportSize": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create(),
+      "Time": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create(),
+      "u_DecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
+      "u_InvDecalMatrix": _global_math__WEBPACK_IMPORTED_MODULE_8__["mat4"].create(),
       "EveSpaceSceneEnvMap": "",
       "EnvMap1": "",
       "EnvMap2": "",
       "EnvMap3": "",
       "ShadowLightness": 0,
-      "OccluderValue": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxOccScale": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].fromValues(1, 1, 0, 0),
-      "LensflareFxDirectionScale": _global_math__WEBPACK_IMPORTED_MODULE_7__["vec4"].create()
+      "OccluderValue": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxOccScale": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].fromValues(1, 1, 0, 0),
+      "LensflareFxDirectionScale": _global_math__WEBPACK_IMPORTED_MODULE_8__["vec4"].create()
     }
   }
 };
@@ -17837,7 +17859,7 @@ __webpack_require__.r(__webpack_exports__);
 var _dec, _class, _class2, _temp;
 
 
-var Tw2Frustum = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Frustum"), _dec(_class = (_temp = _class2 = class Tw2Frustum {
+var Tw2Frustum = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Frustum"), _dec(_class = (_temp = _class2 = class Tw2Frustum {
   constructor() {
     this._halfWidthProjection = 1;
     this._planes = [global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(), global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()];
@@ -17970,7 +17992,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2RenderTarget = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RenderTarget"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].object, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2RenderTarget {
+var Tw2RenderTarget = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RenderTarget"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2RenderTarget {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -18145,12 +18167,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _vertex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./vertex */ "./core/vertex/index.js");
 /* harmony import */ var particle_element_Tw2ParticleElementDeclaration__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! particle/element/Tw2ParticleElementDeclaration */ "./particle/element/Tw2ParticleElementDeclaration.js");
-var _dec, _dec2, _class, _temp;
+var _dec, _class, _temp;
 
 
 
 
-var Tw2RuntimeInstanceData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = (_temp = class Tw2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2RuntimeInstanceData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData"), _dec(_class = (_temp = class Tw2RuntimeInstanceData extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
     this._count = 0;
@@ -18341,7 +18363,7 @@ var Tw2RuntimeInstanceData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
     return this._count;
   }
 
-}, _temp)) || _class) || _class);
+}, _temp)) || _class);
 
 /***/ }),
 
@@ -18789,6 +18811,29 @@ class Tw2RawData {
     return this.elements[name].array;
   }
   /**
+   * Finds an element by an index
+   * @param {Number} index
+   * @returns {*|null}
+   */
+
+
+  FindElementFromIndex(index) {
+    if (index >= 0 && index < this._nextOffset) {
+      for (var key in this.elements) {
+        if (this.elements.hasOwnProperty(key)) {
+          var {
+            offset,
+            size
+          } = this.elements[key];
+          if (index < offset || index > offset + size - 1) continue;
+          return this.elements[key];
+        }
+      }
+    }
+
+    return null;
+  }
+  /**
    * Declares a raw data element
    * @param {String} name
    * @param {Number|Array|Float32Array} data - Size or the default value in an array
@@ -18800,6 +18845,7 @@ class Tw2RawData {
         size = isValue ? data.length : data,
         value = isValue ? data : null;
     this.elements[name] = {
+      name,
       offset: this._nextOffset,
       array: null,
       size,
@@ -18916,7 +18962,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2BlendShapeData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2BlendShapeData"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2VertexDeclaration"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].unknown, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].unknown, _dec(_class = (_class2 = (_temp = class Tw2BlendShapeData {
+var Tw2BlendShapeData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2BlendShapeData"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2VertexDeclaration"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].unknown, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].unknown, _dec(_class = (_class2 = (_temp = class Tw2BlendShapeData {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -18988,7 +19034,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryAnimation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryTrackGroup"), _dec(_class = (_class2 = (_temp = class Tw2GeometryAnimation {
+var Tw2GeometryAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryAnimation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryTrackGroup"), _dec(_class = (_class2 = (_temp = class Tw2GeometryAnimation {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -19042,7 +19088,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryBone = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryBone"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = _class3 = class Tw2GeometryBone {
+var Tw2GeometryBone = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryBone"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = _class3 = class Tw2GeometryBone {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -19162,7 +19208,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec(_class = (_class2 = (_temp = class Tw2GeometryCurve {
+var Tw2GeometryCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec(_class = (_class2 = (_temp = class Tw2GeometryCurve {
   constructor() {
     _initializerDefineProperty(this, "dimension", _descriptor, this);
 
@@ -19231,7 +19277,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2GeometryMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2VertexDeclaration"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryMeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf(WebGLBuffer), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf(WebGLBuffer), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryBone"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf(String), _dec(_class = (_class2 = (_temp = class Tw2GeometryMesh {
+var Tw2GeometryMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2VertexDeclaration"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryMeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("WebGLBuffer"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("WebGLBuffer"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryBone"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("String"), _dec(_class = (_class2 = (_temp = class Tw2GeometryMesh {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -19534,7 +19580,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryMeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryMeshArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2GeometryMeshArea {
+var Tw2GeometryMeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryMeshArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2GeometryMeshArea {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -19649,7 +19695,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryMeshBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryMeshBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryMesh"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryBone"), _dec(_class = (_class2 = (_temp = class Tw2GeometryMeshBinding {
+var Tw2GeometryMeshBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryMeshBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryMesh"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryBone"), _dec(_class = (_class2 = (_temp = class Tw2GeometryMeshBinding {
   constructor() {
     _initializerDefineProperty(this, "mesh", _descriptor, this);
 
@@ -19694,7 +19740,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryModel = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryModel"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryMeshBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometrySkeleton"), _dec(_class = (_class2 = (_temp = class Tw2GeometryModel {
+var Tw2GeometryModel = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryModel"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryMeshBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometrySkeleton"), _dec(_class = (_class2 = (_temp = class Tw2GeometryModel {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -19767,7 +19813,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometrySkeleton = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometrySkeleton"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryBone"), _dec(_class = (_class2 = (_temp = class Tw2GeometrySkeleton {
+var Tw2GeometrySkeleton = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometrySkeleton"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryBone"), _dec(_class = (_class2 = (_temp = class Tw2GeometrySkeleton {
   constructor() {
     _initializerDefineProperty(this, "bones", _descriptor, this);
   }
@@ -19803,7 +19849,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryTrackGroup = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryTrackGroup"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryModel"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryTransformTrack"), _dec(_class = (_class2 = (_temp = class Tw2GeometryTrackGroup {
+var Tw2GeometryTrackGroup = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryTrackGroup"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryModel"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryTransformTrack"), _dec(_class = (_class2 = (_temp = class Tw2GeometryTrackGroup {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -19857,7 +19903,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2GeometryTransformTrack = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryTransformTrack"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryCurve"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryCurve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].unknown, _dec(_class = (_class2 = (_temp = class Tw2GeometryTransformTrack {
+var Tw2GeometryTransformTrack = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryTransformTrack"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryCurve"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryCurve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].unknown, _dec(_class = (_class2 = (_temp = class Tw2GeometryTransformTrack {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -20235,9 +20281,42 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _parameter_Tw2TextureParameter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../parameter/Tw2TextureParameter */ "./core/parameter/Tw2TextureParameter.js");
 /* harmony import */ var _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../parameter/Tw2Vector4Parameter */ "./core/parameter/Tw2Vector4Parameter.js");
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _class2, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
 
+
+
+
+class Tw2ConstantParameter {
+  /**
+   * Black reader
+   * @param {Tw2BlackBinaryReader} r
+   * @returns {Tw2Vector4Parameter}
+   */
+  static blackStruct(r) {
+    var item = new _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"](); // Temporary
+
+    Object.defineProperty(item, "isConstant", {
+      value: true,
+      writable: false
+    });
+    item.name = r.ReadStringU16();
+    r.ExpectU16(0, "unknown content");
+    r.ExpectU16(0, "unknown content");
+    r.ExpectU16(0, "unknown content");
+    item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
+    return item;
+  }
+
+}
 /**
  * Tw2Effect
  *
@@ -20252,18 +20331,28 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Boolean} autoParameter                   - Identifies if the effect should automatically generate parameters
  */
 
-class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+
+var Tw2Effect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2EffectRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Shader"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, (_class = (_temp = _class2 = class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
-    this.name = "";
-    this.effectFilePath = "";
-    this.effectRes = null;
+
+    _initializerDefineProperty(this, "name", _descriptor, this);
+
+    _initializerDefineProperty(this, "effectFilePath", _descriptor2, this);
+
+    _initializerDefineProperty(this, "effectRes", _descriptor3, this);
+
     this.parameters = {};
-    this.techniques = {};
-    this.samplerOverrides = {};
-    this.options = {};
-    this.shader = null;
-    this.autoParameter = false;
+
+    _initializerDefineProperty(this, "techniques", _descriptor4, this);
+
+    _initializerDefineProperty(this, "samplerOverrides", _descriptor5, this);
+
+    _initializerDefineProperty(this, "options", _descriptor6, this);
+
+    _initializerDefineProperty(this, "shader", _descriptor7, this);
+
+    _initializerDefineProperty(this, "autoParameter", _descriptor8, this);
   }
 
   //resources
@@ -20351,6 +20440,11 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   OnResPrepared(res) {
     this.shader = res.GetShader(this.options);
     this.BindParameters();
+    this.emit("loaded", {
+      effect: this,
+      shader: this.shader,
+      resource: res
+    });
     return true;
   }
   /**
@@ -20793,6 +20887,28 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
     return this.BindParameters();
   }
   /**
+   * on Event Listener
+   * @param {Tw2Effect} source
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} [context]
+   * @returns {boolean}
+   */
+
+
+  static onListener(source, eventName, listener, context) {
+    if (eventName === "loaded" && source.shader) {
+      listener.call(context, {
+        effect: source,
+        shader: source.shader,
+        resource: source.effectRes
+      });
+      return true;
+    }
+
+    return false;
+  }
+  /**
    * Converts an effect file path into one suitable for an effect resource
    * @param {String} path
    * @returns {String}
@@ -20877,57 +20993,76 @@ class Tw2Effect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
    */
 
 
-  /**
-   * Black definition
-   * @param r
-   * @returns {*[]}
-   */
-  static black(r) {
-    return [["effectFilePath", r.path], ["name", r.string], ["parameters", r.fromList({
-      key: "name"
-    })], // Reroute resources to parameters for now
-    ["resources", r.fromList({
-      key: "name",
-      reroute: "parameters"
-    })], // Reroute constant parameters for now
-    ["constParameters", r.fromList({
-      key: "name",
-      reroute: "parameters",
-      struct: Tw2ConstantParameter
-    })], ["options", r.notImplemented], ["samplerOverrides", r.notImplemented]];
+}, _class2.ConstantIgnore = ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS", "PerObjectPSInt"], _class2.blackReaders = {
+  parameters: Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__["fromList"])({
+    key: "name"
+  }),
+  resources: Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__["fromList"])({
+    key: "name",
+    reroute: "parameters"
+  }),
+  constParameters: Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_3__["fromList"])({
+    key: "name",
+    reroute: "parameters",
+    struct: Tw2ConstantParameter
+  })
+}, _class2.__isStaging = 1, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "name", [_dec], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
   }
-  /**
-   * Identifies that the class is in staging
-   * @property {null|Number}
-   */
-
-
-}
-Tw2Effect.ConstantIgnore = ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS", "PerObjectPSInt"];
-Tw2Effect.__isStaging = 1;
-
-class Tw2ConstantParameter {
-  /**
-   * Black reader
-   * @param {Tw2BlackBinaryReader} r
-   * @returns {Tw2Vector4Parameter}
-   */
-  static blackStruct(r) {
-    var item = new _parameter_Tw2Vector4Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Vector4Parameter"](); // Temporary
-
-    Object.defineProperty(item, "isConstant", {
-      value: true,
-      writable: false
-    });
-    item.name = r.ReadStringU16();
-    r.ExpectU16(0, "unknown content");
-    r.ExpectU16(0, "unknown content");
-    r.ExpectU16(0, "unknown content");
-    item.SetValue(new Float32Array([r.ReadF32(), r.ReadF32(), r.ReadF32(), r.ReadF32()]));
-    return item;
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "effectFilePath", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
   }
-
-}
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "effectRes", [_dec3, _dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "techniques", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "samplerOverrides", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "options", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return {};
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class.prototype, "shader", [_dec8, _dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class.prototype, "autoParameter", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return false;
+  }
+})), _class));
 
 /***/ }),
 
@@ -20946,7 +21081,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tw2Mesh__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tw2Mesh */ "./core/mesh/Tw2Mesh.js");
 /* harmony import */ var global_engine__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! global/engine */ "./global/engine/index.js");
 /* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -20959,7 +21094,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2MeshArea"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2InstancedMesh", "Tr2InstancedMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2InstancedMesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -20987,15 +21122,17 @@ var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
 
     _initializerDefineProperty(this, "maxBounds", _descriptor12, this);
 
-    _initializerDefineProperty(this, "minBounds", _descriptor13, this);
+    _initializerDefineProperty(this, "maxInstanceSize", _descriptor13, this);
 
-    _initializerDefineProperty(this, "opaqueAreas", _descriptor14, this);
+    _initializerDefineProperty(this, "minBounds", _descriptor14, this);
 
-    _initializerDefineProperty(this, "pickableAreas", _descriptor15, this);
+    _initializerDefineProperty(this, "opaqueAreas", _descriptor15, this);
 
-    _initializerDefineProperty(this, "transparentAreas", _descriptor16, this);
+    _initializerDefineProperty(this, "pickableAreas", _descriptor16, this);
 
-    _initializerDefineProperty(this, "visible", _descriptor17, this);
+    _initializerDefineProperty(this, "transparentAreas", _descriptor17, this);
+
+    _initializerDefineProperty(this, "visible", _descriptor18, this);
 
     this._geometryResource = null;
   }
@@ -21344,35 +21481,42 @@ var Tw2InstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "minBounds", [_dec16], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "maxInstanceSize", [_dec16, _dec17], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "minBounds", [_dec18], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "opaqueAreas", [_dec17], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "opaqueAreas", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "pickableAreas", [_dec18], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "pickableAreas", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "transparentAreas", [_dec19], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "transparentAreas", [_dec21], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec20], {
+}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "visible", [_dec22], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -21415,7 +21559,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2Mesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Mesh", "Tr2Mesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryRes"), _dec(_class = (_class2 = (_temp = class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Mesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Mesh", "Tr2Mesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryRes"), _dec(_class = (_class2 = (_temp = class Tw2Mesh extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -21853,7 +21997,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2MeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2MeshArea", "Tr2MeshArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2MeshArea extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+var Tw2MeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2MeshArea", "Tr2MeshArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2MeshArea extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -21887,6 +22031,16 @@ var Tw2MeshArea = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2M
 
   set meshIndex(val) {
     this.index = val;
+  }
+  /**
+   * Gets a mesh areas's resources
+   * @param {Array} out
+   * @returns {Array<Tw2Resource>} out
+   */
+
+
+  GetResources(out = []) {
+    return this.effect ? this.effect.GetResources(out) : out;
   }
   /**
    * Finds an effect parameter by it's name
@@ -22003,7 +22157,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2MeshLineArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2MeshLineArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2MeshLineArea extends _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_2__["Tw2MeshArea"] {
+var Tw2MeshLineArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2MeshLineArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2MeshLineArea extends _Tw2MeshArea__WEBPACK_IMPORTED_MODULE_2__["Tw2MeshArea"] {
   constructor(...args) {
     super(...args);
 
@@ -22127,7 +22281,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Animation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2TrackGroup"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
+var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Animation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2TrackGroup"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Animation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2EventEmitter"] {
   /**
    * Constructor
    * @param animationController
@@ -22181,11 +22335,11 @@ var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
    * Adds a callback
    * - Provided for backwards compatibility
    * - If the callback returns true it will be removed once fired
-   * @param {Function} callback
+   * @param {Function} [callback=null]
    */
 
 
-  AddCallback(callback) {
+  AddCallback(callback = null) {
     this._callback = callback;
   }
   /**
@@ -22196,7 +22350,12 @@ var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
 
   UpdateCallback() {
     if (this._callback) {
-      if (this._callback(this, this._controller)) {
+      // Cache the original callback in case the animation's callback
+      // was changed from within the original callback - we don't want to remove a new one.
+      var callback = this._callback,
+          remove = callback(this, this._controller);
+
+      if (remove && this._callback === callback) {
         this._callback = null;
       }
     }
@@ -22233,7 +22392,10 @@ var Tw2Animation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     this.cycle = cycle;
     this._state = Tw2Animation.State.PLAYING;
     if (events) this.add(events);
-    if (callback) this.AddCallback(callback);
+
+    if (callback !== undefined) {
+      this.AddCallback(callback);
+    }
 
     if (wasPaused) {
       /**
@@ -22465,7 +22627,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2AnimationController = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2AnimationController"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Handle rebuilding bounds in update function"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2GeometryRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Model"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Animation"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2MeshBinding"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2AnimationController = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2AnimationController"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Handle rebuilding bounds in update function"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryRes"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Model"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Animation"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshBinding"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2AnimationController extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    * @param {Tw2GeometryRes} [geometryResource]
@@ -22491,6 +22653,27 @@ var Tw2AnimationController = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
     if (geometryResource) {
       this.SetGeometryResource(geometryResource);
     }
+  }
+  /**
+   * Fires a listener on an event
+   * @param {String} eventName
+   * @param {Function} listener
+   * @param {*} [context]
+   * @param {Boolean} [once]
+   * @returns {Tw2EventEmitter}
+   */
+
+
+  on(eventName, listener, context, once) {
+    // Ensure "loaded" event is handled if called after the controller has already loaded
+    if (eventName === "loaded" && this.IsLoaded()) {
+      listener.call(context, {
+        controller: this
+      });
+      if (once) return this;
+    }
+
+    return super.on(eventName, listener, context, once);
   }
   /**
    * Checks if the animation is good
@@ -23309,7 +23492,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Bone = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Bone"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryBone"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2BoneBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = class Tw2Bone {
+var Tw2Bone = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Bone"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryBone"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2BoneBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = class Tw2Bone {
   constructor() {
     _initializerDefineProperty(this, "boneRes", _descriptor, this);
 
@@ -23381,7 +23564,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2BoneBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2BoneBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class Tw2BoneBinding {
+var Tw2BoneBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2BoneBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class Tw2BoneBinding {
   constructor() {
     _initializerDefineProperty(this, "array", _descriptor, this);
 
@@ -23426,7 +23609,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2MeshBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2MeshBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Float32Array"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryRes"), _dec(_class = (_class2 = (_temp = class Tw2MeshBinding {
+var Tw2MeshBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2MeshBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Float32Array"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryRes"), _dec(_class = (_class2 = (_temp = class Tw2MeshBinding {
   constructor() {
     _initializerDefineProperty(this, "meshIndex", _descriptor, this);
 
@@ -23471,7 +23654,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Model = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Model"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryModel"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Bone"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plainOf("Tw2Bone"), _dec(_class = (_class2 = (_temp = class Tw2Model {
+var Tw2Model = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Model"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryModel"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Bone"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2Model {
   constructor() {
     _initializerDefineProperty(this, "modelRes", _descriptor, this);
 
@@ -23525,7 +23708,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Track = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Track"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryTransformTrack"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Bone"), _dec(_class = (_class2 = (_temp = class Tw2Track {
+var Tw2Track = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Track"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryTransformTrack"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Bone"), _dec(_class = (_class2 = (_temp = class Tw2Track {
   constructor() {
     _initializerDefineProperty(this, "trackRes", _descriptor, this);
 
@@ -23570,7 +23753,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2TrackGroup = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TrackGroup"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryTrackGroup"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryModel"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Track"), _dec(_class = (_class2 = (_temp = class Tw2TrackGroup {
+var Tw2TrackGroup = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2TrackGroup"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryTrackGroup"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryModel"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Track"), _dec(_class = (_class2 = (_temp = class Tw2TrackGroup {
   constructor() {
     _initializerDefineProperty(this, "trackGroupRes", _descriptor, this);
 
@@ -23670,7 +23853,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2FloatParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2FloatParameter", "Tr2FloatParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.float, _dec(_class = (_class2 = (_temp = _class3 = class Tw2FloatParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
+var Tw2FloatParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2FloatParameter", "Tr2FloatParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec(_class = (_class2 = (_temp = _class3 = class Tw2FloatParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
   /**
    * Constructor
    * @param {String} [name='']
@@ -23819,7 +24002,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2Matrix4Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Matrix4Parameter", "Tw2MatrixParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Matrix4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
+var Tw2Matrix4Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Matrix4Parameter", "Tw2MatrixParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Matrix4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
   /**
    * Constructor
    * @param {String} [name='']
@@ -23962,7 +24145,7 @@ function Tw2MatrixParameter(name, value) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Parameter", function() { return Tw2Parameter; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _class, _descriptor, _class2, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -23972,7 +24155,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Parameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2Parameter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2Parameter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -24024,14 +24207,14 @@ var Tw2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
    */
 
 
-}, _class3.constantBufferSize = 0, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
+}, _class2.constantBufferSize = 0, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "name", [_dec], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _applyDecoratedDescriptor(_class2.prototype, "GetValue", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "GetValue"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "Bind", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "Bind"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "Unbind", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "Unbind"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "Apply", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "Apply"), _class2.prototype)), _class2)) || _class) || _class);
+}), _applyDecoratedDescriptor(_class.prototype, "GetValue", [_dec2], Object.getOwnPropertyDescriptor(_class.prototype, "GetValue"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "Bind", [_dec3], Object.getOwnPropertyDescriptor(_class.prototype, "Bind"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "Unbind", [_dec4], Object.getOwnPropertyDescriptor(_class.prototype, "Unbind"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "Apply", [_dec5], Object.getOwnPropertyDescriptor(_class.prototype, "Apply"), _class.prototype)), _class));
 
 /***/ }),
 
@@ -24061,7 +24244,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2TextureParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TextureParameter", "TriTextureParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2TextureRes"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2SamplerState"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Parameter"] {
+var Tw2TextureParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2TextureParameter", "TriTextureParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2TextureRes"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2SamplerState"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2TextureParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_2__["Tw2Parameter"] {
   /**
    * Constructor
    * @param {String} [name]        - Name of the texture parameter
@@ -24434,7 +24617,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2TransformParameter", "Tr2TransformParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.quaternion, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
+var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2TransformParameter", "Tr2TransformParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].quaternion, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class Tw2TransformParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_0__["Tw2Parameter"] {
   //_parentTransform = null;
   //_worldTranspose = null;
   //_worldInverse = null;
@@ -24594,6 +24777,85 @@ var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].
     } else {
       constantBuffer.set(this._worldTranspose.subarray(0, size), offset);
     }
+  }
+  /**
+   * Sets the transform from an object
+   * @param {Object} options
+   * @param {Boolean} [skipUpdate]
+   */
+
+
+  SetValues(options = {}, skipUpdate) {
+    var {
+      transform,
+      rotation,
+      euler,
+      scale,
+      scaling,
+      radius,
+      translation,
+      position,
+      name
+    } = options;
+    if (name) this.name = name;
+    if (scale === undefined) scale = scaling;
+    if (scale === undefined && radius) scale = radius * 2;
+    if (!rotation) rotation = euler;
+    if (!translation) translation = position;
+
+    if (!transform && !rotation && !scale && !translation) {
+      return;
+    }
+
+    if (transform) {
+      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isMatrix4) {
+        this.SetTransform(transform);
+      } else {
+        throw new Error("Invalid transform matrix");
+      }
+    }
+
+    if (rotation) {
+      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector3(rotation)) {
+        this.SetRotationFromEuler(rotation);
+      } else if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector4(rotation)) {
+        this.SetRotation(rotation);
+      } else {
+        throw new Error("Invalid rotation value");
+      }
+    }
+
+    if (scale !== undefined) {
+      if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isNumber(scale)) {
+        this.SetScaleUniform(scale);
+      } else if (global__WEBPACK_IMPORTED_MODULE_1__["util"].isVector3) {
+        this.SetScale(scale);
+      } else {
+        throw new Error("Invalid scale");
+      }
+    }
+
+    if (translation) {
+      this.SetTranslation(translation);
+    }
+
+    if (!skipUpdate) {
+      this.UpdateValues();
+    }
+  }
+  /**
+   * Gets the transforms' values
+   * @param {Object} [out={}]
+   * @returns {{}}
+   */
+
+
+  GetValues(out = {}) {
+    if (this.name) out.name = this.name;
+    out.rotation = this.GetRotation([]);
+    out.translation = this.GetTranslation([]);
+    out.scaling = this.GetScale([]);
+    return out;
   }
   /**
    * Gets the world transpose
@@ -25042,7 +25304,7 @@ var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].
   }
   /**
    * Gets the local axis angle
-   * @param {quat} out
+   * @param {vec3} out
    * @returns {Number}
    */
 
@@ -25369,6 +25631,38 @@ var Tw2TransformParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].
     return this.ScaleValues(1, 1, s);
   }
   /**
+   * Gets a vector 3 from an object
+   * @param {Object} obj
+   * @returns {Float32Array}
+   */
+
+
+  static Vector3FromObject(obj) {
+    if ("r" in obj) {
+      return new Float32Array([obj.r, obj.g, obj.b]);
+    } else if ("x" in obj) {
+      return new Float32Array([obj.x, obj.y, obj.z]);
+    } else {
+      throw new Error("Invalid vector3 object");
+    }
+  }
+  /**
+   * Gets a quat from an object
+   * @param {Object} obj
+   * @returns {Float32Array}
+   */
+
+
+  static Vector4FromObject(obj) {
+    if ("r" in obj) {
+      return new Float32Array([obj.r, obj.g, obj.b, "a" in obj ? obj.a : 1]);
+    } else if ("x" in obj) {
+      return new Float32Array([obj.x, obj.y, obj.z, obj.w]);
+    } else {
+      throw new Error("Invalid vector4 object");
+    }
+  }
+  /**
    * The parameter's constant buffer size
    * @type {Number}
    */
@@ -25475,7 +25769,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2VariableParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VariableParameter", "TriVariableParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Parameter"] {
+var Tw2VariableParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2VariableParameter", "TriVariableParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class Tw2VariableParameter extends _Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Parameter"] {
   /**
    * Constructor
    * @param {String} [name]
@@ -25584,7 +25878,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2Vector2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vector2Parameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Vector2Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
+var Tw2Vector2Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Vector2Parameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Vector2Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
   /**
    * Constructor
    * @param {String} [name='']
@@ -25682,7 +25976,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2Vector3Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vector3Parameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Vector3Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
+var Tw2Vector3Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Vector3Parameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Vector3Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
   /**
    * Constructor
    * @param {String} [name]
@@ -25798,7 +26092,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2Vector4Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vector4Parameter", "TriVector4Parameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Vector4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
+var Tw2Vector4Parameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Vector4Parameter", "TriVector4Parameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec(_class = (_class2 = (_temp = _class3 = class Tw2Vector4Parameter extends _Tw2VectorParameter__WEBPACK_IMPORTED_MODULE_1__["Tw2VectorParameter"] {
   /**
    * Constructor
    * @param {String} [name]
@@ -25922,11 +26216,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2VectorParameter", function() { return Tw2VectorParameter; });
 /* harmony import */ var _Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Tw2Error */ "./core/Tw2Error.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _class, _class2, _temp;
+var _dec, _class, _class2, _temp;
 
 
 
-var Tw2VectorParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2VectorParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].abstract, _dec(_class = _dec2(_class = (_temp = _class2 = class Tw2VectorParameter extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+var Tw2VectorParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2VectorParameter"), _dec(_class = (_temp = _class2 = class Tw2VectorParameter extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
   /**
    * Gets the parameter's constant buffer size
    * @returns {Number} 0 if invalid
@@ -26086,7 +26380,7 @@ var Tw2VectorParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].typ
    */
 
 
-}, _class2.constantBufferSize = 0, _temp)) || _class) || _class);
+}, _class2.constantBufferSize = 0, _temp)) || _class);
 
 /***/ }),
 
@@ -26170,7 +26464,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2PostEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2PostEffect"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2CurveSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2PostEffectStep"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2PostEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2PostEffect"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2PostEffectStep"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffect extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -26568,7 +26862,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2PostEffectManager = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2PostEffectManager"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].listOf("Tw2PostEffect"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffectManager extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
+var Tw2PostEffectManager = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2PostEffectManager"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("Tw2PostEffect"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2PostEffectManager extends global__WEBPACK_IMPORTED_MODULE_1__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -26794,7 +27088,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2PostEffectStep = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2PostEffectStep"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plainOf("String"), _dec(_class = (_class2 = (_temp = class Tw2PostEffectStep extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2PostEffectStep = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2PostEffectStep"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = class Tw2PostEffectStep extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -27416,18 +27710,17 @@ Tw2BlackBinaryReader.wstringDecoder = new TextDecoder("utf-16le");
 /*!************************************************!*\
   !*** ./core/reader/Tw2BlackPropertyReaders.js ***!
   \************************************************/
-/*! exports provided: getReaderFromType, path, object, rawObject, array, boolean, string, enums, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, fromList, notImplemented */
+/*! exports provided: object, rawObject, array, boolean, string, path, enums, float, ushort, uint, byte, vector2, vector3, color, vector4, matrix, indexBuffer, struct, structList, fromList, notImplemented */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getReaderFromType", function() { return getReaderFromType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "path", function() { return path; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rawObject", function() { return rawObject; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "array", function() { return array; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "path", function() { return path; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "enums", function() { return enums; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "float", function() { return float; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return ushort; });
@@ -27475,88 +27768,6 @@ var TypeReader = {
   [global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].ENUM]: enums
 };
 /**
- * Gets a black reader from a property type
- * @param {Number|String|Function} type
- * @returns {Function}
- */
-
-function getReaderFromType(type) {
-  if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(type)) return type;
-  if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(type)) type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"][type.toUpperCase()];
-  if (type === undefined || TypeReader[type] === undefined) type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].UNKNOWN;
-  return TypeReader[type];
-}
-/**
- * Reads a path
- * - Handles compatibilities so ccpwgl can either load newer files or try to fail gracefully
- * @param {Tw2BlackBinaryReader} reader
- * @returns {String}
- */
-
-function path(reader) {
-  var path = reader.ReadStringU16();
-  var originalPath = path; // Because there are two sources for "res:" now we need to replace
-  // any references from the eve cdn with a new res path mapping
-
-  if (path.indexOf("res:") === 0) {
-    path = "cdn:" + path.substring(4);
-  }
-
-  var ext = "";
-  var dot = path.lastIndexOf(".");
-  if (dot !== -1) ext = path.substr(dot + 1).toLowerCase();
-
-  switch (ext) {
-    case "dds":
-      if (path.includes("_cube")) {
-        path = path.replace(".dds", ".cube");
-      } else {
-        path = path.replace(".dds", ".png");
-      } //console.log(`Renamed: ${originalPath} : ${path}`);
-
-
-      break;
-
-    case "png":
-      // TODO: Remove the need to do this in Tw2TextureRes
-      // Will need to provide all quality versions of these files in the cdn even if they
-      // don't exist as ccpwgl will have no idea if they exist or not, and so we'd get
-      // errors when changing texture qualities in the ccpwgl_int.device
-      path = path.replace("_lowdetail", ""); // Shouldn't exist
-
-      path = path.replace("_mediumdetail", ""); // Shouldn't exist
-
-      path = path.replace(ext, "0.".concat(ext));
-      break;
-
-    case "gr2":
-      // TODO: Add support for these files
-      // Temporarily use ccpwgl resources (this won't always work but will do for now)
-      //path = path.replace(ext, "wbg").replace("cdn:", "res:");
-      path = path.replace(ext, "cake");
-      break;
-
-    case "red":
-      // TODO: Handle red files
-      // There may still be legit .red files some of which we won't be able to read
-      // (Some are in .black format so we'll just rename for now...)
-      path = path.replace(ext, "black");
-      break;
-
-    case "sm_hi":
-    case "sm_lo":
-      path = path.replace(ext, "fx");
-      break;
-
-    case "sm_depth":
-      // TODO: Add support for depth shaders
-      path = "";
-      break;
-  }
-
-  return path;
-}
-/**
  * Reads objects
  * @param {Tw2BlackBinaryReader} reader
  * @param {undefined|Number} [id]
@@ -27581,70 +27792,57 @@ function object(reader, id) {
   var objectReader = reader.ReadBinaryReader(reader.ReadU32()),
       type = objectReader.ReadStringU16(),
       result = context.ConstructType(type),
-      properties = global__WEBPACK_IMPORTED_MODULE_0__["tw2"].HasBlack(type) ? global__WEBPACK_IMPORTED_MODULE_0__["tw2"].GetBlack(type) : null;
+      blackReaders = result.constructor.blackReaders || {};
 
   if (!givenId) {
     reader.references.set(id, result);
   }
 
-  if (!properties && !global__WEBPACK_IMPORTED_MODULE_0__["meta"].has("black", result.constructor)) {
-    throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryObjectTypeNotFound"]({
-      type
-    });
-  }
-
   while (!objectReader.AtEnd()) {
     var propertyName = objectReader.ReadStringU16(),
-        _reader = void 0; // Defined on object
+        _reader = void 0; // Defined directly on class
 
 
-    if (properties && properties.has(propertyName)) {
-      _reader = properties.get(propertyName);
-    } // Defined with meta data
-
-
-    if (!_reader && global__WEBPACK_IMPORTED_MODULE_0__["meta"].has("black", result, propertyName)) {
-      _reader = global__WEBPACK_IMPORTED_MODULE_0__["meta"].get("black", result, propertyName);
-    } // Try to use type definition if all else fails
-
-
-    if (debugEnabled) {
-      if (!_reader && global__WEBPACK_IMPORTED_MODULE_0__["meta"].has("type", result, propertyName)) {
-        var propertyType = global__WEBPACK_IMPORTED_MODULE_0__["meta"].get("type", result, propertyName) || 0;
-        _reader = getReaderFromType(propertyType);
-        console.log("Identifying reader from property '".concat(propertyName, "' type: ").concat(propertyType.toString()));
-      }
-    }
-
-    if (_reader) {
-      if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(_reader)) {
-        if (debugEnabled) console.dir(result);
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
-          readError: "Invalid reader for property \"".concat(propertyName, "\" for \"").concat(type, "\"")
-        });
-      }
-
-      try {
-        if (_reader.custom) {
-          _reader(objectReader, result, propertyName);
-        } else {
-          // Ensure property is defined on object
-          if (!(propertyName in result) && debugEnabled) {
-            console.log("'".concat(type, "' missing property: '").concat(propertyName, "'"));
-          }
-
-          result[propertyName] = _reader(objectReader);
+    if (blackReaders[propertyName]) {
+      _reader = blackReaders[propertyName];
+    } // Defined as black meta data
+    else if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["hasMetadata"])("black", result, propertyName)) {
+        _reader = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["getMetadata"])("black", result, propertyName);
+      } // Use property type meta data
+      else if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["hasMetadata"])("type", result, propertyName)) {
+          var propertyType = Number(Object(global_util__WEBPACK_IMPORTED_MODULE_2__["getMetadata"])("type", result, propertyName));
+          _reader = TypeReader[propertyType];
         }
-      } catch (err) {
-        if (debugEnabled) console.dir(result);
-        throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
-          message: "".concat(propertyName, " (").concat(result.constructor.name, ") > ") + err.message
-        });
-      }
-    } else {
+
+    if (!_reader) {
       if (debugEnabled) console.dir(result);
       throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
         readError: "Unknown property \"".concat(propertyName, "\" for \"").concat(type, "\"")
+      });
+    }
+
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(_reader)) {
+      if (debugEnabled) console.dir(result);
+      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
+        readError: "Invalid reader for property \"".concat(propertyName, "\" for \"").concat(type, "\"")
+      });
+    }
+
+    try {
+      if (_reader.custom) {
+        _reader(objectReader, result, propertyName);
+      } else {
+        // Ensure property is defined on object
+        if (!(propertyName in result) && debugEnabled) {
+          console.log("'".concat(type, "' missing property: '").concat(propertyName, "'"));
+        }
+
+        result[propertyName] = _reader(objectReader);
+      }
+    } catch (err) {
+      if (debugEnabled) console.dir(result);
+      throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrBinaryReaderReadError"]({
+        message: "".concat(propertyName, " (").concat(result.constructor.name, ") > ") + err.message
       });
     }
   }
@@ -27701,15 +27899,31 @@ function string(reader) {
   return reader.ReadStringU16();
 }
 /**
+ * Reads a path
+ * @param {Tw2BlackBinaryReader} reader
+ * @returns {String}
+ */
+
+function path(reader) {
+  var result = reader.ReadStringU16();
+  return path.handler ? path.handler(result) : result;
+}
+/**
+ * Path handler
+ * @type {null|Function}
+ */
+
+path.handler = null;
+/**
  * Creates an enum object from a string
  * @param {Tw2BlackReader} reader
  * @returns {Object}
  */
 
 function enums(reader) {
-  var value = reader.ReadStringU16();
-  var entry = value.split(",");
-  var out = {};
+  var value = reader.ReadStringU16(),
+      entry = value.split(","),
+      out = {};
 
   for (var i = 0; i < entry.length; i++) {
     var split = entry[i].split("=");
@@ -28759,7 +28973,7 @@ var _dec, _class, _temp;
  * @inherits Tw2Resource
  */
 
-var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2EffectRes"), _dec(_class = (_temp = class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__["Tw2Resource"] {
+var Tw2EffectRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2EffectRes"), _dec(_class = (_temp = class Tw2EffectRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_2__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.passes = [];
@@ -28990,7 +29204,7 @@ var _dec, _class, _temp;
  * @inherit Tw2Resource
  */
 
-var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2GeometryRes", "TriGeometryRes"), _dec(_class = (_temp = class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
+var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2GeometryRes", "TriGeometryRes"), _dec(_class = (_temp = class Tw2GeometryRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_3__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.meshes = [];
@@ -29920,16 +30134,6 @@ var Tw2GeometryRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("T
 
     return curve;
   }
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
-
-
-  static black(r) {
-    return [];
-  }
 
 }, _temp)) || _class);
 
@@ -30131,7 +30335,7 @@ var _dec, _class, _class2, _temp;
  * @property {Set} _watchers
  */
 
-var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
+var Tw2Resource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Resource"), _dec(_class = (_temp = _class2 = class Tw2Resource extends global_class_Tw2Notifications__WEBPACK_IMPORTED_MODULE_3__["Tw2Notifications"] {
   constructor(...args) {
     super(...args);
     this.path = "";
@@ -30560,7 +30764,184 @@ var _dec, _class, _class2, _temp;
  * @class
  */
 
-var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Shader"), _dec(_class = (_temp = _class2 = class Tw2Shader {
+var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Shader"), _dec(_class = (_temp = _class2 = class Tw2Shader {
+  /**
+   * Finds per object data usages in a shader
+   * @param {Tw2PerObjectData} perObjectData
+   * @param {String } [technique=Main]
+   * @returns {{ps: {parameter: [], frame: [], object: []}, ffe: {object: []}, vs: {parameter: [], frame: [], object: []}}}
+   */
+  FindPerObjectDataUsage(perObjectData, technique = "Main") {
+    if (!Tw2Shader.DEBUG_ENABLED) {
+      throw new Error("Debug mode must be enabled to find per object data");
+    } //TODO: Add Textures
+    //TODO: Add Overrides
+
+
+    var result = {
+      vs: {
+        frame: [],
+        object: [],
+        parameter: [] //texture: [],
+        //override: []
+
+      },
+      ps: {
+        frame: [],
+        object: [],
+        parameter: [] //texture: [],
+        //override: []
+
+      },
+      ffe: {
+        object: []
+      }
+    };
+    var {
+      perFramePSData,
+      perFrameVSData
+    } = global__WEBPACK_IMPORTED_MODULE_0__["device"],
+        [stage0, stage1] = this.techniques[technique].passes[0].stages,
+        code = stage0.shaderCode + stage1.shaderCode,
+        lines = code.split(/\r\n|\r|\n/);
+    var CBH = {
+      cb0: {
+        name: "ConstantVertex",
+        source: stage0,
+        target: result.vs.parameter,
+        isStage: true
+      },
+      cb1: {
+        name: "PerFrameVS",
+        source: perFrameVSData,
+        target: result.vs.frame
+      },
+      cb2: {
+        name: "PerFramePS",
+        source: perFramePSData,
+        target: result.ps.frame
+      },
+      cb3: {
+        name: "PerObjectVS",
+        source: perObjectData.vs,
+        target: result.vs.object
+      },
+      cb4: {
+        name: "PerObjectPS",
+        source: perObjectData.ps,
+        target: result.ps.object
+      },
+      cb5: {
+        name: "PerObjectFFE",
+        source: perObjectData.ffe,
+        target: result.ffe.object
+      },
+      cb7: {
+        name: "ConstantFragment",
+        source: stage1,
+        target: result.ps.parameter,
+        isStage: true
+      }
+    };
+    var CBHReverse = {
+      "PerFrameVS": "cb1",
+      "PerObjectVS": "cb3",
+      "PerFramePS": "cb2",
+      "PerObjectPS": "cb4",
+      "PerObjectFFE": "cb5"
+    };
+    var Swizzle = ["x", "y", "z", "w"];
+
+    function parsePer(per, index, fullElement) {
+      var {
+        target
+      } = per;
+      var el = per.source.FindElementFromIndex(index);
+
+      if (el) {
+        var {
+          name,
+          offset
+        } = el,
+            ix = index - offset,
+            propName = fullElement ? name : name + "." + ix;
+
+        if (!target.includes(propName)) {
+          target.push(propName);
+          target.sort();
+        }
+
+        return;
+      }
+
+      throw new Error("Error finding element in ".concat(per.name, " at index: ").concat(index));
+    }
+
+    function parseStage(stage, index) {
+      var {
+        target,
+        source
+      } = stage,
+          {
+        constants
+      } = source;
+
+      for (var i = 0; i < constants.length; i++) {
+        var {
+          offset,
+          name,
+          type,
+          size
+        } = constants[i]; // Find the correct constant value
+
+        if (index < offset || index > offset + size - 1) continue; // Offset to the constant
+
+        var ix = index - offset; // Per object or per frame
+
+        if (type === 3) {
+          parsePer(CBH[CBHReverse[name]], ix);
+        } // Parameter
+        else {
+            var propName = name + "." + ix;
+
+            if (!target.includes(propName)) {
+              target.push(propName);
+              target.sort();
+            }
+          }
+
+        return;
+      }
+
+      throw new Error("Error finding element in ".concat(stage.name, " at index: ").concat(index));
+    }
+
+    lines.forEach(line => {
+      if (!line) return; // Todo: Use a single regex to get the results...
+
+      var match = line.match(/cb[0123457]\[\d+\]\.?[xyzw]?[xyzw]?[xyzw]?[xyzw]+/g); //(cb[0123457])\[(\d+)\]\.([xyzw]+)
+
+      if (!match) return;
+
+      for (var i = 0; i < match.length; i++) {
+        var [split, swizzle] = match[i].split(".");
+        var cbh = split.match(/(cb[0-7])/g)[0],
+            index = parseInt(split.replace(cbh, "").replace("[", "").replace("]", "")) * 4,
+            // Todo: Handle when a whole value is used, excluding the initial definition of the constant buffer
+        elements = swizzle.split("").map(x => Swizzle.indexOf(x));
+        var source = CBH[cbh];
+
+        for (var _i = 0; _i < elements.length; _i++) {
+          if (source.isStage) {
+            parseStage(source, index + elements[_i]);
+          } else {
+            parsePer(source, index + elements[_i]);
+          }
+        }
+      }
+    });
+    return result;
+  }
   /**
    * Constructor
    * @param reader
@@ -30569,6 +30950,8 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Sha
    * @param stringTableOffset
    * @param path
    */
+
+
   constructor(reader, version, stringTable, stringTableOffset, path) {
     this.techniques = {};
     this.annotations = {};
@@ -30732,8 +31115,8 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Sha
                 bo = reader.cursor;
             reader.cursor = stringTableOffset + co;
 
-            for (var _i = 0; _i < constantValueSize; ++_i) {
-              stage.constantValues[_i] = reader.ReadFloat32();
+            for (var _i2 = 0; _i2 < constantValueSize; ++_i2) {
+              stage.constantValues[_i2] = reader.ReadFloat32();
             }
 
             reader.cursor = bo;
@@ -30821,6 +31204,23 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Sha
 
             for (var n = 0; n < stage.textures.length; ++n) {
               if (stage.textures[n].registerIndex === s.registerIndex) {
+                /*
+                switch(stage.textures[n].type)
+                {
+                    case 4:
+                        s.samplerType = gl.TEXTURE_CUBE_MAP;
+                        s.isVolume = false;
+                        break;
+                      case 3:
+                        s.samplerType = gl.TEXTURE_2D_ARRAY; // gl.TEXTURE_3D ??
+                        s.isVolume = true;
+                        break;
+                      default:
+                        s.samplerType = gl.TEXTURE_2D;
+                        s.isVolume = false;
+                        break;
+                }
+                 */
                 s.samplerType = stage.textures[n].type === 4 ? gl.TEXTURE_CUBE_MAP : gl.TEXTURE_2D;
                 s.isVolume = stage.textures[n].type === 3;
                 break;
@@ -30868,42 +31268,102 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Sha
 
     for (var paramIx = 0; paramIx < parameterCount; ++paramIx) {
       var name = ReadString(),
-          annotations = [],
+          annotations = {
+        name
+      },
           annotationCount = reader.ReadUInt8();
+      var group = "None",
+          components = [];
 
       for (var annotationIx = 0; annotationIx < annotationCount; ++annotationIx) {
-        annotations[annotationIx] = {};
-        annotations[annotationIx].name = ReadString();
-        annotations[annotationIx].type = reader.ReadUInt8();
+        var key = ReadString(),
+            type = reader.ReadUInt8(),
+            _value = void 0;
 
-        switch (annotations[annotationIx].type) {
+        switch (type) {
           case 0:
-            annotations[annotationIx].value = reader.ReadUInt32() !== 0;
+            _value = reader.ReadUInt32() !== 0;
             break;
 
           case 1:
-            annotations[annotationIx].value = reader.ReadInt32();
+            _value = reader.ReadInt32();
             break;
 
           case 2:
-            annotations[annotationIx].value = reader.ReadFloat32();
+            _value = reader.ReadFloat32();
             break;
 
           default:
-            annotations[annotationIx].value = ReadString();
+            _value = ReadString();
+        } // Normalize the annotations
+
+
+        switch (key.toUpperCase()) {
+          case "UIWIDGET":
+            annotations.widget = _value.toUpperCase();
+
+            if (annotations.widget === "LINEARCOLOR") {
+              components = this.constructor.LinearColor;
+            }
+
+            break;
+
+          case "SASUIVISIBLE":
+            annotations.display = _value;
+            break;
+
+          case "SASUIDESCRIPTION":
+            annotations.description = _value;
+            break;
+
+          case "GROUP":
+            group = annotations.group = _value;
+            break;
+
+          case "COMPONENT1":
+            components[0] = _value;
+            break;
+
+          case "COMPONENT2":
+            components[1] = _value;
+            break;
+
+          case "COMPONENT3":
+            components[2] = _value;
+            break;
+
+          case "COMPONENT4":
+            components[3] = _value;
+            break;
+
+          default:
+            key = key.charAt(0).toLowerCase() + key.substring(1);
+            annotations[key] = _value;
         }
+      }
+
+      if (!annotations.widget && this.HasTexture(name)) {
+        annotations.widget = "TEXTURE";
+      }
+
+      if (components.length) {
+        annotations.components = components;
       }
 
       this.annotations[name] = annotations;
     }
   }
   /**
+   * Linear colour component names
+   * @type {string[]}
+   */
+
+
+  /**
    * Applies an Effect Pass
    * @param {String} technique - technique name
    * @param {Number} pass - effect.passes index
    */
-
-
   ApplyPass(technique, pass) {
     var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
         gl = d.gl;
@@ -31117,9 +31577,17 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Sha
         overrides = _shaderOverrides_json__WEBPACK_IMPORTED_MODULE_4__[fileName];
     if (!overrides) return code;
 
+    function escapeRegExp(string) {
+      return string.replace(/[.*+\-?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function replaceAll(str, find, replace) {
+      return str.replace(new RegExp(escapeRegExp(find), "g"), replace);
+    }
+
     for (var key in overrides) {
       if (overrides.hasOwnProperty(key)) {
-        code = code.replace(key, overrides[key]);
+        code = replaceAll(code, key, overrides[key]);
       }
     }
 
@@ -31131,7 +31599,7 @@ var Tw2Shader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Sha
    */
 
 
-}, _class2.ConstantIgnore = ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS"], _class2.DEBUG_ENABLED = false, _temp)) || _class);
+}, _class2.LinearColor = ["Linear red", "Linear green", "Linear blue", "Linear alpha"], _class2.ConstantIgnore = ["PerFrameVS", "PerObjectVS", "PerFramePS", "PerObjectPS"], _class2.DEBUG_ENABLED = false, _temp)) || _class);
 
 /***/ }),
 
@@ -31167,7 +31635,7 @@ var _dec, _class, _temp;
  * @property {?String} _extension          - loading file extension
  */
 
-var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].type("Tw2TextureRes"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resource"] {
+var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw2TextureRes"), _dec(_class = (_temp = class Tw2TextureRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_0__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.texture = null;
@@ -31240,6 +31708,11 @@ var Tw2TextureRes = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].type("Tw
         */
 
       case "dds":
+        // Ensure we have data to work with
+        if (!data.byteLength) {
+          throw new _Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrResourceFormat"]("Invalid DDS, file is empty");
+        }
+
         var ext = global__WEBPACK_IMPORTED_MODULE_2__["device"].GetExtension("compressed_texture_s3tc"),
             header = new Int32Array(data, 0, global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_LENGTH_INT"]),
             isFourCC = header[global__WEBPACK_IMPORTED_MODULE_2__["DDS_HEADER_OFFSET_PF_FOURCC"]],
@@ -31573,7 +32046,7 @@ var _dec, _class, _temp;
  * @property {?Function} _onEnded        - An optional callback which is fired when the video has ended
  */
 
-var Tw2VideoRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VideoRes"), _dec(_class = (_temp = class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource"] {
+var Tw2VideoRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2VideoRes"), _dec(_class = (_temp = class Tw2VideoRes extends _Tw2Resource__WEBPACK_IMPORTED_MODULE_1__["Tw2Resource"] {
   constructor(...args) {
     super(...args);
     this.texture = null;
@@ -31893,7 +32366,7 @@ var MipFilterModesByName = {
   MIPMAP_NEAREST: 1,
   MIPMAP_LINEAR: 2
 };
-var Tw2SamplerOverride = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SamplerOverride"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(WrapModesByName, 3), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(WrapModesByName, 3), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(WrapModesByName, 3), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(FilterModesByName, 2), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(MipFilterModesByName, 2), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2SamplerOverride {
+var Tw2SamplerOverride = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2SamplerOverride"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(WrapModesByName, 3), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(WrapModesByName, 3), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(WrapModesByName, 3), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(FilterModesByName, 2), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(MipFilterModesByName, 2), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2SamplerOverride {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -32093,7 +32566,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2SamplerState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SamplerState"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2SamplerState {
+var Tw2SamplerState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2SamplerState"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2SamplerState {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -32180,6 +32653,11 @@ var Tw2SamplerState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
         useAddress = hasMipMaps || this.forceAddressModes;
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_S, useAddress ? this.addressU : gl.CLAMP_TO_EDGE);
     gl.texParameteri(targetType, gl.TEXTURE_WRAP_T, useAddress ? this.addressV : gl.CLAMP_TO_EDGE);
+
+    if (targetType === gl.TEXTURE_3D || targetType === gl.TEXTURE_2D_ARRAY) {
+      gl.texParameteri(targetType, gl.TEXTURE_WRAP_R, useAddress ? this.addressW : gl.CLAMP_TO_EDGE);
+    }
+
     gl.texParameteri(targetType, gl.TEXTURE_MIN_FILTER, hasMipMaps ? this.minFilter : this.minFilterNoMips);
     gl.texParameteri(targetType, gl.TEXTURE_MAG_FILTER, this.magFilter);
 
@@ -32330,7 +32808,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2Float = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Float", "TriFloat"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class Tw2Float extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2Float = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Float", "TriFloat"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2Float extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -32386,7 +32864,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2VertexDeclaration = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VertexDeclaration"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2VertexElement"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2VertexElement"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2VertexDeclaration {
+var Tw2VertexDeclaration = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2VertexDeclaration"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2VertexElement"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2VertexElement"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2VertexDeclaration {
   constructor() {
     _initializerDefineProperty(this, "elements", _descriptor, this);
 
@@ -32670,7 +33148,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2VertexElement = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VertexElement"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = _class3 = class Tw2VertexElement {
+var Tw2VertexElement = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2VertexElement"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = _class3 = class Tw2VertexElement {
   constructor() {
     this.customSetter = null;
 
@@ -32869,7 +33347,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2CurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveSet", "TriCurveSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ValueBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("TriCurveSetRange"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2CurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveSet", "TriCurveSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ValueBinding"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriCurveSetRange"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2CurveSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -33089,7 +33567,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Boolean} _sourceIsRGBA       -
  */
 
-var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ValueBinding", "TriValueBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec(_class = (_class2 = (_temp = class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ValueBinding = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ValueBinding", "TriValueBinding"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = (_class2 = (_temp = class Tw2ValueBinding extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -33634,7 +34112,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveKey", function() { return Tw2CurveKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2Curve", function() { return Tw2Curve; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _temp, _dec5, _dec6, _dec7, _dec8, _dec9, _class4, _class5, _descriptor3, _class6, _temp2;
+var _dec, _dec2, _class, _descriptor, _descriptor2, _temp, _dec3, _dec4, _dec5, _class3, _descriptor3, _class4, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -33644,7 +34122,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveKey"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tw2CurveKey extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, (_class = (_temp = class Tw2CurveKey extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -33653,22 +34131,22 @@ var Tw2CurveKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, 
     _initializerDefineProperty(this, "time", _descriptor2, this);
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "name", [_dec], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "time", [_dec4], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "time", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-})), _class2)) || _class) || _class);
-var Tw2Curve = (_dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5(_class4 = _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2Curve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+})), _class));
+var Tw2Curve = (_dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class3 = (_temp2 = _class4 = class Tw2Curve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -33786,7 +34264,7 @@ var Tw2Curve = (_dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _d
    */
 
 
-}, _class6.inputDimension = null, _class6.outputDimension = null, _class6.valueProperty = null, _class6.curveType = null, _class6.Key = null, _class6.Interpolation = null, _class6.Extrapolation = null, _class6.Type = {
+}, _class4.inputDimension = null, _class4.outputDimension = null, _class4.valueProperty = null, _class4.curveType = null, _class4.Key = null, _class4.Interpolation = null, _class4.Extrapolation = null, _class4.Type = {
   CURVE: 1,
   CURVE2: 2,
   CURVE3: 3,
@@ -33796,19 +34274,19 @@ var Tw2Curve = (_dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _d
   SEQUENCER2: 101,
   EXPRESSION: 200,
   ADAPTER: 300
-}, _class6.global = {
+}, _class4.global = {
   vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
   quat_0: global__WEBPACK_IMPORTED_MODULE_0__["quat"].create(),
   quat_1: global__WEBPACK_IMPORTED_MODULE_0__["quat"].create()
-}, _temp2), (_descriptor3 = _applyDecoratedDescriptor(_class5.prototype, "name", [_dec7], {
+}, _temp2), (_descriptor3 = _applyDecoratedDescriptor(_class3.prototype, "name", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _applyDecoratedDescriptor(_class5.prototype, "GetLength", [_dec8], Object.getOwnPropertyDescriptor(_class5.prototype, "GetLength"), _class5.prototype), _applyDecoratedDescriptor(_class5.prototype, "UpdateValue", [_dec9], Object.getOwnPropertyDescriptor(_class5.prototype, "UpdateValue"), _class5.prototype)), _class5)) || _class4) || _class4);
+}), _applyDecoratedDescriptor(_class3.prototype, "GetLength", [_dec4], Object.getOwnPropertyDescriptor(_class3.prototype, "GetLength"), _class3.prototype), _applyDecoratedDescriptor(_class3.prototype, "UpdateValue", [_dec5], Object.getOwnPropertyDescriptor(_class3.prototype, "UpdateValue"), _class3.prototype)), _class3));
 
 /***/ }),
 
@@ -33839,7 +34317,7 @@ var Extrapolation = {
   NONE: 0,
   CYCLE: 3
 };
-var Tw2EventKey = (_dec = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2EventKey", "TriEventKey"), _dec2 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.float, _dec3 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.ushort, _dec(_class = (_class2 = (_temp = class Tw2EventKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"] {
+var Tw2EventKey = (_dec = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2EventKey", "TriEventKey"), _dec2 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec3 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].ushort, _dec(_class = (_class2 = (_temp = class Tw2EventKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -33863,7 +34341,7 @@ var Tw2EventKey = (_dec = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].type
     return 0;
   }
 })), _class2)) || _class);
-var Tw2EventCurve = (_dec4 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2EventCurve", "TriEventCurve"), _dec5 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec6 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.uint, _dec7 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].enumerable(Extrapolation), _dec8 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("Tw2EventKey"), _dec9 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.ushort, _dec10 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec4(_class4 = (_class5 = (_temp2 = _class6 = class Tw2EventCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
+var Tw2EventCurve = (_dec4 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2EventCurve", "TriEventCurve"), _dec5 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec6 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec7 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].enums(Extrapolation), _dec8 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].list("Tw2EventKey"), _dec9 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].ushort, _dec10 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec4(_class4 = (_class5 = (_temp2 = _class6 = class Tw2EventCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_0__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -33987,7 +34465,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2PerlinCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2PerlinCurve", "TriPerlinCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2PerlinCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2PerlinCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2PerlinCurve", "TriPerlinCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2PerlinCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -34216,7 +34694,7 @@ var Interpolation = {
   CONSTANT: 1,
   LINEAR: 2
 };
-var Tw2ColorKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ColorKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ColorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2ColorKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ColorKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ColorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -34258,7 +34736,7 @@ var Tw2ColorKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2C
     return 0;
   }
 })), _class2)) || _class);
-var Tw2ColorCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ColorCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Extrapolation), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2ColorKey"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2ColorCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ColorCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Extrapolation), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ColorKey"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ColorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -34438,7 +34916,7 @@ var Interpolation = {
   CONSTANT: 0,
   LINEAR: 1
 };
-var Tw2ColorKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ColorKey2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ColorKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2ColorKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ColorKey2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ColorKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -34480,7 +34958,7 @@ var Tw2ColorKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     return 1;
   }
 })), _class2)) || _class);
-var Tw2ColorCurve2 = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ColorCurve2"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2ColorKey2"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2ColorCurve2 = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ColorCurve2"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ColorKey2"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ColorCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -34750,7 +35228,7 @@ var Interpolation = {
   CONSTANT: 0,
   SPHERICAL_LINEAR: 4
 };
-var Tw2QuaternionKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2QuaternionKey2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2QuaternionKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2QuaternionKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2QuaternionKey2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2QuaternionKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -34792,7 +35270,7 @@ var Tw2QuaternionKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
     return 1;
   }
 })), _class2)) || _class);
-var Tw2QuaternionCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2QuaternionCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2QuaternionKey"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2QuaternionCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2QuaternionCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2QuaternionKey"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2QuaternionCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -35065,7 +35543,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2RandomConstantCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RandomConstantCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = _class3 = class Tw2RandomConstantCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2RandomConstantCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RandomConstantCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = _class3 = class Tw2RandomConstantCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -35170,7 +35648,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2Torque = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Torque"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec(_class = (_class2 = (_temp = class Tw2Torque extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2Torque = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Torque"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec(_class = (_class2 = (_temp = class Tw2Torque extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -35203,7 +35681,7 @@ var Tw2Torque = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Tor
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 })), _class2)) || _class);
-var Tw2RigidOrientation = (_dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RigidOrientation"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Torque"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5(_class4 = (_class5 = (_temp2 = _class6 = class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2RigidOrientation = (_dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RigidOrientation"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Torque"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5(_class4 = (_class5 = (_temp2 = _class6 = class Tw2RigidOrientation extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -35375,7 +35853,7 @@ var Interpolation = {
   SLERP: 5,
   SQUAD: 6
 };
-var Tw2QuaternionKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2QuaternionKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2QuaternionKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2QuaternionKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2QuaternionKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2QuaternionKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -35417,7 +35895,7 @@ var Tw2QuaternionKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     return 5;
   }
 })), _class2)) || _class);
-var Tw2RotationCurve = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RotationCurve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Extrapolation), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2QuaternionKey"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7(_class4 = (_class5 = (_temp2 = _class6 = class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2RotationCurve = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RotationCurve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Extrapolation), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2QuaternionKey"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7(_class4 = (_class5 = (_temp2 = _class6 = class Tw2RotationCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -35634,7 +36112,7 @@ var Interpolation = {
  * @property {number} interpolation
  */
 
-var Tw2ScalarKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ScalarKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ScalarKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2ScalarKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ScalarKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ScalarKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -35676,7 +36154,7 @@ var Tw2ScalarKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
     return 0;
   }
 })), _class2)) || _class);
-var Tw2ScalarCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ScalarCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Extrapolation), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2ScalarKey"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ScalarCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2ScalarCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ScalarCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Extrapolation), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ScalarKey"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ScalarCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -35885,7 +36363,7 @@ var Interpolation = {
   LINEAR: 1,
   HERMITE: 2
 };
-var Tw2ScalarKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ScalarKey2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ScalarKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2ScalarKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ScalarKey2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2ScalarKey2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -35927,7 +36405,7 @@ var Tw2ScalarKey2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw
     return 1;
   }
 })), _class2)) || _class);
-var Tw2ScalarCurve2 = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ScalarCurve2"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2ScalarKey2"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2ScalarCurve2 = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ScalarCurve2"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ScalarKey2"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2ScalarCurve2 extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -36214,7 +36692,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2SineCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SineCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = _class3 = class Tw2SineCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2SineCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2SineCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = _class3 = class Tw2SineCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -36326,7 +36804,7 @@ var Interpolation = {
   LINEAR: 1,
   HERMITE: 2
 };
-var Tw2Vector2Key = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vector2Key"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2Vector2Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2Vector2Key = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Vector2Key"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2Vector2Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -36368,7 +36846,7 @@ var Tw2Vector2Key = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw
     return 1;
   }
 })), _class2)) || _class);
-var Tw2Vector2Curve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vector2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Vector2Key"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2Vector2Curve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Vector2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Vector2Key"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2Vector2Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -36669,7 +37147,7 @@ var Interpolation = {
   LINEAR: 1,
   HERMITE: 2
 };
-var Tw2Vector3Key = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vector3Key"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2Vector3Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2Vector3Key = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Vector3Key"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2Vector3Key extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -36711,7 +37189,7 @@ var Tw2Vector3Key = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw
     return 1;
   }
 })), _class2)) || _class);
-var Tw2Vector3Curve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Vector3Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Vector3Key"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2Vector3Curve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Vector3Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Vector3Key"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2Vector3Curve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -37020,7 +37498,7 @@ var Interpolation = {
   LINEAR: 2,
   HERMITE: 3
 };
-var Tw2VectorKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VectorKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2VectorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2VectorKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2VectorKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Interpolation), _dec(_class = (_class2 = (_temp = class Tw2VectorKey extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -37074,7 +37552,7 @@ var Tw2VectorKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2
  * @property {number} length
  */
 
-var Tw2VectorCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VectorCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Extrapolation), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2VectorCurve = (_dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2VectorCurve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Extrapolation), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6(_class4 = (_class5 = (_temp2 = _class6 = class Tw2VectorCurve extends _Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -37491,7 +37969,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2MayaAnimationEngine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2MayaAnimationEngine"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list, _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaAnimationEngine {
+var Tw2MayaAnimationEngine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2MayaAnimationEngine"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaAnimationEngine {
   constructor() {
     _initializerDefineProperty(this, "curves", _descriptor, this);
 
@@ -37870,7 +38348,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2MayaEulerRotationCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2MayaEulerRotationCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2MayaAnimationEngine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaEulerRotationCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2MayaEulerRotationCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2MayaEulerRotationCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2MayaAnimationEngine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaEulerRotationCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -38057,7 +38535,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2MayaScalarCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2MayaScalarCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2MayaAnimationEngine"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaScalarCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2MayaScalarCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2MayaScalarCurve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2MayaAnimationEngine"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaScalarCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -38165,7 +38643,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2MayaVector3Curve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2MayaVector3Curve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2MayaAnimationEngine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaVector3Curve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2MayaVector3Curve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2MayaVector3Curve"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2MayaAnimationEngine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2MayaVector3Curve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -38347,7 +38825,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2TransformTrack = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2TransformTrack"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].object, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].object, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].object, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].object, _dec(_class = (_class2 = (_temp = class Tw2TransformTrack {
+var Tw2TransformTrack = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2TransformTrack"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = (_class2 = (_temp = class Tw2TransformTrack {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -38616,7 +39094,7 @@ function Tw2WbgTrack() {
     if (time <= this.duration && time >= 0) this._UpdateValue(time);
   };
 }
-global__WEBPACK_IMPORTED_MODULE_0__["meta"].set("type", "Tw2WbgTrack", Tw2WbgTrack);
+global__WEBPACK_IMPORTED_MODULE_0__["util"].defineMetadata("type", "Tw2WbgTrack", Tw2WbgTrack);
 /**
  * Tw2WbgTransformTrack
  *
@@ -38699,7 +39177,7 @@ function Tw2WbgTransformTrack() {
  */
 
 Tw2WbgTransformTrack.prototype = new Tw2WbgTrack();
-global__WEBPACK_IMPORTED_MODULE_0__["meta"].set("type", "Tw2WbgTransformTrack", Tw2WbgTransformTrack);
+global__WEBPACK_IMPORTED_MODULE_0__["util"].defineMetadata("type", "Tw2WbgTransformTrack", Tw2WbgTransformTrack);
 
 /***/ }),
 
@@ -38747,7 +39225,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var TriColorSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("TriColorSequencer", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make backwards compatible with old Tw2ColorSequencer"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = _class3 = class TriColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var TriColorSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("TriColorSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make backwards compatible with old Tw2ColorSequencer"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = _class3 = class TriColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -38854,7 +39332,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2CurveColor = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveColor", "Tr2CurveColor"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.rawOf("Tr2CurveScalar"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.rawOf("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.rawOf("Tr2CurveScalar"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.rawOf("Tr2CurveScalar"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2CurveColor extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2CurveColor = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveColor", "Tr2CurveColor"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].raw("Tr2CurveScalar"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].raw("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].raw("Tr2CurveScalar"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].raw("Tr2CurveScalar"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2CurveColor extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -38984,7 +39462,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2CurveEulerRotation = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2CurveEulerRotation", "Tr2CurveEulerRotation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.rawOf("Tr2CurveScalar"), _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.rawOf("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.rawOf("Tr2CurveScalar"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2CurveEulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"] {
+var Tw2CurveEulerRotation = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2CurveEulerRotation", "Tr2CurveEulerRotation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].raw("Tr2CurveScalar"), _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].raw("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].raw("Tr2CurveScalar"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2CurveEulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -39108,7 +39586,7 @@ var _dec, _class, _class2, _temp;
 
 
 
-var Tw2CurveSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveSequencer"), _dec(_class = (_temp = _class2 = class Tw2CurveSequencer extends _curve_Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2CurveSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveSequencer"), _dec(_class = (_temp = _class2 = class Tw2CurveSequencer extends _curve_Tw2Curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   /**
    * Legacy sequencer sorting
    * @param {Tw2CurveSequencer} sequencer
@@ -39216,7 +39694,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2CurveVector3 = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tw2CurveVector3", "Tr2CurveVector3"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.rawOf("Tr2CurveScalar"), _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.rawOf("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.rawOf("Tr2CurveScalar"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2CurveVector3 extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"] {
+var Tw2CurveVector3 = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tw2CurveVector3", "Tr2CurveVector3"), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].raw("Tr2CurveScalar"), _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].raw("Tr2CurveScalar"), _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].raw("Tr2CurveScalar"), _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2CurveVector3 extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -39390,7 +39868,7 @@ var Operator = {
   MULTIPLY: 0,
   ADD: 1
 };
-var Tw2ColorSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ColorSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Operator), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2ColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2ColorSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ColorSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Operator), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2ColorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -39531,7 +40009,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2EulerRotation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2EulerRotation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2EulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2EulerRotation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2EulerRotation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2EulerRotation extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -39652,7 +40130,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2QuaternionSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2QuaternionSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2QuaternionSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2QuaternionSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2QuaternionSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2QuaternionSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -39759,7 +40237,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2RGBAScalarSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RGBAScalarSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2RGBAScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2RGBAScalarSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RGBAScalarSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2RGBAScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -39884,7 +40362,7 @@ var Operator = {
   MULTIPLY: 0,
   ADD: 1
 };
-var Tw2ScalarSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ScalarSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Operator), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2ScalarSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ScalarSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Operator), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -40070,7 +40548,7 @@ var Operator = {
   MULTIPLY: 0,
   ADD: 1
 };
-var Tw2VectorSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2VectorSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Operator), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2VectorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2VectorSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2VectorSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Operator), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2VectorSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -40201,7 +40679,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2XYZScalarSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2XYZScalarSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2XYZScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2XYZScalarSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2XYZScalarSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2XYZScalarSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -40312,7 +40790,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2YPRSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2YPRSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2YPRSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
+var Tw2YPRSequencer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2YPRSequencer"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2YPRSequencer extends _Tw2CurveSequencer__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveSequencer"] {
   constructor(...args) {
     super(...args);
 
@@ -40488,7 +40966,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceScene", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2ExternalParameter"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2ShLightingManager"), _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveStarField"), _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveLensflare"), _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EvePlanet"), _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCurveLineSet"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tr2PostProcess"), _dec54 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec55 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec56 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec57 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpaceScene", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ExternalParameter"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2ShLightingManager"), _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify ps/vs frame data"), _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveStarField"), _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlanet"), _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveLineSet"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2PostProcess"), _dec54 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec55 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec56 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Do shadows need their own render mode and batch accumulation?"), _dec57 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   // Should this come from the background effect?
 
   /**
@@ -40577,6 +41055,7 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
 
     _initializerDefineProperty(this, "visible", _descriptor40, this);
 
+    this._localTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
     this._debugHelper = null;
     this._batches = new core__WEBPACK_IMPORTED_MODULE_1__["Tw2BatchAccumulator"]();
     this._emptyTexture = null;
@@ -40617,6 +41096,44 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
 
       this.objects.splice(0);
     }
+  }
+  /**
+   * Sets the scene's transform
+   * @param {mat4} m
+   */
+
+
+  SetTransform(m) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._localTransform, m);
+  }
+  /**
+   * Gets the scene's transform
+   * @param {mat4} out
+   */
+
+
+  GetTransform(out) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(out, this._localTransform);
+  }
+  /**
+   * Sets the scene's environment transform
+   * @param {mat4} m
+   */
+
+
+  SetEnvironmentTransform(m) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(this.envMapRotation, m);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getScaling(this.envMapScaling, m); // Apply to the effect as well??
+  }
+  /**
+   * Gets the scene's environment transform
+   * @param {mat4} out
+   */
+
+
+  GetEnvironmentTransform(out) {
+    var translation = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(EveSpaceScene.global.vec3_ZERO, 0, 0, 0);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromRotationTranslationScale(out, this.envMapRotation, translation, this.envMapScaling);
   }
   /**
    * Sets the post processing path
@@ -40822,7 +41339,7 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     this.ApplyPerFrameData();
     var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
         g = EveSpaceScene.global,
-        tr = undefined,
+        tr = this._localTransform,
         show = this.visible;
 
     if (show["environment"] && this.backgroundEffect) {
@@ -40938,7 +41455,8 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
 
     if (show.lensflares) {
       for (var _i10 = 0; _i10 < this.lensflares.length; ++_i10) {
-        this.lensflares[_i10].UpdateOccluders();
+        this.lensflares[_i10].UpdateOccluders(); // World transform applied here?
+
       }
     }
 
@@ -40962,14 +41480,20 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
   ApplyPerFrameData() {
     var d = global__WEBPACK_IMPORTED_MODULE_0__["device"],
         g = EveSpaceScene.global,
+        world = this._localTransform,
         envMapTransform = g.mat4_2,
         sunDir = g.vec3_0,
-        show = this.visible; // Todo: Update from local transform??
-
+        show = this.visible;
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].fromQuat(envMapTransform, this.envMapRotation);
     global__WEBPACK_IMPORTED_MODULE_0__["mat4"].scale(envMapTransform, envMapTransform, this.envMapScaling);
-    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(envMapTransform, envMapTransform);
-    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(sunDir, this.sunDirection);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(envMapTransform, envMapTransform, world);
+    envMapTransform[12] = 0;
+    envMapTransform[13] = 0;
+    envMapTransform[14] = 0;
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].transpose(envMapTransform, envMapTransform); // Sun direction
+
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(sunDir, this.sunDirection, world);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].negate(sunDir, sunDir);
     global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(sunDir, sunDir);
     var distance = this.fogEnd - this.fogStart;
     if (Math.abs(distance) < 1e-5) distance = 1e-5;
@@ -41018,15 +41542,6 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     ps.SetIndex("ShadowCameraRange", 0, 1);
     ps.SetIndex("ProjectionToView", 0, -d.projection[14]);
     ps.SetIndex("ProjectionToView", 1, -d.projection[10] - 1);
-    /*
-    ps.Get("SceneData.NebulaIntensity")[0] = this.nebulaIntensity;
-    ps.Get("ViewportSize")[0] = d.viewportWidth;
-    ps.Get("ViewportSize")[1] = d.viewportHeight;
-    ps.Get("ShadowCameraRange")[0] = 1;
-    ps.Get("ProjectionToView")[0] = -d.projection[14];
-    ps.Get("ProjectionToView")[1] = -d.projection[10] - 1;
-     */
-
     d.perFramePSData = ps;
     var envMap = this._envMapRes && show.environmentReflection ? this._envMapRes : this.GetEmptyTexture(),
         envMap1 = this._envMap1Res && show.environmentDiffuse ? this._envMap1Res : this.GetEmptyTexture(),
@@ -41043,6 +41558,7 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
   static init() {
     if (!EveSpaceScene.global) {
       EveSpaceScene.global = {
+        vec3_ZERO: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
         vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
         mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
@@ -41060,7 +41576,7 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
 }, _class3.perFrameData = {
   ps: [["ViewInverseTransposeMat", 16], ["ViewMat", 16], ["EnvMapRotationMat", 16], ["SunData.DirWorld", 4], ["SunData.DiffuseColor", 4], ["SceneData.AmbientColor", 3], ["SceneData.NebulaIntensity", 1], ["SceneData.FogColor", 4], ["ViewportOffset", 2], ["ViewportSize", 2], ["TargetResolution", 4], ["ShadowMapSettings", 4], ["ShadowCameraRange", 4], ["ProjectionToView", 2], ["FovXY", 2], ["MiscSettings", 4]],
   vs: [["ViewInverseTransposeMat", 16], ["ViewProjectionMat", 16], ["ViewMat", 16], ["ProjectionMat", 16], ["ShadowViewMat", 16], ["ShadowViewProjectionMat", 16], ["EnvMapRotationMat", 16], ["SunData.DirWorld", 4], ["SunData.DiffuseColor", 4], ["FogFactors", 4], ["TargetResolution", 4], ["ViewportAdjustment", 4], ["MiscSettings", 4]]
-}, _class3.global = null, _class3.DebugRenderer = window["Tw2DebugRenderer"] || null, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "ambientColor", [_dec2], {
+}, _class3.wrappedType = global__WEBPACK_IMPORTED_MODULE_0__["WrappedType"].SPACE_SCENE, _class3.global = null, _class3.DebugRenderer = window["Tw2DebugRenderer"] || null, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "ambientColor", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -41371,17 +41887,13 @@ var EveSpaceScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChild", function() { return EveChild; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _class3, _temp;
+var _dec, _dec2, _dec3, _class, _class2, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 /* eslint no-unused-vars:0 */
 
-/**
- * Root EveChild class
- */
-
-var EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChild"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class EveChild extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Per frame update
    * @param {number} dt
@@ -41411,12 +41923,12 @@ var EveChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _de
    */
 
 
-}, _class3.global = {
+}, _class2.global = {
   mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
   vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
-}, _class3.perObjectData = {
+}, _class2.perObjectData = {
   ffe: [["world", 16], ["worldInverseTranspose", 16]]
-}, _class3.__isEffectChild = true, _temp), (_applyDecoratedDescriptor(_class2.prototype, "Update", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "Update"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "GetResources", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "GetResources"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "GetBatches", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "GetBatches"), _class2.prototype)), _class2)) || _class) || _class);
+}, _class2.__isEffectChild = true, _temp), (_applyDecoratedDescriptor(_class.prototype, "Update", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "Update"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "GetResources", [_dec2], Object.getOwnPropertyDescriptor(_class.prototype, "GetResources"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "GetBatches", [_dec3], Object.getOwnPropertyDescriptor(_class.prototype, "GetBatches"), _class.prototype)), _class));
 
 /***/ }),
 
@@ -41444,7 +41956,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildBillboard = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildBillboard", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf(["Tw2Mesh", "Tw2InstancedMesh"]), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildBillboard extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
+var EveChildBillboard = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildBillboard"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildBillboard extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -41615,7 +42127,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildContainer = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("EveChildContainer", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("Tr2Controller"), _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec12 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.object, _dec13 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.boolean, _dec15 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("EveChildInheritProperties"), _dec17 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("Tr2PointLight"), _dec19 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.matrix4, _dec20 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("EveChild"), _dec21 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("TriObserverLocal"), _dec23 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.quaternion, _dec24 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.vector3, _dec25 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec26 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.boolean, _dec27 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec28 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("EveChildModifier"), _dec29 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.vector3, _dec30 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild"] {
+var EveChildContainer = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("EveChildContainer", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("Tr2Controller"), _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec12 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct(), _dec13 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec15 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("EveChildInheritProperties"), _dec17 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("Tr2PointLight"), _dec19 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].matrix4, _dec20 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveChild"), _dec21 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("TriObserverLocal"), _dec23 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].quaternion, _dec24 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec25 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec26 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec27 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec28 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveChildModifier"), _dec29 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].vector3, _dec30 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildContainer extends _EveChild__WEBPACK_IMPORTED_MODULE_0__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -41894,7 +42406,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildMesh", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].desc("Mesh attachment to space object"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf(["Tw2Mesh", "Tw2InstancedMesh"]), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveChildModifier"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildMesh extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
+var EveChildMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildMesh", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].desc("Mesh attachment to space object"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(["Tw2Mesh", "Tw2InstancedMesh"]), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChildModifier"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildMesh extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -42131,7 +42643,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildParticleSystem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2InstancedMesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleEmitter"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildParticleSystem extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
+var EveChildParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildParticleSystem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2InstancedMesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleEmitter"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(["Tw2ParticleSystem", "Tr2GpuParticleSystem"]), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildParticleSystem extends _EveChild__WEBPACK_IMPORTED_MODULE_2__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -42374,7 +42886,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveLensflare = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveLensflare", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveOccluder"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ValueBinding"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Mesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveOccluder"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveLensflare"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2CurveSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec(_class = (_class2 = (_temp = _class3 = class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveLensflare = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLensflare"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveOccluder"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ValueBinding"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveOccluder"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLensflare"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec(_class = (_class2 = (_temp = _class3 = class EveLensflare extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    */
@@ -42804,7 +43316,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].type("EveMeshOverlayEffect", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.objectOf("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.listOf("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+var EveMeshOverlayEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("EveMeshOverlayEffect", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].struct("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].notImplemented, _dec8 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].list("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveMeshOverlayEffect extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -43056,7 +43568,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveOccluder", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveTransform"), _dec(_class = (_class2 = (_temp = _class3 = class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveOccluder = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveOccluder"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveTransform"), _dec(_class = (_class2 = (_temp = _class3 = class EveOccluder extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    */
@@ -43253,7 +43765,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveStretch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveStretch", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Float"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2PointLight"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = (_class2 = (_temp = _class3 = class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveStretch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStretch", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Float"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2PointLight"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = _class3 = class EveStretch extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Constructor
    */
@@ -43694,7 +44206,7 @@ class EvePerMuzzleData {
 
 }
 
-var EveTurretFiringFX = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTurretFiringFX", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("TriObserverLocal"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("TriObserverLocal"), _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2CurveSet"), _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2CurveSet"), _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf(["EveStretch", "EveStretch2"]), _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveTurretFiringFX = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTurretFiringFX"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriObserverLocal"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Deprecated?"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriObserverLocal"), _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(["EveStretch", "EveStretch2"]), _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTurretFiringFX extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -44348,7 +44860,7 @@ class EveBoosterBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch"
   }
 
 }
-var EveBoosterSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EveBoosterSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveBoosterSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveBoosterSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -44491,7 +45003,7 @@ var EveBoosterSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
     return Math.random();
   }
 })), _class2)) || _class);
-var EveBoosterSet = (_dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet", true), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("EveSpriteSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec11(_class4 = (_class5 = (_temp2 = _class6 = class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveBoosterSet = (_dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveBoosterSet", true), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSpriteSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec11(_class4 = (_class5 = (_temp2 = _class6 = class EveBoosterSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
@@ -45093,7 +45605,7 @@ var LineType = {
   SPHERED: 2,
   CURVED: 3
 };
-var EveCurveLineSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveCurveLineSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(LineType), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EveCurveLineSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveCurveLineSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(LineType), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class EveCurveLineSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -45381,7 +45893,7 @@ var EveCurveLineSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
     return LineType.INVALID;
   }
 })), _class2)) || _class);
-var EveCurveLineSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveCurveLineSet", true), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec16(_class4 = (_class5 = (_temp2 = _class6 = class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveCurveLineSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveCurveLineSet", true), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec16(_class4 = (_class5 = (_temp2 = _class6 = class EveCurveLineSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   /**
    * Constructor
    */
@@ -46159,7 +46671,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveCustomMask", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.byte, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plainOf("Tw2Parameter"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to direct class properties"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveCustomMask extends core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TransformParameter"] {
+var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveCustomMask"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].byte, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to direct class properties"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveCustomMask extends core_parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2TransformParameter"] {
   constructor(...args) {
     super(...args);
 
@@ -46244,14 +46756,30 @@ var EveCustomMask = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
       Gloss,
       PatternMaskMap
     } = mask.parameters;
-    if (DiffuseName) DiffuseName.SetValue(DiffuseColor.GetValue());
-    if (FresnelName) FresnelName.SetValue(FresnelColor.GetValue());
-    if (GlossName) GlossName.SetValue(Gloss.GetValue());
+
+    if (DiffuseName) {
+      DiffuseName.SetValue(DiffuseColor.GetValue());
+      DiffuseColor.on("modified", () => DiffuseName.SetValue(DiffuseColor.GetValue()));
+    }
+
+    if (FresnelName) {
+      FresnelName.SetValue(FresnelColor.GetValue());
+      FresnelColor.on("modified", () => FresnelName.SetValue(FresnelColor.GetValue()));
+    }
+
+    if (GlossName) {
+      GlossName.SetValue(Gloss.GetValue());
+      Gloss.on("modified", () => GlossName.SetValue(Gloss.GetValue()));
+    }
 
     if (PatternTexture) {
       var overrides = PatternMaskMap.GetOverrides();
       PatternTexture.SetOverrides(overrides);
-      PatternTexture.SetValue(PatternTexture.PatternMaskMap.GetValue());
+      PatternTexture.SetValue(PatternMaskMap.GetValue());
+      PatternMaskMap.on("modified", () => {
+        PatternTexture.SetOverrides(PatternMaskMap.GetOverrides());
+        PatternTexture.SetValue(PatternTexture.GetValue());
+      });
     }
   }
 
@@ -46341,7 +46869,8 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveLocator2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveLocator2", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Bone"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveLocator2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+
+var EveLocator2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLocator2"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Move to EveLocator only?"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Bone"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveLocator2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -46357,22 +46886,98 @@ var EveLocator2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveL
   }
 
   /**
+   * Gets glow translation
+   * @param {vec3} out
+   * @param {Number} [offset=0]
+   * @param {mat4} [worldTransform]
+   * @returns {vec3}
+   */
+  GetGlowTranslation(out, offset, worldTransform) {
+    this.GetDirection(out);
+    if (offset) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(out, out, offset);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(out, out, this.GetTranslation(EveLocator2.global.vec3_0));
+    if (worldTransform) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(out, out, worldTransform);
+    return out;
+  }
+  /**
+   * Gets a weapon's rotation and translation
+   * @param {quat} outRotation
+   * @param {vec3} outTranslation
+   * @param {mat4} [worldTransform]
+   */
+
+
+  GetWeaponRotationTranslation(outRotation, outTranslation, worldTransform) {
+    var transform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(EveLocator2.global.mat4_0, this.transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(transform.subarray(0, 3), transform.subarray(0, 3));
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(transform.subarray(4, 7), transform.subarray(4, 7));
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(transform.subarray(8, 11), transform.subarray(8, 11));
+    if (worldTransform) global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(transform, worldTransform, transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getRotation(outRotation, transform);
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(outTranslation, transform);
+  }
+  /**
+   * Gets the item's position
+   * @param {vec3} out
+   * @param {mat4} [worldTransform]
+   * @returns {vec3} out
+   */
+
+
+  GetTranslation(out, worldTransform) {
+    global__WEBPACK_IMPORTED_MODULE_0__["mat4"].getTranslation(out, this.transform);
+    if (worldTransform) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(out, out, worldTransform);
+    return out;
+  }
+  /**
+   * Gets the item's direction
+   * @param {vec3} out
+   * @param {mat4} [worldTransform]
+   * @returns {vec3} out
+   */
+
+
+  GetDirection(out, worldTransform) {
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].set(out, this.transform[8], this.transform[9], this.transform[10]);
+    if (worldTransform) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].transformMat4(out, out, worldTransform);
+    global__WEBPACK_IMPORTED_MODULE_0__["vec3"].normalize(out, out);
+    var scale = this.GetScale();
+    if (scale < 3) global__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(out, out, scale / 3);
+    return out;
+  }
+  /**
+   * Gets the item's scale
+   * @returns {Number}
+   */
+
+
+  GetScale() {
+    var tr = this.transform;
+    return Math.max(global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[0], tr[1], tr[2]]), global__WEBPACK_IMPORTED_MODULE_0__["vec3"].length([tr[4], tr[5], tr[6]]));
+  }
+  /**
    * Gets the locator's bone from an animation controller
    * @param {Tw2AnimationController} animationController
    * @returns {null|Tw2Bone}
    */
+
+
   FindBone(animationController) {
     this.bone = animationController.FindBoneForMesh(this.name, 0);
     return this.bone;
   }
+  /**
+   * Global and static variables
+   * @type {{vec3_0: vec3, mat4_0: mat4}}
+   */
+
+
   /**
    * Creates a locator from options
    * @param {*} [values]
    * @param {*} [options]
    * @returns {EveLocator2}
    */
-
-
   static from(values, options) {
     var item = new EveLocator2();
 
@@ -46383,17 +46988,22 @@ var EveLocator2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveL
     return item;
   }
   /**
-   * Locator name prefixes
+   * Locator types
    * @type {{AUDIO: string, ATTACH: string, BOOSTER: string, TURRET: string, XL_TURRET: string}}
    */
 
 
-}, _class3.Prefix = {
+}, _class3.global = {
+  vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
+  mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
+}, _class3.Type = {
   AUDIO: "locator_audio",
   ATTACH: "locator_attach",
   BOOSTER: "locator_booster",
   TURRET: "locator_turret",
-  XL_TURRET: "locator_xl"
+  XL_TURRET: "locator_xl",
+  CHAIN: "locator_chain",
+  ATOMIC: "locator_atomic"
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
   configurable: true,
   enumerable: true,
@@ -46430,7 +47040,7 @@ var EveLocator2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveL
     return null;
   }
 })), _class2)) || _class) || _class);
-var EveLocator = (_dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveLocator", true), _dec11(_class4 = class EveLocator extends EveLocator2 {}) || _class4);
+var EveLocator = (_dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLocator"), _dec11(_class4 = class EveLocator extends EveLocator2 {}) || _class4);
 
 /***/ }),
 
@@ -46446,7 +47056,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObjectSetItem", function() { return EveObjectSetItem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObjectSet", function() { return EveObjectSet; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _class, _class2, _descriptor, _temp, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class4, _class5, _descriptor2, _descriptor3, _descriptor4, _class6, _temp2;
+var _dec, _class, _descriptor, _temp, _dec2, _dec3, _dec4, _dec5, _dec6, _class3, _descriptor2, _descriptor3, _descriptor4, _class4, _temp2;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -46456,7 +47066,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveObjectSetItem"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveObjectSetItem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, (_class = (_temp = class EveObjectSetItem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -46472,15 +47082,15 @@ var EveObjectSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstr
     this._dirty = true;
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec3], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "display", [_dec], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-})), _class2)) || _class) || _class);
-var EveObjectSet = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveObjectSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4(_class4 = _dec5(_class4 = (_class5 = (_temp2 = _class6 = class EveObjectSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+})), _class));
+var EveObjectSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class3 = (_temp2 = _class4 = class EveObjectSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -46728,35 +47338,35 @@ var EveObjectSet = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract
    */
 
 
-}, _class6.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].GENERIC, _class6.Item = null, _class6.global = {
+}, _class4.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].GENERIC, _class4.Item = null, _class4.global = {
   vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
   vec4_1: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create(),
   mat4_0: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
-}, _temp2), (_descriptor2 = _applyDecoratedDescriptor(_class5.prototype, "autoRebuild", [_dec6], {
+}, _temp2), (_descriptor2 = _applyDecoratedDescriptor(_class3.prototype, "autoRebuild", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class5.prototype, "display", [_dec7], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class3.prototype, "display", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class5.prototype, "items", [_dec8], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class3.prototype, "items", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _applyDecoratedDescriptor(_class5.prototype, "GetBatches", [_dec9], Object.getOwnPropertyDescriptor(_class5.prototype, "GetBatches"), _class5.prototype), _applyDecoratedDescriptor(_class5.prototype, "Render", [_dec10], Object.getOwnPropertyDescriptor(_class5.prototype, "Render"), _class5.prototype)), _class5)) || _class4) || _class4);
+}), _applyDecoratedDescriptor(_class3.prototype, "GetBatches", [_dec5], Object.getOwnPropertyDescriptor(_class3.prototype, "GetBatches"), _class3.prototype), _applyDecoratedDescriptor(_class3.prototype, "Render", [_dec6], Object.getOwnPropertyDescriptor(_class3.prototype, "Render"), _class3.prototype)), _class3));
 
 /***/ }),
 
@@ -46804,7 +47414,7 @@ class EvePlaneSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatch
 
 }
 
-var EvePlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlaneSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec(_class = (_class2 = (_temp = class EvePlaneSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EvePlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EvePlaneSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if this is required anywhere apart from the EVESOF, or if it can be deprecated"), _dec(_class = (_class2 = (_temp = class EvePlaneSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -46966,7 +47576,7 @@ var EvePlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
     return -1;
   }
 })), _class2)) || _class);
-var EvePlaneSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlaneSet", true), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.byte, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EvePlaneSetItem"), _dec16(_class4 = (_class5 = (_temp2 = _class6 = class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EvePlaneSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EvePlaneSet", true), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].byte, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlaneSetItem"), _dec16(_class4 = (_class5 = (_temp2 = _class6 = class EvePlaneSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
@@ -47302,7 +47912,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceObjectDecal", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, this may only be needed if created a SOF object from a decal"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.indexBuffer, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, Doesn't seem to be on the new SOF anywhere but it is required, maybe default to 0?"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveSpaceObjectDecal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpaceObjectDecal", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, this may only be needed if created a SOF object from a decal"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].indexBuffer, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, Doesn't seem to be on the new SOF anywhere but it is required, maybe default to 0?"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObjectDecal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -47684,7 +48294,7 @@ class EveSpotlightSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderB
 
 }
 
-var EveSpotlightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpotlightSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, only needed if creating a SOF object from the spotlight"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec(_class = (_class2 = (_temp = class EveSpotlightSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EveSpotlightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpotlightSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify if deprecated, only needed if creating a SOF object from the spotlight"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = class EveSpotlightSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -47818,7 +48428,7 @@ var EveSpotlightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ty
     return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 })), _class2)) || _class);
-var EveSpotlightSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpotlightSet", true), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSpotlightSetItem"), _dec16(_class4 = (_class5 = (_temp2 = _class6 = class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveSpotlightSet = (_dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpotlightSet", true), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpotlightSetItem"), _dec16(_class4 = (_class5 = (_temp2 = _class6 = class EveSpotlightSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
@@ -48247,7 +48857,7 @@ class EveSpriteSetBatch extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2RenderBatc
 
 }
 
-var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this, and reference the name using the group index"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this after testing"), _dec(_class = (_class2 = (_temp = class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpriteSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this, and reference the name using the group index"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Remove this after testing"), _dec(_class = (_class2 = (_temp = class EveSpriteSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -48385,7 +48995,7 @@ var EveSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     return -1;
   }
 })), _class2)) || _class);
-var EveSpriteSet = (_dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteSet", true), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSpriteSetItem"), _dec17(_class4 = (_class5 = (_temp2 = _class6 = class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveSpriteSet = (_dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpriteSet", true), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpriteSetItem"), _dec17(_class4 = (_class5 = (_temp2 = _class6 = class EveSpriteSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
@@ -48952,7 +49562,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveTurretSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTurretSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec(_class = (_class2 = (_temp = class EveTurretSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EveTurretSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTurretSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec(_class = (_class2 = (_temp = class EveTurretSetItem extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -49043,7 +49653,7 @@ var EveTurretSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     return global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
 })), _class2)) || _class);
-var EveTurretSet = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTurretSet", true), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].object, _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryResource"), _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Update parent class and replace with direct value"), _dec7(_class4 = _dec8(_class4 = (_class5 = (_temp2 = _class6 = class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveTurretSet = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTurretSet", true), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(1), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec40 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec41 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec42 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec43 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec44 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec45 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec46 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec47 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec48 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec49 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec50 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryResource"), _dec51 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Make private"), _dec52 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec53 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Update parent class and replace with direct value"), _dec7(_class4 = _dec8(_class4 = (_class5 = (_temp2 = _class6 = class EveTurretSet extends _EveObjectSet__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
@@ -49186,6 +49796,7 @@ var EveTurretSet = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
   }
   /**
    * Sets a callback which is called when the turret set fires
+   * TODO: Replace with events
    * @param {Function} func
    */
 
@@ -49561,6 +50172,10 @@ var EveTurretSet = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
           }
 
           this._fireCallbackPending = false;
+          this.emit("fired", {
+            turretSet: this,
+            turret: activeTurret
+          });
         }
       }
 
@@ -49723,10 +50338,7 @@ var EveTurretSet = (_dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Ev
     this._activeTurret = this.GetClosestTurret();
     this._state = EveTurretSet.State.FIRING;
     this._recheckTimeLeft = 2;
-
-    if (this._fireCallback) {
-      this._fireCallbackPending = true;
-    }
+    this._fireCallbackPending = true;
   }
   /**
    * Animation helper function for stopping a turret firing
@@ -50073,7 +50685,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveEffectRoot = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveEffectRoot", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Implement LOD"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveMeshOverlayEffect"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
+var EveEffectRoot = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveEffectRoot"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Implement LOD"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveMeshOverlayEffect"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveEffectRoot extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -50279,7 +50891,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveMissileWarhead = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveMissileWarhead", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Mesh"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleEmitter"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSpriteSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveMissileWarhead extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
+var EveMissileWarhead = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveMissileWarhead", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleEmitter"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSpriteSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveMissileWarhead extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -50540,7 +51152,7 @@ var EveMissileWarhead = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
     return 0;
   }
 })), _class2)) || _class) || _class);
-var EveMissile = (_dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveMissile", true), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2TranslationAdapter"), _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveMissileWarhead"), _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2CurveSet"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this deprecated?"), _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22(_class4 = _dec23(_class4 = (_class5 = (_temp2 = class EveMissile extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
+var EveMissile = (_dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveMissile", true), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].stage(2), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2TranslationAdapter"), _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveMissileWarhead"), _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this deprecated?"), _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22(_class4 = _dec23(_class4 = (_class5 = (_temp2 = class EveMissile extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -50757,7 +51369,7 @@ var EveMissile = (_dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Eve
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveObject", function() { return EveObject; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _class3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _class, _descriptor, _descriptor2, _class2, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -50767,7 +51379,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveObject"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class EveObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -50798,12 +51410,12 @@ var EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _d
 
   GetBatches(mode, accumulator) {}
   /**
-   * Global and scratch variables
-   * @type {*}
+   * Identifies the object's wrapped type'
+   * @type {Number}
    */
 
 
-}, _class3.global = {
+}, _class2.wrappedType = global__WEBPACK_IMPORTED_MODULE_0__["WrappedType"].SPACE_OBJECT, _class2.global = {
   vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_2: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
@@ -50816,21 +51428,21 @@ var EveObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _d
   mat4_1: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
   mat4_2: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create(),
   mat4_ID: global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create()
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "name", [_dec], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return "";
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "display", [_dec4], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "display", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return true;
   }
-}), _applyDecoratedDescriptor(_class2.prototype, "GetResources", [_dec5], Object.getOwnPropertyDescriptor(_class2.prototype, "GetResources"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "Update", [_dec6], Object.getOwnPropertyDescriptor(_class2.prototype, "Update"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "GetBatches", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "GetBatches"), _class2.prototype)), _class2)) || _class) || _class);
+}), _applyDecoratedDescriptor(_class.prototype, "GetResources", [_dec3], Object.getOwnPropertyDescriptor(_class.prototype, "GetResources"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "Update", [_dec4], Object.getOwnPropertyDescriptor(_class.prototype, "Update"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "GetBatches", [_dec5], Object.getOwnPropertyDescriptor(_class.prototype, "GetBatches"), _class.prototype)), _class));
 
 /***/ }),
 
@@ -50848,7 +51460,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var _EveTransform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./EveTransform */ "./eve/object/EveTransform.js");
 /* harmony import */ var _EveObject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./EveObject */ "./eve/object/EveObject.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -50860,7 +51472,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EvePlanet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePlanet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("EveTransform"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2RenderTarget"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("EveTransform"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
+var EvePlanet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EvePlanet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveTransform"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2RenderTarget"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveTransform"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class EvePlanet extends _EveObject__WEBPACK_IMPORTED_MODULE_3__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -50888,6 +51500,15 @@ var EvePlanet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePla
   }
 
   /**
+   * Rebuilds the planet
+   */
+  Rebuild() {
+    if (this._planet) {
+      this._heightDirty = true;
+      EvePlanet.MeshLoaded(this, this._planet);
+    }
+  }
+  /**
    * Creates the planet from an options object
    * @param {{}} options={}                   - an object containing the planet's options
    * @param {String} options.name             - the planet's name
@@ -50898,6 +51519,8 @@ var EvePlanet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePla
    * @param {String} options.heightMap2       - the planet's second height map
    * @param {function} [onLoaded]             - an optional callback which is fired when the planet has loaded
    */
+
+
   Create(options = {}, onLoaded) {
     var {
       name = "",
@@ -50930,6 +51553,7 @@ var EvePlanet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePla
 
     if (resPath) {
       global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(resPath, obj => {
+        obj.resPath = resPath;
         this._planet = obj;
         EvePlanet.MeshLoaded(this, obj);
         onPartLoaded();
@@ -50938,6 +51562,7 @@ var EvePlanet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePla
 
     if (atmospherePath) {
       global__WEBPACK_IMPORTED_MODULE_0__["resMan"].GetObject(atmospherePath, obj => {
+        obj.resPath = atmospherePath;
         this._atmosphere = obj;
         this.highDetail.children.push(obj);
         onPartLoaded();
@@ -51217,8 +51842,13 @@ var EvePlanet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EvePla
       }
     }
   }
+  /**
+   * Identifies the object's WrappedType
+   * @type {number}
+   */
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "highDetail", [_dec2], {
+
+}, _class3.wrappedType = global__WEBPACK_IMPORTED_MODULE_0__["WrappedType"].PLANET, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "highDetail", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -51283,7 +51913,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveShip", function() { return EveShip; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveSpaceObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveSpaceObject */ "./eve/object/EveSpaceObject.js");
-var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
+var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _class3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -51293,7 +51923,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveShip = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("EveBoosterSet"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveTurretSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_1__["EveSpaceObject"] {
+var EveShip = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveBoosterSet"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveTurretSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = _class3 = class EveShip extends _EveSpaceObject__WEBPACK_IMPORTED_MODULE_1__["EveSpaceObject"] {
   constructor(...args) {
     super(...args);
 
@@ -51456,8 +52086,13 @@ var EveShip = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip"
       }
     }
   }
+  /**
+   * Identifies the object's wrapped type
+   * @type {number}
+   */
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boosters", [_dec2], {
+
+}, _class3.wrappedType = global__WEBPACK_IMPORTED_MODULE_0__["WrappedType"].SPACE_SHIP, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boosters", [_dec2], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -51507,7 +52142,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpaceObject"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2AnimationController"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveObject"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("Tw2CurveSet"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCustomMask"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpaceObjectDecal"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveChild"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveCurveLineSet"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveLocator"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Mesh"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveMeshOverlayEffect"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EvePlaneSet"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpotlightSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveSpriteSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].listOf("EveTurretSet"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
+var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpaceObject"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2AnimationController"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCustomMask"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveLineSet"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveMeshOverlayEffect"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EvePlaneSet"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpotlightSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpriteSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveTurretSet"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveSpaceObject extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -51556,7 +52191,11 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     this._lod = 3;
     this._worldSpriteScale = 1;
     this._worldTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
+    this._offsetTransform = null;
     this._perObjectData = core__WEBPACK_IMPORTED_MODULE_1__["Tw2PerObjectData"].from(EveSpaceObject.perObjectData);
+    this._boundingBox = null;
+    this._boundingSphere = null;
+    this._boundsDirty = true;
   }
 
   /**
@@ -51572,6 +52211,62 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
     }
   }
   /**
+   * Gets the object's bounding sphere
+   * @param {sph3} out
+   * @param {boolean} force
+   * @returns {boolean}
+   */
+
+
+  GetBoundingSphere(out, force) {
+    this.RebuildBounds(force);
+    global__WEBPACK_IMPORTED_MODULE_0__["sph3"].copy(out, this._boundingSphere);
+    return this._boundsDirty;
+  }
+  /**
+   * Gets the object's bounding box
+   * @param {box3} out
+   * @param {boolean} force
+   * @returns {boolean}
+   */
+
+
+  GetBoundingBox(out, force) {
+    this.RebuildBounds(force);
+    global__WEBPACK_IMPORTED_MODULE_0__["box3"].copy(out, this._boundingBox);
+    return this._boundsDirty;
+  }
+  /**
+   * Rebuilds the object's bounds
+   * @param {boolean} force
+   */
+
+
+  RebuildBounds(force = this._boundsDirty) {
+    if (!this._boundingSphere) {
+      force = true; // Don't use the built in bounding sphere as it isn't geometrically correct
+
+      this._boundingSphere = global__WEBPACK_IMPORTED_MODULE_0__["sph3"].create();
+      this._boundingBox = global__WEBPACK_IMPORTED_MODULE_0__["sph3"].create();
+    }
+
+    var isGood = this.mesh && this.mesh.IsGood();
+
+    if (force) {
+      if (isGood) {
+        this.mesh.geometryResource.GetBoundingBox(this._boundingBox);
+      } else {
+        global__WEBPACK_IMPORTED_MODULE_0__["box3"].empty(this._boundingBox);
+      } // TODO: Cycle through all children and update bounds...
+
+
+      global__WEBPACK_IMPORTED_MODULE_0__["sph3"].fromBox3(this._boundingSphere, this._boundingBox);
+    }
+
+    this._boundsDirty = isGood;
+    return isGood;
+  }
+  /**
    * Sets the object's local transform
    * @param {mat4} m
    * @param {mat4} offset
@@ -51580,7 +52275,15 @@ var EveSpaceObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 
   SetTransform(m, offset) {
     if (offset) {
-      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.transform, m, offset);
+      if (!this._offsetTransform) {
+        this._offsetTransform = global__WEBPACK_IMPORTED_MODULE_0__["mat4"].clone(offset);
+      } else {
+        global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this._offsetTransform, offset);
+      }
+    }
+
+    if (this._offsetTransform) {
+      global__WEBPACK_IMPORTED_MODULE_0__["mat4"].multiply(this.transform, m, this._offsetTransform);
     } else {
       global__WEBPACK_IMPORTED_MODULE_0__["mat4"].copy(this.transform, m);
     }
@@ -52157,7 +52860,7 @@ var Modifier = {
   EVE_SIMPLE_HALO: 102,
   EVE_CAMERA_ROTATION: 103
 };
-var EveTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTransform", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(Modifier), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2ObserverLocal"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveParticleEmitter"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveParticleSystem"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveTransform extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
+var EveTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTransform"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(["Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh"]), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(Modifier), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ObserverLocal"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveParticleEmitter"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveParticleSystem"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec(_class = (_class2 = (_temp = _class3 = class EveTransform extends _EveObject__WEBPACK_IMPORTED_MODULE_2__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -52802,7 +53505,6 @@ var Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
     this.resMan = new _engine__WEBPACK_IMPORTED_MODULE_2__["Tw2ResMan"](this);
     this.device = new _engine__WEBPACK_IMPORTED_MODULE_2__["Tw2Device"](this);
     this._store = {
-      black: new Map(),
       variable: new Map(),
       extension: new Map(),
       class: new Map(),
@@ -52873,10 +53575,20 @@ var Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
   Initialize(options = {}) {
     this.Register(options);
-    this.device.CreateDevice(options.canvas, options.glParams);
+    var {
+      render,
+      glParams,
+      canvas,
+      canvas2d
+    } = options;
+    this.device.CreateDevice({
+      canvas,
+      canvas2d,
+      glParams
+    });
 
-    if (options.render) {
-      this.on("tick", options.render);
+    if (render) {
+      this.on("tick", render);
 
       var tick = () => {
         this.RequestAnimationFrame(tick);
@@ -53302,45 +54014,6 @@ var Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
     });
   }
   /**
-   * Checks if there is a black definition for a given class/ function name
-   * @param name
-   * @returns {*}
-   */
-
-
-  HasBlack(name) {
-    return hasStoreKey(this, "black", name, {
-      isClassName: true
-    });
-  }
-  /**
-   * Gets a black definition for a given class/ function name
-   * @param name
-   * @returns {*}
-   */
-
-
-  GetBlack(name) {
-    return getStoreKey(this, "black", name, {
-      isClassName: true
-    });
-  }
-  /**
-   * Sets a black definition for a given class/ function name
-   * @param {String} name
-   * @param {Function|Array} values
-   * @returns {Map}
-   */
-
-
-  SetBlack(name, values) {
-    if (Object(_util__WEBPACK_IMPORTED_MODULE_4__["isFunction"])(values)) values = values(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__);
-    return setStoreKey(this, "black", name, values, {
-      isValue: _util__WEBPACK_IMPORTED_MODULE_4__["isArray"],
-      onBeforeSet: value => new Map(value)
-    });
-  }
-  /**
    * Checks if a class exists
    * @param name
    * @returns {*}
@@ -53380,10 +54053,6 @@ var Tw2Library = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["singleton"])(_class 
 
     if ("DEBUG_ENABLED" in Value) {
       Value.DEBUG_ENABLED = this._debug;
-    }
-
-    if (Value.black) {
-      this.SetBlack(name, Value.black);
     }
 
     return Value;
@@ -53954,11 +54623,11 @@ var Tw2BaseClass = Object(_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"])(_class
   }
   /**
    *
-   * @type {*}
+   * @type {null|String}
    */
 
 
-}, _class3.black = null, _class3.__category = null, _class3.__keys = null, _temp), (_applyDecoratedDescriptor(_class2, "set", [_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"]], Object.getOwnPropertyDescriptor(_class2, "set"), _class2), _applyDecoratedDescriptor(_class2, "get", [_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"]], Object.getOwnPropertyDescriptor(_class2, "get"), _class2)), _class2)) || _class;
+}, _class3.__category = null, _class3.__keys = null, _temp), (_applyDecoratedDescriptor(_class2, "set", [_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"]], Object.getOwnPropertyDescriptor(_class2, "set"), _class2), _applyDecoratedDescriptor(_class2, "get", [_meta__WEBPACK_IMPORTED_MODULE_0__["abstract"]], Object.getOwnPropertyDescriptor(_class2, "get"), _class2)), _class2)) || _class;
 /**
  * Fires a callback on an object's child lists and types, and no further
  * @param {*} obj
@@ -54177,7 +54846,7 @@ class Tw2EventEmitter {
 
 
     if (!events[eventName].has(listener) && this.constructor.onListener) {
-      if (this.constructor.onListener(eventName, listener, context) && once) {
+      if (this.constructor.onListener(this, eventName, listener, context) && once) {
         return this;
       }
     }
@@ -54234,68 +54903,6 @@ class Tw2EventEmitter {
       if (events[eventName].size === 0) {
         Reflect.deleteProperty(events, eventName);
       }
-    }
-
-    return this;
-  }
-  /**
-   * Binds an event to another event emitter
-   * @param {Tw2EventEmitter} target  - The target event emitter
-   * @param {String} eventName        - The event name
-   * @param {Function} [func]         - An optional function to call before emitting the event on the child
-   * @returns {Tw2EventEmitter}
-   */
-
-
-  bind(target, eventName, func) {
-    function listener(...args) {
-      if (func) func.call(target, ...args);
-      target.emit(eventName, ...args);
-    }
-
-    listener._target = target;
-    return this.on(eventName, listener);
-  }
-  /**
-   * Unbinds an event from another event emitter
-   * @param {Tw2EventEmitter|String} target
-   * @param {String} [eventName="*"]
-   */
-
-
-  unbind(target, eventName) {
-    var _this = this;
-
-    if (!target) return this;
-    var events = PRIVATE.get(this);
-    if (events) return; // Unbind all events
-
-    if (eventName === "*") {
-      var _loop = function (e) {
-        if (events.hasOwnProperty(e)) {
-          events[e].forEach((value, listener) => {
-            if (listener._target === target) {
-              _this.off(e, listener);
-            }
-          });
-        }
-      };
-
-      for (var e in events) {
-        _loop(e);
-      }
-
-      return this;
-    }
-
-    eventName = eventName.toLowerCase();
-
-    if (eventName in events) {
-      events[eventName].forEach((value, listener) => {
-        if (listener._target === target) {
-          this.off(eventName, listener);
-        }
-      });
     }
 
     return this;
@@ -54555,15 +55162,20 @@ __webpack_require__.r(__webpack_exports__);
 /*!**************************************!*\
   !*** ./global/engine/Tw2Constant.js ***!
   \**************************************/
-/*! exports provided: AttachmentType, Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
+/*! exports provided: TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, Type, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TextureQuality", function() { return TextureQuality; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ShaderQuality", function() { return ShaderQuality; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResourceUnloadPolicy", function() { return ResourceUnloadPolicy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LodSettings", function() { return LodSettings; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TurretState", function() { return TurretState; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AnimationState", function() { return AnimationState; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return AttachmentType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WrappedType", function() { return WrappedType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return Type; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TypeCategory", function() { return TypeCategory; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TypeTypeCategory", function() { return TypeTypeCategory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TypeLength", function() { return TypeLength; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GL_COLOR_BUFFER_BIT", function() { return GL_COLOR_BUFFER_BIT; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GL_DEPTH_BUFFER_BIT", function() { return GL_DEPTH_BUFFER_BIT; });
@@ -54918,11 +55530,78 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VendorExitFullScreen", function() { return VendorExitFullScreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VendorGetFullScreenElement", function() { return VendorGetFullScreenElement; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VendorWebglPrefixes", function() { return VendorWebglPrefixes; });
+/**
+ * Values for textureQuality option that can be passed to ccpwgl.initialize.
+ */
+var TextureQuality = {
+  HIGH: 0,
+  MEDIUM: 1,
+  LOW: 2
+};
+/**
+ * Values for textureQuality option that can be passed to ccpwgl.initialize.
+ */
+
+var ShaderQuality = {
+  HIGH: "hi",
+  LOW: "lo"
+};
+/**
+ * Resource unload policty. Controls how cached resources are evicted from
+ * memory. See ccpwgl.getResourceUnloadPolicy and ccpwgl.setResourceUnloadPolicy.
+ * When set to MANUAL you need to call ccpwgl.clearCachedResources function manually
+ * from time to time to clear resources from memory cache. When set to USAGE_BASED
+ * (default) resources are automatically removed from the cache if they are not used
+ * for a specified period of time.
+ * It is preferable to use USAGE_BASED, but occasionally this will unload resources
+ * when you don't want to (for example if you temporary hide a ship). In such cases
+ * you will have to use MANUAL policy and call ccpwgl.clearCachedResources when
+ * you know that all resources you need are loaded (see ccpwgl.isLoading).
+ */
+
+var ResourceUnloadPolicy = {
+  MANUAL: 0,
+  USAGE_BASED: 1
+};
+/**
+ * Scene LOD settings: with LOD_ENABLED, scene will not try to render ships/objects that
+ * are outside view frustum. Additionally it will hide some parts of ship (like decals)
+ * for ships that too far away. Enabling LOD will help performance significantly for
+ * scenes with a large number of objects. Defaults to LOD_DISABLED for compatibility.
+ */
+
+var LodSettings = {
+  LOD_DISABLED: 0,
+  LOD_ENABLED: 1
+};
+/**
+ * Turret states
+ */
+
+var TurretState = {
+  IDLE: 0,
+  OFFLINE: 1,
+  FIRING: 2
+};
+/**
+ * Ship siege state
+ */
+
+var AnimationState = {
+  NORMAL: 0,
+  SIEGE: 1,
+  NORMAL_TO_SIEGE: 100,
+  SIEGE_TO_NORMAL: 101,
+  WARP: 2,
+  NORMAL_TO_WARP: 200,
+  WARP_TO_NORMAL: 201
+};
 /*
 
     Attachment types
 
  */
+
 var AttachmentType = {
   GENERIC: 0,
   SPRITE_SET: 1,
@@ -54931,12 +55610,25 @@ var AttachmentType = {
   TURRET_SET: 4,
   BOOSTER_SET: 5,
   MESH_OVERLAY_EFFECT: 10,
+  LINE_SET: 11,
   SPRITE_LINE_SET: 20,
   BANNER: 21,
   TRAIL_SET: 22,
   BOOSTER_SET_2: 23,
-  HAZE_SET: 213,
-  LINE_SET: 100
+  HAZE_SET: 24
+};
+/*
+
+Wrapped type
+
+ */
+
+var WrappedType = {
+  SPACE_SCENE: 0,
+  SPACE_OBJECT: 1,
+  SPACE_SHIP: 2,
+  PLANET: 3,
+  LENS_FLARE: 4
 };
 /*
 
@@ -54969,44 +55661,6 @@ var Type = {
   MATRIX4: 61,
   INDEX_BUFFER: 62,
   ENUM: 70
-};
-var TypeCategory = {
-  UNKNOWN: 0,
-  BOOLEAN: 1,
-  STRING: 2,
-  NUMBER: 3,
-  OBJECT: 4,
-  PLAIN: 5,
-  LIST: 6,
-  ARRAY: 7,
-  TYPED: 8
-};
-var TypeTypeCategory = {
-  [Type.UNKNOWN]: TypeCategory.UNKNOWN,
-  [Type.BOOLEAN]: TypeCategory.BOOLEAN,
-  [Type.STRING]: TypeCategory.STRING,
-  [Type.PATH]: TypeCategory.STRING,
-  [Type.EXPRESSION]: TypeCategory.STRING,
-  [Type.BYTE]: TypeCategory.NUMBER,
-  [Type.UINT]: TypeCategory.NUMBER,
-  [Type.USHORT]: TypeCategory.NUMBER,
-  [Type.FLOAT]: TypeCategory.NUMBER,
-  [Type.ENUM]: TypeCategory.NUMBER,
-  [Type.OBJECT]: TypeCategory.OBJECT,
-  [Type.RAW]: TypeCategory.OBJECT,
-  [Type.LIST]: TypeCategory.LIST,
-  [Type.PLAIN]: TypeCategory.PLAIN,
-  [Type.ARRAY]: TypeCategory.ARRAY,
-  [Type.VECTOR]: TypeCategory.TYPED,
-  [Type.VECTOR2]: TypeCategory.TYPED,
-  [Type.VECTOR3]: TypeCategory.TYPED,
-  [Type.VECTOR4]: TypeCategory.TYPED,
-  [Type.COLOR]: TypeCategory.TYPED,
-  [Type.QUATERNION]: TypeCategory.TYPED,
-  [Type.MATRIX3]: TypeCategory.TYPED,
-  [Type.MATRIX4]: TypeCategory.TYPED,
-  [Type.INDEX_BUFFER]: TypeCategory.TYPED,
-  [Type.ENUM]: TypeCategory.NUMBER
 };
 var TypeLength = {
   [Type.VECTOR2]: 2,
@@ -55687,6 +56341,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     this.gl = null;
     this.xr = null;
     this.tw2 = null;
+    this.canvas2d = null;
     this.dt = 0;
     this.frameCounter = 0;
     this.startTime = null;
@@ -55714,7 +56369,7 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     this.enableAntialiasing = true;
     this.enableWebgl2 = true;
     this.enableWebxr = true;
-    this.alphaBlendBackBuffer = true;
+    this.alphaBlendBackBuffer = false;
     this.antialiasing = true;
     this.msaaSamples = 0;
     this.wrapModes = [];
@@ -55774,22 +56429,44 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
   }
   /**
    * Creates webgl Device
-   * @param {HTMLCanvasElement} canvas - The html canvas to create a webgl rendering context from
-   * @param {{}} [params]              - Optional gl parameters
-   * @param {Boolean} [params.webgl2]  - Optional flag to enable a webgl2 rendering context
+   * @params {*} options
    * @throws ErrWebglContext           - When unable to create a webgl context
    */
 
 
-  CreateDevice(canvas, params = {}) {
+  CreateDevice({
+    canvas,
+    canvas2d,
+    glParams = {}
+  } = {}) {
     this.gl = null;
     this.effectDir = "/effect.gles2/";
-    params.alpha = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "alpha", true);
+    var params = Object.assign({}, glParams);
+    params.alpha = Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "alpha", false);
     params.webgl2 = this.enableWebgl2;
     params.xrCompatible = this.enableWebxr;
     params.antialiasing = this.enableAntialiasing ? Object(_util__WEBPACK_IMPORTED_MODULE_1__["get"])(params, "antialiasing", true) : false;
     var gl = this.gl = Tw2Device.CreateContext(params, canvas);
-    this.msg("debug", "Webgl".concat(this.glVersion, " context created"));
+    this.msg("debug", "Webgl".concat(this.glVersion, " context created")); // Allow for a 2d canvas
+
+    try {
+      if (canvas2d) {
+        if (Object(_util__WEBPACK_IMPORTED_MODULE_1__["isString"])(canvas2d)) {
+          canvas2d = document.getElementById(canvas2d);
+        }
+
+        this.canvas2d = {
+          canvas: canvas2d,
+          context: canvas2d.getContext("2d"),
+          enabled: true,
+          autoResize: true,
+          OnResize: null,
+          OnDraw: null
+        };
+      }
+    } catch (err) {
+      throw new Error("Invalid 2d canvas");
+    }
 
     var returnFalse = () => false,
         returnTrue = () => true;
@@ -55905,20 +56582,32 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
     }
     */
     else {
-        this.canvas.width = Math.floor(this.canvas.offsetWidth * this.viewportPixelRatio);
-        this.canvas.height = Math.floor(this.canvas.offsetHeight * this.viewportPixelRatio);
+        this.canvas.width = Math.floor(this.canvas.clientWidth * this.viewportPixelRatio);
+        this.canvas.height = Math.floor(this.canvas.clientHeight * this.viewportPixelRatio);
       }
 
     this.viewportWidth = this.canvas.width;
     this.viewportHeight = this.canvas.height;
     this.viewportAspect = this.viewportWidth / this.viewportHeight;
-    this.tw2.SetVariableValue("ViewportSize", [this.viewportWidth, this.viewportHeight, this.viewportWidth, this.viewportHeight]);
-    this.emit("resized", {
+    var event = {
       width: this.viewportWidth,
       height: this.viewportHeight,
-      aspect: this.viewportAspect,
-      canvas: this.canvas
-    });
+      aspect: this.viewportAspect
+    }; // Handle 2d canvas
+
+    if (this.canvas2d && this.canvas2d.enabled) {
+      if (this.canvas2d.autoResize) {
+        this.canvas2d.canvas.width = this.viewportWidth;
+        this.canvas2d.canvas.height = this.viewportHeight;
+      }
+
+      if (this.canvas2d.OnResize) {
+        this.canvas2d.OnResize(event);
+      }
+    }
+
+    this.tw2.SetVariableValue("ViewportSize", [this.viewportWidth, this.viewportHeight, this.viewportWidth, this.viewportHeight]);
+    this.emit("resized", event);
   }
   /**
    * Gets the current time
@@ -55952,7 +56641,11 @@ class Tw2Device extends _class_Tw2EventEmitter__WEBPACK_IMPORTED_MODULE_4__["Tw2
    */
 
 
-  EndFrame() {}
+  EndFrame() {
+    if (this.canvas2d && this.canvas2d.enabled && this.canvas2d.OnDraw) {
+      this.canvas2d.OnDraw();
+    }
+  }
   /**
    * Sets World transform matrix
    * @param {mat4} matrix
@@ -57604,7 +58297,7 @@ Tw2ResMan.__category = "Resource Manager";
 /*!********************************!*\
   !*** ./global/engine/index.js ***!
   \********************************/
-/*! exports provided: Tw2Device, Tw2ResMan, Tw2Logger, AttachmentType, Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
+/*! exports provided: Tw2Device, Tw2ResMan, Tw2Logger, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, Type, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57619,13 +58312,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Logger", function() { return _Tw2Logger__WEBPACK_IMPORTED_MODULE_2__["Tw2Logger"]; });
 
 /* harmony import */ var _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextureQuality", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TextureQuality"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ShaderQuality", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["ShaderQuality"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ResourceUnloadPolicy", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["ResourceUnloadPolicy"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LodSettings", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["LodSettings"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TurretState", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TurretState"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AnimationState", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AnimationState"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AttachmentType"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrappedType", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["WrappedType"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeCategory", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeCategory"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeTypeCategory", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeTypeCategory"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeLength", function() { return _Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeLength"]; });
 
@@ -58346,7 +59049,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************!*\
   !*** ./global/index.js ***!
   \*************************/
-/*! exports provided: meta, util, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, AttachmentType, Type, TypeCategory, TypeTypeCategory, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device */
+/*! exports provided: meta, util, Tw2BaseClass, Tw2EventEmitter, Tw2Notifications, Tw2Schema, TextureQuality, ShaderQuality, ResourceUnloadPolicy, LodSettings, TurretState, AnimationState, AttachmentType, WrappedType, Type, TypeLength, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, GL_STENCIL_BUFFER_BIT, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_INT, GL_FLOAT, GL_HALF_FLOAT_OES, GL_HALF_FLOAT, GL_DEPTH_COMPONENT16, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT32F, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3, GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_TYPE_LENGTH, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_DEPTH_COMPONENT, GL_ALPHA, GL_RGB, GL_RGBA, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8_WEBGL, GL_R8, GL_R16F, GL_R32F, GL_R8UI, GL_RG8, GL_RG16F, GL_RG32F, GL_RGB8, GL_SRGB8, GL_RGB565, GL_R11F_G11F_B10F, GL_RGB9_E5, GL_RGB16F, GL_RGB32F, GL_RGB8UI, GL_RGBA8, GL_RGB5_A1, GL_RGBA16F, GL_RGBA32F, GL_RGBA8UI, GL_RGBA16I, GL_RGBA16UI, GL_RGBA32I, GL_RGBA32UI, GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR, GL_REPEAT, GL_CLAMP_TO_EDGE, GL_MIRRORED_REPEAT, GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA_SATURATE, GL_CONSTANT_COLOR, GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA, GL_VERTEX_SHADER, GL_FRAGMENT_SHADER, GL_FRONT, GL_BACK, GL_FRONT_AND_BACK, GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL, GL_ALWAYS, GL_KEEP, GL_REPLACE, GL_INCR, GL_DECR, GL_INCR_WRAP, GL_DECR_WRAP, GL_INVERT, GL_STREAM_DRAW, GL_STATIC_DRAW, GL_DYNAMIC_DRAW, GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP, GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_CW, GL_CCW, GL_CULL_FACE, GL_DEPTH_TEST, GL_BLEND, RM_ANY, RM_OPAQUE, RM_DECAL, RM_TRANSPARENT, RM_ADDITIVE, RM_DEPTH, RM_FULLSCREEN, RM_PICKABLE, RM_DISTORTION, RS_ZENABLE, RS_FILLMODE, RS_SHADEMODE, RS_ZWRITEENABLE, RS_ALPHATESTENABLE, RS_LASTPIXEL, RS_SRCBLEND, RS_DESTBLEND, RS_CULLMODE, RS_ZFUNC, RS_ALPHAREF, RS_ALPHAFUNC, RS_DITHERENABLE, RS_ALPHABLENDENABLE, RS_FOGENABLE, RS_SPECULARENABLE, RS_FOGCOLOR, RS_FOGTABLEMODE, RS_FOGSTART, RS_FOGEND, RS_FOGDENSITY, RS_RANGEFOGENABLE, RS_STENCILENABLE, RS_STENCILFAIL, RS_STENCILZFAIL, RS_STENCILPASS, RS_STENCILFUNC, RS_STENCILREF, RS_STENCILMASK, RS_STENCILWRITEMASK, RS_TEXTUREFACTOR, RS_WRAP0, RS_WRAP1, RS_WRAP2, RS_WRAP3, RS_WRAP4, RS_WRAP5, RS_WRAP6, RS_WRAP7, RS_CLIPPING, RS_LIGHTING, RS_AMBIENT, RS_FOGVERTEXMODE, RS_COLORVERTEX, RS_LOCALVIEWER, RS_NORMALIZENORMALS, RS_DIFFUSEMATERIALSOURCE, RS_SPECULARMATERIALSOURCE, RS_AMBIENTMATERIALSOURCE, RS_EMISSIVEMATERIALSOURCE, RS_VERTEXBLEND, RS_CLIPPLANEENABLE, RS_POINTSIZE, RS_POINTSIZE_MIN, RS_POINTSPRITEENABLE, RS_POINTSCALEENABLE, RS_POINTSCALE_A, RS_POINTSCALE_B, RS_POINTSCALE_C, RS_MULTISAMPLEANTIALIAS, RS_MULTISAMPLEMASK, RS_PATCHEDGESTYLE, RS_DEBUGMONITORTOKEN, RS_POINTSIZE_MAX, RS_INDEXEDVERTEXBLENDENABLE, RS_COLORWRITEENABLE, RS_TWEENFACTOR, RS_BLENDOP, RS_POSITIONDEGREE, RS_NORMALDEGREE, RS_SCISSORTESTENABLE, RS_SLOPESCALEDEPTHBIAS, RS_ANTIALIASEDLINEENABLE, RS_TWOSIDEDSTENCILMODE, RS_CCW_STENCILFAIL, RS_CCW_STENCILZFAIL, RS_CCW_STENCILPASS, RS_CCW_STENCILFUNC, RS_COLORWRITEENABLE1, RS_COLORWRITEENABLE2, RS_COLORWRITEENABLE3, RS_BLENDFACTOR, RS_SRGBWRITEENABLE, RS_DEPTHBIAS, RS_SEPARATEALPHABLENDENABLE, RS_SRCBLENDALPHA, RS_DESTBLENDALPHA, RS_BLENDOPALPHA, CULL_NONE, CULL_CW, CULL_CCW, CMP_NEVER, CMP_LESS, CMP_EQUAL, CMP_LEQUAL, CMP_GREATER, CMP_NOTEQUAL, CMP_GREATEREQUAL, CMP_ALWAYS, BLEND_ZERO, BLEND_ONE, BLEND_SRCCOLOR, BLEND_INVSRCCOLOR, BLEND_SRCALPHA, BLEND_INVSRCALPHA, BLEND_DESTALPHA, BLEND_INVDESTALPHA, BLEND_DESTCOLOR, BLEND_INVDESTCOLOR, BLEND_SRCALPHASAT, BLEND_BOTHSRCALPHA, BLEND_BOTHINVSRCALPHA, BLEND_BLENDFACTOR, BLEND_INVBLENDFACTOR, BLENDOP_ADD, BLENDOP_SUBTRACT, BLENDOP_REVSUBTRACT, BLENDOP_MIN, BLENDOP_MAX, TF_ALPHA, TF_LUMINANCE, TF_LUMINANCE_ALPHA, TF_RGB, TF_RGBA, TF_RED, TF_R, TF_RG, TF_RED_INTEGER, TF_R_INTEGER, TF_RG_INTEGER, TF_RGB_INTEGER, TF_RGBA_INTEGER, TT_UNSIGNED_BYTE, TT_UNSIGNED_INT, TT_FLOAT, TT_HALF_FLOAT, TT_BYTE, TT_SHORT, TT_UNSIGNED_SHORT, TT_INT, TT_UNSIGNED_INTEGER, TT_UNSIGNED_SHORT_4_4_4_4, TT_UNSIGNED_SHORT_5_5_5_1, TT_UNSIGNED_SHORT_5_6_5, TT_UNSIGNED_INT_2_10_10_10_REV, TT_UNSIGNED_INT_24_8, TT_UNSIGNED_INT_10F_11F_11F_REV, TT_UNSIGNED_INT_5_9_9_9_REV, TT_FLOAT_32_UNSIGNED_INT_24_8_REV, WrapModes, BlendTable, FilterMode, MipFilterMode, DDS_MAGIC, DDSD_CAPS, DDSD_HEIGHT, DDSD_WIDTH, DDSD_PITCH, DDSD_PIXELFORMAT, DDSD_MIPMAPCOUNT, DDSD_LINEARSIZE, DDSD_DEPTH, DDSCAPS_COMPLEX, DDSCAPS_MIPMAP, DDSCAPS_TEXTURE, DDSCAPS2_CUBEMAP, DDSCAPS2_CUBEMAP_POSITIVEX, DDSCAPS2_CUBEMAP_NEGATIVEX, DDSCAPS2_CUBEMAP_POSITIVEY, DDSCAPS2_CUBEMAP_NEGATIVEY, DDSCAPS2_CUBEMAP_POSITIVEZ, DDSCAPS2_CUBEMAP_NEGATIVEZ, DDSCAPS2_VOLUME, DDPF_ALPHAPIXELS, DDPF_ALPHA, DDPF_FOURCC, DDPF_RGB, DDPF_YUV, DDPF_LUMINANCE, DDS_HEADER_LENGTH_INT, DDS_HEADER_OFFSET_MAGIC, DDS_HEADER_OFFSET_SIZE, DDS_HEADER_OFFSET_FLAGS, DDS_HEADER_OFFSET_HEIGHT, DDS_HEADER_OFFSET_WIDTH, DDS_HEADER_OFFSET_MIPMAP_COUNT, DDS_HEADER_OFFSET_PF_FLAGS, DDS_HEADER_OFFSET_PF_FOURCC, DDS_HEADER_OFFSET_RGB_BPP, DDS_HEADER_OFFSET_R_MASK, DDS_HEADER_OFFSET_G_MASK, DDS_HEADER_OFFSET_B_MASK, DDS_HEADER_OFFSET_A_MASK, DDS_HEADER_OFFSET_CAPS1, DDS_HEADER_OFFSET_CAPS2, DDS_HEADER_OFFSET_CAPS3, DDS_HEADER_OFFSET_CAPS4, DDS_HEADER_OFFSET_DXGI_FORMAT, FOURCC_DXT1, FOURCC_DXT5, FOURCC_DXT3, FOURCC_DXT10, FOURCC_D3DFMT_R16G16B16A16F, FOURCC_D3DFMT_R32G32B32A32F, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_B8G8R8X8_UNORM, VendorRequestAnimationFrame, VendorCancelAnimationFrame, VendorRequestFullScreen, VendorExitFullScreen, VendorGetFullScreenElement, VendorWebglPrefixes, num, vec2, vec3, vec4, quat, mat3, mat4, noise, curve, box3, tri3, lne3, pln, ray3, sph3, tw2, resMan, device */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -58365,13 +59068,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Tw2Schema", function() { return _class__WEBPACK_IMPORTED_MODULE_2__["Tw2Schema"]; });
 
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextureQuality", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TextureQuality"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ShaderQuality", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["ShaderQuality"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ResourceUnloadPolicy", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["ResourceUnloadPolicy"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LodSettings", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["LodSettings"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TurretState", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TurretState"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AnimationState", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AnimationState"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AttachmentType", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["AttachmentType"]; });
 
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrappedType", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["WrappedType"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeCategory", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeCategory"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeTypeCategory", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeTypeCategory"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TypeLength", function() { return _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["TypeLength"]; });
 
@@ -59248,7 +59961,6 @@ box3.clone = function (a) {
   out[3] = a[3];
   out[4] = a[4];
   out[5] = a[5];
-  out[6] = a[6];
   return out;
 };
 /**
@@ -59318,7 +60030,6 @@ box3.copy = function (out, a) {
   out[3] = a[3];
   out[4] = a[4];
   out[5] = a[5];
-  out[6] = a[6];
   return out;
 };
 /**
@@ -62149,6 +62860,46 @@ num.toHalfFloat = function () {
   };
 }();
 /**
+ * Converts linear color to rgba/rgb color
+ * @param {Number} a
+ * @returns {Number}
+ */
+
+
+num.colorFromLinear = function (a) {
+  return Math.min(Math.floor(a * 255), 255);
+};
+/**
+ * Converts linear color to rgba/rgb color
+ * @param {Number} a
+ * @returns {Number}
+ */
+
+
+num.linearFromColor = function (a) {
+  return a / 255;
+};
+/**
+ * Converts linear color to hex string
+ * @param {Number} a
+ * @returns {String}
+ */
+
+
+num.hexFromLinear = function (a) {
+  return num.hexFromColor(num.colorFromLinear(a));
+};
+/**
+ * Converts rgb/rgba color to hex string
+ * @param {Number} a
+ * @returns {String}
+ */
+
+
+num.hexFromColor = function (a) {
+  return (a | 1 << 8).toString(16).slice(1);
+};
+/**
  * Unwraps degrees
  *
  * @param {number} d
@@ -64042,6 +64793,56 @@ sph3.fromMat4 = function (out, m) {
   out[3] = _mat4__WEBPACK_IMPORTED_MODULE_2__["mat4"].maxScaleOnAxis(m);
   return out;
 };
+
+var aPosition, bPosition, toAPosition, toBPosition, center;
+/**
+ * Gets the union of two spheres
+ * @param {sph3} out
+ * @param {sph3} a
+ * @param {sph3} b
+ * @returns {sph3} out
+ */
+
+sph3.union = function (out, a, b) {
+  if (!aPosition) {
+    aPosition = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    bPosition = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    toAPosition = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+    toBPosition = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  }
+
+  var aRadius = sph3.extract(a, aPosition),
+      bRadius = sph3.extract(b, bPosition);
+  _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].subtract(toBPosition, bPosition, aPosition);
+  var separation = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].length(toBPosition);
+
+  if (aRadius >= separation + bRadius) {
+    return out === a ? out : sph3.copy(out, a);
+  }
+
+  if (bRadius >= separation + aRadius) {
+    return out === b ? out : sph3.clone(out, b);
+  }
+
+  if (!center) center = _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  var halfDistance = (aRadius + separation + bRadius) * 0.5;
+  _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].scale(center, toBPosition, (-aRadius + halfDistance) / separation);
+  _vec3__WEBPACK_IMPORTED_MODULE_0__["vec3"].add(center, aPosition, center);
+  return sph3.fromPositionRadius(out, center, halfDistance);
+};
+/**
+ * Gets the union of a sphere and a sphere's components
+ * @param {sph3} out
+ * @param {sph3} a
+ * @param {vec3} position
+ * @param {Number} radius
+ * @returns {sph3}
+ */
+
+
+sph3.unionPositionRadius = function (out, a, position, radius) {
+  return sph3.union(out, a, sph3.fromPositionRadius(sph3_0, position, radius));
+};
 /**
  * Gets a point clamped to the sphere
  *
@@ -65545,6 +66346,45 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unwrapRadians = function (out, a)
   out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].unwrapRadians(a[2]);
   return out;
 };
+/**
+ * Converts from linear color to rgba
+ * @param {vec3} out
+ * @param {vec3} linear
+ * @param {boolean} [denormalizeAlpha]
+ * @returns {vec3}
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].toRGB = function (out, linear) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].colorFromLinear(linear[0]);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].colorFromLinear(linear[1]);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].colorFromLinear(linear[2]);
+  return out;
+};
+/**
+ * Converts to linear color from rgba
+ * @param {vec3} out
+ * @param {vec3} rgb
+ * @returns {vec3} out
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].fromRGB = function (out, rgb) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgb[0]);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgb[1]);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgb[2]);
+  return out;
+};
+/**
+ * Gets hex value from linear color
+ * @param {vec4} linear
+ * @returns {string} hex value
+ */
+
+
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].hex = function (linear) {
+  return "#" + _num__WEBPACK_IMPORTED_MODULE_1__["num"].hexFromLinear(linear[0]) + _num__WEBPACK_IMPORTED_MODULE_1__["num"].hexFromLinear(linear[1]) + _num__WEBPACK_IMPORTED_MODULE_1__["num"].hexFromLinear(linear[2]);
+};
 
 /***/ }),
 
@@ -65559,6 +66399,8 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec3"].unwrapRadians = function (out, a)
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gl_matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gl-matrix */ "../node_modules/gl-matrix/lib/gl-matrix.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vec4", function() { return gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"]; });
+
+/* harmony import */ var _num__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./num */ "./global/math/num.js");
 
 
 
@@ -65652,168 +66494,64 @@ gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].subtractScalar = function (out, a
   out[3] = a[3] - s;
   return out;
 };
-
-/***/ }),
-
-/***/ "./global/meta/@black.js":
-/*!*******************************!*\
-  !*** ./global/meta/@black.js ***!
-  \*******************************/
-/*! exports provided: listOf, objectOf, plainOf, rawOf, list, object, plain, unknown, boolean, string, path, expression, float, uint, byte, ushort, raw, array, vector2, vector3, vector4, color, quaternion, matrix4, indexBuffer, enums, fromList, struct */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "listOf", function() { return listOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "objectOf", function() { return objectOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plainOf", function() { return plainOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rawOf", function() { return rawOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "list", function() { return list; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return unknown; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "path", function() { return path; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return expression; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "float", function() { return float; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return uint; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return byte; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return ushort; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return raw; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "array", function() { return array; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return vector2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return vector3; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector4", function() { return vector4; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "color", function() { return color; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "quaternion", function() { return quaternion; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return matrix4; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return indexBuffer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "enums", function() { return enums; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromList", function() { return fromList; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "struct", function() { return struct; });
-/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global/engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _util_type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../util/type */ "./global/util/type.js");
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/**
+ * Converts from linear color to rgba
+ * @param {vec4} out
+ * @param {vec4} linear
+ * @param {boolean} [denormalizeAlpha]
+ * @returns {vec4}
+ */
 
 
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].toRGBA = function (out, linear, denormalizeAlpha) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].colorFromLinear(linear[0]);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].colorFromLinear(linear[1]);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].colorFromLinear(linear[2]);
+  out[3] = denormalizeAlpha ? _num__WEBPACK_IMPORTED_MODULE_1__["num"].colorFromLinear(linear[3]) : linear[3];
+  return out;
+};
+/**
+ * Converts to linear color from rgba
+ * @param {vec4} out
+ * @param {vec4} rgba
+ * @param {boolean} [denormalizedAlpha]
+ * @returns {vec4} out
+ */
 
 
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromRGBA = function (out, rgba, denormalizedAlpha) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgba[0]);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgba[1]);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgba[2]);
+  out[3] = denormalizedAlpha ? _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgba[3]) : rgba[3];
+  return out;
+};
+/**
+ * Converts to linear color from rgb
+ * @param {vec4} out
+ * @param {vec3} rgb
+ * @param {Number} [alpha=1]
+ * @returns {vec4} out
+ */
 
 
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].fromRGB = function (out, rgb, alpha = 1) {
+  out[0] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgb[0]);
+  out[1] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgb[1]);
+  out[2] = _num__WEBPACK_IMPORTED_MODULE_1__["num"].linearFromColor(rgb[2]);
+  out[3] = alpha;
+  return out;
+};
+/**
+ * Gets hex value from linear color
+ * @param {vec4} linear
+ * @returns {string} hex value
+ */
 
-function blackHandler({
-  target,
-  property,
-  descriptor
-}, type, typeOf, reader) {
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["typeHandler"])({
-    target,
-    property,
-    descriptor
-  }, type, typeOf);
-  Object(_meta__WEBPACK_IMPORTED_MODULE_4__["set"])("black", reader, target, property);
-  Object(_meta__WEBPACK_IMPORTED_MODULE_4__["set"])("black", true, target.constructor);
-}
 
-function createType(type, reader) {
-  return Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["decorate"])({
-    property({
-      target,
-      property,
-      descriptor
-    }, typeOf) {
-      if (!reader) reader = Object(core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["getReaderFromType"])(type);
-      blackHandler({
-        target,
-        property,
-        descriptor
-      }, type, typeOf, reader);
-    }
-
-  });
-}
-
-var listOf = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].LIST);
-var objectOf = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].OBJECT);
-var plainOf = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN);
-var rawOf = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].RAW);
-var list = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].LIST)();
-var object = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].OBJECT)();
-var plain = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN)();
-var unknown = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].UNKNOWN)();
-var boolean = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].BOOLEAN)();
-var string = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].STRING)();
-var path = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PATH)();
-var expression = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].EXPRESSION)();
-var float = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].FLOAT)();
-var uint = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].UINT)();
-var byte = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].BYTE)();
-var ushort = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].USHORT)();
-var raw = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].RAW)();
-var array = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].ARRAY)();
-var vector2 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].VECTOR2)();
-var vector3 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].VECTOR3)();
-var vector4 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].VECTOR4)();
-var color = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].COLOR)();
-var quaternion = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].QUATERNION)();
-var matrix4 = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].MATRIX4)();
-var indexBuffer = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].INDEX_BUFFER)();
-var enums = createType(global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].ENUM)();
-var fromList = Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["decorate"])({
-  property({
-    target,
-    property,
-    descriptor
-  }, options, typeOf) {
-    blackHandler({
-      target,
-      property,
-      descriptor
-    }, global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN, typeOf, core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["fromList"](options));
-  }
-
-});
-var struct = Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["decorate"])({
-  property({
-    target,
-    property,
-    descriptor
-  }, value, typeOf) {
-    var reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["notImplemented"],
-        type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].UNKNOWN; // list
-
-    if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isArray"])(value)) {
-      if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(value[0])) {
-        reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["structList"](value[0]);
-        type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].LIST;
-      }
-    } // plain from list, using passed value as the source property key
-    else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isString"])(value)) {
-        reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["fromList"]({
-          key: value
-        });
-        type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN;
-      } // plain from list
-      else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(value)) {
-          reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["fromList"](value);
-          type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].PLAIN;
-        } // object
-        else if (Object(_util_type__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(value)) {
-            reader = core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_0__["struct"](value);
-            type = global_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_1__["Type"].OBJECT;
-          }
-
-    blackHandler({
-      target,
-      property,
-      descriptor
-    }, type, typeOf, reader);
-  }
-
-});
+gl_matrix__WEBPACK_IMPORTED_MODULE_0__["vec4"].hex = function (linear) {
+  return "#" + _num__WEBPACK_IMPORTED_MODULE_1__["num"].hexFromLinear(linear[0]) + _num__WEBPACK_IMPORTED_MODULE_1__["num"].hexFromLinear(linear[1]) + _num__WEBPACK_IMPORTED_MODULE_1__["num"].hexFromLinear(linear[2]) + _num__WEBPACK_IMPORTED_MODULE_1__["num"].hexFromLinear(linear[3]);
+};
 
 /***/ }),
 
@@ -65821,52 +66559,56 @@ var struct = Object(_helpers__WEBPACK_IMPORTED_MODULE_3__["decorate"])({
 /*!*********************************!*\
   !*** ./global/meta/@generic.js ***!
   \*********************************/
-/*! exports provided: abstract, singleton, ccp, type, stage, notImplemented, todo, desc, isPrivate, isNullable, test */
+/*! exports provided: has, get, set, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "has", function() { return has; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return abstract; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return singleton; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ccp", function() { return ccp; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "type", function() { return type; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stage", function() { return stage; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "todo", function() { return todo; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "desc", function() { return desc; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ctor", function() { return ctor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "data", function() { return data; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPrivate", function() { return isPrivate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isNullable", function() { return isNullable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "test", function() { return test; });
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "desc", function() { return desc; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "todo", function() { return todo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "partialImplementation", function() { return partialImplementation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return notImplemented; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stage", function() { return stage; });
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 
 
+var has = function (name, target, property) {
+  return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["hasMetadata"])(name, target, property);
+};
+var get = function (name, target, property) {
+  return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["getMetadata"])(name, target, property);
+};
+var set = function (name, value, target, property) {
+  return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])(name, value, target, property);
+};
+var abstract = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  noArgs: true,
 
-var abstract = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class({
+  ctor({
     target
   }) {
-    return class Abstract extends target {
-      constructor() {
-        super();
-
-        if (this.constructor === Abstract) {
-          throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractClass"]({
-            class: target.name
-          });
-        }
-      }
-
-    };
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("abstract", true, target);
+    return target;
   },
 
   method({
+    target,
     property,
     descriptor
   }) {
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("abstract", true, target, property);
+
     descriptor.value = function () {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrAbstractMethod"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrAbstractMethod"]({
         class: this.constructor.name,
         method: property
       });
@@ -65875,16 +66617,18 @@ var abstract = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
     return descriptor;
   }
 
-})();
-var singleton = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class({
+});
+var singleton = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  noArgs: true,
+
+  ctor({
     target
   }) {
     var count = 0;
     return class Singleton extends target {
       constructor(...args) {
         count++;
-        if (count > 1) throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_0__["ErrSingletonInstantiation"]({
+        if (count > 1) throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrSingletonInstantiation"]({
           class: target.name
         });
         super(...args);
@@ -65893,140 +66637,141 @@ var singleton = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
     };
   }
 
-})();
-var ccp = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class({
+});
+/**
+ * Constructors by type
+ * @type {Map<String, any>}
+ */
+
+var byType = new Map();
+/**
+ * Types by constructor
+ * @type {Map<any, String>}
+ */
+
+var byCtor = new Map();
+var ctor = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  ctor({
     target
-  }, value) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("ccp", value, target);
+  }, ...types) {
+    for (var i = 0; i < types.length; i++) {
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isString"])(types[i])) {
+        byType.set(types[i], target);
+
+        if (i === 0) {
+          byCtor.set(target, types[i]);
+          Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("type", types[i], target); // Temporary
+
+          if (!target.getOwnTw2Type) {
+            target.getOwnTw2Type = function () {
+              return ctor.getType(this);
+            };
+
+            target.getTw2Type = function (Ctor) {
+              return ctor.getType(Ctor);
+            };
+
+            target.getTw2Ctor = function (type) {
+              return ctor.getCtor(type);
+            };
+          }
+        }
+      }
+    }
   }
 
 });
-/**
- * Creates a property type decorator
- * @param {String|Number} type
- * @returns {*}
- */
 
-var type = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class({
-    target
-  }, type, ccpType) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("type", type, target);
+ctor.getCtor = function (type) {
+  return byType.get(type);
+};
 
-    if (ccpType) {
-      if (ccpType === true) ccpType = type;
-      Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("ccp", ccpType, target);
+ctor.getType = function (Ctor) {
+  return byCtor.get(Ctor);
+};
+
+ctor.getValues = function () {
+  var out = {};
+
+  for (var [type, _ctor] of byType) {
+    out[type] = _ctor;
+  }
+
+  return out;
+};
+
+var data = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  handler({
+    target,
+    property
+  }, value) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["hasMetadata"])("data", target, property)) {
+      Object.assign({}, Object(global_util__WEBPACK_IMPORTED_MODULE_0__["getMetadata"])("data", target, property), value);
     }
-  },
+
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("data", value, target, property);
+  }
+
+});
+var isPrivate = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  noArgs: true,
 
   property({
     target,
-    property,
-    descriptor
-  }, type, typeOf) {
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["typeHandler"])({
-      target,
-      property,
-      descriptor
-    }, type, typeOf);
-  }
-
-});
-var stage = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class({
-    target
-  }, value) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("stage", value, target);
-    if (value > 3) Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("notImplemented", true, target);
-  }
-
-});
-var notImplemented = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class({
-    target
-  }) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("notImplemented", true, target);
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("stage", 4, target); // Todo: Flag all children as not implemented
-
-    todo("Implement")(target);
-  },
-
-  handler({
-    target,
     property
   }) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("notImplemented", true, target, property);
-    var stage = Object(_meta__WEBPACK_IMPORTED_MODULE_2__["get"])("stage", target.constructor) || 0;
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("stage", Math.max(stage, 1), target.constructor);
-    todo("Implement")(target, property);
-  }
-
-})();
-var todo = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  handler({
-    target,
-    property
-  }, value) {
-    if (property) {
-      // Add all child todos to the parent
-      var parentTodo = "[".concat(property, "] ") + value,
-          parentTodos = Object(_meta__WEBPACK_IMPORTED_MODULE_2__["has"])("todo", target.constructor) ? Object(_meta__WEBPACK_IMPORTED_MODULE_2__["get"])("todo", target.constructor) : [];
-      if (!parentTodos.includes(parentTodo)) parentTodos.push(parentTodo);
-      parentTodos.sort();
-      Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("todos", parentTodo, target.constructor);
-    }
-
-    var todos = Object(_meta__WEBPACK_IMPORTED_MODULE_2__["has"])("todo", target, property) ? Object(_meta__WEBPACK_IMPORTED_MODULE_2__["get"])("todo", target, property) : [];
-    if (!todos.includes(value)) todos.push(value);
-    todos.sort();
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("todo", todos, target, property);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("isPrivate", true, target, property);
   }
 
 });
-var desc = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
+var desc = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
   handler({
     target,
     property
-  }, value) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("desc", value, target, property);
+  }, description) {
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("desc", description, target, property);
   }
 
 });
-var isPrivate = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class: false,
+var todo = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  handler({
+    target,
+    property
+  }, todo, stage = 1) {
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("todo", todo, target, property);
+    var currentStage = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["getMetadata"])("stage", target, property) || 0;
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("stage", Math.max(stage, currentStage), target, property);
+  }
+
+});
+var partialImplementation = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  noArgs: true,
 
   handler({
     target,
     property
   }) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("isPrivate", true, target, property);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("stage", 2, target, property);
   }
 
-})();
-var isNullable = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class: false,
+});
+var notImplemented = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  noArgs: true,
 
   handler({
     target,
     property
   }) {
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("isNullable", true, target, property);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("stage", 3, target, property);
   }
 
-})();
-var test = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-  class: false,
-
-  handler({
+});
+var stage = Object(global_util__WEBPACK_IMPORTED_MODULE_0__["createDecorator"])({
+  ctor({
     target,
-    property,
-    descriptor
-  }, string = "Test decorator") {
-    console.dir(target);
-    console.dir(property);
-    console.dir(descriptor);
-    throw new Error(string);
+    property
+  }, stage = 0) {
+    Object(global_util__WEBPACK_IMPORTED_MODULE_0__["defineMetadata"])("stage", stage, target, property);
   }
 
 });
@@ -66037,18 +66782,11 @@ var test = Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
 /*!******************************!*\
   !*** ./global/meta/@type.js ***!
   \******************************/
-/*! exports provided: listOf, objectOf, plainOf, rawOf, list, object, plain, unknown, boolean, string, path, expression, float, uint, ushort, byte, raw, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enumerable */
+/*! exports provided: unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "listOf", function() { return listOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "objectOf", function() { return objectOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plainOf", function() { return plainOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rawOf", function() { return rawOf; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "list", function() { return list; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "object", function() { return object; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return unknown; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return boolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "string", function() { return string; });
@@ -66058,7 +66796,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return uint; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return ushort; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return byte; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return raw; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "array", function() { return array; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return vector2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return vector3; });
@@ -66069,225 +66806,297 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return matrix4; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return indexBuffer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "vector", function() { return vector; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "enumerable", function() { return enumerable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "enums", function() { return enums; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return plain; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "list", function() { return list; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fromList", function() { return fromList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "struct", function() { return struct; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return raw; });
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./helpers */ "./global/meta/helpers.js");
+/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+
 
 
 /**
- * Creates a property type decorator
- * @param {String|Number} type
- * @returns {*}
+ * Property type handler
+ * @param target
+ * @param property
+ * @param type
+ * @param typesOf
  */
 
-function createType(type) {
-  return Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["decorate"])({
-    property({
-      target,
-      property,
-      descriptor,
-      Constructor
-    }, typeOf) {
-      Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["typeHandler"])({
-        target,
-        property,
-        descriptor,
-        Constructor
-      }, type, typeOf);
+var typeHandler = function ({
+  target,
+  property
+}, type, ...typesOf) {
+  if (type !== undefined) {
+    Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("type", type, target, property);
+  }
+
+  if (typesOf[0]) {
+    Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("typesOf", typesOf, target, property);
+  }
+
+  if (property.charAt(0) === "_") Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("isPrivate", true, target, property);
+};
+/**
+ * Creates a property type decorator
+ * @param {Number} propertyType
+ * @param {Boolean} [hasTypesOf]
+ * @returns {Function}
+ */
+
+
+function create(propertyType, hasTypesOf) {
+  return Object(global_util__WEBPACK_IMPORTED_MODULE_2__["createDecorator"])({
+    noArgs: !hasTypesOf,
+
+    property(options, ...typesOf) {
+      typeHandler(options, propertyType, ...typesOf);
     }
 
   });
 }
-
-var listOf = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST);
-var objectOf = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT);
-var plainOf = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN);
-var rawOf = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW);
-var list = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST)();
-var object = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT)();
-var plain = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN)();
-var unknown = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN)();
-var boolean = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN)();
-var string = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING)();
-var path = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH)();
-var expression = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].EXPRESSION)();
-var float = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT)();
-var uint = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT)();
-var ushort = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].USHORT)();
-var byte = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE)();
-var raw = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW)();
-var array = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].ARRAY)();
-var vector2 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2)();
-var vector3 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3)();
-var vector4 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4)();
-var color = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR)();
-var quaternion = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION)();
-var matrix3 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX3)();
-var matrix4 = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX4)();
-var indexBuffer = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER)();
-var vector = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR)();
-var enumerable = createType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].ENUM);
-
-/***/ }),
-
-/***/ "./global/meta/helpers.js":
-/*!********************************!*\
-  !*** ./global/meta/helpers.js ***!
-  \********************************/
-/*! exports provided: handleDescriptor, decorate, typeHandler */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleDescriptor", function() { return handleDescriptor; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "decorate", function() { return decorate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "typeHandler", function() { return typeHandler; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../meta */ "./global/meta/index.js");
-/* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
+/**
+ * Unknown value type
+ * @type {PropertyDecorator}
+ */
 
 
+var unknown = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UNKNOWN);
+/**
+ * Boolean property type
+ * @type {PropertyDecorator}
+ */
 
+var boolean = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BOOLEAN);
+/**
+ * String property type
+ * @type {PropertyDecorator}
+ */
 
-var invalidUsage = {
-  class: () => {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
-      reason: "class"
-    });
-  },
-  method: () => {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
-      reason: "method"
-    });
-  },
-  property: () => {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_1__["ErrInvalidDecoratorUsage"]({
-      reason: "property"
-    });
+var string = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].STRING);
+/**
+ * Path property type
+ * @type {PropertyDecorator}
+ */
+
+var path = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PATH);
+/**
+ * Expression property type
+ * @type {PropertyDecorator}
+ */
+
+var expression = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].EXPRESSION);
+/**
+ * Float property type
+ * @type {PropertyDecorator}
+ */
+
+var float = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].FLOAT);
+/**
+ * Uint property type
+ * @type {PropertyDecorator}
+ */
+
+var uint = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].UINT);
+/**
+ * Ushort property type
+ * @type {PropertyDecorator}
+ */
+
+var ushort = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].USHORT);
+/**
+ * Byte property type
+ * @type {PropertyDecorator}
+ */
+
+var byte = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].BYTE);
+/**
+ * Array property type
+ * @type {PropertyDecorator}
+ */
+
+var array = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].ARRAY);
+/**
+ * Vector 2 property type
+ * @type {PropertyDecorator}
+ */
+
+var vector2 = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR2);
+/**
+ * Vector 3 property type
+ * @type {PropertyDecorator}
+ */
+
+var vector3 = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR3);
+/**
+ * Vector 4 property type
+ * @type {PropertyDecorator}
+ */
+
+var vector4 = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR4);
+/**
+ * Linear colour property type
+ * @type {PropertyDecorator}
+ */
+
+var color = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].COLOR);
+/**
+ * Quaternion property type
+ * @type {PropertyDecorator}
+ */
+
+var quaternion = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].QUATERNION);
+/**
+ * Matrix 3 property type
+ * @type {PropertyDecorator}
+ */
+
+var matrix3 = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX3);
+/**
+ * Matrix 4 property type
+ * @type {PropertyDecorator}
+ */
+
+var matrix4 = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].MATRIX4);
+/**
+ * Index buffer property type
+ * @type {PropertyDecorator}
+ */
+
+var indexBuffer = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].INDEX_BUFFER);
+/**
+ * Dynamic typed array
+ * @type {PropertyDecorator}
+ */
+
+var vector = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].VECTOR);
+/**
+ * Enumerable property type
+ * @type {function}
+ */
+
+var enums = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["createDecorator"])({
+  property({
+    target,
+    property
+  }, values) {
+    typeHandler({
+      target,
+      property
+    }, _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].ENUM);
+    Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("enumerable", values, target, property);
   }
-};
+
+});
 /**
- * Ensures descriptors always have default values
- * - Babel doesn't always handle correctly
- * @param {*} d
- * @returns {*}
+ * Plain property type
+ * @type {PropertyDecorator}
  */
 
-function handleDescriptor(d) {
-  if (d && !d.set && !d.get) {
-    if (d.writable === undefined) d.writable = true;
-    if (d.enumerable === undefined) d.enumerable = true;
-    if (d.configurable === undefined) d.configurable = true;
+var plain = create(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN);
+/**
+ * Struct list property type
+ * @type {Function}
+ */
+
+var list = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["createDecorator"])({
+  property({
+    target,
+    property
+  }, ...typesOf) {
+    // Allow defining black struct list from type decorator
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(typesOf[0])) {
+      var _struct = typesOf.shift();
+
+      Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("black", core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_1__["structList"](_struct), target, property); // Try to guess type from struct
+
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["hasMetadata"])("type", _struct)) {
+        typesOf.unshift(Object(global_util__WEBPACK_IMPORTED_MODULE_2__["getMetadata"])("type", _struct));
+      }
+    }
+
+    typeHandler({
+      target,
+      property
+    }, _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].LIST, ...typesOf);
   }
 
-  return d;
-}
+});
 /**
- *
- * @param {*} target
- * @param {String} [property]
- * @returns {string}
+ * Plain from struct list property type
+ * @type {Function}
  */
 
-function getTargetType(target, property) {
-  return !property ? "class" : Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(target[property]) ? "method" : "property";
-}
-/**
- * Normalizes decorator handlers
- * @param options
- * @returns {{method: *, property: *, class: *}}
- */
+var fromList = Object(global_util__WEBPACK_IMPORTED_MODULE_2__["createDecorator"])({
+  property({
+    target,
+    property
+  }, options, ...typesOf) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isString"])(options)) {
+      options = {
+        key: options
+      };
+    }
 
+    if (!Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isPlain"])(options)) {
+      throw new Error("Invalid argument for decorator: expected plain object");
+    }
 
-function normalizeHandlers(options) {
-  if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(options)) options = {
-    handler: options
-  };
-  if (!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(options)) throw new ReferenceError("Invalid options object");
+    Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("black", core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_1__["fromList"](options), target, property); // Try to guess type from struct
 
-  function createHandler(type, options) {
-    if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(options[type])) return options[type];
-    if (options[type] === false) return invalidUsage[type];
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(options.handler) ? options.handler : invalidUsage[type];
+    if (options.struct && Object(global_util__WEBPACK_IMPORTED_MODULE_2__["hasMetadata"])("type", options.struct)) {
+      typesOf.unshift(Object(global_util__WEBPACK_IMPORTED_MODULE_2__["getMetadata"])("type", options.struct));
+    }
+
+    typeHandler({
+      target,
+      property
+    }, _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].PLAIN, ...typesOf);
   }
 
-  return {
-    class: createHandler("class", options),
-    method: createHandler("method", options),
-    property: createHandler("property", options)
-  };
-}
-/**
- * Creates a decorator
- * @param {Object|Function} options
- * @param {Function} [options.class]
- * @param {Function} [options.property]
- * @param {Function} [options.method]
- * @param {*} [value] - An optional predefined value to pass
- * @returns {*}
- */
+});
 
+function createObjectType(propertyType) {
+  return Object(global_util__WEBPACK_IMPORTED_MODULE_2__["createDecorator"])({
+    property({
+      target,
+      property
+    }, ...typesOf) {
+      // Allow defining black struct
+      if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(typesOf[0])) {
+        var _struct2 = typesOf.shift();
 
-function decorate(options, value) {
-  var handlers = normalizeHandlers(options);
-  return function (...args) {
-    return function (target, property, descriptor) {
-      if (descriptor) handleDescriptor(descriptor);
-      var targetType = getTargetType(target, property);
-      var decoratorObject = {
-        target,
-        property,
-        descriptor
-      }; //if (targetType !== "class") decoratorObject.Constructor = target.constructor;
-      // Predefined value
+        Object(global_util__WEBPACK_IMPORTED_MODULE_2__["defineMetadata"])("black", core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_1__["struct"](_struct2), target, property); // Try to guess type from struct
 
-      if (value !== undefined) {
-        return handlers[targetType](decoratorObject, value, ...args);
+        if (Object(global_util__WEBPACK_IMPORTED_MODULE_2__["hasMetadata"])("type", _struct2)) {
+          typesOf.unshift(Object(global_util__WEBPACK_IMPORTED_MODULE_2__["getMetadata"])("type", _struct2));
+        }
       }
 
-      return handlers[targetType](decoratorObject, ...args);
-    };
-  };
+      typeHandler({
+        target,
+        property
+      }, propertyType, ...typesOf);
+    }
+
+  });
 }
 /**
- * Handles property type meta data
- * @param {*} target
- * @param {String} property
- * @param {PropertyDescriptor }descriptor
- * @param {String|Number} type
- * @param {Array|String} typeOf
- * @param {Array} [childTypes]
+ * Structure property type
+ * @type {Function}
  */
 
-function typeHandler({
-  target,
-  property,
-  descriptor
-}, type, typeOf) {
-  // Convert type strings to enum values
-  if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isString"])(type)) type = _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"][type.toUpperCase()];
-  if (type === undefined) type = _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_3__["Type"].UNKNOWN;
-  Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("type", type, target, property);
-  if (typeOf) Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("typeOf", Object(global_util__WEBPACK_IMPORTED_MODULE_0__["toArray"])(typeOf), target, property);
-  if (property.charAt(0) === "_") Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("isPrivate", true, target, property);
-  if (descriptor.value === null) Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("isNullable", true, target, property); // Define constructor properties
 
-  var Constructor = target.constructor;
-  var props = Object(_meta__WEBPACK_IMPORTED_MODULE_2__["getOwn"])("props", Constructor);
+var struct = createObjectType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].OBJECT);
+/**
+ * Raw structure property type
+ * @type {Function}
+ */
 
-  if (!props) {
-    props = Object(_meta__WEBPACK_IMPORTED_MODULE_2__["has"])("props", Constructor) ? Object(_meta__WEBPACK_IMPORTED_MODULE_2__["get"])("props", Constructor).slice(0) : [];
-    Object(_meta__WEBPACK_IMPORTED_MODULE_2__["set"])("props", props, Constructor);
-  }
-
-  if (!props.includes(property)) {
-    props.push(property);
-    props.sort();
-  }
-
-  return type;
-}
+var raw = createObjectType(_engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_0__["Type"].RAW);
 
 /***/ }),
 
@@ -66295,325 +67104,91 @@ function typeHandler({
 /*!******************************!*\
   !*** ./global/meta/index.js ***!
   \******************************/
-/*! exports provided: black, data, set, has, hasOwn, get, getOwn, del, keys, ownKeys, values, ownValues, listOf, objectOf, plainOf, rawOf, list, object, plain, unknown, boolean, string, path, expression, float, uint, ushort, byte, raw, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enumerable, abstract, singleton, ccp, type, stage, notImplemented, todo, desc, isPrivate, isNullable, test */
+/*! exports provided: unknown, boolean, string, path, expression, float, uint, ushort, byte, array, vector2, vector3, vector4, color, quaternion, matrix3, matrix4, indexBuffer, vector, enums, plain, list, fromList, struct, raw, has, get, set, abstract, singleton, ctor, data, isPrivate, desc, todo, partialImplementation, notImplemented, stage */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _black__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./@black */ "./global/meta/@black.js");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "black", function() { return _black__WEBPACK_IMPORTED_MODULE_0__; });
-/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./meta */ "./global/meta/meta.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "data", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["data"]; });
+/* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./@type */ "./global/meta/@type.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["unknown"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["set"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["boolean"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "has", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["has"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "string", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["string"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasOwn", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["hasOwn"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "path", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["path"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["get"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["expression"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwn", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["getOwn"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "float", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["float"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "del", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["del"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["uint"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "keys", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["keys"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["ushort"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ownKeys", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["ownKeys"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["byte"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "values", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["values"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "array", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["array"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ownValues", function() { return _meta__WEBPACK_IMPORTED_MODULE_1__["ownValues"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["vector2"]; });
 
-/* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./@type */ "./global/meta/@type.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "listOf", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["listOf"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["vector3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "objectOf", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["objectOf"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector4", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["vector4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plainOf", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["plainOf"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "color", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["color"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "rawOf", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["rawOf"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quaternion", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["quaternion"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "list", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["list"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix3", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["matrix3"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "object", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["object"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["matrix4"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["plain"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["indexBuffer"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "unknown", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["unknown"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["vector"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "boolean", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["boolean"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "enums", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["enums"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "string", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["string"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plain", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["plain"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "path", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["path"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "list", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["list"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "expression", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["expression"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "fromList", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["fromList"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "float", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["float"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "struct", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["struct"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "uint", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["uint"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return _type__WEBPACK_IMPORTED_MODULE_0__["raw"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ushort", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["ushort"]; });
+/* harmony import */ var _generic__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./@generic */ "./global/meta/@generic.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "has", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["has"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "byte", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["byte"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "get", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["get"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "raw", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["raw"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "set", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["set"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "array", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["array"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["abstract"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector2", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["vector2"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["singleton"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector3", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["vector3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ctor", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["ctor"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector4", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["vector4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "data", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["data"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "color", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["color"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPrivate", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["isPrivate"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "quaternion", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["quaternion"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "desc", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["desc"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix3", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["matrix3"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "todo", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["todo"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "matrix4", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["matrix4"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "partialImplementation", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["partialImplementation"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "indexBuffer", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["indexBuffer"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["notImplemented"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "vector", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["vector"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "stage", function() { return _generic__WEBPACK_IMPORTED_MODULE_1__["stage"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "enumerable", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["enumerable"]; });
 
-/* harmony import */ var _generic__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./@generic */ "./global/meta/@generic.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "abstract", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["abstract"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "singleton", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["singleton"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ccp", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["ccp"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "type", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["type"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "stage", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["stage"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "notImplemented", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["notImplemented"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "todo", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["todo"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "desc", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["desc"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isPrivate", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["isPrivate"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNullable", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["isNullable"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "test", function() { return _generic__WEBPACK_IMPORTED_MODULE_3__["test"]; });
-
-
-
-
-
-
-
-/***/ }),
-
-/***/ "./global/meta/meta.js":
-/*!*****************************!*\
-  !*** ./global/meta/meta.js ***!
-  \*****************************/
-/*! exports provided: data, set, has, hasOwn, get, getOwn, del, keys, ownKeys, values, ownValues */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "data", function() { return data; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "has", function() { return has; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasOwn", function() { return hasOwn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOwn", function() { return getOwn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "del", function() { return del; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "keys", function() { return keys; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ownKeys", function() { return ownKeys; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "values", function() { return values; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ownValues", function() { return ownValues; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-
-/**
- * Meta data prefix
- * @type {string}
- */
-
-var PREFIX = "tw2:";
-/**
- * Turns a string into a meta data name
- * @param {String} name
- * @returns {string}
- */
-
-function getMetaName(name) {
-  return "".concat(PREFIX).concat(name);
-}
-/**
- * Provides similar functionality to Reflect.metadata
- * @param {String} a
- * @param {*} value
- * @returns {Function}
- */
-
-
-function data(a, value = true) {
-  return function (target, property) {
-    if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isPlain"])(a)) {
-      // Not properly supported
-      for (var key in a) {
-        if (a.hasOwnProperty(key)) {
-          set(key, a[key], target, property);
-        }
-      }
-    } else {
-      set(a, value, target, property);
-    }
-  };
-}
-/**
- * Defines meta data
- * @param {String} name
- * @param {*} value
- * @param {*} target
- * @param {String} [property]
- * @returns {*} value
- */
-
-function set(name, value, target, property) {
-  Reflect.defineMetadata(getMetaName(name), value, target, property);
-}
-/**
- * Checks if a target has meta data
- * @param {String} name
- * @param {*} target
- * @param {*} [property]
- * @returns {boolean}
- */
-
-function has(name, target, property) {
-  return Reflect.hasMetadata(getMetaName(name), target, property);
-}
-/**
- * Checks if a target has it's own meta data
- * @param {String} name
- * @param {*} target
- * @param {*} [property]
- * @returns {boolean}
- */
-
-function hasOwn(name, target, property) {
-  return Reflect.hasOwnMetadata(getMetaName(name), target, property);
-}
-/**
- * Gets a target's meta data
- * @param {String} name
- * @param {*} target
- * @param {*} [property]
- * @returns {any}
- */
-
-function get(name, target, property) {
-  return Reflect.getMetadata(getMetaName(name), target, property);
-}
-/**
- * Gets a target's own meta data
- * @param {String} name
- * @param {*} target
- * @param {*} [property]
- * @returns {any}
- */
-
-function getOwn(name, target, property) {
-  return Reflect.getOwnMetadata(getMetaName(name), target, property);
-}
-/**
- * Removes/deletes meta data
- * @param {String} key
- * @param {*} target
- * @param {String} property
- * @returns {boolean}
- */
-
-function del(key, target, property) {
-  return Reflect.deleteMetadata(getMetaName(key), target, property);
-}
-/**
- * Gets only valid meta data keys
- * @param {Array<String>} array
- * @returns {Array<String>}
- */
-
-function getValidKeys(array) {
-  var out = [];
-
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].indexOf(PREFIX) === 0) {
-      out.push(array[i].replace(PREFIX, ""));
-    }
-  }
-
-  return out;
-}
-/**
- * Gets meta data keys
- * @param {*} target
- * @param {String} [property]
- * @returns {[]}
- */
-
-
-function keys(target, property) {
-  return getValidKeys(Reflect.getMetadataKeys(target, property));
-}
-/**
- * Gets own meta data keys
- * @param {*} target
- * @param {String} [property]
- * @returns {[]}
- */
-
-function ownKeys(target, property) {
-  return getValidKeys(Reflect.getOwnMetadataKeys(target, property));
-}
-/**
- *
- * @param {*} target
- * @param {String} property
- * @param {Function} keyFunc
- * @param {Function} getFunc
- */
-
-function getAllValidValues(target, property, keyFunc, getFunc) {
-  var metaKeys = keyFunc(target, property),
-      out = {};
-  metaKeys.forEach(key => {
-    var result = getFunc(key, target, property);
-    if (result !== undefined) out[key] = result;
-  });
-  return out;
-}
-/**
- * Gets all meta data values
- * @param {*} target
- * @param {String} [property]
- */
-
-
-function values(target, property) {
-  return getAllValidValues(target, property, keys, get);
-}
-/**
- * Gets all own metadata values
- * @param {*} target
- * @param {String} [property]
- * @returns {Object}
- */
-
-function ownValues(target, property) {
-  return getAllValidValues(target, property, ownKeys, getOwn);
-}
 
 /***/ }),
 
@@ -66753,7 +67328,7 @@ function toUniqueArray(a) {
 /*!******************************!*\
   !*** ./global/util/index.js ***!
   \******************************/
-/*! exports provided: addToArray, findElementByPropertyValue, findIndexByPropertyValue, perArrayChild, removeFromArray, toArray, toUniqueArray, assignIfExists, get, template, isPrimaryEqual, isVectorEqual, isEqual, isArray, isArrayLike, isAsyncFunction, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, isTr2OrTri, toTw2, getTypeUpper, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4, enableUUID, generateID, getURL, getURLString, getURLInteger, getURLFloat, getURLBoolean, getPathExtension */
+/*! exports provided: addToArray, findElementByPropertyValue, findIndexByPropertyValue, perArrayChild, removeFromArray, toArray, toUniqueArray, assignIfExists, get, template, isPrimaryEqual, isVectorEqual, isEqual, getKeyFromValue, isArray, isArrayLike, isAsyncFunction, isBoolean, isCanvas, isDescriptor, isDNA, isError, isNumber, isFunction, isNoU, isNull, isObject, isObjectLike, isObjectObject, isPlain, isPrimary, isPromise, isString, isSymbol, isSubclassOf, isTag, isTr2OrTri, toTw2, getTypeUpper, isTyped, isUndefined, isVector, isVector2, isVector3, isVector4, isMatrix3, isMatrix4, enableUUID, generateID, getURL, getURLString, getURLInteger, getURLFloat, getURLBoolean, defineMetadata, hasMetadata, hasOwnMetadata, getMetadata, getOwnMetadata, deleteMetadata, getMetadataKeys, getOwnMetadataKeys, getMetadataValues, getOwnMetadataValues, handleDescriptor, createDecorator, getPathExtension */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66786,6 +67361,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isVectorEqual", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["isVectorEqual"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isEqual", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["isEqual"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getKeyFromValue", function() { return _obj__WEBPACK_IMPORTED_MODULE_1__["getKeyFromValue"]; });
 
 /* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./type */ "./global/util/type.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isArray", function() { return _type__WEBPACK_IMPORTED_MODULE_2__["isArray"]; });
@@ -66870,6 +67447,32 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getURLBoolean", function() { return _url__WEBPACK_IMPORTED_MODULE_4__["getURLBoolean"]; });
 
+/* harmony import */ var _meta__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./meta */ "./global/util/meta.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "defineMetadata", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["defineMetadata"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasMetadata", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["hasMetadata"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "hasOwnMetadata", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["hasOwnMetadata"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadata", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["getMetadata"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadata", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["getOwnMetadata"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "deleteMetadata", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["deleteMetadata"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadataKeys", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["getMetadataKeys"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataKeys", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["getOwnMetadataKeys"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getMetadataValues", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["getMetadataValues"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataValues", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["getOwnMetadataValues"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "handleDescriptor", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["handleDescriptor"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createDecorator", function() { return _meta__WEBPACK_IMPORTED_MODULE_5__["createDecorator"]; });
+
+
 
 
 
@@ -66889,11 +67492,301 @@ function getPathExtension(path) {
 
 /***/ }),
 
+/***/ "./global/util/meta.js":
+/*!*****************************!*\
+  !*** ./global/util/meta.js ***!
+  \*****************************/
+/*! exports provided: defineMetadata, hasMetadata, hasOwnMetadata, getMetadata, getOwnMetadata, deleteMetadata, getMetadataKeys, getOwnMetadataKeys, getMetadataValues, getOwnMetadataValues, handleDescriptor, createDecorator */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defineMetadata", function() { return defineMetadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasMetadata", function() { return hasMetadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasOwnMetadata", function() { return hasOwnMetadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMetadata", function() { return getMetadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadata", function() { return getOwnMetadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteMetadata", function() { return deleteMetadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMetadataKeys", function() { return getMetadataKeys; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataKeys", function() { return getOwnMetadataKeys; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getMetadataValues", function() { return getMetadataValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOwnMetadataValues", function() { return getOwnMetadataValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "handleDescriptor", function() { return handleDescriptor; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDecorator", function() { return createDecorator; });
+/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ * Meta data prefix
+ * @type {string}
+ */
+
+var PREFIX = "tw2";
+/**
+ * Turns a string into a meta data name
+ * @param {String} name
+ * @returns {string}
+ */
+
+function getMetaName(name) {
+  return "".concat(PREFIX, ":").concat(name);
+}
+/**
+ * Defines meta data
+ * @param {String} name
+ * @param {*} value
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {*} value
+ */
+
+
+function defineMetadata(name, value, target, property) {
+  Reflect.defineMetadata(getMetaName(name), value, target, property);
+}
+/**
+ * Checks if a target has meta data
+ * @param {String} name
+ * @param {*} target
+ * @param {*} [property]
+ * @returns {boolean}
+ */
+
+function hasMetadata(name, target, property) {
+  return Reflect.hasMetadata(getMetaName(name), target, property);
+}
+/**
+ * Checks if a target has it's own meta data
+ * @param {String} name
+ * @param {*} target
+ * @param {*} [property]
+ * @returns {boolean}
+ */
+
+function hasOwnMetadata(name, target, property) {
+  return Reflect.hasOwnMetadata(getMetaName(name), target, property);
+}
+/**
+ * Gets a target's meta data
+ * @param {String} name
+ * @param {*} target
+ * @param {*} [property]
+ * @returns {any}
+ */
+
+function getMetadata(name, target, property) {
+  return Reflect.getMetadata(getMetaName(name), target, property);
+}
+/**
+ * Gets a target's own meta data
+ * @param {String} name
+ * @param {*} target
+ * @param {*} [property]
+ * @returns {any}
+ */
+
+function getOwnMetadata(name, target, property) {
+  return Reflect.getOwnMetadata(getMetaName(name), target, property);
+}
+/**
+ * Removes/deletes meta data
+ * @param {String} key
+ * @param {*} target
+ * @param {String} property
+ * @returns {boolean}
+ */
+
+function deleteMetadata(key, target, property) {
+  return Reflect.deleteMetadata(getMetaName(key), target, property);
+}
+/**
+ * Gets only valid meta data keys
+ * @param {Array<String>} array
+ * @returns {Array<String>}
+ */
+
+function getValidKeys(array) {
+  var out = [];
+
+  for (var i = 0; i < array.length; i++) {
+    if (array[i].indexOf(PREFIX) === 0) {
+      out.push(array[i].replace(PREFIX, ""));
+    }
+  }
+
+  return out;
+}
+/**
+ * Gets meta data keys
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {[]}
+ */
+
+
+function getMetadataKeys(target, property) {
+  return getValidKeys(Reflect.getMetadataKeys(target, property));
+}
+/**
+ * Gets own meta data keys
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {[]}
+ */
+
+function getOwnMetadataKeys(target, property) {
+  return getValidKeys(Reflect.getOwnMetadataKeys(target, property));
+}
+/**
+ *
+ * @param {*} target
+ * @param {String} property
+ * @param {Function} keyFunc
+ * @param {Function} getFunc
+ */
+
+function getAllValidValues(target, property, keyFunc, getFunc) {
+  var metaKeys = keyFunc(target, property),
+      out = {};
+  metaKeys.forEach(key => {
+    var result = getFunc(key, target, property);
+    if (result !== undefined) out[key] = result;
+  });
+  return out;
+}
+/**
+ * Gets all meta data values
+ * @param {*} target
+ * @param {String} [property]
+ */
+
+
+function getMetadataValues(target, property) {
+  return getAllValidValues(target, property, getMetadataKeys, getMetadata);
+}
+/**
+ * Gets all own metadata values
+ * @param {*} target
+ * @param {String} [property]
+ * @returns {Object}
+ */
+
+function getOwnMetadataValues(target, property) {
+  return getAllValidValues(target, property, getOwnMetadataKeys, getOwnMetadata);
+}
+/**
+ * Ensures descriptors always have default values
+ * - Babel doesn't always handle correctly
+ * @param {PropertyDescriptor} d
+ * @returns {PropertyDescriptor}
+ */
+
+function handleDescriptor(d) {
+  if (d && !d.set && !d.get) {
+    if (d.writable === undefined) d.writable = true;
+    if (d.enumerable === undefined) d.enumerable = true;
+    if (d.configurable === undefined) d.configurable = true;
+  }
+
+  return d;
+}
+var invalidHandlers = {
+  ctor: () => {
+    throw new TypeError("Decorator doesn't support classes");
+  },
+  method: () => {
+    throw new TypeError("Decorator doesn't support methods");
+  },
+  property: () => {
+    throw new TypeError("Decorator doesn't support properties");
+  }
+};
+
+function normalizeHandlers(options) {
+  var {
+    ctor,
+    method,
+    property,
+    handler
+  } = options;
+
+  function resolve(value, errHandler) {
+    if (Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(value)) return value;
+    if (value === false) return errHandler;
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(handler) ? handler : errHandler;
+  }
+
+  return {
+    ctor: resolve(ctor, invalidHandlers.ctor),
+    method: resolve(method, invalidHandlers.method),
+    property: resolve(property, invalidHandlers.property)
+  };
+}
+
+function getDecorator(handlers, options, ...args) {
+  return function (target, property, descriptor) {
+    if (descriptor) handleDescriptor(descriptor);
+
+    var obj = _objectSpread({
+      target,
+      property,
+      descriptor
+    }, options);
+
+    if (!property) return handlers.ctor(obj, ...args);
+    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isFunction"])(target[property]) ? handlers.method(obj, ...args) : handlers.property(obj, ...args);
+  };
+}
+/**
+ * Creates a decorator
+ * @param {Object|Function} o
+ * @param {Boolean|Function} [o.ctor]     - Class handler
+ * @param {Boolean|Function} [o.property] - Property handler
+ * @param {Boolean|Function} [o.method]   - Method handler
+ * @param {Function} [o.handler]  - Default handler
+ * @param {*} [o.value]
+ * @returns {Function}
+ */
+
+
+function createDecorator(o) {
+  // Strip standard options
+  var {
+    handler,
+    property,
+    method,
+    ctor,
+    noArgs
+  } = o,
+      options = _objectWithoutProperties(o, ["handler", "property", "method", "ctor", "noArgs"]);
+
+  var handlers = normalizeHandlers(o);
+
+  if (noArgs) {
+    return getDecorator(handlers, options);
+  }
+
+  return function (...args) {
+    return getDecorator(handlers, options, ...args);
+  };
+}
+
+/***/ }),
+
 /***/ "./global/util/obj.js":
 /*!****************************!*\
   !*** ./global/util/obj.js ***!
   \****************************/
-/*! exports provided: assignIfExists, get, template, isPrimaryEqual, isVectorEqual, isEqual */
+/*! exports provided: assignIfExists, get, template, isPrimaryEqual, isVectorEqual, isEqual, getKeyFromValue */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66904,54 +67797,73 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPrimaryEqual", function() { return isPrimaryEqual; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isVectorEqual", function() { return isVectorEqual; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEqual", function() { return isEqual; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getKeyFromValue", function() { return getKeyFromValue; });
 /* harmony import */ var _type__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./type */ "./global/util/type.js");
-/* harmony import */ var _arr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./arr */ "./global/util/arr.js");
-/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../math */ "./global/math/index.js");
-
+/* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../math */ "./global/math/index.js");
 
 
 /**
  * Assigns property values if they exist in a source object
  * - Typed arrays are cloned/ copied to ensure no pass-by-reference errors
- * - TODO: Return boolean for when some thing was assigned
  *
  * @param {*} dest
  * @param {*} src
- * @param {String|string[]} attrs
+ * @param {string[]} attrs
+ * @param {Boolean} [skipIfDestUndefined] - Skips assignment if the destination doesn't have the value
  * @returns {boolean} true if something was assigned
  */
 
-function assignIfExists(dest, src, attrs) {
+function assignIfExists(dest, src, attrs, skipIfDestUndefined) {
   if (!src) return false;
-  attrs = Object(_arr__WEBPACK_IMPORTED_MODULE_1__["toArray"])(attrs);
+
+  if (!Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArray"])(attrs)) {
+    attrs = [attrs];
+    console.warn("Attributes must now always be an array");
+  }
+
   var assigned = false;
 
   for (var i = 0; i < attrs.length; i++) {
     var attr = attrs[i];
-    if (src[attr] === undefined) continue;
-    assigned = true;
+    var srcAttr = attr,
+        destAttr = attr;
 
-    if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(dest[attr])) {
-      if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(dest[attr])) {
-        if (dest[attr].length !== src[attr].length) {
-          var Constructor = dest[attr].constructor;
-          dest[attr] = new Constructor(src[attr]);
+    if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArray"])(attr)) {
+      srcAttr = attr[1];
+      destAttr = attr[0];
+    }
+
+    if (src[srcAttr] === undefined) {
+      continue;
+    }
+
+    if (skipIfDestUndefined && dest[destAttr] === undefined) {
+      continue;
+    }
+
+    if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isArrayLike"])(dest[destAttr])) {
+      if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(dest[destAttr])) {
+        if (dest[destAttr].length !== src[srcAttr].length) {
+          var Constructor = dest[destAttr].constructor;
+          dest[destAttr] = new Constructor(src[srcAttr]);
         } else {
-          dest[attr].set(src[attr]);
+          dest[destAttr].set(src[srcAttr]);
         }
       } else {
-        dest[attr].splice(0);
+        dest[destAttr].splice(0);
 
-        for (var _i = 0; _i < src[attr].length; _i++) {
-          dest[attr].push(src[attr][_i]);
+        for (var _i = 0; _i < src[srcAttr].length; _i++) {
+          dest[destAttr].push(src[srcAttr][_i]);
         }
       }
-    } else if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(src[attr])) {
-      var _Constructor = src[attr].constructor;
-      dest[attr] = new _Constructor(src[attr]);
+    } else if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isTyped"])(src[srcAttr])) {
+      var _Constructor = src[srcAttr].constructor;
+      dest[destAttr] = new _Constructor(src[srcAttr]);
     } else {
-      dest[attr] = src[attr];
+      dest[destAttr] = src[srcAttr];
     }
+
+    assigned = true;
   }
 
   return assigned;
@@ -67018,7 +67930,7 @@ function template(str, obj = {}) {
 
 function isPrimaryEqual(a, b) {
   if (a === b) return true;
-  return Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(a) && Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(b) ? _math__WEBPACK_IMPORTED_MODULE_2__["num"].equals(a, b) : false;
+  return Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(a) && Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(b) ? _math__WEBPACK_IMPORTED_MODULE_1__["num"].equals(a, b) : false;
 }
 /**
  * Checks two vectors for equality
@@ -67033,7 +67945,7 @@ function isVectorEqual(a, b) {
   if (a.length !== b.length) return false;
 
   for (var i = 0; i < a.length; i++) {
-    if (!_math__WEBPACK_IMPORTED_MODULE_2__["num"].equals(a[i], b[i])) return false;
+    if (!_math__WEBPACK_IMPORTED_MODULE_1__["num"].equals(a[i], b[i])) return false;
   }
 
   return true;
@@ -67051,7 +67963,7 @@ function isVectorEqual(a, b) {
 function isEqual(a, b) {
   if (a === b) return true; // allow "almost" equal numbers
 
-  if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(a)) return Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(b) ? _math__WEBPACK_IMPORTED_MODULE_2__["num"].equals(a, b) : false;
+  if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(a)) return Object(_type__WEBPACK_IMPORTED_MODULE_0__["isNumber"])(b) ? _math__WEBPACK_IMPORTED_MODULE_1__["num"].equals(a, b) : false;
   if (Object(_type__WEBPACK_IMPORTED_MODULE_0__["isVector"])(a)) return Object(_type__WEBPACK_IMPORTED_MODULE_0__["isVector"])(b) ? isVectorEqual(a, b) : false;
   if (!Object(_type__WEBPACK_IMPORTED_MODULE_0__["isObjectObject"])(a) || !Object(_type__WEBPACK_IMPORTED_MODULE_0__["isObjectObject"])(b)) return false;
   if (a.constructor !== b.constructor) return false;
@@ -67070,6 +67982,22 @@ function isEqual(a, b) {
   }
 
   return true;
+}
+/**
+ * Gets an object's key from a value
+ * @param {Object} obj
+ * @param {*} value
+ * @returns {string}
+ */
+
+function getKeyFromValue(obj, value) {
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (obj[key] === value) {
+        return key;
+      }
+    }
+  }
 }
 
 /***/ }),
@@ -67398,16 +68326,21 @@ function isUndefined(a) {
 /**
  * Checks if a value is arraylike and only contains numbers
  * @param {*} a
+ * @param {!Number} [len]
  * @returns {Boolean}
  */
 
-function isVector(a) {
+function isVector(a, len) {
   if (a) {
     if (isTyped(a)) {
-      return true;
+      return len === undefined ? true : a.length === len;
     }
 
     if (isArray(a)) {
+      if (len !== undefined && a.length !== len) {
+        return false;
+      }
+
       for (var i = 0; i < a.length; i++) {
         if (!isNumber(a[i])) return false;
       }
@@ -67425,7 +68358,7 @@ function isVector(a) {
  */
 
 function isVector2(a) {
-  return isVector(a) ? a.length === 2 : false;
+  return isVector(a, 2);
 }
 /**
  * Checks if a value is a vector of length 3
@@ -67434,7 +68367,7 @@ function isVector2(a) {
  */
 
 function isVector3(a) {
-  return isVector(a) ? a.length === 3 : false;
+  return isVector(a, 3);
 }
 /**
  * Checks if a value is a vector of length 4
@@ -67443,7 +68376,7 @@ function isVector3(a) {
  */
 
 function isVector4(a) {
-  return isVector(a) ? a.length === 4 : false;
+  return isVector(a, 4);
 }
 /**
  * Checks if a value is a vector of length 9
@@ -67452,7 +68385,7 @@ function isVector4(a) {
  */
 
 function isMatrix3(a) {
-  return isVector(a) ? a.length === 9 : false;
+  return isVector(a, 9);
 }
 /**
  * Checks if a value is a vector of length 16
@@ -67461,7 +68394,7 @@ function isMatrix3(a) {
  */
 
 function isMatrix4(a) {
-  return isVector(a) ? a.length === 16 : false;
+  return isVector(a, 16);
 }
 
 /***/ }),
@@ -67915,7 +68848,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Array} _vertexStride                              - Vertex stride
  */
 
-var Tw2ParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleConstraint"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleElementDeclaration"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2ParticleEmitter"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2ParticleEmitter"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleForce"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleSystem", "Tr2ParticleSystem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleConstraint"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleElementDeclaration"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleEmitter"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleEmitter"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleForce"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("This is unused, remove it?"), _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleSystem extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   //Float32Array
   //Float32Array
   // Array
@@ -68556,7 +69489,7 @@ var ParticleType = {
   MASS: 3,
   CUSTOM: 4
 };
-var Tw2ParticleElement = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleElement"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(ParticleType), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleElement {
+var Tw2ParticleElement = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleElement"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(ParticleType), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = _class3 = class Tw2ParticleElement {
   constructor() {
     _initializerDefineProperty(this, "elementType", _descriptor, this);
 
@@ -68713,7 +69646,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleElementDeclaration = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].type("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].enumerable(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].black.boolean, _dec(_class = (_class2 = (_temp = class Tw2ParticleElementDeclaration extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
+var Tw2ParticleElementDeclaration = (_dec = global__WEBPACK_IMPORTED_MODULE_2__["meta"].ctor("Tw2ParticleElementDeclaration", "Tr2ParticleElementDeclaration"), _dec2 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].enums(_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec6 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_2__["meta"].boolean, _dec(_class = (_class2 = (_temp = class Tw2ParticleElementDeclaration extends global__WEBPACK_IMPORTED_MODULE_2__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -68867,7 +69800,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2DynamicEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2DynamicEmitter", "Tr2DynamicEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleAttributeGenerator"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2ParticleSystem"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class Tw2DynamicEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"] {
+var Tw2DynamicEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2DynamicEmitter", "Tr2DynamicEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleAttributeGenerator"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleSystem"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2DynamicEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"] {
   constructor(...args) {
     super(...args);
 
@@ -68940,16 +69873,6 @@ var Tw2DynamicEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
       this.particleSystem.EndSpawnParticle();
     }
   }
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
-
-
-  static black(r) {
-    return [["name", r.string], ["particleSystem", r.object], ["generators", r.array], ["maxParticles", r.uint], ["rate", r.float]];
-  }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
   configurable: true,
@@ -69001,7 +69924,7 @@ var Tw2DynamicEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleEmitter", function() { return Tw2ParticleEmitter; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _class, _class2, _descriptor, _temp;
+var _dec, _class, _descriptor, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -69011,7 +69934,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 /* eslint no-unused-vars:0 */
 
-var Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleEmitter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2ParticleSystem"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tw2ParticleEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleSystem"), (_class = (_temp = class Tw2ParticleEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -69046,14 +69969,14 @@ var Tw2ParticleEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abs
 
   Update(dt) {}
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "particleSystem", [_dec3], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "particleSystem", [_dec], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-})), _class2)) || _class) || _class);
+})), _class));
 
 /***/ }),
 
@@ -69081,7 +70004,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2StaticEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2StaticEmitter", "Tr2StaticEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2ParticleSystem"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2GeometryRes"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleEmitter"] {
+var Tw2StaticEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2StaticEmitter", "Tr2StaticEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleSystem"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2GeometryRes"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tw2StaticEmitter extends _Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleEmitter"] {
   constructor(...args) {
     super(...args);
 
@@ -69300,7 +70223,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleAttractorForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleAttractorForce", "Tr2ParticleAttractorForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class Tw2ParticleAttractorForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tw2ParticleAttractorForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleAttractorForce", "Tr2ParticleAttractorForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class Tw2ParticleAttractorForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -69367,7 +70290,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleDirectForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleDirectForce", "Tr2ParticleDirectForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class Tw2ParticleDirectForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tw2ParticleDirectForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleDirectForce", "Tr2ParticleDirectForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class Tw2ParticleDirectForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -69419,7 +70342,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleDragForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleDragForce", "Tr2ParticleDragForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class Tw2ParticleDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tw2ParticleDragForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleDragForce", "Tr2ParticleDragForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2ParticleDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -69473,7 +70396,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleFluidDragForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleFluidDragForce", "Tr2ParticleFluidDragForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class Tw2ParticleFluidDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tw2ParticleFluidDragForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleFluidDragForce", "Tr2ParticleFluidDragForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2ParticleFluidDragForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -69532,13 +70455,13 @@ var Tw2ParticleFluidDragForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleForce", function() { return Tw2ParticleForce; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _class, _class2, _class3, _temp;
+var _dec, _class, _class2, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 /* eslint no-unused-vars:0 */
 
-var Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleForce"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2ParticleForce extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2ParticleForce extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Applies forces
    * @param {Tw2ParticleElement} position - Position
@@ -69562,11 +70485,11 @@ var Tw2ParticleForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstr
    */
 
 
-}, _class3.global = {
+}, _class2.global = {
   vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec3_1: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create(),
   vec4_0: global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create()
-}, _temp), (_applyDecoratedDescriptor(_class2.prototype, "ApplyForce", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "ApplyForce"), _class2.prototype)), _class2)) || _class) || _class);
+}, _temp), (_applyDecoratedDescriptor(_class.prototype, "ApplyForce", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "ApplyForce"), _class.prototype)), _class));
 
 /***/ }),
 
@@ -69592,7 +70515,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleSpring = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleSpring", "Tr2ParticleSpring"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class Tw2ParticleSpring extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tw2ParticleSpring = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleSpring", "Tr2ParticleSpring"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class Tw2ParticleSpring extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -69655,7 +70578,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2ParticleTurbulenceForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleTurbulenceForce", "Tr2ParticleTurbulenceForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class Tw2ParticleTurbulenceForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tw2ParticleTurbulenceForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2ParticleTurbulenceForce", "Tr2ParticleTurbulenceForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2ParticleTurbulenceForce extends _Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -69792,13 +70715,13 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleAttributeGenerator", function() { return Tw2ParticleAttributeGenerator; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _class, _class2, _class3, _temp;
+var _dec, _dec2, _class, _class2, _temp;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 /* eslint no-unused-vars:0 */
 
-var Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2ParticleAttributeGenerator"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2ParticleAttributeGenerator extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = (_temp = _class2 = class Tw2ParticleAttributeGenerator extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Binds a particle system element to the generator
    * @param {Tw2ParticleSystem} ps
@@ -69820,9 +70743,9 @@ var Tw2ParticleAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__[
    */
 
 
-}, _class3.global = {
+}, _class2.global = {
   vec3_0: global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create()
-}, _temp), (_applyDecoratedDescriptor(_class2.prototype, "Bind", [_dec3], Object.getOwnPropertyDescriptor(_class2.prototype, "Bind"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "Generate", [_dec4], Object.getOwnPropertyDescriptor(_class2.prototype, "Generate"), _class2.prototype)), _class2)) || _class) || _class);
+}, _temp), (_applyDecoratedDescriptor(_class.prototype, "Bind", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "Bind"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "Generate", [_dec2], Object.getOwnPropertyDescriptor(_class.prototype, "Generate"), _class.prototype)), _class));
 
 /***/ }),
 
@@ -69850,7 +70773,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2RandomIntegerAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(_element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2ParticleElement"), _dec(_class = (_class2 = (_temp = class Tw2RandomIntegerAttributeGenerator extends _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"] {
+var Tw2RandomIntegerAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RandomIntegerAttributeGenerator", "Tr2RandomIntegerAttributeGenerator"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(_element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleElement"), _dec(_class = (_class2 = (_temp = class Tw2RandomIntegerAttributeGenerator extends _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"] {
   constructor(...args) {
     super(...args);
 
@@ -69957,7 +70880,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2RandomUniformAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2RandomUniformAttributeGenerator", "Tr2RandomUniformAttributeGenerator"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enumerable(_element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2ParticleElement"), _dec(_class = (_class2 = (_temp = class Tw2RandomUniformAttributeGenerator extends _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"] {
+var Tw2RandomUniformAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2RandomUniformAttributeGenerator", "Tr2RandomUniformAttributeGenerator"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(_element_Tw2ParticleElement__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleElement"].Type), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleElement"), _dec(_class = (_class2 = (_temp = class Tw2RandomUniformAttributeGenerator extends _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"] {
   constructor(...args) {
     super(...args);
 
@@ -70073,7 +70996,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2SphereShapeAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2SphereShapeAttributeGenerator", "Tr2SphereShapeAttributeGenerator"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this deprecated?"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this deprecated?"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2ParticleElement"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2ParticleElement"), _dec(_class = (_class2 = (_temp = class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"] {
+var Tw2SphereShapeAttributeGenerator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2SphereShapeAttributeGenerator", "Tr2SphereShapeAttributeGenerator"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this deprecated?"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this deprecated?"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleElement"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleElement"), _dec(_class = (_class2 = (_temp = class Tw2SphereShapeAttributeGenerator extends _Tw2ParticleAttributeGenerator__WEBPACK_IMPORTED_MODULE_2__["Tw2ParticleAttributeGenerator"] {
   constructor(...args) {
     super(...args);
 
@@ -70540,24 +71463,27 @@ function EveSOF(tw2) {
 
     for (var i = 0; i < hullAreas.length; ++i) {
       var area = hullAreas[i],
-          effect = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"](); // Use references to custom mask parameters - do not recreate them
+          effect = new core__WEBPACK_IMPORTED_MODULE_3__["Tw2Effect"]();
 
-      for (var _i = 0; _i < 2; _i++) {
-        var mask = masks[_i];
+      if (masks) {
+        // Use references to custom mask parameters - do not recreate them
+        for (var _i = 0; _i < 2; _i++) {
+          var mask = masks[_i];
 
-        if (mask) {
-          var {
-            PatternMaskMap,
-            DiffuseColor,
-            FresnelColor,
-            Gloss
-          } = mask.parameters;
-          effect.parameters[PatternMaskMap.name] = PatternMaskMap;
-          effect.parameters[DiffuseColor.name] = DiffuseColor;
-          effect.parameters[FresnelColor.name] = FresnelColor;
-          effect.parameters[Gloss.name] = Gloss;
-        } else {
-          console.error("Missing mask " + _i);
+          if (mask) {
+            var {
+              PatternMaskMap,
+              DiffuseColor,
+              FresnelColor,
+              Gloss
+            } = mask.parameters;
+            effect.parameters[PatternMaskMap.name] = PatternMaskMap;
+            effect.parameters[DiffuseColor.name] = DiffuseColor;
+            effect.parameters[FresnelColor.name] = FresnelColor;
+            effect.parameters[Gloss.name] = Gloss;
+          } else {
+            console.error("Missing mask " + _i);
+          }
         }
       }
 
@@ -71386,58 +72312,6 @@ function EveSOF(tw2) {
     });
   }();
   /**
-   * Extends the sof data object with patterns from a space object factory file
-   * @param {String} [resPath] - The resource path to a source space object factory file
-   * @returns {Promise}
-   */
-
-
-  this.ExtendPatternsFrom = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(function* (resPath) {
-      if (!resPath) {
-        return Promise.reject(new Error("Invalid respath: undefined"));
-      }
-
-      var currentSof = yield this.FetchSOF(),
-          extendSof = yield tw2.FetchObject(resPath);
-      currentSof.pattern = currentSof.pattern.concat(extendSof.pattern);
-    });
-
-    return function (_x4) {
-      return _ref3.apply(this, arguments);
-    };
-  }();
-  /**
-   * Extends the sof data object with materials from a space object factory file
-   * @param {String} [resPath] - The resource path to a source space object factory file
-   * @returns {Promise}
-   */
-
-
-  this.ExtendMaterialsFrom = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator(function* (resPath) {
-      if (!resPath) {
-        return Promise.reject(new Error("Invalid respath: undefined"));
-      }
-
-      var currentSof = yield this.FetchSOF(),
-          extendSof = yield tw2.FetchObject(resPath);
-      var materials = extendSof.material;
-
-      if (resPath.includes(".black")) {
-        extendSof.material.forEach(material => {
-          currentSof.material[material.name] = material.Assign();
-        });
-      } else {
-        Object.assign(currentSof.material, extendSof.material);
-      }
-    });
-
-    return function (_x5) {
-      return _ref4.apply(this, arguments);
-    };
-  }();
-  /**
    * Gets a sof object
    * @param {String} name
    * @returns {Promise<{}>}
@@ -71445,14 +72319,14 @@ function EveSOF(tw2) {
 
 
   var getSofObject = /*#__PURE__*/function () {
-    var _ref5 = _asyncToGenerator(function* (name) {
+    var _ref3 = _asyncToGenerator(function* (name) {
       var sof = yield _this.FetchSOF();
       if (sof[name]) return sof[name];
       throw new Error("Invalid sof object (".concat(name, ")"));
     });
 
-    return function getSofObject(_x6) {
-      return _ref5.apply(this, arguments);
+    return function getSofObject(_x4) {
+      return _ref3.apply(this, arguments);
     };
   }();
   /**
@@ -71465,7 +72339,7 @@ function EveSOF(tw2) {
 
 
   var getSofObjectKey = /*#__PURE__*/function () {
-    var _ref6 = _asyncToGenerator(function* (name, key, ErrorConstructor) {
+    var _ref4 = _asyncToGenerator(function* (name, key, ErrorConstructor) {
       var sofObject = yield getSofObject(name);
 
       if (Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isArray"])(sofObject)) {
@@ -71487,8 +72361,8 @@ function EveSOF(tw2) {
       throw new Error("Invalid sof object key (".concat(name, ":").concat(key, ")"));
     });
 
-    return function getSofObjectKey(_x7, _x8, _x9) {
-      return _ref6.apply(this, arguments);
+    return function getSofObjectKey(_x5, _x6, _x7) {
+      return _ref4.apply(this, arguments);
     };
   }();
   /**
@@ -71499,7 +72373,7 @@ function EveSOF(tw2) {
 
 
   var getSofObjectValueDescriptions = /*#__PURE__*/function () {
-    var _ref7 = _asyncToGenerator(function* (name) {
+    var _ref5 = _asyncToGenerator(function* (name) {
       var sofObject = yield getSofObject(name),
           out = {};
 
@@ -71520,8 +72394,8 @@ function EveSOF(tw2) {
       return out;
     });
 
-    return function getSofObjectValueDescriptions(_x10) {
-      return _ref7.apply(this, arguments);
+    return function getSofObjectValueDescriptions(_x8) {
+      return _ref5.apply(this, arguments);
     };
   }();
   /**
@@ -71532,7 +72406,7 @@ function EveSOF(tw2) {
 
 
   var getHullProjection = /*#__PURE__*/function () {
-    var _ref8 = _asyncToGenerator(function* (hull, patternData) {
+    var _ref6 = _asyncToGenerator(function* (hull, patternData) {
       yield _this.FetchHull(hull);
       var {
         projections = []
@@ -71551,8 +72425,8 @@ function EveSOF(tw2) {
       }
     });
 
-    return function getHullProjection(_x11, _x12) {
-      return _ref8.apply(this, arguments);
+    return function getHullProjection(_x9, _x10) {
+      return _ref6.apply(this, arguments);
     };
   }();
   /**
@@ -71563,7 +72437,7 @@ function EveSOF(tw2) {
 
 
   this.FetchObject = /*#__PURE__*/function () {
-    var _ref9 = _asyncToGenerator(function* (dna) {
+    var _ref7 = _asyncToGenerator(function* (dna) {
       if (!Object(global_util__WEBPACK_IMPORTED_MODULE_1__["isDNA"])(dna)) {
         throw new Error("Invalid DNA (".concat(dna, ")"));
       }
@@ -71611,8 +72485,8 @@ function EveSOF(tw2) {
       return ship;
     });
 
-    return function (_x13) {
-      return _ref9.apply(this, arguments);
+    return function (_x11) {
+      return _ref7.apply(this, arguments);
     };
   }();
   /**
@@ -71623,12 +72497,12 @@ function EveSOF(tw2) {
 
 
   this.FetchHull = /*#__PURE__*/function () {
-    var _ref10 = _asyncToGenerator(function* (hull) {
+    var _ref8 = _asyncToGenerator(function* (hull) {
       return getSofObjectKey("hull", hull, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFHullNotFound"]);
     });
 
-    return function (_x14) {
-      return _ref10.apply(this, arguments);
+    return function (_x12) {
+      return _ref8.apply(this, arguments);
     };
   }();
   /**
@@ -71648,15 +72522,15 @@ function EveSOF(tw2) {
    */
 
   this.FetchHullPattern = /*#__PURE__*/function () {
-    var _ref12 = _asyncToGenerator(function* (hull, pattern) {
+    var _ref10 = _asyncToGenerator(function* (hull, pattern) {
       var patternData = yield _this.FetchPattern(pattern),
           found = getHullProjection(hull, patternData);
       if (found) return found;
       throw new Error("Invalid pattern for hull (".concat(hull, ":").concat(pattern, ")"));
     });
 
-    return function (_x15, _x16) {
-      return _ref12.apply(this, arguments);
+    return function (_x13, _x14) {
+      return _ref10.apply(this, arguments);
     };
   }();
   /**
@@ -71667,7 +72541,7 @@ function EveSOF(tw2) {
 
 
   this.FetchHullPatternNames = /*#__PURE__*/function () {
-    var _ref13 = _asyncToGenerator(function* (hull) {
+    var _ref11 = _asyncToGenerator(function* (hull) {
       var patterns = yield getSofObject("pattern");
       var out = [];
       patterns.forEach(pattern => {
@@ -71682,8 +72556,8 @@ function EveSOF(tw2) {
       return out;
     });
 
-    return function (_x17) {
-      return _ref13.apply(this, arguments);
+    return function (_x15) {
+      return _ref11.apply(this, arguments);
     };
   }();
   /**
@@ -71694,14 +72568,14 @@ function EveSOF(tw2) {
 
 
   this.FetchHullBuildClass = /*#__PURE__*/function () {
-    var _ref14 = _asyncToGenerator(function* (dna) {
+    var _ref12 = _asyncToGenerator(function* (dna) {
       var hull = dna.split(":")[0],
           data = yield _this.FetchHull(hull);
       return data.buildClass === 2 ? 2 : 1;
     });
 
-    return function (_x18) {
-      return _ref14.apply(this, arguments);
+    return function (_x16) {
+      return _ref12.apply(this, arguments);
     };
   }();
   /**
@@ -71712,12 +72586,12 @@ function EveSOF(tw2) {
 
 
   this.FetchRace = /*#__PURE__*/function () {
-    var _ref15 = _asyncToGenerator(function* (race) {
+    var _ref13 = _asyncToGenerator(function* (race) {
       return getSofObjectKey("race", race, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFRaceNotFound"]);
     });
 
-    return function (_x19) {
-      return _ref15.apply(this, arguments);
+    return function (_x17) {
+      return _ref13.apply(this, arguments);
     };
   }();
   /**
@@ -71736,12 +72610,12 @@ function EveSOF(tw2) {
    */
 
   this.FetchFaction = /*#__PURE__*/function () {
-    var _ref17 = _asyncToGenerator(function* (faction) {
+    var _ref15 = _asyncToGenerator(function* (faction) {
       return getSofObjectKey("faction", faction, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFFactionNotFound"]);
     });
 
-    return function (_x20) {
-      return _ref17.apply(this, arguments);
+    return function (_x18) {
+      return _ref15.apply(this, arguments);
     };
   }();
   /**
@@ -71760,12 +72634,12 @@ function EveSOF(tw2) {
    */
 
   this.FetchMaterial = /*#__PURE__*/function () {
-    var _ref19 = _asyncToGenerator(function* (material) {
+    var _ref17 = _asyncToGenerator(function* (material) {
       return getSofObjectKey("material", material, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFMaterialNotFound"]);
     });
 
-    return function (_x21) {
-      return _ref19.apply(this, arguments);
+    return function (_x19) {
+      return _ref17.apply(this, arguments);
     };
   }();
   /**
@@ -71784,12 +72658,12 @@ function EveSOF(tw2) {
    */
 
   this.FetchPattern = /*#__PURE__*/function () {
-    var _ref21 = _asyncToGenerator(function* (pattern) {
+    var _ref19 = _asyncToGenerator(function* (pattern) {
       return getSofObjectKey("pattern", pattern, core__WEBPACK_IMPORTED_MODULE_3__["ErrSOFPatternNotFound"]);
     });
 
-    return function (_x22) {
-      return _ref21.apply(this, arguments);
+    return function (_x20) {
+      return _ref19.apply(this, arguments);
     };
   }();
   /**
@@ -71815,285 +72689,74 @@ function EveSOF(tw2) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFData", function() { return EveSOFData; });
-/* harmony import */ var global_util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/util */ "./global/util/index.js");
-/* harmony import */ var core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core */ "./core/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-/**
- * EveSOFData
- *
- * @property {Array.<EveSOFDataFaction>} faction   -
- * @property {EveSOFDataGeneric} generic           -
- * @property {Array.<EveSOFDataHull>} hull         -
- * @property {Array.<EveSOFDataMaterial>} material -
- * @property {Array.<EveSOFDataPattern>} pattern   -
- * @property {Array.<EveSOFDataRace>} race         -
- */
-
-class EveSOFData {
+var EveSOFData = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFData"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFaction"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataGeneric"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHull"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataMaterial"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataPattern"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataRace"), _dec(_class = (_class2 = (_temp = class EveSOFData {
   constructor() {
-    this.faction = [];
-    this.generic = null;
-    this.hull = [];
-    this.material = [];
-    this.pattern = [];
-    this.race = [];
+    _initializerDefineProperty(this, "faction", _descriptor, this);
+
+    _initializerDefineProperty(this, "generic", _descriptor2, this);
+
+    _initializerDefineProperty(this, "hull", _descriptor3, this);
+
+    _initializerDefineProperty(this, "material", _descriptor4, this);
+
+    _initializerDefineProperty(this, "pattern", _descriptor5, this);
+
+    _initializerDefineProperty(this, "race", _descriptor6, this);
   }
 
-  /**
-   * Initializes the sof data
-   */
-  Initialize() {
-    this._spriteEffect = core__WEBPACK_IMPORTED_MODULE_1__["Tw2Effect"].from({
-      effectFilePath: "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx",
-      parameters: {
-        MainIntensity: 1,
-        GradientMap: "res:/texture/particle/whitesharp_gradient.dds.0.png"
-      }
-    }); // There is no "packed" banner effect but there is a "unpacked" version
-    // Need to figure out if we can come to an approximation
-
-    this._bannerEffect = null;
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "faction", [_dec2], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
   }
-  /**
-   * Gets a hull by it's name
-   * @param {String} name
-   * @returns {EveSOFDataHull|null}
-   */
-
-
-  GetHull(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFHullNotFound"]);
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "generic", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
   }
-  /**
-   * Gets hull names
-   * @param {Object|Array} [out={}]
-   * @returns {Object|Array} out
-   */
-
-
-  GetHullNames(out) {
-    return EveSOFData.GetNames(this.hull, out);
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "hull", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
   }
-  /**
-   * Checks if a hull exists
-   * @param {String} name
-   * @returns {boolean}
-   */
-
-
-  HasHull(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.hull, "name", name);
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "material", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
   }
-  /**
-   * Gets a hull's build class
-   * @param {String} name
-   * @returns {Number}
-   */
-
-
-  GetHullBuildClass(name) {
-    return this.GetHull(name).buildClass === 2 ? 2 : 1;
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "pattern", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
   }
-  /**
-   * Gets a hull's pattern names
-   * @param {String} name
-   */
-
-
-  GetHullPatternNames(name) {
-    this.GetHull(name);
-    var patternNames = [];
-
-    for (var i = 0; i < this.pattern.length; i++) {
-      if (this.pattern[i].HasProjection(name)) {
-        patternNames.push(this.pattern[i].name);
-      }
-    }
-
-    return patternNames.sort();
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "race", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
   }
-  /**
-   * Checks if a hull has a given pattern
-   * @param {String} hullName
-   * @param {String} patternName
-   * @returns {boolean}
-   */
-
-
-  HasHullPattern(hullName, patternName) {
-    var hull = this.GetHull(hullName);
-    return this.HasPattern(patternName) ? this.GetPattern(patternName).HasProjection(hull.name) : false;
-  }
-  /**
-   * Gets a hull pattern
-   * @param {String} hullName
-   * @param {String} patternName
-   * @returns {*}
-   */
-
-
-  GetHullPattern(hullName, patternName) {
-    var hull = this.GetHull(hullName);
-    return this.GetPattern(patternName).GetHullPattern(hullName);
-  }
-  /**
-   * Gets a faction by it's name
-   * @param {String} name
-   * @returns {EveSOFDataFaction|null}
-   */
-
-
-  GetFaction(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFFactionNotFound"]);
-  }
-  /**
-   * Gets faction names
-   * @param {Object|Array} [out={}]
-   * @returns {Object|Array} out
-   */
-
-
-  GetFactionNames(out) {
-    return EveSOFData.GetNames(this.faction, out);
-  }
-  /**
-   * Checks if a faction exists
-   * @param {String} name
-   * @returns {boolean}
-   */
-
-
-  HasFaction(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.faction, "name", name);
-  }
-  /**
-   * Gets a race
-   * @param {String} name
-   * @returns {EveSOFDataRace|null}
-   */
-
-
-  GetRace(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFRaceNotFound"]);
-  }
-  /**
-   * Gets race names
-   * @param {Object|Array} [out={}]
-   * @returns {Object|Array} out
-   */
-
-
-  GetRaceNames(out) {
-    return EveSOFData.GetNames(this.race, out);
-  }
-  /**
-   * Checks if a race exists
-   * @param {String} name
-   * @returns {boolean}
-   */
-
-
-  HasRace(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.race, "name", name);
-  }
-  /**
-   * Gets a material
-   * @param {String} name
-   * @returns {EveSOFDataMaterial|null}
-   */
-
-
-  GetMaterial(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFMaterialNotFound"]);
-  }
-  /**
-   * Gets material names
-   * @param {Object|Array} [out={}]
-   * @returns {Object|Array} out
-   */
-
-
-  GetMaterialNames(out) {
-    return EveSOFData.GetNames(this.material, out);
-  }
-  /**
-   * Checks if a material exists
-   * @param {String} name
-   * @returns {boolean}
-   */
-
-
-  HasMaterial(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.material, "name", name);
-  }
-  /**
-   * Gets a pattern
-   * @param {String} name
-   * @returns {EveSOFDataPattern|null}
-   */
-
-
-  GetPattern(name) {
-    return Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name, core__WEBPACK_IMPORTED_MODULE_1__["ErrSOFPatternNotFound"]);
-  }
-  /**
-   * Gets pattern names
-   * @param {Object|Array} [out={}]
-   * @returns {Object|Array} out
-   */
-
-
-  GetPatternNames(out) {
-    return EveSOFData.GetNames(this.pattern, out);
-  }
-  /**
-   * Checks if a pattern exists
-   * @param {String} name
-   * @returns {boolean}
-   */
-
-
-  HasPattern(name) {
-    return !!Object(global_util__WEBPACK_IMPORTED_MODULE_0__["findElementByPropertyValue"])(this.pattern, "name", name);
-  }
-  /**
-   * Gets the names from a sof array
-   * @param {Array} arr
-   * @param {Object|Array} [out={}]
-   * @returns {Object|Array} out
-   */
-
-
-  static GetNames(arr, out = {}) {
-    var getDescription = !Object(global_util__WEBPACK_IMPORTED_MODULE_0__["isArray"])(out);
-
-    for (var i = 0; i < arr.length; i++) {
-      if (getDescription) {
-        out[arr[i].name] = arr[i].description || "";
-      } else {
-        out.push(getDescription);
-      }
-    }
-
-    if (!getDescription) {
-      out.sort();
-    }
-
-    return out;
-  }
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
-
-
-  static black(r) {
-    return [["faction", r.array], ["generic", r.object], ["hull", r.array], ["material", r.array], ["pattern", r.array], ["race", r.array]];
-  }
-
-}
+})), _class2)) || _class);
 
 /***/ }),
 
@@ -72117,7 +72780,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataFaction = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFaction", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataFactionChild"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataFactionColorSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataPatternLayer"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogoSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataFactionPlaneSet"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataFactionSpotlightSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataFactionVisibilityGroupSet"), _dec(_class = (_class2 = (_temp = class EveSOFDataFaction {
+var EveSOFDataFaction = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFaction", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionChild"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionColorSet"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternLayer"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogoSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionPlaneSet"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataFactionSpotlightSet"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataFactionVisibilityGroupSet"), _dec(_class = (_class2 = (_temp = class EveSOFDataFaction {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -72288,7 +72951,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataFactionChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFactionChild", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionChild {
+var EveSOFDataFactionChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFactionChild"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionChild {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -72342,7 +73005,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataFactionColorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFactionColorSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionColorSet {
+var EveSOFDataFactionColorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFactionColorSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionColorSet {
   constructor() {
     _initializerDefineProperty(this, "Black", _descriptor, this);
 
@@ -72387,26 +73050,6 @@ var EveSOFDataFactionColorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
     _initializerDefineProperty(this, "WhiteLight", _descriptor21, this);
 
     _initializerDefineProperty(this, "Yellow", _descriptor22, this);
-  }
-
-  /**
-   * Gets a faction color set by name
-   * @param {String} name
-   * @param {vec4} out
-   * @returns {vec4|null}
-   */
-  Get(name, out) {
-    name = name.toUpperCase();
-
-    for (var key in this) {
-      if (this.hasOwnProperty(key) && key.toUpperCase() === name) {
-        global__WEBPACK_IMPORTED_MODULE_0__["vec4"].copy(out, this[name]);
-        return out;
-      }
-    }
-
-    global__WEBPACK_IMPORTED_MODULE_0__["vec4"].set(out, 0, 0, 0, 0);
-    return null;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "Black", [_dec2], {
@@ -72587,7 +73230,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataFactionPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFactionPlaneSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionPlaneSet {
+var EveSOFDataFactionPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFactionPlaneSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionPlaneSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -72641,7 +73284,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataFactionSpotlightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFactionSpotlightSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionSpotlightSet {
+var EveSOFDataFactionSpotlightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFactionSpotlightSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec(_class = (_class2 = (_temp = class EveSOFDataFactionSpotlightSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -72713,7 +73356,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataFactionVisibilityGroupSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataFactionVisibilityGroupSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataGenericString"), _dec(_class = (_class2 = (_temp = class EveSOFDataFactionVisibilityGroupSet {
+var EveSOFDataFactionVisibilityGroupSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataFactionVisibilityGroupSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec(_class = (_class2 = (_temp = class EveSOFDataFactionVisibilityGroupSet {
   constructor() {
     _initializerDefineProperty(this, "visibilityGroups", _descriptor, this);
   }
@@ -72781,7 +73424,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ErrSOFPatternMaterialPrefixNotFound", function() { return ErrSOFPatternMaterialPrefixNotFound; });
 /* harmony import */ var core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core */ "./core/index.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -72791,7 +73434,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("EveSOFDataGeneric", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.path, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("EveSOFDataGenericShader"), _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.rawOf("EveSOFDataGenericShader"), _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("EveSOFDataGenericDamage"), _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.path, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("EveSOFDataGenericDecalShader"), _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("EveSOFDataGenericHullDamage"), _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("EveSOFDataGenericString"), _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("EveSOFDataGenericString"), _dec12 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.path, _dec13 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.path, _dec14 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.path, _dec15 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec16 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("EveSOFDataGenericSwarm"), _dec17 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.listOf("EveSOFDataGenericVariant"), _dec(_class = (_class2 = (_temp = class EveSOFDataGeneric {
+var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("EveSOFDataGeneric", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].path, _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveSOFDataGenericShader"), _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].raw("EveSOFDataGenericShader"), _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("EveSOFDataGenericDamage"), _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].path, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveSOFDataGenericDecalShader"), _dec8 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("EveSOFDataAreaMaterial"), _dec9 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("EveSOFDataGenericHullDamage"), _dec10 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveSOFDataGenericString"), _dec11 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveSOFDataGenericString"), _dec12 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].path, _dec13 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].path, _dec14 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].path, _dec15 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec16 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("EveSOFDataGenericSwarm"), _dec17 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveSOFDataGenericVariant"), _dec18 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].list("EveSOFDataGenericString"), _dec(_class = (_class2 = (_temp = class EveSOFDataGeneric {
   constructor() {
     _initializerDefineProperty(this, "areaShaderLocation", _descriptor, this);
 
@@ -72824,194 +73467,8 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
     _initializerDefineProperty(this, "swarm", _descriptor15, this);
 
     _initializerDefineProperty(this, "variants", _descriptor16, this);
-  }
 
-  /**
-   * Initializer
-   */
-  Initialize() {
-    if (this.bannerShader) {
-      // No banner.fx for gles effects
-      this.bannerShader.shader = "cdn:/graphics/effect/managed/space/spaceobject/v5/fx/banner/unpacked_fxbannerv5.fx"; // TODO: Figure out default parameters and textures
-    }
-  }
-  /**
-   * Gets a shader's configuration object
-   * @param {String} name
-   * @param {Boolean} isAnimated
-   * @param {Object} [provided]
-   * @returns {{effectFilePath: *, textures: *, parameters: *}}
-   */
-
-
-  GetShaderConfig(name, isAnimated, provided) {
-    if (this.HasDecalShader(name)) {
-      var _shader = this.GetDecalShader(name),
-          _effectFilePath = this.GetDecalShaderPath(name, isAnimated);
-
-      return _shader.Assign({
-        effectFilePath: _effectFilePath
-      }, provided);
-    }
-
-    var shader = this.GetAreaShader(name),
-        effectFilePath = this.GetAreaShaderPath(name, isAnimated);
-    return shader.Assign({
-      effectFilePath,
-      hasPatternMaskMaps: shader.HasPatternMaskMaps()
-    }, provided);
-  }
-  /**
-   * Gets a shader's prefix
-   * @param {Boolean} [isAnimated]
-   * @returns {String}
-   */
-
-
-  GetShaderPrefix(isAnimated) {
-    return isAnimated ? this.shaderPrefixAnimated : "";
-  }
-  /**
-   * Gets a shader's full path
-   * @param {String} shader
-   * @param {Boolean} [isAnimated]
-   * @returns {string}
-   */
-
-
-  GetShaderPath(shader, isAnimated) {
-    var prefix = this.GetShaderPrefix(isAnimated);
-    if (shader.charAt(0) !== "/") shader = "/" + shader;
-    var index = shader.lastIndexOf("/");
-    return shader.substring(0, index + 1) + prefix + shader.substring(index + 1);
-  }
-  /**
-   * Gets an area shader's path
-   * @param shader
-   * @param isAnimated
-   * @returns {string}
-   */
-
-
-  GetAreaShaderPath(shader, isAnimated) {
-    return this.areaShaderLocation + this.GetShaderPath(shader, isAnimated);
-  }
-  /**
-   * Gets a decal shader's path
-   * @param shader
-   * @param isAnimated
-   * @returns {string}
-   */
-
-
-  GetDecalShaderPath(shader, isAnimated) {
-    return this.decalShaderLocation + this.GetShaderPath(shader, isAnimated);
-  }
-  /**
-   * Checks if an area shader exists
-   * @param {String} name
-   * @returns {boolean}
-   */
-
-
-  HasAreaShader(name) {
-    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "shader", name);
-  }
-  /**
-   * Gets area shader by it's short name
-   * @param {String} name
-   * @returns {null|EveSOFDataGenericShader}
-   */
-
-
-  GetAreaShader(name) {
-    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.areaShaders, "shader", name, ErrSOFAreaShaderNotFound);
-  }
-  /**
-   * Checks if a decal shader exists
-   * @param {String} name
-   * @returns {boolean}
-   */
-
-
-  HasDecalShader(name) {
-    return !!global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "shader", name);
-  }
-  /**
-   * Gets a decal shader by it's short name
-   * @param {String} name
-   * @returns {null|EveSOFDataGenericShader}
-   */
-
-
-  GetDecalShader(name) {
-    return global__WEBPACK_IMPORTED_MODULE_1__["util"].findElementByPropertyValue(this.decalShaders, "shader", name, ErrSOFDecalShaderNotFound);
-  }
-  /**
-   * Gets material prefixes
-   * @returns {Array<String>}
-   */
-
-
-  GetMaterialPrefixes() {
-    var out = [];
-
-    for (var i = 0; i < this.materialPrefixes.length; i++) {
-      out.push(this.materialPrefixes[i].str);
-    }
-
-    return out;
-  }
-  /**
-   * Gets pattern material prefixes
-   * @returns {Array<String>}
-   */
-
-
-  GetPatternMaterialPrefixes() {
-    var out = [];
-
-    for (var i = 0; i < this.patternMaterialPrefixes.length; i++) {
-      out.push(this.patternMaterialPrefixes[i].str);
-    }
-
-    return out;
-  }
-  /**
-   * Gets a material prefix by it's index
-   * @param {Number} index
-   * @returns {String}
-   */
-
-
-  GetMaterialPrefix(index) {
-    var offByOne = index - 1;
-
-    if (this.materialPrefixes[offByOne] === undefined) {
-      throw new ErrSOFMaterialPrefixNotFound({
-        index
-      });
-    }
-
-    return this.materialPrefixes[offByOne].str;
-  }
-  /**
-   * Gets a pattern material prefix by it's index
-   * @param {Number} index
-   * @returns {String}
-   */
-
-
-  GetPatternMaterialPrefix(index) {
-    var offByOne = index - 1;
-
-    if (this.patternMaterialPrefixes[offByOne] === undefined) {
-      throw new ErrSOFPatternMaterialPrefixNotFound({
-        index
-      });
-    }
-
-    return this.patternMaterialPrefixes[offByOne].str;
+    _initializerDefineProperty(this, "visibilityGroups", _descriptor17, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "areaShaderLocation", [_dec2], {
@@ -73126,6 +73583,13 @@ var EveSOFDataGeneric = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type
   initializer: function () {
     return [];
   }
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "visibilityGroups", [_dec18], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return [];
+  }
 })), _class2)) || _class);
 /**
  * Fires when a sof area shader is not found
@@ -73190,7 +73654,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericDamage", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector2, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector2, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericDamage {
+var EveSOFDataGenericDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericDamage", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericDamage {
   constructor() {
     _initializerDefineProperty(this, "armorParticleAngle", _descriptor, this);
 
@@ -73415,7 +73879,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericDecalShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericDecalShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataGenericString"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataGenericString"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericDecalShader {
+var EveSOFDataGenericDecalShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericDecalShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericDecalShader {
   constructor() {
     _initializerDefineProperty(this, "defaultTextures", _descriptor, this);
 
@@ -73424,69 +73888,6 @@ var EveSOFDataGenericDecalShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["
     _initializerDefineProperty(this, "parentTextures", _descriptor3, this);
 
     _initializerDefineProperty(this, "shader", _descriptor4, this);
-  }
-
-  /**
-   * Assigns the shader's parameters to an object
-   * @param {Object} [out={}]
-   * @param {Object} [provided]
-   * @returns {Object} out
-   */
-  Assign(out = {}, provided) {
-    out.parameters = this.AssignParameters(out.parameters, provided ? provided.parameters : undefined);
-    out.textures = this.AssignTextures(out.textures, provided ? provided.textures : undefined);
-    return out;
-  }
-  /**
-   * Assigns the shader's parameters to an object
-   * @param {Object} [out={}]
-   * @param {Object} [provided]
-   * @return {Object} out
-   */
-
-
-  AssignParameters(out = {}, provided) {
-    if (provided) {
-      for (var i = 0; i < this.parameters.length; i++) {
-        var {
-          str
-        } = this.parameters[i];
-
-        if (provided[str] !== undefined) {
-          out[str] = provided[str];
-        }
-      }
-    }
-
-    return out;
-  }
-  /**
-   * Assigns the shader's textures to an object
-   * @param {Object} [out={}]
-   * @param {Object} [provided]
-   * @returns {Object} out
-   */
-
-
-  AssignTextures(out = {}, provided) {
-    for (var i = 0; i < this.defaultTextures.length; i++) {
-      this.defaultTextures[i].Assign(out);
-    }
-
-    for (var _i = 0; _i < this.parentTextures.length; _i++) {
-      var {
-        str
-      } = this.parentTextures[_i];
-
-      if (provided && str in provided) {
-        console.log("Providing texture: ", str);
-        out[str] = provided[str];
-      } else if (!out[str]) {
-        out[str] = "";
-      }
-    }
-
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultTextures", [_dec2], {
@@ -73541,7 +73942,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericHullDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericHullDamage", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector2, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector2, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericHullDamage {
+var EveSOFDataGenericHullDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericHullDamage", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector2, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericHullDamage {
   constructor() {
     _initializerDefineProperty(this, "hullParticleAngle", _descriptor, this);
 
@@ -73685,7 +74086,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataGenericString"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = _class3 = class EveSOFDataGenericShader {
+var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericShader"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataGenericString"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = _class3 = class EveSOFDataGenericShader {
   constructor() {
     _initializerDefineProperty(this, "defaultParameters", _descriptor, this);
 
@@ -73699,80 +74100,6 @@ var EveSOFDataGenericShader = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"
 
     _initializerDefineProperty(this, "transparencyTextureName", _descriptor6, this);
   }
-
-  /**
-   * Checks if the effect has pattern mask maps
-   * @returns {boolean}
-   */
-  HasPatternMaskMaps() {
-    for (var i = 0; i < this.parameters.length; i++) {
-      if (EveSOFDataGenericShader.PatternMaskMaps.includes(this.parameters[i].str)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-  /**
-   * Assigns the shader's parameters
-   * @param {Object} [out={}]
-   * @param {Object} [provided]
-   * @returns {Object} out
-   */
-
-
-  Assign(out = {}, provided) {
-    out.parameters = this.AssignParameters(out.parameters, provided ? provided.parameters : undefined);
-    out.textures = this.AssignTextures(out.textures, provided ? provided.textures : undefined);
-    return out;
-  }
-  /**
-   * Assigns the shader's parameters to an object
-   * @param {Object} [out={}]
-   * @param {Object} [provided]
-   * @return {Object} out
-   */
-
-
-  AssignParameters(out = {}, provided) {
-    for (var i = 0; i < this.defaultParameters.length; i++) {
-      this.defaultParameters[i].Assign(out);
-    }
-
-    if (provided) {
-      for (var _i = 0; _i < this.parameters.length; _i++) {
-        var {
-          str
-        } = this.parameters[_i];
-
-        if (provided[str] !== undefined) {
-          out[str] = provided[str];
-        }
-      }
-    }
-
-    return out;
-  }
-  /**
-   * Assigns the shader's textures to an object
-   * @param {Object} [out={}]
-   * @param {Object} [provided] - unused
-   * @returns {Object} out
-   */
-
-
-  AssignTextures(out = {}, provided) {
-    for (var i = 0; i < this.defaultTextures.length; i++) {
-      this.defaultTextures[i].Assign(out);
-    }
-
-    return out;
-  }
-  /**
-   * Pattern mask maps
-   * @type {string[]}
-   */
-
 
 }, _class3.PatternMaskMaps = ["PatternMask1Map", "PatternMask2Map"], _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "defaultParameters", [_dec2], {
   configurable: true,
@@ -73840,7 +74167,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericString = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericString", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericString {
+var EveSOFDataGenericString = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericString", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericString {
   constructor() {
     _initializerDefineProperty(this, "str", _descriptor, this);
   }
@@ -73876,7 +74203,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericSwarm = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericSwarm {
+var EveSOFDataGenericSwarm = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericShader", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericSwarm {
   constructor() {
     _initializerDefineProperty(this, "formationDistance", _descriptor, this);
 
@@ -74020,7 +74347,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataGenericVariant = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataGenericVariant", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataHullArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericVariant {
+var EveSOFDataGenericVariant = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataGenericVariant", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataHullArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = (_class2 = (_temp = class EveSOFDataGenericVariant {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -74126,7 +74453,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHull = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHull", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullAnimation"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullBanner"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataHullBooster"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullChild"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullController"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullArea"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullDecalSet"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataPatternPerHull"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullArea"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullHazeSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullDecalSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataInstancedMesh"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullLightSet"), _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullLocatorSet"), _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullLocator"), _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullArea"), _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullPlaneSet"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullSoundEmitter"), _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullSpotlightSet"), _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullSpriteLineSet"), _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullSpriteSet"), _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullArea"), _dec(_class = (_class2 = (_temp = class EveSOFDataHull {
+var EveSOFDataHull = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHull"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullArea"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullAnimation"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullBanner"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataHullBooster"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullChild"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullController"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullArea"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullDecalSet"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternPerHull"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullArea"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullArea"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullHazeSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullDecalSet"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataInstancedMesh"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullLightSet"), _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullLocatorSet"), _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullLocator"), _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullArea"), _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullPlaneSet"), _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullSoundEmitter"), _dec36 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullSpotlightSet"), _dec37 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullSpriteLineSet"), _dec38 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullSpriteSet"), _dec39 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullArea"), _dec(_class = (_class2 = (_temp = class EveSOFDataHull {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -74505,7 +74832,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullAnimation", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec(_class = (_class2 = (_temp = class EveSOFDataHullAnimation {
+var EveSOFDataHullAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullAnimation"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec(_class = (_class2 = (_temp = class EveSOFDataHullAnimation {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -74604,7 +74931,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullArea", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataHullArea {
+var EveSOFDataHullArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataParameter"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataHullArea {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -74621,45 +74948,6 @@ var EveSOFDataHullArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].typ
     _initializerDefineProperty(this, "shader", _descriptor7, this);
 
     _initializerDefineProperty(this, "textures", _descriptor8, this);
-  }
-
-  /**
-   * Assigns the area's textures and parameters to an object
-   * @param {Object} [out={}]
-   * @returns {{}} out
-   */
-  Assign(out = {}) {
-    out.parameters = this.AssignParameters(out.parameters);
-    out.textures = this.AssignTextures(out.textures);
-    return out;
-  }
-  /**
-   * Assigns the area's parameters to an object
-   * @param {Object} [out={}]
-   * @returns {Object} out
-   */
-
-
-  AssignParameters(out = {}) {
-    for (var i = 0; i < this.parameters.length; i++) {
-      this.parameters[i].Assign(out);
-    }
-
-    return out;
-  }
-  /**
-   * Assigns the area's textures to an object
-   * @param {Object} [out={}]
-   * @returns {Object} out
-   */
-
-
-  AssignTextures(out = {}) {
-    for (var i = 0; i < this.textures.length; i++) {
-      this.textures[i].Assign(out);
-    }
-
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -74742,7 +75030,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullBanner", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = (_class2 = (_temp = class EveSOFDataHullBanner {
+var EveSOFDataHullBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullBanner"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class EveSOFDataHullBanner {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -74853,7 +75141,7 @@ __webpack_require__.r(__webpack_exports__);
 var _dec, _dec2, _class;
 
 
-var EveSOFDataHullBannerLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullBannerLight", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = class EveSOFDataHullBannerLight {}) || _class) || _class);
+var EveSOFDataHullBannerLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullBannerLight"), _dec(_class = _dec2(_class = class EveSOFDataHullBannerLight {}) || _class) || _class);
 
 /***/ }),
 
@@ -74877,7 +75165,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullBooster = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullBooster", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullBoosterItem"), _dec(_class = (_class2 = (_temp = class EveSOFDataHullBooster {
+var EveSOFDataHullBooster = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullBooster"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullBoosterItem"), _dec(_class = (_class2 = (_temp = class EveSOFDataHullBooster {
   constructor() {
     _initializerDefineProperty(this, "alwaysOn", _descriptor, this);
 
@@ -74931,7 +75219,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullBoosterItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullBoosterItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("What should the default value be?"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec(_class = (_class2 = (_temp = class EveSOFDataHullBoosterItem {
+var EveSOFDataHullBoosterItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullBoosterItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("What should the default value be?"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = class EveSOFDataHullBoosterItem {
   constructor() {
     _initializerDefineProperty(this, "atlasIndex0", _descriptor, this);
 
@@ -75012,7 +75300,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullChild", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullChild {
+var EveSOFDataHullChild = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullChild"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullChild {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75111,7 +75399,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullController = (_dec = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullController", true), _dec2 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec(_class = (_class2 = (_temp = class EveSOFDataHullController {
+var EveSOFDataHullController = (_dec = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullController"), _dec2 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = (_class2 = (_temp = class EveSOFDataHullController {
   constructor() {
     _initializerDefineProperty(this, "path", _descriptor, this);
   }
@@ -75137,7 +75425,7 @@ var EveSOFDataHullController = (_dec = global_index__WEBPACK_IMPORTED_MODULE_0__
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullDecalSet", function() { return EveSOFDataHullDecalSet; });
-/* harmony import */ var global_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global/index */ "./global/index.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
@@ -75147,7 +75435,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullDecalSet = (_dec = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullDecalSet", true), _dec2 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullDecalSetItem"), _dec4 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullDecalSet {
+var EveSOFDataHullDecalSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullDecalSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullDecalSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullDecalSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75201,7 +75489,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullDecalSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullDecalSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.indexBuffer, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullDecalSetItem {
+var EveSOFDataHullDecalSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullDecalSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].indexBuffer, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataParameter"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullDecalSetItem {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75228,43 +75516,6 @@ var EveSOFDataHullDecalSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
     _initializerDefineProperty(this, "usage", _descriptor12, this);
 
     _initializerDefineProperty(this, "visibilityGroup", _descriptor13, this);
-  }
-
-  /**
-   * Assigns the hull decal set's parameters
-   * @param {Object} [out={}]
-   * @returns {Object} out
-   */
-  Assign(out = {}) {
-    out.parameters = this.AssignParameters(out.parameters);
-    out.textures = this.AssignTextures(out.textures);
-    return out;
-  }
-  /**
-   * Assigns parameters to an object
-   * @param {Object} [out={}]
-   */
-
-
-  AssignParameters(out = {}) {
-    for (var i = 0; i < this.parameters.length; i++) {
-      this.parameters[i].Assign(out);
-    }
-
-    return out;
-  }
-  /**
-   * Assigns parameters to an object
-   * @param {Object} [out={}]
-   */
-
-
-  AssignTextures(out = {}) {
-    for (var i = 0; i < this.textures.length; i++) {
-      this.textures[i].Assign(out);
-    }
-
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -75382,7 +75633,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullHazeSet = (_dec = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullHazeSet", true), _dec2 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullHazeSetItem"), _dec4 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullHazeSet {
+var EveSOFDataHullHazeSet = (_dec = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullHazeSet"), _dec2 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullHazeSetItem"), _dec4 = global_index__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullHazeSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75436,7 +75687,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullHazeSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullHazeSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullHazeSetItem {
+var EveSOFDataHullHazeSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullHazeSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullHazeSetItem {
   constructor() {
     _initializerDefineProperty(this, "boosterGainInfluence", _descriptor, this);
 
@@ -75535,7 +75786,7 @@ var EveSOFDataHullHazeSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSet", function() { return EveSOFDataHullLightSet; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -75544,13 +75795,17 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullLightSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullLightSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSet {
+var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullLightSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "items", _descriptor2, this);
 
-    _initializerDefineProperty(this, "visibilityGroup", _descriptor3, this);
+    _initializerDefineProperty(this, "noiseAmplitude", _descriptor3, this);
+
+    _initializerDefineProperty(this, "noiseOctaves", _descriptor4, this);
+
+    _initializerDefineProperty(this, "visibilityGroup", _descriptor5, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -75567,7 +75822,21 @@ var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
   initializer: function () {
     return [];
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "visibilityGroup", [_dec4], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "noiseOctaves", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "visibilityGroup", [_dec6], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -75589,7 +75858,7 @@ var EveSOFDataHullLightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetItem", function() { return EveSOFDataHullLightSetItem; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -75598,7 +75867,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullLightSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetItem {
+var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetItem {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75612,9 +75881,11 @@ var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
 
     _initializerDefineProperty(this, "noiseFrequency", _descriptor6, this);
 
-    _initializerDefineProperty(this, "position", _descriptor7, this);
+    _initializerDefineProperty(this, "noiseOctaves", _descriptor7, this);
 
-    _initializerDefineProperty(this, "radius", _descriptor8, this);
+    _initializerDefineProperty(this, "position", _descriptor8, this);
+
+    _initializerDefineProperty(this, "radius", _descriptor9, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -75659,14 +75930,21 @@ var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
   initializer: function () {
     return 0;
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec8], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "noiseOctaves", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec9], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec9], {
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -75688,7 +75966,7 @@ var EveSOFDataHullLightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullLightSetSpotLight", function() { return EveSOFDataHullLightSetSpotLight; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -75697,7 +75975,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLightSetSpotLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullLightSetSpotLight", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetSpotLight {
+var EveSOFDataHullLightSetSpotLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSetSpotLight"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetSpotLight {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75709,13 +75987,17 @@ var EveSOFDataHullLightSetSpotLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0_
 
     _initializerDefineProperty(this, "lightColor", _descriptor5, this);
 
-    _initializerDefineProperty(this, "outerAngle", _descriptor6, this);
+    _initializerDefineProperty(this, "noiseAmplitude", _descriptor6, this);
 
-    _initializerDefineProperty(this, "position", _descriptor7, this);
+    _initializerDefineProperty(this, "noiseFrequency", _descriptor7, this);
 
-    _initializerDefineProperty(this, "radius", _descriptor8, this);
+    _initializerDefineProperty(this, "outerAngle", _descriptor8, this);
 
-    _initializerDefineProperty(this, "rotation", _descriptor9, this);
+    _initializerDefineProperty(this, "position", _descriptor9, this);
+
+    _initializerDefineProperty(this, "radius", _descriptor10, this);
+
+    _initializerDefineProperty(this, "rotation", _descriptor11, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -75753,28 +76035,42 @@ var EveSOFDataHullLightSetSpotLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0_
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "outerAngle", [_dec7], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "noiseAmplitude", [_dec7], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec8], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "noiseFrequency", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "outerAngle", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec10], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec9], {
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "radius", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec10], {
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec12], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -75805,7 +76101,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLightSetTexturedPointLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullLightSetTexturedPointLight", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetTexturedPointLight {
+var EveSOFDataHullLightSetTexturedPointLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLightSetTexturedPointLight"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLightSetTexturedPointLight {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75886,7 +76182,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLocator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullLocator", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLocator {
+var EveSOFDataHullLocator = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLocator"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = class EveSOFDataHullLocator {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75931,7 +76227,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullLocatorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullLocatorSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTransform"), _dec(_class = (_class2 = (_temp = class EveSOFDataHullLocatorSet {
+var EveSOFDataHullLocatorSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullLocatorSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTransform"), _dec(_class = (_class2 = (_temp = class EveSOFDataHullLocatorSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -75976,7 +76272,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullPlaneSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullPlaneSetItem"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSet {
+var EveSOFDataHullPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullPlaneSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullPlaneSetItem"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -76066,7 +76362,7 @@ var EveSOFDataHullPlaneSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullPlaneSetItem", function() { return EveSOFDataHullPlaneSetItem; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -76075,29 +76371,33 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullPlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullPlaneSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSetItem {
+var EveSOFDataHullPlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullPlaneSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullPlaneSetItem {
   constructor() {
     _initializerDefineProperty(this, "boneIndex", _descriptor, this);
 
     _initializerDefineProperty(this, "color", _descriptor2, this);
 
-    _initializerDefineProperty(this, "groupIndex", _descriptor3, this);
+    _initializerDefineProperty(this, "dutyCycle", _descriptor3, this);
 
-    _initializerDefineProperty(this, "layer1Scroll", _descriptor4, this);
+    _initializerDefineProperty(this, "groupIndex", _descriptor4, this);
 
-    _initializerDefineProperty(this, "layer1Transform", _descriptor5, this);
+    _initializerDefineProperty(this, "layer1Scroll", _descriptor5, this);
 
-    _initializerDefineProperty(this, "layer2Scroll", _descriptor6, this);
+    _initializerDefineProperty(this, "layer1Transform", _descriptor6, this);
 
-    _initializerDefineProperty(this, "layer2Transform", _descriptor7, this);
+    _initializerDefineProperty(this, "layer2Scroll", _descriptor7, this);
 
-    _initializerDefineProperty(this, "maskMapAtlasIndex", _descriptor8, this);
+    _initializerDefineProperty(this, "layer2Transform", _descriptor8, this);
 
-    _initializerDefineProperty(this, "position", _descriptor9, this);
+    _initializerDefineProperty(this, "maskMapAtlasIndex", _descriptor9, this);
 
-    _initializerDefineProperty(this, "rotation", _descriptor10, this);
+    _initializerDefineProperty(this, "position", _descriptor10, this);
 
-    _initializerDefineProperty(this, "scaling", _descriptor11, this);
+    _initializerDefineProperty(this, "rate", _descriptor11, this);
+
+    _initializerDefineProperty(this, "rotation", _descriptor12, this);
+
+    _initializerDefineProperty(this, "scaling", _descriptor13, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "boneIndex", [_dec2], {
@@ -76114,63 +76414,77 @@ var EveSOFDataHullPlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec4], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return -1;
-  }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "layer1Scroll", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "layer1Transform", [_dec6], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "layer2Scroll", [_dec7], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "layer2Transform", [_dec8], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
-  }
-}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "maskMapAtlasIndex", [_dec9], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "dutyCycle", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec10], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "groupIndex", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return -1;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "layer1Scroll", [_dec6], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "layer1Transform", [_dec7], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "layer2Scroll", [_dec8], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "layer2Transform", [_dec9], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec4"].create();
+  }
+}), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "maskMapAtlasIndex", [_dec10], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec11], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-}), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec11], {
+}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "rate", [_dec12], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
+  }
+}), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "rotation", [_dec13], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["quat"].create();
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec12], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "scaling", [_dec14], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -76192,7 +76506,7 @@ var EveSOFDataHullPlaneSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataHullSoundEmitter", function() { return EveSOFDataHullSoundEmitter; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2, _temp;
+var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -76201,11 +76515,13 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullSoundEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullSoundEmitter", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSoundEmitter {
+var EveSOFDataHullSoundEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullSoundEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSoundEmitter {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "prefix", _descriptor2, this);
+
+    _initializerDefineProperty(this, "position", _descriptor3, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -76221,6 +76537,13 @@ var EveSOFDataHullSoundEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["me
   writable: true,
   initializer: function () {
     return "";
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "position", [_dec4], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
 })), _class2)) || _class);
 
@@ -76246,7 +76569,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullSpotlightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullSpotlightSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullSpotlightSetItem"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpotlightSet {
+var EveSOFDataHullSpotlightSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullSpotlightSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullSpotlightSetItem"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpotlightSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -76327,7 +76650,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullSpotlightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullSpotlightSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpotlightSetItem {
+var EveSOFDataHullSpotlightSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullSpotlightSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpotlightSetItem {
   constructor() {
     _initializerDefineProperty(this, "boneIndex", _descriptor, this);
 
@@ -76426,7 +76749,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullSpriteLineSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullSpriteLineSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullSpriteLineSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteLineSet {
+var EveSOFDataHullSpriteLineSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullSpriteLineSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullSpriteLineSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteLineSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -76489,7 +76812,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullSpriteLineSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullSpriteLineSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteLineSetItem {
+var EveSOFDataHullSpriteLineSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullSpriteLineSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteLineSetItem {
   constructor() {
     _initializerDefineProperty(this, "blinkPhase", _descriptor, this);
 
@@ -76651,7 +76974,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullSpriteSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullSpriteSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataHullSpriteSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteSet {
+var EveSOFDataHullSpriteSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullSpriteSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataHullSpriteSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteSet {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -76714,7 +77037,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataHullSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataHullSpriteSetItem", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteSetItem {
+var EveSOFDataHullSpriteSetItem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataHullSpriteSetItem"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataHullSpriteSetItem {
   constructor() {
     _initializerDefineProperty(this, "blinkPhase", _descriptor, this);
 
@@ -77118,7 +77441,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSOFDataPattern = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataPattern", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataPatternLayer"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataPatternLayer"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataPatternPerHull"), _dec(_class = (_class2 = (_temp = class EveSOFDataPattern {
+var EveSOFDataPattern = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataPattern", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternLayer"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternLayer"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataPatternPerHull"), _dec(_class = (_class2 = (_temp = class EveSOFDataPattern {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -77127,51 +77450,6 @@ var EveSOFDataPattern = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
     _initializerDefineProperty(this, "layer2", _descriptor3, this);
 
     _initializerDefineProperty(this, "projections", _descriptor4, this);
-  }
-
-  /**
-   * Gets a hull pattern
-   * @param {String} hullName
-   * @returns {*}
-   */
-  GetHullPattern(hullName) {
-    var projection = this.GetProjection(hullName);
-    return {
-      name: this.name,
-      layer1: this.layer1,
-      layer2: this.layer2,
-      transformLayer1: projection.transformLayer1,
-      transformLayer2: projection.transformLayer2
-    };
-  }
-  /**
-   * Checks if a pattern has a projection for a hull
-   * @param name
-   * @returns {boolean}
-   */
-
-
-  HasProjection(name) {
-    return !!global__WEBPACK_IMPORTED_MODULE_0__["util"].findElementByPropertyValue(this.projections, "name", name);
-  }
-  /**
-   * Gets a hull projection
-   * @param {String} name
-   * @returns {null|EveSOFDataPatternPerHull}
-   */
-
-
-  GetProjection(name) {
-    for (var i = 0; i < this.projections.length; i++) {
-      if (this.projections[i].name === name) {
-        return this.projections[i];
-      }
-    }
-
-    throw new ErrSOFProjectionNotFound({
-      pattern: this.name,
-      projection: name
-    });
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -77236,7 +77514,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataPatternLayer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataPatternLayer", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec(_class = (_class2 = (_temp = class EveSOFDataPatternLayer {
+var EveSOFDataPatternLayer = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataPatternLayer", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = (_class2 = (_temp = class EveSOFDataPatternLayer {
   constructor() {
     _initializerDefineProperty(this, "isTargetMtl1", _descriptor, this);
 
@@ -77381,24 +77659,13 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataPatternPerHull = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataPatternPerHull", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataPatternTransform"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataPatternTransform"), _dec(_class = (_class2 = (_temp = class EveSOFDataPatternPerHull {
+var EveSOFDataPatternPerHull = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataPatternPerHull", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternTransform"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataPatternTransform"), _dec(_class = (_class2 = (_temp = class EveSOFDataPatternPerHull {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "transformLayer1", _descriptor2, this);
 
     _initializerDefineProperty(this, "transformLayer2", _descriptor3, this);
-  }
-
-  /**
-   * Reduces transforms to an array
-   * @param {Array} [out=[]]
-   * @returns {Array}
-   */
-  AssignTransforms(out = []) {
-    if (this.transformLayer1) out[0] = this.transformLayer1.Reduce();
-    if (this.transformLayer2) out[1] = this.transformLayer2.Reduce();
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -77446,7 +77713,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataPatternTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataPatternTransform", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataPatternTransform {
+var EveSOFDataPatternTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataPatternTransform", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataPatternTransform {
   constructor() {
     _initializerDefineProperty(this, "isMirrored", _descriptor, this);
 
@@ -77539,7 +77806,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataRace = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataRace", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataBooster"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataRaceDamage"), _dec(_class = (_class2 = (_temp = class EveSOFDataRace {
+var EveSOFDataRace = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataRace"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataBooster"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataRaceDamage"), _dec(_class = (_class2 = (_temp = class EveSOFDataRace {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -77593,7 +77860,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataRaceDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataRaceDamage", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataRaceDamage {
+var EveSOFDataRaceDamage = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataRaceDamage"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataParameter"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataRaceDamage {
   constructor() {
     _initializerDefineProperty(this, "armorImpactParameters", _descriptor, this);
 
@@ -77668,7 +77935,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveSOFDataArea", function() { return EveSOFDataArea; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var sof_shared_EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sof/shared/EveSOFDataMaterial */ "./sof/shared/EveSOFDataMaterial.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -77678,7 +77945,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataArea", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataAreaMaterial"), _dec(_class = (_class2 = (_temp = class EveSOFDataArea {
+var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataArea"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataAreaMaterial"), _dec(_class = (_class2 = (_temp = class EveSOFDataArea {
   constructor() {
     _initializerDefineProperty(this, "Black", _descriptor, this);
 
@@ -77704,63 +77971,27 @@ var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
 
     _initializerDefineProperty(this, "Orange", _descriptor12, this);
 
-    _initializerDefineProperty(this, "Primary", _descriptor13, this);
+    _initializerDefineProperty(this, "Ornament", _descriptor13, this);
 
-    _initializerDefineProperty(this, "Reactor", _descriptor14, this);
+    _initializerDefineProperty(this, "Primary", _descriptor14, this);
 
-    _initializerDefineProperty(this, "Red", _descriptor15, this);
+    _initializerDefineProperty(this, "Reactor", _descriptor15, this);
 
-    _initializerDefineProperty(this, "Rock", _descriptor16, this);
+    _initializerDefineProperty(this, "Red", _descriptor16, this);
 
-    _initializerDefineProperty(this, "Sails", _descriptor17, this);
+    _initializerDefineProperty(this, "Rock", _descriptor17, this);
 
-    _initializerDefineProperty(this, "Secondary", _descriptor18, this);
+    _initializerDefineProperty(this, "Sails", _descriptor18, this);
 
-    _initializerDefineProperty(this, "Tertiary", _descriptor19, this);
+    _initializerDefineProperty(this, "SimplePrimary", _descriptor19, this);
 
-    _initializerDefineProperty(this, "White", _descriptor20, this);
+    _initializerDefineProperty(this, "Secondary", _descriptor20, this);
 
-    _initializerDefineProperty(this, "Yellow", _descriptor21, this);
-  }
+    _initializerDefineProperty(this, "Tertiary", _descriptor21, this);
 
-  /**
-   * Initializer
-   */
-  Initialize() {
-    // Provide names for each data area
-    for (var key in this) {
-      if (this.hasOwnProperty(key) && this[key] instanceof sof_shared_EveSOFDataMaterial__WEBPACK_IMPORTED_MODULE_1__["EveSOFDataMaterial"]) {
-        this[key].name = key;
-      }
-    }
-  }
-  /**
-   * Gets a data area by it's name
-   * @param {String} name
-   * @returns {EveSOFDataAreaMaterial|null}
-   */
+    _initializerDefineProperty(this, "White", _descriptor22, this);
 
-
-  GetByName(name) {
-    if (name.indexOf("area_") === 0) name = name.substring(5);
-    name = name.charAt(0).toUpperCase() + name.substring(1).toLowerCase();
-    return name in this ? this[name] : null;
-  }
-  /**
-   * Gets by color type
-   * @param {Number} value
-   * @returns {{}}
-   */
-
-
-  GetByColorType(value) {
-    for (var key in this) {
-      if (this.hasOwnProperty(key)) {
-        if (this[key].colorType === value) {
-          return this[key];
-        }
-      }
-    }
+    _initializerDefineProperty(this, "Yellow", _descriptor23, this);
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "Black", [_dec2], {
@@ -77847,63 +78078,77 @@ var EveSOFDataArea = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("E
   initializer: function () {
     return null;
   }
-}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "Primary", [_dec14], {
+}), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "Ornament", [_dec14], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "Reactor", [_dec15], {
+}), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "Primary", [_dec15], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "Red", [_dec16], {
+}), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "Reactor", [_dec16], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "Rock", [_dec17], {
+}), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "Red", [_dec17], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "Sails", [_dec18], {
+}), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "Rock", [_dec18], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "Secondary", [_dec19], {
+}), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "Sails", [_dec19], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "Tertiary", [_dec20], {
+}), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "SimplePrimary", [_dec20], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "White", [_dec21], {
+}), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "Secondary", [_dec21], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return null;
   }
-}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "Yellow", [_dec22], {
+}), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "Tertiary", [_dec22], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "White", [_dec23], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
+  }
+}), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "Yellow", [_dec24], {
   configurable: true,
   enumerable: true,
   writable: true,
@@ -77934,7 +78179,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataAreaMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataAreaMaterial", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class EveSOFDataAreaMaterial {
+var EveSOFDataAreaMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataAreaMaterial"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class EveSOFDataAreaMaterial {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -77947,21 +78192,6 @@ var EveSOFDataAreaMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
     _initializerDefineProperty(this, "material3", _descriptor5, this);
 
     _initializerDefineProperty(this, "material4", _descriptor6, this);
-  }
-
-  /**
-   * Assigns the value of the area material to an object
-   * @param {Object} out
-   * @returns {Object}
-   */
-  Assign(out = {}) {
-    out.name = this.name;
-    out.colorType = this.colorType;
-    out.material1 = this.material1;
-    out.material2 = this.material2;
-    out.material3 = this.material3;
-    out.material4 = this.material4;
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -78030,7 +78260,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataBooster = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataBooster", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataBoosterShape"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataBoosterShape"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataBoosterShape"), _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataBoosterShape"), _dec(_class = (_class2 = (_temp = class EveSOFDataBooster {
+var EveSOFDataBooster = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataBooster"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataBoosterShape"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataBoosterShape"), _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataBoosterShape"), _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataBoosterShape"), _dec(_class = (_class2 = (_temp = class EveSOFDataBooster {
   constructor() {
     _initializerDefineProperty(this, "glowColor", _descriptor, this);
 
@@ -78308,7 +78538,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataBoosterShape = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataBoosterShape"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = (_class2 = (_temp = class EveSOFDataBoosterShape {
+var EveSOFDataBoosterShape = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataBoosterShape"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class EveSOFDataBoosterShape {
   constructor() {
     _initializerDefineProperty(this, "color", _descriptor, this);
 
@@ -78404,7 +78634,7 @@ class EveSOFDataInstancedMeshInstanceReader {
 
 }
 
-var EveSOFDataInstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataInstancedMesh", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.struct([EveSOFDataInstancedMeshInstanceReader]), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataInstancedMesh {
+var EveSOFDataInstancedMesh = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataInstancedMesh"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(EveSOFDataInstancedMeshInstanceReader), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataInstancedMesh {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -78485,22 +78715,9 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataLogo = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataLogo", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataLogo {
+var EveSOFDataLogo = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataLogo"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataTexture"), _dec(_class = (_class2 = (_temp = class EveSOFDataLogo {
   constructor() {
     _initializerDefineProperty(this, "textures", _descriptor, this);
-  }
-
-  /**
-   * Assigns the logo's textures to an object
-   * @param {Object} [out={}]
-   * @returns {Object} out
-   */
-  AssignTextures(out = {}) {
-    for (var i = 0; i < this.textures.length; i++) {
-      this.textures[i].Assign(out);
-    }
-
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "textures", [_dec2], {
@@ -78534,7 +78751,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataLogoSet", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSOFDataLogo"), _dec(_class = (_class2 = (_temp = _class3 = class EveSOFDataLogoSet {
+var EveSOFDataLogoSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataLogoSet"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogo"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogo"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogo"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogo"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSOFDataLogo"), _dec(_class = (_class2 = (_temp = _class3 = class EveSOFDataLogoSet {
   constructor() {
     _initializerDefineProperty(this, "Marking_01", _descriptor, this);
 
@@ -78643,35 +78860,11 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataMaterial", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSOFDataParameter"), _dec(_class = (_class2 = (_temp = class EveSOFDataMaterial {
+var EveSOFDataMaterial = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataMaterial"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSOFDataParameter"), _dec(_class = (_class2 = (_temp = class EveSOFDataMaterial {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "parameters", _descriptor2, this);
-  }
-
-  /**
-   * Assigns the material to a simple plain object
-   * @param {*} [out={}]
-   * @param {String} [prefix]
-   * @returns {{ name: String, parameters: Object}} out
-   */
-  Assign(out = {}, prefix) {
-    out.name = this.name;
-    out.parameters = this.AssignParameters(out.parameters, prefix);
-    return out;
-  }
-  /**
-   * Assigns the material's parameters to a simple plain object
-   * @param {{}} [out={}]
-   * @param {String} [prefix]
-   * @returns {Object} out
-   */
-
-
-  AssignParameters(out = {}, prefix) {
-    this.parameters.forEach(parameter => parameter.Assign(out, prefix));
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -78712,22 +78905,11 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataParameter", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec(_class = (_class2 = (_temp = class EveSOFDataParameter {
+var EveSOFDataParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataParameter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec(_class = (_class2 = (_temp = class EveSOFDataParameter {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "value", _descriptor2, this);
-  }
-
-  /**
-   * Assigns the parameter's values to an object
-   * @param {{}} [out]
-   * @param {String} [prefix]
-   * @return {{}} out
-   */
-  Assign(out = {}, prefix) {
-    out[prefix ? prefix + this.name : this.name] = Array.from(this.value);
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -78768,21 +78950,11 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataTexture = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataTexture", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec(_class = (_class2 = (_temp = class EveSOFDataTexture {
+var EveSOFDataTexture = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataTexture"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = (_class2 = (_temp = class EveSOFDataTexture {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
     _initializerDefineProperty(this, "resFilePath", _descriptor2, this);
-  }
-
-  /**
-   * Assigns the texture's values to an object
-   * @param {{}} [out={}]
-   * @returns {{}}
-   */
-  Assign(out = {}) {
-    out[this.name] = this.resFilePath;
-    return out;
   }
 
 }, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec2], {
@@ -78823,7 +78995,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveSOFDataTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSOFDataTransform", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataTransform {
+var EveSOFDataTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSOFDataTransform"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = (_class2 = (_temp = class EveSOFDataTransform {
   constructor() {
     _initializerDefineProperty(this, "boneIndex", _descriptor, this);
 
@@ -78942,7 +79114,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var AudEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("AudEmitter", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = (_class2 = (_temp = class AudEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var AudEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("AudEmitter", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = (_class2 = (_temp = class AudEmitter extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -78980,7 +79152,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2DistanceTracker = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2DistanceTracker", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2DistanceTracker {
+var Tr2DistanceTracker = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2DistanceTracker"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2DistanceTracker {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -79025,7 +79197,7 @@ var Tr2DistanceTracker = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].not
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TriObserverLocal", function() { return TriObserverLocal; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _class, _class2, _descriptor, _temp;
+var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -79034,19 +79206,37 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var TriObserverLocal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("TriObserverLocal", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class TriObserverLocal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var TriObserverLocal = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("TriObserverLocal"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = _dec2(_class = (_class2 = (_temp = class TriObserverLocal extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
-    _initializerDefineProperty(this, "front", _descriptor, this);
+    _initializerDefineProperty(this, "name", _descriptor, this);
+
+    _initializerDefineProperty(this, "front", _descriptor2, this);
+
+    _initializerDefineProperty(this, "observer", _descriptor3, this);
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "front", [_dec3], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return "";
+  }
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "front", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+  }
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "observer", [_dec5], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return null;
   }
 })), _class2)) || _class) || _class);
 
@@ -79120,7 +79310,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2PointLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2PointLight", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PointLight extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2PointLight = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2PointLight"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PointLight extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -79230,7 +79420,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2ShLightingManager = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ShLightingManager", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ShLightingManager extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2ShLightingManager = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ShLightingManager"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ShLightingManager extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -79299,7 +79489,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2MeshLod = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2MeshLod", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Implement LOD"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2GeometryRes"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2LodResource"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2MeshArea"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2MeshLod = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2MeshLod"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Implement LOD"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2GeometryRes"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2LodResource"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2MeshArea"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].plain, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2MeshLod extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -79608,7 +79798,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ExternalParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ExternalParameter", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ExternalParameter extends core_parameter_Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Parameter"] {
+var Tr2ExternalParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ExternalParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ExternalParameter extends core_parameter_Tw2Parameter__WEBPACK_IMPORTED_MODULE_1__["Tw2Parameter"] {
   constructor(...args) {
     super(...args);
 
@@ -79666,7 +79856,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2Texture2dLodParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2Texture2dLodParameter", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2LodResource"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Texture2dLodParameter extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Parameter"] {
+var Tr2Texture2dLodParameter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2Texture2dLodParameter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2LodResource"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Texture2dLodParameter extends core__WEBPACK_IMPORTED_MODULE_1__["Tw2Parameter"] {
   constructor(...args) {
     super(...args);
 
@@ -79733,7 +79923,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2PostProcess = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("Tr2PostProcess", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Effect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PostProcess extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2PostProcess = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2PostProcess"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Effect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PostProcess extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -79789,7 +79979,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2LodResource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2LodResource", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2LodResource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2LodResource"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2LodResource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Gets the high detail resource
    * @returns {null|Tw2TextureRes}
@@ -79976,7 +80166,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var TriMatrix = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("TriMatrix", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Should this default to a identity matrix?"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class TriMatrix extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var TriMatrix = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("TriMatrix"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Should this default to a identity matrix?"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class TriMatrix extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -80165,7 +80355,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tw2CurveSetRange = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveSetRange", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tw2CurveSetRange extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2CurveSetRange = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveSetRange"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tw2CurveSetRange extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -80222,23 +80412,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2RotationAdapter", function() { return Tr2RotationAdapter; });
 /* harmony import */ var _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tw2CurveAdapter */ "./unsupported/curve/adapter/Tw2CurveAdapter.js");
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _class3, _temp;
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+var _dec, _dec2, _class, _class2, _temp;
 
 
 
-var Tr2RotationAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tr2RotationAdapter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("Tw2Curve"), _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.vector4, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2RotationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveAdapter"] {
+var Tr2RotationAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tr2RotationAdapter"), _dec(_class = _dec2(_class = (_temp = _class2 = class Tr2RotationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveAdapter"] {
   constructor(...args) {
     super(...args);
-
-    _initializerDefineProperty(this, "curve", _descriptor, this);
-
-    _initializerDefineProperty(this, "value", _descriptor2, this);
+    this.curve = null;
+    this.value = global__WEBPACK_IMPORTED_MODULE_1__["vec4"].create();
   }
 
   /**
@@ -80260,21 +80442,7 @@ var Tr2RotationAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].not
    */
 
 
-}, _class3.outputDimension = 4, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "curve", [_dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "value", [_dec4], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return global__WEBPACK_IMPORTED_MODULE_1__["vec4"].create();
-  }
-})), _class2)) || _class) || _class);
+}, _class2.outputDimension = 4, _temp)) || _class) || _class);
 
 /***/ }),
 
@@ -80300,7 +80468,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2TranslationAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2TranslationAdapter", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Curve"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2TranslationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveAdapter"] {
+var Tr2TranslationAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2TranslationAdapter"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2TranslationAdapter extends _Tw2CurveAdapter__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveAdapter"] {
   constructor(...args) {
     super(...args);
 
@@ -80358,25 +80526,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2CurveAdapter", function() { return Tw2CurveAdapter; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var curve__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! curve */ "./curve/index.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _class3, _temp;
-
-function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
-
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
-
-function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+var _dec, _class, _class2, _temp;
 
 
 
-var Tw2CurveAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveAdapter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].objectOf("Tw2Curve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].unknown, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tw2CurveAdapter extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2CurveAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveAdapter"), _dec(_class = (_temp = _class2 = class Tw2CurveAdapter extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
-
-    _initializerDefineProperty(this, "name", _descriptor, this);
-
-    _initializerDefineProperty(this, "curve", _descriptor2, this);
-
-    _initializerDefineProperty(this, "value", _descriptor3, this);
+    this.name = "";
+    this.curve = null;
+    this.value = null;
   }
 
   /**
@@ -80401,28 +80560,7 @@ var Tw2CurveAdapter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("
    */
 
 
-}, _class3.valueProperty = "value", _class3.curveType = curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.ADAPTER, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "name", [_dec3], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return "";
-  }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "curve", [_dec4], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "value", [_dec5], {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  initializer: function () {
-    return null;
-  }
-})), _class2)) || _class) || _class);
+}, _class2.valueProperty = "value", _class2.curveType = curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"].Type.ADAPTER, _temp)) || _class);
 
 /***/ }),
 
@@ -80469,7 +80607,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var AudEventKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("AudEventKey", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.ushort, _dec(_class = (_class2 = (_temp = class AudEventKey extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var AudEventKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("AudEventKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ushort, _dec(_class = (_class2 = (_temp = class AudEventKey extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -80493,7 +80631,7 @@ var AudEventKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("AudE
     return 0;
   }
 })), _class2)) || _class);
-var AudEventCurve = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("AudEventCurve", true), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("AudEventKey"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("TriObserverLocal"), _dec4(_class4 = _dec5(_class4 = (_class5 = (_temp2 = class AudEventCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var AudEventCurve = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("AudEventCurve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("AudEventKey"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriObserverLocal"), _dec4(_class4 = _dec5(_class4 = (_class5 = (_temp2 = class AudEventCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -80551,7 +80689,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2BoneMatrixCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2BoneMatrixCurve", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2BoneMatrixCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tr2BoneMatrixCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2BoneMatrixCurve"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2BoneMatrixCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -80591,13 +80729,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-/**
- * Constant curve
- *
- * @property {vec4} value  -
- */
-
-var Tr2CurveConstant = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveConstant", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this a curve or a key?"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector4, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = _class3 = class Tr2CurveConstant extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tr2CurveConstant = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveConstant"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Is this a curve or a key?"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector4, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = _class3 = class Tr2CurveConstant extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -80677,7 +80809,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2CurveScalarKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveScalarKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2CurveScalarKey extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tw2CurveScalarKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveScalarKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = (_class2 = (_temp = class Tw2CurveScalarKey extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -80754,7 +80886,7 @@ var Tw2CurveScalarKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type
     return 0.0;
   }
 })), _class2)) || _class);
-var Tr2CurveScalar = (_dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2CurveScalar", true), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.struct([Tw2CurveScalarKey]), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8(_class4 = _dec9(_class4 = (_class5 = (_temp2 = _class6 = class Tr2CurveScalar extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tr2CurveScalar = (_dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2CurveScalar"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(Tw2CurveScalarKey), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec8(_class4 = _dec9(_class4 = (_class5 = (_temp2 = _class6 = class Tr2CurveScalar extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -80873,7 +81005,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ScalarExprKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ScalarExprKey", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.expression, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tr2ScalarExprKey extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
+var Tr2ScalarExprKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ScalarExprKey"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].expression, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = (_class2 = (_temp = class Tr2ScalarExprKey extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveKey"] {
   constructor(...args) {
     super(...args);
 
@@ -80960,7 +81092,7 @@ var Tr2ScalarExprKey = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type(
     return 0;
   }
 })), _class2)) || _class);
-var Tr2ScalarExprKeyCurve = (_dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ScalarExprKeyCurve", true), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2ScalarExprKey"), _dec12(_class4 = _dec13(_class4 = (_class5 = (_temp2 = class Tr2ScalarExprKeyCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tr2ScalarExprKeyCurve = (_dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ScalarExprKeyCurve"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ScalarExprKey"), _dec12(_class4 = _dec13(_class4 = (_class5 = (_temp2 = class Tr2ScalarExprKeyCurve extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -81056,7 +81188,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2CurveEulerRotationExpression = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2CurveEulerRotationExpression", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.list, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.expression, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.expression, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.expression, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2CurveEulerRotationExpression extends _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveExpression"] {
+var Tr2CurveEulerRotationExpression = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2CurveEulerRotationExpression"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].expression, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].expression, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].expression, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2CurveEulerRotationExpression extends _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveExpression"] {
   constructor(...args) {
     super(...args);
 
@@ -81141,7 +81273,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2CurveScalarExpression = (_dec = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec2 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].type("Tr2CurveScalarExpression", true), _dec3 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec4 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.list, _dec5 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.expression, _dec6 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.float, _dec7 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].todo("Figure out the default value"), _dec8 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.float, _dec9 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].todo("Figure out the default value"), _dec10 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].black.float, _dec11 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].todo("Figure out the default value"), _dec12 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec13 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2CurveScalarExpression extends _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveExpression"] {
+var Tr2CurveScalarExpression = (_dec = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec2 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("Tr2CurveScalarExpression"), _dec3 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec4 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].list(), _dec5 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].expression, _dec6 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec7 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].todo("Figure out the default value"), _dec8 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec9 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].todo("Figure out the default value"), _dec10 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec11 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].todo("Figure out the default value"), _dec12 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec13 = global_index__WEBPACK_IMPORTED_MODULE_1__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2CurveScalarExpression extends _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_0__["Tw2CurveExpression"] {
   constructor(...args) {
     super(...args);
 
@@ -81235,7 +81367,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2CurveVector3Expression = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2CurveVector3Expression"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.list, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.expression, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.expression, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.expression, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2CurveVector3Expression extends _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveExpression"] {
+var Tr2CurveVector3Expression = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2CurveVector3Expression"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].expression, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].expression, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].expression, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].isPrivate, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class Tr2CurveVector3Expression extends _Tw2CurveExpression__WEBPACK_IMPORTED_MODULE_1__["Tw2CurveExpression"] {
   constructor(...args) {
     super(...args);
 
@@ -81320,7 +81452,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tw2CurveExpression = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2CurveExpression"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list, _dec(_class = (_class2 = (_temp = _class3 = class Tw2CurveExpression extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
+var Tw2CurveExpression = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2CurveExpression"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec(_class = (_class2 = (_temp = _class3 = class Tw2CurveExpression extends curve__WEBPACK_IMPORTED_MODULE_1__["Tw2Curve"] {
   constructor(...args) {
     super(...args);
 
@@ -81458,7 +81590,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveAnimation", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimation {
+var EveAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimation {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -81503,7 +81635,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveAnimationCommand = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveAnimationCommand", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify default value"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationCommand {
+var EveAnimationCommand = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveAnimationCommand"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Identify default value"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationCommand {
   constructor() {
     _initializerDefineProperty(this, "command", _descriptor, this);
   }
@@ -81539,7 +81671,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveAnimationCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveAnimationCurve", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationCurve {
+var EveAnimationCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveAnimationCurve"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationCurve {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
   }
@@ -81577,7 +81709,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveAnimationState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveAnimationState", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveAnimationCurve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveAnimationCommand"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveAnimationCommand"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveAnimationCommand"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.struct([_EveAnimationStateTransition__WEBPACK_IMPORTED_MODULE_1__["EveAnimationStateTransition"]], "EveAnimationStateTransition"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationState {
+var EveAnimationState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveAnimationState"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveAnimationCurve"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveAnimationCommand"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveAnimationCommand"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveAnimationCommand"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(_EveAnimationStateTransition__WEBPACK_IMPORTED_MODULE_1__["EveAnimationStateTransition"]), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationState {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -81658,7 +81790,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveAnimationStateMachine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveAnimationStateMachine", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveAnimationState"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveAnimationStateTransition"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationStateMachine {
+var EveAnimationStateMachine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveAnimationStateMachine"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveAnimationState"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveAnimationStateTransition"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationStateMachine {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 
@@ -81739,7 +81871,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveAnimationStateTransition = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveAnimationStateTransition"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationStateTransition {
+var EveAnimationStateTransition = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveAnimationStateTransition"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveAnimationStateTransition {
   constructor() {
     _initializerDefineProperty(this, "state", _descriptor, this);
 
@@ -81845,7 +81977,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildBulletStorm = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].type("EveChildBulletStorm", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.objectOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.string, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildBulletStorm extends eve_child__WEBPACK_IMPORTED_MODULE_0__["EveChild"] {
+var EveChildBulletStorm = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].ctor("EveChildBulletStorm"), _dec3 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].string, _dec7 = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildBulletStorm extends eve_child__WEBPACK_IMPORTED_MODULE_0__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -81931,7 +82063,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildCloud = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildCloud", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildCloud extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
+var EveChildCloud = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildCloud"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildCloud extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -82044,7 +82176,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildExplosion = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildExplosion", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveChildExplosion"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveChildExplosion"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveChildExplosion"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveChildExplosion"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildExplosion extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
+var EveChildExplosion = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildExplosion"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveChildExplosion"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveChildExplosion"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveChildExplosion"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChildExplosion"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildExplosion extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -82206,10 +82338,10 @@ var EveChildExplosion = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notI
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildInheritProperties", function() { return EveChildInheritProperties; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
-var EveChildInheritProperties = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildInheritProperties", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class EveChildInheritProperties {}) || _class) || _class) || _class);
+var EveChildInheritProperties = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildInheritProperties"), _dec(_class = _dec2(_class = class EveChildInheritProperties {}) || _class) || _class);
 
 /***/ }),
 
@@ -82235,7 +82367,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildLink = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildLink", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ValueBinding"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Mesh"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildLink extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
+var EveChildLink = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildLink"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ValueBinding"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Curve"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildLink extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -82321,7 +82453,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildParticleSphere = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildParticleSphere", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleAttributeGenerator"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2InstancedMesh"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2ParticleSystem"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildParticleSphere extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
+var EveChildParticleSphere = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildParticleSphere"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleAttributeGenerator"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2InstancedMesh"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2ParticleSystem"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildParticleSphere extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -82475,7 +82607,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildQuad = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildQuad", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.matrix4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildQuad extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
+var EveChildQuad = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildQuad"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildQuad extends eve_child__WEBPACK_IMPORTED_MODULE_1__["EveChild"] {
   constructor(...args) {
     super(...args);
 
@@ -82643,7 +82775,7 @@ __webpack_require__.r(__webpack_exports__);
 var _dec, _class;
 
 
-var EveChildModifier = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildModifier"), _dec(_class = class EveChildModifier extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class);
+var EveChildModifier = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifier"), _dec(_class = class EveChildModifier extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class);
 
 /***/ }),
 
@@ -82669,7 +82801,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildModifierAttachToBone = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildModifierAttachToBone", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildModifierAttachToBone extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {
+var EveChildModifierAttachToBone = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifierAttachToBone"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildModifierAttachToBone extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {
   constructor(...args) {
     super(...args);
 
@@ -82699,11 +82831,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard2D", function() { return EveChildModifierBillboard2D; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChildModifier */ "./unsupported/eve/child/modifier/EveChildModifier.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
 
-var EveChildModifierBillboard2D = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildModifierBillboard2D", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class EveChildModifierBillboard2D extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class) || _class);
+var EveChildModifierBillboard2D = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifierBillboard2D"), _dec(_class = _dec2(_class = class EveChildModifierBillboard2D extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class);
 
 /***/ }),
 
@@ -82719,11 +82851,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierBillboard3D", function() { return EveChildModifierBillboard3D; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChildModifier */ "./unsupported/eve/child/modifier/EveChildModifier.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
 
-var EveChildModifierBillboard3D = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildModifierBillboard3D", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class EveChildModifierBillboard3D extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class) || _class);
+var EveChildModifierBillboard3D = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifierBillboard3D"), _dec(_class = _dec2(_class = class EveChildModifierBillboard3D extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class);
 
 /***/ }),
 
@@ -82739,11 +82871,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierCameraOrientedRotationConstrained", function() { return EveChildModifierCameraOrientedRotationConstrained; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChildModifier */ "./unsupported/eve/child/modifier/EveChildModifier.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
 
-var EveChildModifierCameraOrientedRotationConstrained = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildModifierCameraOrientedRotationConstrained", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class EveChildModifierCameraOrientedRotationConstrained extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class) || _class);
+var EveChildModifierCameraOrientedRotationConstrained = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifierCameraOrientedRotationConstrained"), _dec(_class = _dec2(_class = class EveChildModifierCameraOrientedRotationConstrained extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class);
 
 /***/ }),
 
@@ -82769,7 +82901,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveChildModifierSRT = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildModifierSRT", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildModifierSRT extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {
+var EveChildModifierSRT = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifierSRT"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveChildModifierSRT extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {
   constructor(...args) {
     super(...args);
 
@@ -82817,11 +82949,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveChildModifierTranslateWithCamera", function() { return EveChildModifierTranslateWithCamera; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EveChildModifier */ "./unsupported/eve/child/modifier/EveChildModifier.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
 
-var EveChildModifierTranslateWithCamera = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveChildModifierTranslateWithCamera", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class EveChildModifierTranslateWithCamera extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class) || _class);
+var EveChildModifierTranslateWithCamera = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveChildModifierTranslateWithCamera"), _dec(_class = _dec2(_class = class EveChildModifierTranslateWithCamera extends _EveChildModifier__WEBPACK_IMPORTED_MODULE_1__["EveChildModifier"] {}) || _class) || _class);
 
 /***/ }),
 
@@ -82881,7 +83013,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveStarfield = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveStarfield", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStarfield extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveStarfield = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStarfield"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStarfield extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -82982,7 +83114,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveStretch2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveStretch2", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2CurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStretch2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveStretch2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStretch2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStretch2 extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -83219,7 +83351,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var EveBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBanner", true), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveBanner extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveBanner = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveBanner"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec(_class = _dec2(_class = (_class2 = (_temp = _class3 = class EveBanner extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -83371,8 +83503,8 @@ var EveBoosterSet2Batch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].no
   }
 
 }, _temp)) || _class);
-var EveBoosterSet2Item = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet2Item", true), _dec2(_class3 = _dec3(_class3 = class EveBoosterSet2Item extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {}) || _class3) || _class3);
-var EveBoosterSet2 = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveBoosterSet2", true), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveSpriteSet"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveTrailsSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4(_class4 = _dec5(_class4 = (_class5 = (_temp2 = _class6 = class EveBoosterSet2 extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
+var EveBoosterSet2Item = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveBoosterSet2Item"), _dec2(_class3 = _dec3(_class3 = class EveBoosterSet2Item extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {}) || _class3) || _class3);
+var EveBoosterSet2 = (_dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveBoosterSet2"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveSpriteSet"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveTrailsSet"), _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4(_class4 = _dec5(_class4 = (_class5 = (_temp2 = _class6 = class EveBoosterSet2 extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {
   constructor(...args) {
     super(...args);
 
@@ -83593,7 +83725,7 @@ var EveHazeSetBatch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
   }
 
 }, _temp)) || _class);
-var EveHazeSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveHazeSetItem", true), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = class EveHazeSetItem extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
+var EveHazeSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveHazeSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = class EveHazeSetItem extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -83690,7 +83822,7 @@ var EveHazeSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImp
     return 0;
   }
 })), _class4)) || _class3) || _class3);
-var EveHazeSet = (_dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveHazeSet", true), _dec13(_class6 = _dec14(_class6 = (_temp3 = _class7 = class EveHazeSet extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {}, _class7.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].HAZE_SET, _temp3)) || _class6) || _class6);
+var EveHazeSet = (_dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveHazeSet"), _dec13(_class6 = _dec14(_class6 = (_temp3 = _class7 = class EveHazeSet extends eve__WEBPACK_IMPORTED_MODULE_2__["EveObjectSet"] {}, _class7.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].HAZE_SET, _temp3)) || _class6) || _class6);
 
 /***/ }),
 
@@ -83732,7 +83864,7 @@ var EveSpriteLineSetBatch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].
   }
 
 }, _temp)) || _class);
-var EveSpriteLineSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteLineSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = class EveSpriteLineSetItem extends eve__WEBPACK_IMPORTED_MODULE_1__["EveObjectSetItem"] {
+var EveSpriteLineSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpriteLineSetItem"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].matrix4, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = class EveSpriteLineSetItem extends eve__WEBPACK_IMPORTED_MODULE_1__["EveObjectSetItem"] {
   constructor(...args) {
     super(...args);
 
@@ -83892,7 +84024,7 @@ var EveSpriteLineSetItem = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].
     return global__WEBPACK_IMPORTED_MODULE_0__["mat4"].create();
   }
 })), _class4)) || _class3) || _class3);
-var EveSpriteLineSet = (_dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpriteLineSet"), _dec20(_class6 = _dec21(_class6 = (_temp3 = _class7 = class EveSpriteLineSet extends eve__WEBPACK_IMPORTED_MODULE_1__["EveObjectSet"] {}, _class7.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].SPRITE_LINE_SET, _temp3)) || _class6) || _class6);
+var EveSpriteLineSet = (_dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpriteLineSet"), _dec20(_class6 = _dec21(_class6 = (_temp3 = _class7 = class EveSpriteLineSet extends eve__WEBPACK_IMPORTED_MODULE_1__["EveObjectSet"] {}, _class7.attachmentType = global__WEBPACK_IMPORTED_MODULE_0__["AttachmentType"].SPRITE_LINE_SET, _temp3)) || _class6) || _class6);
 
 /***/ }),
 
@@ -83934,7 +84066,7 @@ var EveTrailSetRenderBatch = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"]
   }
 
 }, _temp)) || _class);
-var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTrailSet", true), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = _class5 = class EveTrailsSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveTrailsSet = (_dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTrailSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec2(_class3 = _dec3(_class3 = (_class4 = (_temp2 = _class5 = class EveTrailsSet extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -84080,7 +84212,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveEffectRoot2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveEffectRoot2", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveChild"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2PointLight"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("TriObserverLocal"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveEffectRoot2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
+var EveEffectRoot2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveEffectRoot2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2PointLight"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveEffectRoot2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -84237,7 +84369,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveMobile = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveMobile", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObjectSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveChild"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveStateController"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveLocatorSets"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2MeshLod"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("TriObserverLocal"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveMobile extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
+var EveMobile = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveMobile"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveStateController"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2MeshLod"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveMobile extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -84367,28 +84499,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-/**
- * EveRootTransform
- * TODO: Implement
- * @ccp EveRootTransform
- *
- * @property {String} name                       -
- * @property {Number} boundingSphereRadius       -
- * @property {Array.<EveObject>} children        -
- * @property {Array.<Tw2CurveSet>} curveSets     -
- * @property {Boolean} display                   -
- * @property {Tw2Mesh} mesh                      -
- * @property {Number} modifier                   -
- * @property {Array} observers                   -
- * @property {quat} rotation                     -
- * @property {Tr2CurveConstant} rotationCurve    -
- * @property {vec3} scaling                      -
- * @property {Number} sortValueMultiplier        -
- * @property {vec3} translation                  -
- * @property {Tr2CurveConstant} translationCurve -
- */
-
-var EveRootTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveRootTransform", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Mesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("TriObserverLocal"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.quaternion, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Curve"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Curve"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveRootTransform extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
+var EveRootTransform = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveRootTransform"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].quaternion, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Curve"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveRootTransform extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -84545,7 +84656,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveShip2", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObjectSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveBoosterSet2"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveCustomMask"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSpaceObjectDecal"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveLocatorSets"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveLocator2"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf(["Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod"]), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveCurve"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("EveCurve"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveShip2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
+var EveShip2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveShip2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveBoosterSet2"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCustomMask"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh", "Tw2InstancedMesh", "Tr2MeshLod"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveCurve"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("EveCurve"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveShip2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -84720,32 +84831,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-/**
- * EveStation2
- * TODO: Implement
- * @ccp EveStation2
- *
- * @property {Array.<EveObjectSet>} attachments       -
- * @property {vec3} boundingSphereCenter              -
- * @property {Number} boundingSphereRadius            -
- * @property {Array.<EveObject>} children             -
- * @property {Array.<Tw2CurveSet>} curveSets          -
- * @property {Array.<EveSpaceObjectDecal>} decals     -
- * @property {Array.<EveChild>} effectChildren        -
- * @property {Array.<Tr2PointLight>} lights           -
- * @property {Array.<EveLocatorSets>} locatorSets     -
- * @property {Array.<EveLocator2>} locators           -
- * @property {Tw2Mesh} mesh                           -
- * @property {Tr2MeshLod} meshLod                     -
- * @property {Tr2RotationAdapter} modelRotationCurve  -
- * @property {Number} modelScale                      -
- * @property {Array.<TriObserverLocal>} observers     -
- * @property {Tr2RotationAdapter} rotationCurve       -
- * @property {Tr2Effect} shadowEffect                 -
- * @property {Tr2TranslationAdapter} translationCurve -
- */
-
-var EveStation2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveStation2", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObjectSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveObject"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveCurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveSpaceObjectDecal"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveChild"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("TriPointLight"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveLocatorSets"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("EveLocator2"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Mesh"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2MeshLod"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2RotationAdapter"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("TriObserverLocal"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2RotationAdapter"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2TranslationAdapter"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStation2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
+var EveStation2 = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveStation2"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObjectSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveObject"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveCurveSet"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveSpaceObjectDecal"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveChild"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriPointLight"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocatorSets"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("EveLocator2"), _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Mesh"), _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2MeshLod"), _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("TriObserverLocal"), _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2RotationAdapter"), _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2TranslationAdapter"), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveStation2 extends eve_object_EveObject__WEBPACK_IMPORTED_MODULE_1__["EveObject"] {
   constructor(...args) {
     super(...args);
 
@@ -84960,6 +85046,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveParticleDirectForce", function() { return EveParticleDirectForce; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! particle/force/Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+var _dec, _class, _descriptor, _class2, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
 
 
 /**
@@ -84969,28 +85063,21 @@ __webpack_require__.r(__webpack_exports__);
  * @property {vec3} force -
  */
 
-class EveParticleDirectForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var EveParticleDirectForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, (_class = (_temp = _class2 = class EveParticleDirectForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
-    this.force = global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
+
+    _initializerDefineProperty(this, "force", _descriptor, this);
   }
 
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
-  static black(r) {
-    return [["force", r.vector3]];
+}, _class2.__isStaging = 4, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "force", [_dec], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return global__WEBPACK_IMPORTED_MODULE_0__["vec3"].create();
   }
-  /**
-   * Identifies that the class is in staging
-   * @property {null|Number}
-   */
-
-
-}
-EveParticleDirectForce.__isStaging = 4;
+})), _class));
 
 /***/ }),
 
@@ -85005,6 +85092,16 @@ EveParticleDirectForce.__isStaging = 4;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EveParticleDragForce", function() { return EveParticleDragForce; });
 /* harmony import */ var particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! particle/force/Tw2ParticleForce */ "./particle/force/Tw2ParticleForce.js");
+/* harmony import */ var global__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! global */ "./global/index.js");
+var _dec, _class, _descriptor, _class2, _temp;
+
+function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
+
+function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
+
+function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
+
+
 
 /**
  * EveParticleDragForce
@@ -85013,28 +85110,21 @@ __webpack_require__.r(__webpack_exports__);
  * @property {Number} drag -
  */
 
-class EveParticleDragForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"] {
+var EveParticleDragForce = (_dec = global__WEBPACK_IMPORTED_MODULE_1__["meta"].float, (_class = (_temp = _class2 = class EveParticleDragForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_0__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
-    this.drag = 0;
+
+    _initializerDefineProperty(this, "drag", _descriptor, this);
   }
 
-  /**
-   * Black definition
-   * @param {*} r
-   * @returns {*[]}
-   */
-  static black(r) {
-    return [["drag", r.float]];
+}, _class2.__isStaging = 4, _temp), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "drag", [_dec], {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  initializer: function () {
+    return 0;
   }
-  /**
-   * Identifies that the class is in staging
-   * @property {null|Number}
-   */
-
-
-}
-EveParticleDragForce.__isStaging = 4;
+})), _class));
 
 /***/ }),
 
@@ -85093,7 +85183,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Number} type                        -
  */
 
-var EveConnector = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveConnector", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveConnector extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveConnector = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveConnector", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveConnector extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -85218,7 +85308,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {vec3} value -
  */
 
-var EveLocalPositionCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveLocalPositionCurve", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveLocalPositionCurve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveLocalPositionCurve = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveLocalPositionCurve"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveLocalPositionCurve extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -85273,7 +85363,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Number} sortValueMultiplier    -
  */
 
-var EveSpherePin = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveSpherePin", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.list, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveSpherePin extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveSpherePin = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveSpherePin", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveSpherePin extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -85447,7 +85537,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Tw2Effect} velocityEffect    -
  */
 
-var EveTacticalOverlay = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveTacticalOverlay", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTacticalOverlay extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveTacticalOverlay = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveTacticalOverlay"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec(_class = _dec2(_class = (_class2 = (_temp = class EveTacticalOverlay extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -85557,7 +85647,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
  * @property {Number} modelScale           -
  */
 
-var EveUiObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("EveUiObject", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveUiObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var EveUiObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("EveUiObject"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class EveUiObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -85870,7 +85960,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2Model = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2Model", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Mesh"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Model extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2Model = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2Model"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Mesh"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Model extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -85908,7 +85998,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2IntSkinnedObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2IntSkinnedObject", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("TriMatrix"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2SkinnedModel"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2IntSkinnedObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2IntSkinnedObject = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2IntSkinnedObject"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriMatrix"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2SkinnedModel"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2IntSkinnedObject extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -85964,7 +86054,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2SkinnedModel = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2SkinnedModel", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.list, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2SkinnedModel extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2SkinnedModel = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2SkinnedModel"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2SkinnedModel extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -86085,7 +86175,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2InteriorLightSource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2InteriorLightSource", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2KelvinColor"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorLightSource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2InteriorLightSource = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorLightSource"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2KelvinColor"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorLightSource extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -86222,7 +86312,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2KelvinColor = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2KelvinColor", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2KelvinColor extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2KelvinColor = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2KelvinColor"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2KelvinColor extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -86289,7 +86379,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2InteriorPlaceable = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2InteriorPlaceable", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("TriMatrix"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorPlaceable extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2InteriorPlaceable = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorPlaceable"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("TriMatrix"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorPlaceable extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -86336,7 +86426,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2InteriorScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2InteriorScene", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2IntSkinnedObject"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2InteriorLightSource"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2InteriorScene = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2InteriorScene"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2IntSkinnedObject"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2InteriorLightSource"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2InteriorScene extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -86383,7 +86473,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var WodPlaceableRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("WodPlaceableRes", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2Model"), _dec(_class = _dec2(_class = (_class2 = (_temp = class WodPlaceableRes extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var WodPlaceableRes = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("WodPlaceableRes"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2Model"), _dec(_class = _dec2(_class = (_class2 = (_temp = class WodPlaceableRes extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -86463,7 +86553,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2GpuParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2GpuParticleSystem", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Handle conflict with Tw2BaseClass.emit"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2Effect"), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2GpuParticleSystem {
+var Tr2GpuParticleSystem = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2GpuParticleSystem"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].todo("Handle conflict with Tw2BaseClass.emit"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2Effect"), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2GpuParticleSystem {
   constructor() {
     _initializerDefineProperty(this, "clear", _descriptor, this);
 
@@ -86581,7 +86671,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2PlaneConstraint", function() { return Tr2PlaneConstraint; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2ParticleConstraint */ "./unsupported/particle/constraint/Tw2ParticleConstraint.js");
-var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _temp;
+var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _temp;
 
 function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -86591,14 +86681,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-/**
- * Tr2PlaneConstraint
- *
- * @property {Array.<Tw2ParticleAttributeGenerator>} generators -
- * @property {Number} reflectionNoise                        -
- */
-
-var Tr2PlaneConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ccp("Tr2PlaneConstraint"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.list, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = _dec3(_class = (_class2 = (_temp = class Tr2PlaneConstraint extends _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleConstraint"] {
+var Tr2PlaneConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2PlaneConstraint"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2PartcileAttributeGenerator"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2PlaneConstraint extends _Tw2ParticleConstraint__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleConstraint"] {
   constructor(...args) {
     super(...args);
 
@@ -86607,21 +86690,21 @@ var Tr2PlaneConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abs
     _initializerDefineProperty(this, "reflectionNoise", _descriptor2, this);
   }
 
-}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "generators", [_dec4], {
+}, _temp), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "generators", [_dec3], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return [];
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "reflectionNoise", [_dec5], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "reflectionNoise", [_dec4], {
   configurable: true,
   enumerable: true,
   writable: true,
   initializer: function () {
     return 0;
   }
-})), _class2)) || _class) || _class) || _class);
+})), _class2)) || _class) || _class);
 
 /***/ }),
 
@@ -86636,21 +86719,13 @@ var Tr2PlaneConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abs
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tw2ParticleConstraint", function() { return Tw2ParticleConstraint; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _class, _class2;
+var _dec, _class;
 
 function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object.keys(descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object.defineProperty(target, property, desc); desc = null; } return desc; }
 
 /* eslint no-unused-vars:0 */
 
-/**
- * Tw2ParticleConstraint base class
- * - Not implemented yet
- *
- * @property {String|number} _id
- * @property {String} name
- */
-
-var Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, _dec(_class = (_class2 = class Tw2ParticleConstraint extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].abstract, (_class = class Tw2ParticleConstraint extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   /**
    * Applies constraints
    * @param {Array} buffers
@@ -86660,7 +86735,7 @@ var Tw2ParticleConstraint = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].
    */
   ApplyConstraint(buffers, instanceStride, aliveCount, dt) {}
 
-}, (_applyDecoratedDescriptor(_class2.prototype, "ApplyConstraint", [_dec2], Object.getOwnPropertyDescriptor(_class2.prototype, "ApplyConstraint"), _class2.prototype)), _class2)) || _class);
+}, (_applyDecoratedDescriptor(_class.prototype, "ApplyConstraint", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "ApplyConstraint"), _class.prototype)), _class));
 
 /***/ }),
 
@@ -86702,7 +86777,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2GpuSharedEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ccp("Tr2GpuSharedEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2GpuParticleSystem"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2GpuSharedEmitter extends particle_emitter_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"] {
+var Tr2GpuSharedEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2GpuSharedEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2GpuParticleSystem"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2GpuSharedEmitter extends particle_emitter_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"] {
   constructor(...args) {
     super(...args);
 
@@ -87030,7 +87105,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2GpuUniqueEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ccp("Tr2GpuUniqueEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2GpuParticleSystem"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2GpuUniqueEmitter extends particle_emitter_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"] {
+var Tr2GpuUniqueEmitter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2GpuUniqueEmitter"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec7 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec8 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec9 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec10 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].color, _dec11 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec12 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec13 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec14 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec15 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec16 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec17 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec18 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec19 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec20 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec21 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec22 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec23 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec24 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec25 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2GpuParticleSystem"), _dec26 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec27 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec28 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec29 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec30 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec31 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec32 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec33 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec34 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec35 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2GpuUniqueEmitter extends particle_emitter_Tw2ParticleEmitter__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleEmitter"] {
   constructor(...args) {
     super(...args);
 
@@ -87378,7 +87453,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ForceSphereVolume = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ccp("Tr2ForceSphereVolume"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2ParticleForce"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ForceSphereVolume extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tr2ForceSphereVolume = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ForceSphereVolume"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2ParticleForce"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ForceSphereVolume extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -87438,7 +87513,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ParticleVortexForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ccp("Tr2ParticleVortexForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ParticleVortexForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
+var Tr2ParticleVortexForce = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ParticleVortexForce"), _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].vector3, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ParticleVortexForce extends particle_force_Tw2ParticleForce__WEBPACK_IMPORTED_MODULE_1__["Tw2ParticleForce"] {
   constructor(...args) {
     super(...args);
 
@@ -87546,7 +87621,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2StateMachine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2StateMachine", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2StateMachineState"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachine extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2StateMachine = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachine"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachineState"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachine extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -87602,7 +87677,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2StateMachineState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2StateMachineState", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tw2Action"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.object, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2StateMachineTransition"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineState extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2StateMachineState = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachineState"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tw2Action"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachineTransition"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineState extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -87667,7 +87742,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2StateMachineTransition = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2StateMachineTransition", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineTransition extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2StateMachineTransition = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2StateMachineTransition"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2StateMachineTransition extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -87705,10 +87780,10 @@ var Tr2StateMachineTransition = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["met
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2SyncToAnimation", function() { return Tr2SyncToAnimation; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
-var Tr2SyncToAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2SyncToAnimation", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class Tr2SyncToAnimation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class) || _class) || _class);
+var Tr2SyncToAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2SyncToAnimation"), _dec(_class = _dec2(_class = class Tr2SyncToAnimation extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class) || _class);
 
 /***/ }),
 
@@ -87734,7 +87809,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionAnimateCurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionAnimateCurveSet", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionAnimateCurveSet extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionAnimateCurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionAnimateCurveSet"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tw2CurveSet"), _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionAnimateCurveSet extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -87783,7 +87858,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionAnimateValue = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionAnimateValue", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.objectOf("Tr2CurveScalarExpression"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionAnimateValue extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionAnimateValue = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionAnimateValue"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].struct("Tr2CurveScalarExpression"), _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionAnimateValue extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -87850,7 +87925,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionChildEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionChildEffect", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionChildEffect extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionChildEffect = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionChildEffect"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionChildEffect extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -87908,7 +87983,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionOverlay = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionOverlay", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionOverlay extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionOverlay = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionOverlay"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionOverlay extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -87948,7 +88023,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionPlayCurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionPlayCurveSet", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionPlayCurveSet extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionPlayCurveSet = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionPlayCurveSet"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionPlayCurveSet extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -88006,7 +88081,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionPlayMeshAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionPlayMeshAnimation", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionPlayMeshAnimation extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionPlayMeshAnimation = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionPlayMeshAnimation"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionPlayMeshAnimation extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -88064,7 +88139,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionPlaySound = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionPlaySound", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionPlaySound extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionPlaySound = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionPlaySound"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionPlaySound extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -88103,11 +88178,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionResetClipSphereCenter", function() { return Tr2ActionResetClipSphereCenter; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Action__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Action */ "./unsupported/state/action/Tw2Action.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
 
-var Tr2ActionResetClipSphereCenter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionResetClipSphereCenter", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class Tr2ActionResetClipSphereCenter extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {}) || _class) || _class) || _class);
+var Tr2ActionResetClipSphereCenter = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionResetClipSphereCenter"), _dec(_class = _dec2(_class = class Tr2ActionResetClipSphereCenter extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {}) || _class) || _class);
 
 /***/ }),
 
@@ -88133,7 +88208,7 @@ function _initializerWarningHelper(descriptor, context) { throw new Error('Decor
 
 
 
-var Tr2ActionSetValue = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionSetValue", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionSetValue extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
+var Tr2ActionSetValue = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionSetValue"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ActionSetValue extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {
   constructor(...args) {
     super(...args);
 
@@ -88181,11 +88256,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Tr2ActionSpawnParticles", function() { return Tr2ActionSpawnParticles; });
 /* harmony import */ var global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! global */ "./global/index.js");
 /* harmony import */ var _Tw2Action__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tw2Action */ "./unsupported/state/action/Tw2Action.js");
-var _dec, _dec2, _dec3, _class;
+var _dec, _dec2, _class;
 
 
 
-var Tr2ActionSpawnParticles = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ActionSpawnParticles", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].data("black"), _dec(_class = _dec2(_class = _dec3(_class = class Tr2ActionSpawnParticles extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {}) || _class) || _class) || _class);
+var Tr2ActionSpawnParticles = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ActionSpawnParticles"), _dec(_class = _dec2(_class = class Tr2ActionSpawnParticles extends _Tw2Action__WEBPACK_IMPORTED_MODULE_1__["Tw2Action"] {}) || _class) || _class);
 
 /***/ }),
 
@@ -88203,7 +88278,7 @@ __webpack_require__.r(__webpack_exports__);
 var _dec, _class;
 
 
-var Tw2Action = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tw2Action"), _dec(_class = class Tw2Action extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class);
+var Tw2Action = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tw2Action"), _dec(_class = class Tw2Action extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {}) || _class);
 
 /***/ }),
 
@@ -88279,7 +88354,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2Controller = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2Controller", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2StateMachine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.listOf("Tr2ControllerFloatVariable"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Controller extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2Controller = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2Controller"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].boolean, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2StateMachine"), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].list("Tr2ControllerFloatVariable"), _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2Controller extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -88344,7 +88419,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2ControllerReference = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ControllerReference", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ControllerReference extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
+var Tr2ControllerReference = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ControllerReference"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].path, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ControllerReference extends global__WEBPACK_IMPORTED_MODULE_0__["Tw2BaseClass"] {
   constructor(...args) {
     super(...args);
 
@@ -88462,7 +88537,7 @@ function _applyDecoratedDescriptor(target, property, decorators, descriptor, con
 function _initializerWarningHelper(descriptor, context) { throw new Error('Decorating class property failed. Please ensure that ' + 'proposal-class-properties is enabled and runs after the decorators transform.'); }
 
 
-var Tr2ControllerFloatVariable = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].type("Tr2ControllerFloatVariable", true), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.enums, _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].black.uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ControllerFloatVariable {
+var Tr2ControllerFloatVariable = (_dec = global__WEBPACK_IMPORTED_MODULE_0__["meta"].notImplemented, _dec2 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].ctor("Tr2ControllerFloatVariable"), _dec3 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].string, _dec4 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].float, _dec5 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].enums(), _dec6 = global__WEBPACK_IMPORTED_MODULE_0__["meta"].uint, _dec(_class = _dec2(_class = (_class2 = (_temp = class Tr2ControllerFloatVariable {
   constructor() {
     _initializerDefineProperty(this, "name", _descriptor, this);
 

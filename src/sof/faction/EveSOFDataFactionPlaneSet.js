@@ -1,17 +1,17 @@
 import { meta, vec4 } from "global";
 
 
-@meta.type("EveSOFDataFactionPlaneSet", true)
+@meta.ctor("EveSOFDataFactionPlaneSet", true)
 export class EveSOFDataFactionPlaneSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.uint
+    @meta.uint
     groupIndex = -1;
 
 }

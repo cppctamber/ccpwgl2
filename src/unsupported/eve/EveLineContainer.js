@@ -7,11 +7,11 @@ import { meta, Tw2BaseClass } from "global";
  * @property {EveCurveLineSet} lineSet -
  */
 @meta.notImplemented
-@meta.type("EveLineContainer", true)
+@meta.ctor("EveLineContainer", true)
 export class EveLineContainer extends Tw2BaseClass
 {
 
-    @meta.black.object
+    @meta.struct("EveCurveLineSet")
     lineSet = null;
 
 }

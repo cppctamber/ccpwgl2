@@ -3,17 +3,17 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.type("Tr2ActionPlayCurveSet", true)
+@meta.ctor("Tr2ActionPlayCurveSet")
 export class Tr2ActionPlayCurveSet extends Tw2Action
 {
 
-    @meta.black.string
+    @meta.string
     curveSetName = "";
 
-    @meta.black.string
+    @meta.string
     rangeName = "";
 
-    @meta.black.boolean
+    @meta.boolean
     syncToRange = false;
 
 }

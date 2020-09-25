@@ -3,23 +3,23 @@ import { Tw2CurveExpression } from "./Tw2CurveExpression";
 
 
 @meta.notImplemented
-@meta.type("Tr2CurveVector3Expression")
+@meta.ctor("Tr2CurveVector3Expression")
 export class Tr2CurveVector3Expression extends Tw2CurveExpression
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.list
+    @meta.list()
     inputs = [];
 
-    @meta.black.expression
+    @meta.expression
     expressionX = "";
 
-    @meta.black.expression
+    @meta.expression
     expressionY = "";
 
-    @meta.black.expression
+    @meta.expression
     expressionZ = "";
 
     @meta.vector3

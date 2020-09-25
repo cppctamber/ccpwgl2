@@ -2,31 +2,31 @@ import { meta } from "global";
 import { Tw2CurveKey, Tw2Curve } from "curve";
 
 
-@meta.type("AudEventKey", true)
+@meta.ctor("AudEventKey")
 export class AudEventKey extends Tw2CurveKey
 {
 
-    @meta.black.float
+    @meta.float
     time = 0;
 
-    @meta.black.ushort
+    @meta.ushort
     value = 0;
 
 }
 
 
 @meta.notImplemented
-@meta.type("AudEventCurve", true)
+@meta.ctor("AudEventCurve")
 export class AudEventCurve extends Tw2Curve
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("AudEventKey")
+    @meta.list("AudEventKey")
     keys = [];
 
-    @meta.black.objectOf("TriObserverLocal")
+    @meta.struct("TriObserverLocal")
     sourceTriObserver = null;
 
 }

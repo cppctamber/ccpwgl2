@@ -27,7 +27,7 @@ export class EveBoosterBatch extends Tw2RenderBatch
 }
 
 
-@meta.type("EveBoosterSetItem")
+@meta.ctor("EveBoosterSetItem")
 export class EveBoosterSetItem extends EveObjectSetItem
 {
 
@@ -120,7 +120,7 @@ export class EveBoosterSetItem extends EveObjectSetItem
 }
 
 
-@meta.type("EveBoosterSet", true)
+@meta.ctor("EveBoosterSet", true)
 export class EveBoosterSet extends EveObjectSet
 {
 
@@ -128,13 +128,13 @@ export class EveBoosterSet extends EveObjectSet
     @meta.boolean
     alwaysOn = true;
 
-    @meta.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
     @meta.color
     glowColor = vec4.create();
 
-    @meta.objectOf("EveSpriteSet")
+    @meta.struct("EveSpriteSet")
     glows = null;
 
     @meta.float

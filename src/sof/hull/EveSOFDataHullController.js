@@ -1,11 +1,11 @@
 import { meta } from "global/index";
 
 
-@meta.type("EveSOFDataHullController", true)
+@meta.ctor("EveSOFDataHullController")
 export class EveSOFDataHullController
 {
 
-    @meta.black.path
+    @meta.path
     path = "";
 
 }

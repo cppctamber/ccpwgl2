@@ -3,23 +3,23 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveChildBulletStorm", true)
+@meta.ctor("EveChildBulletStorm")
 export class EveChildBulletStorm extends EveChild
 {
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
-    @meta.black.uint
+    @meta.uint
     multiplier = 0;
 
-    @meta.black.float
+    @meta.float
     range = 0;
 
-    @meta.black.string
+    @meta.string
     sourceLocatorSet = "";
 
-    @meta.black.float
+    @meta.float
     speed = 0;
 
 

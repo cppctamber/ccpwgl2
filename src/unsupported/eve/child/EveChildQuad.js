@@ -3,35 +3,35 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.type("EveChildQuad", true)
+@meta.ctor("EveChildQuad")
 export class EveChildQuad extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     brightness = 0;
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.object
+    @meta.struct()
     effect = null;
 
-    @meta.black.matrix4
+    @meta.matrix4
     localTransform = mat4.create();
 
-    @meta.black.float
+    @meta.float
     minScreenSize = 0;
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
     /**

@@ -8,7 +8,7 @@ const Operator = {
 };
 
 
-@meta.type("Tw2VectorSequencer")
+@meta.ctor("Tw2VectorSequencer")
 export class Tw2VectorSequencer extends Tw2CurveSequencer
 {
 
@@ -19,10 +19,10 @@ export class Tw2VectorSequencer extends Tw2CurveSequencer
     @meta.isPrivate
     value = vec3.create();
 
-    @meta.enumerable(Operator)
+    @meta.enums(Operator)
     operator = 0;
 
-    @meta.listOf("Tw2Curve")
+    @meta.list("Tw2Curve")
     functions = [];
 
 

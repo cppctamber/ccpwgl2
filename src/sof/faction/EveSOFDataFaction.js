@@ -1,56 +1,56 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataFaction", true)
+@meta.ctor("EveSOFDataFaction", true)
 export class EveSOFDataFaction
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("EveSOFDataArea")
+    @meta.struct("EveSOFDataArea")
     areaTypes = null;
 
-    @meta.black.listOf("EveSOFDataFactionChild")
+    @meta.list("EveSOFDataFactionChild")
     children = [];
 
-    @meta.black.objectOf("EveSOFDataFactionColorSet")
+    @meta.struct("EveSOFDataFactionColorSet")
     colorSet = null;
 
-    @meta.black.objectOf("EveSOFDataPatternLayer")
+    @meta.struct("EveSOFDataPatternLayer")
     defaultPattern = null;
 
-    @meta.black.string
+    @meta.string
     defaultPatternLayer1MaterialName = "";
 
-    @meta.black.string
+    @meta.string
     description = "";
 
-    @meta.black.objectOf("EveSOFDataLogoSet")
+    @meta.struct("EveSOFDataLogoSet")
     logoSet = null;
 
-    @meta.black.uint
+    @meta.uint
     materialUsageMtl1 = 0;
 
-    @meta.black.uint
+    @meta.uint
     materialUsageMtl2 = 0;
 
-    @meta.black.uint
+    @meta.uint
     materialUsageMtl3 = 0;
 
-    @meta.black.uint
+    @meta.uint
     materialUsageMtl4 = 0;
 
-    @meta.black.listOf("EveSOFDataFactionPlaneSet")
+    @meta.list("EveSOFDataFactionPlaneSet")
     planeSets = [];
 
-    @meta.black.string
+    @meta.string
     resPathInsert = "";
 
-    @meta.black.listOf("EveSOFDataFactionSpotlightSet")
+    @meta.list("EveSOFDataFactionSpotlightSet")
     spotlightSets = [];
 
-    @meta.black.objectOf("EveSOFDataFactionVisibilityGroupSet")
+    @meta.struct("EveSOFDataFactionVisibilityGroupSet")
     visibilityGroupSet = null;
 
 }

@@ -16,84 +16,84 @@ const Modifier = {
 };
 
 
-@meta.type("EveTransform", true)
+@meta.ctor("EveTransform")
 export class EveTransform extends EveObject
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveObject")
+    @meta.list("EveObject")
     children = [];
 
-    @meta.black.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.black.boolean
+    @meta.boolean
     display = true;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     distanceBasedScaleArg1 = 0.2;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     distanceBasedScaleArg2 = 0.63;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     hideOnLowQuality = false;
 
-    @meta.black.objectOf([ "Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh" ])
+    @meta.struct([ "Tw2Mesh", "Tr2MeshLOD", "Tw2InstancedMesh" ])
     mesh = null;
 
-    @meta.black.uint
-    @meta.enumerable(Modifier)
+    @meta.uint
+    @meta.enums(Modifier)
     modifier = EveTransform.Modifier.NONE;
 
-    @meta.black.listOf("Tr2ObserverLocal")
+    @meta.list("Tr2ObserverLocal")
     observers = [];
 
     @meta.notImplemented
-    @meta.black.vector3
+    @meta.vector3
     overrideBoundsMax = vec3.create();
 
     @meta.notImplemented
-    @meta.black.vector3
+    @meta.vector3
     overrideBoundsMin = vec3.create();
 
-    @meta.black.listOf("EveParticleEmitter")
+    @meta.list("EveParticleEmitter")
     particleEmitters = [];
 
-    @meta.black.listOf("EveParticleSystem")
+    @meta.list("EveParticleSystem")
     particleSystems = [];
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     sortValueMultiplier = 1.0;
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
-    @meta.black.boolean
+    @meta.boolean
     update = false;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useDistanceBasedScale = false;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useLodLevel = false;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     visibilityThreshold = 0;
 
     @meta.plain

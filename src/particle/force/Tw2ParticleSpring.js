@@ -2,14 +2,14 @@ import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.type("Tw2ParticleSpring", "Tr2ParticleSpring")
+@meta.ctor("Tw2ParticleSpring", "Tr2ParticleSpring")
 export class Tw2ParticleSpring extends Tw2ParticleForce
 {
 
-    @meta.black.float
+    @meta.float
     springConstant = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
 

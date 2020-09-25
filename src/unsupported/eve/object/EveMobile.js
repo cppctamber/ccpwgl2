@@ -3,41 +3,41 @@ import { EveObject } from "eve/object/EveObject";
 
 
 @meta.notImplemented
-@meta.type("EveMobile", true)
+@meta.ctor("EveMobile")
 export class EveMobile extends EveObject
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveObjectSet")
+    @meta.list("EveObjectSet")
     attachments = [];
 
-    @meta.black.vector3
+    @meta.vector3
     boundingSphereCenter = vec3.create();
 
-    @meta.black.float
+    @meta.float
     boundingSphereRadius = 0;
 
-    @meta.black.listOf("EveChild")
+    @meta.list("EveChild")
     children = [];
 
-    @meta.black.listOf("EveStateController")
+    @meta.list("EveStateController")
     controllers = [];
 
-    @meta.black.listOf("Tw2CurveSet")
+    @meta.list("Tw2CurveSet")
     curveSets = [];
 
-    @meta.black.listOf("EveLocatorSets")
+    @meta.list("EveLocatorSets")
     locatorSets = [];
 
-    @meta.black.objectOf("Tr2MeshLod")
+    @meta.struct("Tr2MeshLod")
     meshLod = null;
 
-    @meta.black.listOf("TriObserverLocal")
+    @meta.list("TriObserverLocal")
     observers = [];
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     shadowEffect = null;
 
 }

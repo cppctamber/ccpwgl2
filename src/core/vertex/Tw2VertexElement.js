@@ -2,7 +2,7 @@ import { meta, GL_FLOAT, util } from "global";
 import * as consts from "global/engine/Tw2Constant";
 
 
-@meta.type("Tw2VertexElement")
+@meta.ctor("Tw2VertexElement")
 export class Tw2VertexElement
 {
 

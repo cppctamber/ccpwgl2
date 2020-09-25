@@ -2,20 +2,20 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2ControllerFloatVariable", true)
+@meta.ctor("Tr2ControllerFloatVariable")
 export class Tr2ControllerFloatVariable
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     defaultValue = 0;
 
-    @meta.black.enums
+    @meta.enums()
     enumValues = {};
 
-    @meta.black.uint
+    @meta.uint
     variableType = 0;
 
     /**

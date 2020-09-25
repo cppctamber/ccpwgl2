@@ -1,14 +1,14 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataHullLocatorSet", true)
+@meta.ctor("EveSOFDataHullLocatorSet")
 export class EveSOFDataHullLocatorSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("EveSOFDataTransform")
+    @meta.list("EveSOFDataTransform")
     locators = [];
 
 }

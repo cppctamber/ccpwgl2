@@ -34,38 +34,38 @@ class EveSpriteSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.type("EveSpriteSetItem", true)
+@meta.ctor("EveSpriteSetItem", true)
 export class EveSpriteSetItem extends EveObjectSetItem
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.float
+    @meta.float
     blinkPhase = 0;
 
-    @meta.black.float
+    @meta.float
     blinkRate = 0;
 
-    @meta.black.uint
+    @meta.uint
     boneIndex = 0;
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.float
+    @meta.float
     falloff = 0;
 
-    @meta.black.float
+    @meta.float
     maxScale = 0;
 
-    @meta.black.float
+    @meta.float
     minScale = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.color
+    @meta.color
     warpColor = vec4.create();
 
     @meta.uint
@@ -101,20 +101,20 @@ export class EveSpriteSetItem extends EveObjectSetItem
 }
 
 
-@meta.type("EveSpriteSet", true)
+@meta.ctor("EveSpriteSet", true)
 export class EveSpriteSet extends EveObjectSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
-    @meta.black.float
+    @meta.float
     intensity = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     skinned = false;
 
     @meta.boolean
@@ -134,7 +134,7 @@ export class EveSpriteSet extends EveObjectSet
      * Alias for this.items
      * @returns {Array}
      */
-    @meta.black.listOf("EveSpriteSetItem")
+    @meta.list("EveSpriteSetItem")
     get sprites()
     {
         return this.items;

@@ -1,47 +1,47 @@
 import { meta } from "global";
 
 
-@meta.type("EveSOFDataGenericShader", true)
+@meta.ctor("EveSOFDataGenericShader", true)
 export class EveSOFDataGenericSwarm
 {
 
-    @meta.black.float
+    @meta.float
     formationDistance = 0;
 
-    @meta.black.float
+    @meta.float
     maxDeceleration = 0;
 
-    @meta.black.float
+    @meta.float
     maxDistance0 = 0;
 
-    @meta.black.float
+    @meta.float
     separationDistance = 0;
 
-    @meta.black.float
+    @meta.float
     wanderDistance = 0;
 
-    @meta.black.float
+    @meta.float
     wanderFluctuation = 0;
 
-    @meta.black.float
+    @meta.float
     wanderRadius = 0;
 
-    @meta.black.float
+    @meta.float
     weightAlign = 0;
 
-    @meta.black.float
+    @meta.float
     weightAnchor = 0;
 
-    @meta.black.float
+    @meta.float
     weightCohesion = 0;
 
-    @meta.black.float
+    @meta.float
     weightDeceleration = 0;
 
-    @meta.black.float
+    @meta.float
     weightFormation = 0;
 
-    @meta.black.float
+    @meta.float
     weightSeparation = 0;
 
 }

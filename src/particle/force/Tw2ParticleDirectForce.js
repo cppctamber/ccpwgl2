@@ -2,11 +2,11 @@ import { meta, vec3 } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.type("Tw2ParticleDirectForce", "Tr2ParticleDirectForce")
+@meta.ctor("Tw2ParticleDirectForce", "Tr2ParticleDirectForce")
 export class Tw2ParticleDirectForce extends Tw2ParticleForce
 {
 
-    @meta.black.vector3
+    @meta.vector3
     force = vec3.create();
 
 

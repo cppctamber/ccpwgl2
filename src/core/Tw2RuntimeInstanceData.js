@@ -3,8 +3,7 @@ import { Tw2VertexDeclaration } from "./vertex";
 import { Tw2ParticleElementDeclaration } from "particle/element/Tw2ParticleElementDeclaration";
 
 
-@meta.type("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData")
-@meta.data("black")
+@meta.ctor("Tw2RuntimeInstanceData", "Tr2RuntimeInstanceData")
 export class Tw2RuntimeInstanceData extends Tw2BaseClass
 {
 

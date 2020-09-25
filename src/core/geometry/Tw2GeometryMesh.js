@@ -4,17 +4,17 @@ import { isNumber } from "global/util";
 import { Tw2GeometryMeshArea } from "./Tw2GeometryMeshArea";
 
 
-@meta.type("Tw2GeometryMesh")
+@meta.ctor("Tw2GeometryMesh")
 export class Tw2GeometryMesh
 {
 
     @meta.string
     name = "";
 
-    @meta.objectOf("Tw2VertexDeclaration")
+    @meta.struct("Tw2VertexDeclaration")
     declaration = new Tw2VertexDeclaration();
 
-    @meta.listOf("Tw2GeometryMeshArea")
+    @meta.list("Tw2GeometryMeshArea")
     areas = [];
 
     @meta.vector
@@ -23,10 +23,10 @@ export class Tw2GeometryMesh
     @meta.uint
     bufferLength = 0;
 
-    @meta.objectOf(WebGLBuffer)
+    @meta.struct("WebGLBuffer")
     bufferData = null;
 
-    @meta.objectOf(WebGLBuffer)
+    @meta.struct("WebGLBuffer")
     indexes = null;
 
     @meta.vector
@@ -47,10 +47,10 @@ export class Tw2GeometryMesh
     @meta.float
     boundsSphereRadius = 0;
 
-    @meta.listOf("Tw2GeometryBone")
+    @meta.list("Tw2GeometryBone")
     bones = [];
 
-    @meta.listOf(String)
+    @meta.list("String")
     boneBindings = [];
 
 

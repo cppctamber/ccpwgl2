@@ -11,55 +11,55 @@ import {
 import { isString } from "global/util";
 
 
-@meta.type("Tw2Mesh", "Tr2Mesh")
+@meta.ctor("Tw2Mesh", "Tr2Mesh")
 export class Tw2Mesh extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     additiveAreas = [];
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     decalAreas = [];
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     deferGeometryLoad = false;
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     depthAreas = [];
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     depthNormalAreas = [];
 
     @meta.boolean
     display = true;
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     distortionAreas = [];
 
-    @meta.black.path
+    @meta.path
     geometryResPath = "";
 
-    @meta.black.uint
+    @meta.uint
     meshIndex = 0;
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     opaqueAreas = [];
 
     @meta.notImplemented
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     opaquePrepassAreas = [];
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     pickableAreas = [];
 
-    @meta.black.listOf("Tw2MeshArea")
+    @meta.list("Tw2MeshArea")
     transparentAreas = [];
 
     @meta.plain
@@ -75,7 +75,7 @@ export class Tw2Mesh extends Tw2BaseClass
         transparentAreas: true,
     };
 
-    @meta.objectOf("Tw2GeometryRes")
+    @meta.struct("Tw2GeometryRes")
     _geometryResource = null;
 
     /**

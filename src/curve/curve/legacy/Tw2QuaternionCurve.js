@@ -8,7 +8,7 @@ const Interpolation = {
 };
 
 
-@meta.type("Tw2QuaternionKey2")
+@meta.ctor("Tw2QuaternionKey2")
 export class Tw2QuaternionKey2 extends Tw2CurveKey
 {
 
@@ -21,13 +21,13 @@ export class Tw2QuaternionKey2 extends Tw2CurveKey
     @meta.vector4
     rightTangent = vec4.create();
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 1;
 
 }
 
 
-@meta.type("Tw2QuaternionCurve")
+@meta.ctor("Tw2QuaternionCurve")
 export class Tw2QuaternionCurve extends Tw2Curve
 {
 
@@ -59,10 +59,10 @@ export class Tw2QuaternionCurve extends Tw2Curve
     @meta.vector4
     endTangent = vec4.create();
 
-    @meta.enumerable(Interpolation)
+    @meta.enums(Interpolation)
     interpolation = 1;
 
-    @meta.listOf("Tw2QuaternionKey")
+    @meta.list("Tw2QuaternionKey")
     keys = [];
 
     @meta.float

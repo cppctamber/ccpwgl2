@@ -3,44 +3,44 @@ import { EveChild } from "eve/child";
 
 
 @meta.notImplemented
-@meta.type("EveChildParticleSphere", true)
+@meta.ctor("EveChildParticleSphere")
 export class EveChildParticleSphere extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.listOf("Tw2ParticleAttributeGenerator")
+    @meta.list("Tw2ParticleAttributeGenerator")
     generators = [];
 
-    @meta.black.float
+    @meta.float
     maxSpeed = 0;
 
-    @meta.black.objectOf("Tw2InstancedMesh")
+    @meta.struct("Tw2InstancedMesh")
     mesh = null;
 
-    @meta.black.float
+    @meta.float
     movementScale = 0;
 
-    @meta.black.objectOf("Tw2ParticleSystem")
+    @meta.struct("Tw2ParticleSystem")
     particleSystem = null;
 
-    @meta.black.float
+    @meta.float
     positionShiftDecreaseSpeed = 0;
 
-    @meta.black.float
+    @meta.float
     positionShiftIncreaseSpeed = 0;
 
-    @meta.black.float
+    @meta.float
     positionShiftMax = 0;
 
-    @meta.black.float
+    @meta.float
     positionShiftMin = 0;
 
-    @meta.black.float
+    @meta.float
     radius = 0;
 
-    @meta.black.boolean
+    @meta.boolean
     useSpaceObjectData = false;
 
 

@@ -2,14 +2,14 @@ import { meta, tw2 } from "global";
 import { Tw2Parameter } from "./Tw2Parameter";
 
 
-@meta.type("Tw2VariableParameter", "TriVariableParameter")
+@meta.ctor("Tw2VariableParameter", "TriVariableParameter")
 export class Tw2VariableParameter extends Tw2Parameter
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.string
+    @meta.string
     variableName = "";
 
 

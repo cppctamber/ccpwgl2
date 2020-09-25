@@ -2,14 +2,14 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveAnimation", true)
+@meta.ctor("EveAnimation")
 export class EveAnimation
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.uint
+    @meta.uint
     loops = 0;
 
 }

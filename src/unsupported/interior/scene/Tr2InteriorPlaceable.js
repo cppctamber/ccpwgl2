@@ -2,14 +2,14 @@ import { meta, Tw2BaseClass } from "global";
 
 
 @meta.notImplemented
-@meta.type("Tr2InteriorPlaceable", true)
+@meta.ctor("Tr2InteriorPlaceable")
 export class Tr2InteriorPlaceable extends Tw2BaseClass
 {
 
-    @meta.black.path
+    @meta.path
     placeableResPath = "";
 
-    @meta.black.objectOf("TriMatrix")
+    @meta.struct("TriMatrix")
     transform = null;
 
 }

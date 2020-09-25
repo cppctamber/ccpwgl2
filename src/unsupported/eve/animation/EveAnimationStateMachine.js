@@ -2,26 +2,26 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveAnimationStateMachine", true)
+@meta.ctor("EveAnimationStateMachine")
 export class EveAnimationStateMachine
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.boolean
+    @meta.boolean
     autoPlayDefault = true;
 
-    @meta.black.listOf("EveAnimationState")
+    @meta.list("EveAnimationState")
     states = [];
 
-    @meta.black.listOf("EveAnimationStateTransition")
+    @meta.list("EveAnimationStateTransition")
     transitions = [];
 
-    @meta.black.string
+    @meta.string
     trackMask = "";
 
-    @meta.black.string
+    @meta.string
     defaultAnimation = "";
 
 }

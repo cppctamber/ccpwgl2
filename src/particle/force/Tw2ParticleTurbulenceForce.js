@@ -2,20 +2,20 @@ import { meta, vec3, vec4, noise } from "global";
 import { Tw2ParticleForce } from "./Tw2ParticleForce";
 
 
-@meta.type("Tw2ParticleTurbulenceForce", "Tr2ParticleTurbulenceForce")
+@meta.ctor("Tw2ParticleTurbulenceForce", "Tr2ParticleTurbulenceForce")
 export class Tw2ParticleTurbulenceForce extends Tw2ParticleForce
 {
 
-    @meta.black.vector3
+    @meta.vector3
     amplitude = vec3.fromValues(1, 1, 1);
 
-    @meta.black.vector4
+    @meta.vector4
     frequency = vec4.fromValues(1, 1, 1, 1);
 
-    @meta.black.float
+    @meta.float
     noiseLevel = 3;
 
-    @meta.black.float
+    @meta.float
     noiseRatio = 0.5;
 
 

@@ -3,32 +3,32 @@ import { util, Tw2BaseClass, meta } from "global";
 import { Tw2Effect } from "./Tw2Effect";
 
 
-@meta.type("Tw2MeshArea", "Tr2MeshArea")
+@meta.ctor("Tw2MeshArea", "Tr2MeshArea")
 @meta.stage(1)
 export class Tw2MeshArea extends Tw2BaseClass
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
     @meta.boolean
     display = true;
 
-    @meta.black.uint
+    @meta.uint
     count = 1;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     effect = null;
 
-    @meta.black.uint
+    @meta.uint
     index = 0;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     reversed = false;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useSHLighting = false;
 
 

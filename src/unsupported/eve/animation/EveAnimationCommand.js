@@ -2,11 +2,11 @@ import { meta } from "global";
 
 
 @meta.notImplemented
-@meta.type("EveAnimationCommand", true)
+@meta.ctor("EveAnimationCommand")
 export class EveAnimationCommand
 {
 
-    @meta.black.uint
+    @meta.uint
     @meta.todo("Identify default value")
     command = -1;
 

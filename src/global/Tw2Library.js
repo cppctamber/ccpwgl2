@@ -4,7 +4,7 @@ import { Tw2ResMan, Tw2Device, Tw2Logger } from "./engine";
 import * as math from "./math";
 import * as util from "./util";
 import * as consts from "./engine/Tw2Constant";
-import * as readers from "core/reader/Tw2BlackPropertyReaders";
+
 import {
     isArray,
     isFunction,
@@ -17,6 +17,7 @@ import {
     isTr2OrTri,
     toTw2
 } from "./util";
+
 import {
     ErrStoreValueInvalid,
     ErrStoreValueMissing,
@@ -48,7 +49,6 @@ class Tw2Library extends Tw2EventEmitter
     device = new Tw2Device(this);
 
     _store = {
-        black: new Map(),
         variable: new Map(),
         extension: new Map(),
         class: new Map(),
@@ -635,42 +635,6 @@ class Tw2Library extends Tw2EventEmitter
     }
 
     /**
-     * Checks if there is a black definition for a given class/ function name
-     * @param name
-     * @returns {*}
-     */
-    HasBlack(name)
-    {
-        return hasStoreKey(this, "black", name, { isClassName: true });
-    }
-
-    /**
-     * Gets a black definition for a given class/ function name
-     * @param name
-     * @returns {*}
-     */
-    GetBlack(name)
-    {
-        return getStoreKey(this, "black", name, { isClassName: true });
-    }
-
-    /**
-     * Sets a black definition for a given class/ function name
-     * @param {String} name
-     * @param {Function|Array} values
-     * @returns {Map}
-     */
-    SetBlack(name, values)
-    {
-        if (isFunction(values)) values = values(readers);
-
-        return setStoreKey(this, "black", name, values, {
-            isValue: isArray,
-            onBeforeSet: value => new Map(value)
-        });
-    }
-
-    /**
      * Checks if a class exists
      * @param name
      * @returns {*}
@@ -705,11 +669,6 @@ class Tw2Library extends Tw2EventEmitter
         if ("DEBUG_ENABLED" in Value)
         {
             Value.DEBUG_ENABLED = this._debug;
-        }
-
-        if (Value.black)
-        {
-            this.SetBlack(name, Value.black);
         }
 
         return Value;

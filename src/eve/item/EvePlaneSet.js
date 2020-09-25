@@ -22,38 +22,38 @@ class EvePlaneSetBatch extends Tw2RenderBatch
 }
 
 
-@meta.type("EvePlaneSetItem", true)
+@meta.ctor("EvePlaneSetItem", true)
 export class EvePlaneSetItem extends EveObjectSetItem
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.color
+    @meta.color
     color = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     layer1Scroll = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     layer1Transform = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     layer2Scroll = vec4.create();
 
-    @meta.black.vector4
+    @meta.vector4
     layer2Transform = vec4.create();
 
-    @meta.black.uint
+    @meta.uint
     maskAtlasID = 0;
 
-    @meta.black.vector3
+    @meta.vector3
     position = vec3.create();
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
     @meta.uint
@@ -122,22 +122,22 @@ export class EvePlaneSetItem extends EveObjectSetItem
 }
 
 
-@meta.type("EvePlaneSet", true)
+@meta.ctor("EvePlaneSet", true)
 export class EvePlaneSet extends EveObjectSet
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.object
+    @meta.struct()
     effect = null;
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     hideOnLowQuality = false;
 
     @meta.notImplemented
-    @meta.black.byte
+    @meta.byte
     pickBufferID = 0;
 
 
@@ -150,7 +150,7 @@ export class EvePlaneSet extends EveObjectSet
      * Alias for this.items
      * @returns {Array}
      */
-    @meta.black.listOf("EvePlaneSetItem")
+    @meta.list("EvePlaneSetItem")
     get planes()
     {
         return this.items;

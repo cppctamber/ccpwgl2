@@ -2,87 +2,63 @@ import { meta, vec3 } from "global";
 import { EveObject } from "eve/object/EveObject";
 
 
-/**
- * EveStation2
- * TODO: Implement
- * @ccp EveStation2
- *
- * @property {Array.<EveObjectSet>} attachments       -
- * @property {vec3} boundingSphereCenter              -
- * @property {Number} boundingSphereRadius            -
- * @property {Array.<EveObject>} children             -
- * @property {Array.<Tw2CurveSet>} curveSets          -
- * @property {Array.<EveSpaceObjectDecal>} decals     -
- * @property {Array.<EveChild>} effectChildren        -
- * @property {Array.<Tr2PointLight>} lights           -
- * @property {Array.<EveLocatorSets>} locatorSets     -
- * @property {Array.<EveLocator2>} locators           -
- * @property {Tw2Mesh} mesh                           -
- * @property {Tr2MeshLod} meshLod                     -
- * @property {Tr2RotationAdapter} modelRotationCurve  -
- * @property {Number} modelScale                      -
- * @property {Array.<TriObserverLocal>} observers     -
- * @property {Tr2RotationAdapter} rotationCurve       -
- * @property {Tr2Effect} shadowEffect                 -
- * @property {Tr2TranslationAdapter} translationCurve -
- */
 @meta.notImplemented
-@meta.type("EveStation2", true)
+@meta.ctor("EveStation2")
 export class EveStation2 extends EveObject
 {
 
-    @meta.black.listOf("EveObjectSet")
+    @meta.list("EveObjectSet")
     attachments = [];
 
-    @meta.black.vector3
+    @meta.vector3
     boundingSphereCenter = vec3.create();
 
-    @meta.black.float
+    @meta.float
     boundingSphereRadius = 0;
 
-    @meta.black.listOf("EveObject")
+    @meta.list("EveObject")
     children = [];
 
-    @meta.black.listOf("EveCurveSet")
+    @meta.list("EveCurveSet")
     curveSets = [];
 
-    @meta.black.listOf("EveSpaceObjectDecal")
+    @meta.list("EveSpaceObjectDecal")
     decals = [];
 
-    @meta.black.listOf("EveChild")
+    @meta.list("EveChild")
     effectChildren = [];
 
-    @meta.black.listOf("TriPointLight")
+    @meta.list("TriPointLight")
     lights = [];
 
-    @meta.black.listOf("EveLocatorSets")
+    @meta.list("EveLocatorSets")
     locatorSets = [];
 
-    @meta.black.listOf("EveLocator2")
+    @meta.list("EveLocator2")
     locators = [];
 
-    @meta.black.objectOf("Tw2Mesh")
+    @meta.struct("Tw2Mesh")
     mesh = null;
 
-    @meta.black.objectOf("Tr2MeshLod")
+    @meta.struct("Tr2MeshLod")
     meshLod = null;
 
-    @meta.black.objectOf("Tr2RotationAdapter")
+    @meta.struct("Tr2RotationAdapter")
     modelRotationCurve = null;
 
-    @meta.black.float
+    @meta.float
     modelScale = 0;
 
-    @meta.black.listOf("TriObserverLocal")
+    @meta.list("TriObserverLocal")
     observers = [];
 
-    @meta.black.objectOf("Tr2RotationAdapter")
+    @meta.struct("Tr2RotationAdapter")
     rotationCurve = null;
 
-    @meta.black.objectOf("Tw2Effect")
+    @meta.struct("Tw2Effect")
     shadowEffect = null;
 
-    @meta.black.objectOf("Tr2TranslationAdapter")
+    @meta.struct("Tr2TranslationAdapter")
     translationCurve = null;
 
 }

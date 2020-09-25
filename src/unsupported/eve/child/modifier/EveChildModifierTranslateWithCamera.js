@@ -3,8 +3,7 @@ import { EveChildModifier } from "./EveChildModifier";
 
 
 @meta.notImplemented
-@meta.type("EveChildModifierTranslateWithCamera", true)
-@meta.data("black")
+@meta.ctor("EveChildModifierTranslateWithCamera")
 export class EveChildModifierTranslateWithCamera extends EveChildModifier
 {
 

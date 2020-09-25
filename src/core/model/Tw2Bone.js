@@ -1,14 +1,14 @@
 import { meta, mat4 } from "global";
 
 
-@meta.type("Tw2Bone")
+@meta.ctor("Tw2Bone")
 export class Tw2Bone
 {
 
-    @meta.objectOf("Tw2GeometryBone")
+    @meta.struct("Tw2GeometryBone")
     boneRes = null;
 
-    @meta.listOf("Tw2BoneBinding")
+    @meta.list("Tw2BoneBinding")
     bindingArrays = [];
 
     @meta.matrix4

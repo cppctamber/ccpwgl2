@@ -19,7 +19,7 @@ import { ErrHTTPRequest, ErrResourceExtensionUnregistered } from "../Tw2Error";
  * @property {?Function} _onPause        - An optional callback which is fired when the video is paused
  * @property {?Function} _onEnded        - An optional callback which is fired when the video has ended
  */
-@meta.type("Tw2VideoRes")
+@meta.ctor("Tw2VideoRes")
 export class Tw2VideoRes extends Tw2Resource
 {
 

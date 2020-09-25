@@ -3,48 +3,48 @@ import { Tw2PerObjectData } from "core";
 import { EveChild } from "./EveChild";
 
 
-@meta.type("EveChildParticleSystem", true)
+@meta.ctor("EveChildParticleSystem", true)
 @meta.stage(1)
 export class EveChildParticleSystem extends EveChild
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.boolean
+    @meta.boolean
     display = true;
 
-    @meta.black.matrix4
+    @meta.matrix4
     localTransform = mat4.create();
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     lodSphereRadius = 0;
 
-    @meta.black.objectOf("Tw2InstancedMesh")
+    @meta.struct("Tw2InstancedMesh")
     mesh = null;
 
     @meta.notImplemented
-    @meta.black.float
+    @meta.float
     minScreenSize = 0;
 
-    @meta.black.listOf("Tw2ParticleEmitter")
+    @meta.list("Tw2ParticleEmitter")
     particleEmitters = [];
 
-    @meta.black.listOf([ "Tw2ParticleSystem", "Tr2GpuParticleSystem" ])
+    @meta.list([ "Tw2ParticleSystem", "Tr2GpuParticleSystem" ])
     particleSystems = [];
 
-    @meta.black.quaternion
+    @meta.quaternion
     rotation = quat.create();
 
-    @meta.black.vector3
+    @meta.vector3
     scaling = vec3.fromValues(1, 1, 1);
 
-    @meta.black.vector3
+    @meta.vector3
     translation = vec3.create();
 
     @meta.notImplemented
-    @meta.black.boolean
+    @meta.boolean
     useDynamicLod = false;
 
     @meta.boolean

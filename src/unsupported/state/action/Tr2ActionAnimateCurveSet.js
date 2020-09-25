@@ -3,14 +3,14 @@ import { Tw2Action } from "./Tw2Action";
 
 
 @meta.notImplemented
-@meta.type("Tr2ActionAnimateCurveSet", true)
+@meta.ctor("Tr2ActionAnimateCurveSet")
 export class Tr2ActionAnimateCurveSet extends Tw2Action
 {
 
-    @meta.black.objectOf("Tw2CurveSet")
+    @meta.struct("Tw2CurveSet")
     curveSet = null;
 
-    @meta.black.string
+    @meta.string
     value = "";
 
 }

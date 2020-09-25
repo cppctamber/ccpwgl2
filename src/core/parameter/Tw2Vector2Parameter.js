@@ -2,7 +2,7 @@ import { meta, vec2 } from "global";
 import { Tw2VectorParameter } from "./Tw2VectorParameter";
 
 
-@meta.type("Tw2Vector2Parameter")
+@meta.ctor("Tw2Vector2Parameter")
 export class Tw2Vector2Parameter extends Tw2VectorParameter
 {
 

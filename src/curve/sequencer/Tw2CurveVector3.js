@@ -2,21 +2,21 @@ import { Tw2CurveSequencer } from "./Tw2CurveSequencer";
 import { meta, vec3 } from "global";
 
 
-@meta.type("Tw2CurveVector3", "Tr2CurveVector3")
+@meta.ctor("Tw2CurveVector3", "Tr2CurveVector3")
 @meta.stage(2)
 export class Tw2CurveVector3 extends Tw2CurveSequencer
 {
 
-    @meta.black.string
+    @meta.string
     name = "";
 
-    @meta.black.rawOf("Tr2CurveScalar")
+    @meta.raw("Tr2CurveScalar")
     x = null;
 
-    @meta.black.rawOf("Tr2CurveScalar")
+    @meta.raw("Tr2CurveScalar")
     y = null;
 
-    @meta.black.rawOf("Tr2CurveScalar")
+    @meta.raw("Tr2CurveScalar")
     z = null;
 
     @meta.vector3
