@@ -53391,14 +53391,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./math */ "./global/math/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./global/util/index.js");
 /* harmony import */ var _engine_Tw2Constant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./engine/Tw2Constant */ "./global/engine/Tw2Constant.js");
-/* harmony import */ var core_reader_Tw2BlackPropertyReaders__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core/reader/Tw2BlackPropertyReaders */ "./core/reader/Tw2BlackPropertyReaders.js");
-/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
+/* harmony import */ var core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! core/Tw2Error */ "./core/Tw2Error.js");
 var _class, _temp;
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 
 
 
@@ -54217,7 +54215,7 @@ function lazyLoadClass(library, propertyName, className, ...args) {
 
 function validateStore(library, storeType) {
   if (!library._store[storeType]) {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreInvalid"]({
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreInvalid"]({
       store: storeType
     });
   }
@@ -54265,7 +54263,7 @@ function getStoreKey(library, storeType, key, options) {
     }
 
   library.emit("store.missing", storeType, key);
-  throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueMissing"]({
+  throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueMissing"]({
     store: storeType,
     key
   });
@@ -54288,7 +54286,7 @@ function setStoreKey(library, storeType, key, value, options) {
   validateStore(library, storeType);
 
   if (!value) {
-    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueInvalid"]({
+    throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueInvalid"]({
       store: storeType,
       key
     });
@@ -54296,14 +54294,14 @@ function setStoreKey(library, storeType, key, value, options) {
 
   if (options) {
     if (options.reserved && options.reserved.includes(key)) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreKeyReserved"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreKeyReserved"]({
         store: storeType,
         key
       });
     }
 
     if (options.isValue && !options.isValue(value)) {
-      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_7__["ErrStoreValueInvalid"]({
+      throw new core_Tw2Error__WEBPACK_IMPORTED_MODULE_6__["ErrStoreValueInvalid"]({
         store: storeType,
         key
       });
