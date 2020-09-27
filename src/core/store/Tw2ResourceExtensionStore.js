@@ -16,6 +16,12 @@ export class Tw2ResourceExtensionStore extends Tw2GenericStore
     }
 
     /**
+     * Identifies stores that use classes
+     * @type {boolean}
+     */
+    static isConstructorStore =  true;
+
+    /**
      * The store's name
      * @type {string}
      */

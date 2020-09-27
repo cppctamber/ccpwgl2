@@ -37,7 +37,7 @@ export class Tw2ConstructorStore extends Tw2GenericStore
      * Identifies stores that use classes
      * @type {boolean}
      */
-    static isClassStore =  true;
+    static isConstructorStore =  true;
 
     /**
      * The store's name

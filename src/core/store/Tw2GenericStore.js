@@ -29,21 +29,22 @@ export class Tw2GenericStore extends Tw2EventEmitter
      */
     Set(key, value)
     {
-        const { storeName, restrictedKeys, onBefore, isValue } = this.constructor;
+        const Ctor = this.constructor;
+        const { storeName } = Ctor;
 
-        if (isValue && !isValue(value))
+        if (Ctor.isValue && !Ctor.isValue(value))
         {
             throw new ErrStoreValueInvalid({ storeName, key });
         }
 
-        if (restrictedKeys && restrictedKeys.includes(key))
+        if (Ctor.restrictedKeys && Ctor.restrictedKeys.includes(key))
         {
             throw new ErrStoreKeyReserved({ storeName, key });
         }
 
-        if (onBefore)
+        if (Ctor.onBefore)
         {
-            const _value = onBefore(value, key, this);
+            const _value = Ctor.onBefore(value, key, this);
             if (_value) value = _value;
         }
 
@@ -59,8 +60,8 @@ export class Tw2GenericStore extends Tw2EventEmitter
      */
     Get(key)
     {
-        const { isClassStore, storeName } = this.constructor;
-        const [ usedKey, value ] = getUsedKey(this, key, isClassStore);
+        const { isConstructorStore, storeName } = this.constructor;
+        const [ usedKey, value ] = getUsedKey(this, key, isConstructorStore);
 
         // Keep track of missing values
         if (!value)
@@ -90,16 +91,7 @@ export class Tw2GenericStore extends Tw2EventEmitter
      */
     Has(key)
     {
-        return !!getUsedKey(this, key, this.constructor.isClassStore)[1];
-    }
-
-    /**
-     * Gets a store's keys
-     * @returns {Array}
-     */
-    Keys()
-    {
-        return Array.from(STORE.get(this).keys());
+        return !!getUsedKey(this, key, this.constructor.isConstructorStore)[1];
     }
 
     /**
@@ -151,7 +143,7 @@ export class Tw2GenericStore extends Tw2EventEmitter
      * Identifies stores that use classes
      * @type {boolean}
      */
-    static isClassStore = false;
+    static isConstructorStore = false;
 
     /**
      * Identifies any restricted keys
@@ -172,10 +164,10 @@ export class Tw2GenericStore extends Tw2EventEmitter
  * Handles substituted keys
  * @param {Tw2GenericStore} source
  * @param {String} key
- * @param {Boolean} isClassStore
+ * @param {Boolean} isConstructorStore
  * @returns {Array}
  */
-function getUsedKey(source, key, isClassStore)
+function getUsedKey(source, key, isConstructorStore)
 {
     const { map } = STORE.get(source);
 
@@ -184,7 +176,7 @@ function getUsedKey(source, key, isClassStore)
         return [ key, map.get(key) ];
     }
 
-    if (isClassStore && isTr2OrTri(key))
+    if (isConstructorStore && isTr2OrTri(key))
     {
         const substituteKey = toTw2(key);
         if (map.has(substituteKey))
